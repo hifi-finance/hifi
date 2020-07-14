@@ -2,7 +2,7 @@
 pragma solidity ^0.6.10;
 
 import "./Erc20Interface.sol";
-import "./SafeMath.sol";
+import "../math/SafeMath.sol";
 
 /**
  * @title Erc20
