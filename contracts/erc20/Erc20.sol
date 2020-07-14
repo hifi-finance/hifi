@@ -31,7 +31,7 @@ contract Erc20 is Erc20Interface {
     /*** Contract Logic Starts Here ***/
 
     /**
-     * @dev All three of these values are immutable: they can only be set once * during construction.
+     * @dev All three of these values are immutable: they can only be set once during construction.
      * @param name_ Erc20 name of this token.
      * @param symbol_ Erc20 symbol of this token.
      * @param decimals_ Erc20 decimal precision of this token.
