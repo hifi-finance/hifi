@@ -4,12 +4,13 @@ pragma solidity ^0.6.10;
 import "./yTokenInterface.sol";
 import "./erc20/Erc20.sol";
 import "./erc20/Erc20Interface.sol";
+import "./utils/ReentrancyGuard.sol";
 
 /**
  * @title yToken
  * @author Mainframe
  */
-abstract contract yToken is yTokenInterface, Erc20 {
+abstract contract yToken is yTokenInterface, Erc20, ReentrancyGuard {
     modifier isMatured() {
         require(block.timestamp >= expirationTime, "ERR_NOT_MATURED");
         _;
