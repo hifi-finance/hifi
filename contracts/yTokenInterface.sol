@@ -8,6 +8,8 @@ import "./yTokenStorage.sol";
  * @author Mainframe
  */
 abstract contract yTokenInterface is yTokenStorage {
+
+    /*** Non-Constant Functions ***/
     function borrow(uint256 underlyingBorrowAmount) external virtual returns (bool);
 
     function liquidateBorrow(address borrower, uint256 repayUnderlyingAmount) external virtual returns (bool);
