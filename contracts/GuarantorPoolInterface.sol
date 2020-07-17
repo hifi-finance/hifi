@@ -9,7 +9,7 @@ import "./GuarantorPoolStorage.sol";
  */
 abstract contract GuarantorPoolInterface is GuarantorPoolStorage {
     /*** Non-Constant Functions ***/
-    function redeem(address collateral, uint256 endowment) external virtual returns (bool);
+    function redeemEndowment(address collateral, uint256 endowment) external virtual returns (bool);
 
     function supply(address collateral, uint256 endowment) external virtual returns (bool);
 

@@ -1,16 +1,23 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.6.10;
 
+import "./DumbOracle.sol";
 import "./yTokenInterface.sol";
 import "./erc20/Erc20.sol";
 import "./erc20/Erc20Interface.sol";
+import "./math/Exponential.sol";
 import "./utils/ReentrancyGuard.sol";
 
 /**
  * @title yToken
  * @author Mainframe
  */
-abstract contract yToken is yTokenInterface, Erc20, ReentrancyGuard {
+abstract contract yToken is yTokenInterface, Erc20, Exponential, ReentrancyGuard {
+    modifier isVaultOpenForCaller() {
+        require(vaults[msg.sender].isOpen, "ERR_VAULT_NOT_OPEN");
+        _;
+    }
+
     modifier isMatured() {
         require(block.timestamp >= expirationTime, "ERR_NOT_MATURED");
         _;
@@ -46,6 +53,58 @@ abstract contract yToken is yTokenInterface, Erc20, ReentrancyGuard {
 
         /* Set the expiration time. */
         expirationTime = expirationTime_;
+    }
+
+    struct MintLocalVars {
+        MathError mathErr;
+        uint256 ethPriceInDai;
+        uint256 ratio;
+    }
+
+    function mint(uint256 yTokenAmount) public override isVaultOpenForCaller nonReentrant returns (bool) {
+
+        /* Checks: verify collateralization profile. */
+        MintLocalVars memory vars;
+        vars.ethPriceInDai = DumbOracle(oracle).getEthPriceInDai();
+        vars.ratio = collateralAmount / vars.ethPriceInDai;
+        require(vars.ratio >= collateralizationRatio.mantissa, "ERR_COLLATERALIZATION_INSUFFICIENT");
+
+        /* Interactions: attempt to perform the ERC20 transfer. */
+        // require(
+        //     Erc20Interface(collateral).transferFrom(msg.sender, address(this), endowment),
+        //     "ERR_MINT_ERC20_TRANSFER"
+        // );
+
+        return true;
+    }
+
+    function openVault() public returns (bool) {
+        require(vaults[msg.sender].isOpen == false, "ERR_VAULT_OPEN");
+        vaults[msg.sender].isOpen = true;
+        return true;
+    }
+
+    function setCollateralizationRatio(uint256 collateralizationRatio_) external returns (bool) {
+        collateralizationRatio = collateralizationRatio_;
+        return true;
+    }
+
+    function setOracle(address oracle_) external returns (bool) {
+        oracle = oracle_;
+        return true;
+    }
+
+    function supply(uint256 collateralAmount) public isVaultOpenForCaller nonReentrant returns (bool) {
+        /* Effects: update the storage properties. */
+        vaults[msg.sender].freeCollateral += collateralAmount;
+
+        /* Interactions */
+        require(
+            Erc20Interface(collateral).transferFrom(msg.sender, address(this), collateralAmount),
+            "ERR_SUPPLY_ERC20_TRANSFER"
+        );
+
+        return true;
     }
 
     /**

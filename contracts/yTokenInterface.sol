@@ -10,11 +10,11 @@ import "./yTokenStorage.sol";
 abstract contract yTokenInterface is yTokenStorage {
 
     /*** Non-Constant Functions ***/
-    function borrow(uint256 underlyingBorrowAmount) external virtual returns (bool);
+    function borrow(uint256 borrowUnderlyingAmount) external virtual returns (bool);
 
     function liquidateBorrow(address borrower, uint256 repayUnderlyingAmount) external virtual returns (bool);
 
-    function mint(uint256 underlyingMintAmount) external virtual returns (bool);
+    function mint(uint256 yTokenAmount) external virtual returns (bool);
 
     function redeem(uint256 redeemUnderlyingAmount) external virtual returns (bool);
 

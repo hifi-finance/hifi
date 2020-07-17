@@ -2,6 +2,7 @@
 pragma solidity ^0.6.10;
 
 import "./GuarantorPoolInterface.sol";
+import "./erc20/Erc20.sol";
 import "./erc20/Erc20Interface.sol";
 import "./governance/MfAdmin.sol";
 import "./math/Exponential.sol";
@@ -11,14 +12,18 @@ import "./utils/ReentrancyGuard.sol";
  * @title GuarantorPool
  * @author Mainframe
  */
-contract GuarantorPool is GuarantorPoolInterface, MfAdmin, Exponential, ReentrancyGuard {
+contract GuarantorPool is GuarantorPoolInterface, Erc20, MfAdmin, Exponential, ReentrancyGuard {
     modifier isCollateralAuthorized(address collateral) {
         require(supportedCollaterals[collateral] == true, "ERR_COLLATERAL_NOT_AUTHORIZED");
         _;
     }
 
     /* solhint-disable-next-line */
-    constructor() public MfAdmin() {}
+    constructor(
+        string memory name_,
+        string memory symbol_,
+        uint8 decimals_
+    ) public Erc20(name_, symbol_, decimals_) MfAdmin() {}
 
     struct RedeemLocalVars {
         MathError mathErr;
@@ -30,22 +35,22 @@ contract GuarantorPool is GuarantorPoolInterface, MfAdmin, Exponential, Reentran
      * @notice Lorem ipsum.
      * @dev WARNING: there's a risk of a liquidity crunch ...
      */
-    function redeem(address collateral, uint256 endowment) external override returns (bool) {
-        /* Checks: The caller has an insufficient balance. */
-        require(endowments[msg.sender][collateral] >= endowment, "ERR_WITHDRAW_ENDOWMENT_INSUFFICIENT_BALANCE");
+    function redeemEndowment(address collateral, uint256 endowment) external override returns (bool) {
+        /* Checks: verify endowment balance. */
+        require(endowments[msg.sender][collateral] >= endowment, "ERR_WITHDRAW_ENDOWMENT_BALANCE_INSUFFICIENT");
 
         /* Checks: liquidity situation */
         /* TODO */
 
-        /* Effects: Update the storage properties/ */
+        /* Effects: update the storage properties/ */
         RedeemLocalVars memory vars;
         vars.currentEndowment = endowments[msg.sender][collateral];
         (vars.mathErr, vars.newEndowment) = subUInt(vars.currentEndowment, endowment);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_WITHDRAW_ENDOWMENT_MATH_ERR");
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_WITHDRAW_ENDOWMENT_MATH_ERROR");
         endowments[msg.sender][collateral] = vars.newEndowment;
 
-        /* Interactions: Attempt to perform the ERC20 transfer. */
-        require(Erc20Interface(collateral).transfer(msg.sender, endowment), "ERR_WITHDRAW_ENDOWMENT_TRANSFER_FROM");
+        /* Interactions: attempt to perform the ERC20 transfer. */
+        require(Erc20Interface(collateral).transfer(msg.sender, endowment), "ERR_REDEEM_ENDOWMENT_ERC20_TRANSFER");
         return true;
     }
 
@@ -64,17 +69,22 @@ contract GuarantorPool is GuarantorPoolInterface, MfAdmin, Exponential, Reentran
         isCollateralAuthorized(collateral)
         returns (bool)
     {
-        /* Compute the new total amount endowed by the caller */
+        /* Checks: compute the new total amount endowed by the caller */
         SupplyLocalVars memory vars;
         vars.currentEndowment = endowments[msg.sender][collateral];
         (vars.mathErr, vars.newEndowment) = addUInt(vars.currentEndowment, endowment);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_DEPOSIT_ENDOWMENT_MATH_ERR");
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_DEPOSIT_ENDOWMENT_MATH_ERROR");
+
+        /* Effects: update the endowment storage property. */
         endowments[msg.sender][collateral] = vars.newEndowment;
 
-        /* Attempt to perform the ERC20 transfer */
+        /* Effects: mint new ownership tokens */
+        // TODO
+
+        /* Interactions: attempt to perform the ERC20 transfer */
         require(
             Erc20Interface(collateral).transferFrom(msg.sender, address(this), endowment),
-            "ERR_DEPOSIT_ENDOWMENT_TRANSFER_FROM"
+            "ERR_SUPPLY_ENDOWMENT_ERC20_TRANSFER"
         );
         return true;
     }
