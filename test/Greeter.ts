@@ -13,7 +13,7 @@ chai.use(solidity);
 setTimeout(async function () {
   const wallets = (await ethers.getSigners()) as Wallet[];
 
-  describe("Greeter", function () {
+  describe.skip("Greeter", function () {
     beforeEach(async function () {
       const greeting: string = "Hello, world!";
       this.greeter = (await deployContract(wallets[0], GreeterArtifact, [greeting])) as Greeter;

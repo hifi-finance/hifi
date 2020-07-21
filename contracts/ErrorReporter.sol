@@ -31,7 +31,7 @@ abstract contract ErrorReporter {
         ERR_WITHDRAW_ENDOWMENT_MATH_ERROR
     }
 
-    enum yTokenError {
+    enum YTokenError {
         ERR_COLLATERALIZATION_INSUFFICIENT,
         ERR_NOT_MATURED,
         ERR_SUPPLY_ERC20_TRANSFER,

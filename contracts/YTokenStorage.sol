@@ -4,10 +4,10 @@ pragma solidity ^0.6.10;
 import "./math/Exponential.sol";
 
 /**
- * @title yTokenInterface
+ * @title YTokenInterface
  * @author Mainframe
  */
-abstract contract yTokenStorage {
+abstract contract YTokenStorage is Exponential {
     struct Vault {
         uint256 freeCollateral;
         uint256 lockedCollateral;
@@ -15,7 +15,7 @@ abstract contract yTokenStorage {
     }
 
     /**
-     * @notice Collateral Erc20 asset for this yToken.
+     * @notice Collateral Erc20 asset for this YToken.
      */
     address public collateral;
 
@@ -30,7 +30,7 @@ abstract contract yTokenStorage {
     uint256 public expirationTime;
 
     /**
-     * @notice The pool into which Guarantors of this yToken deposit their capital.
+     * @notice The pool into which Guarantors of this YToken deposit their capital.
      */
     address public guarantorPool;
 
@@ -40,7 +40,7 @@ abstract contract yTokenStorage {
     address public oracle;
 
     /**
-     * @notice Underlying Erc20 asset for this yToken.
+     * @notice Underlying Erc20 asset for this YToken.
      */
     address public underlying;
 

@@ -1,18 +1,19 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.6.10;
 
+import "@nomiclabs/buidler/console.sol";
 import "./DumbOracle.sol";
-import "./yTokenInterface.sol";
+import "./YTokenInterface.sol";
 import "./erc20/Erc20.sol";
 import "./erc20/Erc20Interface.sol";
 import "./math/Exponential.sol";
 import "./utils/ReentrancyGuard.sol";
 
 /**
- * @title yToken
+ * @title YToken
  * @author Mainframe
  */
-abstract contract yToken is yTokenInterface, Erc20, Exponential, ReentrancyGuard {
+abstract contract YToken is YTokenInterface, Erc20, ReentrancyGuard {
     modifier isVaultOpenForCaller() {
         require(vaults[msg.sender].isOpen, "ERR_VAULT_NOT_OPEN");
         _;
@@ -29,7 +30,7 @@ abstract contract yToken is yTokenInterface, Erc20, Exponential, ReentrancyGuard
      * @param decimals_ ERC-20 decimal precision of this token
      * @param underlying_ The address of the underlying asset
      * @param collateral_ The address of the collateral asset
-     * @param guarantorPool_ The pool into which Guarantors of this yToken deposit their capital
+     * @param guarantorPool_ The pool into which Guarantors of this YToken deposit their capital
      * @param expirationTime_ Unix timestamp in seconds for when this token expires
      */
     constructor(
@@ -61,12 +62,14 @@ abstract contract yToken is yTokenInterface, Erc20, Exponential, ReentrancyGuard
         uint256 ratio;
     }
 
-    function mint(uint256 yTokenAmount) public override isVaultOpenForCaller nonReentrant returns (bool) {
-
+    function mint(uint256 YTokenAmount) public override isVaultOpenForCaller nonReentrant returns (bool) {
         /* Checks: verify collateralization profile. */
         MintLocalVars memory vars;
         vars.ethPriceInDai = DumbOracle(oracle).getEthPriceInDai();
-        vars.ratio = collateralAmount / vars.ethPriceInDai;
+        vars.ratio = YTokenAmount / vars.ethPriceInDai;
+        console.log("YTokenAmount", YTokenAmount);
+        console.log("vars.ethPriceInDai", vars.ethPriceInDai);
+        console.log("vars.ratio", vars.ratio);
         require(vars.ratio >= collateralizationRatio.mantissa, "ERR_COLLATERALIZATION_INSUFFICIENT");
 
         /* Interactions: attempt to perform the ERC20 transfer. */
@@ -78,6 +81,10 @@ abstract contract yToken is yTokenInterface, Erc20, Exponential, ReentrancyGuard
         return true;
     }
 
+    /**
+     * @notice Opens a Vault for the caller.
+     * @dev Reverts if the caller has previously opened a vault.
+     */
     function openVault() public returns (bool) {
         require(vaults[msg.sender].isOpen == false, "ERR_VAULT_OPEN");
         vaults[msg.sender].isOpen = true;
@@ -85,7 +92,7 @@ abstract contract yToken is yTokenInterface, Erc20, Exponential, ReentrancyGuard
     }
 
     function setCollateralizationRatio(uint256 collateralizationRatio_) external returns (bool) {
-        collateralizationRatio = collateralizationRatio_;
+        collateralizationRatio = Exp({ mantissa: collateralizationRatio_ });
         return true;
     }
 
@@ -108,7 +115,7 @@ abstract contract yToken is yTokenInterface, Erc20, Exponential, ReentrancyGuard
     }
 
     /**
-     * @notice yTokens resemble zero-coupong bonds, so this function pays the
+     * @notice YTokens resemble zero-coupong bonds, so this function pays the
      * token holder the face value at maturation time.
      */
     function settle() external override isMatured returns (bool) {

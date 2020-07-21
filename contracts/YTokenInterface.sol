@@ -1,20 +1,20 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.6.10;
 
-import "./yTokenStorage.sol";
+import "./YTokenStorage.sol";
 
 /**
- * @title yTokenInterface
+ * @title YTokenInterface
  * @author Mainframe
  */
-abstract contract yTokenInterface is yTokenStorage {
+abstract contract YTokenInterface is YTokenStorage {
 
     /*** Non-Constant Functions ***/
     function borrow(uint256 borrowUnderlyingAmount) external virtual returns (bool);
 
     function liquidateBorrow(address borrower, uint256 repayUnderlyingAmount) external virtual returns (bool);
 
-    function mint(uint256 yTokenAmount) external virtual returns (bool);
+    function mint(uint256 YTokenAmount) external virtual returns (bool);
 
     function redeem(uint256 redeemUnderlyingAmount) external virtual returns (bool);
 

@@ -1,4 +1,4 @@
-import { Greeter } from "../typechain/Greeter";
+import { YToken } from "../typechain/YToken";
 
 export interface TypechainConfig {
   outDir?: string;
@@ -18,6 +18,6 @@ declare module "@nomiclabs/buidler/types" {
 }
 declare module "mocha" {
   export interface Context {
-    greeter: Greeter;
+    yToken: YToken;
   }
 }
