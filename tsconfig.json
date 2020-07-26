@@ -18,10 +18,11 @@
     "artifacts/**/*",
     "artifacts/**/*.json",
     "dev-utils/**/*",
+    "test/scenarios/**/*",
     "scripts/**/*",
     "tasks/**/*",
     "test/**/*",
     "typechain/**/*",
-    "buidler.config.ts"
+    "buidler.config.ts", "tasks"
   ]
 }

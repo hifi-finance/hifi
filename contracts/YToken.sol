@@ -42,7 +42,7 @@ contract YToken is YTokenInterface, Erc20, ErrorReporter, ReentrancyGuard {
         address collateral_,
         address guarantorPool_,
         uint256 expirationTime_
-    ) public Erc20(name_, symbol_, decimals_) {
+    ) public MfAdmin() Erc20(name_, symbol_, decimals_) {
         /* Set underlying and collateral and sanity check them. */
         underlying = underlying_;
         Erc20Interface(underlying_).totalSupply();
@@ -114,16 +114,6 @@ contract YToken is YTokenInterface, Erc20, ErrorReporter, ReentrancyGuard {
         return NO_ERROR;
     }
 
-    function setCollateralizationRatio(uint256 collateralizationRatio_) external returns (bool) {
-        collateralizationRatio = Exp({ mantissa: collateralizationRatio_ });
-        return true;
-    }
-
-    function setOracle(address oracle_) external returns (bool) {
-        oracle = oracle_;
-        return true;
-    }
-
     function supply(uint256 collateralAmount) public isVaultOpenForCaller nonReentrant returns (bool) {
         /* Effects: update the storage properties. */
         vaults[msg.sender].freeCollateral += collateralAmount;
@@ -151,11 +141,11 @@ contract YToken is YTokenInterface, Erc20, ErrorReporter, ReentrancyGuard {
 
     /*** Admin Functions ***/
 
-    function _reduceReserves(uint256 reduceAmount) external override returns (bool) {
+    function _reduceReserves(uint256 reduceAmount) external override isAuthorized returns (bool) {
         return NO_ERROR;
     }
 
-    function _setReserveFactor(uint256 newReserveFactorMantissa) external override returns (bool) {
+    function _setReserveFactor(uint256 newReserveFactorMantissa) external override isAuthorized returns (bool) {
         return NO_ERROR;
     }
 }

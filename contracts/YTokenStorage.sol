@@ -1,18 +1,22 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.6.10;
 
+import "./governance/MfAdmin.sol";
 import "./math/Exponential.sol";
 
 /**
  * @title YTokenInterface
  * @author Mainframe
  */
-abstract contract YTokenStorage is Exponential {
+contract YTokenStorage is MfAdmin, Exponential {
+    /*** Structs ***/
     struct Vault {
         uint256 freeCollateral;
         uint256 lockedCollateral;
         bool isOpen;
     }
+
+    /*** Storage Properties ***/
 
     /**
      * @notice Collateral Erc20 asset for this YToken.
@@ -48,4 +52,16 @@ abstract contract YTokenStorage is Exponential {
      * @notice ...
      */
     mapping(address => Vault) public vaults;
+
+    /*** Non-Constant Functions ***/
+
+    function setCollateralizationRatio(uint256 collateralizationRatio_) external returns (bool) {
+        collateralizationRatio = Exp({ mantissa: collateralizationRatio_ });
+        return true;
+    }
+
+    function setOracle(address oracle_) external isAuthorized returns (bool) {
+        oracle = oracle_;
+        return true;
+    }
 }

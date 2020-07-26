@@ -24,20 +24,20 @@ abstract contract MfAdmin {
     event TransferAdmin(address indexed previousAdmin, address indexed newAdmin);
 
     /**
+     * @dev Throws if called by any account other than the admin.
+     */
+    modifier isAuthorized() {
+        require(admin == msg.sender, "ERR_NOT_AUTHORIZED");
+        _;
+    }
+
+    /**
      * @dev Initializes the contract setting the deployer as the initial admin.
      */
     constructor() internal {
         address msgSender = msg.sender;
         admin = msgSender;
         emit TransferAdmin(address(0x00), msgSender);
-    }
-
-    /**
-     * @dev Throws if called by any account other than the admin.
-     */
-    modifier isAuthorized() {
-        require(admin == msg.sender, "ERR_NOT_AUTHORIZED");
-        _;
     }
 
     /**

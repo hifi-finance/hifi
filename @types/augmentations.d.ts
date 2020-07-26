@@ -1,5 +1,6 @@
 import { Erc20 } from "../typechain/Erc20";
 import { GuarantorPool } from "../typechain/GuarantorPool";
+import { Scenario } from "../test/scenarios";
 import { YToken } from "../typechain/YToken";
 
 export interface TypechainConfig {
@@ -22,6 +23,7 @@ declare module "mocha" {
   export interface Context {
     collateral: Erc20;
     guarantorPool: GuarantorPool;
+    scenario: Scenario;
     underlying: Erc20;
     yToken: YToken;
   }
