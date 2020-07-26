@@ -3,6 +3,7 @@ pragma solidity ^0.6.10;
 
 import "@nomiclabs/buidler/console.sol";
 import "./DumbOracle.sol";
+import "./ErrorReporter.sol";
 import "./YTokenInterface.sol";
 import "./erc20/Erc20.sol";
 import "./erc20/Erc20Interface.sol";
@@ -13,7 +14,7 @@ import "./utils/ReentrancyGuard.sol";
  * @title YToken
  * @author Mainframe
  */
-abstract contract YToken is YTokenInterface, Erc20, ReentrancyGuard {
+contract YToken is YTokenInterface, Erc20, ErrorReporter, ReentrancyGuard {
     modifier isVaultOpenForCaller() {
         require(vaults[msg.sender].isOpen, "ERR_VAULT_NOT_OPEN");
         _;
@@ -56,6 +57,16 @@ abstract contract YToken is YTokenInterface, Erc20, ReentrancyGuard {
         expirationTime = expirationTime_;
     }
 
+    /*** Non-Constant Functions ***/
+
+    function borrow(uint256 borrowUnderlyingAmount) external override returns (bool) {
+        return NO_ERROR;
+    }
+
+    function liquidateBorrow(address borrower, uint256 repayUnderlyingAmount) external override returns (bool) {
+        return NO_ERROR;
+    }
+
     struct MintLocalVars {
         MathError mathErr;
         uint256 ethPriceInDai;
@@ -91,6 +102,18 @@ abstract contract YToken is YTokenInterface, Erc20, ReentrancyGuard {
         return true;
     }
 
+    function redeem(uint256 redeemUnderlyingAmount) external override returns (bool) {
+        return NO_ERROR;
+    }
+
+    function repayBorrow(uint256 repayUnderlyingAmount) external override returns (bool) {
+        return NO_ERROR;
+    }
+
+    function repayBorrowBehalf(address borrower, uint256 repayUnderlyingAmount) external override returns (bool) {
+        return NO_ERROR;
+    }
+
     function setCollateralizationRatio(uint256 collateralizationRatio_) external returns (bool) {
         collateralizationRatio = Exp({ mantissa: collateralizationRatio_ });
         return true;
@@ -115,10 +138,24 @@ abstract contract YToken is YTokenInterface, Erc20, ReentrancyGuard {
     }
 
     /**
-     * @notice YTokens resemble zero-coupong bonds, so this function pays the
+     * @notice YTokens resemble zero-coupon bonds, so this function pays the
      * token holder the face value at maturation time.
      */
     function settle() external override isMatured returns (bool) {
         return true;
+    }
+
+    // function transfer(address recipient, uint256 amount) external override(Erc20) returns (bool) {
+    //     return super.transfer(recipient, amount);
+    // }
+
+    /*** Admin Functions ***/
+
+    function _reduceReserves(uint256 reduceAmount) external override returns (bool) {
+        return NO_ERROR;
+    }
+
+    function _setReserveFactor(uint256 newReserveFactorMantissa) external override returns (bool) {
+        return NO_ERROR;
     }
 }

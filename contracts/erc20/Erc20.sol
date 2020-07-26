@@ -66,7 +66,7 @@ contract Erc20 is Erc20Interface {
      * - the caller must have a balance of at least `amount`.
      */
     function transfer(address recipient, uint256 amount) external virtual override returns (bool) {
-        transfer(msg.sender, recipient, amount);
+        transferInternal(msg.sender, recipient, amount);
         return true;
     }
 
@@ -100,7 +100,7 @@ contract Erc20 is Erc20Interface {
      * - `spender` cannot be the zero address.
      */
     function approve(address spender, uint256 amount) external virtual override returns (bool) {
-        approve(msg.sender, spender, amount);
+        approveInternal(msg.sender, spender, amount);
         return true;
     }
 
@@ -126,8 +126,8 @@ contract Erc20 is Erc20Interface {
         address recipient,
         uint256 amount
     ) external virtual override returns (bool) {
-        transfer(sender, recipient, amount);
-        approve(
+        transferInternal(sender, recipient, amount);
+        approveInternal(
             sender,
             msg.sender,
             allowances[sender][msg.sender].sub(amount, "Erc20: transfer amount exceeds allowance")
@@ -148,7 +148,7 @@ contract Erc20 is Erc20Interface {
      * - `spender` cannot be the zero address.
      */
     function increaseAllowance(address spender, uint256 addedValue) external virtual returns (bool) {
-        approve(msg.sender, spender, allowances[msg.sender][spender].add(addedValue));
+        approveInternal(msg.sender, spender, allowances[msg.sender][spender].add(addedValue));
         return true;
     }
 
@@ -167,7 +167,7 @@ contract Erc20 is Erc20Interface {
      * `subtractedValue`.
      */
     function decreaseAllowance(address spender, uint256 subtractedValue) external virtual returns (bool) {
-        approve(
+        approveInternal(
             msg.sender,
             spender,
             allowances[msg.sender][spender].sub(subtractedValue, "Erc20: decreased allowance below zero")
@@ -189,7 +189,7 @@ contract Erc20 is Erc20Interface {
      * - `recipient` cannot be the zero address.
      * - `sender` must have a balance of at least `amount`.
      */
-    function transfer(
+    function transferInternal(
         address sender,
         address recipient,
         uint256 amount
@@ -213,7 +213,7 @@ contract Erc20 is Erc20Interface {
      * - `account` cannot be the zero address.
      * - `account` must have at least `amount` tokens.
      */
-    function burn(address account, uint256 amount) internal virtual {
+    function burnInternal(address account, uint256 amount) internal virtual {
         require(account != address(0), "Erc20: burn from the zero address");
 
         balances[account] = balances[account].sub(amount, "Erc20: burn amount exceeds balance");
@@ -234,7 +234,7 @@ contract Erc20 is Erc20Interface {
      * - `owner` cannot be the zero address.
      * - `spender` cannot be the zero address.
      */
-    function approve(
+    function approveInternal(
         address owner,
         address spender,
         uint256 amount
