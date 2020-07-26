@@ -1,3 +1,5 @@
+import { Erc20 } from "../typechain/Erc20";
+import { GuarantorPool } from "../typechain/GuarantorPool";
 import { YToken } from "../typechain/YToken";
 
 export interface TypechainConfig {
@@ -18,6 +20,9 @@ declare module "@nomiclabs/buidler/types" {
 }
 declare module "mocha" {
   export interface Context {
+    collateral: Erc20;
+    guarantorPool: GuarantorPool;
+    underlying: Erc20;
     yToken: YToken;
   }
 }
