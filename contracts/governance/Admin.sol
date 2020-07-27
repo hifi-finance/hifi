@@ -1,8 +1,10 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.6.10;
 
+import "./AdminStorage.sol";
+
 /**
- * @title MfAdmin
+ * @title Admin
  * @author Mainframe
  * @notice Contract module which provides a basic access control mechanism, where
  * there is an account (an admin) that can be granted exclusive access to
@@ -18,9 +20,7 @@ pragma solidity ^0.6.10;
  * @dev Forked from OpenZeppelin
  * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v3.1.0/contracts/access/Ownable.sol
  */
-abstract contract MfAdmin {
-    address public admin;
-
+abstract contract Admin is AdminStorage {
     event TransferAdmin(address indexed previousAdmin, address indexed newAdmin);
 
     /**

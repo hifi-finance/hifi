@@ -20,4 +20,8 @@ contract DumbOracle {
         uint256 daiPriceInUsd = getDaiPriceInUsd();
         return ethPriceInUsd / daiPriceInUsd;
     }
+
+    function getPrice(address asset) external pure returns (uint256) {
+        return 0;
+    }
 }

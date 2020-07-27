@@ -2,19 +2,20 @@
 pragma solidity ^0.6.10;
 
 import "@nomiclabs/buidler/console.sol";
-import "./DumbOracle.sol";
-import "./ErrorReporter.sol";
 import "./YTokenInterface.sol";
+import "./governance/Admin.sol";
 import "./erc20/Erc20.sol";
 import "./erc20/Erc20Interface.sol";
 import "./math/Exponential.sol";
+import "./pricing/DumbOracle.sol";
+import "./utils/ErrorReporter.sol";
 import "./utils/ReentrancyGuard.sol";
 
 /**
  * @title YToken
  * @author Mainframe
  */
-contract YToken is YTokenInterface, Erc20, ErrorReporter, ReentrancyGuard {
+contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard {
     modifier isVaultOpenForCaller() {
         require(vaults[msg.sender].isOpen, "ERR_VAULT_NOT_OPEN");
         _;
@@ -29,8 +30,9 @@ contract YToken is YTokenInterface, Erc20, ErrorReporter, ReentrancyGuard {
      * @param name_ ERC-20 name of this token
      * @param symbol_ ERC-20 symbol of this token
      * @param decimals_ ERC-20 decimal precision of this token
-     * @param underlying_ The address of the underlying asset
-     * @param collateral_ The address of the collateral asset
+     * @param fintroller_ The address of the fintroller contract
+     * @param underlying_ The contract address of the underlying asset
+     * @param collateral_ The contract address of the collateral asset
      * @param guarantorPool_ The pool into which Guarantors of this YToken deposit their capital
      * @param expirationTime_ Unix timestamp in seconds for when this token expires
      */
@@ -38,11 +40,14 @@ contract YToken is YTokenInterface, Erc20, ErrorReporter, ReentrancyGuard {
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
+        address fintroller_,
         address underlying_,
         address collateral_,
         address guarantorPool_,
         uint256 expirationTime_
-    ) public MfAdmin() Erc20(name_, symbol_, decimals_) {
+    ) public Erc20(name_, symbol_, decimals_) Admin() {
+        fintroller = fintroller_;
+
         /* Set underlying and collateral and sanity check them. */
         underlying = underlying_;
         Erc20Interface(underlying_).totalSupply();

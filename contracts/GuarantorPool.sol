@@ -4,7 +4,7 @@ pragma solidity ^0.6.10;
 import "./GuarantorPoolInterface.sol";
 import "./erc20/Erc20.sol";
 import "./erc20/Erc20Interface.sol";
-import "./governance/MfAdmin.sol";
+import "./governance/Admin.sol";
 import "./math/Exponential.sol";
 import "./utils/ReentrancyGuard.sol";
 
@@ -12,7 +12,7 @@ import "./utils/ReentrancyGuard.sol";
  * @title GuarantorPool
  * @author Mainframe
  */
-contract GuarantorPool is GuarantorPoolInterface, Erc20, MfAdmin, Exponential, ReentrancyGuard {
+contract GuarantorPool is GuarantorPoolInterface, Erc20, Admin, Exponential, ReentrancyGuard {
     modifier isCollateralAuthorized(address collateral) {
         require(supportedCollaterals[collateral] == true, "ERR_COLLATERAL_NOT_AUTHORIZED");
         _;
@@ -23,7 +23,7 @@ contract GuarantorPool is GuarantorPoolInterface, Erc20, MfAdmin, Exponential, R
         string memory name_,
         string memory symbol_,
         uint8 decimals_
-    ) public Erc20(name_, symbol_, decimals_) MfAdmin() {}
+    ) public Erc20(name_, symbol_, decimals_) Admin() {}
 
     struct RedeemLocalVars {
         MathError mathErr;
