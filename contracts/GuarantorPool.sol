@@ -4,8 +4,8 @@ pragma solidity ^0.6.10;
 import "./GuarantorPoolInterface.sol";
 import "./erc20/Erc20.sol";
 import "./erc20/Erc20Interface.sol";
-import "./governance/Admin.sol";
 import "./math/Exponential.sol";
+import "./utils/Admin.sol";
 import "./utils/ReentrancyGuard.sol";
 
 /**

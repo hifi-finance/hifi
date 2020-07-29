@@ -3,11 +3,11 @@ pragma solidity ^0.6.10;
 
 import "@nomiclabs/buidler/console.sol";
 import "./YTokenInterface.sol";
-import "./governance/Admin.sol";
 import "./erc20/Erc20.sol";
 import "./erc20/Erc20Interface.sol";
 import "./math/Exponential.sol";
 import "./pricing/DumbOracle.sol";
+import "./utils/Admin.sol";
 import "./utils/ErrorReporter.sol";
 import "./utils/ReentrancyGuard.sol";
 
@@ -81,12 +81,12 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
     function mint(uint256 YTokenAmount) public override isVaultOpenForCaller nonReentrant returns (bool) {
         /* Checks: verify collateralization profile. */
         MintLocalVars memory vars;
-        vars.ethPriceInDai = DumbOracle(oracle).getEthPriceInDai();
-        vars.ratio = YTokenAmount / vars.ethPriceInDai;
+        // vars.ethPriceInDai = DumbOracle(oracle).getEthPriceInDai();
+        // vars.ratio = YTokenAmount / vars.ethPriceInDai;
         console.log("YTokenAmount", YTokenAmount);
         console.log("vars.ethPriceInDai", vars.ethPriceInDai);
         console.log("vars.ratio", vars.ratio);
-        require(vars.ratio >= collateralizationRatio.mantissa, "ERR_COLLATERALIZATION_INSUFFICIENT");
+        // require(vars.ratio >= collateralizationRatio.mantissa, "ERR_COLLATERALIZATION_INSUFFICIENT");
 
         /* Interactions: attempt to perform the ERC20 transfer. */
         // require(

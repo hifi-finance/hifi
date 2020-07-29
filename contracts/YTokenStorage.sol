@@ -28,11 +28,6 @@ contract YTokenStorage is Exponential {
     address public fintroller;
 
     /**
-     * @notice The surplus of collateral that a borrower must deposit in order to mint new tokens.
-     */
-    Exp public collateralizationRatio;
-
-    /**
      * @notice Unix timestamp in seconds for when this token expires.
      */
     uint256 public expirationTime;

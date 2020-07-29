@@ -1,4 +1,5 @@
 import { Erc20 } from "../typechain/Erc20";
+import { Fintroller } from "../typechain/Fintroller";
 import { GuarantorPool } from "../typechain/GuarantorPool";
 import { Scenario } from "../test/scenarios";
 import { YToken } from "../typechain/YToken";
@@ -22,6 +23,7 @@ declare module "@nomiclabs/buidler/types" {
 declare module "mocha" {
   export interface Context {
     collateral: Erc20;
+    fintroller: Fintroller;
     guarantorPool: GuarantorPool;
     scenario: Scenario;
     underlying: Erc20;
