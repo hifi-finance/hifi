@@ -22,6 +22,8 @@ abstract contract ErrorReporter {
 
     enum AdminError { ERR_NOT_AUTHORIZED, ERR_SET_ADMIN_ZERO_ADDRESS }
 
+    enum FintrollerError { ERR_SET_COLLATERALIZATION_RATIO_OVERFLOW, ERR_SET_COLLATERALIZATION_RATIO_UNDERFLOW }
+
     enum GuarantorPoolError {
         ERR_COLLATERAL_AUTHORIZED,
         ERR_COLLATERAL_NOT_AUTHORIZED,

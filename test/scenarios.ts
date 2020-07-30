@@ -1,25 +1,30 @@
+import { BigNumber } from "@ethersproject/bignumber";
+
 export interface Scenario {
   collateral: {
-    decimals: number,
-    name: string,
-    symbol: string,
-  },
+    decimals: BigNumber;
+    name: string;
+    symbol: string;
+  };
+  fintroller: {
+    collateralizationRatio: BigNumber;
+  };
   guarantorPool: {
-    decimals: number,
-    name: string,
-    symbol: string,
-  },
+    decimals: BigNumber;
+    name: string;
+    symbol: string;
+  };
   underlying: {
-    decimals: number,
-    name: string,
-    symbol: string,
-  },
+    decimals: BigNumber;
+    name: string;
+    symbol: string;
+  };
   yToken: {
-    decimals: number,
-    expirationTime: number;
-    name: string,
-    symbol: string,
-  }
+    decimals: BigNumber;
+    expirationTime: BigNumber;
+    name: string;
+    symbol: string;
+  };
 }
 
 const scenarioKeys = ["default"];
@@ -28,26 +33,29 @@ export type ScenarioKey = typeof scenarioKeys[number];
 const scenarios: Record<ScenarioKey, Scenario> = {
   default: {
     collateral: {
-      decimals: 18,
+      decimals: BigNumber.from(18),
       name: "Wrapped Ether",
-      symbol: "WETH"
+      symbol: "WETH",
+    },
+    fintroller: {
+      collateralizationRatio: BigNumber.from("1500000000000000000"),
     },
     guarantorPool: {
-      decimals: 18,
+      decimals: BigNumber.from(18),
       name: "Mainframe Guarantor Pool Shares",
-      symbol: "MGP-SHARES"
+      symbol: "MGP-SHARES",
     },
     underlying: {
-      decimals: 18,
+      decimals: BigNumber.from(18),
       name: "Dai Stablecoin",
-      symbol: "DAI"
+      symbol: "DAI",
     },
     yToken: {
-      decimals: 18,
-      expirationTime: 1609459199, // December 31, 2020 at 23:59:59
+      decimals: BigNumber.from(18),
+      expirationTime: BigNumber.from(1609459199), // December 31, 2020 at 23:59:59
       name: "DAI/ETH (2021-01-01)",
-      symbol: "yDAI-JAN21"
-    }
+      symbol: "yDAI-JAN21",
+    },
   },
 };
 

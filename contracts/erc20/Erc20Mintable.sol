@@ -17,7 +17,7 @@ contract Erc20Mintable is Erc20 {
     ) public Erc20(name, symbol, decimals) {} /* solhint-disable-line no-empty-blocks */
 
     /**
-     * @dev Function to mint tokens.
+     * @notice Function to mint tokens.
      * @param to The address that will receive the minted tokens.
      * @param value The amount of tokens to mint.
      * @return bool true=success, otherwise it reverts.
@@ -34,13 +34,13 @@ contract Erc20Mintable is Erc20 {
      *
      * Requirements
      *
-     * - `to` cannot be the zero address.
+     * - `account` cannot be the zero address.
      */
     function mintInternal(address account, uint256 amount) internal virtual {
-        require(account != address(0), "Erc20: mint to the zero address");
+        require(account != address(0x00), "Erc20: mint to the zero address");
 
         totalSupply = totalSupply.add(amount);
         balances[account] = balances[account].add(amount);
-        emit Transfer(address(0), account, amount);
+        emit Transfer(address(0x00), account, amount);
     }
 }

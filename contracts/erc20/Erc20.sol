@@ -194,8 +194,8 @@ contract Erc20 is Erc20Interface {
         address recipient,
         uint256 amount
     ) internal virtual {
-        require(sender != address(0), "Erc20: transfer from the zero address");
-        require(recipient != address(0), "Erc20: transfer to the zero address");
+        require(sender != address(0x00), "Erc20: transfer from the zero address");
+        require(recipient != address(0x00), "Erc20: transfer to the zero address");
 
         balances[sender] = balances[sender].sub(amount, "Erc20: transfer amount exceeds balance");
         balances[recipient] = balances[recipient].add(amount);
@@ -214,11 +214,11 @@ contract Erc20 is Erc20Interface {
      * - `account` must have at least `amount` tokens.
      */
     function burnInternal(address account, uint256 amount) internal virtual {
-        require(account != address(0), "Erc20: burn from the zero address");
+        require(account != address(0x00), "Erc20: burn from the zero address");
 
         balances[account] = balances[account].sub(amount, "Erc20: burn amount exceeds balance");
         totalSupply = totalSupply.sub(amount);
-        emit Transfer(account, address(0), amount);
+        emit Transfer(account, address(0x00), amount);
     }
 
     /**
@@ -239,8 +239,8 @@ contract Erc20 is Erc20Interface {
         address spender,
         uint256 amount
     ) internal virtual {
-        require(owner != address(0), "Erc20: approve from the zero address");
-        require(spender != address(0), "Erc20: approve to the zero address");
+        require(owner != address(0x00), "Erc20: approve from the zero address");
+        require(spender != address(0x00), "Erc20: approve to the zero address");
 
         allowances[owner][spender] = amount;
         emit Approval(owner, spender, amount);

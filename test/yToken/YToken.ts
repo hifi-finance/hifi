@@ -1,27 +1,21 @@
-import chai from "chai";
 import { Wallet } from "@ethersproject/wallet";
-import { deployContract, solidity } from "ethereum-waffle";
+import { deployContract } from "ethereum-waffle";
 
 import Erc20Artifact from "../../artifacts/Erc20.json";
 import FintrollerArtifact from "../../artifacts/Fintroller.json";
 import GuarantorPoolArtifact from "../../artifacts/GuarantorPool.json";
 import YTokenArtifact from "../../artifacts/YToken.json";
 
-import scenarios from "../scenarios";
 import { Erc20 } from "../../typechain/Erc20";
 import { Fintroller } from "../../typechain/Fintroller";
 import { GuarantorPool } from "../../typechain/GuarantorPool";
 import { YToken } from "../../typechain/YToken";
 import { shouldBehaveLikeYToken } from "./YToken.behavior";
 
-chai.use(solidity);
-
 export function testYToken(wallets: Wallet[]): void {
   describe("YToken", function () {
     beforeEach(async function () {
       const deployer: Wallet = wallets[0];
-      this.scenario = scenarios.default;
-
       this.underlying = (await deployContract(deployer, Erc20Artifact, [
         this.scenario.underlying.name,
         this.scenario.underlying.symbol,
