@@ -1,5 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
+import { OnePercent } from "./constants";
+
 export interface Scenario {
   collateral: {
     decimals: BigNumber;
@@ -38,7 +40,7 @@ const scenarios: Record<ScenarioKey, Scenario> = {
       symbol: "WETH",
     },
     fintroller: {
-      collateralizationRatio: BigNumber.from("1500000000000000000"),
+      collateralizationRatio: BigNumber.from(150).mul(OnePercent),
     },
     guarantorPool: {
       decimals: BigNumber.from(18),
