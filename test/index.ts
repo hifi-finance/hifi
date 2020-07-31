@@ -12,7 +12,7 @@ chai.use(solidity);
 setTimeout(async function () {
   const wallets = (await ethers.getSigners()) as Wallet[];
 
-  beforeEach(async function () {
+  before(async function () {
     this.scenario = scenarios.default;
   });
 

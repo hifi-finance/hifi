@@ -2,6 +2,7 @@
 pragma solidity ^0.6.10;
 
 import "@nomiclabs/buidler/console.sol";
+import "./FintrollerInterface.sol";
 import "./YTokenInterface.sol";
 import "./erc20/Erc20.sol";
 import "./erc20/Erc20Interface.sol";
@@ -40,9 +41,9 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
-        address fintroller_,
-        address underlying_,
-        address collateral_,
+        FintrollerInterface fintroller_,
+        Erc20Interface underlying_,
+        Erc20Interface collateral_,
         address guarantorPool_,
         uint256 expirationTime_
     ) public Erc20(name_, symbol_, decimals_) Admin() {
@@ -139,10 +140,6 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
     function settle() external override isMatured returns (bool) {
         return true;
     }
-
-    // function transfer(address recipient, uint256 amount) external override(Erc20) returns (bool) {
-    //     return super.transfer(recipient, amount);
-    // }
 
     /*** Admin Functions ***/
 

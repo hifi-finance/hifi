@@ -11,9 +11,10 @@ import { Fintroller } from "../../typechain/Fintroller";
 import { GuarantorPool } from "../../typechain/GuarantorPool";
 import { YToken } from "../../typechain/YToken";
 import { shouldBehaveLikeYToken } from "./YToken.behavior";
+import { shouldBehaveLikeYTokenStorage } from "./YTokenStorage.behavior";
 
 export function testYToken(wallets: Wallet[]): void {
-  describe("YToken", function () {
+  describe("YToken Tests", function () {
     beforeEach(async function () {
       const deployer: Wallet = wallets[0];
       this.underlying = (await deployContract(deployer, Erc20Artifact, [
@@ -21,11 +22,6 @@ export function testYToken(wallets: Wallet[]): void {
         this.scenario.underlying.symbol,
         this.scenario.underlying.decimals,
       ])) as Erc20;
-
-      const decimals: number = 18;
-      const name: string = "My Token";
-      const symbol: string = "TKN";
-      this.token = (await deployContract(deployer, Erc20Artifact, [name, symbol, decimals])) as Erc20;
 
       this.collateral = (await deployContract(deployer, Erc20Artifact, [
         this.scenario.collateral.name,
@@ -53,6 +49,12 @@ export function testYToken(wallets: Wallet[]): void {
       ])) as YToken;
     });
 
-    shouldBehaveLikeYToken(wallets);
+    describe("YToken", function () {
+      shouldBehaveLikeYToken(wallets);
+    });
+
+    describe("YTokenStorage", function () {
+      shouldBehaveLikeYTokenStorage(wallets);
+    });
   });
 }

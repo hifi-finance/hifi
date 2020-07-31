@@ -2,25 +2,32 @@
 pragma solidity ^0.6.10;
 
 import "./math/Exponential.sol";
+import "./pricing/DumbOracleInterface.sol";
 
 abstract contract FintrollerStorage is Exponential {
+    struct Bond {
+        bool isListed;
+        /* The percentage that dictates the threshold under which loans become under-collateralized. */
+        Exp collateralizationRatio;
+    }
+
     /**
      * @notice The threshold below which the collateralization ratio cannot be set, equivalent to 100%.
      */
-    uint256 public constant COLLATERALIZATION_RATIO_LOWER_BOUND_MANTISSA = 1000000000000000000;
+    uint256 public constant collateralizationRatioLowerBoundMantissa = 1000000000000000000;
 
     /**
      * @notice The threshold above which the collateralization ratio cannot be set, equivalent to 10,000%.
      */
-    uint256 public constant COLLATERALIZATION_RATIO_UPPER_BOUND_MANTISSA = 100000000000000000000;
-
-    /**
-     * @notice The percentage that dictates the threshold under which loans become under-collateralized.
-     */
-    Exp public collateralizationRatio;
+    uint256 public constant collateralizationRatioUpperBoundMantissa = 100000000000000000000;
 
     /**
      * @notice Provides price information in USD for the collateral and the underlying asset.
      */
-    address public oracle;
+    DumbOracleInterface public oracle;
+
+    /**
+     * @dev Official mapping of yToken -> Bond metadata
+     */
+    mapping(address => Bond) internal bonds;
 }

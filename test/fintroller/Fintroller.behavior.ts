@@ -1,6 +1,6 @@
 import { Wallet } from "@ethersproject/wallet";
 
-import { shouldBehaveLikeFintrollerStorage } from "./FintrollerStorage.behavior";
+import shouldBehaveLikeListBond from "./effects/listBond";
 import shouldBehaveLikeSetCollateralizationRatio from "./effects/setCollateralizationRatio";
 import shouldBehaveLikeSetOracle from "./effects/setOracle";
 
@@ -11,17 +11,15 @@ export function shouldBehaveLikeFintroller(wallets: Wallet[]): void {
   const _lucy: Wallet = wallets[3];
   const eve: Wallet = wallets[4];
 
-  describe("Fintroller", function () {
-    describe("setCollateralizationRatio", function () {
-      shouldBehaveLikeSetCollateralizationRatio(admin, eve);
-    });
-
-    describe("setOracle", function () {
-      shouldBehaveLikeSetOracle(admin, eve);
-    });
+  describe("listBond", function () {
+    shouldBehaveLikeListBond();
   });
 
-  describe("FintrollerStorage", function () {
-    shouldBehaveLikeFintrollerStorage(wallets);
+  describe("setCollateralizationRatio", function () {
+    shouldBehaveLikeSetCollateralizationRatio(admin);
+  });
+
+  describe("setOracle", function () {
+    shouldBehaveLikeSetOracle(admin, eve);
   });
 }

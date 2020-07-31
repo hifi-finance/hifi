@@ -2,13 +2,41 @@
 pragma solidity ^0.6.10;
 
 import "./FintrollerInterface.sol";
+import "./YTokenInterface.sol";
 import "./math/Exponential.sol";
 import "./utils/Admin.sol";
 import "./utils/ErrorReporter.sol";
 
+/**
+ * @notice Fintroller
+ * @author Mainframe
+ */
 contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     /* solhint-disable-next-line */
     constructor() public Admin() {}
+
+    /**
+     * @notice Marks the bond as listed in this contract's registry. It is not an error to list a bond twice.
+     *
+     * @dev Emits a {ListBond} event.
+     *
+     * Requirements:
+     * - caller must be the administrator
+     *
+     * @param bond The bond contract to list.
+     * @return bool true=success, otherwise it reverts.
+     */
+    function listBond(YTokenInterface bond) external override returns (bool) {
+        /* Sanity check */
+        bond.isYToken();
+        bonds[address(bond)].isListed = true;
+        emit ListBond(bond);
+        return NO_ERROR;
+    }
+
+    struct SetCollateralizationRatioLocalVars {
+        address bondAddress;
+    }
 
     /**
      * @notice Updates the collateralization ratio that ensures that the protocol is
@@ -18,40 +46,58 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      *
      * Requirements:
      * - caller must be the administrator
+     * - the bond must be listed
      * - `newCollateralizationRatioMantissa_` cannot be higher than 10,000%
      * - `newCollateralizationRatioMantissa_` cannot be lower than 100%
      *
+     * @param bond The bond for which to update the collateralization ratio.
      * @param newCollateralizationRatioMantissa_ The mantissa value of the new collateralization ratio.
      * @return bool true=success, otherwise it reverts.
      */
-    function setCollateralizationRatio(uint256 newCollateralizationRatioMantissa_)
+    function setCollateralizationRatio(YTokenInterface bond, uint256 newCollateralizationRatioMantissa_)
         external
         isAuthorized
         returns (bool)
     {
+        SetCollateralizationRatioLocalVars memory vars;
+        vars.bondAddress = address(bond);
+
+        require(bonds[vars.bondAddress].isListed, "ERR_SET_COLLATERALIZATION_RATIO_BOND_NOT_LISTED");
         require(
-            newCollateralizationRatioMantissa_ <= COLLATERALIZATION_RATIO_UPPER_BOUND_MANTISSA,
+            newCollateralizationRatioMantissa_ <= collateralizationRatioUpperBoundMantissa,
             "ERR_SET_COLLATERALIZATION_RATIO_OVERFLOW"
         );
         require(
-            newCollateralizationRatioMantissa_ >= COLLATERALIZATION_RATIO_LOWER_BOUND_MANTISSA,
+            newCollateralizationRatioMantissa_ >= collateralizationRatioLowerBoundMantissa,
             "ERR_SET_COLLATERALIZATION_RATIO_UNDERFLOW"
         );
-        collateralizationRatio = Exp({ mantissa: newCollateralizationRatioMantissa_ });
-        emit NewCollateralizationRatio(newCollateralizationRatioMantissa_);
+
+        uint256 oldCollateralizationRatioMantissa = bonds[vars.bondAddress].collateralizationRatio.mantissa;
+        bonds[vars.bondAddress].collateralizationRatio = Exp({ mantissa: newCollateralizationRatioMantissa_ });
+
+        emit NewCollateralizationRatio(
+            vars.bondAddress,
+            oldCollateralizationRatioMantissa,
+            newCollateralizationRatioMantissa_
+        );
         return NO_ERROR;
     }
 
     /**
      * @notice Updates the oracle contract's address saved in storage.
      *
-     * @dev Reverts if not called by the administrator.
+     * @dev Emits a {SetOracle} event.
      *
-     * @param oracle_ The address of the oracle contract.
+     * Requirements:
+     * - caller must be the administrator
+     *
+     * @param oracle_ The new oracle contract.
      * @return bool true=success, otherwise it reverts.
      */
-    function setOracle(address oracle_) external isAuthorized returns (bool) {
+    function setOracle(DumbOracleInterface oracle_) external isAuthorized returns (bool) {
+        address oldOracle = address(oracle);
         oracle = oracle_;
+        emit NewOracle(oldOracle, address(oracle));
         return NO_ERROR;
     }
 }

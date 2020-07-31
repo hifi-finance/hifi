@@ -320,6 +320,13 @@
   dependencies:
     "@ethersproject/bignumber" "^5.0.0"
 
+"@ethersproject/constants@^5.0.2":
+  version "5.0.2"
+  resolved "https://registry.yarnpkg.com/@ethersproject/constants/-/constants-5.0.2.tgz#f7ac0b320e2bbec1a5950da075015f8bc4e8fed1"
+  integrity sha512-nNoVlNP6bgpog7pQ2EyD1xjlaXcy1Cl4kK5v1KoskHj58EtB6TK8M8AFGi3GgHTdMldfT4eN3OsoQ/CdOTVNFA==
+  dependencies:
+    "@ethersproject/bignumber" "^5.0.0"
+
 "@ethersproject/contracts@^5.0.0":
   version "5.0.1"
   resolved "https://registry.npmjs.org/@ethersproject/contracts/-/contracts-5.0.1.tgz#b11ad52f98f807e13a4bf0a89e45a2c56db19df3"

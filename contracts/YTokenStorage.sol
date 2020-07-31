@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.6.10;
 
+import "./FintrollerInterface.sol";
+import "./erc20/Erc20Interface.sol";
 import "./math/Exponential.sol";
 
 /**
@@ -18,14 +20,19 @@ contract YTokenStorage is Exponential {
     /*** Storage Properties ***/
 
     /**
+     * @notice Indicator that this is a YToken contract, for inspection.
+     */
+    bool public constant isYToken = true;
+
+    /**
      * @notice Collateral Erc20 asset for this YToken.
      */
-    address public collateral;
+    Erc20Interface public collateral;
 
     /**
      * @notice The address of the fintroller contract.
      */
-    address public fintroller;
+    FintrollerInterface public fintroller;
 
     /**
      * @notice Unix timestamp in seconds for when this token expires.
@@ -40,7 +47,7 @@ contract YTokenStorage is Exponential {
     /**
      * @notice Underlying Erc20 asset for this YToken.
      */
-    address public underlying;
+    Erc20Interface public underlying;
 
     /**
      * @notice ...
