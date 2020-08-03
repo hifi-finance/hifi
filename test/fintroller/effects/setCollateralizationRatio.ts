@@ -6,7 +6,7 @@ import { expect } from "chai";
 import { Errors, FintrollerErrors } from "../../errors";
 import { OnePercent } from "../../constants";
 
-export default function shouldBehaveLikeSetCollateralizationRatio(eve: Wallet): void {
+export default function shouldBehaveLikeSetCollateralizationRatio(_admin: Wallet, eve: Wallet): void {
   describe("when the caller is the admin", function () {
     describe("when the bond is listed", function () {
       beforeEach(async function () {
@@ -16,9 +16,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(eve: Wallet): 
       describe("when the collateralization ratio is valid", function () {
         it("sets the new value", async function () {
           /* Equivalent to 175% */
-          const newCollateralizationRatioMantissa: BigNumber = this.scenario.fintroller.collateralizationRatio.add(
-            BigNumber.from(25).mul(OnePercent),
-          );
+          const newCollateralizationRatioMantissa: BigNumber = OnePercent.mul(175);
           await this.fintroller.setCollateralizationRatio(this.yToken.address, newCollateralizationRatioMantissa);
         });
       });

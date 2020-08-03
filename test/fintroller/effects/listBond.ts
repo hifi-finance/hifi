@@ -3,9 +3,9 @@ import { expect } from "chai";
 
 export default function shouldBehaveLikeListBond(): void {
   describe("when the contract to be listed is compliant", function () {
-    // it.only("lists the new bond", async function () {
-    //   await this.fintroller.listBond("0x0000000000000000000000000000000000000000");
-    // });
+    it("lists the new bond", async function () {
+      await this.fintroller.listBond(this.yToken.address);
+    });
   });
 
   describe("when the contract to be listed is non-compliant", function () {

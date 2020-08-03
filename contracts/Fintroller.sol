@@ -16,6 +16,16 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     constructor() public Admin() {}
 
     /**
+     * @notice Returns the bond with all its properties.
+     * @dev Reverts if the bond is not listed.
+     * @param bondAddress The address of the bond contract.
+     * @return collateralizationRatioMantissa The bond object.
+     */
+    function getBond(address bondAddress) external view returns (uint256 collateralizationRatioMantissa) {
+        collateralizationRatioMantissa = bonds[bondAddress].collateralizationRatio.mantissa;
+    }
+
+    /**
      * @notice Marks the bond as listed in this contract's registry. It is not an error to list a bond twice.
      *
      * @dev Emits a {ListBond} event.
@@ -90,11 +100,13 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      *
      * Requirements:
      * - caller must be the administrator
+     * - the new address must not be the zero address
      *
      * @param oracle_ The new oracle contract.
      * @return bool true=success, otherwise it reverts.
      */
     function setOracle(DumbOracleInterface oracle_) external isAuthorized returns (bool) {
+        require(address(oracle_) != address(0x00), "ERR_SET_ORACLE_ZERO_ADDRESS");
         address oldOracle = address(oracle);
         oracle = oracle_;
         emit NewOracle(oldOracle, address(oracle));
