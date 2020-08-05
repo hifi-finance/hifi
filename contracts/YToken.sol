@@ -63,13 +63,41 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         expirationTime = expirationTime_;
     }
 
+    /*** View Functions ***/
+    function getVault(address vaultHolder)
+        external
+        override
+        view
+        returns (uint256 freeCollateral, uint256 lockedCollateral)
+    {
+        freeCollateral = vaults[vaultHolder].freeCollateral;
+        lockedCollateral = vaults[vaultHolder].lockedCollateral;
+    }
+
     /*** Non-Constant Functions ***/
 
-    function borrow(uint256 borrowUnderlyingAmount) external override returns (bool) {
+    function burn(uint256 burnAmount) external override returns (bool) {
         return NO_ERROR;
     }
 
-    function liquidateBorrow(address borrower, uint256 repayUnderlyingAmount) external override returns (bool) {
+    function burnBehalf(address minter, uint256 burnAmount) external override returns (bool) {
+        return NO_ERROR;
+    }
+
+    function deposit(uint256 collateralAmount) public override isVaultOpenForCaller nonReentrant returns (bool) {
+        /* Effects: update the storage properties. */
+        vaults[msg.sender].freeCollateral += collateralAmount;
+
+        /* Interactions */
+        require(
+            Erc20Interface(collateral).transferFrom(msg.sender, address(this), collateralAmount),
+            "ERR_SUPPLY_ERC20_TRANSFER"
+        );
+
+        return true;
+    }
+
+    function liquidate(address borrower, uint256 repayUnderlyingAmount) external override returns (bool) {
         return NO_ERROR;
     }
 
@@ -108,37 +136,12 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         return true;
     }
 
-    function redeem(uint256 redeemUnderlyingAmount) external override returns (bool) {
-        return NO_ERROR;
-    }
-
-    function repayBorrow(uint256 repayUnderlyingAmount) external override returns (bool) {
-        return NO_ERROR;
-    }
-
-    function repayBorrowBehalf(address borrower, uint256 repayUnderlyingAmount) external override returns (bool) {
-        return NO_ERROR;
-    }
-
-    function supply(uint256 collateralAmount) public isVaultOpenForCaller nonReentrant returns (bool) {
-        /* Effects: update the storage properties. */
-        vaults[msg.sender].freeCollateral += collateralAmount;
-
-        /* Interactions */
-        require(
-            Erc20Interface(collateral).transferFrom(msg.sender, address(this), collateralAmount),
-            "ERR_SUPPLY_ERC20_TRANSFER"
-        );
-
-        return true;
-    }
-
     /**
      * @notice YTokens resemble zero-coupon bonds, so this function pays the
      * token holder the face value at maturation time.
      */
     function settle() external override isMatured returns (bool) {
-        return true;
+        return NO_ERROR;
     }
 
     /*** Admin Functions ***/

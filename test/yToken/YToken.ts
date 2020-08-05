@@ -5,7 +5,7 @@ import { shouldBehaveLikeYToken } from "./YToken.behavior";
 import { deployFintroller, deployYToken } from "../deployers";
 
 export function testYToken(wallets: Wallet[]): void {
-  describe("YToken Tests", function () {
+  describe("YToken", function () {
     beforeEach(async function () {
       const deployer: Wallet = wallets[0];
       await deployFintroller.call(this, deployer);

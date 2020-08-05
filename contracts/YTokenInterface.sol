@@ -8,19 +8,20 @@ import "./YTokenStorage.sol";
  * @author Mainframe
  */
 abstract contract YTokenInterface is YTokenStorage {
+    /*** View Functions ***/
+    function getVault(address vaultHolder) external virtual view returns (uint256, uint256);
 
     /*** Non-Constant Functions ***/
-    function borrow(uint256 borrowUnderlyingAmount) external virtual returns (bool);
 
-    function liquidateBorrow(address borrower, uint256 repayUnderlyingAmount) external virtual returns (bool);
+    function burn(uint256 burnAmount) external virtual returns (bool);
 
-    function mint(uint256 YTokenAmount) external virtual returns (bool);
+    function burnBehalf(address minter, uint256 repayAmount) external virtual returns (bool);
 
-    function redeem(uint256 redeemUnderlyingAmount) external virtual returns (bool);
+    function deposit(uint256 collateralAmount) public virtual returns (bool);
 
-    function repayBorrow(uint256 repayUnderlyingAmount) external virtual returns (bool);
+    function liquidate(address minter, uint256 repayAmount) external virtual returns (bool);
 
-    function repayBorrowBehalf(address borrower, uint256 repayUnderlyingAmount) external virtual returns (bool);
+    function mint(uint256 yTokenAmount) external virtual returns (bool);
 
     function settle() external virtual returns (bool);
 

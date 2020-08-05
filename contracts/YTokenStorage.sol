@@ -9,7 +9,7 @@ import "./math/Exponential.sol";
  * @title YTokenInterface
  * @author Mainframe
  */
-contract YTokenStorage is Exponential {
+abstract contract YTokenStorage is Exponential {
     /*** Structs ***/
     struct Vault {
         uint256 freeCollateral;
@@ -52,5 +52,5 @@ contract YTokenStorage is Exponential {
     /**
      * @notice ...
      */
-    mapping(address => Vault) public vaults;
+    mapping(address => Vault) internal vaults;
 }
