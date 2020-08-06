@@ -24,6 +24,7 @@
     "tasks/**/*",
     "test/**/*",
     "typechain/**/*",
-    "buidler.config.ts", "tasks"
+    "buidler.config.ts",
+    "tasks"
   ]
 }

@@ -55,7 +55,6 @@ abstract contract CarefulMath {
         return (MathError.NO_ERROR, a / b);
     }
 
-
     /**
      * @notice Returns the remainder of dividing two numbers.
      * @dev Reverts with custom message when dividing by zero.
@@ -64,10 +63,7 @@ abstract contract CarefulMath {
      * opcode (which leaves remaining gas untouched) while Solidity uses an
      * invalid opcode to revert (consuming all remaining gas).
      */
-    function modUInt(
-        uint256 a,
-        uint256 b
-    ) internal pure returns (MathError, uint256) {
+    function modUInt(uint256 a, uint256 b) internal pure returns (MathError, uint256) {
         if (b == 0) {
             return (MathError.MODULO_BY_ZERO, 0);
         }

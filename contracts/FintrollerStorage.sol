@@ -6,10 +6,17 @@ import "./pricing/DumbOracleInterface.sol";
 
 abstract contract FintrollerStorage is Exponential {
     struct Bond {
-        bool isListed;
         /* The percentage that dictates the threshold under which loans become under-collateralized. */
         Exp collateralizationRatio;
+        bool isDepositAllowed;
+        bool isListed;
+        bool isMintAllowed;
     }
+
+    /**
+     * @dev Official mapping of yToken -> Bond metadata
+     */
+    mapping(address => Bond) internal bonds;
 
     /**
      * @notice The threshold below which the collateralization ratio cannot be set, equivalent to 100%.
@@ -25,9 +32,4 @@ abstract contract FintrollerStorage is Exponential {
      * @notice Provides price information in USD for the collateral and the underlying asset.
      */
     DumbOracleInterface public oracle;
-
-    /**
-     * @dev Official mapping of yToken -> Bond metadata
-     */
-    mapping(address => Bond) internal bonds;
 }

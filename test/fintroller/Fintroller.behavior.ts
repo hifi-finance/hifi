@@ -41,7 +41,7 @@ export function shouldBehaveLikeFintroller(wallets: Wallet[]): void {
     describe("collateralizationRatioUpperBoundMantissa", function () {
       shouldBehaveLikeCollateralizationRatioUpperBoundMantissaGetter();
     });
-  
+
     describe("oracle", function () {
       shouldBehaveLikeOracleGetter();
     });

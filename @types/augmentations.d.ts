@@ -1,7 +1,8 @@
-import { Erc20 } from "../typechain/Erc20";
+import { Erc20Mintable } from "../typechain/Erc20Mintable";
 import { Fintroller } from "../typechain/Fintroller";
 import { GuarantorPool } from "../typechain/GuarantorPool";
-import { Scenario } from "../test/scenarios";
+import { Scenario } from "./";
+import { SuperMinter } from "../typechain/SuperMinter";
 import { YToken } from "../typechain/YToken";
 
 export interface TypechainConfig {
@@ -22,11 +23,12 @@ declare module "@nomiclabs/buidler/types" {
 }
 declare module "mocha" {
   export interface Context {
-    collateral: Erc20;
+    collateral: Erc20Mintable;
     fintroller: Fintroller;
     guarantorPool: GuarantorPool;
     scenario: Scenario;
-    underlying: Erc20;
+    superMinter: SuperMinter;
+    underlying: Erc20Mintable;
     yToken: YToken;
   }
 }

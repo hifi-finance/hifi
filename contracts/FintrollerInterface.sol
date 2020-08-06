@@ -5,9 +5,27 @@ import "./FintrollerStorage.sol";
 import "./YTokenInterface.sol";
 
 abstract contract FintrollerInterface is FintrollerStorage {
-    function listBond(YTokenInterface bond) external virtual returns (bool);
+    /*** View Functions ***/
+    function depositAllowed(YTokenInterface yToken) external virtual view returns (bool);
 
-    event ListBond(YTokenInterface bond);
-    event NewCollateralizationRatio(address bond, uint256 oldCollateralizationRatio, uint256 newCollateralizationRatio);
+    function mintAllowed(YTokenInterface yToken) external virtual view returns (bool);
+
+    /*** Non-Constant Functions ***/
+    function setCollateralizationRatio(YTokenInterface yToken, uint256 newCollateralizationRatioMantissa_)
+        external
+        virtual
+        returns (bool);
+
+    function setOracle(DumbOracleInterface oracle_) external virtual returns (bool);
+
+    event ListBond(YTokenInterface yToken);
+    event NewCollateralizationRatio(
+        YTokenInterface yToken,
+        uint256 oldCollateralizationRatio,
+        uint256 newCollateralizationRatio
+    );
     event NewOracle(address oldOracle, address newOracle);
+
+    /*** Admin Functions ***/
+    function _listBond(YTokenInterface yToken) external virtual returns (bool);
 }

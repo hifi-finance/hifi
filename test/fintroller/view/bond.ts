@@ -10,7 +10,7 @@ export default function shouldBehaveLikeGetBond(): void {
 
   describe("when the bond is listed", function () {
     beforeEach(async function () {
-      await this.fintroller.listBond(this.yToken.address);
+      await this.fintroller._listBond(this.yToken.address);
       await this.fintroller.setCollateralizationRatio(this.yToken.address, newCollateralizationRatioMantissa);
     });
 

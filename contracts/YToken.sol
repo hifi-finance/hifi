@@ -85,16 +85,19 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
     }
 
     function deposit(uint256 collateralAmount) public override isVaultOpenForCaller nonReentrant returns (bool) {
+        /* Checks: verify that the Fintroller allows this action to be performed. */
+        require(fintroller.depositAllowed(this), "ERR_DEPOSIT_NOT_ALLOWED");
+
         /* Effects: update the storage properties. */
         vaults[msg.sender].freeCollateral += collateralAmount;
 
         /* Interactions */
         require(
             Erc20Interface(collateral).transferFrom(msg.sender, address(this), collateralAmount),
-            "ERR_SUPPLY_ERC20_TRANSFER"
+            "ERR_DEPOSIT_ERC20_TRANSFER"
         );
 
-        return true;
+        return NO_ERROR;
     }
 
     function liquidate(address borrower, uint256 repayUnderlyingAmount) external override returns (bool) {
@@ -107,14 +110,17 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         uint256 ratio;
     }
 
-    function mint(uint256 YTokenAmount) public override isVaultOpenForCaller nonReentrant returns (bool) {
+    function mint(uint256 yTokenAmount) public override isVaultOpenForCaller nonReentrant returns (bool) {
+        /* Checks: verify that the Fintroller allows this action to be performed. */
+        require(fintroller.mintAllowed(this), "ERR_MINT_NOT_ALLOWED");
+
         /* Checks: verify collateralization profile. */
-        MintLocalVars memory vars;
+        // MintLocalVars memory vars;
         // vars.ethPriceInDai = DumbOracle(oracle).getEthPriceInDai();
         // vars.ratio = YTokenAmount / vars.ethPriceInDai;
-        console.log("YTokenAmount", YTokenAmount);
-        console.log("vars.ethPriceInDai", vars.ethPriceInDai);
-        console.log("vars.ratio", vars.ratio);
+        // console.log("YTokenAmount", YTokenAmount);
+        // console.log("vars.ethPriceInDai", vars.ethPriceInDai);
+        // console.log("vars.ratio", vars.ratio);
         // require(vars.ratio >= collateralizationRatio.mantissa, "ERR_COLLATERALIZATION_INSUFFICIENT");
 
         /* Interactions: attempt to perform the ERC20 transfer. */

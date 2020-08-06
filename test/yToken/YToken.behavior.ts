@@ -1,6 +1,7 @@
 import { Wallet } from "@ethersproject/wallet";
 
 import shouldBehaveLikeCollateralGetter from "./view/collateral";
+import shouldBehaveLikeDeposit from "./effects/deposit";
 import shouldBehaveLikeExpirationTimeGetter from "./view/expirationTime";
 import shouldBehaveLikeFintrollerGetter from "./view/fintroller";
 import shouldBehaveLikeGuarantorPoolGetter from "./view/guarantorPool";
@@ -16,6 +17,10 @@ export function shouldBehaveLikeYToken(wallets: Wallet[]): void {
   const eve: Wallet = wallets[4];
 
   describe("Effects Functions", function () {
+    describe("deposit", function () {
+      shouldBehaveLikeDeposit(admin, bob, eve);
+    });
+
     describe("mint", function () {
       shouldBehaveLikeMint(admin, bob, eve);
     });

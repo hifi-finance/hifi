@@ -7,7 +7,7 @@ import "./Erc20.sol";
  * @title Erc20Mintable
  * @author Mainframe
  * @notice Anybody can mint.
- * @dev Strictly for test purposes.
+ * @dev Strictly for test purposes. Do not use in production.
  */
 contract Erc20Mintable is Erc20 {
     constructor(

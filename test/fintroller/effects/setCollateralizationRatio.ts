@@ -10,7 +10,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(_admin: Wallet
   describe("when the caller is the admin", function () {
     describe("when the bond is listed", function () {
       beforeEach(async function () {
-        await this.fintroller.listBond(this.yToken.address);
+        await this.fintroller._listBond(this.yToken.address);
       });
 
       describe("when the collateralization ratio is valid", function () {
@@ -55,7 +55,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(_admin: Wallet
         const newCollateralizationRatioMantissa: BigNumber = this.scenario.fintroller.collateralizationRatio.add(1);
         await expect(
           this.fintroller.setCollateralizationRatio(this.yToken.address, newCollateralizationRatioMantissa),
-        ).to.be.revertedWith(FintrollerErrors.SetCollateralizationRatioBondNotListed);
+        ).to.be.revertedWith(FintrollerErrors.BondNotListed);
       });
     });
   });

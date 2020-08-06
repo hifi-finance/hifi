@@ -1,4 +1,4 @@
-/* SDPX-License-Identifier: LGPL-3.0-or-later */
+/* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.6.10;
 
 import "./FintrollerInterface.sol";
@@ -15,37 +15,46 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     /* solhint-disable-next-line */
     constructor() public Admin() {}
 
+    /*** View Functions ***/
+
     /**
-     * @notice Returns the bond with all its properties.
-     * @dev Reverts if the bond is not listed.
-     * @param bondAddress The address of the bond contract.
-     * @return collateralizationRatioMantissa The bond object.
+     * @notice Checks if the user should be allowed to deposit new collateral.
+     * @dev Reverts it the bond is not listed.
+     * @param yToken The bond to verify the check against.
+     * @return bool true=allowed, false=not allowed.
      */
-    function getBond(address bondAddress) external view returns (uint256 collateralizationRatioMantissa) {
-        collateralizationRatioMantissa = bonds[bondAddress].collateralizationRatio.mantissa;
+    function depositAllowed(YTokenInterface yToken) external override view returns (bool) {
+        Bond memory bond = bonds[address(yToken)];
+        require(bond.isListed, "ERR_BOND_NOT_LISTED");
+        return bond.isDepositAllowed;
     }
 
     /**
-     * @notice Marks the bond as listed in this contract's registry. It is not an error to list a bond twice.
-     *
-     * @dev Emits a {ListBond} event.
-     *
-     * Requirements:
-     * - caller must be the administrator
-     *
-     * @param bond The bond contract to list.
-     * @return bool true=success, otherwise it reverts.
+     * @notice Checks if the user should be allowed to mint new tokens.
+     * @dev Reverts it the bond is not listed.
+     * @param yToken The bond to verify the check against.
+     * @return bool true=allowed, false=not allowed.
      */
-    function listBond(YTokenInterface bond) external override returns (bool) {
-        /* Sanity check */
-        bond.isYToken();
-        bonds[address(bond)].isListed = true;
-        emit ListBond(bond);
-        return NO_ERROR;
+    function mintAllowed(YTokenInterface yToken) external override view returns (bool) {
+        Bond memory bond = bonds[address(yToken)];
+        require(bond.isListed, "ERR_BOND_NOT_LISTED");
+        return bond.isMintAllowed;
+    }
+
+    /*** Non-Constant Functions ***/
+
+    /**
+     * @notice Returns the bond with all its properties.
+     * @dev It is not an error to provide an invalid yToken address. The returned values will all be zero.
+     * @param yTokenAddress The address of the bond contract.
+     * @return collateralizationRatioMantissa The bond data.
+     */
+    function getBond(address yTokenAddress) external view returns (uint256 collateralizationRatioMantissa) {
+        collateralizationRatioMantissa = bonds[yTokenAddress].collateralizationRatio.mantissa;
     }
 
     struct SetCollateralizationRatioLocalVars {
-        address bondAddress;
+        address yTokenAddress;
     }
 
     /**
@@ -60,19 +69,20 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * - `newCollateralizationRatioMantissa_` cannot be higher than 10,000%
      * - `newCollateralizationRatioMantissa_` cannot be lower than 100%
      *
-     * @param bond The bond for which to update the collateralization ratio.
+     * @param yToken The bond for which to update the collateralization ratio.
      * @param newCollateralizationRatioMantissa_ The mantissa value of the new collateralization ratio.
      * @return bool true=success, otherwise it reverts.
      */
-    function setCollateralizationRatio(YTokenInterface bond, uint256 newCollateralizationRatioMantissa_)
+    function setCollateralizationRatio(YTokenInterface yToken, uint256 newCollateralizationRatioMantissa_)
         external
+        override
         isAuthorized
         returns (bool)
     {
         SetCollateralizationRatioLocalVars memory vars;
-        vars.bondAddress = address(bond);
+        vars.yTokenAddress = address(yToken);
 
-        require(bonds[vars.bondAddress].isListed, "ERR_SET_COLLATERALIZATION_RATIO_BOND_NOT_LISTED");
+        require(bonds[vars.yTokenAddress].isListed, "ERR_BOND_NOT_LISTED");
         require(
             newCollateralizationRatioMantissa_ <= collateralizationRatioUpperBoundMantissa,
             "ERR_SET_COLLATERALIZATION_RATIO_OVERFLOW"
@@ -82,14 +92,10 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
             "ERR_SET_COLLATERALIZATION_RATIO_UNDERFLOW"
         );
 
-        uint256 oldCollateralizationRatioMantissa = bonds[vars.bondAddress].collateralizationRatio.mantissa;
-        bonds[vars.bondAddress].collateralizationRatio = Exp({ mantissa: newCollateralizationRatioMantissa_ });
+        uint256 oldCollateralizationRatioMantissa = bonds[vars.yTokenAddress].collateralizationRatio.mantissa;
+        bonds[vars.yTokenAddress].collateralizationRatio = Exp({ mantissa: newCollateralizationRatioMantissa_ });
 
-        emit NewCollateralizationRatio(
-            vars.bondAddress,
-            oldCollateralizationRatioMantissa,
-            newCollateralizationRatioMantissa_
-        );
+        emit NewCollateralizationRatio(yToken, oldCollateralizationRatioMantissa, newCollateralizationRatioMantissa_);
         return NO_ERROR;
     }
 
@@ -105,11 +111,60 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @param oracle_ The new oracle contract.
      * @return bool true=success, otherwise it reverts.
      */
-    function setOracle(DumbOracleInterface oracle_) external isAuthorized returns (bool) {
+    function setOracle(DumbOracleInterface oracle_) external override isAuthorized returns (bool) {
         require(address(oracle_) != address(0x00), "ERR_SET_ORACLE_ZERO_ADDRESS");
         address oldOracle = address(oracle);
         oracle = oracle_;
         emit NewOracle(oldOracle, address(oracle));
         return NO_ERROR;
+    }
+
+    /*** Admin Functions ***/
+
+    /**
+     * @notice Marks the bond as listed in this contract's registry. It is not an error to list a bond twice.
+     *
+     * @dev Emits a {ListBond} event.
+     *
+     * Requirements:
+     * - caller must be the administrator
+     *
+     * @param yToken The bond contract to list.
+     * @return bool true=success, otherwise it reverts.
+     */
+    function _listBond(YTokenInterface yToken) external override isAuthorized returns (bool) {
+        /* Sanity check */
+        yToken.isYToken();
+        bonds[address(yToken)] = Bond({
+            collateralizationRatio: Exp({ mantissa: 0 }),
+            isListed: true,
+            isDepositAllowed: true,
+            isMintAllowed: true
+        });
+        emit ListBond(yToken);
+        return NO_ERROR;
+    }
+
+
+    function _setMintPaused(YTokenInterface yToken, bool state) public isAuthorized returns (bool) {
+        // require(markets[address(cToken)].isListed, "cannot pause a market that is not listed");
+        // require(msg.sender == pauseGuardian || msg.sender == admin, "only pause guardian and admin can pause");
+        // require(msg.sender == admin || state == true, "only admin can unpause");
+
+        // mintGuardianPaused[address(cToken)] = state;
+        // emit ActionPaused(cToken, "Mint", state);
+        // return state;
+        return true;
+    }
+
+    function _setDepositPaused(YTokenInterface yToken, bool state) public isAuthorized returns (bool) {
+        // require(markets[address(cToken)].isListed, "cannot pause a market that is not listed");
+        // require(msg.sender == pauseGuardian || msg.sender == admin, "only pause guardian and admin can pause");
+        // require(msg.sender == admin || state == true, "only admin can unpause");
+
+        // borrowGuardianPaused[address(cToken)] = state;
+        // emit ActionPaused(cToken, "Borrow", state);
+        // return state;
+        return true;
     }
 }
