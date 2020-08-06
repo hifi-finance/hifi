@@ -4,7 +4,7 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { Errors, FintrollerErrors } from "../../errors";
-import { OnePercent } from "../../constants";
+import { OnePercent } from "../../../constants";
 
 export default function shouldBehaveLikeSetCollateralizationRatio(_admin: Wallet, eve: Wallet): void {
   describe("when the caller is the admin", function () {

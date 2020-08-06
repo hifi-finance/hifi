@@ -2,7 +2,7 @@ import { Wallet } from "@ethersproject/wallet";
 import { AddressZero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { AddressOne } from "../../constants";
+import { AddressOne } from "../../../constants";
 import { Errors, FintrollerErrors } from "../../errors";
 
 export default function shouldBehaveLikeSetOracle(alice: Wallet, eve: Wallet): void {

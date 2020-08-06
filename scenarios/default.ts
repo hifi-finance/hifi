@@ -1,36 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
-import { OnePercent } from "./constants";
-
-export interface Scenario {
-  collateral: {
-    decimals: BigNumber;
-    name: string;
-    symbol: string;
-  };
-  fintroller: {
-    collateralizationRatio: BigNumber;
-  };
-  guarantorPool: {
-    decimals: BigNumber;
-    name: string;
-    symbol: string;
-  };
-  underlying: {
-    decimals: BigNumber;
-    name: string;
-    symbol: string;
-  };
-  yToken: {
-    decimals: BigNumber;
-    expirationTime: BigNumber;
-    name: string;
-    symbol: string;
-  };
-}
-
-const scenarioKeys = ["default"];
-export type ScenarioKey = typeof scenarioKeys[number];
+import { OnePercent } from "../constants";
+import { Scenario } from "../@types";
 
 const defaultScenario: Scenario = {
   collateral: {
@@ -59,8 +30,4 @@ const defaultScenario: Scenario = {
   },
 };
 
-const scenarios: Record<ScenarioKey, Scenario> = {
-  default: defaultScenario,
-};
-
-export default scenarios;
+export default defaultScenario;
