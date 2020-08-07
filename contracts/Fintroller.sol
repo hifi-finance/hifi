@@ -129,7 +129,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * Requirements:
      * - caller must be the administrator
      *
-     * @param yToken The bond contract to list.
+     * @param yToken The yToken contract to list.
      * @return bool true=success, otherwise it reverts.
      */
     function _listBond(YTokenInterface yToken) external override isAuthorized returns (bool) {
@@ -138,33 +138,48 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
         bonds[address(yToken)] = Bond({
             collateralizationRatio: Exp({ mantissa: 0 }),
             isListed: true,
-            isDepositAllowed: true,
-            isMintAllowed: true
+            isDepositAllowed: false,
+            isMintAllowed: false
         });
         emit ListBond(yToken);
         return NO_ERROR;
     }
 
-
-    function _setMintPaused(YTokenInterface yToken, bool state) public isAuthorized returns (bool) {
-        // require(markets[address(cToken)].isListed, "cannot pause a market that is not listed");
-        // require(msg.sender == pauseGuardian || msg.sender == admin, "only pause guardian and admin can pause");
-        // require(msg.sender == admin || state == true, "only admin can unpause");
-
-        // mintGuardianPaused[address(cToken)] = state;
-        // emit ActionPaused(cToken, "Mint", state);
-        // return state;
-        return true;
+    /**
+     * @notice Sets the state of the permission accessed by the yToken before allowing a new deposit.
+     *
+     * @dev Emits a {SetDepositAllowed} event.
+     *
+     * Requirements:
+     * - caller must be the administrator
+     *
+     * @param yToken The yToken contract to update the permission for.
+     * @param state The new state to be put in storage.
+     * @return bool true=success, otherwise it reverts.
+     */
+    function _setDepositAllowed(YTokenInterface yToken, bool state) external override isAuthorized returns (bool) {
+        require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
+        bonds[address(yToken)].isDepositAllowed = state;
+        emit SetDepositAllowed(yToken, state);
+        return NO_ERROR;
     }
 
-    function _setDepositPaused(YTokenInterface yToken, bool state) public isAuthorized returns (bool) {
-        // require(markets[address(cToken)].isListed, "cannot pause a market that is not listed");
-        // require(msg.sender == pauseGuardian || msg.sender == admin, "only pause guardian and admin can pause");
-        // require(msg.sender == admin || state == true, "only admin can unpause");
-
-        // borrowGuardianPaused[address(cToken)] = state;
-        // emit ActionPaused(cToken, "Borrow", state);
-        // return state;
-        return true;
+    /**
+     * @notice Sets the state of the permission accessed by the yToken before allowing a new mint.
+     *
+     * @dev Emits a {SetMintAllowed} event.
+     *
+     * Requirements:
+     * - caller must be the administrator
+     *
+     * @param yToken The yToken contract to update the permission for.
+     * @param state The new state to be put in storage.
+     * @return bool true=success, otherwise it reverts.
+     */
+    function _setMintAllowed(YTokenInterface yToken, bool state) external override isAuthorized returns (bool) {
+        require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
+        bonds[address(yToken)].isMintAllowed = state;
+        emit SetMintAllowed(yToken, state);
+        return NO_ERROR;
     }
 }

@@ -11,7 +11,9 @@ export const OneHundredPercent: BigNumber = BigNumber.from("1000000000000000000"
 export const TenThousandPercent: BigNumber = BigNumber.from("100000000000000000000");
 
 export const OneToken: BigNumber = UnitsPerToken;
+export const TenTokens: BigNumber = UnitsPerToken.mul(10);
 export const OneHundredTokens: BigNumber = UnitsPerToken.mul(100);
+export const OneThousandTokens: BigNumber = UnitsPerToken.mul(1000);
 
 export const FintrollerConstants = {
   CollateralizationRatioLowerBoundMantissa: OneHundredPercent,

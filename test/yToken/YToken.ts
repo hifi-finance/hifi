@@ -1,8 +1,8 @@
 import { Wallet } from "@ethersproject/wallet";
 
-import { OneHundredTokens } from "../../constants";
+import { OneThousandTokens, TenTokens } from "../../constants";
 import { deployFintroller, deploySuperMinter, deployYToken } from "../deployers";
-import { mintAndDistributeUnderlyingTokens } from "../minters";
+import { mintAndDistributeTokens } from "../minters";
 import { shouldBehaveLikeYToken } from "./YToken.behavior";
 
 export function testYToken(wallets: Wallet[]): void {
@@ -14,7 +14,10 @@ export function testYToken(wallets: Wallet[]): void {
 
       await deploySuperMinter.call(this, deployer);
 
-      await mintAndDistributeUnderlyingTokens.call(this, OneHundredTokens, wallets);
+      /* Give all wallets 10 WETH */
+      await mintAndDistributeTokens.call(this, this.collateral, TenTokens, wallets.slice(0, 5));
+      /* Give all wallets 1,000 DAI */
+      await mintAndDistributeTokens.call(this, this.underlying, OneThousandTokens, wallets.slice(0, 5));
     });
 
     shouldBehaveLikeYToken(wallets);

@@ -1,11 +1,14 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Wallet } from "@ethersproject/wallet";
 
+import { Erc20Mintable } from "../typechain/Erc20Mintable"
+
 /**
- * @dev This functions assumes that both `superMinter` and `underlying` are deployed.
+ * @dev This functions assumes that both `superMinter` and the token contract are deployed.
  */
-export async function mintAndDistributeUnderlyingTokens(
+export async function mintAndDistributeTokens(
   this: Mocha.Context,
+  token: Erc20Mintable,
   amount: BigNumber,
   wallets: Wallet[],
 ): Promise<void> {
@@ -14,6 +17,6 @@ export async function mintAndDistributeUnderlyingTokens(
     walletAddresses.push(await wallets[i].getAddress());
   }
   const totalAmountToMint: BigNumber = amount.mul(wallets.length);
-  await this.underlying.mint(this.superMinter.address, totalAmountToMint);
-  await this.superMinter.distributeTokensToAccounts(this.underlying.address, amount, walletAddresses);
+  await token.mint(this.superMinter.address, totalAmountToMint);
+  await this.superMinter.distributeTokensToAccounts(token.address, amount, walletAddresses);
 }
