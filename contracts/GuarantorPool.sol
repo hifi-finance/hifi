@@ -73,7 +73,7 @@ contract GuarantorPool is GuarantorPoolInterface, Erc20, Admin, Exponential, Ree
         SupplyLocalVars memory vars;
         vars.currentEndowment = endowments[msg.sender][collateral];
         (vars.mathErr, vars.newEndowment) = addUInt(vars.currentEndowment, endowment);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_DEPOSIT_ENDOWMENT_MATH_ERROR");
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_SUPPLY_MATH_ERROR");
 
         /* Effects: update the endowment storage property. */
         endowments[msg.sender][collateral] = vars.newEndowment;

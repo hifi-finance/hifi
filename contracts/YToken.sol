@@ -84,12 +84,20 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         return NO_ERROR;
     }
 
+    struct DepositLocalVars {
+        MathError mathErr;
+        uint256 newFreeCollateral;
+    }
+
     function deposit(uint256 collateralAmount) public override isVaultOpenForCaller nonReentrant returns (bool) {
         /* Checks: verify that the Fintroller allows this action to be performed. */
         require(fintroller.depositAllowed(this), "ERR_DEPOSIT_NOT_ALLOWED");
 
         /* Effects: update the storage properties. */
-        vaults[msg.sender].freeCollateral += collateralAmount;
+        DepositLocalVars memory vars;
+        (vars.mathErr, vars.newFreeCollateral) = addUInt(vaults[msg.sender].freeCollateral, collateralAmount);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_DEPOSIT_MATH_ERROR");
+        vaults[msg.sender].freeCollateral = vars.newFreeCollateral;
 
         /* Interactions */
         require(
@@ -115,6 +123,8 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
     function mint(uint256 yTokenAmount) public override isVaultOpenForCaller nonReentrant returns (bool) {
         /* Checks: verify that the Fintroller allows this action to be performed. */
         require(fintroller.mintAllowed(this), "ERR_MINT_NOT_ALLOWED");
+
+        /* Checks: liquidity in the guarantor pool. */
 
         /* Checks: verify collateralization profile. */
         // MintLocalVars memory vars;
