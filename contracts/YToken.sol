@@ -97,6 +97,8 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
             "ERR_DEPOSIT_ERC20_TRANSFER"
         );
 
+        emit DepositCollateral(msg.sender, collateralAmount);
+
         return NO_ERROR;
     }
 

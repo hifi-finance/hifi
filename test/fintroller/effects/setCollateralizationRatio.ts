@@ -4,9 +4,12 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { Errors, FintrollerErrors } from "../../errors";
-import { OnePercent } from "../../../constants";
+import { FintrollerConstants, OnePercent } from "../../../constants";
 
 export default function shouldBehaveLikeSetCollateralizationRatio(_admin: Wallet, eve: Wallet): void {
+  /* Equivalent to 175% */
+  const newCollateralizationRatioMantissa: BigNumber = OnePercent.mul(175);
+
   describe("when the caller is the admin", function () {
     describe("when the bond is listed", function () {
       beforeEach(async function () {
@@ -15,9 +18,20 @@ export default function shouldBehaveLikeSetCollateralizationRatio(_admin: Wallet
 
       describe("when the collateralization ratio is valid", function () {
         it("sets the new value", async function () {
-          /* Equivalent to 175% */
-          const newCollateralizationRatioMantissa: BigNumber = OnePercent.mul(175);
           await this.fintroller.setCollateralizationRatio(this.yToken.address, newCollateralizationRatioMantissa);
+        });
+
+        it("emits a NewCollateralizationRatio event", async function () {
+          /* The second argument is the default value of the collateralization ratio */
+          await expect(
+            this.fintroller.setCollateralizationRatio(this.yToken.address, newCollateralizationRatioMantissa),
+          )
+            .to.emit(this.fintroller, "NewCollateralizationRatio")
+            .withArgs(
+              this.yToken.address,
+              FintrollerConstants.DefaultCollateralizationRatioMantissa,
+              newCollateralizationRatioMantissa,
+            );
         });
       });
 

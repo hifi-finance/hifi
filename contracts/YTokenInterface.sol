@@ -12,22 +12,18 @@ abstract contract YTokenInterface is YTokenStorage {
     function getVault(address vaultHolder) external virtual view returns (uint256, uint256);
 
     /*** Non-Constant Functions ***/
-
     function burn(uint256 burnAmount) external virtual returns (bool);
-
     function burnBehalf(address minter, uint256 repayAmount) external virtual returns (bool);
-
     function deposit(uint256 collateralAmount) public virtual returns (bool);
-
     function liquidate(address minter, uint256 repayAmount) external virtual returns (bool);
-
     function mint(uint256 yTokenAmount) external virtual returns (bool);
-
     function settle() external virtual returns (bool);
 
     /*** Admin Functions ***/
 
     function _reduceReserves(uint256 reduceAmount) external virtual returns (bool);
-
     function _setReserveFactor(uint256 newReserveFactorMantissa) external virtual returns (bool);
+
+    /*** Events ***/
+    event DepositCollateral(address indexed user, uint256 collateralAmount);
 }

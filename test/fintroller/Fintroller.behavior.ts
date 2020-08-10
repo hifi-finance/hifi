@@ -3,6 +3,7 @@ import { Wallet } from "@ethersproject/wallet";
 import shouldBehaveLikeBondGetter from "./view/bond";
 import shouldBehaveLikeCollateralizationRatioLowerBoundMantissaGetter from "./view/collateralizationRatioLowerBoundMantissa";
 import shouldBehaveLikeCollateralizationRatioUpperBoundMantissaGetter from "./view/collateralizationRatioUpperBoundMantissa";
+import shouldBehaveLikeDefaultCollateralizationRatioMantissaGetter from "./view/defaultCollateralizationRatioMantissa";
 import shouldBehaveLikeListBond from "./effects/listBond";
 import shouldBehaveLikeOracleGetter from "./view/oracle";
 import shouldBehaveLikeSetCollateralizationRatio from "./effects/setCollateralizationRatio";
@@ -17,7 +18,7 @@ export function shouldBehaveLikeFintroller(wallets: Wallet[]): void {
 
   describe("Effects Functions", function () {
     describe("listBond", function () {
-      shouldBehaveLikeListBond();
+      shouldBehaveLikeListBond(admin);
     });
 
     describe("setCollateralizationRatio", function () {
@@ -40,6 +41,10 @@ export function shouldBehaveLikeFintroller(wallets: Wallet[]): void {
 
     describe("collateralizationRatioUpperBoundMantissa", function () {
       shouldBehaveLikeCollateralizationRatioUpperBoundMantissaGetter();
+    });
+
+    describe("defaultCollateralizationRatioMantissa", function () {
+      shouldBehaveLikeDefaultCollateralizationRatioMantissaGetter();
     });
 
     describe("oracle", function () {

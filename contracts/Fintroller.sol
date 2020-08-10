@@ -136,7 +136,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
         /* Sanity check */
         yToken.isYToken();
         bonds[address(yToken)] = Bond({
-            collateralizationRatio: Exp({ mantissa: 0 }),
+            collateralizationRatio: Exp({ mantissa: defaultCollateralizationRatioMantissa }),
             isListed: true,
             isDepositAllowed: false,
             isMintAllowed: false

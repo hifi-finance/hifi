@@ -29,6 +29,11 @@ abstract contract FintrollerStorage is Exponential {
     uint256 public constant collateralizationRatioUpperBoundMantissa = 100000000000000000000;
 
     /**
+     * @notice The dafault collateralization ratio set when a new bond is listed.
+     */
+    uint256 public constant defaultCollateralizationRatioMantissa = 1500000000000000000;
+
+    /**
      * @notice Provides price information in USD for the collateral and the underlying asset.
      */
     DumbOracleInterface public oracle;

@@ -18,6 +18,12 @@ abstract contract FintrollerInterface is FintrollerStorage {
 
     function setOracle(DumbOracleInterface oracle_) external virtual returns (bool);
 
+    /*** Admin Functions ***/
+    function _listBond(YTokenInterface yToken) external virtual returns (bool);
+    function _setDepositAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
+    function _setMintAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
+
+    /*** Events ***/
     event ListBond(YTokenInterface indexed yToken);
     event NewCollateralizationRatio(
         YTokenInterface indexed yToken,
@@ -27,9 +33,4 @@ abstract contract FintrollerInterface is FintrollerStorage {
     event NewOracle(address oldOracle, address newOracle);
     event SetDepositAllowed(YTokenInterface indexed yToken, bool state);
     event SetMintAllowed(YTokenInterface indexed yToken, bool state);
-
-    /*** Admin Functions ***/
-    function _listBond(YTokenInterface yToken) external virtual returns (bool);
-    function _setDepositAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
-    function _setMintAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
 }
