@@ -7,6 +7,8 @@ import shouldBehaveLikeDefaultCollateralizationRatioMantissaGetter from "./view/
 import shouldBehaveLikeListBond from "./effects/listBond";
 import shouldBehaveLikeOracleGetter from "./view/oracle";
 import shouldBehaveLikeSetCollateralizationRatio from "./effects/setCollateralizationRatio";
+import shouldBehaveLikeSetDepositAllowed from "./effects/setDepositAllowed";
+import shouldBehaveLikeSetMintAllowed from "./effects/setMintAllowed";
 import shouldBehaveLikeSetOracle from "./effects/setOracle";
 
 export function shouldBehaveLikeFintroller(wallets: Wallet[]): void {
@@ -23,6 +25,14 @@ export function shouldBehaveLikeFintroller(wallets: Wallet[]): void {
 
     describe("setCollateralizationRatio", function () {
       shouldBehaveLikeSetCollateralizationRatio(admin, eve);
+    });
+
+    describe("setDepositAllowed", function () {
+      shouldBehaveLikeSetDepositAllowed(admin);
+    });
+
+    describe("setMintAllowed", function () {
+      shouldBehaveLikeSetMintAllowed(admin);
     });
 
     describe("setOracle", function () {

@@ -1,3 +1,4 @@
+import { DumbOracle } from "../typechain/DumbOracle";
 import { Erc20Mintable } from "../typechain/Erc20Mintable";
 import { Fintroller } from "../typechain/Fintroller";
 import { GuarantorPool } from "../typechain/GuarantorPool";
@@ -26,6 +27,7 @@ declare module "mocha" {
     collateral: Erc20Mintable;
     fintroller: Fintroller;
     guarantorPool: GuarantorPool;
+    oracle: DumbOracle;
     scenario: Scenario;
     superMinter: SuperMinter;
     underlying: Erc20Mintable;

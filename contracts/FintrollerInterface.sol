@@ -20,7 +20,9 @@ abstract contract FintrollerInterface is FintrollerStorage {
 
     /*** Admin Functions ***/
     function _listBond(YTokenInterface yToken) external virtual returns (bool);
+
     function _setDepositAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
+
     function _setMintAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
 
     /*** Events ***/

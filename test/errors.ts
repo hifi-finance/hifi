@@ -11,6 +11,9 @@ export enum FintrollerErrors {
 
 export enum YTokenErrors {
   DepositNotAllowed = "ERR_DEPOSIT_NOT_ALLOWED",
+  FreeCollateralInsufficient = "ERR_FREE_COLLATERAL_INSUFFICIENT",
+  Matured = "ERR_MATURED",
   MintNotAllowed = "ERR_MINT_NOT_ALLOWED",
+  NotMatured = "ERR_NOT_MATURED",
   VaultNotOpen = "ERR_VAULT_NOT_OPEN",
 }

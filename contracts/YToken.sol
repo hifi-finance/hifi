@@ -7,7 +7,7 @@ import "./YTokenInterface.sol";
 import "./erc20/Erc20.sol";
 import "./erc20/Erc20Interface.sol";
 import "./math/Exponential.sol";
-import "./pricing/DumbOracle.sol";
+import "./pricing/DumbOracleInterface.sol";
 import "./utils/Admin.sol";
 import "./utils/ErrorReporter.sol";
 import "./utils/ReentrancyGuard.sol";
@@ -64,6 +64,24 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
     }
 
     /*** View Functions ***/
+
+    /**
+     * @notice Returns the number of seconds left before the yToken expires.
+     * @dev Also useful for stubbing in testing.
+     * @return uint256=number of seconds if not expired or zero if expired, otherwise it reverts.
+     */
+    function timeToLive() public view returns (uint256) {
+        uint256 blockTimestamp = getBlockTimestamp();
+        if (expirationTime > blockTimestamp) {
+            return expirationTime - blockTimestamp;
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * @notice Returns the vault data.
+     */
     function getVault(address vaultHolder)
         external
         override
@@ -116,19 +134,48 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
 
     struct MintLocalVars {
         MathError mathErr;
-        uint256 ethPriceInDai;
-        uint256 ratio;
+        uint256 collateralPriceInUsd;
+        uint256 newCollateralizationRatio;
+        uint256 timeToLive;
+        uint256 underlyingPriceInUsd;
+        uint256 valueOfCollateralInUsd;
     }
 
+    /**
+     * @notice Mints new yTokens and increases the debt of the caller.
+     * @dev Requirements:
+     *
+     * - The fintroller must have listed this yToken
+     * - The fintroller must allow new mints
+     * - The yToken must not be matured
+     *
+     * @param yTokenAmount The amount of new yToken to print into existence.
+     * @return bool true=success, otherwise it reverts.
+     */
     function mint(uint256 yTokenAmount) public override isVaultOpenForCaller nonReentrant returns (bool) {
+        MintLocalVars memory vars;
+
         /* Checks: verify that the Fintroller allows this action to be performed. */
         require(fintroller.mintAllowed(this), "ERR_MINT_NOT_ALLOWED");
 
-        /* Checks: liquidity in the guarantor pool. */
+        /* Checks: verify that the yToken did not mature. */
+        vars.timeToLive = timeToLive();
+        require(vars.timeToLive > 0, "ERR_MATURED");
+
+        /* TODO: check liquidity in the guarantor pool. */
 
         /* Checks: verify collateralization profile. */
-        // MintLocalVars memory vars;
-        // vars.ethPriceInDai = DumbOracle(oracle).getEthPriceInDai();
+        // require(false, "ERR_FREE_COLLATERAL_INSUFFICIENT");
+
+        vars.collateralPriceInUsd = fintroller.oracle().getEthPriceInUsd();
+        vars.underlyingPriceInUsd = fintroller.oracle().getDaiPriceInUsd();
+        console.log("collateralPriceInUsd: %d", vars.collateralPriceInUsd);
+        console.log("underlyingPriceInUsd: %d", vars.underlyingPriceInUsd);
+
+        // (vars.mathErr, vars.valueOfCollateralInUsd) = divUInt(yTokenAmount, )
+        // vars.newCollateralizationRatio =
+
+        // vars
         // vars.ratio = YTokenAmount / vars.ethPriceInDai;
         // console.log("YTokenAmount", YTokenAmount);
         // console.log("vars.ethPriceInDai", vars.ethPriceInDai);
@@ -141,7 +188,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         //     "ERR_MINT_ERC20_TRANSFER"
         // );
 
-        return true;
+        return NO_ERROR;
     }
 
     /**
@@ -170,5 +217,15 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
 
     function _setReserveFactor(uint256 newReserveFactorMantissa) external override isAuthorized returns (bool) {
         return NO_ERROR;
+    }
+
+    /*** Internal Functions ***/
+
+    /**
+     * @dev Simply retrieves the block timestamp. This exists mainly for stubbing
+     * it when testing.
+     */
+    function getBlockTimestamp() internal view returns (uint256) {
+        return block.timestamp;
     }
 }

@@ -1,12 +1,14 @@
 import { Wallet } from "@ethersproject/wallet";
 import { deployContract } from "ethereum-waffle";
 
+import DumbOracleArtifact from "../artifacts/DumbOracle.json";
 import Erc20MintableArtifact from "../artifacts/Erc20Mintable.json";
 import FintrollerArtifact from "../artifacts/Fintroller.json";
 import GuarantorPoolArtifact from "../artifacts/GuarantorPool.json";
 import SuperMinterArtifact from "../artifacts/SuperMinter.json";
 import YTokenArtifact from "../artifacts/YToken.json";
 
+import { DumbOracle } from "../typechain/DumbOracle";
 import { Erc20Mintable } from "../typechain/Erc20Mintable";
 import { Fintroller } from "../typechain/Fintroller";
 import { GuarantorPool } from "../typechain/GuarantorPool";
@@ -44,6 +46,10 @@ export async function deployGuarantorPool(this: Mocha.Context, deployer: Wallet)
     this.scenario.guarantorPool.symbol,
     this.scenario.guarantorPool.decimals,
   ])) as unknown) as GuarantorPool;
+}
+
+export async function deployOracle(this: Mocha.Context, deployer: Wallet): Promise<void> {
+  this.oracle = ((await deployContract(deployer, DumbOracleArtifact, [])) as unknown) as DumbOracle;
 }
 
 export async function deploySuperMinter(this: Mocha.Context, deployer: Wallet): Promise<void> {
