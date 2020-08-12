@@ -12,6 +12,7 @@ import "./math/Exponential.sol";
 abstract contract YTokenStorage is Exponential {
     /*** Structs ***/
     struct Vault {
+        uint256 debt;
         uint256 freeCollateral;
         uint256 lockedCollateral;
         bool isOpen;

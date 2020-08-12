@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.6.10;
 
-import "./Erc20.sol";
+import "../erc20/Erc20.sol";
 
 /**
  * @title Erc20Mintable
@@ -37,7 +37,7 @@ contract Erc20Mintable is Erc20 {
      * - `account` cannot be the zero address.
      */
     function mintInternal(address account, uint256 amount) internal virtual {
-        require(account != address(0x00), "Erc20: mint to the zero address");
+        require(account != address(0x00), "ERR_MINT_ZERO_ADDRESS");
 
         totalSupply = totalSupply.add(amount);
         balances[account] = balances[account].add(amount);

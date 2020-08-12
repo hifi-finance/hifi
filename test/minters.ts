@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Wallet } from "@ethersproject/wallet";
 
-import { Erc20Mintable } from "../typechain/Erc20Mintable"
+import { Erc20Mintable } from "../typechain/Erc20Mintable";
 
 /**
  * @dev This functions assumes that both `superMinter` and the token contract are deployed.

@@ -37,7 +37,7 @@ contract GuarantorPool is GuarantorPoolInterface, Erc20, Admin, Exponential, Ree
      */
     function redeemEndowment(address collateral, uint256 endowment) external override returns (bool) {
         /* Checks: verify endowment balance. */
-        require(endowments[msg.sender][collateral] >= endowment, "ERR_WITHDRAW_ENDOWMENT_BALANCE_INSUFFICIENT");
+        require(endowments[msg.sender][collateral] >= endowment, "ERR_WITHDRAW_INSUFFICIENT_ENDOWMENT_BALANCET");
 
         /* Checks: liquidity situation */
         /* TODO */

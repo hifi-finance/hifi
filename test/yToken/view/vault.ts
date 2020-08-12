@@ -11,10 +11,11 @@ export default function shouldBehaveLikeVaultGetter(bob: Wallet): void {
 
     it("should retrieve the vault data", async function () {
       const vault = await this.yToken.getVault(await bob.getAddress());
-      /* TODO: change with non-zero collateral values */
       expect(vault.freeCollateral).to.be.equal(Zero);
       expect(vault.lockedCollateral).to.be.equal(Zero);
     });
+
+    /* TODO: test for non-zero collateral values */
   });
 
   describe("when the bond is not open", function () {

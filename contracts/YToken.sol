@@ -17,7 +17,7 @@ import "./utils/ReentrancyGuard.sol";
  * @author Mainframe
  */
 contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard {
-    modifier isVaultOpenForCaller() {
+    modifier isVaultOpen() {
         require(vaults[msg.sender].isOpen, "ERR_VAULT_NOT_OPEN");
         _;
     }
@@ -33,7 +33,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
      * @param decimals_ ERC-20 decimal precision of this token
      * @param fintroller_ The address of the fintroller contract
      * @param underlying_ The contract address of the underlying asset
-     * @param collateral_ The contract address of the collateral asset
+     * @param collateral_ The contract address of the totalCollateral asset
      * @param guarantorPool_ The pool into which Guarantors of this YToken deposit their capital
      * @param expirationTime_ Unix timestamp in seconds for when this token expires
      */
@@ -49,7 +49,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
     ) public Erc20(name_, symbol_, decimals_) Admin() {
         fintroller = fintroller_;
 
-        /* Set underlying and collateral and sanity check them. */
+        /* Set underlying and totalCollateral and sanity check them. */
         underlying = underlying_;
         Erc20Interface(underlying_).totalSupply();
 
@@ -107,7 +107,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         uint256 newFreeCollateral;
     }
 
-    function deposit(uint256 collateralAmount) public override isVaultOpenForCaller nonReentrant returns (bool) {
+    function depositCollateral(uint256 collateralAmount) public override isVaultOpen nonReentrant returns (bool) {
         /* Checks: verify that the Fintroller allows this action to be performed. */
         require(fintroller.depositAllowed(this), "ERR_DEPOSIT_NOT_ALLOWED");
 
@@ -128,14 +128,59 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         return NO_ERROR;
     }
 
+    function freeCollateral(uint256 collateralAmount) external override isVaultOpen returns (bool) {
+        return NO_ERROR;
+    }
+
     function liquidate(address borrower, uint256 repayUnderlyingAmount) external override returns (bool) {
+        return NO_ERROR;
+    }
+
+    struct LockCollateralLocalVars {
+        MathError mathErr;
+        uint256 newFreeCollateral;
+        uint256 newLockedCollateral;
+    }
+
+    /**
+     * @notice Locks some or all of the free collateral in order to be used for minting.
+     * @dev Emits a {LockCollateral} event.
+     *
+     * Requirements:
+     * - The vault must be open
+     * - There must be enough free collateral
+     *
+     * @param collateralAmount The amount of free collateral to lock.
+     * @return bool true=success, otherwise it reverts.
+     */
+    function lockCollateral(uint256 collateralAmount) external override isVaultOpen returns (bool) {
+        Vault memory vault = vaults[msg.sender];
+        require(vault.freeCollateral >= collateralAmount, "ERR_LOCK_COLLATERAL_INSUFFICIENT_FREE_COLLATERAL");
+
+        LockCollateralLocalVars memory vars;
+
+        (vars.mathErr, vars.newLockedCollateral) = addUInt(vault.lockedCollateral, collateralAmount);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_LOCK_COLLATERAL_MATH_ERROR");
+        vaults[msg.sender].lockedCollateral = vars.newLockedCollateral;
+
+        (vars.mathErr, vars.newFreeCollateral) = subUInt(vault.freeCollateral, collateralAmount);
+        require(vars.mathErr == MathError.NO_ERROR, "newFreeCollateral");
+        vaults[msg.sender].freeCollateral = vars.newFreeCollateral;
+
+        emit LockCollateral(msg.sender, collateralAmount);
         return NO_ERROR;
     }
 
     struct MintLocalVars {
         MathError mathErr;
         uint256 collateralPriceInUsd;
-        uint256 newCollateralizationRatio;
+        uint256 collateralizationRatioMantissa;
+        uint256 lockedCollateralValue;
+        uint256 mintValue;
+        Exp newCollateralizationRatio;
+        uint256 newDebt;
+        uint256 newMinterBalance;
+        uint256 newTotalSupply;
         uint256 timeToLive;
         uint256 underlyingPriceInUsd;
         uint256 valueOfCollateralInUsd;
@@ -145,14 +190,15 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
      * @notice Mints new yTokens and increases the debt of the caller.
      * @dev Requirements:
      *
-     * - The fintroller must have listed this yToken
+     * - The vault must be open
+     * - The yToken must be listed as a bond in the fintroller registry
      * - The fintroller must allow new mints
      * - The yToken must not be matured
      *
-     * @param yTokenAmount The amount of new yToken to print into existence.
+     * @param yTokenAmount The amount of yTokens to print into existence.
      * @return bool true=success, otherwise it reverts.
      */
-    function mint(uint256 yTokenAmount) public override isVaultOpenForCaller nonReentrant returns (bool) {
+    function mint(uint256 yTokenAmount) public override isVaultOpen nonReentrant returns (bool) {
         MintLocalVars memory vars;
 
         /* Checks: verify that the Fintroller allows this action to be performed. */
@@ -160,33 +206,53 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
 
         /* Checks: verify that the yToken did not mature. */
         vars.timeToLive = timeToLive();
-        require(vars.timeToLive > 0, "ERR_MATURED");
+        require(vars.timeToLive > 0, "ERR_BOND_MATURED");
 
         /* TODO: check liquidity in the guarantor pool. */
 
-        /* Checks: verify collateralization profile. */
-        // require(false, "ERR_FREE_COLLATERAL_INSUFFICIENT");
+        Vault memory vault = vaults[msg.sender];
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
 
         vars.collateralPriceInUsd = fintroller.oracle().getEthPriceInUsd();
+        (vars.mathErr, vars.lockedCollateralValue) = mulUInt(vault.lockedCollateral, vars.collateralPriceInUsd);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
+
         vars.underlyingPriceInUsd = fintroller.oracle().getDaiPriceInUsd();
-        console.log("collateralPriceInUsd: %d", vars.collateralPriceInUsd);
-        console.log("underlyingPriceInUsd: %d", vars.underlyingPriceInUsd);
+        (vars.mathErr, vars.mintValue) = mulUInt(yTokenAmount, vars.underlyingPriceInUsd);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
 
-        // (vars.mathErr, vars.valueOfCollateralInUsd) = divUInt(yTokenAmount, )
-        // vars.newCollateralizationRatio =
+        (vars.mathErr, vars.newDebt) = addUInt(vault.debt, yTokenAmount);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
 
-        // vars
-        // vars.ratio = YTokenAmount / vars.ethPriceInDai;
-        // console.log("YTokenAmount", YTokenAmount);
-        // console.log("vars.ethPriceInDai", vars.ethPriceInDai);
-        // console.log("vars.ratio", vars.ratio);
-        // require(vars.ratio >= collateralizationRatio.mantissa, "ERR_COLLATERALIZATION_INSUFFICIENT");
+        (vars.mathErr, vars.newCollateralizationRatio) = divExp(
+            Exp({ mantissa: vars.lockedCollateralValue }),
+            Exp({ mantissa: vars.newDebt })
+        );
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
 
-        /* Interactions: attempt to perform the ERC20 transfer. */
-        // require(
-        //     Erc20Interface(collateral).transferFrom(msg.sender, address(this), endowment),
-        //     "ERR_MINT_ERC20_TRANSFER"
-        // );
+        /* Checks: the new collateralization ratio must be be higher or equal to the threshold. */
+        (vars.collateralizationRatioMantissa) = fintroller.getBond(address(this));
+        require(
+            vars.newCollateralizationRatio.mantissa >= vars.collateralizationRatioMantissa,
+            "ERR_MINT_INSUFFICIENT_LOCKED_COLLATERAL"
+        );
+
+        /* Effects: update the new debt. */
+        vaults[msg.sender].debt = vars.newDebt;
+
+        /* Effects: increases the yToken supply. */
+        (vars.mathErr, vars.newTotalSupply) = addUInt(totalSupply, yTokenAmount);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
+        totalSupply = vars.newTotalSupply;
+
+        /* Effects: mints the yTokens. */
+        (vars.mathErr, vars.newMinterBalance) = addUInt(balances[msg.sender], yTokenAmount);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
+        balances[msg.sender] = vars.newMinterBalance;
+
+        /* We emit both a Mint and a Transfer event */
+        emit Mint(msg.sender, yTokenAmount);
+        emit Transfer(address(this), msg.sender, yTokenAmount);
 
         return NO_ERROR;
     }

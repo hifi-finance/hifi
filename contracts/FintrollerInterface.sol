@@ -8,6 +8,8 @@ abstract contract FintrollerInterface is FintrollerStorage {
     /*** View Functions ***/
     function depositAllowed(YTokenInterface yToken) external virtual view returns (bool);
 
+    function getBond(address yTokenAddress) external virtual view returns (uint256 collateralizationRatioMantissa);
+
     function mintAllowed(YTokenInterface yToken) external virtual view returns (bool);
 
     /*** Non-Constant Functions ***/
@@ -27,12 +29,16 @@ abstract contract FintrollerInterface is FintrollerStorage {
 
     /*** Events ***/
     event ListBond(YTokenInterface indexed yToken);
+
     event NewCollateralizationRatio(
         YTokenInterface indexed yToken,
         uint256 oldCollateralizationRatio,
         uint256 newCollateralizationRatio
     );
+
     event NewOracle(address oldOracle, address newOracle);
+
     event SetDepositAllowed(YTokenInterface indexed yToken, bool state);
+
     event SetMintAllowed(YTokenInterface indexed yToken, bool state);
 }

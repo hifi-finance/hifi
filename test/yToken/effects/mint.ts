@@ -22,47 +22,73 @@ export default function shouldBehaveLikeMint(admin: Wallet, bob: Wallet, _eve: W
           await this.fintroller.connect(admin)._setMintAllowed(this.yToken.address, true);
         });
 
-        describe("when the yToken did not mature", function () {
-          describe("when the user has enough free collateral", function () {
+        describe("when the bond did not mature", function () {
+          beforeEach(async function () {
+            await this.fintroller.connect(admin)._setDepositAllowed(this.yToken.address, true);
+          });
+
+          describe("when the user deposited collateral and locked it", function () {
             beforeEach(async function () {
-              await this.fintroller.connect(admin)._setDepositAllowed(this.yToken.address, true);
               await this.collateral.connect(bob).approve(this.yToken.address, TenTokens);
-              await this.yToken.connect(bob).deposit(TenTokens);
+              await this.yToken.connect(bob).depositCollateral(TenTokens);
+              await this.yToken.connect(bob).lockCollateral(TenTokens);
             });
 
-            describe("when the yToken contract has enough underlying allowance", function () {
-              beforeEach(async function () {
-                await this.underlying.connect(bob).approve(this.yToken.address, TenTokens);
-              });
-
-              it("mints new yTokens", async function () {
-                await this.yToken.connect(bob).mint(OneHundredTokens);
-              });
+            it("mints new yTokens", async function () {
+              await this.yToken.connect(bob).mint(OneHundredTokens);
             });
 
-            describe("when the yToken contract does not have enough underlying allowance", function () {
-              it.skip("reverts", async function () {
-                await expect(this.yToken.connect(bob).mint(OneHundredTokens)).to.be.revertedWith("Lol");
-              });
+            it("increases the erc20 balance of the caller", async function () {
+              const callerAddress: string = await bob.getAddress();
+              const preBalance: BigNumber = await this.yToken.balanceOf(callerAddress);
+              await this.yToken.connect(bob).mint(OneHundredTokens);
+              const postBalance: BigNumber = await this.yToken.balanceOf(callerAddress);
+              expect(preBalance).to.equal(postBalance.sub(OneHundredTokens));
+            });
+
+            it("emits a Mint event", async function () {
+              await expect(this.yToken.connect(bob).mint(OneHundredTokens))
+                .to.emit(this.yToken, "Mint")
+                .withArgs(await bob.getAddress(), OneHundredTokens);
+            });
+
+            it("emits a Transfer event", async function () {
+              await expect(this.yToken.connect(bob).mint(OneHundredTokens))
+                .to.emit(this.yToken, "Transfer")
+                .withArgs(this.yToken.address, await bob.getAddress(), OneHundredTokens);
             });
           });
 
-          describe("when the user does not have enough free collateral", function () {
-            it.skip("reverts", async function () {
+          describe("when the user deposited collateral but did not lock it", function () {
+            beforeEach(async function () {
+              await this.collateral.connect(bob).approve(this.yToken.address, TenTokens);
+              await this.yToken.connect(bob).depositCollateral(TenTokens);
+            });
+
+            it("reverts", async function () {
               await expect(this.yToken.connect(bob).mint(OneHundredTokens)).to.be.revertedWith(
-                YTokenErrors.FreeCollateralInsufficient,
+                YTokenErrors.MintInsufficientLockedCollateral,
+              );
+            });
+          });
+
+          describe("when the user did not deposit any collateral", function () {
+            it("reverts", async function () {
+              await expect(this.yToken.connect(bob).mint(OneHundredTokens)).to.be.revertedWith(
+                YTokenErrors.MintInsufficientLockedCollateral,
               );
             });
           });
         });
 
-        describe("when the yToken matured", function () {
+        describe("when the bond matured", function () {
           beforeEach(async function () {
+            /* TODO: ensure that this doesn't mess up all test cases after it */
             await setNextBlockTimestamp(this.scenario.yToken.expirationTime);
           });
 
           it("reverts", async function () {
-            await expect(this.yToken.connect(bob).mint(OneHundredTokens)).to.be.revertedWith(YTokenErrors.Matured);
+            await expect(this.yToken.connect(bob).mint(OneHundredTokens)).to.be.revertedWith(YTokenErrors.BondMatured);
           });
         });
       });

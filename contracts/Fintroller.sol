@@ -49,7 +49,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @param yTokenAddress The address of the bond contract.
      * @return collateralizationRatioMantissa The bond data.
      */
-    function getBond(address yTokenAddress) external view returns (uint256 collateralizationRatioMantissa) {
+    function getBond(address yTokenAddress) external override view returns (uint256 collateralizationRatioMantissa) {
         collateralizationRatioMantissa = bonds[yTokenAddress].collateralizationRatio.mantissa;
     }
 

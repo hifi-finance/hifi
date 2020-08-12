@@ -31,7 +31,7 @@ contract SuperMinter {
         Erc20Interface(token).totalSupply();
         require(
             Erc20Interface(token).balanceOf(address(this)) >= amount.mul(accounts.length),
-            "ERR_ERC20_BALANCE_INSUFFICIENT"
+            "ERR_ERC20_INSUFFICIENT_BALANCE"
         );
 
         uint256 length = accounts.length;
