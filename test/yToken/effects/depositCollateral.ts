@@ -13,12 +13,12 @@ export default function shouldBehaveLikeDepositCollateral(admin: Wallet, bob: Wa
 
     describe("when the bond is listed", function () {
       beforeEach(async function () {
-        await this.fintroller.connect(admin)._listBond(this.yToken.address);
+        await this.fintroller.connect(admin).listBond(this.yToken.address);
       });
 
       describe("when the fintroller allows new deposits", function () {
         beforeEach(async function () {
-          await this.fintroller.connect(admin)._setDepositAllowed(this.yToken.address, true);
+          await this.fintroller.connect(admin).setDepositAllowed(this.yToken.address, true);
         });
 
         describe("when the yToken contract has enough allowance", function () {

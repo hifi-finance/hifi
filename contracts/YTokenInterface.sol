@@ -9,11 +9,9 @@ import "./YTokenStorage.sol";
  */
 abstract contract YTokenInterface is YTokenStorage {
     /*** View Functions ***/
-
     function getVault(address vaultHolder) external virtual view returns (uint256, uint256);
 
     /*** Non-Constant Functions ***/
-
     function burn(uint256 burnAmount) external virtual returns (bool);
 
     function burnBehalf(address minter, uint256 repayAmount) external virtual returns (bool);
@@ -31,13 +29,11 @@ abstract contract YTokenInterface is YTokenStorage {
     function settle() external virtual returns (bool);
 
     /*** Admin Functions ***/
-
     function _reduceReserves(uint256 reduceAmount) external virtual returns (bool);
 
     function _setReserveFactor(uint256 newReserveFactorMantissa) external virtual returns (bool);
 
     /*** Events ***/
-
     event DepositCollateral(address indexed user, uint256 collateralAmount);
 
     event FreeCollateral(address indexed user, uint256 collateralAmount);

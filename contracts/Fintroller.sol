@@ -44,6 +44,30 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     /*** Non-Constant Functions ***/
 
     /**
+     * @notice Marks the bond as listed in this contract's registry. It is not an error to list a bond twice.
+     *
+     * @dev Emits a {ListBond} event.
+     *
+     * Requirements:
+     * - caller must be the administrator
+     *
+     * @param yToken The yToken contract to list.
+     * @return bool true=success, otherwise it reverts.
+     */
+    function listBond(YTokenInterface yToken) external override isAuthorized returns (bool) {
+        /* Sanity check */
+        yToken.isYToken();
+        bonds[address(yToken)] = Bond({
+            collateralizationRatio: Exp({ mantissa: defaultCollateralizationRatioMantissa }),
+            isListed: true,
+            isDepositAllowed: false,
+            isMintAllowed: false
+        });
+        emit ListBond(yToken);
+        return NO_ERROR;
+    }
+
+    /**
      * @notice Returns the bond with all its properties.
      * @dev It is not an error to provide an invalid yToken address. The returned values will all be zero.
      * @param yTokenAddress The address of the bond contract.
@@ -100,52 +124,6 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     }
 
     /**
-     * @notice Updates the oracle contract's address saved in storage.
-     *
-     * @dev Emits a {SetOracle} event.
-     *
-     * Requirements:
-     * - caller must be the administrator
-     * - the new address must not be the zero address
-     *
-     * @param oracle_ The new oracle contract.
-     * @return bool true=success, otherwise it reverts.
-     */
-    function setOracle(DumbOracleInterface oracle_) external override isAuthorized returns (bool) {
-        require(address(oracle_) != address(0x00), "ERR_SET_ORACLE_ZERO_ADDRESS");
-        address oldOracle = address(oracle);
-        oracle = oracle_;
-        emit NewOracle(oldOracle, address(oracle));
-        return NO_ERROR;
-    }
-
-    /*** Admin Functions ***/
-
-    /**
-     * @notice Marks the bond as listed in this contract's registry. It is not an error to list a bond twice.
-     *
-     * @dev Emits a {ListBond} event.
-     *
-     * Requirements:
-     * - caller must be the administrator
-     *
-     * @param yToken The yToken contract to list.
-     * @return bool true=success, otherwise it reverts.
-     */
-    function _listBond(YTokenInterface yToken) external override isAuthorized returns (bool) {
-        /* Sanity check */
-        yToken.isYToken();
-        bonds[address(yToken)] = Bond({
-            collateralizationRatio: Exp({ mantissa: defaultCollateralizationRatioMantissa }),
-            isListed: true,
-            isDepositAllowed: false,
-            isMintAllowed: false
-        });
-        emit ListBond(yToken);
-        return NO_ERROR;
-    }
-
-    /**
      * @notice Sets the state of the permission accessed by the yToken before allowing a new deposit.
      *
      * @dev Emits a {SetDepositAllowed} event.
@@ -157,7 +135,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @param state The new state to be put in storage.
      * @return bool true=success, otherwise it reverts.
      */
-    function _setDepositAllowed(YTokenInterface yToken, bool state) external override isAuthorized returns (bool) {
+    function setDepositAllowed(YTokenInterface yToken, bool state) external override isAuthorized returns (bool) {
         require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
         bonds[address(yToken)].isDepositAllowed = state;
         emit SetDepositAllowed(yToken, state);
@@ -176,10 +154,30 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @param state The new state to be put in storage.
      * @return bool true=success, otherwise it reverts.
      */
-    function _setMintAllowed(YTokenInterface yToken, bool state) external override isAuthorized returns (bool) {
+    function setMintAllowed(YTokenInterface yToken, bool state) external override isAuthorized returns (bool) {
         require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
         bonds[address(yToken)].isMintAllowed = state;
         emit SetMintAllowed(yToken, state);
+        return NO_ERROR;
+    }
+
+    /**
+     * @notice Updates the oracle contract's address saved in storage.
+     *
+     * @dev Emits a {SetOracle} event.
+     *
+     * Requirements:
+     * - caller must be the administrator
+     * - the new address must not be the zero address
+     *
+     * @param oracle_ The new oracle contract.
+     * @return bool true=success, otherwise it reverts.
+     */
+    function setOracle(DumbOracleInterface oracle_) external override isAuthorized returns (bool) {
+        require(address(oracle_) != address(0x00), "ERR_SET_ORACLE_ZERO_ADDRESS");
+        address oldOracle = address(oracle);
+        oracle = oracle_;
+        emit NewOracle(oldOracle, address(oracle));
         return NO_ERROR;
     }
 }

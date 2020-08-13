@@ -14,7 +14,6 @@ abstract contract GuarantorPoolInterface is GuarantorPoolStorage {
     function supply(address collateral, uint256 endowment) external virtual returns (bool);
 
     /*** Admin Functions ***/
-
     function _authorizeCollateral(address collateral) external virtual returns (bool);
 
     function _disapproveCollateral(address collateral) external virtual returns (bool);

@@ -14,17 +14,17 @@ export default function shouldBehaveLikeMint(admin: Wallet, bob: Wallet, _eve: W
 
     describe("when the bond is listed", function () {
       beforeEach(async function () {
-        await this.fintroller.connect(admin)._listBond(this.yToken.address);
+        await this.fintroller.connect(admin).listBond(this.yToken.address);
       });
 
       describe("when the fintroller allows new mints", function () {
         beforeEach(async function () {
-          await this.fintroller.connect(admin)._setMintAllowed(this.yToken.address, true);
+          await this.fintroller.connect(admin).setMintAllowed(this.yToken.address, true);
         });
 
         describe("when the bond did not mature", function () {
           beforeEach(async function () {
-            await this.fintroller.connect(admin)._setDepositAllowed(this.yToken.address, true);
+            await this.fintroller.connect(admin).setDepositAllowed(this.yToken.address, true);
           });
 
           describe("when the user deposited collateral and locked it", function () {

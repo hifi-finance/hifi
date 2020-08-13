@@ -13,7 +13,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(admin: Wallet,
   describe("when the caller is the admin", function () {
     describe("when the bond is listed", function () {
       beforeEach(async function () {
-        await this.fintroller.connect(admin)._listBond(this.yToken.address);
+        await this.fintroller.connect(admin).listBond(this.yToken.address);
       });
 
       describe("when the collateralization ratio is valid", function () {
