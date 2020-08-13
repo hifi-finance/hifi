@@ -1,5 +1,5 @@
 {
-  "delay": true,
+  "delay": false,
   "extension": ["ts"],
   "recursive": "test",
   "require": ["@nomiclabs/buidler/register"],

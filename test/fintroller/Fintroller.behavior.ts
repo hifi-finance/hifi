@@ -1,5 +1,3 @@
-import { Wallet } from "@ethersproject/wallet";
-
 import shouldBehaveLikeBondGetter from "./view/bond";
 import shouldBehaveLikeCollateralizationRatioLowerBoundMantissaGetter from "./view/collateralizationRatioLowerBoundMantissa";
 import shouldBehaveLikeCollateralizationRatioUpperBoundMantissaGetter from "./view/collateralizationRatioUpperBoundMantissa";
@@ -11,32 +9,26 @@ import shouldBehaveLikeSetDepositAllowed from "./effects/setDepositAllowed";
 import shouldBehaveLikeSetMintAllowed from "./effects/setMintAllowed";
 import shouldBehaveLikeSetOracle from "./effects/setOracle";
 
-export function shouldBehaveLikeFintroller(wallets: Wallet[]): void {
-  const admin: Wallet = wallets[0];
-  const _bob: Wallet = wallets[1];
-  const _grace: Wallet = wallets[2];
-  const _lucy: Wallet = wallets[3];
-  const eve: Wallet = wallets[4];
-
+export function shouldBehaveLikeFintroller(): void {
   describe("Effects Functions", function () {
     describe("listBond", function () {
-      shouldBehaveLikeListBond(admin);
+      shouldBehaveLikeListBond();
     });
 
     describe("setCollateralizationRatio", function () {
-      shouldBehaveLikeSetCollateralizationRatio(admin, eve);
+      shouldBehaveLikeSetCollateralizationRatio();
     });
 
     describe("setDepositAllowed", function () {
-      shouldBehaveLikeSetDepositAllowed(admin);
+      shouldBehaveLikeSetDepositAllowed();
     });
 
     describe("setMintAllowed", function () {
-      shouldBehaveLikeSetMintAllowed(admin);
+      shouldBehaveLikeSetMintAllowed();
     });
 
     describe("setOracle", function () {
-      shouldBehaveLikeSetOracle(admin, eve);
+      shouldBehaveLikeSetOracle();
     });
   });
 

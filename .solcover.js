@@ -3,7 +3,7 @@ const shell = require("shelljs");
 module.exports = {
   istanbulReporter: ["html"],
   mocha: {
-    delay: true,
+    delay: false,
   },
   onCompileComplete: async function (_config) {
     await run("typechain");

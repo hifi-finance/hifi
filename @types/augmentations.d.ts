@@ -1,3 +1,5 @@
+import { Signer } from "@ethersproject/abstract-signer";
+
 import { DumbOracle } from "../typechain/DumbOracle";
 import { Erc20Mintable } from "../typechain/Erc20Mintable";
 import { Fintroller } from "../typechain/Fintroller";
@@ -32,5 +34,15 @@ declare module "mocha" {
     superMinter: SuperMinter;
     underlying: Erc20Mintable;
     yToken: YToken;
+  }
+}
+
+declare module "mocha" {
+  export interface Context {
+    admin: Signer;
+    brad: Signer;
+    eve: Signer;
+    grace: Signer;
+    lucy: Signer;
   }
 }

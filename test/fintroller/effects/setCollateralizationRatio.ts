@@ -1,25 +1,24 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { Wallet } from "@ethersproject/wallet";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { Errors, FintrollerErrors } from "../../errors";
 import { FintrollerConstants, OnePercent } from "../../../constants";
 
-export default function shouldBehaveLikeSetCollateralizationRatio(admin: Wallet, eve: Wallet): void {
+export default function shouldBehaveLikeSetCollateralizationRatio(): void {
   /* Equivalent to 175% */
   const newCollateralizationRatioMantissa: BigNumber = OnePercent.mul(175);
 
   describe("when the caller is the admin", function () {
     describe("when the bond is listed", function () {
       beforeEach(async function () {
-        await this.fintroller.connect(admin).listBond(this.yToken.address);
+        await this.fintroller.connect(this.admin).listBond(this.yToken.address);
       });
 
       describe("when the collateralization ratio is valid", function () {
         it("sets the new value", async function () {
           await this.fintroller
-            .connect(admin)
+            .connect(this.admin)
             .setCollateralizationRatio(this.yToken.address, newCollateralizationRatioMantissa);
         });
 
@@ -27,7 +26,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(admin: Wallet,
           /* The second argument is the default value of the collateralization ratio */
           await expect(
             this.fintroller
-              .connect(admin)
+              .connect(this.admin)
               .setCollateralizationRatio(this.yToken.address, newCollateralizationRatioMantissa),
           )
             .to.emit(this.fintroller, "NewCollateralizationRatio")
@@ -45,7 +44,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(admin: Wallet,
             const overflowCollateralizationRatioMantissa: BigNumber = OnePercent.mul(10000).add(1);
             await expect(
               this.fintroller
-                .connect(admin)
+                .connect(this.admin)
                 .setCollateralizationRatio(this.yToken.address, overflowCollateralizationRatioMantissa),
             ).to.be.revertedWith(FintrollerErrors.SetCollateralizationRatioOverflow);
           });
@@ -56,7 +55,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(admin: Wallet,
             const underflowCollateralizationRatioMantissa: BigNumber = OnePercent.mul(100).sub(1);
             await expect(
               this.fintroller
-                .connect(admin)
+                .connect(this.admin)
                 .setCollateralizationRatio(this.yToken.address, underflowCollateralizationRatioMantissa),
             ).to.be.revertedWith(FintrollerErrors.SetCollateralizationRatioUnderflow);
           });
@@ -65,7 +64,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(admin: Wallet,
         describe("when the collateralization ratio is zero", function () {
           it("reverts", async function () {
             await expect(
-              this.fintroller.connect(admin).setCollateralizationRatio(this.yToken.address, Zero),
+              this.fintroller.connect(this.admin).setCollateralizationRatio(this.yToken.address, Zero),
             ).to.be.revertedWith(FintrollerErrors.SetCollateralizationRatioUnderflow);
           });
         });
@@ -77,7 +76,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(admin: Wallet,
         const newCollateralizationRatioMantissa: BigNumber = this.scenario.fintroller.collateralizationRatio.add(1);
         await expect(
           this.fintroller
-            .connect(admin)
+            .connect(this.admin)
             .setCollateralizationRatio(this.yToken.address, newCollateralizationRatioMantissa),
         ).to.be.revertedWith(FintrollerErrors.BondNotListed);
       });
@@ -88,7 +87,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(admin: Wallet,
     it("reverts", async function () {
       await expect(
         this.fintroller
-          .connect(eve)
+          .connect(this.eve)
           .setCollateralizationRatio(this.yToken.address, this.scenario.fintroller.collateralizationRatio),
       ).to.be.revertedWith(Errors.NotAuthorized);
     });

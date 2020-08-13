@@ -41,7 +41,8 @@ function createHDAccountConfig(network: string): HDAccountsConfigExtended {
 const config: BuidlerConfig = {
   defaultNetwork: "buidlerevm",
   mocha: {
-    delay: true,
+    /* Set this to "true" if you need to run a setTimeout block before tests. */
+    delay: false,
   },
   networks: {
     buidlerevm: {

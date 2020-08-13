@@ -1,5 +1,5 @@
 import chai from "chai";
-import { Wallet } from "@ethersproject/wallet";
+import { Signer } from "@ethersproject/abstract-signer";
 import { ethers } from "@nomiclabs/buidler";
 import { solidity } from "ethereum-waffle";
 
@@ -9,15 +9,18 @@ import { testYToken } from "./yToken/YToken";
 
 chai.use(solidity);
 
-setTimeout(async function () {
-  const wallets = (await ethers.getSigners()) as Wallet[];
-
+describe("Contracts", function () {
   before(async function () {
     this.scenario = scenarios.default;
+
+    const signers: Signer[] = await ethers.getSigners();
+    this.admin = signers[0];
+    this.brad = signers[1];
+    this.grace = signers[2];
+    this.lucy = signers[3];
+    this.eve = signers[4];
   });
 
-  testFintroller(wallets);
-  testYToken(wallets);
-
-  run();
-}, 1000);
+  testFintroller();
+  testYToken();
+});

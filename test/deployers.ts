@@ -1,4 +1,4 @@
-import { Wallet } from "@ethersproject/wallet";
+import { Signer } from "@ethersproject/abstract-signer";
 import { deployContract } from "ethereum-waffle";
 
 import DumbOracleArtifact from "../artifacts/DumbOracle.json";
@@ -20,19 +20,15 @@ import { YToken } from "../typechain/YToken";
  * https://bit.ly/3i7mxrh
  */
 
-export async function deployFintroller(this: Mocha.Context, deployer: Wallet): Promise<void> {
+export async function deployFintroller(this: Mocha.Context, deployer: Signer): Promise<void> {
   this.fintroller = ((await deployContract(deployer, FintrollerArtifact, [])) as unknown) as Fintroller;
 }
 
-export async function deployUnderlying(this: Mocha.Context, deployer: Wallet): Promise<void> {
-  this.underlying = ((await deployContract(deployer, Erc20MintableArtifact, [
-    this.scenario.underlying.name,
-    this.scenario.underlying.symbol,
-    this.scenario.underlying.decimals,
-  ])) as unknown) as Erc20Mintable;
+export async function deployFintroller2(this: Mocha.Context, deployer: Signer): Promise<void> {
+  this.fintroller = ((await deployContract(deployer, FintrollerArtifact, [])) as unknown) as Fintroller;
 }
 
-export async function deployCollateral(this: Mocha.Context, deployer: Wallet): Promise<void> {
+export async function deployCollateral(this: Mocha.Context, deployer: Signer): Promise<void> {
   this.collateral = ((await deployContract(deployer, Erc20MintableArtifact, [
     this.scenario.collateral.name,
     this.scenario.collateral.symbol,
@@ -40,7 +36,7 @@ export async function deployCollateral(this: Mocha.Context, deployer: Wallet): P
   ])) as unknown) as Erc20Mintable;
 }
 
-export async function deployGuarantorPool(this: Mocha.Context, deployer: Wallet): Promise<void> {
+export async function deployGuarantorPool(this: Mocha.Context, deployer: Signer): Promise<void> {
   this.guarantorPool = ((await deployContract(deployer, GuarantorPoolArtifact, [
     this.scenario.guarantorPool.name,
     this.scenario.guarantorPool.symbol,
@@ -48,15 +44,23 @@ export async function deployGuarantorPool(this: Mocha.Context, deployer: Wallet)
   ])) as unknown) as GuarantorPool;
 }
 
-export async function deployOracle(this: Mocha.Context, deployer: Wallet): Promise<void> {
+export async function deployOracle(this: Mocha.Context, deployer: Signer): Promise<void> {
   this.oracle = ((await deployContract(deployer, DumbOracleArtifact, [])) as unknown) as DumbOracle;
 }
 
-export async function deploySuperMinter(this: Mocha.Context, deployer: Wallet): Promise<void> {
+export async function deploySuperMinter(this: Mocha.Context, deployer: Signer): Promise<void> {
   this.superMinter = ((await deployContract(deployer, SuperMinterArtifact, [])) as unknown) as SuperMinter;
 }
 
-export async function deployYToken(this: Mocha.Context, deployer: Wallet): Promise<void> {
+export async function deployUnderlying(this: Mocha.Context, deployer: Signer): Promise<void> {
+  this.underlying = ((await deployContract(deployer, Erc20MintableArtifact, [
+    this.scenario.underlying.name,
+    this.scenario.underlying.symbol,
+    this.scenario.underlying.decimals,
+  ])) as unknown) as Erc20Mintable;
+}
+
+export async function deployYToken(this: Mocha.Context, deployer: Signer): Promise<void> {
   await deployUnderlying.call(this, deployer);
   await deployCollateral.call(this, deployer);
   await deployGuarantorPool.call(this, deployer);

@@ -273,21 +273,10 @@
     "@ethersproject/transactions" "^5.0.0"
     "@ethersproject/web" "^5.0.0"
 
-"@ethersproject/abstract-signer@^5.0.0":
+"@ethersproject/abstract-signer@^5.0.0", "@ethersproject/abstract-signer@^5.0.2":
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/@ethersproject/abstract-signer/-/abstract-signer-5.0.2.tgz#5776f888fda816de1d08ddb0e74778ecb9590f69"
   integrity sha512-CzzXbeqKlgayE4YTnvvreGBG3n+HxakGXrxaGM6LjBZnOOIVSYi6HMFG8ZXls7UspRY4hvMrtnKEJKDCOngSBw==
-  dependencies:
-    "@ethersproject/abstract-provider" "^5.0.0"
-    "@ethersproject/bignumber" "^5.0.0"
-    "@ethersproject/bytes" "^5.0.0"
-    "@ethersproject/logger" "^5.0.0"
-    "@ethersproject/properties" "^5.0.0"
-
-"@ethersproject/abstract-signer@^5.0.1":
-  version "5.0.1"
-  resolved "https://registry.npmjs.org/@ethersproject/abstract-signer/-/abstract-signer-5.0.1.tgz#92149e771366467e86cc44dd0c49d28f93eaa852"
-  integrity sha512-Rp8DP+cLcSNFkd1YhwPSBcgEWLRipNakitwIwHngAmhbo4zdiWgALD/OLqdQ7SKF75CufF1W4BCuXcQgiWaRow==
   dependencies:
     "@ethersproject/abstract-provider" "^5.0.0"
     "@ethersproject/bignumber" "^5.0.0"

@@ -1,5 +1,5 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { Wallet } from "@ethersproject/wallet";
+import { Signer } from "@ethersproject/abstract-signer";
 
 import { Erc20Mintable } from "../typechain/Erc20Mintable";
 
@@ -10,7 +10,7 @@ export async function mintAndDistributeTokens(
   this: Mocha.Context,
   token: Erc20Mintable,
   amount: BigNumber,
-  wallets: Wallet[],
+  wallets: Signer[],
 ): Promise<void> {
   const walletAddresses: string[] = [];
   for (let i: number = 0; i < wallets.length; i += 1) {

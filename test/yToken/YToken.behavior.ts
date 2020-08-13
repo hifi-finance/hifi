@@ -1,5 +1,3 @@
-import { Wallet } from "@ethersproject/wallet";
-
 import shouldBehaveLikeCollateralGetter from "./view/collateral";
 import shouldBehaveLikeDepositCollateral from "./effects/depositCollateral";
 import shouldBehaveLikeExpirationTimeGetter from "./view/expirationTime";
@@ -9,20 +7,14 @@ import shouldBehaveLikeMint from "./effects/mint";
 import shouldBehaveLikeUnderlyingGetter from "./view/underlying";
 import shouldBehaveLikeVaultGetter from "./view/vault";
 
-export function shouldBehaveLikeYToken(wallets: Wallet[]): void {
-  const admin: Wallet = wallets[0];
-  const bob: Wallet = wallets[1];
-  const _grace: Wallet = wallets[2];
-  const _lucy: Wallet = wallets[3];
-  const eve: Wallet = wallets[4];
-
+export function shouldBehaveLikeYToken(): void {
   describe("Effects Functions", function () {
     describe("depositCollateral", function () {
-      shouldBehaveLikeDepositCollateral(admin, bob, eve);
+      shouldBehaveLikeDepositCollateral();
     });
 
     describe("mint", function () {
-      shouldBehaveLikeMint(admin, bob, eve);
+      shouldBehaveLikeMint();
     });
   });
 
@@ -48,7 +40,7 @@ export function shouldBehaveLikeYToken(wallets: Wallet[]): void {
     });
 
     describe("vault", function () {
-      shouldBehaveLikeVaultGetter(bob);
+      shouldBehaveLikeVaultGetter();
     });
   });
 }

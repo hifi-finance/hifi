@@ -1,17 +1,14 @@
-import { Wallet } from "@ethersproject/wallet";
-
 import { shouldBehaveLikeFintroller } from "./Fintroller.behavior";
 
-import { deployFintroller, deployYToken } from "../deployers";
+import { deployFintroller2, deployYToken } from "../deployers";
 
-export function testFintroller(wallets: Wallet[]): void {
+export function testFintroller(): void {
   describe("Fintroller", function () {
     beforeEach(async function () {
-      const deployer: Wallet = wallets[0];
-      await deployFintroller.call(this, deployer);
-      await deployYToken.call(this, deployer);
+      await deployFintroller2.call(this, this.admin);
+      await deployYToken.call(this, this.admin);
     });
 
-    shouldBehaveLikeFintroller(wallets);
+    shouldBehaveLikeFintroller();
   });
 }
