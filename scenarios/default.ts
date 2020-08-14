@@ -1,6 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
-import { OnePercent } from "../constants";
+import { OnePercent } from "../dev-utils/constants";
 import { Scenario } from "../@types";
 
 const defaultScenario: Scenario = {

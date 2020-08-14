@@ -41,10 +41,10 @@ abstract contract ErrorReporter {
     enum YTokenError {
         ERR_BOND_MATURED,
         ERR_BOND_NOT_LISTED,
+        ERR_BOND_NOT_MATURED,
         ERR_DEPOSIT_ERC20_TRANSFER,
         ERR_MINT_INSUFFICIENT_LOCKED_COLLATERAL,
         ERR_MINT_NOT_ALLOWED,
-        ERR_NOT_MATURED,
         ERR_VAULT_NOT_OPEN,
         ERR_VAULT_OPEN
     }

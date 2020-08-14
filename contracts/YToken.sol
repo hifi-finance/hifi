@@ -23,7 +23,12 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
     }
 
     modifier isMatured() {
-        require(block.timestamp >= expirationTime, "ERR_NOT_MATURED");
+        require(block.timestamp >= expirationTime, "ERR_BOND_NOT_MATURED");
+        _;
+    }
+
+    modifier isNotMatured() {
+        require(block.timestamp < expirationTime, "ERR_BOND_MATURED");
         _;
     }
 
@@ -143,7 +148,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
     }
 
     /**
-     * @notice Locks some or all of the free collateral in order to be used for minting.
+     * @notice Locks a portion or all of the free collateral to make it eligible for minting.
      * @dev Emits a {LockCollateral} event.
      *
      * Requirements:
@@ -198,15 +203,11 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
      * @param yTokenAmount The amount of yTokens to print into existence.
      * @return bool true=success, otherwise it reverts.
      */
-    function mint(uint256 yTokenAmount) public override isVaultOpen nonReentrant returns (bool) {
+    function mint(uint256 yTokenAmount) public override isVaultOpen isNotMatured nonReentrant returns (bool) {
         MintLocalVars memory vars;
 
         /* Checks: verify that the Fintroller allows this action to be performed. */
         require(fintroller.mintAllowed(this), "ERR_MINT_NOT_ALLOWED");
-
-        /* Checks: verify that the yToken did not mature. */
-        vars.timeToLive = timeToLive();
-        require(vars.timeToLive > 0, "ERR_BOND_MATURED");
 
         /* TODO: check liquidity in the guarantor pool. */
 

@@ -1,8 +1,8 @@
 import { Signer } from "@ethersproject/abstract-signer";
 
-import { OneThousandTokens, TenTokens } from "../../constants";
-import { deployFintroller, deploySuperMinter, deployYToken, deployOracle } from "../deployers";
-import { mintAndDistributeTokens } from "../minters";
+import { OneThousandTokens, TenTokens } from "../../dev-utils/constants";
+import { deployFintroller, deploySuperMinter, deployYToken, deployOracle } from "../../dev-utils/deployers";
+import { mintAndDistributeTokens } from "../../dev-utils/minters";
 import { shouldBehaveLikeYToken } from "./YToken.behavior";
 
 export function testYToken(): void {

@@ -10,6 +10,9 @@ plugins:
   - "@typescript-eslint"
 root: true
 rules:
+  "@explicit-module-boundary-types"
+    - error
+    
   "@typescript-eslint/no-floating-promises":
     - error
     - ignoreIIFE: true

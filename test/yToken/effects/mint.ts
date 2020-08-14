@@ -1,9 +1,10 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
-import { FintrollerErrors, YTokenErrors } from "../../errors";
-import { OneHundredTokens, TenTokens } from "../../../constants";
-import { setNextBlockTimestamp } from "../../helpers";
+import { FintrollerErrors, YTokenErrors } from "../../../dev-utils/errors";
+import { OneHundredTokens, TenTokens } from "../../../dev-utils/constants";
+import { contextForTimeDependentTests } from "../../../dev-utils/mochaContexts";
+import { setNextBlockTimestamp } from "../../../dev-utils/jsonRpcHelpers";
 
 export default function shouldBehaveLikeMint(): void {
   describe("when the vault is open", function () {
@@ -16,13 +17,10 @@ export default function shouldBehaveLikeMint(): void {
         await this.fintroller.connect(this.admin).listBond(this.yToken.address);
       });
 
-      describe("when the fintroller allows new mints", function () {
-        beforeEach(async function () {
-          await this.fintroller.connect(this.admin).setMintAllowed(this.yToken.address, true);
-        });
-
-        describe("when the bond did not mature", function () {
+      describe("when the bond did not mature", function () {
+        describe("when the fintroller allows new mints", function () {
           beforeEach(async function () {
+            await this.fintroller.connect(this.admin).setMintAllowed(this.yToken.address, true);
             await this.fintroller.connect(this.admin).setDepositAllowed(this.yToken.address, true);
           });
 
@@ -80,24 +78,23 @@ export default function shouldBehaveLikeMint(): void {
           });
         });
 
-        describe("when the bond matured", function () {
-          beforeEach(async function () {
-            /* TODO: ensure that this doesn't mess up all test cases after it */
-            await setNextBlockTimestamp(this.scenario.yToken.expirationTime);
-          });
-
+        describe("when the fintroller does not allow new mints", function () {
           it("reverts", async function () {
             await expect(this.yToken.connect(this.brad).mint(OneHundredTokens)).to.be.revertedWith(
-              YTokenErrors.BondMatured,
+              YTokenErrors.MintNotAllowed,
             );
           });
         });
       });
 
-      describe("when the fintroller does not allow new mints", function () {
+      contextForTimeDependentTests("when the bond matured", function () {
+        beforeEach(async function () {
+          await setNextBlockTimestamp(this.scenario.yToken.expirationTime);
+        });
+
         it("reverts", async function () {
           await expect(this.yToken.connect(this.brad).mint(OneHundredTokens)).to.be.revertedWith(
-            YTokenErrors.MintNotAllowed,
+            YTokenErrors.BondMatured,
           );
         });
       });

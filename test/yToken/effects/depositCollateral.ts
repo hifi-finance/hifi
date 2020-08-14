@@ -1,8 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
-import { FintrollerErrors, YTokenErrors } from "../../errors";
-import { TenTokens } from "../../../constants";
+import { FintrollerErrors, YTokenErrors } from "../../../dev-utils/errors";
+import { TenTokens } from "../../../dev-utils/constants";
+import { contextForTimeDependentTests } from "../../../dev-utils/mochaContexts";
 
 export default function shouldBehaveLikeDepositCollateral(): void {
   describe("when the vault is open", function () {

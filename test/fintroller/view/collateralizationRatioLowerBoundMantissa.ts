@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
-import { FintrollerConstants } from "../../../constants";
+import { FintrollerConstants } from "../../../dev-utils/constants";
 
 export default function shouldBehaveLikeCollateralizationRatioLowerBoundMantissaGetter(): void {
   it("should retrieve the collateralization ratio lower bound mantissa", async function () {

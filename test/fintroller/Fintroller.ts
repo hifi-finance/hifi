@@ -1,6 +1,6 @@
 import { shouldBehaveLikeFintroller } from "./Fintroller.behavior";
 
-import { deployFintroller2, deployYToken } from "../deployers";
+import { deployFintroller2, deployYToken } from "../../dev-utils/deployers";
 
 export function testFintroller(): void {
   describe("Fintroller", function () {
