@@ -169,7 +169,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         vaults[msg.sender].lockedCollateral = vars.newLockedCollateral;
 
         (vars.mathErr, vars.newFreeCollateral) = subUInt(vault.freeCollateral, collateralAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "newFreeCollateral");
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_LOCK_COLLATERAL_MATH_ERROR");
         vaults[msg.sender].freeCollateral = vars.newFreeCollateral;
 
         emit LockCollateral(msg.sender, collateralAmount);

@@ -12,13 +12,13 @@ export default function shouldBehaveLikeSetMintAllowed(): void {
       it("sets the value of the property to true", async function () {
         await this.fintroller.connect(this.admin).setMintAllowed(this.yToken.address, true);
         const newState: boolean = await this.fintroller.mintAllowed(this.yToken.address);
-        expect(newState).to.be.equal(true);
+        expect(newState).to.equal(true);
       });
 
       it("sets the value of the property to false", async function () {
         await this.fintroller.connect(this.admin).setMintAllowed(this.yToken.address, false);
         const newState: boolean = await this.fintroller.mintAllowed(this.yToken.address);
-        expect(newState).to.be.equal(false);
+        expect(newState).to.equal(false);
       });
 
       it("emits a SetMintAllowed event", async function () {
