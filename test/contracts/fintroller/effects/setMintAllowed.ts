@@ -1,6 +1,6 @@
 import { expect } from "chai";
 
-import { Errors, FintrollerErrors } from "../../../dev-utils/errors";
+import { Errors, FintrollerErrors } from "../../../../dev-utils/errors";
 
 export default function shouldBehaveLikeSetMintAllowed(): void {
   describe("when the caller is the admin", function () {

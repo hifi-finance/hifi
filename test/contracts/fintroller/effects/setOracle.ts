@@ -1,8 +1,8 @@
 import { AddressZero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { AddressOne } from "../../../dev-utils/constants";
-import { Errors, FintrollerErrors } from "../../../dev-utils/errors";
+import { AddressOne } from "../../../../dev-utils/constants";
+import { Errors, FintrollerErrors } from "../../../../dev-utils/errors";
 
 export default function shouldBehaveLikeSetOracle(): void {
   const newOracle: string = AddressOne;

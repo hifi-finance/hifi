@@ -3,9 +3,9 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { ethers } from "@nomiclabs/buidler";
 import { solidity } from "ethereum-waffle";
 
-import scenarios from "../scenarios";
-import { testFintroller } from "./fintroller/Fintroller";
-import { testYToken } from "./yToken/YToken";
+import scenarios from "./scenarios";
+import { testFintroller } from "./contracts/fintroller/Fintroller";
+import { testYToken } from "./contracts/yToken/YToken";
 
 chai.use(solidity);
 

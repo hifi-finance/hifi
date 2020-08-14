@@ -1,4 +1,4 @@
-import { Scenario } from "../@types";
+import { Scenario } from "../../@types";
 
 import defaultScenario from "./default";
 
