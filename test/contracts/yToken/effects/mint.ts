@@ -68,7 +68,7 @@ export default function shouldBehaveLikeMint(): void {
             describe("but did not lock it", function () {
               it("reverts", async function () {
                 await expect(this.yToken.connect(this.brad).mint(OneHundredTokens)).to.be.revertedWith(
-                  YTokenErrors.MintInsufficientLockedCollateral,
+                  YTokenErrors.BelowCollateralizationRatio,
                 );
               });
             });
@@ -77,7 +77,7 @@ export default function shouldBehaveLikeMint(): void {
           describe("when the user did not deposit any collateral", function () {
             it("reverts", async function () {
               await expect(this.yToken.connect(this.brad).mint(OneHundredTokens)).to.be.revertedWith(
-                YTokenErrors.MintInsufficientLockedCollateral,
+                YTokenErrors.BelowCollateralizationRatio,
               );
             });
           });

@@ -75,7 +75,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
      * @dev Also useful for stubbing in testing.
      * @return uint256=number of seconds if not expired or zero if expired, otherwise it reverts.
      */
-    function timeToLive() public view returns (uint256) {
+    function timeToLive() public override view returns (uint256) {
         uint256 blockTimestamp = getBlockTimestamp();
         if (expirationTime > blockTimestamp) {
             return expirationTime - blockTimestamp;
@@ -91,8 +91,13 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         external
         override
         view
-        returns (uint256 freeCollateral, uint256 lockedCollateral)
+        returns (
+            uint256 debt,
+            uint256 freeCollateral,
+            uint256 lockedCollateral
+        )
     {
+        debt = vaults[vaultHolder].debt;
         freeCollateral = vaults[vaultHolder].freeCollateral;
         lockedCollateral = vaults[vaultHolder].lockedCollateral;
     }
@@ -133,7 +138,57 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         return NO_ERROR;
     }
 
+    struct FreeCollateralLocalVars {
+        MathError mathErr;
+        uint256 collateralizationRatioMantissa;
+        Exp newCollateralizationRatio;
+        uint256 newFreeCollateral;
+        uint256 newLockedCollateral;
+    }
+
+    /**
+     * @notice Frees a portion or all of the locked collateral.
+     * @dev Emits a {FreeCollateral} event.
+     *
+     * Requirements:
+     * - The vault must be open
+     * - There must be enough locked collateral
+     * - The user must not fall below the collateralization ratio
+     *
+     * @param collateralAmount The amount of free collateral to lock.
+     * @return bool true=success, otherwise it reverts.
+     */
     function freeCollateral(uint256 collateralAmount) external override isVaultOpen returns (bool) {
+        Vault memory vault = vaults[msg.sender];
+        require(vault.lockedCollateral >= collateralAmount, "ERR_FREE_COLLATERAL_INSUFFICIENT_LOCKED_COLLATERAL");
+
+        FreeCollateralLocalVars memory vars;
+
+        /* This operation can't fail because of the first `require` in this function. */
+        (vars.mathErr, vars.newLockedCollateral) = subUInt(vault.lockedCollateral, collateralAmount);
+        assert(vars.mathErr == MathError.NO_ERROR);
+        vaults[msg.sender].lockedCollateral = vars.newLockedCollateral;
+
+        if (vaults[msg.sender].debt > 0) {
+            /* This operation can't fail because both operands are non-zero. */
+            (vars.mathErr, vars.newCollateralizationRatio) = divExp(
+                Exp({ mantissa: vars.newLockedCollateral }),
+                Exp({ mantissa: vaults[msg.sender].debt })
+            );
+            assert(vars.mathErr == MathError.NO_ERROR);
+
+            (vars.collateralizationRatioMantissa) = fintroller.getBond(address(this));
+            require(
+                vars.newCollateralizationRatio.mantissa >= vars.collateralizationRatioMantissa,
+                "ERR_BELOW_COLLATERALIZATION_RATIO"
+            );
+        }
+
+        (vars.mathErr, vars.newFreeCollateral) = addUInt(vault.freeCollateral, collateralAmount);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_FREE_COLLATERAL_MATH_ERROR");
+        vaults[msg.sender].freeCollateral = vars.newFreeCollateral;
+
+        emit FreeCollateral(msg.sender, collateralAmount);
         return NO_ERROR;
     }
 
@@ -168,8 +223,9 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         require(vars.mathErr == MathError.NO_ERROR, "ERR_LOCK_COLLATERAL_MATH_ERROR");
         vaults[msg.sender].lockedCollateral = vars.newLockedCollateral;
 
+        /* This operation can't fail because of the first `require` in this function. */
         (vars.mathErr, vars.newFreeCollateral) = subUInt(vault.freeCollateral, collateralAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_LOCK_COLLATERAL_MATH_ERROR");
+        assert(vars.mathErr == MathError.NO_ERROR);
         vaults[msg.sender].freeCollateral = vars.newFreeCollateral;
 
         emit LockCollateral(msg.sender, collateralAmount);
@@ -235,7 +291,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         (vars.collateralizationRatioMantissa) = fintroller.getBond(address(this));
         require(
             vars.newCollateralizationRatio.mantissa >= vars.collateralizationRatioMantissa,
-            "ERR_MINT_INSUFFICIENT_LOCKED_COLLATERAL"
+            "ERR_BELOW_COLLATERALIZATION_RATIO"
         );
 
         /* Effects: update the new debt. */

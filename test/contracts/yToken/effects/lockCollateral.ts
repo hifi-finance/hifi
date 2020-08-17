@@ -34,8 +34,6 @@ export default function shouldBehaveLikeLockCollateral(): void {
       });
     });
 
-    /* TODO: Write tests for ERR_LOCK_COLLATERAL_MATH_ERROR */
-
     describe("when the user did not deposit any collateral", function () {
       it("reverts", async function () {
         await expect(this.yToken.connect(this.brad).lockCollateral(TenTokens)).to.be.revertedWith(

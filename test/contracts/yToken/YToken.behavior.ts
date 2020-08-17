@@ -1,4 +1,5 @@
 import shouldBehaveLikeDepositCollateral from "./effects/depositCollateral";
+import shouldBehaveLikeFreeCollateral from "./effects/freeCollateral";
 import shouldBehaveLikeLockCollateral from "./effects/lockCollateral";
 import shouldBehaveLikeMint from "./effects/mint";
 
@@ -13,6 +14,10 @@ export function shouldBehaveLikeYToken(): void {
   describe("Effects Functions", function () {
     describe("depositCollateral", function () {
       shouldBehaveLikeDepositCollateral();
+    });
+
+    describe("freeCollateral", function() {
+      shouldBehaveLikeFreeCollateral();
     });
 
     describe("lockCollateral", function() {

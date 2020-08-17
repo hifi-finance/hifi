@@ -12,6 +12,7 @@ export default function shouldBehaveLikeVaultGetter(): void {
       const vault = await this.yToken.getVault(await this.brad.getAddress());
       expect(vault.freeCollateral).to.equal(Zero);
       expect(vault.lockedCollateral).to.equal(Zero);
+      expect(vault.debt).to.equal(Zero);
     });
 
     /* TODO: test for other collateral values */

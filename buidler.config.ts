@@ -46,7 +46,9 @@ const config: BuidlerConfig = {
   },
   networks: {
     buidlerevm: {
+      blockGasLimit: 50000000,
       chainId: 31337,
+      gas: 50000000,
     },
     coverage: {
       url: "http://127.0.0.1:8555",
