@@ -24,10 +24,6 @@ export async function deployFintroller(this: Mocha.Context, deployer: Signer): P
   this.fintroller = ((await deployContract(deployer, FintrollerArtifact, [])) as unknown) as Fintroller;
 }
 
-export async function deployFintroller2(this: Mocha.Context, deployer: Signer): Promise<void> {
-  this.fintroller = ((await deployContract(deployer, FintrollerArtifact, [])) as unknown) as Fintroller;
-}
-
 export async function deployCollateral(this: Mocha.Context, deployer: Signer): Promise<void> {
   this.collateral = ((await deployContract(deployer, Erc20MintableArtifact, [
     this.scenario.collateral.name,

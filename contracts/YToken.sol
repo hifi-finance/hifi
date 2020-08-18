@@ -177,7 +177,9 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
             );
             assert(vars.mathErr == MathError.NO_ERROR);
 
-            (vars.collateralizationRatioMantissa) = fintroller.getBond(address(this));
+            /* Uncomment this for the "out of gas" error to come back */
+            // (vars.collateralizationRatioMantissa) = fintroller.getBond(address(this));
+            console.log("vars.newLockedCollateral: %d", vars.newLockedCollateral);
             require(
                 vars.newCollateralizationRatio.mantissa >= vars.collateralizationRatioMantissa,
                 "ERR_BELOW_COLLATERALIZATION_RATIO"

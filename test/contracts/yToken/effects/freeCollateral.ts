@@ -29,13 +29,12 @@ export default function shouldBehaveLikeLockCollateral(): void {
           });
 
           /* TODO: fix this. */
-          describe.skip("and is safely over-collateralized", async function () {
+          describe("and is safely over-collateralized", async function () {
             beforeEach(async function () {
-              // const mintAmount: BigNumber = OneToken.mul(200);
               await this.yToken.connect(this.brad).mint(OneHundredTokens);
             });
 
-            it("it frees the collateral", async function () {
+            it.only("it frees the collateral", async function () {
               const callerAddress: string = await this.brad.getAddress();
               const preVault = await this.yToken.getVault(callerAddress);
               await this.yToken.connect(this.brad).freeCollateral(OneToken);
