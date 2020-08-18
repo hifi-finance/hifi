@@ -140,10 +140,14 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
 
     struct FreeCollateralLocalVars {
         MathError mathErr;
+        uint256 collateralPriceInUsd;
         uint256 collateralizationRatioMantissa;
+        uint256 debtValueInUsd;
         Exp newCollateralizationRatio;
         uint256 newFreeCollateral;
         uint256 newLockedCollateral;
+        uint256 newLockedCollateralValue;
+        uint256 underlyingPriceInUsd;
     }
 
     /**
@@ -170,16 +174,26 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         vaults[msg.sender].lockedCollateral = vars.newLockedCollateral;
 
         if (vaults[msg.sender].debt > 0) {
+            vars.collateralPriceInUsd = fintroller.oracle().getEthPriceInUsd();
+            (vars.mathErr, vars.newLockedCollateralValue) = mulUInt(
+                vars.newLockedCollateral,
+                vars.collateralPriceInUsd
+            );
+            require(vars.mathErr == MathError.NO_ERROR, "ERR_FREE_COLLATERAL_MATH_ERROR");
+
+            vars.underlyingPriceInUsd = fintroller.oracle().getDaiPriceInUsd();
+            (vars.mathErr, vars.debtValueInUsd) = mulUInt(vault.debt, vars.underlyingPriceInUsd);
+            require(vars.mathErr == MathError.NO_ERROR, "ERR_FREE_COLLATERAL_MATH_ERROR");
+
             /* This operation can't fail because both operands are non-zero. */
             (vars.mathErr, vars.newCollateralizationRatio) = divExp(
-                Exp({ mantissa: vars.newLockedCollateral }),
-                Exp({ mantissa: vaults[msg.sender].debt })
+                Exp({ mantissa: vars.newLockedCollateralValue }),
+                Exp({ mantissa: vars.debtValueInUsd })
             );
-            assert(vars.mathErr == MathError.NO_ERROR);
+            require(vars.mathErr == MathError.NO_ERROR, "ERR_FREE_COLLATERAL_MATH_ERROR");
 
             /* Uncomment this for the "out of gas" error to come back */
-            // (vars.collateralizationRatioMantissa) = fintroller.getBond(address(this));
-            console.log("vars.newLockedCollateral: %d", vars.newLockedCollateral);
+            (vars.collateralizationRatioMantissa) = fintroller.getBond(address(this));
             require(
                 vars.newCollateralizationRatio.mantissa >= vars.collateralizationRatioMantissa,
                 "ERR_BELOW_COLLATERALIZATION_RATIO"
@@ -238,15 +252,14 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         MathError mathErr;
         uint256 collateralPriceInUsd;
         uint256 collateralizationRatioMantissa;
-        uint256 lockedCollateralValue;
-        uint256 mintValue;
+        uint256 lockedCollateralValueInUsd;
+        uint256 mintValueInUsd;
         Exp newCollateralizationRatio;
         uint256 newDebt;
         uint256 newMinterBalance;
         uint256 newTotalSupply;
         uint256 timeToLive;
         uint256 underlyingPriceInUsd;
-        uint256 valueOfCollateralInUsd;
     }
 
     /**
@@ -273,18 +286,18 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
 
         vars.collateralPriceInUsd = fintroller.oracle().getEthPriceInUsd();
-        (vars.mathErr, vars.lockedCollateralValue) = mulUInt(vault.lockedCollateral, vars.collateralPriceInUsd);
+        (vars.mathErr, vars.lockedCollateralValueInUsd) = mulUInt(vault.lockedCollateral, vars.collateralPriceInUsd);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
 
         vars.underlyingPriceInUsd = fintroller.oracle().getDaiPriceInUsd();
-        (vars.mathErr, vars.mintValue) = mulUInt(yTokenAmount, vars.underlyingPriceInUsd);
+        (vars.mathErr, vars.mintValueInUsd) = mulUInt(yTokenAmount, vars.underlyingPriceInUsd);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
 
         (vars.mathErr, vars.newDebt) = addUInt(vault.debt, yTokenAmount);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
 
         (vars.mathErr, vars.newCollateralizationRatio) = divExp(
-            Exp({ mantissa: vars.lockedCollateralValue }),
+            Exp({ mantissa: vars.lockedCollateralValueInUsd }),
             Exp({ mantissa: vars.newDebt })
         );
         require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");

@@ -3,6 +3,7 @@ import { resolve } from "path";
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
 import { BuidlerConfig, usePlugin } from "@nomiclabs/buidler/config";
+import { DefaultBlockGasLimit } from "./dev-utils/constants";
 import { HDAccountsConfig } from "@nomiclabs/buidler/types";
 import "./tasks/accounts";
 import "./tasks/clean";
@@ -34,7 +35,7 @@ function createHDAccountConfig(network: string): HDAccountsConfigExtended {
     initialIndex: 0,
     mnemonic: process.env.MNEMONIC,
     path: "m/44'/60'/0'/0",
-    url: `https://${network}.infura.io/v3/${process.env.INFURA_API_KEY}`,
+    url: "https://${network}.infura.io/v3/" + process.env.INFURA_API_KEY,
   };
 }
 
@@ -46,9 +47,9 @@ const config: BuidlerConfig = {
   },
   networks: {
     buidlerevm: {
-      blockGasLimit: 50000000,
+      blockGasLimit: DefaultBlockGasLimit.toNumber(),
       chainId: 31337,
-      gas: 50000000,
+      gas: DefaultBlockGasLimit.toNumber(),
     },
     coverage: {
       url: "http://127.0.0.1:8555",

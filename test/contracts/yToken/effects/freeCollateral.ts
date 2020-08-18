@@ -28,13 +28,12 @@ export default function shouldBehaveLikeLockCollateral(): void {
             await this.fintroller.connect(this.admin).setMintAllowed(this.yToken.address, true);
           });
 
-          /* TODO: fix this. */
           describe("and is safely over-collateralized", async function () {
             beforeEach(async function () {
               await this.yToken.connect(this.brad).mint(OneHundredTokens);
             });
 
-            it.only("it frees the collateral", async function () {
+            it("it frees the collateral", async function () {
               const callerAddress: string = await this.brad.getAddress();
               const preVault = await this.yToken.getVault(callerAddress);
               await this.yToken.connect(this.brad).freeCollateral(OneToken);
@@ -52,7 +51,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
 
           describe("and is dangerously collateralized", function () {
             beforeEach(async function () {
-              /* Remember that we deposited 10 ETH and that the oracle assumes 1 ETH = $100. */
+              /* This is 150%. Remember that we deposited 10 ETH and that the oracle assumes 1 ETH = $100. */
               const mintAmount: BigNumber = OneToken.mul(666);
               await this.yToken.connect(this.brad).mint(mintAmount);
             });

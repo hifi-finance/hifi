@@ -6,6 +6,7 @@ export const UnitsPerToken: BigNumber = BigNumber.from("1000000000000000000");
 
 /* Final constants */
 export const AddressOne: string = "0x0000000000000000000000000000000000000001";
+export const DefaultBlockGasLimit: BigNumber = BigNumber.from("10000000");
 export const OneHundredPercent: BigNumber = OnePercent.mul(100);
 export const OneHundredAndFiftyPercent: BigNumber = OnePercent.mul(150);
 export const OneToken: BigNumber = UnitsPerToken;

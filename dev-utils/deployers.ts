@@ -1,5 +1,5 @@
 import { Signer } from "@ethersproject/abstract-signer";
-import { deployContract } from "ethereum-waffle";
+import { waffle } from "@nomiclabs/buidler";
 
 import DumbOracleArtifact from "../artifacts/DumbOracle.json";
 import Erc20MintableArtifact from "../artifacts/Erc20Mintable.json";
@@ -8,12 +8,15 @@ import GuarantorPoolArtifact from "../artifacts/GuarantorPool.json";
 import SuperMinterArtifact from "../artifacts/SuperMinter.json";
 import YTokenArtifact from "../artifacts/YToken.json";
 
+import { DefaultBlockGasLimit } from "./constants";
 import { DumbOracle } from "../typechain/DumbOracle";
 import { Erc20Mintable } from "../typechain/Erc20Mintable";
 import { Fintroller } from "../typechain/Fintroller";
 import { GuarantorPool } from "../typechain/GuarantorPool";
 import { SuperMinter } from "../typechain/SuperMinter";
 import { YToken } from "../typechain/YToken";
+
+const { deployContract } = waffle;
 
 /**
  * Throughout this file, we use "as unknown" a couple of times. Refer to the URL for more information.
@@ -61,14 +64,19 @@ export async function deployYToken(this: Mocha.Context, deployer: Signer): Promi
   await deployCollateral.call(this, deployer);
   await deployGuarantorPool.call(this, deployer);
 
-  this.yToken = ((await deployContract(deployer, YTokenArtifact, [
-    this.scenario.yToken.name,
-    this.scenario.yToken.symbol,
-    this.scenario.yToken.decimals,
-    this.fintroller.address,
-    this.underlying.address,
-    this.collateral.address,
-    this.guarantorPool.address,
-    this.scenario.yToken.expirationTime,
-  ])) as unknown) as YToken;
+  this.yToken = ((await deployContract(
+    deployer,
+    YTokenArtifact,
+    [
+      this.scenario.yToken.name,
+      this.scenario.yToken.symbol,
+      this.scenario.yToken.decimals,
+      this.fintroller.address,
+      this.underlying.address,
+      this.collateral.address,
+      this.guarantorPool.address,
+      this.scenario.yToken.expirationTime,
+    ],
+    { gasLimit: DefaultBlockGasLimit },
+  )) as unknown) as YToken;
 }
