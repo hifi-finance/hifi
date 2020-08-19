@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { OnePercent } from "../../../../dev-utils/constants";
+import { OnePercent } from "../../../helpers/constants";
 
 export default function shouldBehaveLikeGetBond(): void {
   /* Equivalent to 175% */

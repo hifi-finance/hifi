@@ -1,20 +1,20 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { waffle } from "@nomiclabs/buidler";
 
-import DumbOracleArtifact from "../artifacts/DumbOracle.json";
-import Erc20MintableArtifact from "../artifacts/Erc20Mintable.json";
-import FintrollerArtifact from "../artifacts/Fintroller.json";
-import GuarantorPoolArtifact from "../artifacts/GuarantorPool.json";
-import SuperMinterArtifact from "../artifacts/SuperMinter.json";
-import YTokenArtifact from "../artifacts/YToken.json";
+import DumbOracleArtifact from "../../artifacts/DumbOracle.json";
+import Erc20MintableArtifact from "../../artifacts/Erc20Mintable.json";
+import FintrollerArtifact from "../../artifacts/Fintroller.json";
+import GuarantorPoolArtifact from "../../artifacts/GuarantorPool.json";
+import SuperMinterArtifact from "../../artifacts/SuperMinter.json";
+import YTokenArtifact from "../../artifacts/YToken.json";
 
 import { DefaultBlockGasLimit } from "./constants";
-import { DumbOracle } from "../typechain/DumbOracle";
-import { Erc20Mintable } from "../typechain/Erc20Mintable";
-import { Fintroller } from "../typechain/Fintroller";
-import { GuarantorPool } from "../typechain/GuarantorPool";
-import { SuperMinter } from "../typechain/SuperMinter";
-import { YToken } from "../typechain/YToken";
+import { DumbOracle } from "../../typechain/DumbOracle";
+import { Erc20Mintable } from "../../typechain/Erc20Mintable";
+import { Fintroller } from "../../typechain/Fintroller";
+import { GuarantorPool } from "../../typechain/GuarantorPool";
+import { SuperMinter } from "../../typechain/SuperMinter";
+import { YToken } from "../../typechain/YToken";
 
 const { deployContract } = waffle;
 

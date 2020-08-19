@@ -1,10 +1,10 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
-import { FintrollerErrors, YTokenErrors } from "../../../../dev-utils/errors";
-import { OneHundredTokens, TenTokens } from "../../../../dev-utils/constants";
-import { contextForTimeDependentTests } from "../../../../dev-utils/mochaContexts";
-import { setNextBlockTimestamp } from "../../../../dev-utils/jsonRpcHelpers";
+import { FintrollerErrors, YTokenErrors } from "../../../helpers/errors";
+import { OneHundredTokens, TenTokens } from "../../../helpers/constants";
+import { contextForTimeDependentTests } from "../../../helpers/mochaContexts";
+import { setNextBlockTimestamp } from "../../../helpers/jsonRpcHelpers";
 
 export default function shouldBehaveLikeMint(): void {
   describe("when the vault is open", function () {

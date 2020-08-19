@@ -1,8 +1,8 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
-import { FintrollerErrors, YTokenErrors } from "../../../../dev-utils/errors";
-import { OneToken, TenTokens, OneHundredTokens } from "../../../../dev-utils/constants";
+import { FintrollerErrors, YTokenErrors } from "../../../helpers/errors";
+import { OneToken, TenTokens, OneHundredTokens } from "../../../helpers/constants";
 
 export default function shouldBehaveLikeLockCollateral(): void {
   describe("when the vault is open", function () {

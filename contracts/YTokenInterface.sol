@@ -9,7 +9,15 @@ import "./YTokenStorage.sol";
  */
 abstract contract YTokenInterface is YTokenStorage {
     /*** View Functions ***/
-    function getVault(address vaultHolder) external virtual view returns (uint256, uint256, uint256);
+    function getVault(address vaultHolder)
+        external
+        virtual
+        view
+        returns (
+            uint256,
+            uint256,
+            uint256
+        );
 
     function timeToLive() public virtual view returns (uint256);
 

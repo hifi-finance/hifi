@@ -16,11 +16,11 @@ export function shouldBehaveLikeYToken(): void {
       shouldBehaveLikeDepositCollateral();
     });
 
-    describe("freeCollateral", function() {
+    describe("freeCollateral", function () {
       shouldBehaveLikeFreeCollateral();
     });
 
-    describe("lockCollateral", function() {
+    describe("lockCollateral", function () {
       shouldBehaveLikeLockCollateral();
     });
 
