@@ -9,7 +9,7 @@ export default function shouldBehaveLikeVaultGetter(): void {
     });
 
     it("should retrieve the vault data", async function () {
-      const vault = await this.yToken.getVault(await this.brad.getAddress());
+      const vault = await this.yToken.getVault(this.bradAddress);
       expect(vault.freeCollateral).to.equal(Zero);
       expect(vault.lockedCollateral).to.equal(Zero);
       expect(vault.debt).to.equal(Zero);
@@ -20,7 +20,7 @@ export default function shouldBehaveLikeVaultGetter(): void {
 
   describe("when the bond is not open", function () {
     it("should retrieve zero values", async function () {
-      const vault = await this.yToken.getVault(await this.brad.getAddress());
+      const vault = await this.yToken.getVault(this.bradAddress);
       expect(vault.freeCollateral).to.equal(Zero);
       expect(vault.lockedCollateral).to.equal(Zero);
     });

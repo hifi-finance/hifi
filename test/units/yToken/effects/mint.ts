@@ -45,23 +45,22 @@ export default function shouldBehaveLikeMint(): void {
               });
 
               it("increases the erc20 balance of the caller", async function () {
-                const callerAddress: string = await this.brad.getAddress();
-                const preBalance: BigNumber = await this.yToken.balanceOf(callerAddress);
+                const preBalance: BigNumber = await this.yToken.balanceOf(this.bradAddress);
                 await this.yToken.connect(this.brad).mint(OneHundredTokens);
-                const postBalance: BigNumber = await this.yToken.balanceOf(callerAddress);
+                const postBalance: BigNumber = await this.yToken.balanceOf(this.bradAddress);
                 expect(preBalance).to.equal(postBalance.sub(OneHundredTokens));
               });
 
               it("emits a Mint event", async function () {
                 await expect(this.yToken.connect(this.brad).mint(OneHundredTokens))
                   .to.emit(this.yToken, "Mint")
-                  .withArgs(await this.brad.getAddress(), OneHundredTokens);
+                  .withArgs(this.bradAddress, OneHundredTokens);
               });
 
               it("emits a Transfer event", async function () {
                 await expect(this.yToken.connect(this.brad).mint(OneHundredTokens))
                   .to.emit(this.yToken, "Transfer")
-                  .withArgs(this.yToken.address, await this.brad.getAddress(), OneHundredTokens);
+                  .withArgs(this.yToken.address, this.bradAddress, OneHundredTokens);
               });
             });
 

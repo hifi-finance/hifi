@@ -34,10 +34,9 @@ export default function shouldBehaveLikeLockCollateral(): void {
             });
 
             it("it frees the collateral", async function () {
-              const callerAddress: string = await this.brad.getAddress();
-              const preVault = await this.yToken.getVault(callerAddress);
+              const preVault = await this.yToken.getVault(this.bradAddress);
               await this.yToken.connect(this.brad).freeCollateral(OneToken);
-              const postVault = await this.yToken.getVault(callerAddress);
+              const postVault = await this.yToken.getVault(this.bradAddress);
               expect(preVault.freeCollateral).to.equal(postVault.freeCollateral.sub(OneToken));
               expect(preVault.lockedCollateral).to.equal(postVault.lockedCollateral.add(OneToken));
             });
@@ -45,7 +44,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
             it("emits a FreeCollateral event", async function () {
               await expect(this.yToken.connect(this.brad).freeCollateral(OneToken))
                 .to.emit(this.yToken, "FreeCollateral")
-                .withArgs(await this.brad.getAddress(), OneToken);
+                .withArgs(this.bradAddress, OneToken);
             });
           });
 
@@ -66,10 +65,9 @@ export default function shouldBehaveLikeLockCollateral(): void {
 
         describe("when the user does not have a debt", function () {
           it("it frees the collateral", async function () {
-            const callerAddress: string = await this.brad.getAddress();
-            const preVault = await this.yToken.getVault(callerAddress);
+            const preVault = await this.yToken.getVault(this.bradAddress);
             await this.yToken.connect(this.brad).freeCollateral(TenTokens);
-            const postVault = await this.yToken.getVault(callerAddress);
+            const postVault = await this.yToken.getVault(this.bradAddress);
             expect(preVault.freeCollateral).to.equal(postVault.freeCollateral.sub(TenTokens));
             expect(preVault.lockedCollateral).to.equal(postVault.lockedCollateral.add(TenTokens));
           });
@@ -77,7 +75,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
           it("emits a FreeCollateral event", async function () {
             await expect(this.yToken.connect(this.brad).freeCollateral(TenTokens))
               .to.emit(this.yToken, "FreeCollateral")
-              .withArgs(await this.brad.getAddress(), TenTokens);
+              .withArgs(this.bradAddress, TenTokens);
           });
         });
       });

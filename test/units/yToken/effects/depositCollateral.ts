@@ -31,17 +31,16 @@ export default function shouldBehaveLikeDepositCollateral(): void {
           });
 
           it("decreases the erc20 balance of the caller", async function () {
-            const callerAddress: string = await this.brad.getAddress();
-            const preBalance: BigNumber = await this.collateral.balanceOf(callerAddress);
+            const preBalance: BigNumber = await this.collateral.balanceOf(this.bradAddress);
             await this.yToken.connect(this.brad).depositCollateral(TenTokens);
-            const postBalance: BigNumber = await this.collateral.balanceOf(callerAddress);
+            const postBalance: BigNumber = await this.collateral.balanceOf(this.bradAddress);
             expect(preBalance).to.equal(postBalance.add(TenTokens));
           });
 
           it("emits a DepositCollateral event", async function () {
             await expect(this.yToken.connect(this.brad).depositCollateral(TenTokens))
               .to.emit(this.yToken, "DepositCollateral")
-              .withArgs(await this.brad.getAddress(), TenTokens);
+              .withArgs(this.bradAddress, TenTokens);
           });
         });
 

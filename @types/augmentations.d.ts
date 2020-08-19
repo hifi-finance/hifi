@@ -46,3 +46,14 @@ declare module "mocha" {
     lucy: Signer;
   }
 }
+
+/* Fingers-crossed that ethers.js or waffle will provide an easier way to cache the address */
+declare module "mocha" {
+  export interface Context {
+    adminAddress: string;
+    bradAddress: string;
+    eveAddress: string;
+    graceAddress: string;
+    lucyAddress: string;
+  }
+}

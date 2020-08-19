@@ -12,11 +12,13 @@ export async function mintAndDistributeTokens(
   amount: BigNumber,
   wallets: Signer[],
 ): Promise<void> {
-  const walletAddresses: string[] = [];
-  for (let i: number = 0; i < wallets.length; i += 1) {
-    walletAddresses.push(await wallets[i].getAddress());
-  }
   const totalAmountToMint: BigNumber = amount.mul(wallets.length);
   await token.mint(this.superMinter.address, totalAmountToMint);
-  await this.superMinter.distributeTokensToAccounts(token.address, amount, walletAddresses);
+  await this.superMinter.distributeTokensToAccounts(token.address, amount, [
+    this.adminAddress,
+    this.bradAddress,
+    this.graceAddress,
+    this.lucyAddress,
+    this.eveAddress,
+  ]);
 }
