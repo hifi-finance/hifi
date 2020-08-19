@@ -58,6 +58,9 @@ const config: BuidlerConfig = {
       ...createHDAccountConfig("goerli"),
       chainId: 5,
     },
+    localhost: {
+      url: "http://127.0.0.1:8545",
+    },
     kovan: {
       ...createHDAccountConfig("kovan"),
       chainId: 42,

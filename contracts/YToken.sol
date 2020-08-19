@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.6.10;
 
-import "@nomiclabs/buidler/console.sol";
 import "./FintrollerInterface.sol";
 import "./YTokenInterface.sol";
 import "./erc20/Erc20.sol";

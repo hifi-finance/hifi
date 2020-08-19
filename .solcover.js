@@ -9,7 +9,7 @@ module.exports = {
     await run("typechain");
   },
   onIstanbulComplete: async function (_config) {
-    shell.rm("-rf", "./typechain");
+    await run("clean");
   },
   skipFiles: ["mocks", "test"],
 };
