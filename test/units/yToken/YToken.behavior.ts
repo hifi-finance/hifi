@@ -2,6 +2,7 @@ import shouldBehaveLikeDepositCollateral from "./effects/depositCollateral";
 import shouldBehaveLikeFreeCollateral from "./effects/freeCollateral";
 import shouldBehaveLikeLockCollateral from "./effects/lockCollateral";
 import shouldBehaveLikeMint from "./effects/mint";
+import shouldBehaveLikeWithdrawCollateral from "./effects/withdrawCollateral";
 
 import shouldBehaveLikeCollateralGetter from "./view/collateral";
 import shouldBehaveLikeExpirationTimeGetter from "./view/expirationTime";
@@ -26,6 +27,10 @@ export function shouldBehaveLikeYToken(): void {
 
     describe("mint", function () {
       shouldBehaveLikeMint();
+    });
+
+    describe("withdrawCollateral", function () {
+      shouldBehaveLikeWithdrawCollateral();
     });
   });
 

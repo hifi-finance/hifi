@@ -26,7 +26,7 @@ abstract contract YTokenInterface is YTokenStorage {
 
     function burnBehalf(address minter, uint256 repayAmount) external virtual returns (bool);
 
-    function depositCollateral(uint256 collateralAmount) public virtual returns (bool);
+    function depositCollateral(uint256 collateralAmount) external virtual returns (bool);
 
     function freeCollateral(uint256 collateralAmount) external virtual returns (bool);
 
@@ -37,6 +37,8 @@ abstract contract YTokenInterface is YTokenStorage {
     function mint(uint256 yTokenAmount) external virtual returns (bool);
 
     function settle() external virtual returns (bool);
+
+    function withdrawCollateral(uint256 collateralAmount) external virtual returns (bool);
 
     /*** Admin Functions ***/
     function _reduceReserves(uint256 reduceAmount) external virtual returns (bool);

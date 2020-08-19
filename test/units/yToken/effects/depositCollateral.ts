@@ -54,7 +54,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
       describe("when the fintroller does not allow new deposits", function () {
         it("reverts", async function () {
           await expect(this.yToken.connect(this.brad).depositCollateral(TenTokens)).to.be.revertedWith(
-            YTokenErrors.DepositNotAllowed,
+            YTokenErrors.DepositCollateralNotAllowed,
           );
         });
       });

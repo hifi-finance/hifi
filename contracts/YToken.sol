@@ -117,20 +117,36 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         uint256 newFreeCollateral;
     }
 
-    function depositCollateral(uint256 collateralAmount) public override isVaultOpen nonReentrant returns (bool) {
+    /**
+     * @notice Deposits collateral into the user's vault.
+     *
+     * @dev Emits a {DepositCollateral} event.
+     *
+     * Requirements:
+     * - The vault must be open.
+     * - The amount to deposit cannot be zero.
+     * - The fintroller must allow new deposit.
+     * - The caller must have allowed this contract to spend `collateralAmount` tokens.
+     *
+     * @param collateralAmount The amount of collateral to withdraw.
+     * @return bool=success, otherwise it reverts.
+     */
+    function depositCollateral(uint256 collateralAmount) external override isVaultOpen nonReentrant returns (bool) {
+        /* Checks: avoid the zero edge case. */
+        require(collateralAmount > 0, "ERR_DEPOSIT_COLLATERAL_ZERO");
         /* Checks: verify that the Fintroller allows this action to be performed. */
-        require(fintroller.depositAllowed(this), "ERR_DEPOSIT_NOT_ALLOWED");
+        require(fintroller.depositAllowed(this), "ERR_DEPOSIT_COLLATERAL_NOT_ALLOWED");
 
         /* Effects: update the storage properties. */
         DepositLocalVars memory vars;
         (vars.mathErr, vars.newFreeCollateral) = addUInt(vaults[msg.sender].freeCollateral, collateralAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_DEPOSIT_MATH_ERROR");
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_DEPOSIT_COLLATERAL_MATH_ERROR");
         vaults[msg.sender].freeCollateral = vars.newFreeCollateral;
 
         /* Interactions */
         require(
             Erc20Interface(collateral).transferFrom(msg.sender, address(this), collateralAmount),
-            "ERR_DEPOSIT_ERC20_TRANSFER"
+            "ERR_DEPOSIT_COLLATERAL_ERC20_TRANSFER"
         );
 
         emit DepositCollateral(msg.sender, collateralAmount);
@@ -155,14 +171,18 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
      * @dev Emits a {FreeCollateral} event.
      *
      * Requirements:
-     * - The vault must be open
-     * - There must be enough locked collateral
-     * - The user must not fall below the collateralization ratio
+     * - The vault must be open.
+     * - The amount to free cannot be zero.
+     * - There must be enough locked collateral.
+     * - The user must not fall below the collateralization ratio.
      *
      * @param collateralAmount The amount of free collateral to lock.
      * @return bool true=success, otherwise it reverts.
      */
     function freeCollateral(uint256 collateralAmount) external override isVaultOpen returns (bool) {
+        /* Avoid the zero edge case. */
+        require(collateralAmount > 0, "ERR_FREE_COLLATERAL_ZERO");
+
         Vault memory vault = vaults[msg.sender];
         require(vault.lockedCollateral >= collateralAmount, "ERR_FREE_COLLATERAL_INSUFFICIENT_LOCKED_COLLATERAL");
 
@@ -223,13 +243,17 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
      * @dev Emits a {LockCollateral} event.
      *
      * Requirements:
-     * - The vault must be open
-     * - There must be enough free collateral
+     * - The vault must be open.
+     * - The amount to lock cannot be zero.
+     * - There must be enough free collateral.
      *
      * @param collateralAmount The amount of free collateral to lock.
      * @return bool true=success, otherwise it reverts.
      */
     function lockCollateral(uint256 collateralAmount) external override isVaultOpen returns (bool) {
+        /* Avoid the zero edge case. */
+        require(collateralAmount > 0, "ERR_LOCK_COLLATERAL_ZERO");
+
         Vault memory vault = vaults[msg.sender];
         require(vault.freeCollateral >= collateralAmount, "ERR_LOCK_COLLATERAL_INSUFFICIENT_FREE_COLLATERAL");
 
@@ -266,16 +290,19 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
      * @notice Mints new yTokens and increases the debt of the caller.
      * @dev Requirements:
      *
-     * - The vault must be open
-     * - The yToken must be listed as a bond in the fintroller registry
-     * - The fintroller must allow new mints
-     * - The yToken must not be matured
+     * - The vault must be open.
+     * - The amount to mint cannot be zero.
+     * - The fintroller must allow new mints.
+     * - The yToken must not be matured.
      *
      * @param yTokenAmount The amount of yTokens to print into existence.
      * @return bool true=success, otherwise it reverts.
      */
     function mint(uint256 yTokenAmount) public override isVaultOpen isNotMatured nonReentrant returns (bool) {
         MintLocalVars memory vars;
+
+        /* Checks: avoid the zero edge case. */
+        require(yTokenAmount > 0, "ERR_MINT_ZERO");
 
         /* Checks: verify that the Fintroller allows this action to be performed. */
         require(fintroller.mintAllowed(this), "ERR_MINT_NOT_ALLOWED");
@@ -332,11 +359,12 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
     /**
      * @notice Opens a Vault for the caller.
      * @dev Reverts if the caller has previously opened a vault.
+     * @return bool=success, otherwise it reverts.
      */
     function openVault() public returns (bool) {
         require(vaults[msg.sender].isOpen == false, "ERR_VAULT_OPEN");
         vaults[msg.sender].isOpen = true;
-        return true;
+        return NO_ERROR;
     }
 
     /**
@@ -344,6 +372,52 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
      * token holder the face value at maturation time.
      */
     function settle() external override isMatured returns (bool) {
+        return NO_ERROR;
+    }
+
+    struct WithdrawCollateralLocalVars {
+        MathError mathErr;
+        uint256 newFreeCollateral;
+    }
+
+    /**
+     * @notice Withdraws a portion or all of the free collateral.
+     *
+     * @dev Emits a {WithdrawCollateral} event.
+     *
+     * Requirements:
+     * - The vault must be open.
+     * - The amount to withdraw cannot be zero.
+     * - There must be sufficient free collateral in the vault.
+     *
+     * @param collateralAmount The amount of collateral to withdraw.
+     * @return bool=success, otherwise it reverts.
+     */
+    function withdrawCollateral(uint256 collateralAmount) external override isVaultOpen nonReentrant returns (bool) {
+        /* Checks: avoid the zero edge case. */
+        require(collateralAmount > 0, "ERR_WITHDRAW_COLLATERAL_ZERO");
+
+        /* Checks: there is enough free collateral. */
+        require(
+            vaults[msg.sender].freeCollateral >= collateralAmount,
+            "ERR_WITHDRAW_COLLATERAL_INSUFFICIENT_FREE_COLLATERAL"
+        );
+
+        /* Effects: update the storage properties. */
+        WithdrawCollateralLocalVars memory vars;
+        (vars.mathErr, vars.newFreeCollateral) = subUInt(vaults[msg.sender].freeCollateral, collateralAmount);
+        /* This operation can't fail because of the first `require` in this function. */
+        assert(vars.mathErr == MathError.NO_ERROR);
+        vaults[msg.sender].freeCollateral = vars.newFreeCollateral;
+
+        /* Interactions */
+        require(
+            Erc20Interface(collateral).transfer(msg.sender, collateralAmount),
+            "ERR_WITHDRAW_COLLATERAL_ERC20_TRANSFER"
+        );
+
+        emit WithdrawCollateral(msg.sender, collateralAmount);
+
         return NO_ERROR;
     }
 
@@ -360,7 +434,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
     /*** Internal Functions ***/
 
     /**
-     * @dev Simply retrieves the block timestamp. This exists mainly for stubbing
+     * @dev Retrieves the block timestamp. This exists mainly for stubbing
      * it when testing.
      */
     function getBlockTimestamp() internal view returns (uint256) {

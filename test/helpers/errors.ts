@@ -13,9 +13,12 @@ export enum YTokenErrors {
   BelowCollateralizationRatio = "ERR_BELOW_COLLATERALIZATION_RATIO",
   BondMatured = "ERR_BOND_MATURED",
   BondNotMatured = "ERR_BOND_NOT_MATURED",
-  DepositNotAllowed = "ERR_DEPOSIT_NOT_ALLOWED",
+  DepositCollateralZero = "ERR_DEPOSIT_COLLATERAL_ZERO",
+  DepositCollateralNotAllowed = "ERR_DEPOSIT_COLLATERAL_NOT_ALLOWED",
   FreeCollateralInsufficientLockedCollateral = "ERR_FREE_COLLATERAL_INSUFFICIENT_LOCKED_COLLATERAL",
   LockCollateralInsufficientFreeCollateral = "ERR_LOCK_COLLATERAL_INSUFFICIENT_FREE_COLLATERAL",
   MintNotAllowed = "ERR_MINT_NOT_ALLOWED",
   VaultNotOpen = "ERR_VAULT_NOT_OPEN",
+  WithdrawCollateralInsufficientFreeCollateral = "ERR_WITHDRAW_COLLATERAL_INSUFFICIENT_FREE_COLLATERAL",
+  WithdrawCollateralZero = "ERR_WITHDRAW_COLLATERAL_ZERO",
 }
