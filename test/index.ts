@@ -9,7 +9,7 @@ import { testYToken } from "./units/yToken/YToken";
 
 chai.use(solidity);
 
-describe("Contracts", function () {
+describe("Unit Tests", function () {
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
   let snapshot: any;
 

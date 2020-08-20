@@ -11,7 +11,7 @@ export default function shouldBehaveLikewithdrawCollateral(): void {
       await this.yToken.connect(this.brad).openVault();
     });
 
-    describe("when the withdrawal amount is not zero", function () {
+    describe("when the amount to withdraw is not zero", function () {
       describe("when the user deposited collateral", function () {
         beforeEach(async function () {
           await this.fintroller.connect(this.admin).listBond(this.yToken.address);
@@ -61,7 +61,7 @@ export default function shouldBehaveLikewithdrawCollateral(): void {
       });
     });
 
-    describe("when the withdrawal amount is zero", function () {
+    describe("when the amount to withdraw is zero", function () {
       it("reverts", async function () {
         await expect(this.yToken.connect(this.brad).withdrawCollateral(Zero)).to.be.revertedWith(
           YTokenErrors.WithdrawCollateralZero,
