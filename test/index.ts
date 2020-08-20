@@ -1,13 +1,9 @@
-import chai from "chai";
 import { Signer } from "@ethersproject/abstract-signer";
 import { ethers } from "@nomiclabs/buidler";
-import { solidity } from "ethereum-waffle";
 
 import scenarios from "./scenarios";
 import { testFintroller } from "./units/fintroller/Fintroller";
 import { testYToken } from "./units/yToken/YToken";
-
-chai.use(solidity);
 
 describe("Unit Tests", function () {
   /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
