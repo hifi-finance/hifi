@@ -1,13 +1,16 @@
-import shouldBehaveLikeBondGetter from "./view/bond";
-import shouldBehaveLikeCollateralizationRatioLowerBoundMantissaGetter from "./view/collateralizationRatioLowerBoundMantissa";
-import shouldBehaveLikeCollateralizationRatioUpperBoundMantissaGetter from "./view/collateralizationRatioUpperBoundMantissa";
-import shouldBehaveLikeDefaultCollateralizationRatioMantissaGetter from "./view/defaultCollateralizationRatioMantissa";
 import shouldBehaveLikeListBond from "./effects/listBond";
-import shouldBehaveLikeOracleGetter from "./view/oracle";
 import shouldBehaveLikeSetCollateralizationRatio from "./effects/setCollateralizationRatio";
 import shouldBehaveLikeSetDepositAllowed from "./effects/setDepositAllowed";
 import shouldBehaveLikeSetMintAllowed from "./effects/setMintAllowed";
 import shouldBehaveLikeSetOracle from "./effects/setOracle";
+
+import shouldBehaveLikeBondGetter from "./view/bond";
+import shouldBehaveLikeCollateralizationRatioLowerBoundMantissaGetter from "./view/collateralizationRatioLowerBoundMantissa";
+import shouldBehaveLikeCollateralizationRatioUpperBoundMantissaGetter from "./view/collateralizationRatioUpperBoundMantissa";
+import shouldBehaveLikeDefaultCollateralizationRatioMantissaGetter from "./view/defaultCollateralizationRatioMantissa";
+import shouldBehaveLikeDepositAllowed from "./view/depositAllowed";
+import shouldBehaveLikeMintAllowed from "./view/mintAllowed";
+import shouldBehaveLikeOracleGetter from "./view/oracle";
 
 export function shouldBehaveLikeFintroller(): void {
   describe("Effects Functions", function () {
@@ -47,6 +50,14 @@ export function shouldBehaveLikeFintroller(): void {
 
     describe("defaultCollateralizationRatioMantissa", function () {
       shouldBehaveLikeDefaultCollateralizationRatioMantissaGetter();
+    });
+
+    describe("shouldBehaveLikeDepositAllowed", function () {
+      shouldBehaveLikeDepositAllowed();
+    });
+
+    describe("shouldBehaveLikeMintAllowed", function () {
+      shouldBehaveLikeMintAllowed();
     });
 
     describe("oracle", function () {
