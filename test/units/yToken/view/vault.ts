@@ -8,7 +8,7 @@ export default function shouldBehaveLikeVaultGetter(): void {
       /* TODO mint tokens */
     });
 
-    it("should retrieve the vault data", async function () {
+    it("retrieves the vault data", async function () {
       const vault = await this.yToken.getVault(this.bradAddress);
       expect(vault.freeCollateral).to.equal(Zero);
       expect(vault.lockedCollateral).to.equal(Zero);
@@ -19,7 +19,7 @@ export default function shouldBehaveLikeVaultGetter(): void {
   });
 
   describe("when the bond is not open", function () {
-    it("should retrieve zero values", async function () {
+    it("retrieves zero values", async function () {
       const vault = await this.yToken.getVault(this.bradAddress);
       expect(vault.freeCollateral).to.equal(Zero);
       expect(vault.lockedCollateral).to.equal(Zero);

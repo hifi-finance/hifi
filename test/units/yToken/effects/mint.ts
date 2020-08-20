@@ -4,7 +4,7 @@ import { expect } from "chai";
 import { FintrollerErrors, YTokenErrors } from "../../../helpers/errors";
 import { OneHundredTokens, TenTokens } from "../../../helpers/constants";
 import { contextForTimeDependentTests } from "../../../helpers/mochaContexts";
-import { setNextBlockTimestamp } from "../../../helpers/jsonRpcHelpers";
+import { increaseTime } from "../../../helpers/jsonRpcHelpers";
 
 export default function shouldBehaveLikeMint(): void {
   describe("when the vault is open", function () {
@@ -93,7 +93,7 @@ export default function shouldBehaveLikeMint(): void {
 
       contextForTimeDependentTests("when the bond matured", function () {
         beforeEach(async function () {
-          await setNextBlockTimestamp(this.scenario.yToken.expirationTime);
+          await increaseTime(this.scenario.yToken.expirationTime);
         });
 
         it("reverts", async function () {
