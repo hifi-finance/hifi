@@ -1,4 +1,4 @@
-import { ethers } from "@nomiclabs/buidler";
+import { waffle } from "@nomiclabs/buidler";
 
 /**
  * An utility function that takes a snapshot of the EVM and reverts to it after the
@@ -11,13 +11,13 @@ export function contextForTimeDependentTests(description: string, hooks: () => v
     let snapshot: any;
 
     beforeEach(async function () {
-      snapshot = await ethers.provider.send("evm_snapshot", []);
+      snapshot = await waffle.provider.send("evm_snapshot", []);
     });
 
     hooks();
 
     afterEach(async function () {
-      await ethers.provider.send("evm_revert", [snapshot]);
+      await waffle.provider.send("evm_revert", [snapshot]);
     });
   });
 }

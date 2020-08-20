@@ -1,5 +1,5 @@
 import { Signer } from "@ethersproject/abstract-signer";
-import { ethers } from "@nomiclabs/buidler";
+import { ethers, waffle } from "@nomiclabs/buidler";
 
 import scenarios from "./scenarios";
 import { testFintroller } from "./units/fintroller/Fintroller";
@@ -10,7 +10,7 @@ describe("Unit Tests", function () {
   let snapshot: any;
 
   before(async function () {
-    snapshot = await ethers.provider.send("evm_snapshot", []);
+    snapshot = await waffle.provider.send("evm_snapshot", []);
   });
 
   before(async function () {
@@ -34,6 +34,6 @@ describe("Unit Tests", function () {
   testYToken();
 
   after(async function () {
-    await ethers.provider.send("evm_revert", [snapshot]);
+    await waffle.provider.send("evm_revert", [snapshot]);
   });
 });
