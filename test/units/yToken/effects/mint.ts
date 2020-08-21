@@ -10,20 +10,24 @@ import { increaseTime } from "../../../helpers/jsonRpcHelpers";
 export default function shouldBehaveLikeMint(): void {
   describe("when the vault is open", function () {
     beforeEach(async function () {
-      await this.yToken.connect(this.brad).openVault();
+      await this.contracts.yToken.connect(this.signers.brad).openVault();
     });
 
     describe("when the amount to mint is not zero", function () {
       describe("when the bond is listed", function () {
         beforeEach(async function () {
-          await this.fintroller.connect(this.admin).listBond(this.yToken.address);
+          await this.stubs.fintroller.connect(this.signers.admin).listBond(this.contracts.yToken.address);
         });
 
         describe("when the bond did not mature", function () {
           describe("when the fintroller allows new mints", function () {
             beforeEach(async function () {
-              await this.fintroller.connect(this.admin).setMintAllowed(this.yToken.address, true);
-              await this.fintroller.connect(this.admin).setDepositAllowed(this.yToken.address, true);
+              await this.stubs.fintroller
+                .connect(this.signers.admin)
+                .setMintAllowed(this.contracts.yToken.address, true);
+              await this.stubs.fintroller
+                .connect(this.signers.admin)
+                .setDepositAllowed(this.contracts.yToken.address, true);
             });
 
             /**
@@ -33,60 +37,55 @@ export default function shouldBehaveLikeMint(): void {
              */
             describe("when the user deposited collateral", function () {
               beforeEach(async function () {
-                await this.collateral.connect(this.brad).approve(this.yToken.address, TenTokens);
-                await this.yToken.connect(this.brad).depositCollateral(TenTokens);
+                await this.stubs.collateral
+                  .connect(this.signers.brad)
+                  .approve(this.contracts.yToken.address, TenTokens);
+                await this.contracts.yToken.connect(this.signers.brad).depositCollateral(TenTokens);
               });
 
               describe("and locked it", function () {
                 beforeEach(async function () {
-                  await this.yToken.connect(this.brad).lockCollateral(TenTokens);
+                  await this.contracts.yToken.connect(this.signers.brad).lockCollateral(TenTokens);
                 });
 
                 it("mints new yTokens", async function () {
-                  await this.yToken.connect(this.brad).mint(OneHundredTokens);
-                });
-
-                it("increases the erc20 balance of the caller", async function () {
-                  const preBalance: BigNumber = await this.yToken.balanceOf(this.bradAddress);
-                  await this.yToken.connect(this.brad).mint(OneHundredTokens);
-                  const postBalance: BigNumber = await this.yToken.balanceOf(this.bradAddress);
-                  expect(preBalance).to.equal(postBalance.sub(OneHundredTokens));
+                  await this.contracts.yToken.connect(this.signers.brad).mint(OneHundredTokens);
                 });
 
                 it("emits a Mint event", async function () {
-                  await expect(this.yToken.connect(this.brad).mint(OneHundredTokens))
-                    .to.emit(this.yToken, "Mint")
-                    .withArgs(this.bradAddress, OneHundredTokens);
+                  await expect(this.contracts.yToken.connect(this.signers.brad).mint(OneHundredTokens))
+                    .to.emit(this.contracts.yToken, "Mint")
+                    .withArgs(this.accounts.brad, OneHundredTokens);
                 });
 
                 it("emits a Transfer event", async function () {
-                  await expect(this.yToken.connect(this.brad).mint(OneHundredTokens))
-                    .to.emit(this.yToken, "Transfer")
-                    .withArgs(this.yToken.address, this.bradAddress, OneHundredTokens);
+                  await expect(this.contracts.yToken.connect(this.signers.brad).mint(OneHundredTokens))
+                    .to.emit(this.contracts.yToken, "Transfer")
+                    .withArgs(this.contracts.yToken.address, this.accounts.brad, OneHundredTokens);
                 });
               });
 
               describe("but did not lock it", function () {
                 it("reverts", async function () {
-                  await expect(this.yToken.connect(this.brad).mint(OneHundredTokens)).to.be.revertedWith(
-                    YTokenErrors.BelowCollateralizationRatio,
-                  );
+                  await expect(
+                    this.contracts.yToken.connect(this.signers.brad).mint(OneHundredTokens),
+                  ).to.be.revertedWith(YTokenErrors.BelowCollateralizationRatio);
                 });
               });
             });
 
             describe("when the user did not deposit any collateral", function () {
               it("reverts", async function () {
-                await expect(this.yToken.connect(this.brad).mint(OneHundredTokens)).to.be.revertedWith(
-                  YTokenErrors.BelowCollateralizationRatio,
-                );
+                await expect(
+                  this.contracts.yToken.connect(this.signers.brad).mint(OneHundredTokens),
+                ).to.be.revertedWith(YTokenErrors.BelowCollateralizationRatio);
               });
             });
           });
 
           describe("when the fintroller does not allow new mints", function () {
             it("reverts", async function () {
-              await expect(this.yToken.connect(this.brad).mint(OneHundredTokens)).to.be.revertedWith(
+              await expect(this.contracts.yToken.connect(this.signers.brad).mint(OneHundredTokens)).to.be.revertedWith(
                 YTokenErrors.MintNotAllowed,
               );
             });
@@ -99,7 +98,7 @@ export default function shouldBehaveLikeMint(): void {
           });
 
           it("reverts", async function () {
-            await expect(this.yToken.connect(this.brad).mint(OneHundredTokens)).to.be.revertedWith(
+            await expect(this.contracts.yToken.connect(this.signers.brad).mint(OneHundredTokens)).to.be.revertedWith(
               YTokenErrors.BondMatured,
             );
           });
@@ -108,7 +107,7 @@ export default function shouldBehaveLikeMint(): void {
 
       describe("when the bond is not listed", function () {
         it("reverts", async function () {
-          await expect(this.yToken.connect(this.brad).mint(OneHundredTokens)).to.be.revertedWith(
+          await expect(this.contracts.yToken.connect(this.signers.brad).mint(OneHundredTokens)).to.be.revertedWith(
             FintrollerErrors.BondNotListed,
           );
         });
@@ -117,14 +116,18 @@ export default function shouldBehaveLikeMint(): void {
 
     describe("when the amount to mint is zero", function () {
       it("reverts", async function () {
-        await expect(this.yToken.connect(this.brad).mint(Zero)).to.be.revertedWith(YTokenErrors.MintZero);
+        await expect(this.contracts.yToken.connect(this.signers.brad).mint(Zero)).to.be.revertedWith(
+          YTokenErrors.MintZero,
+        );
       });
     });
   });
 
   describe("when the vault is not open", function () {
     it("reverts", async function () {
-      await expect(this.yToken.connect(this.brad).mint(OneHundredTokens)).to.be.revertedWith(YTokenErrors.VaultNotOpen);
+      await expect(this.contracts.yToken.connect(this.signers.brad).mint(OneHundredTokens)).to.be.revertedWith(
+        YTokenErrors.VaultNotOpen,
+      );
     });
   });
 }

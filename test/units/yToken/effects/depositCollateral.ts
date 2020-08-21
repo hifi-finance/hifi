@@ -2,78 +2,87 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
+import { FintrollerConstants } from "../../../helpers/constants";
 import { FintrollerErrors, YTokenErrors } from "../../../helpers/errors";
 import { TenTokens } from "../../../helpers/constants";
-import { contextForTimeDependentTests } from "../../../helpers/mochaContexts";
 
 export default function shouldBehaveLikeDepositCollateral(): void {
   describe("when the vault is open", function () {
     beforeEach(async function () {
-      await this.yToken.connect(this.brad).openVault();
+      await this.contracts.yToken.connect(this.signers.brad).openVault();
     });
 
     describe("when the amount to deposit is not zero", function () {
       describe("when the bond is listed", function () {
         beforeEach(async function () {
-          await this.fintroller.connect(this.admin).listBond(this.yToken.address);
+          await this.stubs.fintroller.mock.getBond
+            .withArgs(this.contracts.yToken.address)
+            .returns(FintrollerConstants.DefaultCollateralizationRatioMantissa);
         });
 
         describe("when the fintroller allows new deposits", function () {
           beforeEach(async function () {
-            await this.fintroller.connect(this.admin).setDepositAllowed(this.yToken.address, true);
+            await this.stubs.fintroller.mock.depositAllowed.withArgs(this.contracts.yToken.address).returns(true);
           });
 
           describe("when the yToken contract has enough allowance", function () {
             beforeEach(async function () {
-              await this.collateral.connect(this.brad).approve(this.yToken.address, TenTokens);
+              await this.stubs.collateral.mock.transferFrom
+                .withArgs(this.accounts.brad, this.contracts.yToken.address, TenTokens)
+                .returns(true);
             });
 
             it("makes the collateral deposit", async function () {
-              await this.yToken.connect(this.brad).depositCollateral(TenTokens);
-            });
-
-            it("decreases the erc20 balance of the caller", async function () {
-              const preBalance: BigNumber = await this.collateral.balanceOf(this.bradAddress);
-              await this.yToken.connect(this.brad).depositCollateral(TenTokens);
-              const postBalance: BigNumber = await this.collateral.balanceOf(this.bradAddress);
-              expect(preBalance).to.equal(postBalance.add(TenTokens));
+              await this.contracts.yToken.connect(this.signers.brad).depositCollateral(TenTokens);
             });
 
             it("emits a DepositCollateral event", async function () {
-              await expect(this.yToken.connect(this.brad).depositCollateral(TenTokens))
-                .to.emit(this.yToken, "DepositCollateral")
-                .withArgs(this.bradAddress, TenTokens);
+              await expect(this.contracts.yToken.connect(this.signers.brad).depositCollateral(TenTokens))
+                .to.emit(this.contracts.yToken, "DepositCollateral")
+                .withArgs(this.accounts.brad, TenTokens);
             });
           });
 
           describe("when the yToken contract does not have enough allowance", function () {
             it("reverts", async function () {
-              await expect(this.yToken.connect(this.brad).depositCollateral(TenTokens)).to.be.reverted;
+              await expect(this.contracts.yToken.connect(this.signers.brad).depositCollateral(TenTokens)).to.be
+                .reverted;
             });
           });
         });
 
         describe("when the fintroller does not allow new deposits", function () {
+          beforeEach(async function () {
+            await this.stubs.fintroller.mock.depositAllowed.withArgs(this.contracts.yToken.address).returns(false);
+          });
+
           it("reverts", async function () {
-            await expect(this.yToken.connect(this.brad).depositCollateral(TenTokens)).to.be.revertedWith(
-              YTokenErrors.DepositCollateralNotAllowed,
-            );
+            await expect(
+              this.contracts.yToken.connect(this.signers.brad).depositCollateral(TenTokens),
+            ).to.be.revertedWith(YTokenErrors.DepositCollateralNotAllowed);
           });
         });
       });
 
-      describe("when the bond is not listed", function () {
+      describe.skip("when the bond is not listed", function () {
+        beforeEach(async function () {
+          /* TODO: add PR to Waffle to enable revert reasons */
+          await this.stubs.fintroller.mock.depositAllowed
+            .withArgs(this.contracts.yToken.address)
+            .reverts(FintrollerErrors.BondNotListed);
+        });
+
         it("reverts", async function () {
-          await expect(this.yToken.connect(this.brad).depositCollateral(TenTokens)).to.be.revertedWith(
-            FintrollerErrors.BondNotListed,
-          );
+          await expect(
+            this.contracts.yToken.connect(this.signers.brad).depositCollateral(TenTokens),
+          ).to.be.revertedWith(FintrollerErrors.BondNotListed);
         });
       });
     });
 
     describe("when the amount to deposit is zero", function () {
       it("reverts", async function () {
-        await expect(this.yToken.connect(this.brad).depositCollateral(Zero)).to.be.revertedWith(
+        await expect(this.contracts.yToken.connect(this.signers.brad).depositCollateral(Zero)).to.be.revertedWith(
           YTokenErrors.DepositCollateralZero,
         );
       });
@@ -82,7 +91,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
 
   describe("when the vault is not open", function () {
     it("reverts", async function () {
-      await expect(this.yToken.connect(this.brad).depositCollateral(TenTokens)).to.be.revertedWith(
+      await expect(this.contracts.yToken.connect(this.signers.brad).depositCollateral(TenTokens)).to.be.revertedWith(
         YTokenErrors.VaultNotOpen,
       );
     });

@@ -8,62 +8,57 @@ import { TenTokens } from "../../../helpers/constants";
 export default function shouldBehaveLikewithdrawCollateral(): void {
   describe("when the vault is open", function () {
     beforeEach(async function () {
-      await this.yToken.connect(this.brad).openVault();
+      await this.contracts.yToken.connect(this.signers.brad).openVault();
     });
 
     describe("when the amount to withdraw is not zero", function () {
       describe("when the user deposited collateral", function () {
         beforeEach(async function () {
-          await this.fintroller.connect(this.admin).listBond(this.yToken.address);
-          await this.fintroller.connect(this.admin).setDepositAllowed(this.yToken.address, true);
-          await this.collateral.connect(this.brad).approve(this.yToken.address, TenTokens);
-          await this.yToken.connect(this.brad).depositCollateral(TenTokens);
+          await this.stubs.fintroller.connect(this.signers.admin).listBond(this.contracts.yToken.address);
+          await this.stubs.fintroller
+            .connect(this.signers.admin)
+            .setDepositAllowed(this.contracts.yToken.address, true);
+          await this.stubs.collateral.connect(this.signers.brad).approve(this.contracts.yToken.address, TenTokens);
+          await this.contracts.yToken.connect(this.signers.brad).depositCollateral(TenTokens);
         });
 
         describe("and did not lock it", function () {
           it("makes the collateral withdrawal", async function () {
-            await this.yToken.connect(this.brad).withdrawCollateral(TenTokens);
-          });
-
-          it("increases the erc20 balance of the caller", async function () {
-            const preBalance: BigNumber = await this.collateral.balanceOf(this.bradAddress);
-            await this.yToken.connect(this.brad).withdrawCollateral(TenTokens);
-            const postBalance: BigNumber = await this.collateral.balanceOf(this.bradAddress);
-            expect(preBalance).to.equal(postBalance.sub(TenTokens));
+            await this.contracts.yToken.connect(this.signers.brad).withdrawCollateral(TenTokens);
           });
 
           it("emits a WithdrawCollateral event", async function () {
-            await expect(this.yToken.connect(this.brad).withdrawCollateral(TenTokens))
-              .to.emit(this.yToken, "WithdrawCollateral")
-              .withArgs(this.bradAddress, TenTokens);
+            await expect(this.contracts.yToken.connect(this.signers.brad).withdrawCollateral(TenTokens))
+              .to.emit(this.contracts.yToken, "WithdrawCollateral")
+              .withArgs(this.accounts.brad, TenTokens);
           });
         });
 
         describe("and locked it", function () {
           beforeEach(async function () {
-            await this.yToken.connect(this.brad).lockCollateral(TenTokens);
+            await this.contracts.yToken.connect(this.signers.brad).lockCollateral(TenTokens);
           });
 
           it("reverts", async function () {
-            await expect(this.yToken.connect(this.brad).withdrawCollateral(TenTokens)).to.be.revertedWith(
-              YTokenErrors.WithdrawCollateralInsufficientFreeCollateral,
-            );
+            await expect(
+              this.contracts.yToken.connect(this.signers.brad).withdrawCollateral(TenTokens),
+            ).to.be.revertedWith(YTokenErrors.WithdrawCollateralInsufficientFreeCollateral);
           });
         });
       });
 
       describe("when the user did not deposit any collateral", function () {
         it("reverts", async function () {
-          await expect(this.yToken.connect(this.brad).withdrawCollateral(TenTokens)).to.be.revertedWith(
-            YTokenErrors.WithdrawCollateralInsufficientFreeCollateral,
-          );
+          await expect(
+            this.contracts.yToken.connect(this.signers.brad).withdrawCollateral(TenTokens),
+          ).to.be.revertedWith(YTokenErrors.WithdrawCollateralInsufficientFreeCollateral);
         });
       });
     });
 
     describe("when the amount to withdraw is zero", function () {
       it("reverts", async function () {
-        await expect(this.yToken.connect(this.brad).withdrawCollateral(Zero)).to.be.revertedWith(
+        await expect(this.contracts.yToken.connect(this.signers.brad).withdrawCollateral(Zero)).to.be.revertedWith(
           YTokenErrors.WithdrawCollateralZero,
         );
       });
@@ -72,7 +67,7 @@ export default function shouldBehaveLikewithdrawCollateral(): void {
 
   describe("when the vault is not open", function () {
     it("reverts", async function () {
-      await expect(this.yToken.connect(this.brad).withdrawCollateral(TenTokens)).to.be.revertedWith(
+      await expect(this.contracts.yToken.connect(this.signers.brad).withdrawCollateral(TenTokens)).to.be.revertedWith(
         YTokenErrors.VaultNotOpen,
       );
     });

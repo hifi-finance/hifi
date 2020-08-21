@@ -10,19 +10,22 @@ export default function shouldBehaveLikeGetBond(): void {
 
   describe("when the bond is listed", function () {
     beforeEach(async function () {
-      await this.fintroller.listBond(this.yToken.address);
-      await this.fintroller.setCollateralizationRatio(this.yToken.address, newCollateralizationRatioMantissa);
+      await this.contracts.fintroller.listBond(this.stubs.yToken.address);
+      await this.contracts.fintroller.setCollateralizationRatio(
+        this.stubs.yToken.address,
+        newCollateralizationRatioMantissa,
+      );
     });
 
     it("retrieves the bond data", async function () {
-      const bondCollateralizationRatio: BigNumber = await this.fintroller.getBond(this.yToken.address);
+      const bondCollateralizationRatio: BigNumber = await this.contracts.fintroller.getBond(this.stubs.yToken.address);
       expect(bondCollateralizationRatio).to.equal(newCollateralizationRatioMantissa);
     });
   });
 
   describe("when the bond is not listed", function () {
     it("retrieves a zero value", async function () {
-      const bondCollateralizationRatio: BigNumber = await this.fintroller.getBond(this.yToken.address);
+      const bondCollateralizationRatio: BigNumber = await this.contracts.fintroller.getBond(this.stubs.yToken.address);
       expect(bondCollateralizationRatio).to.equal(Zero);
     });
   });

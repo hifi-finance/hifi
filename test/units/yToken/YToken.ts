@@ -1,26 +1,20 @@
-import { Signer } from "@ethersproject/abstract-signer";
+import { waffle } from "@nomiclabs/buidler";
 
-import { OneThousandTokens, TenTokens } from "../../helpers/constants";
-import { deployFintroller, deploySuperMinter, deployYToken, deployOracle } from "../../helpers/deployers";
-import { mintAndDistributeTokens } from "../../helpers/minters";
+import { yTokenFixture } from "../../helpers/fixtures";
 import { shouldBehaveLikeYToken } from "./YToken.behavior";
+
+const { loadFixture } = waffle;
 
 export function testYToken(): void {
   describe("YToken", function () {
     beforeEach(async function () {
-      const deployer: Signer = this.admin;
-      await deployFintroller.call(this, deployer);
-      await deployOracle.call(this, deployer);
-      /* TODO: handle the case when the oracle isn't set. */
-      await this.fintroller.connect(deployer).setOracle(this.oracle.address);
-      await deployYToken.call(this, deployer);
-      await deploySuperMinter.call(this, deployer);
-
-      const signers: Signer[] = [this.admin, this.brad, this.eve, this.grace, this.lucy];
-      /* Give all wallets 10 WETH */
-      await mintAndDistributeTokens.call(this, this.collateral, TenTokens, signers);
-      /* Give all wallets 1,000 DAI */
-      await mintAndDistributeTokens.call(this, this.underlying, OneThousandTokens, signers);
+      const { collateral, fintroller, guarantorPool, oracle, underlying, yToken } = await loadFixture(yTokenFixture);
+      this.stubs.collateral = collateral;
+      this.stubs.fintroller = fintroller;
+      this.stubs.guarantorPool = guarantorPool;
+      this.stubs.oracle = oracle;
+      this.stubs.underlying = underlying;
+      this.contracts.yToken = yToken;
     });
 
     shouldBehaveLikeYToken();

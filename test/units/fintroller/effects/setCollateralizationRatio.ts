@@ -12,26 +12,26 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
   describe("when the caller is the admin", function () {
     describe("when the bond is listed", function () {
       beforeEach(async function () {
-        await this.fintroller.connect(this.admin).listBond(this.yToken.address);
+        await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.yToken.address);
       });
 
       describe("when the collateralization ratio is valid", function () {
         it("sets the new value", async function () {
-          await this.fintroller
-            .connect(this.admin)
-            .setCollateralizationRatio(this.yToken.address, newCollateralizationRatioMantissa);
+          await this.contracts.fintroller
+            .connect(this.signers.admin)
+            .setCollateralizationRatio(this.stubs.yToken.address, newCollateralizationRatioMantissa);
         });
 
         it("emits a NewCollateralizationRatio event", async function () {
           /* The second argument is the default value of the collateralization ratio */
           await expect(
-            this.fintroller
-              .connect(this.admin)
-              .setCollateralizationRatio(this.yToken.address, newCollateralizationRatioMantissa),
+            this.contracts.fintroller
+              .connect(this.signers.admin)
+              .setCollateralizationRatio(this.stubs.yToken.address, newCollateralizationRatioMantissa),
           )
-            .to.emit(this.fintroller, "NewCollateralizationRatio")
+            .to.emit(this.contracts.fintroller, "NewCollateralizationRatio")
             .withArgs(
-              this.yToken.address,
+              this.stubs.yToken.address,
               FintrollerConstants.DefaultCollateralizationRatioMantissa,
               newCollateralizationRatioMantissa,
             );
@@ -43,9 +43,9 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
           it("reverts", async function () {
             const overflowCollateralizationRatioMantissa: BigNumber = OnePercent.mul(10000).add(1);
             await expect(
-              this.fintroller
-                .connect(this.admin)
-                .setCollateralizationRatio(this.yToken.address, overflowCollateralizationRatioMantissa),
+              this.contracts.fintroller
+                .connect(this.signers.admin)
+                .setCollateralizationRatio(this.stubs.yToken.address, overflowCollateralizationRatioMantissa),
             ).to.be.revertedWith(FintrollerErrors.SetCollateralizationRatioOverflow);
           });
         });
@@ -54,9 +54,9 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
           it("reverts", async function () {
             const underflowCollateralizationRatioMantissa: BigNumber = OnePercent.mul(100).sub(1);
             await expect(
-              this.fintroller
-                .connect(this.admin)
-                .setCollateralizationRatio(this.yToken.address, underflowCollateralizationRatioMantissa),
+              this.contracts.fintroller
+                .connect(this.signers.admin)
+                .setCollateralizationRatio(this.stubs.yToken.address, underflowCollateralizationRatioMantissa),
             ).to.be.revertedWith(FintrollerErrors.SetCollateralizationRatioUnderflow);
           });
         });
@@ -64,7 +64,9 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
         describe("when the collateralization ratio is zero", function () {
           it("reverts", async function () {
             await expect(
-              this.fintroller.connect(this.admin).setCollateralizationRatio(this.yToken.address, Zero),
+              this.contracts.fintroller
+                .connect(this.signers.admin)
+                .setCollateralizationRatio(this.stubs.yToken.address, Zero),
             ).to.be.revertedWith(FintrollerErrors.SetCollateralizationRatioUnderflow);
           });
         });
@@ -73,11 +75,13 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
 
     describe("when the bond is not listed", function () {
       it("reverts", async function () {
-        const newCollateralizationRatioMantissa: BigNumber = this.scenario.fintroller.collateralizationRatio.add(1);
+        const newCollateralizationRatioMantissa: BigNumber = FintrollerConstants.DefaultCollateralizationRatioMantissa.add(
+          1,
+        );
         await expect(
-          this.fintroller
-            .connect(this.admin)
-            .setCollateralizationRatio(this.yToken.address, newCollateralizationRatioMantissa),
+          this.contracts.fintroller
+            .connect(this.signers.admin)
+            .setCollateralizationRatio(this.stubs.yToken.address, newCollateralizationRatioMantissa),
         ).to.be.revertedWith(FintrollerErrors.BondNotListed);
       });
     });
@@ -86,9 +90,12 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
   describe("when the caller is not the admin", function () {
     it("reverts", async function () {
       await expect(
-        this.fintroller
-          .connect(this.eve)
-          .setCollateralizationRatio(this.yToken.address, this.scenario.fintroller.collateralizationRatio),
+        this.contracts.fintroller
+          .connect(this.signers.eve)
+          .setCollateralizationRatio(
+            this.stubs.yToken.address,
+            FintrollerConstants.DefaultCollateralizationRatioMantissa,
+          ),
       ).to.be.revertedWith(Errors.NotAuthorized);
     });
   });

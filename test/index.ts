@@ -2,6 +2,8 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { ethers, waffle } from "@nomiclabs/buidler";
 
 import scenarios from "./scenarios";
+
+import { Accounts, Contracts, Signers, Stubs } from "../@types/index";
 import { testFintroller } from "./units/fintroller/Fintroller";
 import { testYToken } from "./units/yToken/YToken";
 
@@ -15,19 +17,25 @@ describe("Unit Tests", function () {
 
   before(async function () {
     this.scenario = scenarios.default;
+
+    this.accounts = {} as Accounts;
+    this.contracts = {} as Contracts;
+    this.signers = {} as Signers;
+    this.stubs = {} as Stubs;
+
     const signers: Signer[] = await ethers.getSigners();
 
-    this.admin = signers[0];
-    this.brad = signers[1];
-    this.grace = signers[2];
-    this.lucy = signers[3];
-    this.eve = signers[4];
+    this.signers.admin = signers[0];
+    this.signers.brad = signers[1];
+    this.signers.grace = signers[2];
+    this.signers.lucy = signers[3];
+    this.signers.eve = signers[4];
 
-    this.adminAddress = await signers[0].getAddress();
-    this.bradAddress = await signers[1].getAddress();
-    this.graceAddress = await signers[2].getAddress();
-    this.lucyAddress = await signers[3].getAddress();
-    this.eveAddress = await signers[4].getAddress();
+    this.accounts.admin = await signers[0].getAddress();
+    this.accounts.brad = await signers[1].getAddress();
+    this.accounts.grace = await signers[2].getAddress();
+    this.accounts.lucy = await signers[3].getAddress();
+    this.accounts.eve = await signers[4].getAddress();
   });
 
   testFintroller();

@@ -52,11 +52,11 @@ export function shouldBehaveLikeFintroller(): void {
       shouldBehaveLikeDefaultCollateralizationRatioMantissaGetter();
     });
 
-    describe("shouldBehaveLikeDepositAllowed", function () {
+    describe("depositAllowed", function () {
       shouldBehaveLikeDepositAllowed();
     });
 
-    describe("shouldBehaveLikeMintAllowed", function () {
+    describe("mintAllowed", function () {
       shouldBehaveLikeMintAllowed();
     });
 

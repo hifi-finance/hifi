@@ -1,12 +1,17 @@
+import { waffle } from "@nomiclabs/buidler";
+
+import { deployStubYToken } from "../../helpers/stubs";
+import { fintrollerFixture } from "../../helpers/fixtures";
 import { shouldBehaveLikeFintroller } from "./Fintroller.behavior";
 
-import { deployFintroller, deployYToken } from "../../helpers/deployers";
+const { loadFixture } = waffle;
 
 export function testFintroller(): void {
   describe("Fintroller", function () {
     beforeEach(async function () {
-      await deployFintroller.call(this, this.admin);
-      await deployYToken.call(this, this.admin);
+      const { fintroller } = await loadFixture(fintrollerFixture);
+      this.contracts.fintroller = fintroller;
+      this.stubs.yToken = await deployStubYToken(this.signers.admin);
     });
 
     shouldBehaveLikeFintroller();

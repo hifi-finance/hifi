@@ -9,9 +9,6 @@ const defaultScenario: Scenario = {
     name: "Wrapped Ether",
     symbol: "WETH",
   },
-  fintroller: {
-    collateralizationRatio: BigNumber.from(150).mul(OnePercent),
-  },
   guarantorPool: {
     decimals: BigNumber.from(18),
     name: "Mainframe Guarantor Pool Shares",

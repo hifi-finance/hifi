@@ -4,7 +4,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 export const OnePercent: BigNumber = BigNumber.from("10000000000000000");
 export const UnitsPerToken: BigNumber = BigNumber.from("1000000000000000000");
 
-/* Final constants */
+/* Generic constants */
 export const AddressOne: string = "0x0000000000000000000000000000000000000001";
 export const DefaultBlockGasLimit: BigNumber = BigNumber.from("10000000");
 export const OneHundredPercent: BigNumber = OnePercent.mul(100);
