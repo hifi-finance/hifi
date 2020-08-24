@@ -5,7 +5,6 @@ export default function shouldBehaveLikeVaultGetter(): void {
   describe("when the vault is open", function () {
     beforeEach(async function () {
       await this.contracts.yToken.connect(this.signers.brad).openVault();
-      /* TODO mint tokens */
     });
 
     it("retrieves the vault data", async function () {

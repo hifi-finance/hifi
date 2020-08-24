@@ -16,13 +16,19 @@ import {
   deployStubUnderlying,
   deployStubFintroller,
   deployStubOracle,
+  deployStubYToken,
 } from "./stubs";
 
 const { deployContract } = waffle;
 
-export async function fintrollerFixture(signers: Signer[]): Promise<{ fintroller: Fintroller }> {
+export async function fintrollerFixture(
+  signers: Signer[],
+): Promise<{ fintroller: Fintroller; oracle: MockContract; yToken: MockContract }> {
+  const deployer: Signer = signers[0];
   const fintroller: Fintroller = ((await deployContract(signers[0], FintrollerArtifact, [])) as unknown) as Fintroller;
-  return { fintroller };
+  const oracle: MockContract = await deployStubOracle(deployer);
+  const yToken: MockContract = await deployStubYToken(deployer);
+  return { fintroller, oracle, yToken };
 }
 
 export async function yTokenFixture(

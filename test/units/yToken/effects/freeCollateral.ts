@@ -2,8 +2,9 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { FintrollerErrors, YTokenErrors } from "../../../helpers/errors";
+import { FintrollerConstants } from "../../../helpers/constants";
 import { OneToken, TenTokens, OneHundredTokens } from "../../../helpers/constants";
+import { YTokenErrors } from "../../../helpers/errors";
 
 export default function shouldBehaveLikeLockCollateral(): void {
   describe("when the vault is open", function () {
@@ -14,11 +15,13 @@ export default function shouldBehaveLikeLockCollateral(): void {
     describe("when the collateral amount to free is not zero", function () {
       describe("when the user deposited collateral", function () {
         beforeEach(async function () {
-          await this.stubs.fintroller.connect(this.signers.admin).listBond(this.contracts.yToken.address);
-          await this.stubs.fintroller
-            .connect(this.signers.admin)
-            .setDepositAllowed(this.contracts.yToken.address, true);
-          await this.stubs.collateral.connect(this.signers.brad).approve(this.contracts.yToken.address, TenTokens);
+          await this.stubs.fintroller.mock.getBond
+            .withArgs(this.contracts.yToken.address)
+            .returns(FintrollerConstants.DefaultCollateralizationRatioMantissa);
+          await this.stubs.fintroller.mock.depositAllowed.withArgs(this.contracts.yToken.address).returns(true);
+          await this.stubs.collateral.mock.transferFrom
+            .withArgs(this.accounts.brad, this.contracts.yToken.address, TenTokens)
+            .returns(true);
           await this.contracts.yToken.connect(this.signers.brad).depositCollateral(TenTokens);
         });
 
@@ -29,9 +32,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
 
           describe("when the user has a debt", function () {
             beforeEach(async function () {
-              await this.stubs.fintroller
-                .connect(this.signers.admin)
-                .setMintAllowed(this.contracts.yToken.address, true);
+              await this.stubs.fintroller.mock.mintAllowed.withArgs(this.contracts.yToken.address).returns(true);
             });
 
             describe("and is safely over-collateralized", async function () {

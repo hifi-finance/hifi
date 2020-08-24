@@ -1,4 +1,3 @@
-import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
@@ -44,6 +43,12 @@ export default function shouldBehaveLikeDepositCollateral(): void {
           });
 
           describe("when the yToken contract does not have enough allowance", function () {
+            beforeEach(async function () {
+              await this.stubs.collateral.mock.transferFrom
+                .withArgs(this.accounts.brad, this.contracts.yToken.address, TenTokens)
+                .returns(false);
+            });
+
             it("reverts", async function () {
               await expect(this.contracts.yToken.connect(this.signers.brad).depositCollateral(TenTokens)).to.be
                 .reverted;
@@ -64,18 +69,18 @@ export default function shouldBehaveLikeDepositCollateral(): void {
         });
       });
 
-      describe.skip("when the bond is not listed", function () {
+      describe("when the bond is not listed", function () {
         beforeEach(async function () {
-          /* TODO: add PR to Waffle to enable revert reasons */
           await this.stubs.fintroller.mock.depositAllowed
             .withArgs(this.contracts.yToken.address)
             .reverts(FintrollerErrors.BondNotListed);
         });
 
         it("reverts", async function () {
+          /* TODO: Replace with FintrollerErrors.BondNotListed */
           await expect(
             this.contracts.yToken.connect(this.signers.brad).depositCollateral(TenTokens),
-          ).to.be.revertedWith(FintrollerErrors.BondNotListed);
+          ).to.be.revertedWith("Mock revert");
         });
       });
     });

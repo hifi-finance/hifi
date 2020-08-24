@@ -1,4 +1,3 @@
-import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
@@ -14,15 +13,18 @@ export default function shouldBehaveLikewithdrawCollateral(): void {
     describe("when the amount to withdraw is not zero", function () {
       describe("when the user deposited collateral", function () {
         beforeEach(async function () {
-          await this.stubs.fintroller.connect(this.signers.admin).listBond(this.contracts.yToken.address);
-          await this.stubs.fintroller
-            .connect(this.signers.admin)
-            .setDepositAllowed(this.contracts.yToken.address, true);
-          await this.stubs.collateral.connect(this.signers.brad).approve(this.contracts.yToken.address, TenTokens);
+          await this.stubs.fintroller.mock.depositAllowed.withArgs(this.contracts.yToken.address).returns(true);
+          await this.stubs.collateral.mock.transferFrom
+            .withArgs(this.accounts.brad, this.contracts.yToken.address, TenTokens)
+            .returns(true);
           await this.contracts.yToken.connect(this.signers.brad).depositCollateral(TenTokens);
         });
 
         describe("and did not lock it", function () {
+          beforeEach(async function () {
+            await this.stubs.collateral.mock.transfer.withArgs(this.accounts.brad, TenTokens).returns(true);
+          });
+
           it("makes the collateral withdrawal", async function () {
             await this.contracts.yToken.connect(this.signers.brad).withdrawCollateral(TenTokens);
           });

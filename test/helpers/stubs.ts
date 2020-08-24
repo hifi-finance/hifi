@@ -18,8 +18,6 @@ export async function deployStubCollateral(deployer: Signer): Promise<MockContra
   await collateral.mock.name.returns("Wrapped Ether");
   await collateral.mock.symbol.returns("WETH");
   await collateral.mock.totalSupply.returns(Zero);
-
-  /* TODO: assign mock balances */
   return collateral;
 }
 
@@ -34,15 +32,13 @@ export async function deployStubGuarantorPool(deployer: Signer): Promise<MockCon
   await guarantorPool.mock.name.returns("Mainframe Guarantor Pool Shares");
   await guarantorPool.mock.symbol.returns("MGP-SHARES");
   await guarantorPool.mock.totalSupply.returns(Zero);
-
-  /* TODO: assign remaining mock fields and functions */
   return guarantorPool;
 }
 
 export async function deployStubOracle(deployer: Signer): Promise<MockContract> {
   const oracle: MockContract = await deployStubContract(deployer, DumbOracleArtifact.abi);
-  await oracle.mock.getEthPriceInUsd.returns(100);
-  await oracle.mock.getDaiPriceInUsd.returns(1);
+  await oracle.mock.getEthPriceInUsd.returns(BigNumber.from(100));
+  await oracle.mock.getDaiPriceInUsd.returns(BigNumber.from(1));
   return oracle;
 }
 
@@ -52,8 +48,6 @@ export async function deployStubUnderlying(deployer: Signer): Promise<MockContra
   await underlying.mock.name.returns("Wrapped Ether");
   await underlying.mock.symbol.returns("WETH");
   await underlying.mock.totalSupply.returns(Zero);
-
-  /* TODO: assign mock balances */
   return underlying;
 }
 
