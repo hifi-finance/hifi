@@ -13,10 +13,10 @@ import { YToken } from "../../typechain/YToken";
 import {
   deployStubCollateral,
   deployStubGuarantorPool,
-  deployStubUnderlying,
   deployStubFintroller,
   deployStubOracle,
   deployStubYToken,
+  deployStubUnderlying,
 } from "./stubs";
 
 const { deployContract } = waffle;
