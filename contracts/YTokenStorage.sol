@@ -51,7 +51,7 @@ abstract contract YTokenStorage is Exponential {
     Erc20Interface public underlying;
 
     /**
-     * @notice ...
+     * @dev ...
      */
     mapping(address => Vault) internal vaults;
 }

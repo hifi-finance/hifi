@@ -1,3 +1,4 @@
+import shouldBehaveLikeBurn from "./effects/burn";
 import shouldBehaveLikeDepositCollateral from "./effects/depositCollateral";
 import shouldBehaveLikeFreeCollateral from "./effects/freeCollateral";
 import shouldBehaveLikeLockCollateral from "./effects/lockCollateral";
@@ -13,6 +14,10 @@ import shouldBehaveLikeVaultGetter from "./view/vault";
 
 export function shouldBehaveLikeYToken(): void {
   describe("Effects Functions", function () {
+    describe("burn", function () {
+      shouldBehaveLikeBurn();
+    });
+
     describe("depositCollateral", function () {
       shouldBehaveLikeDepositCollateral();
     });

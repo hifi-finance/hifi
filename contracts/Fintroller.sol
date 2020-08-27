@@ -18,9 +18,21 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     /*** View Functions ***/
 
     /**
+     * @notice Checks if the user should be allowed to burn yTokens.
+     * @dev Reverts it the bond is not listed.
+     * @param yToken The bond to make the check against.
+     * @return bool true=allowed, false=not allowed.
+     */
+    function burnAllowed(YTokenInterface yToken) external override view returns (bool) {
+        Bond memory bond = bonds[address(yToken)];
+        require(bond.isListed, "ERR_BOND_NOT_LISTED");
+        return bond.isBurnAllowed;
+    }
+
+    /**
      * @notice Checks if the user should be allowed to deposit new collateral.
      * @dev Reverts it the bond is not listed.
-     * @param yToken The bond to verify the check against.
+     * @param yToken The bond to make the check against.
      * @return bool true=allowed, false=not allowed.
      */
     function depositAllowed(YTokenInterface yToken) external override view returns (bool) {
@@ -30,9 +42,9 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     }
 
     /**
-     * @notice Checks if the user should be allowed to mint new tokens.
+     * @notice Checks if the user should be allowed to mint new yTokens.
      * @dev Reverts it the bond is not listed.
-     * @param yToken The bond to verify the check against.
+     * @param yToken The bond to make the check against.
      * @return bool true=allowed, false=not allowed.
      */
     function mintAllowed(YTokenInterface yToken) external override view returns (bool) {
@@ -58,7 +70,8 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
         /* Sanity check */
         yToken.isYToken();
         bonds[address(yToken)] = Bond({
-            collateralizationRatio: Exp({ mantissa: defaultCollateralizationRatioMantissa }),
+            thresholdCollateralizationRatio: Exp({ mantissa: defaultCollateralizationRatioMantissa }),
+            isBurnAllowed: false,
             isListed: true,
             isDepositAllowed: false,
             isMintAllowed: false
@@ -74,7 +87,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @return collateralizationRatioMantissa The bond data.
      */
     function getBond(address yTokenAddress) external override view returns (uint256 collateralizationRatioMantissa) {
-        collateralizationRatioMantissa = bonds[yTokenAddress].collateralizationRatio.mantissa;
+        collateralizationRatioMantissa = bonds[yTokenAddress].thresholdCollateralizationRatio.mantissa;
     }
 
     struct SetCollateralizationRatioLocalVars {
@@ -116,10 +129,31 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
             "ERR_SET_COLLATERALIZATION_RATIO_UNDERFLOW"
         );
 
-        uint256 oldCollateralizationRatioMantissa = bonds[vars.yTokenAddress].collateralizationRatio.mantissa;
-        bonds[vars.yTokenAddress].collateralizationRatio = Exp({ mantissa: newCollateralizationRatioMantissa_ });
+        uint256 oldCollateralizationRatioMantissa = bonds[vars.yTokenAddress].thresholdCollateralizationRatio.mantissa;
+        bonds[vars.yTokenAddress].thresholdCollateralizationRatio = Exp({
+            mantissa: newCollateralizationRatioMantissa_
+        });
 
         emit NewCollateralizationRatio(yToken, oldCollateralizationRatioMantissa, newCollateralizationRatioMantissa_);
+        return NO_ERROR;
+    }
+
+    /**
+     * @notice Sets the state of the permission accessed by the yToken before allowing a burn.
+     *
+     * @dev Emits a {SetBurnAllowed} event.
+     *
+     * Requirements:
+     * - caller must be the administrator
+     *
+     * @param yToken The yToken contract to update the permission for.
+     * @param state The new state to be put in storage.
+     * @return bool true=success, otherwise it reverts.
+     */
+    function setBurnAllowed(YTokenInterface yToken, bool state) external override isAuthorized returns (bool) {
+        require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
+        bonds[address(yToken)].isBurnAllowed = state;
+        emit SetBurnAllowed(yToken, state);
         return NO_ERROR;
     }
 

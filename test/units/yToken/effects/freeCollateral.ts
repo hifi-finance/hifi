@@ -65,7 +65,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
               it("reverts", async function () {
                 await expect(
                   this.contracts.yToken.connect(this.signers.brad).freeCollateral(OneToken),
-                ).to.be.revertedWith(YTokenErrors.BelowCollateralizationRatio);
+                ).to.be.revertedWith(YTokenErrors.BelowThresholdCollateralizationRatio);
               });
             });
           });

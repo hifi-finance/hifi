@@ -29,7 +29,7 @@ export default function shouldBehaveLikeMint(): void {
             });
 
             /**
-             * Write tests for the following cases:
+             * TODO: Write tests for the following cases:
              * - collateral value too small
              * - not enough liquidity in the guarantor pool
              */
@@ -68,7 +68,7 @@ export default function shouldBehaveLikeMint(): void {
                 it("reverts", async function () {
                   await expect(
                     this.contracts.yToken.connect(this.signers.brad).mint(OneHundredTokens),
-                  ).to.be.revertedWith(YTokenErrors.BelowCollateralizationRatio);
+                  ).to.be.revertedWith(YTokenErrors.BelowThresholdCollateralizationRatio);
                 });
               });
             });
@@ -77,7 +77,7 @@ export default function shouldBehaveLikeMint(): void {
               it("reverts", async function () {
                 await expect(
                   this.contracts.yToken.connect(this.signers.brad).mint(OneHundredTokens),
-                ).to.be.revertedWith(YTokenErrors.BelowCollateralizationRatio);
+                ).to.be.revertedWith(YTokenErrors.BelowThresholdCollateralizationRatio);
               });
             });
           });

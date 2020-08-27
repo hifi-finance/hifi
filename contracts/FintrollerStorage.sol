@@ -7,7 +7,8 @@ import "./pricing/DumbOracleInterface.sol";
 abstract contract FintrollerStorage is Exponential {
     struct Bond {
         /* The percentage that dictates the threshold under which loans become under-collateralized. */
-        Exp collateralizationRatio;
+        Exp thresholdCollateralizationRatio;
+        bool isBurnAllowed;
         bool isDepositAllowed;
         bool isListed;
         bool isMintAllowed;

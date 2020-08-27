@@ -10,9 +10,13 @@ export enum FintrollerErrors {
 }
 
 export enum YTokenErrors {
-  BelowCollateralizationRatio = "ERR_BELOW_COLLATERALIZATION_RATIO",
+  BelowThresholdCollateralizationRatio = "ERR_BELOW_THRESHOLD_COLLATERALIZATION_RATIO",
   BondMatured = "ERR_BOND_MATURED",
   BondNotMatured = "ERR_BOND_NOT_MATURED",
+  BurnInsufficientBalance = "ERR_BURN_INSUFFICIENT_BALANCE",
+  BurnInsufficientDebt = "ERR_BURN_INSUFFICIENT_DEBT",
+  BurnNotAllowed = "ERR_BURN_NOT_ALLOWED",
+  BurnZero = "ERR_BURN_ZERO",
   DepositCollateralZero = "ERR_DEPOSIT_COLLATERAL_ZERO",
   DepositCollateralNotAllowed = "ERR_DEPOSIT_COLLATERAL_NOT_ALLOWED",
   FreeCollateralInsufficientLockedCollateral = "ERR_FREE_COLLATERAL_INSUFFICIENT_LOCKED_COLLATERAL",

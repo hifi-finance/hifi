@@ -6,6 +6,8 @@ import "./YTokenInterface.sol";
 
 abstract contract FintrollerInterface is FintrollerStorage {
     /*** View Functions ***/
+    function burnAllowed(YTokenInterface yToken) external virtual view returns (bool);
+
     function depositAllowed(YTokenInterface yToken) external virtual view returns (bool);
 
     function getBond(address yTokenAddress) external virtual view returns (uint256 collateralizationRatioMantissa);
@@ -19,6 +21,8 @@ abstract contract FintrollerInterface is FintrollerStorage {
         external
         virtual
         returns (bool);
+
+    function setBurnAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
 
     function setDepositAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
 
@@ -34,6 +38,8 @@ abstract contract FintrollerInterface is FintrollerStorage {
         uint256 oldCollateralizationRatio,
         uint256 newCollateralizationRatio
     );
+
+    event SetBurnAllowed(YTokenInterface indexed yToken, bool state);
 
     event NewOracle(address oldOracle, address newOracle);
 

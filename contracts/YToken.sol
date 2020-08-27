@@ -103,11 +103,62 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
 
     /*** Non-Constant Functions ***/
 
-    function burn(uint256 burnAmount) external override returns (bool) {
-        return NO_ERROR;
+    struct BurnLocalVars {
+        MathError mathErr;
+        uint256 newBurnerBalance;
+        uint256 newDebt;
+        uint256 newTotalSupply;
     }
 
-    function burnBehalf(address minter, uint256 burnAmount) external override returns (bool) {
+    /**
+     * @notice Exchanges yTokens for the underlying asset and takes the yTokens out of circulation.
+     * @dev Emits a {Burn} and a {Transfer} event.
+     *
+     * Requirements:
+     * - The vault must be open.
+     * - The amount to burn cannot be zero.
+     * - The caller must have enough yTokens.
+     * - The caller must have enough debt.
+     * - The caller is not below the threshold collateralization ratio.
+     *
+     * @param burnAmount Lorem ipsum.
+     * @return bool=success, otherwise it reverts.
+     */
+    function burn(uint256 burnAmount) external override isVaultOpen nonReentrant returns (bool) {
+        BurnLocalVars memory vars;
+
+        /* Checks: avoid the zero edge case. */
+        require(burnAmount > 0, "ERR_BURN_ZERO");
+
+        /* Checks: verify that the Fintroller allows this action to be performed. */
+        require(fintroller.burnAllowed(this), "ERR_BURN_NOT_ALLOWED");
+
+        /* Checks: user has enough yTokens. */
+        require(balanceOf(msg.sender) >= burnAmount, "ERR_BURN_INSUFFICIENT_BALANCE");
+
+        /* Checks: user has enough debt. */
+        require(vaults[msg.sender].debt >= burnAmount, "ERR_BURN_INSUFFICIENT_DEBT");
+
+        /* Effects: reduce the debt of the user. */
+        (vars.mathErr, vars.newDebt) = subUInt(vaults[msg.sender].debt, burnAmount);
+        /* This operation can't fail because of the last `require` from above. */
+        assert(vars.mathErr == MathError.NO_ERROR);
+        vaults[msg.sender].debt = vars.newDebt;
+
+        /* Effects: reduce the yToken supply. */
+        (vars.mathErr, vars.newTotalSupply) = subUInt(totalSupply, burnAmount);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_BURN_MATH_ERROR");
+        totalSupply = vars.newTotalSupply;
+
+        /* Effects: burn the yTokens. */
+        (vars.mathErr, vars.newBurnerBalance) = subUInt(balances[msg.sender], burnAmount);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_BURN_MATH_ERROR");
+        balances[msg.sender] = vars.newBurnerBalance;
+
+        /* We emit both a Mint and a Transfer event */
+        emit Burn(msg.sender, burnAmount);
+        emit Transfer(msg.sender, address(this), burnAmount);
+
         return NO_ERROR;
     }
 
@@ -131,13 +182,14 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
      * @return bool=success, otherwise it reverts.
      */
     function depositCollateral(uint256 collateralAmount) external override isVaultOpen nonReentrant returns (bool) {
+        DepositLocalVars memory vars;
+
         /* Checks: avoid the zero edge case. */
         require(collateralAmount > 0, "ERR_DEPOSIT_COLLATERAL_ZERO");
         /* Checks: verify that the Fintroller allows this action to be performed. */
         require(fintroller.depositAllowed(this), "ERR_DEPOSIT_COLLATERAL_NOT_ALLOWED");
 
         /* Effects: update the storage properties. */
-        DepositLocalVars memory vars;
         (vars.mathErr, vars.newFreeCollateral) = addUInt(vaults[msg.sender].freeCollateral, collateralAmount);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_DEPOSIT_COLLATERAL_MATH_ERROR");
         vaults[msg.sender].freeCollateral = vars.newFreeCollateral;
@@ -161,7 +213,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         Exp newCollateralizationRatio;
         uint256 newFreeCollateral;
         uint256 newLockedCollateral;
-        uint256 newLockedCollateralValue;
+        uint256 newLockedCollateralValueInUsd;
         uint256 underlyingPriceInUsd;
     }
 
@@ -179,13 +231,13 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
      * @return bool true=success, otherwise it reverts.
      */
     function freeCollateral(uint256 collateralAmount) external override isVaultOpen returns (bool) {
+        FreeCollateralLocalVars memory vars;
+
         /* Avoid the zero edge case. */
         require(collateralAmount > 0, "ERR_FREE_COLLATERAL_ZERO");
 
         Vault memory vault = vaults[msg.sender];
         require(vault.lockedCollateral >= collateralAmount, "ERR_FREE_COLLATERAL_INSUFFICIENT_LOCKED_COLLATERAL");
-
-        FreeCollateralLocalVars memory vars;
 
         /* This operation can't fail because of the first `require` in this function. */
         (vars.mathErr, vars.newLockedCollateral) = subUInt(vault.lockedCollateral, collateralAmount);
@@ -193,11 +245,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         vaults[msg.sender].lockedCollateral = vars.newLockedCollateral;
 
         if (vaults[msg.sender].debt > 0) {
-            vars.collateralPriceInUsd = fintroller.oracle().getEthPriceInUsd();
-            (vars.mathErr, vars.newLockedCollateralValue) = mulUInt(
-                vars.newLockedCollateral,
-                vars.collateralPriceInUsd
-            );
+            (vars.mathErr, vars.newLockedCollateralValueInUsd) = getCollateralValueInUsd(vars.newLockedCollateral);
             require(vars.mathErr == MathError.NO_ERROR, "ERR_FREE_COLLATERAL_MATH_ERROR");
 
             vars.underlyingPriceInUsd = fintroller.oracle().getDaiPriceInUsd();
@@ -206,7 +254,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
 
             /* This operation can't fail because both operands are non-zero. */
             (vars.mathErr, vars.newCollateralizationRatio) = divExp(
-                Exp({ mantissa: vars.newLockedCollateralValue }),
+                Exp({ mantissa: vars.newLockedCollateralValueInUsd }),
                 Exp({ mantissa: vars.debtValueInUsd })
             );
             require(vars.mathErr == MathError.NO_ERROR, "ERR_FREE_COLLATERAL_MATH_ERROR");
@@ -215,7 +263,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
             (vars.collateralizationRatioMantissa) = fintroller.getBond(address(this));
             require(
                 vars.newCollateralizationRatio.mantissa >= vars.collateralizationRatioMantissa,
-                "ERR_BELOW_COLLATERALIZATION_RATIO"
+                "ERR_BELOW_THRESHOLD_COLLATERALIZATION_RATIO"
             );
         }
 
@@ -250,13 +298,13 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
      * @return bool true=success, otherwise it reverts.
      */
     function lockCollateral(uint256 collateralAmount) external override isVaultOpen returns (bool) {
+        LockCollateralLocalVars memory vars;
+
         /* Avoid the zero edge case. */
         require(collateralAmount > 0, "ERR_LOCK_COLLATERAL_ZERO");
 
         Vault memory vault = vaults[msg.sender];
         require(vault.freeCollateral >= collateralAmount, "ERR_LOCK_COLLATERAL_INSUFFICIENT_FREE_COLLATERAL");
-
-        LockCollateralLocalVars memory vars;
 
         (vars.mathErr, vars.newLockedCollateral) = addUInt(vault.lockedCollateral, collateralAmount);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_LOCK_COLLATERAL_MATH_ERROR");
@@ -273,53 +321,55 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
 
     struct MintLocalVars {
         MathError mathErr;
-        uint256 collateralPriceInUsd;
-        uint256 collateralizationRatioMantissa;
         uint256 lockedCollateralValueInUsd;
         uint256 mintValueInUsd;
         Exp newCollateralizationRatio;
         uint256 newDebt;
         uint256 newMinterBalance;
         uint256 newTotalSupply;
+        uint256 thresholdCollateralizationRatioMantissa;
         uint256 timeToLive;
         uint256 underlyingPriceInUsd;
     }
 
     /**
      * @notice Mints new yTokens and increases the debt of the caller.
-     * @dev Requirements:
+     * @dev Emits a {Mint} and a {Transfer} event.
+     *
+     * Requirements:
      *
      * - The vault must be open.
      * - The amount to mint cannot be zero.
      * - The fintroller must allow new mints.
      * - The yToken must not be matured.
+     * - The caller must not fall below the
      *
-     * @param yTokenAmount The amount of yTokens to print into existence.
+     * @param mintAmount The amount of yTokens to print into existence.
      * @return bool true=success, otherwise it reverts.
      */
-    function mint(uint256 yTokenAmount) public override isVaultOpen isNotMatured nonReentrant returns (bool) {
+    function mint(uint256 mintAmount) public override isVaultOpen isNotMatured nonReentrant returns (bool) {
         MintLocalVars memory vars;
 
         /* Checks: avoid the zero edge case. */
-        require(yTokenAmount > 0, "ERR_MINT_ZERO");
+        require(mintAmount > 0, "ERR_MINT_ZERO");
 
         /* Checks: verify that the Fintroller allows this action to be performed. */
         require(fintroller.mintAllowed(this), "ERR_MINT_NOT_ALLOWED");
 
         /* TODO: check liquidity in the guarantor pool. */
 
+        /* Checks: the contingent collateralization ratio is higher or equal to the threshold. */
         Vault memory vault = vaults[msg.sender];
         require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
 
-        vars.collateralPriceInUsd = fintroller.oracle().getEthPriceInUsd();
-        (vars.mathErr, vars.lockedCollateralValueInUsd) = mulUInt(vault.lockedCollateral, vars.collateralPriceInUsd);
+        (vars.mathErr, vars.lockedCollateralValueInUsd) = getCollateralValueInUsd(vault.lockedCollateral);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
 
         vars.underlyingPriceInUsd = fintroller.oracle().getDaiPriceInUsd();
-        (vars.mathErr, vars.mintValueInUsd) = mulUInt(yTokenAmount, vars.underlyingPriceInUsd);
+        (vars.mathErr, vars.mintValueInUsd) = mulUInt(mintAmount, vars.underlyingPriceInUsd);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
 
-        (vars.mathErr, vars.newDebt) = addUInt(vault.debt, yTokenAmount);
+        (vars.mathErr, vars.newDebt) = addUInt(vault.debt, vars.mintValueInUsd);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
 
         (vars.mathErr, vars.newCollateralizationRatio) = divExp(
@@ -328,29 +378,28 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         );
         require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
 
-        /* Checks: the new collateralization ratio must be be higher or equal to the threshold. */
-        (vars.collateralizationRatioMantissa) = fintroller.getBond(address(this));
+        (vars.thresholdCollateralizationRatioMantissa) = fintroller.getBond(address(this));
         require(
-            vars.newCollateralizationRatio.mantissa >= vars.collateralizationRatioMantissa,
-            "ERR_BELOW_COLLATERALIZATION_RATIO"
+            vars.newCollateralizationRatio.mantissa >= vars.thresholdCollateralizationRatioMantissa,
+            "ERR_BELOW_THRESHOLD_COLLATERALIZATION_RATIO"
         );
 
-        /* Effects: update the new debt. */
+        /* Effects: increase the debt of the user. */
         vaults[msg.sender].debt = vars.newDebt;
 
-        /* Effects: increases the yToken supply. */
-        (vars.mathErr, vars.newTotalSupply) = addUInt(totalSupply, yTokenAmount);
+        /* Effects: increase the yToken supply. */
+        (vars.mathErr, vars.newTotalSupply) = addUInt(totalSupply, mintAmount);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
         totalSupply = vars.newTotalSupply;
 
-        /* Effects: mints the yTokens. */
-        (vars.mathErr, vars.newMinterBalance) = addUInt(balances[msg.sender], yTokenAmount);
+        /* Effects: mint the yTokens. */
+        (vars.mathErr, vars.newMinterBalance) = addUInt(balances[msg.sender], mintAmount);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
         balances[msg.sender] = vars.newMinterBalance;
 
         /* We emit both a Mint and a Transfer event */
-        emit Mint(msg.sender, yTokenAmount);
-        emit Transfer(address(this), msg.sender, yTokenAmount);
+        emit Mint(msg.sender, mintAmount);
+        emit Transfer(address(this), msg.sender, mintAmount);
 
         return NO_ERROR;
     }
@@ -393,6 +442,8 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
      * @return bool=success, otherwise it reverts.
      */
     function withdrawCollateral(uint256 collateralAmount) external override isVaultOpen nonReentrant returns (bool) {
+        WithdrawCollateralLocalVars memory vars;
+
         /* Checks: avoid the zero edge case. */
         require(collateralAmount > 0, "ERR_WITHDRAW_COLLATERAL_ZERO");
 
@@ -403,7 +454,6 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         );
 
         /* Effects: update the storage properties. */
-        WithdrawCollateralLocalVars memory vars;
         (vars.mathErr, vars.newFreeCollateral) = subUInt(vaults[msg.sender].freeCollateral, collateralAmount);
         /* This operation can't fail because of the first `require` in this function. */
         assert(vars.mathErr == MathError.NO_ERROR);
@@ -420,16 +470,6 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         return NO_ERROR;
     }
 
-    /*** Admin Functions ***/
-
-    function _reduceReserves(uint256 reduceAmount) external override isAuthorized returns (bool) {
-        return NO_ERROR;
-    }
-
-    function _setReserveFactor(uint256 newReserveFactorMantissa) external override isAuthorized returns (bool) {
-        return NO_ERROR;
-    }
-
     /*** Internal Functions ***/
 
     /**
@@ -438,5 +478,21 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
      */
     function getBlockTimestamp() internal view returns (uint256) {
         return block.timestamp;
+    }
+
+    struct GetLockedCollateralValueInUsdLocalVars {
+        MathError mathErr;
+        uint256 collateralPriceInUsd;
+        uint256 lockedCollateralValueInUsd;
+    }
+
+    /**
+     * @dev Used to avoid duplicating the logic.
+     */
+    function getCollateralValueInUsd(uint256 collateralAmount) internal view returns (MathError, uint256) {
+        GetLockedCollateralValueInUsdLocalVars memory vars;
+        vars.collateralPriceInUsd = fintroller.oracle().getEthPriceInUsd();
+        (vars.mathErr, vars.lockedCollateralValueInUsd) = mulUInt(collateralAmount, vars.collateralPriceInUsd);
+        return (vars.mathErr, vars.lockedCollateralValueInUsd);
     }
 }
