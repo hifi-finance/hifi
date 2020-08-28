@@ -24,6 +24,7 @@ contract DumbOracle is DumbOracleInterface {
     }
 
     function getPrice(address asset) external override pure returns (uint256) {
+        asset;
         return 0;
     }
 }

@@ -22,12 +22,12 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
     }
 
     modifier isMatured() {
-        require(block.timestamp >= expirationTime, "ERR_BOND_NOT_MATURED");
+        require(getBlockTimestamp() >= expirationTime, "ERR_BOND_NOT_MATURED");
         _;
     }
 
     modifier isNotMatured() {
-        require(block.timestamp < expirationTime, "ERR_BOND_MATURED");
+        require(getBlockTimestamp() < expirationTime, "ERR_BOND_MATURED");
         _;
     }
 
@@ -119,7 +119,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
      * - The amount to burn cannot be zero.
      * - The caller must have enough yTokens.
      * - The caller must have enough debt.
-     * - The caller is not below the threshold collateralization ratio.
+     * - The caller cannot fall below the threshold collateralization ratio.
      *
      * @param burnAmount Lorem ipsum.
      * @return bool=success, otherwise it reverts.
@@ -155,7 +155,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         require(vars.mathErr == MathError.NO_ERROR, "ERR_BURN_MATH_ERROR");
         balances[msg.sender] = vars.newBurnerBalance;
 
-        /* We emit both a Mint and a Transfer event */
+        /* We emit both a Burn and a Transfer event. */
         emit Burn(msg.sender, burnAmount);
         emit Transfer(msg.sender, address(this), burnAmount);
 
@@ -214,7 +214,6 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         uint256 newFreeCollateral;
         uint256 newLockedCollateral;
         uint256 newLockedCollateralValueInUsd;
-        uint256 underlyingPriceInUsd;
     }
 
     /**
@@ -225,7 +224,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
      * - The vault must be open.
      * - The amount to free cannot be zero.
      * - There must be enough locked collateral.
-     * - The user must not fall below the collateralization ratio.
+     * - The user cannot fall below the collateralization ratio.
      *
      * @param collateralAmount The amount of free collateral to lock.
      * @return bool true=success, otherwise it reverts.
@@ -248,8 +247,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
             (vars.mathErr, vars.newLockedCollateralValueInUsd) = getCollateralValueInUsd(vars.newLockedCollateral);
             require(vars.mathErr == MathError.NO_ERROR, "ERR_FREE_COLLATERAL_MATH_ERROR");
 
-            vars.underlyingPriceInUsd = fintroller.oracle().getDaiPriceInUsd();
-            (vars.mathErr, vars.debtValueInUsd) = mulUInt(vault.debt, vars.underlyingPriceInUsd);
+            (vars.mathErr, vars.debtValueInUsd) = getUnderlyingValueInUsd(vault.debt);
             require(vars.mathErr == MathError.NO_ERROR, "ERR_FREE_COLLATERAL_MATH_ERROR");
 
             /* This operation can't fail because both operands are non-zero. */
@@ -276,6 +274,8 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
     }
 
     function liquidate(address borrower, uint256 repayUnderlyingAmount) external override returns (bool) {
+        borrower;
+        repayUnderlyingAmount;
         return NO_ERROR;
     }
 
@@ -329,7 +329,6 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         uint256 newTotalSupply;
         uint256 thresholdCollateralizationRatioMantissa;
         uint256 timeToLive;
-        uint256 underlyingPriceInUsd;
     }
 
     /**
@@ -342,7 +341,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
      * - The amount to mint cannot be zero.
      * - The fintroller must allow new mints.
      * - The yToken must not be matured.
-     * - The caller must not fall below the
+     * - The caller must not fall below the threshold collateralization ratio.
      *
      * @param mintAmount The amount of yTokens to print into existence.
      * @return bool true=success, otherwise it reverts.
@@ -365,8 +364,8 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         (vars.mathErr, vars.lockedCollateralValueInUsd) = getCollateralValueInUsd(vault.lockedCollateral);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
 
-        vars.underlyingPriceInUsd = fintroller.oracle().getDaiPriceInUsd();
-        (vars.mathErr, vars.mintValueInUsd) = mulUInt(mintAmount, vars.underlyingPriceInUsd);
+        /* TODO: handle the case where the underlying has a different no. of decimals compared to the yToken? */
+        (vars.mathErr, vars.mintValueInUsd) = getUnderlyingValueInUsd(mintAmount);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
 
         (vars.mathErr, vars.newDebt) = addUInt(vault.debt, vars.mintValueInUsd);
@@ -397,7 +396,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
         balances[msg.sender] = vars.newMinterBalance;
 
-        /* We emit both a Mint and a Transfer event */
+        /* We emit both a Mint and a Transfer event. */
         emit Mint(msg.sender, mintAmount);
         emit Transfer(address(this), msg.sender, mintAmount);
 
@@ -480,19 +479,35 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         return block.timestamp;
     }
 
-    struct GetLockedCollateralValueInUsdLocalVars {
+    struct GetCollateralValueInUsdLocalVars {
         MathError mathErr;
         uint256 collateralPriceInUsd;
-        uint256 lockedCollateralValueInUsd;
+        uint256 collateralValueInUsd;
     }
 
     /**
      * @dev Used to avoid duplicating the logic.
      */
     function getCollateralValueInUsd(uint256 collateralAmount) internal view returns (MathError, uint256) {
-        GetLockedCollateralValueInUsdLocalVars memory vars;
+        GetCollateralValueInUsdLocalVars memory vars;
         vars.collateralPriceInUsd = fintroller.oracle().getEthPriceInUsd();
-        (vars.mathErr, vars.lockedCollateralValueInUsd) = mulUInt(collateralAmount, vars.collateralPriceInUsd);
-        return (vars.mathErr, vars.lockedCollateralValueInUsd);
+        (vars.mathErr, vars.collateralValueInUsd) = mulUInt(collateralAmount, vars.collateralPriceInUsd);
+        return (vars.mathErr, vars.collateralValueInUsd);
+    }
+
+    struct GetUnderlyingValueInUsdLocalVars {
+        MathError mathErr;
+        uint256 underlyingPriceInUsd;
+        uint256 underlyingValueInUsd;
+    }
+
+    /**
+     * @dev Used to avoid duplicating the logic.
+     */
+    function getUnderlyingValueInUsd(uint256 underlyingAmount) internal view returns (MathError, uint256) {
+        GetUnderlyingValueInUsdLocalVars memory vars;
+        vars.underlyingPriceInUsd = fintroller.oracle().getDaiPriceInUsd();
+        (vars.mathErr, vars.underlyingValueInUsd) = mulUInt(underlyingAmount, vars.underlyingPriceInUsd);
+        return (vars.mathErr, vars.underlyingValueInUsd);
     }
 }

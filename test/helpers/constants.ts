@@ -21,3 +21,8 @@ export const FintrollerConstants = {
   CollateralizationRatioUpperBoundMantissa: TenThousandPercent,
   DefaultCollateralizationRatioMantissa: OneHundredAndFiftyPercent,
 };
+
+export const YTokenConstants = {
+  /* TODO: find a way to make this a runtime-generated constant */
+  DefaultExpirationTime: BigNumber.from(1609459199) /* December 31, 2020 at 23:59:59 */,
+};

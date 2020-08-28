@@ -14,7 +14,7 @@ import shouldBehaveLikeVaultGetter from "./view/vault";
 
 export function shouldBehaveLikeYToken(): void {
   describe("Effects Functions", function () {
-    describe.only("burn", function () {
+    describe("burn", function () {
       shouldBehaveLikeBurn();
     });
 
@@ -44,7 +44,7 @@ export function shouldBehaveLikeYToken(): void {
       shouldBehaveLikeCollateralGetter();
     });
 
-    describe("expirationTime", function () {
+    describe.only("expirationTime", function () {
       shouldBehaveLikeExpirationTimeGetter();
     });
 

@@ -1,7 +1,8 @@
+import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { FintrollerConstants } from "../../../helpers/constants";
+import { FintrollerConstants, YTokenConstants } from "../../../helpers/constants";
 import { FintrollerErrors } from "../../../helpers/errors";
 import { OneHundredTokens, TenTokens } from "../../../helpers/constants";
 import { YTokenErrors } from "../../../helpers/errors";
@@ -50,7 +51,10 @@ export default function shouldBehaveLikeMint(): void {
                 });
 
                 it("mints new yTokens", async function () {
+                  const preBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.brad);
                   await this.contracts.yToken.connect(this.signers.brad).mint(OneHundredTokens);
+                  const postBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.brad);
+                  expect(preBalance).to.equal(postBalance.sub(OneHundredTokens));
                 });
 
                 it("emits a Mint event", async function () {
@@ -99,7 +103,7 @@ export default function shouldBehaveLikeMint(): void {
 
         contextForTimeDependentTests("when the bond matured", function () {
           beforeEach(async function () {
-            await increaseTime(this.scenario.yToken.expirationTime);
+            await increaseTime(YTokenConstants.DefaultExpirationTime);
           });
 
           it("reverts", async function () {

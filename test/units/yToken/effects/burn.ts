@@ -1,3 +1,4 @@
+import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
@@ -34,7 +35,10 @@ export default function shouldBehaveLikeBurn(): void {
             });
 
             it("burns the yTokens", async function () {
+              const preBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.brad);
               await this.contracts.yToken.connect(this.signers.brad).burn(OneHundredTokens);
+              const postBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.brad);
+              expect(preBalance).to.equal(postBalance.add(OneHundredTokens));
             });
 
             it("emits a Burn event", async function () {
