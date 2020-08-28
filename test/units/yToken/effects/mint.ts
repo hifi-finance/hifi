@@ -35,14 +35,16 @@ export default function shouldBehaveLikeMint(): void {
              */
             describe("when the user deposited collateral", function () {
               beforeEach(async function () {
-                await this.stubs.fintroller.mock.depositAllowed.withArgs(this.contracts.yToken.address).returns(true);
+                await this.stubs.fintroller.mock.depositCollateralAllowed
+                  .withArgs(this.contracts.yToken.address)
+                  .returns(true);
                 await this.stubs.collateral.mock.transferFrom
                   .withArgs(this.accounts.brad, this.contracts.yToken.address, TenTokens)
                   .returns(true);
                 await this.contracts.yToken.connect(this.signers.brad).depositCollateral(TenTokens);
               });
 
-              describe("and locked it", function () {
+              describe("when the user locked the collateral", function () {
                 beforeEach(async function () {
                   await this.contracts.yToken.connect(this.signers.brad).lockCollateral(TenTokens);
                 });
@@ -64,7 +66,7 @@ export default function shouldBehaveLikeMint(): void {
                 });
               });
 
-              describe("but did not lock it", function () {
+              describe("when the user did not lock the collateral", function () {
                 it("reverts", async function () {
                   await expect(
                     this.contracts.yToken.connect(this.signers.brad).mint(OneHundredTokens),

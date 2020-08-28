@@ -187,7 +187,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         /* Checks: avoid the zero edge case. */
         require(collateralAmount > 0, "ERR_DEPOSIT_COLLATERAL_ZERO");
         /* Checks: verify that the Fintroller allows this action to be performed. */
-        require(fintroller.depositAllowed(this), "ERR_DEPOSIT_COLLATERAL_NOT_ALLOWED");
+        require(fintroller.depositCollateralAllowed(this), "ERR_DEPOSIT_COLLATERAL_NOT_ALLOWED");
 
         /* Effects: update the storage properties. */
         (vars.mathErr, vars.newFreeCollateral) = addUInt(vaults[msg.sender].freeCollateral, collateralAmount);

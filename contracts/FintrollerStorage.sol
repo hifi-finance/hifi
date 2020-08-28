@@ -9,7 +9,7 @@ abstract contract FintrollerStorage is Exponential {
         /* The percentage that dictates the threshold under which loans become under-collateralized. */
         Exp thresholdCollateralizationRatio;
         bool isBurnAllowed;
-        bool isDepositAllowed;
+        bool isDepositCollateralAllowed;
         bool isListed;
         bool isMintAllowed;
     }

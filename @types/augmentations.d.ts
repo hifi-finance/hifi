@@ -1,6 +1,6 @@
 import { Signer } from "@ethersproject/abstract-signer";
 
-import { Accounts, Contracts, Scenario, Signers, Stubs } from "./";
+import { Accounts, Contracts, Signers, Stubs } from "./";
 
 export interface TypechainConfig {
   outDir?: string;
@@ -18,12 +18,6 @@ declare module "@nomiclabs/buidler/types" {
     typechain: string;
   }
 }
-declare module "mocha" {
-  export interface Context {
-    scenario: Scenario;
-  }
-}
-
 declare module "mocha" {
   export interface Context {
     accounts: Accounts;

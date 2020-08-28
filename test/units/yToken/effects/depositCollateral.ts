@@ -21,7 +21,9 @@ export default function shouldBehaveLikeDepositCollateral(): void {
 
         describe("when the fintroller allows new deposits", function () {
           beforeEach(async function () {
-            await this.stubs.fintroller.mock.depositAllowed.withArgs(this.contracts.yToken.address).returns(true);
+            await this.stubs.fintroller.mock.depositCollateralAllowed
+              .withArgs(this.contracts.yToken.address)
+              .returns(true);
           });
 
           describe("when the yToken contract has enough allowance", function () {
@@ -58,7 +60,9 @@ export default function shouldBehaveLikeDepositCollateral(): void {
 
         describe("when the fintroller does not allow new deposits", function () {
           beforeEach(async function () {
-            await this.stubs.fintroller.mock.depositAllowed.withArgs(this.contracts.yToken.address).returns(false);
+            await this.stubs.fintroller.mock.depositCollateralAllowed
+              .withArgs(this.contracts.yToken.address)
+              .returns(false);
           });
 
           it("reverts", async function () {
@@ -71,7 +75,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
 
       describe("when the bond is not listed", function () {
         beforeEach(async function () {
-          await this.stubs.fintroller.mock.depositAllowed
+          await this.stubs.fintroller.mock.depositCollateralAllowed
             .withArgs(this.contracts.yToken.address)
             .reverts(FintrollerErrors.BondNotListed);
         });

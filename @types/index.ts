@@ -23,30 +23,6 @@ export interface Contracts {
   yToken: YToken;
 }
 
-export interface Scenario {
-  collateral: {
-    decimals: BigNumber;
-    name: string;
-    symbol: string;
-  };
-  guarantorPool: {
-    decimals: BigNumber;
-    name: string;
-    symbol: string;
-  };
-  underlying: {
-    decimals: BigNumber;
-    name: string;
-    symbol: string;
-  };
-  yToken: {
-    decimals: BigNumber;
-    expirationTime: BigNumber;
-    name: string;
-    symbol: string;
-  };
-}
-
 export interface Signers {
   admin: Signer;
   brad: Signer;

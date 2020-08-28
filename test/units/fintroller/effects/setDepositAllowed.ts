@@ -10,22 +10,28 @@ export default function shouldBehaveLikeSetDepositAllowed(): void {
       });
 
       it("sets the value of the property to true", async function () {
-        await this.contracts.fintroller.connect(this.signers.admin).setDepositAllowed(this.stubs.yToken.address, true);
-        const newState: boolean = await this.contracts.fintroller.depositAllowed(this.stubs.yToken.address);
+        await this.contracts.fintroller
+          .connect(this.signers.admin)
+          .setDepositCollateralAllowed(this.stubs.yToken.address, true);
+        const newState: boolean = await this.contracts.fintroller.depositCollateralAllowed(this.stubs.yToken.address);
         expect(newState).to.equal(true);
       });
 
       it("sets the value of the property to false", async function () {
-        await this.contracts.fintroller.connect(this.signers.admin).setDepositAllowed(this.stubs.yToken.address, false);
-        const newState: boolean = await this.contracts.fintroller.depositAllowed(this.stubs.yToken.address);
+        await this.contracts.fintroller
+          .connect(this.signers.admin)
+          .setDepositCollateralAllowed(this.stubs.yToken.address, false);
+        const newState: boolean = await this.contracts.fintroller.depositCollateralAllowed(this.stubs.yToken.address);
         expect(newState).to.equal(false);
       });
 
       it("emits a SetDepositAllowed event", async function () {
         await expect(
-          this.contracts.fintroller.connect(this.signers.admin).setDepositAllowed(this.stubs.yToken.address, true),
+          this.contracts.fintroller
+            .connect(this.signers.admin)
+            .setDepositCollateralAllowed(this.stubs.yToken.address, true),
         )
-          .to.emit(this.contracts.fintroller, "SetDepositAllowed")
+          .to.emit(this.contracts.fintroller, "SetDepositCollateralAllowed")
           .withArgs(this.stubs.yToken.address, true);
       });
     });
@@ -33,7 +39,9 @@ export default function shouldBehaveLikeSetDepositAllowed(): void {
     describe("when the bond is not listed", function () {
       it("rejects", async function () {
         await expect(
-          this.contracts.fintroller.connect(this.signers.admin).setDepositAllowed(this.stubs.yToken.address, true),
+          this.contracts.fintroller
+            .connect(this.signers.admin)
+            .setDepositCollateralAllowed(this.stubs.yToken.address, true),
         ).to.be.revertedWith(FintrollerErrors.BondNotListed);
       });
     });
@@ -42,7 +50,9 @@ export default function shouldBehaveLikeSetDepositAllowed(): void {
   describe("when the caller is not the admin", function () {
     it("reverts", async function () {
       await expect(
-        this.contracts.fintroller.connect(this.signers.eve).setDepositAllowed(this.stubs.yToken.address, true),
+        this.contracts.fintroller
+          .connect(this.signers.eve)
+          .setDepositCollateralAllowed(this.stubs.yToken.address, true),
       ).to.be.revertedWith(Errors.NotAuthorized);
     });
   });

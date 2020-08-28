@@ -1,8 +1,6 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { ethers, waffle } from "@nomiclabs/buidler";
 
-import scenarios from "./scenarios";
-
 import { Accounts, Contracts, Signers, Stubs } from "../@types/index";
 import { testFintroller } from "./units/fintroller/Fintroller";
 import { testYToken } from "./units/yToken/YToken";
@@ -16,8 +14,6 @@ describe("Unit Tests", function () {
   });
 
   before(async function () {
-    this.scenario = scenarios.default;
-
     this.accounts = {} as Accounts;
     this.contracts = {} as Contracts;
     this.signers = {} as Signers;

@@ -14,7 +14,7 @@ import shouldBehaveLikeVaultGetter from "./view/vault";
 
 export function shouldBehaveLikeYToken(): void {
   describe("Effects Functions", function () {
-    describe("burn", function () {
+    describe.only("burn", function () {
       shouldBehaveLikeBurn();
     });
 

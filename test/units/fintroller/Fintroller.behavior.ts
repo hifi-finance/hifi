@@ -8,7 +8,7 @@ import shouldBehaveLikeBondGetter from "./view/bond";
 import shouldBehaveLikeCollateralizationRatioLowerBoundMantissaGetter from "./view/collateralizationRatioLowerBoundMantissa";
 import shouldBehaveLikeCollateralizationRatioUpperBoundMantissaGetter from "./view/collateralizationRatioUpperBoundMantissa";
 import shouldBehaveLikeDefaultCollateralizationRatioMantissaGetter from "./view/defaultCollateralizationRatioMantissa";
-import shouldBehaveLikeDepositAllowed from "./view/depositAllowed";
+import shouldBehaveLikeDepositCollateralAllowed from "./view/depositCollateralAllowed";
 import shouldBehaveLikeMintAllowed from "./view/mintAllowed";
 import shouldBehaveLikeOracleGetter from "./view/oracle";
 
@@ -52,8 +52,8 @@ export function shouldBehaveLikeFintroller(): void {
       shouldBehaveLikeDefaultCollateralizationRatioMantissaGetter();
     });
 
-    describe("depositAllowed", function () {
-      shouldBehaveLikeDepositAllowed();
+    describe("depositCollateralAllowed", function () {
+      shouldBehaveLikeDepositCollateralAllowed();
     });
 
     describe("mintAllowed", function () {

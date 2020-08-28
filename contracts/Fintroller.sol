@@ -35,10 +35,10 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @param yToken The bond to make the check against.
      * @return bool true=allowed, false=not allowed.
      */
-    function depositAllowed(YTokenInterface yToken) external override view returns (bool) {
+    function depositCollateralAllowed(YTokenInterface yToken) external override view returns (bool) {
         Bond memory bond = bonds[address(yToken)];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
-        return bond.isDepositAllowed;
+        return bond.isDepositCollateralAllowed;
     }
 
     /**
@@ -72,8 +72,8 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
         bonds[address(yToken)] = Bond({
             thresholdCollateralizationRatio: Exp({ mantissa: defaultCollateralizationRatioMantissa }),
             isBurnAllowed: false,
+            isDepositCollateralAllowed: false,
             isListed: true,
-            isDepositAllowed: false,
             isMintAllowed: false
         });
         emit ListBond(yToken);
@@ -158,9 +158,9 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     }
 
     /**
-     * @notice Sets the state of the permission accessed by the yToken before allowing a new deposit.
+     * @notice Sets the state of the permission accessed by the yToken before allowing a new collateral deposit.
      *
-     * @dev Emits a {SetDepositAllowed} event.
+     * @dev Emits a {SetDepositCollateralAllowed} event.
      *
      * Requirements:
      * - caller must be the administrator
@@ -169,10 +169,15 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @param state The new state to be put in storage.
      * @return bool true=success, otherwise it reverts.
      */
-    function setDepositAllowed(YTokenInterface yToken, bool state) external override isAuthorized returns (bool) {
+    function setDepositCollateralAllowed(YTokenInterface yToken, bool state)
+        external
+        override
+        isAuthorized
+        returns (bool)
+    {
         require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
-        bonds[address(yToken)].isDepositAllowed = state;
-        emit SetDepositAllowed(yToken, state);
+        bonds[address(yToken)].isDepositCollateralAllowed = state;
+        emit SetDepositCollateralAllowed(yToken, state);
         return NO_ERROR;
     }
 

@@ -18,14 +18,16 @@ export default function shouldBehaveLikeLockCollateral(): void {
           await this.stubs.fintroller.mock.getBond
             .withArgs(this.contracts.yToken.address)
             .returns(FintrollerConstants.DefaultCollateralizationRatioMantissa);
-          await this.stubs.fintroller.mock.depositAllowed.withArgs(this.contracts.yToken.address).returns(true);
+          await this.stubs.fintroller.mock.depositCollateralAllowed
+            .withArgs(this.contracts.yToken.address)
+            .returns(true);
           await this.stubs.collateral.mock.transferFrom
             .withArgs(this.accounts.brad, this.contracts.yToken.address, TenTokens)
             .returns(true);
           await this.contracts.yToken.connect(this.signers.brad).depositCollateral(TenTokens);
         });
 
-        describe("and locked it", function () {
+        describe("when the user locked the collateral", function () {
           beforeEach(async function () {
             await this.contracts.yToken.connect(this.signers.brad).lockCollateral(TenTokens);
           });
@@ -35,7 +37,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
               await this.stubs.fintroller.mock.mintAllowed.withArgs(this.contracts.yToken.address).returns(true);
             });
 
-            describe("and is safely over-collateralized", async function () {
+            describe("when the user is safely over-collateralized", async function () {
               beforeEach(async function () {
                 await this.contracts.yToken.connect(this.signers.brad).mint(OneHundredTokens);
               });
@@ -55,7 +57,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
               });
             });
 
-            describe("and is dangerously collateralized", function () {
+            describe("when the user is dangerously collateralized", function () {
               beforeEach(async function () {
                 /* This is 150%. Remember that we deposited 10 ETH and that the oracle assumes 1 ETH = $100. */
                 const mintAmount: BigNumber = OneToken.mul(666);
