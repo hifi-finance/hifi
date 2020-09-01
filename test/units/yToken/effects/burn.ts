@@ -103,13 +103,12 @@ export default function shouldBehaveLikeBurn(): void {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.burnAllowed
             .withArgs(this.contracts.yToken.address)
-            .reverts(FintrollerErrors.BondNotListed);
+            .revertsWithReason(FintrollerErrors.BondNotListed);
         });
 
         it("reverts", async function () {
-          /* TODO: Replace with FintrollerErrors.BondNotListed */
           await expect(this.contracts.yToken.connect(this.signers.brad).burn(OneHundredTokens)).to.be.revertedWith(
-            "Mock revert",
+            FintrollerErrors.BondNotListed,
           );
         });
       });

@@ -118,13 +118,12 @@ export default function shouldBehaveLikeMint(): void {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.mintAllowed
             .withArgs(this.contracts.yToken.address)
-            .reverts(FintrollerErrors.BondNotListed);
+            .revertsWithReason(FintrollerErrors.BondNotListed);
         });
 
         it("reverts", async function () {
-          /* TODO: Replace with FintrollerErrors.BondNotListed */
           await expect(this.contracts.yToken.connect(this.signers.brad).mint(OneHundredTokens)).to.be.revertedWith(
-            "Mock revert",
+            FintrollerErrors.BondNotListed,
           );
         });
       });
