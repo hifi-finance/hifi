@@ -107,14 +107,14 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
     /*** Non-Constant Functions ***/
 
     /**
-     * @notice Exchanges yTokens for the underlying asset and takes the yTokens out of circulation.
+     * @notice Deletes the user's debt from the registry and takes the yTokens out of circulation.
      * @dev Emits a {Burn} and a {Transfer} event.
      *
      * Requirements:
      * - The vault must be open.
      * - The amount to burn cannot be zero.
-     * - The caller must have enough yTokens.
-     * - The caller must have enough debt.
+     * - The caller must have at least `burnAmount` yTokens.
+     * - The caller must have at least `burnAmount` as debt yTokens.
      * - The caller cannot fall below the threshold collateralization ratio.
      *
      * @param burnAmount Lorem ipsum.
@@ -130,6 +130,17 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         return NO_ERROR;
     }
 
+    /**
+     * @notice Deletes the user's debt from the registry and takes the yTokens out of circulation.
+     * @dev Emits a {Burn}, {BurnBehalf} and a {Transfer} event.
+     *
+     * Requirements: same as the `burn` function, but here `borrower` is the one who must have
+     * at least `burnAmount` as debt yTokens.
+     *
+     * @param burnAmount Lorem ipsum.
+     * @param burnAmount Lorem ipsum.
+     * @return bool=success, otherwise it reverts.
+     */
     function burnBehalf(address borrower, uint256 burnAmount) external override nonReentrant returns (bool) {
         require(vaults[borrower].isOpen, "ERR_VAULT_NOT_OPEN");
 
