@@ -2,9 +2,8 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { FintrollerConstants } from "../../../helpers/constants";
+import { FintrollerConstants, OneHundredTokens, TenTokens } from "../../../helpers/constants";
 import { FintrollerErrors } from "../../../helpers/errors";
-import { OneHundredTokens, TenTokens } from "../../../helpers/constants";
 import { YTokenErrors } from "../../../helpers/errors";
 import { contextForBradDepositingTenTokensAsCollateral } from "../../../helpers/mochaContexts";
 
@@ -27,7 +26,7 @@ export default function shouldBehaveLikeBurn(): void {
             await this.stubs.fintroller.mock.burnAllowed.withArgs(this.contracts.yToken.address).returns(true);
           });
 
-          contextForBradDepositingTenTokensAsCollateral("when the user has a debt", function () {
+          contextForBradDepositingTenTokensAsCollateral("when the caller has a debt", function () {
             beforeEach(async function () {
               await this.contracts.yToken.connect(this.signers.brad).lockCollateral(TenTokens);
               await this.stubs.fintroller.mock.mintAllowed.withArgs(this.contracts.yToken.address).returns(true);
@@ -54,33 +53,35 @@ export default function shouldBehaveLikeBurn(): void {
             });
           });
 
-          describe("when the user does not have a debt", function () {
-            contextForBradDepositingTenTokensAsCollateral("when the user owns yTokens", function () {
-              it("reverts", async function () {
-                /* Brads mints 100 yDAI and sends it all to Lucy. */
-                await this.contracts.yToken.connect(this.signers.brad).lockCollateral(TenTokens);
-                await this.stubs.fintroller.mock.mintAllowed.withArgs(this.contracts.yToken.address).returns(true);
-                await this.contracts.yToken.connect(this.signers.brad).mint(OneHundredTokens);
-                await this.contracts.yToken.connect(this.signers.brad).transfer(this.accounts.lucy, OneHundredTokens);
+          contextForBradDepositingTenTokensAsCollateral("when the caller does not have a debt", function () {
+            beforeEach(async function () {
+              /* Brads mints 100 yDAI. */
+              await this.contracts.yToken.connect(this.signers.brad).lockCollateral(TenTokens);
+              await this.stubs.fintroller.mock.mintAllowed.withArgs(this.contracts.yToken.address).returns(true);
+              await this.contracts.yToken.connect(this.signers.brad).mint(OneHundredTokens);
 
-                /* Lucy tries to burn the 100 yDAI but fails to do so because she doesn't have any debt. */
-                await this.contracts.yToken.connect(this.signers.lucy).openVault();
-                await expect(
-                  this.contracts.yToken.connect(this.signers.lucy).burn(OneHundredTokens),
-                ).to.be.revertedWith(YTokenErrors.BurnInsufficientDebt);
-              });
+              /* And sends it all to Lucy. */
+              await this.contracts.yToken.connect(this.signers.brad).transfer(this.accounts.lucy, OneHundredTokens);
             });
 
-            describe("when the user does not own any yTokens", function () {
-              beforeEach(async function () {
-                await this.stubs.collateral.mock.balanceOf.withArgs(this.accounts.brad).returns(Zero);
-              });
+            it("reverts", async function () {
+              /* Lucy tries to burn the 100 yDAI but fails to do so because she doesn't have any debt. */
+              await this.contracts.yToken.connect(this.signers.lucy).openVault();
+              await expect(this.contracts.yToken.connect(this.signers.lucy).burn(OneHundredTokens)).to.be.revertedWith(
+                YTokenErrors.BurnInsufficientDebt,
+              );
+            });
+          });
 
-              it("reverts", async function () {
-                await expect(
-                  this.contracts.yToken.connect(this.signers.brad).burn(OneHundredTokens),
-                ).to.be.revertedWith(YTokenErrors.BurnInsufficientBalance);
-              });
+          describe("when the caller does not have any yTokens", function () {
+            beforeEach(async function () {
+              await this.stubs.collateral.mock.balanceOf.withArgs(this.accounts.brad).returns(Zero);
+            });
+
+            it("reverts", async function () {
+              await expect(this.contracts.yToken.connect(this.signers.brad).burn(OneHundredTokens)).to.be.revertedWith(
+                YTokenErrors.BurnInsufficientBalance,
+              );
             });
           });
         });

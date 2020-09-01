@@ -9,20 +9,23 @@ import "./YTokenStorage.sol";
  */
 abstract contract YTokenInterface is YTokenStorage {
     /*** View Functions ***/
-    function getVault(address vaultHolder)
+    function getVault(address user)
         external
         virtual
         view
         returns (
             uint256,
             uint256,
-            uint256
+            uint256,
+            bool
         );
 
     function timeToLive() public virtual view returns (uint256);
 
     /*** Non-Constant Functions ***/
     function burn(uint256 burnAmount) external virtual returns (bool);
+
+    function burnBehalf(address borrower, uint256 burnAmount) external virtual returns (bool);
 
     function depositCollateral(uint256 collateralAmount) external virtual returns (bool);
 
@@ -39,7 +42,9 @@ abstract contract YTokenInterface is YTokenStorage {
     function withdrawCollateral(uint256 collateralAmount) external virtual returns (bool);
 
     /*** Events ***/
-    event Burn(address indexed user, uint256 burnAmount);
+    event Burn(address indexed borower, uint256 burnAmount);
+
+    event BurnBehalf(address indexed payer, address indexed borrower, uint256 burnAmount);
 
     event DepositCollateral(address indexed user, uint256 collateralAmount);
 
@@ -47,7 +52,7 @@ abstract contract YTokenInterface is YTokenStorage {
 
     event LockCollateral(address indexed user, uint256 collateralAmount);
 
-    event Mint(address indexed user, uint256 burnAmount);
+    event Mint(address indexed borrower, uint256 burnAmount);
 
     event WithdrawCollateral(address indexed user, uint256 collateralAmount);
 }

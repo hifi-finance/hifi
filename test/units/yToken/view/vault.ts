@@ -9,9 +9,10 @@ export default function shouldBehaveLikeVaultGetter(): void {
 
     it("retrieves the vault data", async function () {
       const vault = await this.contracts.yToken.getVault(this.accounts.brad);
+      expect(vault.debt).to.equal(Zero);
       expect(vault.freeCollateral).to.equal(Zero);
       expect(vault.lockedCollateral).to.equal(Zero);
-      expect(vault.debt).to.equal(Zero);
+      expect(vault.isOpen).to.equal(true);
     });
 
     /* TODO: test for other collateral values */
@@ -20,8 +21,10 @@ export default function shouldBehaveLikeVaultGetter(): void {
   describe("when the bond is not open", function () {
     it("retrieves zero values", async function () {
       const vault = await this.contracts.yToken.getVault(this.accounts.brad);
+      expect(vault.debt).to.equal(Zero);
       expect(vault.freeCollateral).to.equal(Zero);
       expect(vault.lockedCollateral).to.equal(Zero);
+      expect(vault.isOpen).to.equal(false);
     });
   });
 }

@@ -2,9 +2,13 @@ import { waffle } from "@nomiclabs/buidler";
 
 import { FintrollerConstants, TenTokens } from "./constants";
 
+/**
+ * @dev This functions assumes that the user's vault is open.
+ */
 export function contextForBradDepositingTenTokensAsCollateral(description: string, hooks: () => void): void {
   describe(description, function () {
     beforeEach(async function () {
+      /* Mock the necessary functions on the Fintroller and the Erc20 contracts. */
       await this.stubs.fintroller.mock.getBond
         .withArgs(this.contracts.yToken.address)
         .returns(FintrollerConstants.DefaultCollateralizationRatioMantissa);
@@ -12,6 +16,8 @@ export function contextForBradDepositingTenTokensAsCollateral(description: strin
       await this.stubs.collateral.mock.transferFrom
         .withArgs(this.accounts.brad, this.contracts.yToken.address, TenTokens)
         .returns(true);
+
+      /* Deposit the WETH collateral. */
       await this.contracts.yToken.connect(this.signers.brad).depositCollateral(TenTokens);
     });
 

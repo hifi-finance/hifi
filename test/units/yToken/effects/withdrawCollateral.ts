@@ -11,7 +11,7 @@ export default function shouldBehaveLikewithdrawCollateral(): void {
     });
 
     describe("when the amount to withdraw is not zero", function () {
-      describe("when the user deposited collateral", function () {
+      describe("when the caller deposited collateral", function () {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.depositCollateralAllowed
             .withArgs(this.contracts.yToken.address)
@@ -22,7 +22,7 @@ export default function shouldBehaveLikewithdrawCollateral(): void {
           await this.contracts.yToken.connect(this.signers.brad).depositCollateral(TenTokens);
         });
 
-        describe("when the user did not lock the collateral", function () {
+        describe("when the caller did not lock the collateral", function () {
           beforeEach(async function () {
             await this.stubs.collateral.mock.transfer.withArgs(this.accounts.brad, TenTokens).returns(true);
           });
@@ -38,7 +38,7 @@ export default function shouldBehaveLikewithdrawCollateral(): void {
           });
         });
 
-        describe("when the user locked the collateral", function () {
+        describe("when the caller locked the collateral", function () {
           beforeEach(async function () {
             await this.contracts.yToken.connect(this.signers.brad).lockCollateral(TenTokens);
           });
@@ -51,7 +51,7 @@ export default function shouldBehaveLikewithdrawCollateral(): void {
         });
       });
 
-      describe("when the user did not deposit any collateral", function () {
+      describe("when the caller did not deposit any collateral", function () {
         it("reverts", async function () {
           await expect(
             this.contracts.yToken.connect(this.signers.brad).withdrawCollateral(TenTokens),

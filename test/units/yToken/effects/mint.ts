@@ -34,7 +34,7 @@ export default function shouldBehaveLikeMint(): void {
              * - collateral value too small
              * - not enough liquidity in the guarantor pool
              */
-            describe("when the user deposited collateral", function () {
+            describe("when the caller deposited collateral", function () {
               beforeEach(async function () {
                 await this.stubs.fintroller.mock.depositCollateralAllowed
                   .withArgs(this.contracts.yToken.address)
@@ -45,7 +45,7 @@ export default function shouldBehaveLikeMint(): void {
                 await this.contracts.yToken.connect(this.signers.brad).depositCollateral(TenTokens);
               });
 
-              describe("when the user locked the collateral", function () {
+              describe("when the caller locked the collateral", function () {
                 beforeEach(async function () {
                   await this.contracts.yToken.connect(this.signers.brad).lockCollateral(TenTokens);
                 });
@@ -70,7 +70,7 @@ export default function shouldBehaveLikeMint(): void {
                 });
               });
 
-              describe("when the user did not lock the collateral", function () {
+              describe("when the caller did not lock the collateral", function () {
                 it("reverts", async function () {
                   await expect(
                     this.contracts.yToken.connect(this.signers.brad).mint(OneHundredTokens),
@@ -79,7 +79,7 @@ export default function shouldBehaveLikeMint(): void {
               });
             });
 
-            describe("when the user did not deposit any collateral", function () {
+            describe("when the caller did not deposit any collateral", function () {
               it("reverts", async function () {
                 await expect(
                   this.contracts.yToken.connect(this.signers.brad).mint(OneHundredTokens),

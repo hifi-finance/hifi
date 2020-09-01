@@ -1,9 +1,8 @@
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { FintrollerConstants } from "../../../helpers/constants";
+import { FintrollerConstants, TenTokens } from "../../../helpers/constants";
 import { FintrollerErrors, YTokenErrors } from "../../../helpers/errors";
-import { TenTokens } from "../../../helpers/constants";
 
 export default function shouldBehaveLikeDepositCollateral(): void {
   describe("when the vault is open", function () {

@@ -16,11 +16,6 @@ import "./utils/ReentrancyGuard.sol";
  * @author Mainframe
  */
 contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard {
-    modifier isVaultOpen() {
-        require(vaults[msg.sender].isOpen, "ERR_VAULT_NOT_OPEN");
-        _;
-    }
-
     modifier isMatured() {
         require(getBlockTimestamp() >= expirationTime, "ERR_BOND_NOT_MATURED");
         _;
@@ -31,7 +26,13 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         _;
     }
 
+    modifier isVaultOpen() {
+        require(vaults[msg.sender].isOpen, "ERR_VAULT_NOT_OPEN");
+        _;
+    }
+
     /**
+     * @dev This implementation assumes that the yToken has the same number of decimals as the underlying.
      * @param name_ ERC-20 name of this token
      * @param symbol_ ERC-20 symbol of this token
      * @param decimals_ ERC-20 decimal precision of this token
@@ -86,29 +87,24 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
     /**
      * @notice Returns the vault data.
      */
-    function getVault(address vaultHolder)
+    function getVault(address user)
         external
         override
         view
         returns (
             uint256 debt,
             uint256 freeCollateral,
-            uint256 lockedCollateral
+            uint256 lockedCollateral,
+            bool isOpen
         )
     {
-        debt = vaults[vaultHolder].debt;
-        freeCollateral = vaults[vaultHolder].freeCollateral;
-        lockedCollateral = vaults[vaultHolder].lockedCollateral;
+        debt = vaults[user].debt;
+        freeCollateral = vaults[user].freeCollateral;
+        lockedCollateral = vaults[user].lockedCollateral;
+        isOpen = vaults[user].isOpen;
     }
 
     /*** Non-Constant Functions ***/
-
-    struct BurnLocalVars {
-        MathError mathErr;
-        uint256 newBurnerBalance;
-        uint256 newDebt;
-        uint256 newTotalSupply;
-    }
 
     /**
      * @notice Exchanges yTokens for the underlying asset and takes the yTokens out of circulation.
@@ -125,38 +121,23 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
      * @return bool=success, otherwise it reverts.
      */
     function burn(uint256 burnAmount) external override isVaultOpen nonReentrant returns (bool) {
-        BurnLocalVars memory vars;
-
-        /* Checks: avoid the zero edge case. */
-        require(burnAmount > 0, "ERR_BURN_ZERO");
-
-        /* Checks: verify that the Fintroller allows this action to be performed. */
-        require(fintroller.burnAllowed(this), "ERR_BURN_NOT_ALLOWED");
-
-        /* Checks: user has enough yTokens. */
-        require(balanceOf(msg.sender) >= burnAmount, "ERR_BURN_INSUFFICIENT_BALANCE");
-
-        /* Checks: user has enough debt. */
-        require(vaults[msg.sender].debt >= burnAmount, "ERR_BURN_INSUFFICIENT_DEBT");
-
-        /* Effects: reduce the debt of the user. */
-        (vars.mathErr, vars.newDebt) = subUInt(vaults[msg.sender].debt, burnAmount);
-        /* This operation can't fail because of the last `require` from above. */
-        assert(vars.mathErr == MathError.NO_ERROR);
-        vaults[msg.sender].debt = vars.newDebt;
-
-        /* Effects: reduce the yToken supply. */
-        (vars.mathErr, vars.newTotalSupply) = subUInt(totalSupply, burnAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_BURN_MATH_ERROR");
-        totalSupply = vars.newTotalSupply;
-
-        /* Effects: burn the yTokens. */
-        (vars.mathErr, vars.newBurnerBalance) = subUInt(balances[msg.sender], burnAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_BURN_MATH_ERROR");
-        balances[msg.sender] = vars.newBurnerBalance;
+        burnInternal(msg.sender, msg.sender, burnAmount);
 
         /* We emit both a Burn and a Transfer event. */
         emit Burn(msg.sender, burnAmount);
+        emit Transfer(msg.sender, address(this), burnAmount);
+
+        return NO_ERROR;
+    }
+
+    function burnBehalf(address borrower, uint256 burnAmount) external override nonReentrant returns (bool) {
+        require(vaults[borrower].isOpen, "ERR_VAULT_NOT_OPEN");
+
+        burnInternal(msg.sender, borrower, burnAmount);
+
+        /* We emit a Burn, BurnBehalf and a Transfer event. */
+        emit Burn(borrower, burnAmount);
+        emit BurnBehalf(msg.sender, borrower, burnAmount);
         emit Transfer(msg.sender, address(this), burnAmount);
 
         return NO_ERROR;
@@ -509,5 +490,53 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         vars.underlyingPriceInUsd = fintroller.oracle().getDaiPriceInUsd();
         (vars.mathErr, vars.underlyingValueInUsd) = mulUInt(underlyingAmount, vars.underlyingPriceInUsd);
         return (vars.mathErr, vars.underlyingValueInUsd);
+    }
+
+    struct BurnLocalVars {
+        MathError mathErr;
+        uint256 newBurnerBalance;
+        uint256 newDebt;
+        uint256 newTotalSupply;
+    }
+
+    /**
+     * @dev See the documentation in the public functions.
+     */
+    function burnInternal(
+        address payer,
+        address borrower,
+        uint256 burnAmount
+    ) internal returns (bool) {
+        BurnLocalVars memory vars;
+
+        /* Checks: avoid the zero edge case. */
+        require(burnAmount > 0, "ERR_BURN_ZERO");
+
+        /* Checks: verify that the Fintroller allows this action to be performed. */
+        require(fintroller.burnAllowed(this), "ERR_BURN_NOT_ALLOWED");
+
+        /* Checks: the payer has enough yTokens. */
+        require(balanceOf(payer) >= burnAmount, "ERR_BURN_INSUFFICIENT_BALANCE");
+
+        /* Checks: minter has a debt to pay. */
+        require(vaults[borrower].debt >= burnAmount, "ERR_BURN_INSUFFICIENT_DEBT");
+
+        /* Effects: reduce the debt of the user. */
+        (vars.mathErr, vars.newDebt) = subUInt(vaults[borrower].debt, burnAmount);
+        /* This operation can't fail because of the last `require` from above. */
+        assert(vars.mathErr == MathError.NO_ERROR);
+        vaults[borrower].debt = vars.newDebt;
+
+        /* Effects: reduce the yToken supply. */
+        (vars.mathErr, vars.newTotalSupply) = subUInt(totalSupply, burnAmount);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_BURN_MATH_ERROR");
+        totalSupply = vars.newTotalSupply;
+
+        /* Effects: burn the yTokens. */
+        (vars.mathErr, vars.newBurnerBalance) = subUInt(balances[payer], burnAmount);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_BURN_MATH_ERROR");
+        balances[payer] = vars.newBurnerBalance;
+
+        return NO_ERROR;
     }
 }

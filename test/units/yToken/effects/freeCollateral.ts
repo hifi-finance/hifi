@@ -2,8 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { FintrollerConstants } from "../../../helpers/constants";
-import { OneToken, TenTokens, OneHundredTokens } from "../../../helpers/constants";
+import { FintrollerConstants, OneToken, TenTokens, OneHundredTokens } from "../../../helpers/constants";
 import { YTokenErrors } from "../../../helpers/errors";
 
 export default function shouldBehaveLikeLockCollateral(): void {
@@ -13,7 +12,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
     });
 
     describe("when the collateral amount to free is not zero", function () {
-      describe("when the user deposited collateral", function () {
+      describe("when the caller deposited collateral", function () {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.getBond
             .withArgs(this.contracts.yToken.address)
@@ -27,17 +26,17 @@ export default function shouldBehaveLikeLockCollateral(): void {
           await this.contracts.yToken.connect(this.signers.brad).depositCollateral(TenTokens);
         });
 
-        describe("when the user locked the collateral", function () {
+        describe("when the caller locked the collateral", function () {
           beforeEach(async function () {
             await this.contracts.yToken.connect(this.signers.brad).lockCollateral(TenTokens);
           });
 
-          describe("when the user has a debt", function () {
+          describe("when the caller has a debt", function () {
             beforeEach(async function () {
               await this.stubs.fintroller.mock.mintAllowed.withArgs(this.contracts.yToken.address).returns(true);
             });
 
-            describe("when the user is safely over-collateralized", async function () {
+            describe("when the caller is safely over-collateralized", async function () {
               beforeEach(async function () {
                 await this.contracts.yToken.connect(this.signers.brad).mint(OneHundredTokens);
               });
@@ -57,7 +56,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
               });
             });
 
-            describe("when the user is dangerously collateralized", function () {
+            describe("when the caller is dangerously collateralized", function () {
               beforeEach(async function () {
                 /* This is 150%. Remember that we deposited 10 ETH and that the oracle assumes 1 ETH = $100. */
                 const mintAmount: BigNumber = OneToken.mul(666);
@@ -72,7 +71,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
             });
           });
 
-          describe("when the user does not have a debt", function () {
+          describe("when the caller does not have a debt", function () {
             it("it frees the collateral", async function () {
               const preVault = await this.contracts.yToken.getVault(this.accounts.brad);
               await this.contracts.yToken.connect(this.signers.brad).freeCollateral(TenTokens);
@@ -98,7 +97,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
         });
       });
 
-      describe("when the user did not deposit any collateral", function () {
+      describe("when the caller did not deposit any collateral", function () {
         it("reverts", async function () {
           await expect(this.contracts.yToken.connect(this.signers.brad).freeCollateral(TenTokens)).to.be.revertedWith(
             YTokenErrors.FreeCollateralInsufficientLockedCollateral,

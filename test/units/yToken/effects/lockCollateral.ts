@@ -11,7 +11,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
     });
 
     describe("when the collateral amount to lock is not zero", function () {
-      describe("when the user deposited collateral", function () {
+      describe("when the caller deposited collateral", function () {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.depositCollateralAllowed
             .withArgs(this.contracts.yToken.address)
@@ -37,7 +37,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
         });
       });
 
-      describe("when the user did not deposit any collateral", function () {
+      describe("when the caller did not deposit any collateral", function () {
         it("reverts", async function () {
           await expect(this.contracts.yToken.connect(this.signers.brad).lockCollateral(TenTokens)).to.be.revertedWith(
             YTokenErrors.LockCollateralInsufficientFreeCollateral,

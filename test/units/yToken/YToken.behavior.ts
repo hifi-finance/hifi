@@ -1,4 +1,5 @@
 import shouldBehaveLikeBurn from "./effects/burn";
+import shouldBehaveLikeBurnBehalf from "./effects/burnBehalf";
 import shouldBehaveLikeDepositCollateral from "./effects/depositCollateral";
 import shouldBehaveLikeFreeCollateral from "./effects/freeCollateral";
 import shouldBehaveLikeLockCollateral from "./effects/lockCollateral";
@@ -16,6 +17,10 @@ export function shouldBehaveLikeYToken(): void {
   describe("Effects Functions", function () {
     describe("burn", function () {
       shouldBehaveLikeBurn();
+    });
+
+    describe("burnBehalf", function () {
+      shouldBehaveLikeBurnBehalf();
     });
 
     describe("depositCollateral", function () {
@@ -44,7 +49,7 @@ export function shouldBehaveLikeYToken(): void {
       shouldBehaveLikeCollateralGetter();
     });
 
-    describe.only("expirationTime", function () {
+    describe("expirationTime", function () {
       shouldBehaveLikeExpirationTimeGetter();
     });
 
