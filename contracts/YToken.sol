@@ -6,7 +6,7 @@ import "./YTokenInterface.sol";
 import "./erc20/Erc20.sol";
 import "./erc20/Erc20Interface.sol";
 import "./math/Exponential.sol";
-import "./pricing/DumbOracleInterface.sol";
+import "./pricing/SimpleOracleInterface.sol";
 import "./utils/Admin.sol";
 import "./utils/ErrorReporter.sol";
 import "./utils/ReentrancyGuard.sol";
@@ -178,7 +178,8 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
 
         /* Checks: avoid the zero edge case. */
         require(collateralAmount > 0, "ERR_DEPOSIT_COLLATERAL_ZERO");
-        /* Checks: verify that the Fintroller allows this action to be performed. */
+
+        /* Checks: the Fintroller allows this action to be performed. */
         require(fintroller.depositCollateralAllowed(this), "ERR_DEPOSIT_COLLATERAL_NOT_ALLOWED");
 
         /* Effects: update the storage properties. */
@@ -235,11 +236,14 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         assert(vars.mathErr == MathError.NO_ERROR);
         vaults[msg.sender].lockedCollateral = vars.newLockedCollateral;
 
-        if (vaults[msg.sender].debt > 0) {
-            (vars.mathErr, vars.newLockedCollateralValueInUsd) = getCollateralValueInUsd(vars.newLockedCollateral);
+        if (vault.debt > 0) {
+            SimpleOracleInterface oracle = fintroller.oracle();
+            (vars.mathErr, vars.newLockedCollateralValueInUsd) = oracle.multiplyCollateralAmountByItsPriceInUsd(
+                vars.newLockedCollateral
+            );
             require(vars.mathErr == MathError.NO_ERROR, "ERR_FREE_COLLATERAL_MATH_ERROR");
 
-            (vars.mathErr, vars.debtValueInUsd) = getUnderlyingValueInUsd(vault.debt);
+            (vars.mathErr, vars.debtValueInUsd) = oracle.multiplyUnderlyingAmountByItsPriceInUsd(vault.debt);
             require(vars.mathErr == MathError.NO_ERROR, "ERR_FREE_COLLATERAL_MATH_ERROR");
 
             /* This operation can't fail because both operands are non-zero. */
@@ -317,7 +321,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         uint256 mintValueInUsd;
         Exp newCollateralizationRatio;
         uint256 newDebt;
-        uint256 newMinterBalance;
+        uint256 newBorrowerBalance;
         uint256 newTotalSupply;
         uint256 thresholdCollateralizationRatioMantissa;
         uint256 timeToLive;
@@ -330,9 +334,9 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
      * Requirements:
      *
      * - The vault must be open.
+     * - Must be called post maturation.
      * - The amount to mint cannot be zero.
      * - The fintroller must allow new mints.
-     * - The yToken must not be matured.
      * - The caller must not fall below the threshold collateralization ratio.
      *
      * @param mintAmount The amount of yTokens to print into existence.
@@ -344,20 +348,22 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         /* Checks: avoid the zero edge case. */
         require(mintAmount > 0, "ERR_MINT_ZERO");
 
-        /* Checks: verify that the Fintroller allows this action to be performed. */
+        /* Checks: the Fintroller allows this action to be performed. */
         require(fintroller.mintAllowed(this), "ERR_MINT_NOT_ALLOWED");
 
-        /* TODO: check liquidity in the guarantor pool. */
+        /* TODO: check liquidity in the Guarantor Pool and Redemption Pool. */
 
         /* Checks: the contingent collateralization ratio is higher or equal to the threshold. */
         Vault memory vault = vaults[msg.sender];
         require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
 
-        (vars.mathErr, vars.lockedCollateralValueInUsd) = getCollateralValueInUsd(vault.lockedCollateral);
+        SimpleOracleInterface oracle = fintroller.oracle();
+        (vars.mathErr, vars.lockedCollateralValueInUsd) = oracle.multiplyCollateralAmountByItsPriceInUsd(
+            vault.lockedCollateral
+        );
         require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
 
-        /* TODO: handle the case where the underlying has a different no. of decimals compared to the yToken? */
-        (vars.mathErr, vars.mintValueInUsd) = getUnderlyingValueInUsd(mintAmount);
+        (vars.mathErr, vars.mintValueInUsd) = oracle.multiplyUnderlyingAmountByItsPriceInUsd(mintAmount);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
 
         (vars.mathErr, vars.newDebt) = addUInt(vault.debt, vars.mintValueInUsd);
@@ -384,9 +390,9 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         totalSupply = vars.newTotalSupply;
 
         /* Effects: mint the yTokens. */
-        (vars.mathErr, vars.newMinterBalance) = addUInt(balances[msg.sender], mintAmount);
+        (vars.mathErr, vars.newBorrowerBalance) = addUInt(balances[msg.sender], mintAmount);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
-        balances[msg.sender] = vars.newMinterBalance;
+        balances[msg.sender] = vars.newBorrowerBalance;
 
         /* We emit both a Mint and a Transfer event. */
         emit Mint(msg.sender, mintAmount);
@@ -406,11 +412,88 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         return NO_ERROR;
     }
 
+    struct RedeemLocalVars {
+        MathError mathErr;
+        uint256 newRedeemableUnderlying;
+        uint256 newTotalSupply;
+        uint256 newUserBalance;
+    }
+
     /**
-     * @notice YTokens resemble zero-coupon bonds, so this function pays the
-     * token holder the face value at maturation time.
+     * @notice Pays the token holder the face value at maturation time. Recall that yTokens resemble zero-coupon bonds.
+     *
+     * @dev Emits a {Redeem} event.
+     *
+     * Requirements:
+     * - Must be called post maturation.
+     * - The amount to redeem cannot be zero.
+     * - There must be enough liquidity in the Redemption Pool.
+     *
+     * @param redeemAmount The amount of yTokens to redeem for the underlying asset.
+     * @return bool=success, otherwise it reverts.
      */
-    function settle() external override isMatured returns (bool) {
+    function redeem(uint256 redeemAmount) external override isMatured returns (bool) {
+        RedeemLocalVars memory vars;
+
+        /* Checks: avoid the zero edge case. */
+        require(redeemAmount > 0, "ERR_REDEEM_ZERO");
+
+        /* Checks: the Fintroller allows this action to be performed. */
+        require(fintroller.redeemAllowed(this), "ERR_REDEEM_NOT_ALLOWED");
+
+        /* Checks: there is sufficient liquidity. */
+        require(redeemAmount <= redeemableUnderlyingTotalSupply, "ERR_REDEEM_INSUFFICIENT_REDEEMABLE_UNDERLYING");
+
+        /* Effects: decrease the remaining supply of redeemable underlying. */
+        (vars.mathErr, vars.newRedeemableUnderlying) = subUInt(redeemableUnderlyingTotalSupply, redeemAmount);
+        assert(vars.mathErr == MathError.NO_ERROR);
+        redeemableUnderlyingTotalSupply = vars.newRedeemableUnderlying;
+
+        /* Effects: decrease the total supply. */
+        (vars.mathErr, vars.newTotalSupply) = subUInt(totalSupply, redeemAmount);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_REDEEM_MATH_ERROR");
+        totalSupply = vars.newTotalSupply;
+
+        /* Effects: decrease the user's balance. */
+        (vars.mathErr, vars.newUserBalance) = subUInt(balances[msg.sender], redeemAmount);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_REDEEM_MATH_ERROR");
+        balances[msg.sender] = vars.newUserBalance;
+
+        /* Interactions */
+        require(underlying.transfer(msg.sender, redeemAmount), "ERR_REDEEM_ERC20_TRANSFER");
+
+        emit Redeem(msg.sender, redeemAmount);
+
+        return NO_ERROR;
+    }
+
+    /**
+     * @notice An alternative to the normal minting method. Works by supplying a number of underlying assets to the
+     * Redemption Pool and getting an equal amount of yTokens in return.
+     *
+     * @dev Emits a {SupplyRedeemableUnderlying}, {Mint} and {Transfer} event.
+     *
+     * Requirements:
+     * - Must be called before maturation.
+     * - The amount to deposit cannot be zero.
+     * - The caller must have allowed this contract to spend `redeemableUnderlyingAmount` tokens.
+     *
+     * @param redeemableUnderlyingAmount The amount of underlying to supply to the Redemption Pool.
+     * @return bool=success, otherwise it reverts.
+     */
+    function supplyRedeemableUnderlyingAndMint(uint256 redeemableUnderlyingAmount)
+        external
+        override
+        isNotMatured
+        returns (bool)
+    {
+        supplyRedeemableUnderlyingAndMintInternal(redeemableUnderlyingAmount);
+
+        /* We emit a SupplyRedeemableUnderlying, Mint and a Transfer event. */
+        emit SupplyRedeemableUnderlying(msg.sender, redeemableUnderlyingAmount);
+        emit Mint(msg.sender, redeemableUnderlyingAmount);
+        emit Transfer(address(this), msg.sender, redeemableUnderlyingAmount);
+
         return NO_ERROR;
     }
 
@@ -471,38 +554,6 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         return block.timestamp;
     }
 
-    struct GetCollateralValueInUsdLocalVars {
-        MathError mathErr;
-        uint256 collateralPriceInUsd;
-        uint256 collateralValueInUsd;
-    }
-
-    /**
-     * @dev Used to avoid duplicating the logic.
-     */
-    function getCollateralValueInUsd(uint256 collateralAmount) internal view returns (MathError, uint256) {
-        GetCollateralValueInUsdLocalVars memory vars;
-        vars.collateralPriceInUsd = fintroller.oracle().getEthPriceInUsd();
-        (vars.mathErr, vars.collateralValueInUsd) = mulUInt(collateralAmount, vars.collateralPriceInUsd);
-        return (vars.mathErr, vars.collateralValueInUsd);
-    }
-
-    struct GetUnderlyingValueInUsdLocalVars {
-        MathError mathErr;
-        uint256 underlyingPriceInUsd;
-        uint256 underlyingValueInUsd;
-    }
-
-    /**
-     * @dev Used to avoid duplicating the logic.
-     */
-    function getUnderlyingValueInUsd(uint256 underlyingAmount) internal view returns (MathError, uint256) {
-        GetUnderlyingValueInUsdLocalVars memory vars;
-        vars.underlyingPriceInUsd = fintroller.oracle().getDaiPriceInUsd();
-        (vars.mathErr, vars.underlyingValueInUsd) = mulUInt(underlyingAmount, vars.underlyingPriceInUsd);
-        return (vars.mathErr, vars.underlyingValueInUsd);
-    }
-
     struct BurnLocalVars {
         MathError mathErr;
         uint256 newBurnerBalance;
@@ -511,13 +562,13 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
     }
 
     /**
-     * @dev See the documentation in the public functions.
+     * @dev See the documentation of the public functions that call this internal function.
      */
     function burnInternal(
         address payer,
         address borrower,
         uint256 burnAmount
-    ) internal returns (bool) {
+    ) internal {
         BurnLocalVars memory vars;
 
         /* Checks: avoid the zero edge case. */
@@ -534,7 +585,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
 
         /* Effects: reduce the debt of the user. */
         (vars.mathErr, vars.newDebt) = subUInt(vaults[borrower].debt, burnAmount);
-        /* This operation can't fail because of the last `require` from above. */
+        /* This operation can't fail because of the previous `require`. */
         assert(vars.mathErr == MathError.NO_ERROR);
         vaults[borrower].debt = vars.newDebt;
 
@@ -547,7 +598,46 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         (vars.mathErr, vars.newBurnerBalance) = subUInt(balances[payer], burnAmount);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_BURN_MATH_ERROR");
         balances[payer] = vars.newBurnerBalance;
+    }
 
-        return NO_ERROR;
+    struct SupplyRedeemableUnderlyingAndMintLocalVars {
+        MathError mathErr;
+        uint256 newRedeemableUnderlyingTotalSupply;
+        uint256 newTotalSupply;
+        uint256 newUserBalance;
+    }
+
+    /**
+     * @dev See the documentation of the public functions that call this internal function.
+     */
+    function supplyRedeemableUnderlyingAndMintInternal(uint256 redeemableUnderlyingAmount) internal returns (bool) {
+        SupplyRedeemableUnderlyingAndMintLocalVars memory vars;
+
+        /* Checks: avoid the zero edge case. */
+        require(redeemableUnderlyingAmount > 0, "ERR_SRUAM_ZERO");
+
+        /* Effects: update the redeemable underlying total supply in storage. */
+        (vars.mathErr, vars.newRedeemableUnderlyingTotalSupply) = addUInt(
+            redeemableUnderlyingTotalSupply,
+            redeemableUnderlyingAmount
+        );
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_SRUAM_MATH_ERROR");
+        redeemableUnderlyingTotalSupply = vars.newRedeemableUnderlyingTotalSupply;
+
+        /* Effects: increase the yToken supply. */
+        (vars.mathErr, vars.newTotalSupply) = addUInt(totalSupply, redeemableUnderlyingAmount);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_SRUAM_MATH_ERROR");
+        totalSupply = vars.newTotalSupply;
+
+        /* Effects: mint the yTokens. */
+        (vars.mathErr, vars.newUserBalance) = addUInt(balances[msg.sender], redeemableUnderlyingAmount);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_SRUAM_MATH_ERROR");
+        balances[msg.sender] = vars.newUserBalance;
+
+        /* Interactions */
+        require(
+            underlying.transferFrom(msg.sender, address(this), redeemableUnderlyingAmount),
+            "ERR_SRUAM_ERC20_TRANSFER"
+        );
     }
 }

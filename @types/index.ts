@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { MockContract } from "ethereum-waffle";
 import { Signer } from "@ethersproject/abstract-signer";
 
-import { DumbOracle } from "../typechain/DumbOracle";
+import { SimpleOracle } from "../typechain/SimpleOracle";
 import { Fintroller } from "../typechain/Fintroller";
 import { GuarantorPool } from "../typechain/GuarantorPool";
 import { YToken } from "../typechain/YToken";
@@ -19,7 +19,7 @@ export interface Accounts {
 export interface Contracts {
   fintroller: Fintroller;
   guarantorPool: GuarantorPool;
-  oracle: DumbOracle;
+  oracle: SimpleOracle;
   yToken: YToken;
 }
 

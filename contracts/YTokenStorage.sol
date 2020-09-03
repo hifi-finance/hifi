@@ -31,7 +31,7 @@ abstract contract YTokenStorage is Exponential {
     Erc20Interface public collateral;
 
     /**
-     * @notice The address of the fintroller contract.
+     * @notice The address of the risk manager contract.
      */
     FintrollerInterface public fintroller;
 
@@ -44,6 +44,11 @@ abstract contract YTokenStorage is Exponential {
      * @notice The pool into which Guarantors of this YToken deposit their capital.
      */
     address public guarantorPool;
+
+    /**
+     * @notice The pool that allows holders to redeem their yTokens for the underyling asset after maturation.
+     */
+    uint256 public redeemableUnderlyingTotalSupply;
 
     /**
      * @notice Underlying Erc20 asset for this YToken.

@@ -4,11 +4,14 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { Zero } from "@ethersproject/constants";
 import { waffle } from "@nomiclabs/buidler";
 
-import DumbOracleArtifact from "../../artifacts/DumbOracle.json";
 import Erc20MintableArtifact from "../../artifacts/Erc20Mintable.json";
 import FintrollerArtifact from "../../artifacts/Fintroller.json";
 import GuarantorPoolArtifact from "../../artifacts/GuarantorPool.json";
+import SimpleOracleArtifact from "../../artifacts/SimpleOracle.json";
 import YTokenArtifact from "../../artifacts/YToken.json";
+
+import { CarefulMathErrors } from "./errors";
+import { OneDollar, OneHundredDollars, OneHundredTokens, OneThousandDollars, OneToken, TenTokens } from "./constants";
 
 const { deployMockContract: deployStubContract } = waffle;
 
@@ -36,9 +39,31 @@ export async function deployStubGuarantorPool(deployer: Signer): Promise<MockCon
 }
 
 export async function deployStubOracle(deployer: Signer): Promise<MockContract> {
-  const oracle: MockContract = await deployStubContract(deployer, DumbOracleArtifact.abi);
-  await oracle.mock.getEthPriceInUsd.returns(BigNumber.from(100));
-  await oracle.mock.getDaiPriceInUsd.returns(BigNumber.from(1));
+  const oracle: MockContract = await deployStubContract(deployer, SimpleOracleArtifact.abi);
+  await oracle.mock.getCollateralPriceInUsd.returns(BigNumber.from(100));
+  await oracle.mock.getUnderlyingPriceInUsd.returns(OneDollar);
+
+  /* 0 WETH = $0*/
+  await oracle.mock.multiplyCollateralAmountByItsPriceInUsd.withArgs(Zero).returns(CarefulMathErrors.NoError, Zero);
+
+  /* 1 WETH = $100 */
+  await oracle.mock.multiplyCollateralAmountByItsPriceInUsd
+    .withArgs(OneToken)
+    .returns(CarefulMathErrors.NoError, OneHundredDollars);
+
+  /* 10 WETH = $1,000 */
+  await oracle.mock.multiplyCollateralAmountByItsPriceInUsd
+    .withArgs(TenTokens)
+    .returns(CarefulMathErrors.NoError, OneThousandDollars);
+
+  /* 0 DAI = $0 */
+  await oracle.mock.multiplyUnderlyingAmountByItsPriceInUsd.withArgs(Zero).returns(CarefulMathErrors.NoError, Zero);
+
+  /* 100 DAI = $100 */
+  await oracle.mock.multiplyUnderlyingAmountByItsPriceInUsd
+    .withArgs(OneHundredTokens)
+    .returns(CarefulMathErrors.NoError, OneHundredDollars);
+
   return oracle;
 }
 

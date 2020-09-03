@@ -15,15 +15,15 @@ export default function shouldBehaveLikeMint(): void {
       await this.contracts.yToken.connect(this.signers.brad).openVault();
     });
 
-    describe("when the amount to mint is not zero", function () {
-      describe("when the bond is listed", function () {
-        beforeEach(async function () {
-          await this.stubs.fintroller.mock.getBond
-            .withArgs(this.contracts.yToken.address)
-            .returns(FintrollerConstants.DefaultCollateralizationRatioMantissa);
-        });
+    describe("when the bond did not mature", function () {
+      describe("when the amount to mint is not zero", function () {
+        describe("when the bond is listed", function () {
+          beforeEach(async function () {
+            await this.stubs.fintroller.mock.getBond
+              .withArgs(this.contracts.yToken.address)
+              .returns(FintrollerConstants.DefaultCollateralizationRatioMantissa);
+          });
 
-        describe("when the bond did not mature", function () {
           describe("when the fintroller allows new mints", function () {
             beforeEach(async function () {
               await this.stubs.fintroller.mock.mintAllowed.withArgs(this.contracts.yToken.address).returns(true);
@@ -101,38 +101,38 @@ export default function shouldBehaveLikeMint(): void {
           });
         });
 
-        contextForTimeDependentTests("when the bond matured", function () {
+        describe("when the bond is not listed", function () {
           beforeEach(async function () {
-            await increaseTime(YTokenConstants.DefaultExpirationTime);
+            await this.stubs.fintroller.mock.mintAllowed
+              .withArgs(this.contracts.yToken.address)
+              .revertsWithReason(FintrollerErrors.BondNotListed);
           });
 
           it("reverts", async function () {
             await expect(this.contracts.yToken.connect(this.signers.brad).mint(OneHundredTokens)).to.be.revertedWith(
-              YTokenErrors.BondMatured,
+              FintrollerErrors.BondNotListed,
             );
           });
         });
       });
 
-      describe("when the bond is not listed", function () {
-        beforeEach(async function () {
-          await this.stubs.fintroller.mock.mintAllowed
-            .withArgs(this.contracts.yToken.address)
-            .revertsWithReason(FintrollerErrors.BondNotListed);
-        });
-
+      describe("when the amount to mint is zero", function () {
         it("reverts", async function () {
-          await expect(this.contracts.yToken.connect(this.signers.brad).mint(OneHundredTokens)).to.be.revertedWith(
-            FintrollerErrors.BondNotListed,
+          await expect(this.contracts.yToken.connect(this.signers.brad).mint(Zero)).to.be.revertedWith(
+            YTokenErrors.MintZero,
           );
         });
       });
     });
 
-    describe("when the amount to mint is zero", function () {
+    contextForTimeDependentTests("when the bond matured", function () {
+      beforeEach(async function () {
+        await increaseTime(YTokenConstants.DefaultExpirationTime);
+      });
+
       it("reverts", async function () {
-        await expect(this.contracts.yToken.connect(this.signers.brad).mint(Zero)).to.be.revertedWith(
-          YTokenErrors.MintZero,
+        await expect(this.contracts.yToken.connect(this.signers.brad).mint(OneHundredTokens)).to.be.revertedWith(
+          YTokenErrors.BondMatured,
         );
       });
     });

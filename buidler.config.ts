@@ -84,9 +84,12 @@ const config: BuidlerConfig = {
     tests: "./test",
   },
   solc: {
-    /* https://buidler.dev/buidler-evm/#solidity-optimizer-support */
+    /**
+     * TODO: disable the optimizer when compiling for testing
+     * https://buidler.dev/buidler-evm/#solidity-optimizer-support
+     */
     optimizer: {
-      enabled: false,
+      enabled: true,
       runs: 200,
     },
     version: "0.6.10",

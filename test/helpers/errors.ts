@@ -1,3 +1,7 @@
+export enum CarefulMathErrors {
+  NoError = 0,
+}
+
 export enum Errors {
   NotAuthorized = "ERR_NOT_AUTHORIZED",
 }
@@ -25,6 +29,10 @@ export enum YTokenErrors {
   LockCollateralZero = "ERR_LOCK_COLLATERAL_ZERO",
   MintNotAllowed = "ERR_MINT_NOT_ALLOWED",
   MintZero = "ERR_MINT_ZERO",
+  RedeemInsufficientLiquidity = "ERR_REDEEM_INSUFFICIENT_LIQUIDITY",
+  RedeemNotAllowed = "ERR_REDEEM_NOT_ALLOWED",
+  RedeemZero = "ERR_REDEEM_ZERO",
+  SupplyRedeemableUnderlyingAndMintZero = "ERR_SRUAM_ZERO",
   VaultNotOpen = "ERR_VAULT_NOT_OPEN",
   WithdrawCollateralInsufficientFreeCollateral = "ERR_WITHDRAW_COLLATERAL_INSUFFICIENT_FREE_COLLATERAL",
   WithdrawCollateralZero = "ERR_WITHDRAW_COLLATERAL_ZERO",

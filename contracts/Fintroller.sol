@@ -53,6 +53,18 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
         return bond.isMintAllowed;
     }
 
+    /**
+     * @notice Checks if the user should be allowed to redeem yTokens for the underlying asset.
+     * @dev Reverts it the bond is not listed.
+     * @param yToken The bond to make the check against.
+     * @return bool true=allowed, false=not allowed.
+     */
+    function redeemAllowed(YTokenInterface yToken) external override view returns (bool) {
+        Bond memory bond = bonds[address(yToken)];
+        require(bond.isListed, "ERR_BOND_NOT_LISTED");
+        return bond.isRedeemAllowed;
+    }
+
     /*** Non-Constant Functions ***/
 
     /**
@@ -74,7 +86,8 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
             isBurnAllowed: false,
             isDepositCollateralAllowed: false,
             isListed: true,
-            isMintAllowed: false
+            isMintAllowed: false,
+            isRedeemAllowed: false
         });
         emit ListBond(yToken);
         return NO_ERROR;
@@ -139,7 +152,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     }
 
     /**
-     * @notice Sets the state of the permission accessed by the yToken before allowing a burn.
+     * @notice Sets the state of the permission accessed by the yToken before a burn.
      *
      * @dev Emits a {SetBurnAllowed} event.
      *
@@ -158,7 +171,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     }
 
     /**
-     * @notice Sets the state of the permission accessed by the yToken before allowing a new collateral deposit.
+     * @notice Sets the state of the permission accessed by the yToken before a new collateral deposit.
      *
      * @dev Emits a {SetDepositCollateralAllowed} event.
      *
@@ -182,7 +195,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     }
 
     /**
-     * @notice Sets the state of the permission accessed by the yToken before allowing a new mint.
+     * @notice Sets the state of the permission accessed by the yToken before a new mint.
      *
      * @dev Emits a {SetMintAllowed} event.
      *
@@ -201,6 +214,25 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     }
 
     /**
+     * @notice Sets the state of the permission accessed by the yToken before an underlying redemption.
+     *
+     * @dev Emits a {SetRedeemAllowed} event.
+     *
+     * Requirements:
+     * - caller must be the administrator
+     *
+     * @param yToken The yToken contract to update the permission for.
+     * @param state The new state to be put in storage.
+     * @return bool true=success, otherwise it reverts.
+     */
+    function setRedeemAllowed(YTokenInterface yToken, bool state) external override isAuthorized returns (bool) {
+        require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
+        bonds[address(yToken)].isRedeemAllowed = state;
+        emit SetRedeemAllowed(yToken, state);
+        return NO_ERROR;
+    }
+
+    /**
      * @notice Updates the oracle contract's address saved in storage.
      *
      * @dev Emits a {SetOracle} event.
@@ -212,7 +244,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @param oracle_ The new oracle contract.
      * @return bool true=success, otherwise it reverts.
      */
-    function setOracle(DumbOracleInterface oracle_) external override isAuthorized returns (bool) {
+    function setOracle(SimpleOracleInterface oracle_) external override isAuthorized returns (bool) {
         require(address(oracle_) != address(0x00), "ERR_SET_ORACLE_ZERO_ADDRESS");
         address oldOracle = address(oracle);
         oracle = oracle_;

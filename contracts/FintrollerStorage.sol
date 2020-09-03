@@ -2,7 +2,7 @@
 pragma solidity ^0.6.10;
 
 import "./math/Exponential.sol";
-import "./pricing/DumbOracleInterface.sol";
+import "./pricing/SimpleOracleInterface.sol";
 
 abstract contract FintrollerStorage is Exponential {
     struct Bond {
@@ -12,6 +12,7 @@ abstract contract FintrollerStorage is Exponential {
         bool isDepositCollateralAllowed;
         bool isListed;
         bool isMintAllowed;
+        bool isRedeemAllowed;
     }
 
     /**
@@ -37,5 +38,5 @@ abstract contract FintrollerStorage is Exponential {
     /**
      * @notice Provides price information in USD for the collateral and the underlying asset.
      */
-    DumbOracleInterface public oracle;
+    SimpleOracleInterface public oracle;
 }

@@ -37,12 +37,14 @@ abstract contract YTokenInterface is YTokenStorage {
 
     function mint(uint256 mintAmount) external virtual returns (bool);
 
-    function settle() external virtual returns (bool);
+    function redeem(uint256 redeemAmount) external virtual returns (bool);
+
+    function supplyRedeemableUnderlyingAndMint(uint256 redeemableUnderlyingAmount) external virtual returns (bool);
 
     function withdrawCollateral(uint256 collateralAmount) external virtual returns (bool);
 
     /*** Events ***/
-    event Burn(address indexed borower, uint256 burnAmount);
+    event Burn(address indexed user, uint256 burnAmount);
 
     event BurnBehalf(address indexed payer, address indexed borrower, uint256 burnAmount);
 
@@ -52,7 +54,11 @@ abstract contract YTokenInterface is YTokenStorage {
 
     event LockCollateral(address indexed user, uint256 collateralAmount);
 
-    event Mint(address indexed borrower, uint256 burnAmount);
+    event Mint(address indexed user, uint256 burnAmount);
+
+    event Redeem(address indexed user, uint256 settleAmount);
+
+    event SupplyRedeemableUnderlying(address indexed user, uint256 redeemableUnderlyingAmount);
 
     event WithdrawCollateral(address indexed user, uint256 collateralAmount);
 }

@@ -4,12 +4,14 @@ import shouldBehaveLikeDepositCollateral from "./effects/depositCollateral";
 import shouldBehaveLikeFreeCollateral from "./effects/freeCollateral";
 import shouldBehaveLikeLockCollateral from "./effects/lockCollateral";
 import shouldBehaveLikeMint from "./effects/mint";
+import shouldBehaveLikeRedeem from "./effects/redeem";
 import shouldBehaveLikeWithdrawCollateral from "./effects/withdrawCollateral";
 
 import shouldBehaveLikeCollateralGetter from "./view/collateral";
 import shouldBehaveLikeExpirationTimeGetter from "./view/expirationTime";
 import shouldBehaveLikeFintrollerGetter from "./view/fintroller";
 import shouldBehaveLikeGuarantorPoolGetter from "./view/guarantorPool";
+import shouldBehaveLikeRedeemableUnderlyingTotalSupplyGetter from "./view/redeemableUnderlyingTotalSupply";
 import shouldBehaveLikeUnderlyingGetter from "./view/underlying";
 import shouldBehaveLikeVaultGetter from "./view/vault";
 
@@ -39,6 +41,10 @@ export function shouldBehaveLikeYToken(): void {
       shouldBehaveLikeMint();
     });
 
+    describe("redeem", function () {
+      shouldBehaveLikeRedeem();
+    });
+
     describe("withdrawCollateral", function () {
       shouldBehaveLikeWithdrawCollateral();
     });
@@ -59,6 +65,10 @@ export function shouldBehaveLikeYToken(): void {
 
     describe("guarantorPool", function () {
       shouldBehaveLikeGuarantorPoolGetter();
+    });
+
+    describe("redeemableUnderlyingTotalSupply", function () {
+      shouldBehaveLikeRedeemableUnderlyingTotalSupplyGetter();
     });
 
     describe("underlying", function () {
