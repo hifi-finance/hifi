@@ -1,38 +1,34 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.6.10;
 
-import "./AdminStorage.sol";
+import "./AdminInterface.sol";
 
 /**
  * @title Admin
  * @author Mainframe
- * @notice Contract module which provides a basic access control mechanism, where
- * there is an account (an admin) that can be granted exclusive access to
- * specific functions.
+ * @notice Contract module which provides a basic access control mechanism, where there is
+ * an account (an admin) that can be granted exclusive access to specific functions.
  *
- * By default, the admin account will be the one that deploys the contract. This
- * can later be changed with {transferAdmin}.
+ * By default, the admin account will be the one that deploys the contract. This can later
+ * be changed with {transferAdmin}.
  *
- * This module is used through inheritance. It will make available the modifier
- * `onlyAdmin`, which can be applied to your functions to restrict their use to
- * the admin.
+ * This module is used through inheritance. It will make available the modifier `onlyAdmin`,
+ * which can be applied to your functions to restrict their use to the admin.
  *
  * @dev Forked from OpenZeppelin
  * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v3.1.0/contracts/access/Ownable.sol
  */
-abstract contract Admin is AdminStorage {
-    event TransferAdmin(address indexed previousAdmin, address indexed newAdmin);
-
+abstract contract Admin is AdminInterface {
     /**
-     * @dev Throws if called by any account other than the admin.
+     * @notice Throws if called by any account other than the admin.
      */
-    modifier isAuthorized() {
-        require(admin == msg.sender, "ERR_NOT_AUTHORIZED");
+    modifier onlyAdmin() {
+        require(admin == msg.sender, "ERR_NOT_ADMIN");
         _;
     }
 
     /**
-     * @dev Initializes the contract setting the deployer as the initial admin.
+     * @notice Initializes the contract setting the deployer as the initial admin.
      */
     constructor() internal {
         address msgSender = msg.sender;
@@ -41,13 +37,16 @@ abstract contract Admin is AdminStorage {
     }
 
     /**
-     * @dev Leaves the contract without admin. It will not be possible to call
-     * `onlyAdmin` functions anymore. Can only be called by the current admin.
+     * @dev Leaves the contract without admin, so it will not be possible to call
+     * `onlyAdmin` functions anymore.
+     *
+     * Requirements:
+     * - Can only be called by the current admin.
      *
      * WARNING: Doing this will leave the contract without an admin,
      * thereby removing any functionality that is only available to the admin.
      */
-    function renounceAdmin() public virtual isAuthorized {
+    function renounceAdmin() external virtual override onlyAdmin {
         emit TransferAdmin(admin, address(0x00));
         admin = address(0x00);
     }
@@ -57,7 +56,7 @@ abstract contract Admin is AdminStorage {
      * Can only be called by the current admin.
      * @param newAdmin The acount of the new admin.
      */
-    function transferAdmin(address newAdmin) public virtual isAuthorized {
+    function transferAdmin(address newAdmin) external virtual override onlyAdmin {
         require(newAdmin != address(0x00), "ERR_SET_ADMIN_ZERO_ADDRESS");
         emit TransferAdmin(admin, newAdmin);
         admin = newAdmin;

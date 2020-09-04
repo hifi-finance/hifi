@@ -21,11 +21,6 @@ abstract contract YTokenStorage {
     /*** Storage Properties ***/
 
     /**
-     * @notice Indicator that this is a YToken contract, for inspection.
-     */
-    bool public constant isYToken = true;
-
-    /**
      * @notice Collateral Erc20 asset for this YToken.
      */
     Erc20Interface public collateral;
@@ -44,6 +39,11 @@ abstract contract YTokenStorage {
      * @notice The pool into which Guarantors of this YToken deposit their capital.
      */
     address public guarantorPool;
+
+    /**
+     * @notice Indicator that this is a YToken contract, for inspection.
+     */
+    bool public constant isYToken = true;
 
     /**
      * @notice blah

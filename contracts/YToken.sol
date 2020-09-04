@@ -9,13 +9,14 @@ import "./math/Exponential.sol";
 import "./pricing/SimpleOracleInterface.sol";
 import "./utils/Admin.sol";
 import "./utils/ErrorReporter.sol";
+import "./utils/Orchestratable.sol";
 import "./utils/ReentrancyGuard.sol";
 
 /**
  * @title YToken
  * @author Mainframe
  */
-contract YToken is YTokenInterface, Erc20, Admin, Exponential, ErrorReporter, ReentrancyGuard {
+contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter, Exponential, ReentrancyGuard {
     modifier isMatured() {
         require(block.timestamp >= expirationTime, "ERR_BOND_NOT_MATURED");
         _;
@@ -36,11 +37,11 @@ contract YToken is YTokenInterface, Erc20, Admin, Exponential, ErrorReporter, Re
      * @param name_ Erc20 name of this token.
      * @param symbol_ Erc20 symbol of this token.
      * @param decimals_ Erc20 decimal precision of this token.
-     * @param fintroller_ The address of the fintroller contract.
+     * @param fintroller_ The contract address of the Fintroller.
      * @param underlying_ The contract address of the underlying asset.
-     * @param collateral_ The contract address of the totalCollateral asset.
+     * @param collateral_ The contract address of the collateral asset.
      * @param guarantorPool_ The pool where Guarantors deploy their capital to.
-     * @param guarantorPool_ The pool where the redeemable underlying is stored.
+     * @param redemptionPool_ The pool where the redeemable underlying is stored.
      * @param expirationTime_ Unix timestamp in seconds for when this token expires.
      */
     constructor(
@@ -53,7 +54,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Exponential, ErrorReporter, Re
         address guarantorPool_,
         RedemptionPoolInterface redemptionPool_,
         uint256 expirationTime_
-    ) public Erc20(name_, symbol_, decimals_) Admin() {
+    ) public Erc20(name_, symbol_, decimals_) Admin() Orchestratable() {
         fintroller = fintroller_;
 
         /* Set the underlying and collateral contracts and sanity check them. */
@@ -77,19 +78,6 @@ contract YToken is YTokenInterface, Erc20, Admin, Exponential, ErrorReporter, Re
     /*** View Functions ***/
 
     /**
-     * @notice Returns the number of seconds left before the yToken expires.
-     * @dev Also useful for stubbing in testing.
-     * @return uint256=number of seconds if not expired or zero if expired, otherwise it reverts.
-     */
-    function timeToLive() public override view returns (uint256) {
-        if (expirationTime > block.timestamp) {
-            return expirationTime - block.timestamp;
-        } else {
-            return 0;
-        }
-    }
-
-    /**
      * @notice Returns the vault data.
      */
     function getVault(address user)
@@ -107,6 +95,19 @@ contract YToken is YTokenInterface, Erc20, Admin, Exponential, ErrorReporter, Re
         freeCollateral = vaults[user].freeCollateral;
         lockedCollateral = vaults[user].lockedCollateral;
         isOpen = vaults[user].isOpen;
+    }
+
+    /**
+     * @notice Returns the number of seconds left before the yToken expires.
+     * @dev Also useful for stubbing in testing.
+     * @return uint256=number of seconds if not expired or zero if expired, otherwise it reverts.
+     */
+    function timeToLive() public override view returns (uint256) {
+        if (expirationTime > block.timestamp) {
+            return expirationTime - block.timestamp;
+        } else {
+            return 0;
+        }
     }
 
     /*** Non-Constant Functions ***/
@@ -127,15 +128,15 @@ contract YToken is YTokenInterface, Erc20, Admin, Exponential, ErrorReporter, Re
      * Requirements:
      *
      * - The vault must be open.
-     * - Must be called post maturation.
+     * - Must be called before maturation.
      * - The amount to borrow cannot be zero.
      * - The Fintroller must allow borrows.
      * - The caller must not fall below the threshold collateralization ratio.
      *
-     * @param borrowAmount The amount of yTokens to print into existence.
+     * @param borrowAmount The amount of yTokens to borrow and print into existence.
      * @return bool true=success, otherwise it reverts.
      */
-    function borrow(uint256 borrowAmount) public override isVaultOpen isNotMatured nonReentrant returns (bool) {
+    function borrow(uint256 borrowAmount) public override isVaultOpen isNotMatured returns (bool) {
         BorrowLocalVars memory vars;
 
         /* Checks: the zero edge case. */
@@ -344,6 +345,36 @@ contract YToken is YTokenInterface, Erc20, Admin, Exponential, ErrorReporter, Re
         vaults[msg.sender].freeCollateral = vars.newFreeCollateral;
 
         emit LockCollateral(msg.sender, collateralAmount);
+
+        return NO_ERROR;
+    }
+
+    /**
+     * @dev Emits a {Mint} event.
+     *
+     * Requirements:
+     * - Must be called before maturation.
+     * - Can only be called by the Redemption Pool, the sole ochestrated contract.
+     * - The amount to mint cannot be zero.
+     *
+     * @param beneficiary The user for whom to mint the tokens.
+     * @param mintAmount The amount of yTokens to print into existence.
+     */
+    function mint(address beneficiary, uint256 mintAmount)
+        external
+        override
+        isNotMatured
+        onlyOrchestrated
+        returns (bool)
+    {
+        /* Checks: the zero edge case. */
+        require(mintAmount > 0, "ERR_MINT_ZERO");
+
+        /* Effects */
+        mintInternal(beneficiary, mintAmount);
+
+        emit Mint(beneficiary, mintAmount);
+
         return NO_ERROR;
     }
 
@@ -366,54 +397,6 @@ contract YToken is YTokenInterface, Erc20, Admin, Exponential, ErrorReporter, Re
     }
 
     /**
-     * @notice Pays the token holder the face value at maturation time. Recall that yTokens resemble zero-coupon bonds.
-     *
-     * @dev Emits a {Redeem} event.
-     *
-     * Requirements:
-     * - Must be called post maturation.
-     * - The amount to redeem cannot be zero.
-     * - There must be enough liquidity in the Redemption Pool.
-     *
-     * @param redeemAmount The amount of yTokens to redeem for the underlying asset.
-     * @return bool=success, otherwise it reverts.
-     */
-    // function redeem(uint256 redeemAmount) external override isMatured returns (bool) {
-    //     RedeemLocalVars memory vars;
-
-    //     /* Checks: the zero edge case. */
-    //     require(redeemAmount > 0, "ERR_REDEEM_ZERO");
-
-    //     /* Checks: the Fintroller allows this action to be performed. */
-    //     require(fintroller.redeemAllowed(this), "ERR_REDEEM_NOT_ALLOWED");
-
-    //     /* Checks: there is sufficient liquidity. */
-    //     require(redeemAmount <= redeemableUnderlyingTotalSupply, "ERR_REDEEM_INSUFFICIENT_REDEEMABLE_UNDERLYING");
-
-    //     /* Effects: decrease the remaining supply of redeemable underlying. */
-    //     (vars.mathErr, vars.newRedeemableUnderlying) = subUInt(redeemableUnderlyingTotalSupply, redeemAmount);
-    //     assert(vars.mathErr == MathError.NO_ERROR);
-    //     redeemableUnderlyingTotalSupply = vars.newRedeemableUnderlying;
-
-    //     /* Effects: decrease the total supply. */
-    //     (vars.mathErr, vars.newTotalSupply) = subUInt(totalSupply, redeemAmount);
-    //     require(vars.mathErr == MathError.NO_ERROR, "ERR_REDEEM_MATH_ERROR");
-    //     totalSupply = vars.newTotalSupply;
-
-    //     /* Effects: decrease the user's balance. */
-    //     (vars.mathErr, vars.newUserBalance) = subUInt(balances[msg.sender], redeemAmount);
-    //     require(vars.mathErr == MathError.NO_ERROR, "ERR_REDEEM_MATH_ERROR");
-    //     balances[msg.sender] = vars.newUserBalance;
-
-    //     /* Interactions */
-    //     require(underlying.transfer(msg.sender, redeemAmount), "ERR_REDEEM_ERC20_TRANSFER");
-
-    //     emit Redeem(msg.sender, redeemAmount);
-
-    //     return NO_ERROR;
-    // }
-
-    /**
      * @notice Deletes the user's debt from the registry and takes the yTokens out of circulation.
      * @dev Emits a {RepayBorrow} and a {Transfer} event.
      *
@@ -431,7 +414,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Exponential, ErrorReporter, Re
         repayBorrowInternal(msg.sender, msg.sender, repayAmount);
 
         /* We emit both a RepayBorrow and a Transfer event. */
-        emit RepayBorrow(msg.sender, repayAmount);
+        emit RepayBorrow(msg.sender, msg.sender, repayAmount);
         emit Transfer(msg.sender, address(this), repayAmount);
 
         return NO_ERROR;
@@ -444,7 +427,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Exponential, ErrorReporter, Re
      * Requirements: same as the `repayBorrow` function, but here `borrower` is the user who must have
      * at least `repayAmount` yTokens to repay the borrow.
      *
-     * @param borrower The address of the user for whom to repay the borrow.
+     * @param borrower The account for whom to repay the borrow.
      * @param repayAmount The amount of yTokens to repay.
      * @return bool=success, otherwise it reverts.
      */
@@ -453,9 +436,8 @@ contract YToken is YTokenInterface, Erc20, Admin, Exponential, ErrorReporter, Re
 
         repayBorrowInternal(msg.sender, borrower, repayAmount);
 
-        /* We emit a RepayBorrow, RepayBorrowBehalf and a Transfer event. */
-        emit RepayBorrow(borrower, repayAmount);
-        emit RepayBorrowBehalf(msg.sender, borrower, repayAmount);
+        /* We emit a RepayBorrow and a Transfer event. */
+        emit RepayBorrow(msg.sender, borrower, repayAmount);
         emit Transfer(msg.sender, address(this), repayAmount);
 
         return NO_ERROR;
@@ -509,7 +491,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Exponential, ErrorReporter, Re
     }
 
     /*** Internal Functions ***/
-    struct RepayBorrowLocalVars {
+    struct RepayBorrowInternalLocalVars {
         MathError mathErr;
         uint256 newPayerBalance;
         uint256 newDebt;
@@ -524,7 +506,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Exponential, ErrorReporter, Re
         address borrower,
         uint256 repayAmount
     ) internal {
-        RepayBorrowLocalVars memory vars;
+        RepayBorrowInternalLocalVars memory vars;
 
         /* Checks: the zero edge case. */
         require(repayAmount > 0, "ERR_REPAY_BORROW_ZERO");

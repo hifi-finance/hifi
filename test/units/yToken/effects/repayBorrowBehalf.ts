@@ -55,16 +55,6 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
                   .repayBorrowBehalf(this.accounts.brad, OneHundredTokens),
               )
                 .to.emit(this.contracts.yToken, "RepayBorrow")
-                .withArgs(this.accounts.brad, OneHundredTokens);
-            });
-
-            it("emits a RepayBorrowBehalf event", async function () {
-              await expect(
-                this.contracts.yToken
-                  .connect(this.signers.lucy)
-                  .repayBorrowBehalf(this.accounts.brad, OneHundredTokens),
-              )
-                .to.emit(this.contracts.yToken, "RepayBorrowBehalf")
                 .withArgs(this.accounts.lucy, this.accounts.brad, OneHundredTokens);
             });
 

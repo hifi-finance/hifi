@@ -92,7 +92,7 @@ contract GuarantorPool is GuarantorPoolInterface, Erc20, Admin, Exponential, Ree
     /**
      * @notice Lorem ipsum.
      */
-    function _authorizeCollateral(address collateral) external override isAuthorized returns (bool) {
+    function _authorizeCollateral(address collateral) external override onlyAdmin returns (bool) {
         require(supportedCollaterals[collateral] == false, "ERR_COLLATERAL_AUTHORIZED");
         supportedCollaterals[collateral] = true;
         return true;
@@ -101,7 +101,7 @@ contract GuarantorPool is GuarantorPoolInterface, Erc20, Admin, Exponential, Ree
     /**
      * @notice Lorem ipsum.
      */
-    function _disapproveCollateral(address collateral) external override isAuthorized returns (bool) {
+    function _disapproveCollateral(address collateral) external override onlyAdmin returns (bool) {
         require(supportedCollaterals[collateral] == true, "ERR_COLLATERAL_NOT_AUTHORIZED");
         supportedCollaterals[collateral] = true;
         return true;

@@ -43,7 +43,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
             it("emits a RepayBorrow event", async function () {
               await expect(this.contracts.yToken.connect(this.signers.brad).repayBorrow(OneHundredTokens))
                 .to.emit(this.contracts.yToken, "RepayBorrow")
-                .withArgs(this.accounts.brad, OneHundredTokens);
+                .withArgs(this.accounts.brad, this.accounts.brad, OneHundredTokens);
             });
 
             it("emits a Transfer event", async function () {

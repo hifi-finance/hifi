@@ -1,7 +1,7 @@
 import { AddressZero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { Errors, FintrollerErrors } from "../../../helpers/errors";
+import { AdminErrors, FintrollerErrors } from "../../../helpers/errors";
 
 export default function shouldBehaveLikeSetOracle(): void {
   describe("when the caller is the admin", function () {
@@ -30,7 +30,7 @@ export default function shouldBehaveLikeSetOracle(): void {
   describe("when the caller is not the admin", function () {
     it("reverts", async function () {
       await expect(this.contracts.fintroller.connect(this.signers.eve).setOracle(AddressZero)).to.be.revertedWith(
-        Errors.NotAuthorized,
+        AdminErrors.NotAdmin,
       );
     });
   });

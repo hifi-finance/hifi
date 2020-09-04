@@ -1,7 +1,7 @@
 import { AddressZero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { Errors } from "../../../helpers/errors";
+import { AdminErrors } from "../../../helpers/errors";
 
 export default function shouldBehaveLikeListBond(): void {
   describe("when the caller is the admin", function () {
@@ -28,7 +28,7 @@ export default function shouldBehaveLikeListBond(): void {
     it("reverts", async function () {
       await expect(
         this.contracts.fintroller.connect(this.signers.eve).listBond(this.stubs.yToken.address),
-      ).to.be.revertedWith(Errors.NotAuthorized);
+      ).to.be.revertedWith(AdminErrors.NotAdmin);
     });
   });
 }

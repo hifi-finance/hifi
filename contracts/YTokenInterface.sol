@@ -33,9 +33,7 @@ abstract contract YTokenInterface is YTokenStorage {
 
     function lockCollateral(uint256 collateralAmount) external virtual returns (bool);
 
-    // function mint(uint256 mintAmount) external virtual returns (bool);
-
-    // function redeem(uint256 redeemAmount) external virtual returns (bool);
+    function mint(address beneficiary, uint256 borrowAmount) external virtual returns (bool);
 
     function repayBorrow(uint256 repayAmount) external virtual returns (bool);
 
@@ -52,13 +50,11 @@ abstract contract YTokenInterface is YTokenStorage {
 
     event LockCollateral(address indexed user, uint256 collateralAmount);
 
+    event Mint(address indexed user, uint256 mintAmount);
+
     event Redeem(address indexed user, uint256 settleAmount);
 
-    event RepayBorrow(address indexed user, uint256 repayAmount);
-
-    event RepayBorrowBehalf(address indexed payer, address indexed borrower, uint256 repayAmount);
-
-    event SupplyRedeemableUnderlying(address indexed user, uint256 redeemableUnderlyingAmount);
+    event RepayBorrow(address indexed payer, address indexed borrower, uint256 repayAmount);
 
     event WithdrawCollateral(address indexed user, uint256 collateralAmount);
 }

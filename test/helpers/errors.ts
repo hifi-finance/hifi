@@ -1,9 +1,9 @@
-export enum CarefulMathErrors {
-  NoError = 0,
+export enum AdminErrors {
+  NotAdmin = "ERR_NOT_ADMIN",
 }
 
-export enum Errors {
-  NotAuthorized = "ERR_NOT_AUTHORIZED",
+export enum CarefulMathErrors {
+  NoError = 0,
 }
 
 export enum FintrollerErrors {

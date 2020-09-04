@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { Errors, FintrollerErrors } from "../../../helpers/errors";
+import { AdminErrors, FintrollerErrors } from "../../../helpers/errors";
 import { FintrollerConstants, OnePercent } from "../../../helpers/constants";
 
 export default function shouldBehaveLikeSetCollateralizationRatio(): void {
@@ -96,7 +96,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
             this.stubs.yToken.address,
             FintrollerConstants.DefaultCollateralizationRatioMantissa,
           ),
-      ).to.be.revertedWith(Errors.NotAuthorized);
+      ).to.be.revertedWith(AdminErrors.NotAdmin);
     });
   });
 }

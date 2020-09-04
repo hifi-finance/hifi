@@ -4,7 +4,7 @@ import shouldBehaveLikeOracleYTokenGetter from "./view/yToken";
 
 export function shouldBehaveLikeRedemptionPool(): void {
   describe("View Functions", function () {
-    describe.only("isRedemptionPool", function () {
+    describe("isRedemptionPool", function () {
       shouldBehaveLikeIsRedemptionPoolGetter();
     });
 

@@ -2,6 +2,8 @@
 pragma solidity ^0.6.10;
 
 abstract contract AdminStorage {
-    /* The address of the administrator account or contract */
+    /**
+     * @notice The address of the administrator account or contract.
+     */
     address public admin;
 }

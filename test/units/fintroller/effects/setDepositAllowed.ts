@@ -1,6 +1,6 @@
 import { expect } from "chai";
 
-import { Errors, FintrollerErrors } from "../../../helpers/errors";
+import { AdminErrors, FintrollerErrors } from "../../../helpers/errors";
 
 export default function shouldBehaveLikeSetDepositAllowed(): void {
   describe("when the caller is the admin", function () {
@@ -53,7 +53,7 @@ export default function shouldBehaveLikeSetDepositAllowed(): void {
         this.contracts.fintroller
           .connect(this.signers.eve)
           .setDepositCollateralAllowed(this.stubs.yToken.address, true),
-      ).to.be.revertedWith(Errors.NotAuthorized);
+      ).to.be.revertedWith(AdminErrors.NotAdmin);
     });
   });
 }

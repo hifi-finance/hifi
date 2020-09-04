@@ -1,6 +1,6 @@
 import { expect } from "chai";
 
-import { Errors, FintrollerErrors } from "../../../helpers/errors";
+import { AdminErrors, FintrollerErrors } from "../../../helpers/errors";
 
 export default function shouldBehaveLikeSetBorrowAllowed(): void {
   describe("when the caller is the admin", function () {
@@ -43,7 +43,7 @@ export default function shouldBehaveLikeSetBorrowAllowed(): void {
     it("reverts", async function () {
       await expect(
         this.contracts.fintroller.connect(this.signers.eve).setBorrowAllowed(this.stubs.yToken.address, true),
-      ).to.be.revertedWith(Errors.NotAuthorized);
+      ).to.be.revertedWith(AdminErrors.NotAdmin);
     });
   });
 }

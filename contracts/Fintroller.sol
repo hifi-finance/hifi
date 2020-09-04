@@ -78,7 +78,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @param yToken The yToken contract to list.
      * @return bool true=success, otherwise it reverts.
      */
-    function listBond(YTokenInterface yToken) external override isAuthorized returns (bool) {
+    function listBond(YTokenInterface yToken) external override onlyAdmin returns (bool) {
         /* Sanity check */
         yToken.isYToken();
         bonds[address(yToken)] = Bond({
@@ -126,7 +126,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     function setCollateralizationRatio(YTokenInterface yToken, uint256 newCollateralizationRatioMantissa_)
         external
         override
-        isAuthorized
+        onlyAdmin
         returns (bool)
     {
         SetCollateralizationRatioLocalVars memory vars;
@@ -152,9 +152,9 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     }
 
     /**
-     * @notice Sets the state of the permission accessed by the yToken before a repay borrow.
+     * @notice Sets the state of the permission accessed by the yToken before a borrow.
      *
-     * @dev Emits a {SetRepayBorrowAllowed} event.
+     * @dev Emits a {SetBorrowAllowed} event.
      *
      * Requirements:
      * - caller must be the administrator
@@ -163,10 +163,10 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @param state The new state to be put in storage.
      * @return bool true=success, otherwise it reverts.
      */
-    function setRepayBorrowAllowed(YTokenInterface yToken, bool state) external override isAuthorized returns (bool) {
+    function setBorrowAllowed(YTokenInterface yToken, bool state) external override onlyAdmin returns (bool) {
         require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
-        bonds[address(yToken)].isRepayBorrowAllowed = state;
-        emit SetRepayBorrowAllowed(yToken, state);
+        bonds[address(yToken)].isBorrowAllowed = state;
+        emit SetBorrowAllowed(yToken, state);
         return NO_ERROR;
     }
 
@@ -185,50 +185,12 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     function setDepositCollateralAllowed(YTokenInterface yToken, bool state)
         external
         override
-        isAuthorized
+        onlyAdmin
         returns (bool)
     {
         require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
         bonds[address(yToken)].isDepositCollateralAllowed = state;
         emit SetDepositCollateralAllowed(yToken, state);
-        return NO_ERROR;
-    }
-
-    /**
-     * @notice Sets the state of the permission accessed by the yToken before a borrow.
-     *
-     * @dev Emits a {SetBorrowAllowed} event.
-     *
-     * Requirements:
-     * - caller must be the administrator
-     *
-     * @param yToken The yToken contract to update the permission for.
-     * @param state The new state to be put in storage.
-     * @return bool true=success, otherwise it reverts.
-     */
-    function setBorrowAllowed(YTokenInterface yToken, bool state) external override isAuthorized returns (bool) {
-        require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
-        bonds[address(yToken)].isBorrowAllowed = state;
-        emit SetBorrowAllowed(yToken, state);
-        return NO_ERROR;
-    }
-
-    /**
-     * @notice Sets the state of the permission accessed by the yToken before an underlying redemption.
-     *
-     * @dev Emits a {SetRedeemAllowed} event.
-     *
-     * Requirements:
-     * - caller must be the administrator
-     *
-     * @param yToken The yToken contract to update the permission for.
-     * @param state The new state to be put in storage.
-     * @return bool true=success, otherwise it reverts.
-     */
-    function setRedeemAllowed(YTokenInterface yToken, bool state) external override isAuthorized returns (bool) {
-        require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
-        bonds[address(yToken)].isRedeemAllowed = state;
-        emit SetRedeemAllowed(yToken, state);
         return NO_ERROR;
     }
 
@@ -244,11 +206,49 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @param oracle_ The new oracle contract.
      * @return bool true=success, otherwise it reverts.
      */
-    function setOracle(SimpleOracleInterface oracle_) external override isAuthorized returns (bool) {
+    function setOracle(SimpleOracleInterface oracle_) external override onlyAdmin returns (bool) {
         require(address(oracle_) != address(0x00), "ERR_SET_ORACLE_ZERO_ADDRESS");
         address oldOracle = address(oracle);
         oracle = oracle_;
         emit NewOracle(oldOracle, address(oracle));
+        return NO_ERROR;
+    }
+
+    /**
+     * @notice Sets the state of the permission accessed by the yToken before an underlying redemption.
+     *
+     * @dev Emits a {SetRedeemAllowed} event.
+     *
+     * Requirements:
+     * - caller must be the administrator
+     *
+     * @param yToken The yToken contract to update the permission for.
+     * @param state The new state to be put in storage.
+     * @return bool true=success, otherwise it reverts.
+     */
+    function setRedeemAllowed(YTokenInterface yToken, bool state) external override onlyAdmin returns (bool) {
+        require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
+        bonds[address(yToken)].isRedeemAllowed = state;
+        emit SetRedeemAllowed(yToken, state);
+        return NO_ERROR;
+    }
+
+    /**
+     * @notice Sets the state of the permission accessed by the yToken before a repay borrow.
+     *
+     * @dev Emits a {SetRepayBorrowAllowed} event.
+     *
+     * Requirements:
+     * - caller must be the administrator
+     *
+     * @param yToken The yToken contract to update the permission for.
+     * @param state The new state to be put in storage.
+     * @return bool true=success, otherwise it reverts.
+     */
+    function setRepayBorrowAllowed(YTokenInterface yToken, bool state) external override onlyAdmin returns (bool) {
+        require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
+        bonds[address(yToken)].isRepayBorrowAllowed = state;
+        emit SetRepayBorrowAllowed(yToken, state);
         return NO_ERROR;
     }
 }

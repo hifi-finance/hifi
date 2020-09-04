@@ -49,25 +49,16 @@ contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorRep
         require(vars.mathErr == MathError.NO_ERROR, "ERR_SUPPLY_UNDERLYING_MATH_ERROR");
         underlyingTotalSupply = vars.newUnderlyingTotalSupply;
 
-        /* Effects: increase the yToken supply. */
-        // (vars.mathErr, vars.newTotalSupply) = addUInt(totalSupply, underlyingAmount);
-        // require(vars.mathErr == MathError.NO_ERROR, "ERR_SUPPLY_UNDERLYING_MATH_ERROR");
-        // totalSupply = vars.newTotalSupply;
+        /* Interactions: mint the yTokens. */
+        require(yToken.mint(msg.sender, underlyingAmount), "ERR_SUPPLY_UNDERLYING_YTOKEN_MINT");
 
-        /* Effects: mint the yTokens. */
-        // (vars.mathErr, vars.newUserBalance) = addUInt(balances[msg.sender], underlyingAmount);
-        // require(vars.mathErr == MathError.NO_ERROR, "ERR_SUPPLY_UNDERLYING_MATH_ERROR");
-        // balances[msg.sender] = vars.newUserBalance;
-
-        /* Interactions */
+        /* Interactions: deposit the underlying */
         require(
             yToken.underlying().transferFrom(msg.sender, address(this), underlyingAmount),
             "ERR_SUPPLY_UNDERLYING_ERC20_TRANSFER"
         );
 
         emit SupplyUnderlying(msg.sender, underlyingAmount);
-        // emit Mint(msg.sender, underlyingAmount);
-        // emit Transfer(address(this), msg.sender, underlyingAmount);
 
         return NO_ERROR;
     }
