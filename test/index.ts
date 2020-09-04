@@ -20,7 +20,6 @@ describe("Unit Tests", function () {
     this.stubs = {} as Stubs;
 
     const signers: Signer[] = await ethers.getSigners();
-
     this.signers.admin = signers[0];
     this.signers.brad = signers[1];
     this.signers.grace = signers[2];
