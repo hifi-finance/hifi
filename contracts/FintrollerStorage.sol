@@ -8,11 +8,11 @@ abstract contract FintrollerStorage is Exponential {
     struct Bond {
         /* The percentage that dictates the threshold under which loans become under-collateralized. */
         Exp thresholdCollateralizationRatio;
-        bool isBurnAllowed;
+        bool isBorrowAllowed;
         bool isDepositCollateralAllowed;
         bool isListed;
-        bool isMintAllowed;
         bool isRedeemAllowed;
+        bool isRepayBorrowAllowed;
     }
 
     /**
@@ -34,6 +34,11 @@ abstract contract FintrollerStorage is Exponential {
      * @notice The dafault collateralization ratio set when a new bond is listed.
      */
     uint256 public constant defaultCollateralizationRatioMantissa = 1500000000000000000;
+
+    /**
+     * @notice Indicator that this is a Fintroller contract, for inspection.
+     */
+    bool public constant isFintroller = true;
 
     /**
      * @notice Provides price information in USD for the collateral and the underlying asset.

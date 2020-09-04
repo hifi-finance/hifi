@@ -7,6 +7,7 @@ import { waffle } from "@nomiclabs/buidler";
 import Erc20MintableArtifact from "../../artifacts/Erc20Mintable.json";
 import FintrollerArtifact from "../../artifacts/Fintroller.json";
 import GuarantorPoolArtifact from "../../artifacts/GuarantorPool.json";
+import RedemptionPoolArtifact from "../../artifacts/RedemptionPool.json";
 import SimpleOracleArtifact from "../../artifacts/SimpleOracle.json";
 import YTokenArtifact from "../../artifacts/YToken.json";
 
@@ -26,12 +27,14 @@ export async function deployStubCollateral(deployer: Signer): Promise<MockContra
 
 export async function deployStubFintroller(deployer: Signer): Promise<MockContract> {
   const fintroller: MockContract = await deployStubContract(deployer, FintrollerArtifact.abi);
+  await fintroller.mock.isFintroller.returns(true);
   return fintroller;
 }
 
 export async function deployStubGuarantorPool(deployer: Signer): Promise<MockContract> {
   const guarantorPool: MockContract = await deployStubContract(deployer, GuarantorPoolArtifact.abi);
   await guarantorPool.mock.decimals.returns(BigNumber.from(18));
+  await guarantorPool.mock.isGuarantorPool.returns(true);
   await guarantorPool.mock.name.returns("Mainframe Guarantor Pool Shares");
   await guarantorPool.mock.symbol.returns("MGP-SHARES");
   await guarantorPool.mock.totalSupply.returns(Zero);
@@ -65,6 +68,12 @@ export async function deployStubOracle(deployer: Signer): Promise<MockContract> 
     .returns(CarefulMathErrors.NoError, OneHundredDollars);
 
   return oracle;
+}
+
+export async function deployStubRedemptionPool(deployer: Signer): Promise<MockContract> {
+  const redemptionPool: MockContract = await deployStubContract(deployer, RedemptionPoolArtifact.abi);
+  await redemptionPool.mock.isRedemptionPool.returns(true);
+  return redemptionPool;
 }
 
 export async function deployStubUnderlying(deployer: Signer): Promise<MockContract> {

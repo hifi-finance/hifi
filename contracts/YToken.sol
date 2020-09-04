@@ -15,14 +15,14 @@ import "./utils/ReentrancyGuard.sol";
  * @title YToken
  * @author Mainframe
  */
-contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard {
+contract YToken is YTokenInterface, Erc20, Admin, Exponential, ErrorReporter, ReentrancyGuard {
     modifier isMatured() {
-        require(getBlockTimestamp() >= expirationTime, "ERR_BOND_NOT_MATURED");
+        require(block.timestamp >= expirationTime, "ERR_BOND_NOT_MATURED");
         _;
     }
 
     modifier isNotMatured() {
-        require(getBlockTimestamp() < expirationTime, "ERR_BOND_MATURED");
+        require(block.timestamp < expirationTime, "ERR_BOND_MATURED");
         _;
     }
 
@@ -33,14 +33,15 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
 
     /**
      * @dev This implementation assumes that the yToken has the same number of decimals as the underlying.
-     * @param name_ ERC-20 name of this token
-     * @param symbol_ ERC-20 symbol of this token
-     * @param decimals_ ERC-20 decimal precision of this token
-     * @param fintroller_ The address of the fintroller contract
-     * @param underlying_ The contract address of the underlying asset
-     * @param collateral_ The contract address of the totalCollateral asset
-     * @param guarantorPool_ The pool into which Guarantors of this YToken deposit their capital
-     * @param expirationTime_ Unix timestamp in seconds for when this token expires
+     * @param name_ Erc20 name of this token.
+     * @param symbol_ Erc20 symbol of this token.
+     * @param decimals_ Erc20 decimal precision of this token.
+     * @param fintroller_ The address of the fintroller contract.
+     * @param underlying_ The contract address of the underlying asset.
+     * @param collateral_ The contract address of the totalCollateral asset.
+     * @param guarantorPool_ The pool where Guarantors deploy their capital to.
+     * @param guarantorPool_ The pool where the redeemable underlying is stored.
+     * @param expirationTime_ Unix timestamp in seconds for when this token expires.
      */
     constructor(
         string memory name_,
@@ -50,18 +51,23 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         Erc20Interface underlying_,
         Erc20Interface collateral_,
         address guarantorPool_,
+        RedemptionPoolInterface redemptionPool_,
         uint256 expirationTime_
     ) public Erc20(name_, symbol_, decimals_) Admin() {
         fintroller = fintroller_;
 
-        /* Set underlying and totalCollateral and sanity check them. */
+        /* Set the underlying and collateral contracts and sanity check them. */
         underlying = underlying_;
         Erc20Interface(underlying_).totalSupply();
 
         collateral = collateral_;
         Erc20Interface(collateral_).totalSupply();
 
-        /* Set the guarantor pool. */
+        /* Set the Redemption Pool contract and sanity check it. */
+        redemptionPool_.isRedemptionPool();
+        redemptionPool = redemptionPool_;
+
+        /* Set the Guarantor Pool contract. */
         guarantorPool = guarantorPool_;
 
         /* Set the expiration time. */
@@ -76,9 +82,8 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
      * @return uint256=number of seconds if not expired or zero if expired, otherwise it reverts.
      */
     function timeToLive() public override view returns (uint256) {
-        uint256 blockTimestamp = getBlockTimestamp();
-        if (expirationTime > blockTimestamp) {
-            return expirationTime - blockTimestamp;
+        if (expirationTime > block.timestamp) {
+            return expirationTime - block.timestamp;
         } else {
             return 0;
         }
@@ -108,48 +113,48 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
 
     /**
      * @notice Deletes the user's debt from the registry and takes the yTokens out of circulation.
-     * @dev Emits a {Burn} and a {Transfer} event.
+     * @dev Emits a {RepayBorrow} and a {Transfer} event.
      *
      * Requirements:
      * - The vault must be open.
-     * - The amount to burn cannot be zero.
-     * - The caller must have at least `burnAmount` yTokens.
-     * - The caller must have at least `burnAmount` as debt yTokens.
+     * - The amount to repay cannot be zero.
+     * - The caller must have at least `repayAmount` yTokens.
+     * - The caller must have at least `repayAmount` as debt yTokens.
      * - The caller cannot fall below the threshold collateralization ratio.
      *
-     * @param burnAmount Lorem ipsum.
+     * @param repayAmount Lorem ipsum.
      * @return bool=success, otherwise it reverts.
      */
-    function burn(uint256 burnAmount) external override isVaultOpen nonReentrant returns (bool) {
-        burnInternal(msg.sender, msg.sender, burnAmount);
+    function repayBorrow(uint256 repayAmount) external override isVaultOpen nonReentrant returns (bool) {
+        repayBorrowInternal(msg.sender, msg.sender, repayAmount);
 
-        /* We emit both a Burn and a Transfer event. */
-        emit Burn(msg.sender, burnAmount);
-        emit Transfer(msg.sender, address(this), burnAmount);
+        /* We emit both a RepayBorrow and a Transfer event. */
+        emit RepayBorrow(msg.sender, repayAmount);
+        emit Transfer(msg.sender, address(this), repayAmount);
 
         return NO_ERROR;
     }
 
     /**
      * @notice Deletes the user's debt from the registry and takes the yTokens out of circulation.
-     * @dev Emits a {Burn}, {BurnBehalf} and a {Transfer} event.
+     * @dev Emits a {RepayBorrow}, {RepayBorrowBehalf} and a {Transfer} event.
      *
-     * Requirements: same as the `burn` function, but here `borrower` is the one who must have
-     * at least `burnAmount` as debt yTokens.
+     * Requirements: same as the `repayBorrow` function, but here `borrower` is the user who must have
+     * at least `repayAmount` yTokens to repay the borrow.
      *
-     * @param burnAmount Lorem ipsum.
-     * @param burnAmount Lorem ipsum.
+     * @param borrower The address of the user for whom to repay the borrow.
+     * @param repayAmount The amount of yTokens to repay.
      * @return bool=success, otherwise it reverts.
      */
-    function burnBehalf(address borrower, uint256 burnAmount) external override nonReentrant returns (bool) {
+    function repayBorrowBehalf(address borrower, uint256 repayAmount) external override nonReentrant returns (bool) {
         require(vaults[borrower].isOpen, "ERR_VAULT_NOT_OPEN");
 
-        burnInternal(msg.sender, borrower, burnAmount);
+        repayBorrowInternal(msg.sender, borrower, repayAmount);
 
-        /* We emit a Burn, BurnBehalf and a Transfer event. */
-        emit Burn(borrower, burnAmount);
-        emit BurnBehalf(msg.sender, borrower, burnAmount);
-        emit Transfer(msg.sender, address(this), burnAmount);
+        /* We emit a RepayBorrow, RepayBorrowBehalf and a Transfer event. */
+        emit RepayBorrow(borrower, repayAmount);
+        emit RepayBorrowBehalf(msg.sender, borrower, repayAmount);
+        emit Transfer(msg.sender, address(this), repayAmount);
 
         return NO_ERROR;
     }
@@ -167,7 +172,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
      * Requirements:
      * - The vault must be open.
      * - The amount to deposit cannot be zero.
-     * - The fintroller must allow new deposit.
+     * - The Fintroller must allow new deposits.
      * - The caller must have allowed this contract to spend `collateralAmount` tokens.
      *
      * @param collateralAmount The amount of collateral to withdraw.
@@ -176,7 +181,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
     function depositCollateral(uint256 collateralAmount) external override isVaultOpen nonReentrant returns (bool) {
         DepositLocalVars memory vars;
 
-        /* Checks: avoid the zero edge case. */
+        /* Checks: the zero edge case. */
         require(collateralAmount > 0, "ERR_DEPOSIT_COLLATERAL_ZERO");
 
         /* Checks: the Fintroller allows this action to be performed. */
@@ -269,7 +274,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         return NO_ERROR;
     }
 
-    function liquidate(address borrower, uint256 repayUnderlyingAmount) external override returns (bool) {
+    function liquidateBorrow(address borrower, uint256 repayUnderlyingAmount) external override returns (bool) {
         borrower;
         repayUnderlyingAmount;
         return NO_ERROR;
@@ -282,7 +287,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
     }
 
     /**
-     * @notice Locks a portion or all of the free collateral to make it eligible for minting.
+     * @notice Locks a portion or all of the free collateral to make it eligible for borrowing.
      * @dev Emits a {LockCollateral} event.
      *
      * Requirements:
@@ -315,65 +320,62 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         return NO_ERROR;
     }
 
-    struct MintLocalVars {
+    struct BorrowLocalVars {
         MathError mathErr;
         uint256 lockedCollateralValueInUsd;
-        uint256 mintValueInUsd;
+        uint256 borrowValueInUsd;
         Exp newCollateralizationRatio;
         uint256 newDebt;
-        uint256 newBorrowerBalance;
-        uint256 newTotalSupply;
         uint256 thresholdCollateralizationRatioMantissa;
-        uint256 timeToLive;
     }
 
     /**
-     * @notice Mints new yTokens and increases the debt of the caller.
-     * @dev Emits a {Mint} and a {Transfer} event.
+     * @notice Increases the debt of the caller and mints new yToken.
+     * @dev Emits a {Borrow} and a {Transfer} event.
      *
      * Requirements:
      *
      * - The vault must be open.
      * - Must be called post maturation.
-     * - The amount to mint cannot be zero.
-     * - The fintroller must allow new mints.
+     * - The amount to borrow cannot be zero.
+     * - The Fintroller must allow borrows.
      * - The caller must not fall below the threshold collateralization ratio.
      *
-     * @param mintAmount The amount of yTokens to print into existence.
+     * @param borrowAmount The amount of yTokens to print into existence.
      * @return bool true=success, otherwise it reverts.
      */
-    function mint(uint256 mintAmount) public override isVaultOpen isNotMatured nonReentrant returns (bool) {
-        MintLocalVars memory vars;
+    function borrow(uint256 borrowAmount) public override isVaultOpen isNotMatured nonReentrant returns (bool) {
+        BorrowLocalVars memory vars;
 
-        /* Checks: avoid the zero edge case. */
-        require(mintAmount > 0, "ERR_MINT_ZERO");
+        /* Checks: the zero edge case. */
+        require(borrowAmount > 0, "ERR_BORROW_ZERO");
 
         /* Checks: the Fintroller allows this action to be performed. */
-        require(fintroller.mintAllowed(this), "ERR_MINT_NOT_ALLOWED");
+        require(fintroller.borrowAllowed(this), "ERR_BORROW_NOT_ALLOWED");
 
         /* TODO: check liquidity in the Guarantor Pool and Redemption Pool. */
 
         /* Checks: the contingent collateralization ratio is higher or equal to the threshold. */
         Vault memory vault = vaults[msg.sender];
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
 
         SimpleOracleInterface oracle = fintroller.oracle();
         (vars.mathErr, vars.lockedCollateralValueInUsd) = oracle.multiplyCollateralAmountByItsPriceInUsd(
             vault.lockedCollateral
         );
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
 
-        (vars.mathErr, vars.mintValueInUsd) = oracle.multiplyUnderlyingAmountByItsPriceInUsd(mintAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
+        (vars.mathErr, vars.borrowValueInUsd) = oracle.multiplyUnderlyingAmountByItsPriceInUsd(borrowAmount);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
 
-        (vars.mathErr, vars.newDebt) = addUInt(vault.debt, vars.mintValueInUsd);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
+        (vars.mathErr, vars.newDebt) = addUInt(vault.debt, vars.borrowValueInUsd);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
 
         (vars.mathErr, vars.newCollateralizationRatio) = divExp(
             Exp({ mantissa: vars.lockedCollateralValueInUsd }),
             Exp({ mantissa: vars.newDebt })
         );
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
 
         (vars.thresholdCollateralizationRatioMantissa) = fintroller.getBond(address(this));
         require(
@@ -384,19 +386,11 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
         /* Effects: increase the debt of the user. */
         vaults[msg.sender].debt = vars.newDebt;
 
-        /* Effects: increase the yToken supply. */
-        (vars.mathErr, vars.newTotalSupply) = addUInt(totalSupply, mintAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
-        totalSupply = vars.newTotalSupply;
+        mintInternal(msg.sender, borrowAmount);
 
-        /* Effects: mint the yTokens. */
-        (vars.mathErr, vars.newBorrowerBalance) = addUInt(balances[msg.sender], mintAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_MATH_ERROR");
-        balances[msg.sender] = vars.newBorrowerBalance;
-
-        /* We emit both a Mint and a Transfer event. */
-        emit Mint(msg.sender, mintAmount);
-        emit Transfer(address(this), msg.sender, mintAmount);
+        /* We emit both a Borrow and a Transfer event. */
+        emit Borrow(msg.sender, borrowAmount);
+        emit Transfer(address(this), msg.sender, borrowAmount);
 
         return NO_ERROR;
     }
@@ -432,70 +426,40 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
      * @param redeemAmount The amount of yTokens to redeem for the underlying asset.
      * @return bool=success, otherwise it reverts.
      */
-    function redeem(uint256 redeemAmount) external override isMatured returns (bool) {
-        RedeemLocalVars memory vars;
+    // function redeem(uint256 redeemAmount) external override isMatured returns (bool) {
+    //     RedeemLocalVars memory vars;
 
-        /* Checks: avoid the zero edge case. */
-        require(redeemAmount > 0, "ERR_REDEEM_ZERO");
+    //     /* Checks: the zero edge case. */
+    //     require(redeemAmount > 0, "ERR_REDEEM_ZERO");
 
-        /* Checks: the Fintroller allows this action to be performed. */
-        require(fintroller.redeemAllowed(this), "ERR_REDEEM_NOT_ALLOWED");
+    //     /* Checks: the Fintroller allows this action to be performed. */
+    //     require(fintroller.redeemAllowed(this), "ERR_REDEEM_NOT_ALLOWED");
 
-        /* Checks: there is sufficient liquidity. */
-        require(redeemAmount <= redeemableUnderlyingTotalSupply, "ERR_REDEEM_INSUFFICIENT_REDEEMABLE_UNDERLYING");
+    //     /* Checks: there is sufficient liquidity. */
+    //     require(redeemAmount <= redeemableUnderlyingTotalSupply, "ERR_REDEEM_INSUFFICIENT_REDEEMABLE_UNDERLYING");
 
-        /* Effects: decrease the remaining supply of redeemable underlying. */
-        (vars.mathErr, vars.newRedeemableUnderlying) = subUInt(redeemableUnderlyingTotalSupply, redeemAmount);
-        assert(vars.mathErr == MathError.NO_ERROR);
-        redeemableUnderlyingTotalSupply = vars.newRedeemableUnderlying;
+    //     /* Effects: decrease the remaining supply of redeemable underlying. */
+    //     (vars.mathErr, vars.newRedeemableUnderlying) = subUInt(redeemableUnderlyingTotalSupply, redeemAmount);
+    //     assert(vars.mathErr == MathError.NO_ERROR);
+    //     redeemableUnderlyingTotalSupply = vars.newRedeemableUnderlying;
 
-        /* Effects: decrease the total supply. */
-        (vars.mathErr, vars.newTotalSupply) = subUInt(totalSupply, redeemAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_REDEEM_MATH_ERROR");
-        totalSupply = vars.newTotalSupply;
+    //     /* Effects: decrease the total supply. */
+    //     (vars.mathErr, vars.newTotalSupply) = subUInt(totalSupply, redeemAmount);
+    //     require(vars.mathErr == MathError.NO_ERROR, "ERR_REDEEM_MATH_ERROR");
+    //     totalSupply = vars.newTotalSupply;
 
-        /* Effects: decrease the user's balance. */
-        (vars.mathErr, vars.newUserBalance) = subUInt(balances[msg.sender], redeemAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_REDEEM_MATH_ERROR");
-        balances[msg.sender] = vars.newUserBalance;
+    //     /* Effects: decrease the user's balance. */
+    //     (vars.mathErr, vars.newUserBalance) = subUInt(balances[msg.sender], redeemAmount);
+    //     require(vars.mathErr == MathError.NO_ERROR, "ERR_REDEEM_MATH_ERROR");
+    //     balances[msg.sender] = vars.newUserBalance;
 
-        /* Interactions */
-        require(underlying.transfer(msg.sender, redeemAmount), "ERR_REDEEM_ERC20_TRANSFER");
+    //     /* Interactions */
+    //     require(underlying.transfer(msg.sender, redeemAmount), "ERR_REDEEM_ERC20_TRANSFER");
 
-        emit Redeem(msg.sender, redeemAmount);
+    //     emit Redeem(msg.sender, redeemAmount);
 
-        return NO_ERROR;
-    }
-
-    /**
-     * @notice An alternative to the normal minting method. Works by supplying a number of underlying assets to the
-     * Redemption Pool and getting an equal amount of yTokens in return.
-     *
-     * @dev Emits a {SupplyRedeemableUnderlying}, {Mint} and {Transfer} event.
-     *
-     * Requirements:
-     * - Must be called before maturation.
-     * - The amount to deposit cannot be zero.
-     * - The caller must have allowed this contract to spend `redeemableUnderlyingAmount` tokens.
-     *
-     * @param redeemableUnderlyingAmount The amount of underlying to supply to the Redemption Pool.
-     * @return bool=success, otherwise it reverts.
-     */
-    function supplyRedeemableUnderlyingAndMint(uint256 redeemableUnderlyingAmount)
-        external
-        override
-        isNotMatured
-        returns (bool)
-    {
-        supplyRedeemableUnderlyingAndMintInternal(redeemableUnderlyingAmount);
-
-        /* We emit a SupplyRedeemableUnderlying, Mint and a Transfer event. */
-        emit SupplyRedeemableUnderlying(msg.sender, redeemableUnderlyingAmount);
-        emit Mint(msg.sender, redeemableUnderlyingAmount);
-        emit Transfer(address(this), msg.sender, redeemableUnderlyingAmount);
-
-        return NO_ERROR;
-    }
+    //     return NO_ERROR;
+    // }
 
     struct WithdrawCollateralLocalVars {
         MathError mathErr;
@@ -518,7 +482,7 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
     function withdrawCollateral(uint256 collateralAmount) external override isVaultOpen nonReentrant returns (bool) {
         WithdrawCollateralLocalVars memory vars;
 
-        /* Checks: avoid the zero edge case. */
+        /* Checks: the zero edge case. */
         require(collateralAmount > 0, "ERR_WITHDRAW_COLLATERAL_ZERO");
 
         /* Checks: there is enough free collateral. */
@@ -545,99 +509,72 @@ contract YToken is YTokenInterface, Erc20, Admin, ErrorReporter, ReentrancyGuard
     }
 
     /*** Internal Functions ***/
-
-    /**
-     * @dev Retrieves the block timestamp. This exists mainly for stubbing
-     * it when testing.
-     */
-    function getBlockTimestamp() internal view returns (uint256) {
-        return block.timestamp;
-    }
-
-    struct BurnLocalVars {
+    struct RepayBorrowLocalVars {
         MathError mathErr;
-        uint256 newBurnerBalance;
+        uint256 newPayerBalance;
         uint256 newDebt;
         uint256 newTotalSupply;
     }
 
     /**
-     * @dev See the documentation of the public functions that call this internal function.
+     * @dev See the documentation for the public functions that call this internal function.
      */
-    function burnInternal(
+    function repayBorrowInternal(
         address payer,
         address borrower,
-        uint256 burnAmount
+        uint256 repayAmount
     ) internal {
-        BurnLocalVars memory vars;
+        RepayBorrowLocalVars memory vars;
 
-        /* Checks: avoid the zero edge case. */
-        require(burnAmount > 0, "ERR_BURN_ZERO");
+        /* Checks: the zero edge case. */
+        require(repayAmount > 0, "ERR_REPAY_BORROW_ZERO");
 
         /* Checks: verify that the Fintroller allows this action to be performed. */
-        require(fintroller.burnAllowed(this), "ERR_BURN_NOT_ALLOWED");
+        require(fintroller.repayBorrowAllowed(this), "ERR_REPAY_BORROW_NOT_ALLOWED");
 
         /* Checks: the payer has enough yTokens. */
-        require(balanceOf(payer) >= burnAmount, "ERR_BURN_INSUFFICIENT_BALANCE");
+        require(balanceOf(payer) >= repayAmount, "ERR_REPAY_BORROW_INSUFFICIENT_BALANCE");
 
-        /* Checks: minter has a debt to pay. */
-        require(vaults[borrower].debt >= burnAmount, "ERR_BURN_INSUFFICIENT_DEBT");
+        /* Checks: user has a debt to pay. */
+        require(vaults[borrower].debt >= repayAmount, "ERR_REPAY_BORROW_INSUFFICIENT_DEBT");
 
         /* Effects: reduce the debt of the user. */
-        (vars.mathErr, vars.newDebt) = subUInt(vaults[borrower].debt, burnAmount);
+        (vars.mathErr, vars.newDebt) = subUInt(vaults[borrower].debt, repayAmount);
         /* This operation can't fail because of the previous `require`. */
         assert(vars.mathErr == MathError.NO_ERROR);
         vaults[borrower].debt = vars.newDebt;
 
         /* Effects: reduce the yToken supply. */
-        (vars.mathErr, vars.newTotalSupply) = subUInt(totalSupply, burnAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_BURN_MATH_ERROR");
+        (vars.mathErr, vars.newTotalSupply) = subUInt(totalSupply, repayAmount);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_REPAY_BORROW_MATH_ERROR");
         totalSupply = vars.newTotalSupply;
 
         /* Effects: burn the yTokens. */
-        (vars.mathErr, vars.newBurnerBalance) = subUInt(balances[payer], burnAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_BURN_MATH_ERROR");
-        balances[payer] = vars.newBurnerBalance;
+        (vars.mathErr, vars.newPayerBalance) = subUInt(balances[payer], repayAmount);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_REPAY_BORROW_MATH_ERROR");
+        balances[payer] = vars.newPayerBalance;
     }
 
-    struct SupplyRedeemableUnderlyingAndMintLocalVars {
+    struct MintInternalLocalVars {
         MathError mathErr;
-        uint256 newRedeemableUnderlyingTotalSupply;
+        uint256 newBeneficiaryBalance;
         uint256 newTotalSupply;
-        uint256 newUserBalance;
     }
 
     /**
-     * @dev See the documentation of the public functions that call this internal function.
+     * @dev See the documentation for the public functions that call this internal function.
      */
-    function supplyRedeemableUnderlyingAndMintInternal(uint256 redeemableUnderlyingAmount) internal returns (bool) {
-        SupplyRedeemableUnderlyingAndMintLocalVars memory vars;
+    function mintInternal(address beneficiary, uint256 mintAmount) internal {
+        MintInternalLocalVars memory vars;
 
-        /* Checks: avoid the zero edge case. */
-        require(redeemableUnderlyingAmount > 0, "ERR_SRUAM_ZERO");
-
-        /* Effects: update the redeemable underlying total supply in storage. */
-        (vars.mathErr, vars.newRedeemableUnderlyingTotalSupply) = addUInt(
-            redeemableUnderlyingTotalSupply,
-            redeemableUnderlyingAmount
-        );
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_SRUAM_MATH_ERROR");
-        redeemableUnderlyingTotalSupply = vars.newRedeemableUnderlyingTotalSupply;
-
-        /* Effects: increase the yToken supply. */
-        (vars.mathErr, vars.newTotalSupply) = addUInt(totalSupply, redeemableUnderlyingAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_SRUAM_MATH_ERROR");
+        /* Increase the yToken supply. */
+        (vars.mathErr, vars.newTotalSupply) = addUInt(totalSupply, mintAmount);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_INTERNAL_MATH_ERROR");
         totalSupply = vars.newTotalSupply;
 
-        /* Effects: mint the yTokens. */
-        (vars.mathErr, vars.newUserBalance) = addUInt(balances[msg.sender], redeemableUnderlyingAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_SRUAM_MATH_ERROR");
-        balances[msg.sender] = vars.newUserBalance;
-
-        /* Interactions */
-        require(
-            underlying.transferFrom(msg.sender, address(this), redeemableUnderlyingAmount),
-            "ERR_SRUAM_ERC20_TRANSFER"
-        );
+        /* Mint the yTokens. */
+        (vars.mathErr, vars.newBeneficiaryBalance) = addUInt(balances[beneficiary], mintAmount);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_INTERNAL_MATH_ERROR");
+        balances[beneficiary] = vars.newBeneficiaryBalance;
     }
 }

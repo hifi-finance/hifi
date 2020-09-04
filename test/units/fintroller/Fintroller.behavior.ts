@@ -1,15 +1,15 @@
 import shouldBehaveLikeListBond from "./effects/listBond";
 import shouldBehaveLikeSetCollateralizationRatio from "./effects/setCollateralizationRatio";
 import shouldBehaveLikeSetDepositAllowed from "./effects/setDepositAllowed";
-import shouldBehaveLikeSetMintAllowed from "./effects/setMintAllowed";
+import shouldBehaveLikeSetBorrowAllowed from "./effects/setBorrowAllowed";
 import shouldBehaveLikeSetOracle from "./effects/setOracle";
 
 import shouldBehaveLikeBondGetter from "./view/bond";
+import shouldBehaveLikeBorrowAllowed from "./view/borrowAllowed";
 import shouldBehaveLikeCollateralizationRatioLowerBoundMantissaGetter from "./view/collateralizationRatioLowerBoundMantissa";
 import shouldBehaveLikeCollateralizationRatioUpperBoundMantissaGetter from "./view/collateralizationRatioUpperBoundMantissa";
 import shouldBehaveLikeDefaultCollateralizationRatioMantissaGetter from "./view/defaultCollateralizationRatioMantissa";
 import shouldBehaveLikeDepositCollateralAllowed from "./view/depositCollateralAllowed";
-import shouldBehaveLikeMintAllowed from "./view/mintAllowed";
 import shouldBehaveLikeOracleGetter from "./view/oracle";
 
 export function shouldBehaveLikeFintroller(): void {
@@ -26,8 +26,8 @@ export function shouldBehaveLikeFintroller(): void {
       shouldBehaveLikeSetDepositAllowed();
     });
 
-    describe("setMintAllowed", function () {
-      shouldBehaveLikeSetMintAllowed();
+    describe("setBorrowAllowed", function () {
+      shouldBehaveLikeSetBorrowAllowed();
     });
 
     describe("setOracle", function () {
@@ -56,8 +56,8 @@ export function shouldBehaveLikeFintroller(): void {
       shouldBehaveLikeDepositCollateralAllowed();
     });
 
-    describe("mintAllowed", function () {
-      shouldBehaveLikeMintAllowed();
+    describe("borrowAllowed", function () {
+      shouldBehaveLikeBorrowAllowed();
     });
 
     describe("oracle", function () {

@@ -18,15 +18,15 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     /*** View Functions ***/
 
     /**
-     * @notice Checks if the user should be allowed to burn yTokens.
+     * @notice Checks if the user should be allowed to borrow yTokens.
      * @dev Reverts it the bond is not listed.
      * @param yToken The bond to make the check against.
      * @return bool true=allowed, false=not allowed.
      */
-    function burnAllowed(YTokenInterface yToken) external override view returns (bool) {
+    function borrowAllowed(YTokenInterface yToken) external override view returns (bool) {
         Bond memory bond = bonds[address(yToken)];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
-        return bond.isBurnAllowed;
+        return bond.isBorrowAllowed;
     }
 
     /**
@@ -42,18 +42,6 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     }
 
     /**
-     * @notice Checks if the user should be allowed to mint new yTokens.
-     * @dev Reverts it the bond is not listed.
-     * @param yToken The bond to make the check against.
-     * @return bool true=allowed, false=not allowed.
-     */
-    function mintAllowed(YTokenInterface yToken) external override view returns (bool) {
-        Bond memory bond = bonds[address(yToken)];
-        require(bond.isListed, "ERR_BOND_NOT_LISTED");
-        return bond.isMintAllowed;
-    }
-
-    /**
      * @notice Checks if the user should be allowed to redeem yTokens for the underlying asset.
      * @dev Reverts it the bond is not listed.
      * @param yToken The bond to make the check against.
@@ -63,6 +51,18 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
         Bond memory bond = bonds[address(yToken)];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
         return bond.isRedeemAllowed;
+    }
+
+    /**
+     * @notice Checks if the user should be allowed to repay borrows.
+     * @dev Reverts it the bond is not listed.
+     * @param yToken The bond to make the check against.
+     * @return bool true=allowed, false=not allowed.
+     */
+    function repayBorrowAllowed(YTokenInterface yToken) external override view returns (bool) {
+        Bond memory bond = bonds[address(yToken)];
+        require(bond.isListed, "ERR_BOND_NOT_LISTED");
+        return bond.isRepayBorrowAllowed;
     }
 
     /*** Non-Constant Functions ***/
@@ -82,12 +82,12 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
         /* Sanity check */
         yToken.isYToken();
         bonds[address(yToken)] = Bond({
-            thresholdCollateralizationRatio: Exp({ mantissa: defaultCollateralizationRatioMantissa }),
-            isBurnAllowed: false,
+            isBorrowAllowed: false,
             isDepositCollateralAllowed: false,
             isListed: true,
-            isMintAllowed: false,
-            isRedeemAllowed: false
+            isRedeemAllowed: false,
+            isRepayBorrowAllowed: false,
+            thresholdCollateralizationRatio: Exp({ mantissa: defaultCollateralizationRatioMantissa })
         });
         emit ListBond(yToken);
         return NO_ERROR;
@@ -152,9 +152,9 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     }
 
     /**
-     * @notice Sets the state of the permission accessed by the yToken before a burn.
+     * @notice Sets the state of the permission accessed by the yToken before a repay borrow.
      *
-     * @dev Emits a {SetBurnAllowed} event.
+     * @dev Emits a {SetRepayBorrowAllowed} event.
      *
      * Requirements:
      * - caller must be the administrator
@@ -163,10 +163,10 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @param state The new state to be put in storage.
      * @return bool true=success, otherwise it reverts.
      */
-    function setBurnAllowed(YTokenInterface yToken, bool state) external override isAuthorized returns (bool) {
+    function setRepayBorrowAllowed(YTokenInterface yToken, bool state) external override isAuthorized returns (bool) {
         require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
-        bonds[address(yToken)].isBurnAllowed = state;
-        emit SetBurnAllowed(yToken, state);
+        bonds[address(yToken)].isRepayBorrowAllowed = state;
+        emit SetRepayBorrowAllowed(yToken, state);
         return NO_ERROR;
     }
 
@@ -195,9 +195,9 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     }
 
     /**
-     * @notice Sets the state of the permission accessed by the yToken before a new mint.
+     * @notice Sets the state of the permission accessed by the yToken before a borrow.
      *
-     * @dev Emits a {SetMintAllowed} event.
+     * @dev Emits a {SetBorrowAllowed} event.
      *
      * Requirements:
      * - caller must be the administrator
@@ -206,10 +206,10 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @param state The new state to be put in storage.
      * @return bool true=success, otherwise it reverts.
      */
-    function setMintAllowed(YTokenInterface yToken, bool state) external override isAuthorized returns (bool) {
+    function setBorrowAllowed(YTokenInterface yToken, bool state) external override isAuthorized returns (bool) {
         require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
-        bonds[address(yToken)].isMintAllowed = state;
-        emit SetMintAllowed(yToken, state);
+        bonds[address(yToken)].isBorrowAllowed = state;
+        emit SetBorrowAllowed(yToken, state);
         return NO_ERROR;
     }
 

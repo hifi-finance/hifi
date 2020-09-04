@@ -4,10 +4,12 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { waffle } from "@nomiclabs/buidler";
 
 import FintrollerArtifact from "../../artifacts/Fintroller.json";
+import RedemptionPoolArtifact from "../../artifacts/RedemptionPool.json";
 import YTokenArtifact from "../../artifacts/YToken.json";
 
 import { DefaultBlockGasLimit } from "./constants";
 import { Fintroller } from "../../typechain/Fintroller";
+import { RedemptionPool } from "../../typechain/RedemptionPool";
 import { YToken } from "../../typechain/YToken";
 
 import {
@@ -15,6 +17,7 @@ import {
   deployStubGuarantorPool,
   deployStubFintroller,
   deployStubOracle,
+  deployStubRedemptionPool,
   deployStubYToken,
   deployStubUnderlying,
 } from "./stubs";
@@ -31,6 +34,17 @@ export async function fintrollerFixture(
   return { fintroller, oracle, yToken };
 }
 
+export async function redemptionPoolFixture(
+  signers: Signer[],
+): Promise<{ redemptionPool: RedemptionPool; yToken: MockContract }> {
+  const deployer: Signer = signers[0];
+  const yToken: MockContract = await deployStubYToken(deployer);
+  const redemptionPool: RedemptionPool = ((await deployContract(signers[0], RedemptionPoolArtifact, [
+    yToken.address,
+  ])) as unknown) as RedemptionPool;
+  return { redemptionPool, yToken };
+}
+
 export async function yTokenFixture(
   signers: Signer[],
 ): Promise<{
@@ -38,6 +52,7 @@ export async function yTokenFixture(
   fintroller: MockContract;
   guarantorPool: MockContract;
   oracle: MockContract;
+  redemptionPool: MockContract;
   underlying: MockContract;
   yToken: YToken;
 }> {
@@ -51,6 +66,7 @@ export async function yTokenFixture(
   const underlying: MockContract = await deployStubUnderlying(deployer);
   const collateral: MockContract = await deployStubCollateral(deployer);
   const guarantorPool: MockContract = await deployStubGuarantorPool(deployer);
+  const redemptionPool: MockContract = await deployStubRedemptionPool(deployer);
 
   const name: string = "DAI/ETH (2021-01-01)";
   const symbol: string = "yDAI-JAN21";
@@ -69,10 +85,11 @@ export async function yTokenFixture(
       underlying.address,
       collateral.address,
       guarantorPool.address,
+      redemptionPool.address,
       expirationTime,
     ],
     { gasLimit: DefaultBlockGasLimit },
   )) as unknown) as YToken;
 
-  return { collateral, fintroller, guarantorPool, oracle, underlying, yToken };
+  return { collateral, fintroller, guarantorPool, oracle, redemptionPool, underlying, yToken };
 }

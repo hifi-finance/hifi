@@ -89,7 +89,7 @@ const config: BuidlerConfig = {
      * https://buidler.dev/buidler-evm/#solidity-optimizer-support
      */
     optimizer: {
-      enabled: true,
+      enabled: process.env.ETHEREUM_NETWORK === "mainnet" ? true : true,
       runs: 200,
     },
     version: "0.6.10",

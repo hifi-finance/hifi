@@ -2,14 +2,14 @@
 pragma solidity ^0.6.10;
 
 import "./FintrollerInterface.sol";
+import "./RedemptionPoolInterface.sol";
 import "./erc20/Erc20Interface.sol";
-import "./math/Exponential.sol";
 
 /**
  * @title YTokenInterface
  * @author Mainframe
  */
-abstract contract YTokenStorage is Exponential {
+abstract contract YTokenStorage {
     /*** Structs ***/
     struct Vault {
         uint256 debt;
@@ -46,9 +46,9 @@ abstract contract YTokenStorage is Exponential {
     address public guarantorPool;
 
     /**
-     * @notice The pool that allows holders to redeem their yTokens for the underyling asset after maturation.
+     * @notice blah
      */
-    uint256 public redeemableUnderlyingTotalSupply;
+    RedemptionPoolInterface public redemptionPool;
 
     /**
      * @notice Underlying Erc20 asset for this YToken.

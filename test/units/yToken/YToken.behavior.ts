@@ -1,28 +1,24 @@
-import shouldBehaveLikeBurn from "./effects/burn";
-import shouldBehaveLikeBurnBehalf from "./effects/burnBehalf";
+import shouldBehaveLikeBorrow from "./effects/borrow";
 import shouldBehaveLikeDepositCollateral from "./effects/depositCollateral";
 import shouldBehaveLikeFreeCollateral from "./effects/freeCollateral";
 import shouldBehaveLikeLockCollateral from "./effects/lockCollateral";
-import shouldBehaveLikeMint from "./effects/mint";
 import shouldBehaveLikeRedeem from "./effects/redeem";
+import shouldBehaveLikeRepayBorrow from "./effects/repayBorrow";
+import shouldBehaveLikeRepayBorrowBehalf from "./effects/repayBorrowBehalf";
 import shouldBehaveLikeWithdrawCollateral from "./effects/withdrawCollateral";
 
 import shouldBehaveLikeCollateralGetter from "./view/collateral";
 import shouldBehaveLikeExpirationTimeGetter from "./view/expirationTime";
 import shouldBehaveLikeFintrollerGetter from "./view/fintroller";
 import shouldBehaveLikeGuarantorPoolGetter from "./view/guarantorPool";
-import shouldBehaveLikeRedeemableUnderlyingTotalSupplyGetter from "./view/redeemableUnderlyingTotalSupply";
+import shouldBehaveLikeRedemptionPoolGetter from "./view/redemptionPool";
 import shouldBehaveLikeUnderlyingGetter from "./view/underlying";
 import shouldBehaveLikeVaultGetter from "./view/vault";
 
 export function shouldBehaveLikeYToken(): void {
   describe("Effects Functions", function () {
-    describe("burn", function () {
-      shouldBehaveLikeBurn();
-    });
-
-    describe("burnBehalf", function () {
-      shouldBehaveLikeBurnBehalf();
+    describe("borrow", function () {
+      shouldBehaveLikeBorrow();
     });
 
     describe("depositCollateral", function () {
@@ -37,12 +33,16 @@ export function shouldBehaveLikeYToken(): void {
       shouldBehaveLikeLockCollateral();
     });
 
-    describe("mint", function () {
-      shouldBehaveLikeMint();
+    describe.skip("redeem", function () {
+      shouldBehaveLikeRedeem();
     });
 
-    describe("redeem", function () {
-      shouldBehaveLikeRedeem();
+    describe("repayBorrow", function () {
+      shouldBehaveLikeRepayBorrow();
+    });
+
+    describe("repayBorrowBehalf", function () {
+      shouldBehaveLikeRepayBorrowBehalf();
     });
 
     describe("withdrawCollateral", function () {
@@ -67,8 +67,8 @@ export function shouldBehaveLikeYToken(): void {
       shouldBehaveLikeGuarantorPoolGetter();
     });
 
-    describe("redeemableUnderlyingTotalSupply", function () {
-      shouldBehaveLikeRedeemableUnderlyingTotalSupplyGetter();
+    describe("redemptionPool", function () {
+      shouldBehaveLikeRedemptionPoolGetter();
     });
 
     describe("underlying", function () {

@@ -2,7 +2,7 @@ import { expect } from "chai";
 
 import { Errors, FintrollerErrors } from "../../../helpers/errors";
 
-export default function shouldBehaveLikeSetMintAllowed(): void {
+export default function shouldBehaveLikeSetBorrowAllowed(): void {
   describe("when the caller is the admin", function () {
     describe("when the bond is listed", function () {
       beforeEach(async function () {
@@ -10,22 +10,22 @@ export default function shouldBehaveLikeSetMintAllowed(): void {
       });
 
       it("sets the value of the property to true", async function () {
-        await this.contracts.fintroller.connect(this.signers.admin).setMintAllowed(this.stubs.yToken.address, true);
-        const newState: boolean = await this.contracts.fintroller.mintAllowed(this.stubs.yToken.address);
+        await this.contracts.fintroller.connect(this.signers.admin).setBorrowAllowed(this.stubs.yToken.address, true);
+        const newState: boolean = await this.contracts.fintroller.borrowAllowed(this.stubs.yToken.address);
         expect(newState).to.equal(true);
       });
 
       it("sets the value of the property to false", async function () {
-        await this.contracts.fintroller.connect(this.signers.admin).setMintAllowed(this.stubs.yToken.address, false);
-        const newState: boolean = await this.contracts.fintroller.mintAllowed(this.stubs.yToken.address);
+        await this.contracts.fintroller.connect(this.signers.admin).setBorrowAllowed(this.stubs.yToken.address, false);
+        const newState: boolean = await this.contracts.fintroller.borrowAllowed(this.stubs.yToken.address);
         expect(newState).to.equal(false);
       });
 
-      it("emits a SetMintAllowed event", async function () {
+      it("emits a SetBorrowAllowed event", async function () {
         await expect(
-          this.contracts.fintroller.connect(this.signers.admin).setMintAllowed(this.stubs.yToken.address, true),
+          this.contracts.fintroller.connect(this.signers.admin).setBorrowAllowed(this.stubs.yToken.address, true),
         )
-          .to.emit(this.contracts.fintroller, "SetMintAllowed")
+          .to.emit(this.contracts.fintroller, "SetBorrowAllowed")
           .withArgs(this.stubs.yToken.address, true);
       });
     });
@@ -33,7 +33,7 @@ export default function shouldBehaveLikeSetMintAllowed(): void {
     describe("when the bond is not listed", function () {
       it("rejects", async function () {
         await expect(
-          this.contracts.fintroller.connect(this.signers.admin).setMintAllowed(this.stubs.yToken.address, true),
+          this.contracts.fintroller.connect(this.signers.admin).setBorrowAllowed(this.stubs.yToken.address, true),
         ).to.be.revertedWith(FintrollerErrors.BondNotListed);
       });
     });
@@ -42,7 +42,7 @@ export default function shouldBehaveLikeSetMintAllowed(): void {
   describe("when the caller is not the admin", function () {
     it("reverts", async function () {
       await expect(
-        this.contracts.fintroller.connect(this.signers.eve).setMintAllowed(this.stubs.yToken.address, true),
+        this.contracts.fintroller.connect(this.signers.eve).setBorrowAllowed(this.stubs.yToken.address, true),
       ).to.be.revertedWith(Errors.NotAuthorized);
     });
   });

@@ -33,7 +33,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
 
           describe("when the caller has a debt", function () {
             beforeEach(async function () {
-              await this.stubs.fintroller.mock.mintAllowed.withArgs(this.contracts.yToken.address).returns(true);
+              await this.stubs.fintroller.mock.borrowAllowed.withArgs(this.contracts.yToken.address).returns(true);
               /* The yToken will ask the oracle what's the value of 9 WETH collateral. */
               await this.stubs.oracle.mock.multiplyCollateralAmountByItsPriceInUsd
                 .withArgs(TenTokens.sub(OneToken))
@@ -42,7 +42,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
 
             describe("when the caller is safely over-collateralized", async function () {
               beforeEach(async function () {
-                await this.contracts.yToken.connect(this.signers.brad).mint(OneHundredTokens);
+                await this.contracts.yToken.connect(this.signers.brad).borrow(OneHundredTokens);
               });
 
               it("it frees the collateral", async function () {
@@ -63,11 +63,11 @@ export default function shouldBehaveLikeLockCollateral(): void {
             describe("when the caller is dangerously collateralized", function () {
               beforeEach(async function () {
                 /* This is 150%. Recall that we deposited 10 ETH and that the oracle assumes 1 ETH = $100. */
-                const mintAmount: BigNumber = OneToken.mul(666);
+                const borrowAmount: BigNumber = OneToken.mul(666);
                 await this.stubs.oracle.mock.multiplyUnderlyingAmountByItsPriceInUsd
-                  .withArgs(mintAmount)
+                  .withArgs(borrowAmount)
                   .returns(CarefulMathErrors.NoError, OneDollar.mul(666));
-                await this.contracts.yToken.connect(this.signers.brad).mint(mintAmount);
+                await this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount);
               });
 
               it("reverts", async function () {

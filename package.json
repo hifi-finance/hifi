@@ -8,7 +8,7 @@
     "url": "https://mainframe.co"
   },
   "bugs": {
-    "url": "https://github.com/mainframehq/mainframe-protocol-prb/issues"
+    "url": "https://github.com/mainframehq/mainframe-lending-protocol/issues"
   },
   "devDependencies": {
     "@commitlint/cli": "^9.0.1",
@@ -54,7 +54,7 @@
   "files": [
     "/contracts"
   ],
-  "homepage": "https://github.com/mainframehq/mainframe-protocol-prb#readme",
+  "homepage": "https://github.com/mainframehq/mainframe-lending-protocol#readme",
   "keywords": [
     "blockchain",
     "ethereum",
@@ -67,7 +67,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mainframehq/mainframe-protocol-prb"
+    "url": "https://github.com/mainframehq/mainframe-lending-protocol"
   },
   "scripts": {
     "build": "yarn run compile && yarn run typechain",

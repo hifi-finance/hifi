@@ -3,6 +3,7 @@ import { ethers, waffle } from "@nomiclabs/buidler";
 
 import { Accounts, Contracts, Signers, Stubs } from "../@types/index";
 import { testFintroller } from "./units/fintroller/Fintroller";
+import { testRedemptionPool } from "./units/redemptionPool/RedemptionPool";
 import { testYToken } from "./units/yToken/YToken";
 
 describe("Unit Tests", function () {
@@ -34,6 +35,7 @@ describe("Unit Tests", function () {
   });
 
   testFintroller();
+  testRedemptionPool();
   testYToken();
 
   after(async function () {
