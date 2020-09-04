@@ -8,6 +8,7 @@ import shouldBehaveLikeBondGetter from "./view/bond";
 import shouldBehaveLikeBorrowAllowed from "./view/borrowAllowed";
 import shouldBehaveLikeCollateralizationRatioLowerBoundMantissaGetter from "./view/collateralizationRatioLowerBoundMantissa";
 import shouldBehaveLikeCollateralizationRatioUpperBoundMantissaGetter from "./view/collateralizationRatioUpperBoundMantissa";
+import shouldBehaveLikeIsFintrollerGetter from "./view/isFintroller";
 import shouldBehaveLikeDefaultCollateralizationRatioMantissaGetter from "./view/defaultCollateralizationRatioMantissa";
 import shouldBehaveLikeDepositCollateralAllowed from "./view/depositCollateralAllowed";
 import shouldBehaveLikeOracleGetter from "./view/oracle";
@@ -40,6 +41,10 @@ export function shouldBehaveLikeFintroller(): void {
       shouldBehaveLikeBondGetter();
     });
 
+    describe("borrowAllowed", function () {
+      shouldBehaveLikeBorrowAllowed();
+    });
+
     describe("collateralizationRatioLowerBoundMantissa", function () {
       shouldBehaveLikeCollateralizationRatioLowerBoundMantissaGetter();
     });
@@ -56,8 +61,8 @@ export function shouldBehaveLikeFintroller(): void {
       shouldBehaveLikeDepositCollateralAllowed();
     });
 
-    describe("borrowAllowed", function () {
-      shouldBehaveLikeBorrowAllowed();
+    describe("isFintroller", function () {
+      shouldBehaveLikeIsFintrollerGetter();
     });
 
     describe("oracle", function () {

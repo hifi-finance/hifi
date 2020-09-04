@@ -8,7 +8,7 @@ export default function shouldBehaveLikeBorrowAllowed(): void {
       await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.yToken.address);
     });
 
-    it("retrieves the borrow allowed state", async function () {
+    it("retrieves the borrowAllowed state", async function () {
       const borrowAllowed: boolean = await this.contracts.fintroller.borrowAllowed(this.stubs.yToken.address);
       expect(borrowAllowed).to.equal(false);
     });

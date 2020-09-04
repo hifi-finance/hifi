@@ -14,6 +14,7 @@ import shouldBehaveLikeGuarantorPoolGetter from "./view/guarantorPool";
 import shouldBehaveLikeRedemptionPoolGetter from "./view/redemptionPool";
 import shouldBehaveLikeUnderlyingGetter from "./view/underlying";
 import shouldBehaveLikeVaultGetter from "./view/vault";
+import shouldBehaveLikeIsYTokenGetter from "./view/isYToken";
 
 export function shouldBehaveLikeYToken(): void {
   describe("Effects Functions", function () {
@@ -65,6 +66,10 @@ export function shouldBehaveLikeYToken(): void {
 
     describe("guarantorPool", function () {
       shouldBehaveLikeGuarantorPoolGetter();
+    });
+
+    describe("isYToken", function () {
+      shouldBehaveLikeIsYTokenGetter();
     });
 
     describe("redemptionPool", function () {
