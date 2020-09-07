@@ -4,6 +4,7 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { Zero } from "@ethersproject/constants";
 import { waffle } from "@nomiclabs/buidler";
 
+import BalanceSheetArtifact from "../../artifacts/BalanceSheet.json";
 import Erc20MintableArtifact from "../../artifacts/Erc20Mintable.json";
 import FintrollerArtifact from "../../artifacts/Fintroller.json";
 import GuarantorPoolArtifact from "../../artifacts/GuarantorPool.json";
@@ -15,6 +16,12 @@ import { CarefulMathErrors } from "./errors";
 import { OneDollar, OneHundredDollars, OneHundredTokens, OneThousandDollars, OneToken, TenTokens } from "./constants";
 
 const { deployMockContract: deployStubContract } = waffle;
+
+export async function deployStubBalanceSheet(deployer: Signer): Promise<MockContract> {
+  const balanceSheet: MockContract = await deployStubContract(deployer, BalanceSheetArtifact.abi);
+  await balanceSheet.mock.isBalanceSheet.returns(true);
+  return balanceSheet;
+}
 
 export async function deployStubCollateral(deployer: Signer): Promise<MockContract> {
   const collateral: MockContract = await deployStubContract(deployer, Erc20MintableArtifact.abi);

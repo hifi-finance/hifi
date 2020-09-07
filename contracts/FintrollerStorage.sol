@@ -16,7 +16,7 @@ abstract contract FintrollerStorage is Exponential {
     }
 
     /**
-     * @dev Official mapping of yToken -> Bond metadata
+     * @dev Official mapping of yToken -> Bond metadata.
      */
     mapping(address => Bond) internal bonds;
 

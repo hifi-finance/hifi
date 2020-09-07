@@ -2,6 +2,7 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { ethers, waffle } from "@nomiclabs/buidler";
 
 import { Accounts, Contracts, Signers, Stubs } from "../@types/index";
+import { testBalanceSheet } from "./units/balanceSheet/BalanceSheet";
 import { testFintroller } from "./units/fintroller/Fintroller";
 import { testRedemptionPool } from "./units/redemptionPool/RedemptionPool";
 import { testYToken } from "./units/yToken/YToken";
@@ -34,6 +35,7 @@ describe("Unit Tests", function () {
     this.accounts.eve = await signers[4].getAddress();
   });
 
+  testBalanceSheet();
   testFintroller();
   testRedemptionPool();
   testYToken();

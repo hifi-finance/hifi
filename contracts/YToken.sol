@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.6.10;
 
+import "./BalanceSheetInterface.sol";
 import "./FintrollerInterface.sol";
 import "./YTokenInterface.sol";
 import "./erc20/Erc20.sol";
@@ -27,8 +28,8 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         _;
     }
 
-    modifier isVaultOpen() {
-        require(vaults[msg.sender].isOpen, "ERR_VAULT_NOT_OPEN");
+    modifier isVaultOpen(address user) {
+        require(balanceSheet.isVaultOpen(this, user), "ERR_VAULT_NOT_OPEN");
         _;
     }
 
@@ -37,25 +38,36 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
      * @param name_ Erc20 name of this token.
      * @param symbol_ Erc20 symbol of this token.
      * @param decimals_ Erc20 decimal precision of this token.
-     * @param fintroller_ The contract address of the Fintroller.
+     * @param expirationTime_ Unix timestamp in seconds for when this token expires.
+     * @param balanceSheet_ The address of the BalanceSheet contract.
+     * @param fintroller_ The address of the Fintroller contract.
      * @param underlying_ The contract address of the underlying asset.
      * @param collateral_ The contract address of the collateral asset.
-     * @param guarantorPool_ The pool where Guarantors deploy their capital to.
-     * @param redemptionPool_ The pool where the redeemable underlying is stored.
-     * @param expirationTime_ Unix timestamp in seconds for when this token expires.
+     * @param guarantorPool_ The address of the GuarantorPool contract.
+     * @param redemptionPool_ The address of the RedemptionPool contract.
      */
     constructor(
         string memory name_,
         string memory symbol_,
         uint8 decimals_,
+        uint256 expirationTime_,
+        BalanceSheetInterface balanceSheet_,
         FintrollerInterface fintroller_,
         Erc20Interface underlying_,
         Erc20Interface collateral_,
         address guarantorPool_,
-        RedemptionPoolInterface redemptionPool_,
-        uint256 expirationTime_
+        RedemptionPoolInterface redemptionPool_
     ) public Erc20(name_, symbol_, decimals_) Admin() Orchestratable() {
+        /* Set the unix expiration time. */
+        expirationTime = expirationTime_;
+
+        /* Set the Balance Sheet contract and sanity check it. */
+        balanceSheet = balanceSheet_;
+        balanceSheet.isBalanceSheet();
+
+        /* Set the Fintroller contract and sanity check it. */
         fintroller = fintroller_;
+        fintroller.isFintroller();
 
         /* Set the underlying and collateral contracts and sanity check them. */
         underlying = underlying_;
@@ -70,32 +82,9 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
 
         /* Set the Guarantor Pool contract. */
         guarantorPool = guarantorPool_;
-
-        /* Set the expiration time. */
-        expirationTime = expirationTime_;
     }
 
     /*** View Functions ***/
-
-    /**
-     * @notice Returns the vault data.
-     */
-    function getVault(address user)
-        external
-        override
-        view
-        returns (
-            uint256 debt,
-            uint256 freeCollateral,
-            uint256 lockedCollateral,
-            bool isOpen
-        )
-    {
-        debt = vaults[user].debt;
-        freeCollateral = vaults[user].freeCollateral;
-        lockedCollateral = vaults[user].lockedCollateral;
-        isOpen = vaults[user].isOpen;
-    }
 
     /**
      * @notice Returns the number of seconds left before the yToken expires.
@@ -114,6 +103,8 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
 
     struct BorrowLocalVars {
         MathError mathErr;
+        uint256 debt;
+        uint256 lockedCollateral;
         uint256 lockedCollateralValueInUsd;
         uint256 borrowValueInUsd;
         Exp newCollateralizationRatio;
@@ -136,7 +127,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
      * @param borrowAmount The amount of yTokens to borrow and print into existence.
      * @return bool true=success, otherwise it reverts.
      */
-    function borrow(uint256 borrowAmount) public override isVaultOpen isNotMatured returns (bool) {
+    function borrow(uint256 borrowAmount) public override isVaultOpen(msg.sender) isNotMatured returns (bool) {
         BorrowLocalVars memory vars;
 
         /* Checks: the zero edge case. */
@@ -147,20 +138,20 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
 
         /* TODO: check liquidity in the Guarantor Pool and Redemption Pool. */
 
-        /* Checks: the contingent collateralization ratio is higher or equal to the threshold. */
-        Vault memory vault = vaults[msg.sender];
+        /* Checks: the new collateralization ratio is higher or equal to the threshold. */
+        (vars.debt, , vars.lockedCollateral, ) = balanceSheet.getVault(this, msg.sender);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
 
         SimpleOracleInterface oracle = fintroller.oracle();
         (vars.mathErr, vars.lockedCollateralValueInUsd) = oracle.multiplyCollateralAmountByItsPriceInUsd(
-            vault.lockedCollateral
+            vars.lockedCollateral
         );
         require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
 
         (vars.mathErr, vars.borrowValueInUsd) = oracle.multiplyUnderlyingAmountByItsPriceInUsd(borrowAmount);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
 
-        (vars.mathErr, vars.newDebt) = addUInt(vault.debt, vars.borrowValueInUsd);
+        (vars.mathErr, vars.newDebt) = addUInt(vars.debt, vars.borrowValueInUsd);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
 
         (vars.mathErr, vars.newCollateralizationRatio) = divExp(
@@ -175,177 +166,27 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
             "ERR_BELOW_THRESHOLD_COLLATERALIZATION_RATIO"
         );
 
-        /* Effects: increase the debt of the user. */
-        vaults[msg.sender].debt = vars.newDebt;
-
+        /* Effects: print the new yTokens into existence. */
         mintInternal(msg.sender, borrowAmount);
 
-        /* We emit both a Borrow and a Transfer event. */
+        /* Interactions: increase the debt of the user. */
+        require(balanceSheet.setVaultDebt(this, msg.sender, vars.newDebt), "ERR_BORROW_SET_VAULT_DEBT");
+
+        /* Emit both a Borrow and a Transfer event. */
         emit Borrow(msg.sender, borrowAmount);
         emit Transfer(address(this), msg.sender, borrowAmount);
 
         return NO_ERROR;
     }
 
-    struct DepositLocalVars {
-        MathError mathErr;
-        uint256 newFreeCollateral;
-    }
-
-    /**
-     * @notice Deposits collateral into the user's vault.
-     *
-     * @dev Emits a {DepositCollateral} event.
-     *
-     * Requirements:
-     * - The vault must be open.
-     * - The amount to deposit cannot be zero.
-     * - The Fintroller must allow new deposits.
-     * - The caller must have allowed this contract to spend `collateralAmount` tokens.
-     *
-     * @param collateralAmount The amount of collateral to withdraw.
-     * @return bool=success, otherwise it reverts.
-     */
-    function depositCollateral(uint256 collateralAmount) external override isVaultOpen nonReentrant returns (bool) {
-        DepositLocalVars memory vars;
-
-        /* Checks: the zero edge case. */
-        require(collateralAmount > 0, "ERR_DEPOSIT_COLLATERAL_ZERO");
-
-        /* Checks: the Fintroller allows this action to be performed. */
-        require(fintroller.depositCollateralAllowed(this), "ERR_DEPOSIT_COLLATERAL_NOT_ALLOWED");
-
-        /* Effects: update the storage properties. */
-        (vars.mathErr, vars.newFreeCollateral) = addUInt(vaults[msg.sender].freeCollateral, collateralAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_DEPOSIT_COLLATERAL_MATH_ERROR");
-        vaults[msg.sender].freeCollateral = vars.newFreeCollateral;
-
-        /* Interactions */
-        require(
-            Erc20Interface(collateral).transferFrom(msg.sender, address(this), collateralAmount),
-            "ERR_DEPOSIT_COLLATERAL_ERC20_TRANSFER"
-        );
-
-        emit DepositCollateral(msg.sender, collateralAmount);
-
-        return NO_ERROR;
-    }
-
-    struct FreeCollateralLocalVars {
-        MathError mathErr;
-        uint256 collateralPriceInUsd;
-        uint256 collateralizationRatioMantissa;
-        uint256 debtValueInUsd;
-        Exp newCollateralizationRatio;
-        uint256 newFreeCollateral;
-        uint256 newLockedCollateral;
-        uint256 newLockedCollateralValueInUsd;
-    }
-
-    /**
-     * @notice Frees a portion or all of the locked collateral.
-     * @dev Emits a {FreeCollateral} event.
-     *
-     * Requirements:
-     * - The vault must be open.
-     * - The amount to free cannot be zero.
-     * - There must be enough locked collateral.
-     * - The user cannot fall below the collateralization ratio.
-     *
-     * @param collateralAmount The amount of free collateral to lock.
-     * @return bool true=success, otherwise it reverts.
-     */
-    function freeCollateral(uint256 collateralAmount) external override isVaultOpen returns (bool) {
-        FreeCollateralLocalVars memory vars;
-
-        /* Avoid the zero edge case. */
-        require(collateralAmount > 0, "ERR_FREE_COLLATERAL_ZERO");
-
-        Vault memory vault = vaults[msg.sender];
-        require(vault.lockedCollateral >= collateralAmount, "ERR_FREE_COLLATERAL_INSUFFICIENT_LOCKED_COLLATERAL");
-
-        /* This operation can't fail because of the first `require` in this function. */
-        (vars.mathErr, vars.newLockedCollateral) = subUInt(vault.lockedCollateral, collateralAmount);
-        assert(vars.mathErr == MathError.NO_ERROR);
-        vaults[msg.sender].lockedCollateral = vars.newLockedCollateral;
-
-        if (vault.debt > 0) {
-            SimpleOracleInterface oracle = fintroller.oracle();
-            (vars.mathErr, vars.newLockedCollateralValueInUsd) = oracle.multiplyCollateralAmountByItsPriceInUsd(
-                vars.newLockedCollateral
-            );
-            require(vars.mathErr == MathError.NO_ERROR, "ERR_FREE_COLLATERAL_MATH_ERROR");
-
-            (vars.mathErr, vars.debtValueInUsd) = oracle.multiplyUnderlyingAmountByItsPriceInUsd(vault.debt);
-            require(vars.mathErr == MathError.NO_ERROR, "ERR_FREE_COLLATERAL_MATH_ERROR");
-
-            /* This operation can't fail because both operands are non-zero. */
-            (vars.mathErr, vars.newCollateralizationRatio) = divExp(
-                Exp({ mantissa: vars.newLockedCollateralValueInUsd }),
-                Exp({ mantissa: vars.debtValueInUsd })
-            );
-            require(vars.mathErr == MathError.NO_ERROR, "ERR_FREE_COLLATERAL_MATH_ERROR");
-
-            /* Uncomment this for the "out of gas" error to come back */
-            (vars.collateralizationRatioMantissa) = fintroller.getBond(address(this));
-            require(
-                vars.newCollateralizationRatio.mantissa >= vars.collateralizationRatioMantissa,
-                "ERR_BELOW_THRESHOLD_COLLATERALIZATION_RATIO"
-            );
-        }
-
-        (vars.mathErr, vars.newFreeCollateral) = addUInt(vault.freeCollateral, collateralAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_FREE_COLLATERAL_MATH_ERROR");
-        vaults[msg.sender].freeCollateral = vars.newFreeCollateral;
-
-        emit FreeCollateral(msg.sender, collateralAmount);
-        return NO_ERROR;
-    }
-
-    function liquidateBorrow(address borrower, uint256 repayUnderlyingAmount) external override returns (bool) {
+    function liquidateBorrow(address borrower, uint256 repayUnderlyingAmount)
+        external
+        override
+        isVaultOpen(borrower)
+        returns (bool)
+    {
         borrower;
         repayUnderlyingAmount;
-        return NO_ERROR;
-    }
-
-    struct LockCollateralLocalVars {
-        MathError mathErr;
-        uint256 newFreeCollateral;
-        uint256 newLockedCollateral;
-    }
-
-    /**
-     * @notice Locks a portion or all of the free collateral to make it eligible for borrowing.
-     * @dev Emits a {LockCollateral} event.
-     *
-     * Requirements:
-     * - The vault must be open.
-     * - The amount to lock cannot be zero.
-     * - There must be enough free collateral.
-     *
-     * @param collateralAmount The amount of free collateral to lock.
-     * @return bool true=success, otherwise it reverts.
-     */
-    function lockCollateral(uint256 collateralAmount) external override isVaultOpen returns (bool) {
-        LockCollateralLocalVars memory vars;
-
-        /* Avoid the zero edge case. */
-        require(collateralAmount > 0, "ERR_LOCK_COLLATERAL_ZERO");
-
-        Vault memory vault = vaults[msg.sender];
-        require(vault.freeCollateral >= collateralAmount, "ERR_LOCK_COLLATERAL_INSUFFICIENT_FREE_COLLATERAL");
-
-        (vars.mathErr, vars.newLockedCollateral) = addUInt(vault.lockedCollateral, collateralAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_LOCK_COLLATERAL_MATH_ERROR");
-        vaults[msg.sender].lockedCollateral = vars.newLockedCollateral;
-
-        /* This operation can't fail because of the first `require` in this function. */
-        (vars.mathErr, vars.newFreeCollateral) = subUInt(vault.freeCollateral, collateralAmount);
-        assert(vars.mathErr == MathError.NO_ERROR);
-        vaults[msg.sender].freeCollateral = vars.newFreeCollateral;
-
-        emit LockCollateral(msg.sender, collateralAmount);
-
         return NO_ERROR;
     }
 
@@ -370,7 +211,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         /* Checks: the zero edge case. */
         require(mintAmount > 0, "ERR_MINT_ZERO");
 
-        /* Effects */
+        /* Effects: print the new yTokens into existence. */
         mintInternal(beneficiary, mintAmount);
 
         emit Mint(beneficiary, mintAmount);
@@ -379,25 +220,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
     }
 
     /**
-     * @notice Opens a Vault for the caller.
-     * @dev Reverts if the caller has previously opened a vault.
-     * @return bool=success, otherwise it reverts.
-     */
-    function openVault() public returns (bool) {
-        require(vaults[msg.sender].isOpen == false, "ERR_VAULT_OPEN");
-        vaults[msg.sender].isOpen = true;
-        return NO_ERROR;
-    }
-
-    struct RedeemLocalVars {
-        MathError mathErr;
-        uint256 newRedeemableUnderlying;
-        uint256 newTotalSupply;
-        uint256 newUserBalance;
-    }
-
-    /**
-     * @notice Deletes the user's debt from the registry and takes the yTokens out of circulation.
+     * @notice Deletes the user's debt from the registry and take the yTokens out of circulation.
      * @dev Emits a {RepayBorrow} and a {Transfer} event.
      *
      * Requirements:
@@ -410,10 +233,10 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
      * @param repayAmount Lorem ipsum.
      * @return bool=success, otherwise it reverts.
      */
-    function repayBorrow(uint256 repayAmount) external override isVaultOpen nonReentrant returns (bool) {
+    function repayBorrow(uint256 repayAmount) external override isVaultOpen(msg.sender) nonReentrant returns (bool) {
         repayBorrowInternal(msg.sender, msg.sender, repayAmount);
 
-        /* We emit both a RepayBorrow and a Transfer event. */
+        /* Emit both a RepayBorrow and a Transfer event. */
         emit RepayBorrow(msg.sender, msg.sender, repayAmount);
         emit Transfer(msg.sender, address(this), repayAmount);
 
@@ -421,7 +244,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
     }
 
     /**
-     * @notice Deletes the user's debt from the registry and takes the yTokens out of circulation.
+     * @notice Deletes the borrower's debt from the registry and take the yTokens out of circulation.
      * @dev Emits a {RepayBorrow}, {RepayBorrowBehalf} and a {Transfer} event.
      *
      * Requirements: same as the `repayBorrow` function, but here `borrower` is the user who must have
@@ -431,68 +254,49 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
      * @param repayAmount The amount of yTokens to repay.
      * @return bool=success, otherwise it reverts.
      */
-    function repayBorrowBehalf(address borrower, uint256 repayAmount) external override nonReentrant returns (bool) {
-        require(vaults[borrower].isOpen, "ERR_VAULT_NOT_OPEN");
-
+    function repayBorrowBehalf(address borrower, uint256 repayAmount)
+        external
+        override
+        isVaultOpen(borrower)
+        nonReentrant
+        returns (bool)
+    {
         repayBorrowInternal(msg.sender, borrower, repayAmount);
 
-        /* We emit a RepayBorrow and a Transfer event. */
+        /* Emit a RepayBorrow and a Transfer event. */
         emit RepayBorrow(msg.sender, borrower, repayAmount);
         emit Transfer(msg.sender, address(this), repayAmount);
 
         return NO_ERROR;
     }
 
-    struct WithdrawCollateralLocalVars {
+    /*** Internal Functions ***/
+    struct BurnInternalLocalVars {
         MathError mathErr;
-        uint256 newFreeCollateral;
+        uint256 newHolderBalance;
+        uint256 newTotalSupply;
     }
 
     /**
-     * @notice Withdraws a portion or all of the free collateral.
-     *
-     * @dev Emits a {WithdrawCollateral} event.
-     *
-     * Requirements:
-     * - The vault must be open.
-     * - The amount to withdraw cannot be zero.
-     * - There must be sufficient free collateral in the vault.
-     *
-     * @param collateralAmount The amount of collateral to withdraw.
-     * @return bool=success, otherwise it reverts.
+     * @dev See the documentation for the public functions that call this internal function.
      */
-    function withdrawCollateral(uint256 collateralAmount) external override isVaultOpen nonReentrant returns (bool) {
-        WithdrawCollateralLocalVars memory vars;
+    function burnInternal(address holder, uint256 burnAmount) internal {
+        BurnInternalLocalVars memory vars;
 
-        /* Checks: the zero edge case. */
-        require(collateralAmount > 0, "ERR_WITHDRAW_COLLATERAL_ZERO");
+        /* Effects: reduce the yToken supply. */
+        (vars.mathErr, vars.newTotalSupply) = subUInt(totalSupply, burnAmount);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_BURN_UNDERFLOW_TOTAL_SUPPLY");
+        totalSupply = vars.newTotalSupply;
 
-        /* Checks: there is enough free collateral. */
-        require(
-            vaults[msg.sender].freeCollateral >= collateralAmount,
-            "ERR_WITHDRAW_COLLATERAL_INSUFFICIENT_FREE_COLLATERAL"
-        );
-
-        /* Effects: update the storage properties. */
-        (vars.mathErr, vars.newFreeCollateral) = subUInt(vaults[msg.sender].freeCollateral, collateralAmount);
-        /* This operation can't fail because of the first `require` in this function. */
-        assert(vars.mathErr == MathError.NO_ERROR);
-        vaults[msg.sender].freeCollateral = vars.newFreeCollateral;
-
-        /* Interactions */
-        require(
-            Erc20Interface(collateral).transfer(msg.sender, collateralAmount),
-            "ERR_WITHDRAW_COLLATERAL_ERC20_TRANSFER"
-        );
-
-        emit WithdrawCollateral(msg.sender, collateralAmount);
-
-        return NO_ERROR;
+        /* Effects: burn the yTokens. */
+        (vars.mathErr, vars.newHolderBalance) = subUInt(balances[holder], burnAmount);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_BURN_INSUFFICIENT_BALANCE");
+        balances[holder] = vars.newHolderBalance;
     }
 
-    /*** Internal Functions ***/
     struct RepayBorrowInternalLocalVars {
         MathError mathErr;
+        uint256 debt;
         uint256 newPayerBalance;
         uint256 newDebt;
         uint256 newTotalSupply;
@@ -518,23 +322,19 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         require(balanceOf(payer) >= repayAmount, "ERR_REPAY_BORROW_INSUFFICIENT_BALANCE");
 
         /* Checks: user has a debt to pay. */
-        require(vaults[borrower].debt >= repayAmount, "ERR_REPAY_BORROW_INSUFFICIENT_DEBT");
+        (vars.debt, , , ) = balanceSheet.getVault(this, borrower);
+        require(vars.debt >= repayAmount, "ERR_REPAY_BORROW_INSUFFICIENT_DEBT");
 
         /* Effects: reduce the debt of the user. */
-        (vars.mathErr, vars.newDebt) = subUInt(vaults[borrower].debt, repayAmount);
+        (vars.mathErr, vars.newDebt) = subUInt(vars.debt, repayAmount);
         /* This operation can't fail because of the previous `require`. */
         assert(vars.mathErr == MathError.NO_ERROR);
-        vaults[borrower].debt = vars.newDebt;
-
-        /* Effects: reduce the yToken supply. */
-        (vars.mathErr, vars.newTotalSupply) = subUInt(totalSupply, repayAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_REPAY_BORROW_MATH_ERROR");
-        totalSupply = vars.newTotalSupply;
 
         /* Effects: burn the yTokens. */
-        (vars.mathErr, vars.newPayerBalance) = subUInt(balances[payer], repayAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_REPAY_BORROW_MATH_ERROR");
-        balances[payer] = vars.newPayerBalance;
+        burnInternal(payer, repayAmount);
+
+        /* Interactions: reduce the debt of the user. */
+        require(balanceSheet.setVaultDebt(this, borrower, vars.newDebt), "ERR_REPAY_BORROW_SET_VAULT_DEBT");
     }
 
     struct MintInternalLocalVars {
@@ -551,12 +351,12 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
 
         /* Increase the yToken supply. */
         (vars.mathErr, vars.newTotalSupply) = addUInt(totalSupply, mintAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_INTERNAL_MATH_ERROR");
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_OVERFLOW_TOTAL_SUPPLY");
         totalSupply = vars.newTotalSupply;
 
         /* Mint the yTokens. */
         (vars.mathErr, vars.newBeneficiaryBalance) = addUInt(balances[beneficiary], mintAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_INTERNAL_MATH_ERROR");
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_OVERFLOW_BALANCE");
         balances[beneficiary] = vars.newBeneficiaryBalance;
     }
 }

@@ -9,7 +9,7 @@ import "./YTokenInterface.sol";
  */
 abstract contract RedemptionPoolStorage {
     /**
-     * @notice Indicator that this is a RedemptionPool contract, for inspection.
+     * @notice Indicator that this is a Redemption Pool contract, for inspection.
      */
     bool public constant isRedemptionPool = true;
 
@@ -19,7 +19,7 @@ abstract contract RedemptionPoolStorage {
     uint256 public underlyingTotalSupply;
 
     /**
-     * The unique yToken associated with this redemption pool.
+     * The unique yToken associated with this Redemption Pool.
      */
     YTokenInterface public yToken;
 }

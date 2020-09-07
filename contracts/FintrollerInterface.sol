@@ -19,7 +19,7 @@ abstract contract FintrollerInterface is FintrollerStorage {
     /*** Non-Constant Functions ***/
     function listBond(YTokenInterface yToken) external virtual returns (bool);
 
-    function setCollateralizationRatio(YTokenInterface yToken, uint256 newCollateralizationRatioMantissa_)
+    function setCollateralizationRatio(YTokenInterface yToken, uint256 newCollateralizationRatioMantissa)
         external
         virtual
         returns (bool);

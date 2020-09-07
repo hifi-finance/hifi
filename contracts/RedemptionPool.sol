@@ -12,9 +12,9 @@ import "./utils/ErrorReporter.sol";
  */
 contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorReporter {
     constructor(YTokenInterface yToken_) public Admin() {
-        /* Sanity check. */
-        yToken_.isYToken();
+        /* Set the yToken contract and sanity check it. */
         yToken = yToken_;
+        yToken_.isYToken();
     }
 
     struct SupplyUnderlyingLocalVars {

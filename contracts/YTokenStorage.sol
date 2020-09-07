@@ -1,12 +1,13 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.6.10;
 
+import "./BalanceSheetInterface.sol";
 import "./FintrollerInterface.sol";
 import "./RedemptionPoolInterface.sol";
 import "./erc20/Erc20Interface.sol";
 
 /**
- * @title YTokenInterface
+ * @title YTokenStorage
  * @author Mainframe
  */
 abstract contract YTokenStorage {
@@ -21,12 +22,17 @@ abstract contract YTokenStorage {
     /*** Storage Properties ***/
 
     /**
-     * @notice Collateral Erc20 asset for this YToken.
+     * @notice The global debt registry.
+     */
+    BalanceSheetInterface public balanceSheet;
+
+    /**
+     * @notice The collateral asset backing borows of this yToken.
      */
     Erc20Interface public collateral;
 
     /**
-     * @notice The address of the risk manager contract.
+     * @notice The unique Fintroller associated with this contract.
      */
     FintrollerInterface public fintroller;
 
@@ -36,7 +42,7 @@ abstract contract YTokenStorage {
     uint256 public expirationTime;
 
     /**
-     * @notice The pool into which Guarantors of this YToken deposit their capital.
+     * @notice The unique Guarantor Pool associated with this contract.
      */
     address public guarantorPool;
 
@@ -46,17 +52,17 @@ abstract contract YTokenStorage {
     bool public constant isYToken = true;
 
     /**
-     * @notice blah
+     * @notice The unique Redemption Pool associated with this contract.
      */
     RedemptionPoolInterface public redemptionPool;
 
     /**
-     * @notice Underlying Erc20 asset for this YToken.
+     * @notice The underlying, or target, asset for this yToken.
      */
     Erc20Interface public underlying;
 
     /**
-     * @dev ...
+     * @dev One vault for each user.
      */
     mapping(address => Vault) internal vaults;
 }

@@ -203,25 +203,6 @@ contract Erc20 is Erc20Interface {
     }
 
     /**
-     * @notice Destroys `amount` tokens from `account`, reducing the
-     * total supply.
-     *
-     * @dev Emits a {Transfer} event with `to` set to the zero address.
-     *
-     * Requirements
-     *
-     * - `account` cannot be the zero address.
-     * - `account` must have at least `amount` tokens.
-     */
-    function burnInternal(address account, uint256 amount) internal virtual {
-        require(account != address(0x00), "Erc20: burn from the zero address");
-
-        balances[account] = balances[account].sub(amount, "Erc20: burn amount exceeds balance");
-        totalSupply = totalSupply.sub(amount);
-        emit Transfer(account, address(0x00), amount);
-    }
-
-    /**
      * @notice Sets `amount` as the allowance of `spender` over the `owner`s tokens.
      *
      * @dev This is internal function is equivalent to `approve`, and can be used to

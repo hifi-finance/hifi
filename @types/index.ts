@@ -1,6 +1,7 @@
 import { MockContract } from "ethereum-waffle";
 import { Signer } from "@ethersproject/abstract-signer";
 
+import { BalanceSheet } from "../typechain/BalanceSheet";
 import { SimpleOracle } from "../typechain/SimpleOracle";
 import { Fintroller } from "../typechain/Fintroller";
 import { GuarantorPool } from "../typechain/GuarantorPool";
@@ -17,6 +18,7 @@ export interface Accounts {
 }
 
 export interface Contracts {
+  balanceSheet: BalanceSheet;
   fintroller: Fintroller;
   guarantorPool: GuarantorPool;
   oracle: SimpleOracle;
@@ -33,6 +35,7 @@ export interface Signers {
 }
 
 export interface Stubs {
+  balanceSheet: MockContract;
   collateral: MockContract;
   fintroller: MockContract;
   guarantorPool: MockContract;

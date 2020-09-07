@@ -1,4 +1,5 @@
 import { BigNumber } from "@ethersproject/bignumber";
+import { Zero } from "@ethersproject/constants";
 
 /* Math constants */
 export const UnitsPerToken: BigNumber = BigNumber.from("1000000000000000000");
@@ -20,6 +21,15 @@ export const TenThousandPercent: BigNumber = OnePercent.mul(10000);
 /* Generic constants */
 export const AddressOne: string = "0x0000000000000000000000000000000000000001";
 export const DefaultBlockGasLimit: BigNumber = BigNumber.from("10000000");
+
+export const BalanceSheetConstants = {
+  DefaultOpenVault: {
+    debt: Zero,
+    freeCollateral: Zero,
+    lockedCollateral: Zero,
+    isOpen: true,
+  },
+};
 
 /* Contract-specific constants */
 export const FintrollerConstants = {

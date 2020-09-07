@@ -9,7 +9,7 @@ abstract contract GuarantorPoolStorage {
     mapping(address => mapping(address => uint256)) public endowments;
 
     /**
-     * @notice Indicator that this is a GuarantorPool contract, for inspection.
+     * @notice Indicator that this is a Guarantor Pool contract, for inspection.
      */
     bool public constant isGuarantorPool = true;
 

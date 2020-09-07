@@ -3,16 +3,19 @@ import { MockContract } from "ethereum-waffle";
 import { Signer } from "@ethersproject/abstract-signer";
 import { waffle } from "@nomiclabs/buidler";
 
+import BalanceSheetArtifact from "../../artifacts/BalanceSheet.json";
 import FintrollerArtifact from "../../artifacts/Fintroller.json";
 import RedemptionPoolArtifact from "../../artifacts/RedemptionPool.json";
 import YTokenArtifact from "../../artifacts/YToken.json";
 
 import { DefaultBlockGasLimit } from "./constants";
+import { BalanceSheet } from "../../typechain/BalanceSheet";
 import { Fintroller } from "../../typechain/Fintroller";
 import { RedemptionPool } from "../../typechain/RedemptionPool";
 import { YToken } from "../../typechain/YToken";
 
 import {
+  deployStubBalanceSheet,
   deployStubCollateral,
   deployStubGuarantorPool,
   deployStubFintroller,
@@ -24,13 +27,40 @@ import {
 
 const { deployContract } = waffle;
 
+export async function balanceSheetFixture(
+  signers: Signer[],
+): Promise<{
+  balanceSheet: BalanceSheet;
+  collateral: MockContract;
+  fintroller: MockContract;
+  oracle: MockContract;
+  yToken: MockContract;
+}> {
+  const deployer: Signer = signers[0];
+  const collateral: MockContract = await deployStubCollateral(deployer);
+  const oracle: MockContract = await deployStubOracle(deployer);
+
+  /* TODO: handle the case when the oracle isn't set. */
+  const fintroller: MockContract = await deployStubFintroller(deployer);
+  await fintroller.mock.oracle.returns(oracle.address);
+
+  /* TODO: handle the case when the collateral isn't set. */
+  const yToken: MockContract = await deployStubYToken(deployer);
+  await yToken.mock.collateral.returns(collateral.address);
+
+  const balanceSheet: BalanceSheet = ((await deployContract(deployer, BalanceSheetArtifact, [
+    fintroller.address,
+  ])) as unknown) as BalanceSheet;
+  return { balanceSheet, collateral, fintroller, oracle, yToken };
+}
+
 export async function fintrollerFixture(
   signers: Signer[],
 ): Promise<{ fintroller: Fintroller; oracle: MockContract; yToken: MockContract }> {
   const deployer: Signer = signers[0];
-  const fintroller: Fintroller = ((await deployContract(signers[0], FintrollerArtifact, [])) as unknown) as Fintroller;
   const oracle: MockContract = await deployStubOracle(deployer);
   const yToken: MockContract = await deployStubYToken(deployer);
+  const fintroller: Fintroller = ((await deployContract(deployer, FintrollerArtifact, [])) as unknown) as Fintroller;
   return { fintroller, oracle, yToken };
 }
 
@@ -39,7 +69,7 @@ export async function redemptionPoolFixture(
 ): Promise<{ redemptionPool: RedemptionPool; yToken: MockContract }> {
   const deployer: Signer = signers[0];
   const yToken: MockContract = await deployStubYToken(deployer);
-  const redemptionPool: RedemptionPool = ((await deployContract(signers[0], RedemptionPoolArtifact, [
+  const redemptionPool: RedemptionPool = ((await deployContract(deployer, RedemptionPoolArtifact, [
     yToken.address,
   ])) as unknown) as RedemptionPool;
   return { redemptionPool, yToken };
@@ -48,6 +78,7 @@ export async function redemptionPoolFixture(
 export async function yTokenFixture(
   signers: Signer[],
 ): Promise<{
+  balanceSheet: MockContract;
   collateral: MockContract;
   fintroller: MockContract;
   guarantorPool: MockContract;
@@ -59,6 +90,7 @@ export async function yTokenFixture(
   const deployer: Signer = signers[0];
 
   /* TODO: handle the case when the oracle isn't set. */
+  const balanceSheet: MockContract = await deployStubBalanceSheet(deployer);
   const fintroller: MockContract = await deployStubFintroller(deployer);
   const oracle: MockContract = await deployStubOracle(deployer);
   await fintroller.mock.oracle.returns(oracle.address);
@@ -81,15 +113,16 @@ export async function yTokenFixture(
       name,
       symbol,
       decimals,
+      expirationTime,
+      balanceSheet.address,
       fintroller.address,
       underlying.address,
       collateral.address,
       guarantorPool.address,
       redemptionPool.address,
-      expirationTime,
     ],
     { gasLimit: DefaultBlockGasLimit },
   )) as unknown) as YToken;
 
-  return { collateral, fintroller, guarantorPool, oracle, redemptionPool, underlying, yToken };
+  return { balanceSheet, collateral, fintroller, guarantorPool, oracle, redemptionPool, underlying, yToken };
 }

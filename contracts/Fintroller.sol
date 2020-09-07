@@ -18,7 +18,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     /*** View Functions ***/
 
     /**
-     * @notice Checks if the user should be allowed to borrow yTokens.
+     * @notice Check if the user should be allowed to borrow yTokens.
      * @dev Reverts it the bond is not listed.
      * @param yToken The bond to make the check against.
      * @return bool true=allowed, false=not allowed.
@@ -79,7 +79,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @return bool true=success, otherwise it reverts.
      */
     function listBond(YTokenInterface yToken) external override onlyAdmin returns (bool) {
-        /* Sanity check */
+        /* Sanity check. */
         yToken.isYToken();
         bonds[address(yToken)] = Bond({
             isBorrowAllowed: false,
@@ -104,26 +104,26 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     }
 
     struct SetCollateralizationRatioLocalVars {
+        uint256 oldCollateralizationRatioMantissa;
         address yTokenAddress;
     }
 
     /**
-     * @notice Updates the collateralization ratio that ensures that the protocol is
-     * sufficiently collateralized.
+     * @notice Updates the collateralization ratio, which ensures that the protocol is sufficiently collateralized.
      *
      * @dev Emits a {SetCollateralizationRatio} event.
      *
      * Requirements:
      * - caller must be the administrator
      * - the bond must be listed
-     * - `newCollateralizationRatioMantissa_` cannot be higher than 10,000%
-     * - `newCollateralizationRatioMantissa_` cannot be lower than 100%
+     * - `newCollateralizationRatioMantissa` cannot be higher than 10,000%
+     * - `newCollateralizationRatioMantissa` cannot be lower than 100%
      *
      * @param yToken The bond for which to update the collateralization ratio.
-     * @param newCollateralizationRatioMantissa_ The mantissa value of the new collateralization ratio.
+     * @param newCollateralizationRatioMantissa The mantissa value of the new collateralization ratio.
      * @return bool true=success, otherwise it reverts.
      */
-    function setCollateralizationRatio(YTokenInterface yToken, uint256 newCollateralizationRatioMantissa_)
+    function setCollateralizationRatio(YTokenInterface yToken, uint256 newCollateralizationRatioMantissa)
         external
         override
         onlyAdmin
@@ -132,22 +132,31 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
         SetCollateralizationRatioLocalVars memory vars;
         vars.yTokenAddress = address(yToken);
 
+        /* Checks: bond is listed. */
         require(bonds[vars.yTokenAddress].isListed, "ERR_BOND_NOT_LISTED");
+
+        /* Checks: collateralization ratio is within the accepted bounds. */
         require(
-            newCollateralizationRatioMantissa_ <= collateralizationRatioUpperBoundMantissa,
+            newCollateralizationRatioMantissa <= collateralizationRatioUpperBoundMantissa,
             "ERR_SET_COLLATERALIZATION_RATIO_OVERFLOW"
         );
         require(
-            newCollateralizationRatioMantissa_ >= collateralizationRatioLowerBoundMantissa,
+            newCollateralizationRatioMantissa >= collateralizationRatioLowerBoundMantissa,
             "ERR_SET_COLLATERALIZATION_RATIO_UNDERFLOW"
         );
 
-        uint256 oldCollateralizationRatioMantissa = bonds[vars.yTokenAddress].thresholdCollateralizationRatio.mantissa;
+        /* Effects: update the storage property. */
+        vars.oldCollateralizationRatioMantissa = bonds[vars.yTokenAddress].thresholdCollateralizationRatio.mantissa;
         bonds[vars.yTokenAddress].thresholdCollateralizationRatio = Exp({
-            mantissa: newCollateralizationRatioMantissa_
+            mantissa: newCollateralizationRatioMantissa
         });
 
-        emit NewCollateralizationRatio(yToken, oldCollateralizationRatioMantissa, newCollateralizationRatioMantissa_);
+        emit NewCollateralizationRatio(
+            yToken,
+            vars.oldCollateralizationRatioMantissa,
+            newCollateralizationRatioMantissa
+        );
+
         return NO_ERROR;
     }
 
