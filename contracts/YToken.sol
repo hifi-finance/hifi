@@ -84,7 +84,9 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         guarantorPool = guarantorPool_;
     }
 
-    /*** View Functions ***/
+    /**
+     * VIEW FUNCTIONS
+     */
 
     /**
      * @notice Returns the number of seconds left before the yToken expires.
@@ -99,7 +101,9 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         }
     }
 
-    /*** Non-Constant Functions ***/
+    /**
+     * NON-CONSTANT FUNCTIONS
+     */
 
     struct BorrowLocalVars {
         MathError mathErr;
@@ -157,7 +161,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         );
         require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
 
-        (vars.thresholdCollateralizationRatioMantissa) = fintroller.getBond(address(this));
+        (vars.thresholdCollateralizationRatioMantissa) = fintroller.getBond(this);
         require(
             vars.newCollateralizationRatio.mantissa >= vars.thresholdCollateralizationRatioMantissa,
             "ERR_BELOW_THRESHOLD_COLLATERALIZATION_RATIO"
@@ -174,6 +178,31 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         /* Emit both a Borrow and a Transfer event. */
         emit Borrow(msg.sender, borrowAmount);
         emit Transfer(address(this), msg.sender, borrowAmount);
+
+        return NO_ERROR;
+    }
+
+    /**
+     * @notice Reduces the token supply by `burnAmount`.
+     *
+     * @dev Emits a {Burn} event.
+     *
+     * Requirements:
+     * - Must be called before maturation.
+     * - Can only be called by the Redemption Pool, the sole ochestrated contract.
+     * - The amount to mint cannot be zero.
+     *
+     * @param holder The account whose yTokens to burn.
+     * @param burnAmount The amount of yTokens to burn
+     */
+    function burn(address holder, uint256 burnAmount) external override onlyOrchestrated returns (bool) {
+        /* Checks: the zero edge case. */
+        require(burnAmount > 0, "ERR_BURN_ZERO");
+
+        /* Effects: burns the yTokens. */
+        mintInternal(holder, burnAmount);
+
+        emit Burn(holder, burnAmount);
 
         return NO_ERROR;
     }
@@ -197,7 +226,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
      * - Can only be called by the Redemption Pool, the sole ochestrated contract.
      * - The amount to mint cannot be zero.
      *
-     * @param beneficiary The user for whom to mint the tokens.
+     * @param beneficiary The account for whom to mint the tokens.
      * @param mintAmount The amount of yTokens to print into existence.
      */
     function mint(address beneficiary, uint256 mintAmount)

@@ -9,7 +9,9 @@ import "./YTokenInterface.sol";
  * @author Mainframe
  */
 abstract contract BalanceSheetInterface is BalanceSheetStorage {
-    /*** View Functions ***/
+    /**
+     * VIEW FUNCTIONS
+     */
     function getVault(YTokenInterface yToken, address user)
         external
         virtual
@@ -23,7 +25,9 @@ abstract contract BalanceSheetInterface is BalanceSheetStorage {
 
     function isVaultOpen(YTokenInterface yToken, address user) external virtual returns (bool);
 
-    /*** Non-Constant Functions ***/
+    /**
+     * NON-CONSTANT FUNCTIONS
+     */
     function depositCollateral(YTokenInterface yToken, uint256 collateralAmount) external virtual returns (bool);
 
     function freeCollateral(YTokenInterface yToken, uint256 collateralAmount) external virtual returns (bool);
@@ -40,7 +44,9 @@ abstract contract BalanceSheetInterface is BalanceSheetStorage {
 
     function withdrawCollateral(YTokenInterface yToken, uint256 collateralAmount) external virtual returns (bool);
 
-    /*** Events ***/
+    /**
+     * EVENTS
+     */
     event DepositCollateral(YTokenInterface indexed yToken, address indexed user, uint256 collateralAmount);
 
     event FreeCollateral(YTokenInterface indexed yToken, address indexed user, uint256 collateralAmount);

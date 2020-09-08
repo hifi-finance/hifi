@@ -66,13 +66,15 @@ export async function fintrollerFixture(
 
 export async function redemptionPoolFixture(
   signers: Signer[],
-): Promise<{ redemptionPool: RedemptionPool; yToken: MockContract }> {
+): Promise<{ fintroller: MockContract; redemptionPool: RedemptionPool; yToken: MockContract }> {
   const deployer: Signer = signers[0];
+  const fintroller: MockContract = await deployStubFintroller(deployer);
   const yToken: MockContract = await deployStubYToken(deployer);
   const redemptionPool: RedemptionPool = ((await deployContract(deployer, RedemptionPoolArtifact, [
+    fintroller.address,
     yToken.address,
   ])) as unknown) as RedemptionPool;
-  return { redemptionPool, yToken };
+  return { fintroller, redemptionPool, yToken };
 }
 
 export async function yTokenFixture(

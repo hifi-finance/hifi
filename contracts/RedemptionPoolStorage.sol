@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.6.10;
 
+import "./FintrollerInterface.sol";
 import "./YTokenInterface.sol";
 
 /**
@@ -12,6 +13,11 @@ abstract contract RedemptionPoolStorage {
      * @notice Indicator that this is a Redemption Pool contract, for inspection.
      */
     bool public constant isRedemptionPool = true;
+
+    /**
+     * @notice The unique Fintroller associated with this contract.
+     */
+    FintrollerInterface public fintroller;
 
     /**
      * @notice The amount of the underyling asset available to be redeemed after maturation.

@@ -15,7 +15,9 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     /* solhint-disable-next-line no-empty-blocks */
     constructor() public Admin() {}
 
-    /*** View Functions ***/
+    /**
+     * VIEW FUNCTIONS
+     */
 
     /**
      * @notice Check if the user should be allowed to borrow yTokens.
@@ -42,7 +44,17 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     }
 
     /**
-     * @notice Checks if the user should be allowed to redeem yTokens for the underlying asset.
+     * @notice Returns the bond with all its properties.
+     * @dev It is not an error to provide an invalid yToken address. The returned values will all be zero.
+     * @param yToken The address of the bond contract.
+     * @return collateralizationRatioMantissa The bond data.
+     */
+    function getBond(YTokenInterface yToken) external override view returns (uint256 collateralizationRatioMantissa) {
+        collateralizationRatioMantissa = bonds[address(yToken)].thresholdCollateralizationRatio.mantissa;
+    }
+
+    /**
+     * @notice Checks if the user should be allowed to redeem the underlying asset from the Redemption Pool.
      * @dev Reverts it the bond is not listed.
      * @param yToken The bond to make the check against.
      * @return bool true=allowed, false=not allowed.
@@ -65,7 +77,21 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
         return bond.isRepayBorrowAllowed;
     }
 
-    /*** Non-Constant Functions ***/
+    /**
+     * @notice Checks if the user should be allowed to the supply underlying asset to the Redemption Pool.
+     * @dev Reverts it the bond is not listed.
+     * @param yToken The bond to make the check against.
+     * @return bool true=allowed, false=not allowed.
+     */
+    function supplyUnderlyingAllowed(YTokenInterface yToken) external override view returns (bool) {
+        Bond memory bond = bonds[address(yToken)];
+        require(bond.isListed, "ERR_BOND_NOT_LISTED");
+        return bond.isSupplyUnderlyingAllowed;
+    }
+
+    /**
+     * NON-CONSTANT FUNCTIONS
+     */
 
     /**
      * @notice Marks the bond as listed in this contract's registry. It is not an error to list a bond twice.
@@ -73,7 +99,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @dev Emits a {ListBond} event.
      *
      * Requirements:
-     * - caller must be the administrator
+     * - Caller must be the administrator
      *
      * @param yToken The yToken contract to list.
      * @return bool true=success, otherwise it reverts.
@@ -87,20 +113,11 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
             isListed: true,
             isRedeemAllowed: false,
             isRepayBorrowAllowed: false,
+            isSupplyUnderlyingAllowed: false,
             thresholdCollateralizationRatio: Exp({ mantissa: defaultCollateralizationRatioMantissa })
         });
         emit ListBond(yToken);
         return NO_ERROR;
-    }
-
-    /**
-     * @notice Returns the bond with all its properties.
-     * @dev It is not an error to provide an invalid yToken address. The returned values will all be zero.
-     * @param yTokenAddress The address of the bond contract.
-     * @return collateralizationRatioMantissa The bond data.
-     */
-    function getBond(address yTokenAddress) external override view returns (uint256 collateralizationRatioMantissa) {
-        collateralizationRatioMantissa = bonds[yTokenAddress].thresholdCollateralizationRatio.mantissa;
     }
 
     struct SetCollateralizationRatioLocalVars {
@@ -114,7 +131,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @dev Emits a {SetCollateralizationRatio} event.
      *
      * Requirements:
-     * - caller must be the administrator
+     * - Caller must be the administrator
      * - the bond must be listed
      * - `newCollateralizationRatioMantissa` cannot be higher than 10,000%
      * - `newCollateralizationRatioMantissa` cannot be lower than 100%
@@ -161,12 +178,12 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     }
 
     /**
-     * @notice Sets the state of the permission accessed by the yToken before a borrow.
+     * @notice Updates the state of the permission accessed by the yToken before a borrow.
      *
      * @dev Emits a {SetBorrowAllowed} event.
      *
      * Requirements:
-     * - caller must be the administrator
+     * - Caller must be the administrator
      *
      * @param yToken The yToken contract to update the permission for.
      * @param state The new state to be put in storage.
@@ -180,12 +197,12 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     }
 
     /**
-     * @notice Sets the state of the permission accessed by the yToken before a new collateral deposit.
+     * @notice Updates the state of the permission accessed by the yToken before a new collateral deposit.
      *
      * @dev Emits a {SetDepositCollateralAllowed} event.
      *
      * Requirements:
-     * - caller must be the administrator
+     * - Caller must be the administrator
      *
      * @param yToken The yToken contract to update the permission for.
      * @param state The new state to be put in storage.
@@ -209,7 +226,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @dev Emits a {SetOracle} event.
      *
      * Requirements:
-     * - caller must be the administrator
+     * - Caller must be the administrator
      * - the new address must not be the zero address
      *
      * @param oracle_ The new oracle contract.
@@ -224,12 +241,12 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     }
 
     /**
-     * @notice Sets the state of the permission accessed by the yToken before an underlying redemption.
+     * @notice Updates the state of the permission accessed by the Redemption Pool before a redemption of underlying.
      *
      * @dev Emits a {SetRedeemAllowed} event.
      *
      * Requirements:
-     * - caller must be the administrator
+     * - Caller must be the administrator
      *
      * @param yToken The yToken contract to update the permission for.
      * @param state The new state to be put in storage.
@@ -243,12 +260,12 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     }
 
     /**
-     * @notice Sets the state of the permission accessed by the yToken before a repay borrow.
+     * @notice Updates the state of the permission accessed by the yToken before a repay borrow.
      *
      * @dev Emits a {SetRepayBorrowAllowed} event.
      *
      * Requirements:
-     * - caller must be the administrator
+     * - Caller must be the administrator
      *
      * @param yToken The yToken contract to update the permission for.
      * @param state The new state to be put in storage.
@@ -258,6 +275,25 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
         require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
         bonds[address(yToken)].isRepayBorrowAllowed = state;
         emit SetRepayBorrowAllowed(yToken, state);
+        return NO_ERROR;
+    }
+
+    /**
+     * @notice Updates the state of the permission accessed by the Redemption Pool before a supply of underlying.
+     *
+     * @dev Emits a {SetSupplyUnderlyingAllowed} event.
+     *
+     * Requirements:
+     * - Caller must be the administrator
+     *
+     * @param yToken The yToken contract to update the permission for.
+     * @param state The new state to be put in storage.
+     * @return bool true=success, otherwise it reverts.
+     */
+    function setSupplyUnderlyingAllowed(YTokenInterface yToken, bool state) external override onlyAdmin returns (bool) {
+        require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
+        bonds[address(yToken)].isRedeemAllowed = state;
+        emit SetSupplyUnderlyingAllowed(yToken, state);
         return NO_ERROR;
     }
 }

@@ -11,7 +11,9 @@ import "./Erc20Storage.sol";
  * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v3.1.0/contracts/token/ERC20/IERC20.sol
  */
 abstract contract Erc20Interface is Erc20Storage {
-    /*** Events ***/
+    /**
+     * EVENTS
+     */
 
     /**
      * @notice Emitted when `value` tokens are moved from one account (`from`) to

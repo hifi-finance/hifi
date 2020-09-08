@@ -8,8 +8,9 @@ const { loadFixture } = waffle;
 export function testRedemptionPool(): void {
   describe("Redemption Pool", function () {
     beforeEach(async function () {
-      const { redemptionPool, yToken } = await loadFixture(redemptionPoolFixture);
+      const { fintroller, redemptionPool, yToken } = await loadFixture(redemptionPoolFixture);
       this.contracts.redemptionPool = redemptionPool;
+      this.stubs.fintroller = fintroller;
       this.stubs.yToken = yToken;
     });
 

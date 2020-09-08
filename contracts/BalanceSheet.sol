@@ -28,7 +28,9 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
         fintroller.isFintroller();
     }
 
-    /*** View Functions ***/
+    /**
+     * VIEW FUNCTIONS
+     */
 
     /**
      * @notice Returns the vault data.
@@ -57,7 +59,9 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
         require(vaults[address(yToken)][user].isOpen, "ERR_VAULT_NOT_OPEN");
     }
 
-    /*** Non-Constant Functions ***/
+    /**
+     * NON-CONSTANT FUNCTIONS
+     */
 
     struct DepositLocalVars {
         MathError mathErr;
@@ -174,8 +178,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
             );
             require(vars.mathErr == MathError.NO_ERROR, "ERR_FREE_COLLATERAL_MATH_ERROR");
 
-            /* Uncomment this for the "out of gas" error to come back */
-            (vars.collateralizationRatioMantissa) = fintroller.getBond(address(this));
+            (vars.collateralizationRatioMantissa) = fintroller.getBond(yToken);
             require(
                 vars.newCollateralizationRatio.mantissa >= vars.collateralizationRatioMantissa,
                 "ERR_BELOW_THRESHOLD_COLLATERALIZATION_RATIO"

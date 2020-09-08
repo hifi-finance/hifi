@@ -8,11 +8,17 @@ import "./YTokenStorage.sol";
  * @author Mainframe
  */
 abstract contract YTokenInterface is YTokenStorage {
-    /*** View Functions ***/
+    /**
+     * VIEW FUNCTIONS
+     */
     function timeToLive() public virtual view returns (uint256);
 
-    /*** Non-Constant Functions ***/
+    /**
+     * NON-CONSTANT FUNCTIONS
+     */
     function borrow(uint256 borrowAmount) external virtual returns (bool);
+
+    function burn(address holder, uint256 burnAmount) external virtual returns (bool);
 
     function liquidateBorrow(address borrower, uint256 repayAmount) external virtual returns (bool);
 
@@ -22,12 +28,14 @@ abstract contract YTokenInterface is YTokenStorage {
 
     function repayBorrowBehalf(address borrower, uint256 repayAmount) external virtual returns (bool);
 
-    /*** Events ***/
+    /**
+     * EVENTS
+     */
     event Borrow(address indexed user, uint256 repayAmount);
 
-    event Mint(address indexed user, uint256 mintAmount);
+    event Burn(address indexed user, uint256 burnAmount);
 
-    event Redeem(address indexed user, uint256 settleAmount);
+    event Mint(address indexed user, uint256 mintAmount);
 
     event RepayBorrow(address indexed payer, address indexed borrower, uint256 repayAmount);
 }

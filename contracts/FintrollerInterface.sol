@@ -5,19 +5,27 @@ import "./FintrollerStorage.sol";
 import "./YTokenInterface.sol";
 
 abstract contract FintrollerInterface is FintrollerStorage {
-    /*** View Functions ***/
+    /**
+     * VIEW FUNCTIONS
+     */
     function borrowAllowed(YTokenInterface yToken) external virtual view returns (bool);
 
     function depositCollateralAllowed(YTokenInterface yToken) external virtual view returns (bool);
 
-    function getBond(address yTokenAddress) external virtual view returns (uint256 collateralizationRatioMantissa);
+    function getBond(YTokenInterface yToken) external virtual view returns (uint256 collateralizationRatioMantissa);
 
     function redeemAllowed(YTokenInterface yToken) external virtual view returns (bool);
 
     function repayBorrowAllowed(YTokenInterface yToken) external virtual view returns (bool);
 
-    /*** Non-Constant Functions ***/
+    function supplyUnderlyingAllowed(YTokenInterface yToken) external virtual view returns (bool);
+
+    /**
+     * NON-CONSTANT FUNCTIONS
+     */
     function listBond(YTokenInterface yToken) external virtual returns (bool);
+
+    function setBorrowAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
 
     function setCollateralizationRatio(YTokenInterface yToken, uint256 newCollateralizationRatioMantissa)
         external
@@ -26,15 +34,17 @@ abstract contract FintrollerInterface is FintrollerStorage {
 
     function setDepositCollateralAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
 
-    function setBorrowAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
+    function setOracle(SimpleOracleInterface oracle_) external virtual returns (bool);
 
     function setRedeemAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
 
     function setRepayBorrowAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
 
-    function setOracle(SimpleOracleInterface oracle_) external virtual returns (bool);
+    function setSupplyUnderlyingAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
 
-    /*** Events ***/
+    /**
+     * EVENTS
+     */
     event ListBond(YTokenInterface indexed yToken);
 
     event NewCollateralizationRatio(
@@ -52,4 +62,6 @@ abstract contract FintrollerInterface is FintrollerStorage {
     event SetRedeemAllowed(YTokenInterface indexed yToken, bool state);
 
     event SetRepayBorrowAllowed(YTokenInterface indexed yToken, bool state);
+
+    event SetSupplyUnderlyingAllowed(YTokenInterface indexed yToken, bool state);
 }
