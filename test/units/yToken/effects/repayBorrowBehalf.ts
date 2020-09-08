@@ -4,7 +4,7 @@ import { expect } from "chai";
 
 import { BalanceSheetConstants, FintrollerConstants, OneHundredTokens, TenTokens } from "../../../helpers/constants";
 import { YTokenErrors } from "../../../helpers/errors";
-import { contextForBradDepositingTenTokensAsCollateral } from "../../../helpers/mochaContexts";
+import { stubVaultLockedCollateral, stubVaultDebt } from "../../../helpers/stubs";
 
 /**
  * This test suite assumes that Lucy pays the debt on behalf of Brad.
@@ -14,7 +14,7 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
     beforeEach(async function () {
       await this.stubs.balanceSheet.mock.getVault
         .withArgs(this.contracts.yToken.address, this.accounts.brad)
-        .returns(...Object.values(BalanceSheetConstants.DefaultOpenVault));
+        .returns(...Object.values(BalanceSheetConstants.DefaultVault));
       await this.stubs.balanceSheet.mock.isVaultOpen
         .withArgs(this.contracts.yToken.address, this.accounts.brad)
         .returns(true);
@@ -33,27 +33,36 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
             await this.stubs.fintroller.mock.repayBorrowAllowed.withArgs(this.contracts.yToken.address).returns(true);
           });
 
-          contextForBradDepositingTenTokensAsCollateral("when the user has a debt", function () {
+          describe("when the user has a debt", function () {
             beforeEach(async function () {
               /* Brads borrows 100 yDAI. */
-              await this.contracts.yToken.connect(this.signers.brad).lockCollateral(TenTokens);
+              await stubVaultLockedCollateral.call(this, this.contracts.yToken.address, this.accounts.brad, TenTokens);
               await this.stubs.fintroller.mock.borrowAllowed.withArgs(this.contracts.yToken.address).returns(true);
+              await this.stubs.balanceSheet.mock.setVaultDebt
+                .withArgs(this.contracts.yToken.address, this.accounts.brad, OneHundredTokens)
+                .returns(true);
               await this.contracts.yToken.connect(this.signers.brad).borrow(OneHundredTokens);
+              await stubVaultDebt.call(this, this.contracts.yToken.address, this.accounts.brad, OneHundredTokens);
 
               /* And sends it all to Lucy. */
               await this.contracts.yToken.connect(this.signers.brad).transfer(this.accounts.lucy, OneHundredTokens);
+
+              /* The yToken makes an internal call to this stubbed function. */
+              await this.stubs.balanceSheet.mock.setVaultDebt
+                .withArgs(this.contracts.yToken.address, this.accounts.brad, Zero)
+                .returns(true);
             });
 
-            it.skip("repays the borrowed yTokens", async function () {
-              const preBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.lucy);
+            it("repays the borrowed yTokens", async function () {
+              const oldBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.lucy);
               await this.contracts.yToken
                 .connect(this.signers.lucy)
                 .repayBorrowBehalf(this.accounts.brad, OneHundredTokens);
-              const postBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.lucy);
-              expect(preBalance).to.equal(postBalance.add(OneHundredTokens));
+              const newBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.lucy);
+              expect(oldBalance).to.equal(newBalance.add(OneHundredTokens));
             });
 
-            it.skip("emits a RepayBorrow event", async function () {
+            it("emits a RepayBorrow event", async function () {
               await expect(
                 this.contracts.yToken
                   .connect(this.signers.lucy)
@@ -63,7 +72,7 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
                 .withArgs(this.accounts.lucy, this.accounts.brad, OneHundredTokens);
             });
 
-            it.skip("emits a Transfer event", async function () {
+            it("emits a Transfer event", async function () {
               await expect(
                 this.contracts.yToken
                   .connect(this.signers.lucy)
@@ -77,28 +86,27 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
           describe("when the user does not have a debt", function () {
             beforeEach(async function () {
               /* Lucy deposits 10 WETH as collateral. */
-              await this.stubs.balanceSheet.mock.getVault
-                .withArgs(this.contracts.yToken.address, this.accounts.lucy)
-                .returns(...Object.values(BalanceSheetConstants.DefaultOpenVault));
               await this.stubs.balanceSheet.mock.isVaultOpen
                 .withArgs(this.contracts.yToken.address, this.accounts.lucy)
                 .returns(true);
-              await this.stubs.fintroller.mock.depositCollateralAllowed
-                .withArgs(this.contracts.yToken.address)
-                .returns(true);
-              await this.stubs.collateral.mock.transferFrom
-                .withArgs(this.accounts.lucy, this.contracts.yToken.address, TenTokens)
-                .returns(true);
-              await this.contracts.yToken.connect(this.signers.lucy).depositCollateral(TenTokens);
-              await this.contracts.yToken.connect(this.signers.lucy).lockCollateral(TenTokens);
+              await stubVaultLockedCollateral.call(this, this.contracts.yToken.address, this.accounts.lucy, TenTokens);
 
-              /* Lucy borrows 100 yDAI by minting them. */
+              /* Lucy borrows 100 yDAI. */
               await this.stubs.fintroller.mock.borrowAllowed.withArgs(this.contracts.yToken.address).returns(true);
+              await this.stubs.balanceSheet.mock.setVaultDebt
+                .withArgs(this.contracts.yToken.address, this.accounts.lucy, OneHundredTokens)
+                .returns(true);
               await this.contracts.yToken.connect(this.signers.lucy).borrow(OneHundredTokens);
+              await stubVaultDebt.call(this, this.contracts.yToken.address, this.accounts.lucy, OneHundredTokens);
+
+              /* The yToken's makes an internal call to this stubbed function. */
+              await this.stubs.balanceSheet.mock.setVaultDebt
+                .withArgs(this.contracts.yToken.address, this.accounts.lucy, Zero)
+                .returns(true);
             });
 
-            it.skip("reverts", async function () {
-              /* Lucy tries to repays Brad's debt but fails to do so because he doesn't have one. */
+            it("reverts", async function () {
+              /* Lucy tries to repays Brad's debt but fails to do it because he doesn't have one. */
               await expect(
                 this.contracts.yToken
                   .connect(this.signers.lucy)
@@ -132,7 +140,13 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
   });
 
   describe("when the vault is not open", function () {
-    it.skip("reverts", async function () {
+    beforeEach(async function () {
+      await this.stubs.balanceSheet.mock.isVaultOpen
+        .withArgs(this.contracts.yToken.address, this.accounts.brad)
+        .returns(false);
+    });
+
+    it("reverts", async function () {
       await expect(
         this.contracts.yToken.connect(this.signers.lucy).repayBorrowBehalf(this.accounts.brad, OneHundredTokens),
       ).to.be.revertedWith(YTokenErrors.VaultNotOpen);

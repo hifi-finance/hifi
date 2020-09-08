@@ -8,13 +8,14 @@ import { OneHundredTokens, TenTokens } from "../../../helpers/constants";
 import { YTokenErrors } from "../../../helpers/errors";
 import { contextForTimeDependentTests } from "../../../helpers/mochaContexts";
 import { increaseTime } from "../../../helpers/jsonRpcHelpers";
+import { stubVaultFreeCollateral, stubVaultLockedCollateral } from "../../../helpers/stubs";
 
 export default function shouldBehaveLikeBorrow(): void {
   describe("when the vault is open", function () {
     beforeEach(async function () {
       await this.stubs.balanceSheet.mock.getVault
         .withArgs(this.contracts.yToken.address, this.accounts.brad)
-        .returns(...Object.values(BalanceSheetConstants.DefaultOpenVault));
+        .returns(...Object.values(BalanceSheetConstants.DefaultVault));
       await this.stubs.balanceSheet.mock.isVaultOpen
         .withArgs(this.contracts.yToken.address, this.accounts.brad)
         .returns(true);
@@ -35,31 +36,32 @@ export default function shouldBehaveLikeBorrow(): void {
             });
 
             /**
-             * TODO: Write tests for the following cases:
+             * TODO: Write tests for the following scenarios:
              * - collateral value too small
              * - not enough liquidity in the guarantor pool
              */
             describe("when the caller deposited collateral", function () {
-              beforeEach(async function () {
-                await this.stubs.fintroller.mock.depositCollateralAllowed
-                  .withArgs(this.contracts.yToken.address)
-                  .returns(true);
-                await this.stubs.collateral.mock.transferFrom
-                  .withArgs(this.accounts.brad, this.contracts.yToken.address, TenTokens)
-                  .returns(true);
-                await this.contracts.yToken.connect(this.signers.brad).depositCollateral(TenTokens);
-              });
-
-              describe.skip("when the caller locked the collateral", function () {
+              describe("when the caller locked the collateral", function () {
                 beforeEach(async function () {
-                  await this.contracts.yToken.connect(this.signers.brad).lockCollateral(TenTokens);
+                  /* Stub the value of the locked collateral. */
+                  await stubVaultLockedCollateral.call(
+                    this,
+                    this.contracts.yToken.address,
+                    this.accounts.brad,
+                    TenTokens,
+                  );
+
+                  /* The yToken makes an internal call to this stubbed function. */
+                  await this.stubs.balanceSheet.mock.setVaultDebt
+                    .withArgs(this.contracts.yToken.address, this.accounts.brad, OneHundredTokens)
+                    .returns(true);
                 });
 
                 it("borrows yTokens", async function () {
-                  const preBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.brad);
+                  const oldBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.brad);
                   await this.contracts.yToken.connect(this.signers.brad).borrow(OneHundredTokens);
-                  const postBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.brad);
-                  expect(preBalance).to.equal(postBalance.sub(OneHundredTokens));
+                  const newBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.brad);
+                  expect(oldBalance).to.equal(newBalance.sub(OneHundredTokens));
                 });
 
                 it("emits a Borrow event", async function () {
@@ -76,7 +78,17 @@ export default function shouldBehaveLikeBorrow(): void {
               });
 
               describe("when the caller did not lock the collateral", function () {
-                it.skip("reverts", async function () {
+                beforeEach(async function () {
+                  /* Stub the value of the free collateral. */
+                  await stubVaultFreeCollateral.call(
+                    this,
+                    this.contracts.yToken.address,
+                    this.accounts.brad,
+                    TenTokens,
+                  );
+                });
+
+                it("reverts", async function () {
                   await expect(
                     this.contracts.yToken.connect(this.signers.brad).borrow(OneHundredTokens),
                   ).to.be.revertedWith(YTokenErrors.BelowThresholdCollateralizationRatio);
@@ -144,7 +156,13 @@ export default function shouldBehaveLikeBorrow(): void {
   });
 
   describe("when the vault is not open", function () {
-    it.skip("reverts", async function () {
+    beforeEach(async function () {
+      await this.stubs.balanceSheet.mock.isVaultOpen
+        .withArgs(this.contracts.yToken.address, this.accounts.brad)
+        .returns(false);
+    });
+
+    it("reverts", async function () {
       await expect(this.contracts.yToken.connect(this.signers.brad).borrow(OneHundredTokens)).to.be.revertedWith(
         YTokenErrors.VaultNotOpen,
       );

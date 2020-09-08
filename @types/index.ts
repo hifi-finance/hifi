@@ -1,12 +1,13 @@
 import { MockContract } from "ethereum-waffle";
 import { Signer } from "@ethersproject/abstract-signer";
 
-import { BalanceSheet } from "../typechain/BalanceSheet";
+import { GodModeBalanceSheet as BalanceSheet } from "../typechain/GodModeBalanceSheet";
 import { SimpleOracle } from "../typechain/SimpleOracle";
 import { Fintroller } from "../typechain/Fintroller";
 import { GuarantorPool } from "../typechain/GuarantorPool";
 import { RedemptionPool } from "../typechain/RedemptionPool";
 import { YToken } from "../typechain/YToken";
+import { BigNumber } from "ethers";
 
 /* Fingers-crossed that ethers.js or waffle will provide an easier way to cache the address */
 export interface Accounts {
@@ -43,4 +44,11 @@ export interface Stubs {
   redemptionPool: MockContract;
   underlying: MockContract;
   yToken: MockContract;
+}
+
+export interface Vault {
+  debt: BigNumber;
+  freeCollateral: BigNumber;
+  lockedCollateral: BigNumber;
+  isOpen: boolean;
 }

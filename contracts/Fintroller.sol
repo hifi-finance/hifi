@@ -12,7 +12,7 @@ import "./utils/ErrorReporter.sol";
  * @author Mainframe
  */
 contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
-    /* solhint-disable-next-line */
+    /* solhint-disable-next-line no-empty-blocks */
     constructor() public Admin() {}
 
     /*** View Functions ***/

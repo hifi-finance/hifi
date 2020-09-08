@@ -14,7 +14,7 @@ import "./utils/ReentrancyGuard.sol";
  * @author Mainframe
  */
 contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponential, ReentrancyGuard {
-    modifier isVaultOpenForCaller(YTokenInterface yToken) {
+    modifier isVaultOpenForMsgSender(YTokenInterface yToken) {
         require(vaults[address(yToken)][msg.sender].isOpen, "ERR_VAULT_NOT_OPEN");
         _;
     }
@@ -82,7 +82,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
     function depositCollateral(YTokenInterface yToken, uint256 collateralAmount)
         external
         override
-        isVaultOpenForCaller(yToken)
+        isVaultOpenForMsgSender(yToken)
         nonReentrant
         returns (bool)
     {
@@ -141,7 +141,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
     function freeCollateral(YTokenInterface yToken, uint256 collateralAmount)
         external
         override
-        isVaultOpenForCaller(yToken)
+        isVaultOpenForMsgSender(yToken)
         returns (bool)
     {
         FreeCollateralLocalVars memory vars;
@@ -213,7 +213,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
     function lockCollateral(YTokenInterface yToken, uint256 collateralAmount)
         external
         override
-        isVaultOpenForCaller(yToken)
+        isVaultOpenForMsgSender(yToken)
         returns (bool)
     {
         LockCollateralLocalVars memory vars;
@@ -256,7 +256,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
     }
 
     struct SetDebtLocalVars {
-        uint256 oldDebt;
+        uint256 oldVaultDebt;
     }
 
     /**
@@ -275,18 +275,18 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
     function setVaultDebt(
         YTokenInterface yToken,
         address user,
-        uint256 newDebt
-    ) external override isVaultOpenForCaller(yToken) returns (bool) {
+        uint256 newVaultDebt
+    ) external override isVaultOpenForMsgSender(yToken) returns (bool) {
         SetDebtLocalVars memory vars;
 
         /* Checks: the caller is the yToken contract. */
         require(msg.sender == address(yToken), "ERR_SET_DEBT_NOT_AUTHORIZED");
 
         /* Effects: update the storage property. */
-        vars.oldDebt = vaults[address(yToken)][user].debt;
-        vaults[address(yToken)][user].debt = newDebt;
+        vars.oldVaultDebt = vaults[address(yToken)][user].debt;
+        vaults[address(yToken)][user].debt = newVaultDebt;
 
-        emit SetVaultDebt(yToken, user, vars.oldDebt, newDebt);
+        emit SetVaultDebt(yToken, user, vars.oldVaultDebt, newVaultDebt);
 
         return NO_ERROR;
     }
@@ -313,7 +313,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
     function withdrawCollateral(YTokenInterface yToken, uint256 collateralAmount)
         external
         override
-        isVaultOpenForCaller(yToken)
+        isVaultOpenForMsgSender(yToken)
         nonReentrant
         returns (bool)
     {

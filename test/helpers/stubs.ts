@@ -4,7 +4,7 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { Zero } from "@ethersproject/constants";
 import { waffle } from "@nomiclabs/buidler";
 
-import BalanceSheetArtifact from "../../artifacts/BalanceSheet.json";
+import BalanceSheetArtifact from "../../artifacts/GodModeBalanceSheet.json";
 import Erc20MintableArtifact from "../../artifacts/Erc20Mintable.json";
 import FintrollerArtifact from "../../artifacts/Fintroller.json";
 import GuarantorPoolArtifact from "../../artifacts/GuarantorPool.json";
@@ -13,9 +13,23 @@ import SimpleOracleArtifact from "../../artifacts/SimpleOracle.json";
 import YTokenArtifact from "../../artifacts/YToken.json";
 
 import { CarefulMathErrors } from "./errors";
-import { OneDollar, OneHundredDollars, OneHundredTokens, OneThousandDollars, OneToken, TenTokens } from "./constants";
+import {
+  BalanceSheetConstants,
+  OneDollar,
+  OneHundredDollars,
+  OneHundredTokens,
+  OneThousandDollars,
+  OneToken,
+  TenTokens,
+} from "./constants";
 
 const { deployMockContract: deployStubContract } = waffle;
+
+/**
+ * ---------
+ * Deployers
+ * ---------
+ */
 
 export async function deployStubBalanceSheet(deployer: Signer): Promise<MockContract> {
   const balanceSheet: MockContract = await deployStubContract(deployer, BalanceSheetArtifact.abi);
@@ -53,7 +67,7 @@ export async function deployStubOracle(deployer: Signer): Promise<MockContract> 
   await oracle.mock.getCollateralPriceInUsd.returns(BigNumber.from(100));
   await oracle.mock.getUnderlyingPriceInUsd.returns(OneDollar);
 
-  /* 0 WETH = $0*/
+  /* 0 WETH = $0 */
   await oracle.mock.multiplyCollateralAmountByItsPriceInUsd.withArgs(Zero).returns(CarefulMathErrors.NoError, Zero);
 
   /* 1 WETH = $100 */
@@ -96,4 +110,82 @@ export async function deployStubYToken(deployer: Signer): Promise<MockContract> 
   const yToken: MockContract = await deployStubContract(deployer, YTokenArtifact.abi);
   await yToken.mock.isYToken.returns(true);
   return yToken;
+}
+
+/**
+ * --------------
+ * Function Stubs
+ * --------------
+ */
+
+export async function stubGetVault(
+  this: Mocha.Context,
+  yTokenAddress: string,
+  user: string,
+  debt: BigNumber,
+  freeCollateral: BigNumber,
+  lockedCollateral: BigNumber,
+  isOpen: boolean,
+) {
+  await this.stubs.balanceSheet.mock.getVault
+    .withArgs(yTokenAddress, user)
+    .returns(debt, freeCollateral, lockedCollateral, isOpen);
+}
+
+export async function stubVaultDebt(this: Mocha.Context, yTokenAddress: string, user: string, debt: BigNumber) {
+  await stubGetVault.call(
+    this,
+    yTokenAddress,
+    user,
+    debt,
+    BalanceSheetConstants.DefaultVault.freeCollateral,
+    BalanceSheetConstants.DefaultVault.lockedCollateral,
+    BalanceSheetConstants.DefaultVault.isOpen,
+  );
+}
+
+export async function stubVaultFreeCollateral(
+  this: Mocha.Context,
+  yTokenAddress: string,
+  user: string,
+  freeCollateral: BigNumber,
+) {
+  await stubGetVault.call(
+    this,
+    yTokenAddress,
+    user,
+    BalanceSheetConstants.DefaultVault.debt,
+    freeCollateral,
+    BalanceSheetConstants.DefaultVault.lockedCollateral,
+    BalanceSheetConstants.DefaultVault.isOpen,
+  );
+}
+
+export async function stubVaultLockedCollateral(
+  this: Mocha.Context,
+  yTokenAddress: string,
+  user: string,
+  lockedCollateral: BigNumber,
+) {
+  await stubGetVault.call(
+    this,
+    yTokenAddress,
+    user,
+    BalanceSheetConstants.DefaultVault.debt,
+    BalanceSheetConstants.DefaultVault.freeCollateral,
+    lockedCollateral,
+    BalanceSheetConstants.DefaultVault.isOpen,
+  );
+}
+
+export async function stuVaultIsOpen(this: Mocha.Context, yTokenAddress: string, user: string, isOpen: boolean) {
+  await stubGetVault.call(
+    this,
+    yTokenAddress,
+    user,
+    BalanceSheetConstants.DefaultVault.debt,
+    BalanceSheetConstants.DefaultVault.freeCollateral,
+    BalanceSheetConstants.DefaultVault.lockedCollateral,
+    isOpen,
+  );
 }

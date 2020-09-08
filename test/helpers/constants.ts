@@ -23,7 +23,7 @@ export const AddressOne: string = "0x0000000000000000000000000000000000000001";
 export const DefaultBlockGasLimit: BigNumber = BigNumber.from("10000000");
 
 export const BalanceSheetConstants = {
-  DefaultOpenVault: {
+  DefaultVault: {
     debt: Zero,
     freeCollateral: Zero,
     lockedCollateral: Zero,

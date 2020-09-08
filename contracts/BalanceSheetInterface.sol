@@ -35,7 +35,7 @@ abstract contract BalanceSheetInterface is BalanceSheetStorage {
     function setVaultDebt(
         YTokenInterface yToken,
         address user,
-        uint256 newDebt
+        uint256 newVaultDebt
     ) external virtual returns (bool);
 
     function withdrawCollateral(YTokenInterface yToken, uint256 collateralAmount) external virtual returns (bool);

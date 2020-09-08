@@ -3,14 +3,14 @@ import { MockContract } from "ethereum-waffle";
 import { Signer } from "@ethersproject/abstract-signer";
 import { waffle } from "@nomiclabs/buidler";
 
-import BalanceSheetArtifact from "../../artifacts/BalanceSheet.json";
+import BalanceSheetArtifact from "../../artifacts/GodModeBalanceSheet.json";
 import FintrollerArtifact from "../../artifacts/Fintroller.json";
 import RedemptionPoolArtifact from "../../artifacts/RedemptionPool.json";
 import YTokenArtifact from "../../artifacts/YToken.json";
 
 import { DefaultBlockGasLimit } from "./constants";
-import { BalanceSheet } from "../../typechain/BalanceSheet";
 import { Fintroller } from "../../typechain/Fintroller";
+import { GodModeBalanceSheet as BalanceSheet } from "../../typechain/GodModeBalanceSheet";
 import { RedemptionPool } from "../../typechain/RedemptionPool";
 import { YToken } from "../../typechain/YToken";
 

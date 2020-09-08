@@ -3,6 +3,7 @@ import { expect } from "chai";
 
 import { TenTokens } from "../../../helpers/constants";
 import { YTokenErrors } from "../../../helpers/errors";
+import { Vault } from "../../../../@types";
 
 export default function shouldBehaveLikeLockCollateral(): void {
   describe("when the vault is open", function () {
@@ -23,13 +24,20 @@ export default function shouldBehaveLikeLockCollateral(): void {
         });
 
         it("it locks the collateral", async function () {
-          const preVault = await this.contracts.balanceSheet.getVault(this.stubs.yToken.address, this.accounts.brad);
+          const oldVault: Vault = await this.contracts.balanceSheet.getVault(
+            this.stubs.yToken.address,
+            this.accounts.brad,
+          );
           await this.contracts.balanceSheet
             .connect(this.signers.brad)
             .lockCollateral(this.stubs.yToken.address, TenTokens);
-          const postVault = await this.contracts.balanceSheet.getVault(this.stubs.yToken.address, this.accounts.brad);
-          expect(preVault.freeCollateral).to.equal(postVault.freeCollateral.add(TenTokens));
-          expect(preVault.lockedCollateral).to.equal(postVault.lockedCollateral.sub(TenTokens));
+          const newVault: Vault = await this.contracts.balanceSheet.getVault(
+            this.stubs.yToken.address,
+            this.accounts.brad,
+          );
+
+          expect(oldVault.freeCollateral).to.equal(newVault.freeCollateral.add(TenTokens));
+          expect(oldVault.lockedCollateral).to.equal(newVault.lockedCollateral.sub(TenTokens));
         });
 
         it("emits a LockCollateral event", async function () {

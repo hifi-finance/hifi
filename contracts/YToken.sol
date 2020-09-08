@@ -151,12 +151,9 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         (vars.mathErr, vars.borrowValueInUsd) = oracle.multiplyUnderlyingAmountByItsPriceInUsd(borrowAmount);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
 
-        (vars.mathErr, vars.newDebt) = addUInt(vars.debt, vars.borrowValueInUsd);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
-
         (vars.mathErr, vars.newCollateralizationRatio) = divExp(
             Exp({ mantissa: vars.lockedCollateralValueInUsd }),
-            Exp({ mantissa: vars.newDebt })
+            Exp({ mantissa: vars.borrowValueInUsd })
         );
         require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
 
@@ -170,6 +167,8 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         mintInternal(msg.sender, borrowAmount);
 
         /* Interactions: increase the debt of the user. */
+        (vars.mathErr, vars.newDebt) = addUInt(vars.debt, borrowAmount);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
         require(balanceSheet.setVaultDebt(this, msg.sender, vars.newDebt), "ERR_BORROW_SET_VAULT_DEBT");
 
         /* Emit both a Borrow and a Transfer event. */

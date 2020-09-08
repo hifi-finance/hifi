@@ -18,12 +18,11 @@ contract GuarantorPool is GuarantorPoolInterface, Erc20, Admin, Exponential, Ree
         _;
     }
 
-    /* solhint-disable-next-line */
     constructor(
         string memory name_,
         string memory symbol_,
         uint8 decimals_
-    ) public Erc20(name_, symbol_, decimals_) Admin() {}
+    ) public Erc20(name_, symbol_, decimals_) Admin() {} /* solhint-disable-line no-empty-blocks */
 
     struct RedeemLocalVars {
         MathError mathErr;

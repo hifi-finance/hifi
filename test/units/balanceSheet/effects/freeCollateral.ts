@@ -1,10 +1,10 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
-import { waffle } from "@nomiclabs/buidler";
 
 import { CarefulMathErrors, YTokenErrors } from "../../../helpers/errors";
-import { FintrollerConstants, OneDollar, OneToken, TenTokens, OneHundredTokens } from "../../../helpers/constants";
+import { FintrollerConstants, OneDollar, OneHundredDollars, OneToken, TenTokens } from "../../../helpers/constants";
+import { Vault } from "../../../../@types";
 
 export default function shouldBehaveLikeLockCollateral(): void {
   describe("when the vault is open", function () {
@@ -15,6 +15,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
     describe("when the collateral amount to free is not zero", function () {
       describe("when the caller deposited collateral", function () {
         beforeEach(async function () {
+          /* Mock the required functions on the Fintroller and the Collateral stubs. */
           await this.stubs.fintroller.mock.getBond
             .withArgs(this.contracts.balanceSheet.address)
             .returns(FintrollerConstants.DefaultCollateralizationRatioMantissa);
@@ -22,6 +23,8 @@ export default function shouldBehaveLikeLockCollateral(): void {
           await this.stubs.collateral.mock.transferFrom
             .withArgs(this.accounts.brad, this.contracts.balanceSheet.address, TenTokens)
             .returns(true);
+
+          /* Deposit 10 WETH. */
           await this.contracts.balanceSheet
             .connect(this.signers.brad)
             .depositCollateral(this.stubs.yToken.address, TenTokens);
@@ -37,28 +40,37 @@ export default function shouldBehaveLikeLockCollateral(): void {
           describe("when the caller has a debt", function () {
             beforeEach(async function () {
               await this.stubs.fintroller.mock.borrowAllowed.withArgs(this.stubs.yToken.address).returns(true);
-              /* The yToken will ask the oracle what's the value of 9 WETH collateral. */
+              /* The balance sheet will ask the oracle what's the value of 9 WETH collateral. */
               await this.stubs.oracle.mock.multiplyCollateralAmountByItsPriceInUsd
                 .withArgs(TenTokens.sub(OneToken))
                 .returns(CarefulMathErrors.NoError, OneDollar.mul(900));
             });
 
-            /* TODO: un-skip when Buidler releases `evm_impersonate` */
-            describe.skip("when the caller is safely over-collateralized", async function () {
+            describe("when the caller is safely over-collateralized", async function () {
+              beforeEach(async function () {
+                /* Cannot call the usual `setVaultDebt` since the yToken is stubbed. */
+                await this.contracts.balanceSheet.__godMode_setVaultDebt(
+                  this.stubs.yToken.address,
+                  this.accounts.brad,
+                  OneHundredDollars,
+                );
+              });
+
               it("it frees the collateral", async function () {
-                const preVault = await this.contracts.balanceSheet.getVault(
+                const oldVault: Vault = await this.contracts.balanceSheet.getVault(
                   this.stubs.yToken.address,
                   this.accounts.brad,
                 );
                 await this.contracts.balanceSheet
                   .connect(this.signers.brad)
                   .freeCollateral(this.stubs.yToken.address, OneToken);
-                const postVault = await this.contracts.balanceSheet.getVault(
+                const newVault: Vault = await this.contracts.balanceSheet.getVault(
                   this.stubs.yToken.address,
                   this.accounts.brad,
                 );
-                expect(preVault.freeCollateral).to.equal(postVault.freeCollateral.sub(OneToken));
-                expect(preVault.lockedCollateral).to.equal(postVault.lockedCollateral.add(OneToken));
+
+                expect(oldVault.freeCollateral).to.equal(newVault.freeCollateral.sub(OneToken));
+                expect(oldVault.lockedCollateral).to.equal(newVault.lockedCollateral.add(OneToken));
               });
 
               it("emits a FreeCollateral event", async function () {
@@ -72,14 +84,21 @@ export default function shouldBehaveLikeLockCollateral(): void {
               });
             });
 
-            /* TODO: unskip when Buidler releases `evm_impersonate` */
-            describe.skip("when the caller is dangerously collateralized", function () {
+            describe("when the caller is dangerously collateralized", function () {
               beforeEach(async function () {
-                /* This is 150%. Recall that we deposited 10 ETH and that the oracle assumes 1 ETH = $100. */
+                /* This is 150% collateralization ratio. We deposited 10 ETH and the oracle assumes 1 ETH = $100. */
                 const borrowAmount: BigNumber = OneToken.mul(666);
+                const borrowValueInUsd: BigNumber = OneDollar.mul(666);
                 await this.stubs.oracle.mock.multiplyUnderlyingAmountByItsPriceInUsd
                   .withArgs(borrowAmount)
-                  .returns(CarefulMathErrors.NoError, OneDollar.mul(666));
+                  .returns(CarefulMathErrors.NoError, borrowValueInUsd);
+
+                /* Cannot call the usual `setVaultDebt` since the yToken is stubbed. */
+                await this.contracts.balanceSheet.__godMode_setVaultDebt(
+                  this.stubs.yToken.address,
+                  this.accounts.brad,
+                  borrowValueInUsd,
+                );
               });
 
               it("reverts", async function () {
@@ -94,19 +113,20 @@ export default function shouldBehaveLikeLockCollateral(): void {
 
           describe("when the caller does not have a debt", function () {
             it("it frees the collateral", async function () {
-              const preVault = await this.contracts.balanceSheet.getVault(
+              const oldVault: Vault = await this.contracts.balanceSheet.getVault(
                 this.stubs.yToken.address,
                 this.accounts.brad,
               );
               await this.contracts.balanceSheet
                 .connect(this.signers.brad)
                 .freeCollateral(this.stubs.yToken.address, TenTokens);
-              const postVault = await this.contracts.balanceSheet.getVault(
+              const newVault: Vault = await this.contracts.balanceSheet.getVault(
                 this.stubs.yToken.address,
                 this.accounts.brad,
               );
-              expect(preVault.freeCollateral).to.equal(postVault.freeCollateral.sub(TenTokens));
-              expect(preVault.lockedCollateral).to.equal(postVault.lockedCollateral.add(TenTokens));
+
+              expect(oldVault.freeCollateral).to.equal(newVault.freeCollateral.sub(TenTokens));
+              expect(oldVault.lockedCollateral).to.equal(newVault.lockedCollateral.add(TenTokens));
             });
 
             it("emits a FreeCollateral event", async function () {
