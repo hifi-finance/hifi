@@ -3,7 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { BalanceSheetConstants, FintrollerConstants, OneHundredTokens, TenTokens } from "../../../helpers/constants";
-import { YTokenErrors } from "../../../helpers/errors";
+import { BalanceSheetErrors, YTokenErrors } from "../../../helpers/errors";
 import { stubVaultLockedCollateral, stubVaultDebt } from "../../../helpers/stubs";
 
 /**
@@ -149,7 +149,7 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
     it("reverts", async function () {
       await expect(
         this.contracts.yToken.connect(this.signers.lucy).repayBorrowBehalf(this.accounts.brad, OneHundredTokens),
-      ).to.be.revertedWith(YTokenErrors.VaultNotOpen);
+      ).to.be.revertedWith(BalanceSheetErrors.VaultNotOpen);
     });
   });
 }

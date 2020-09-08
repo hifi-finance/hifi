@@ -252,6 +252,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
      * @return bool=success, otherwise it reverts.
      */
     function openVault(YTokenInterface yToken) external override returns (bool) {
+        yToken.isYToken();
         require(vaults[address(yToken)][msg.sender].isOpen == false, "ERR_VAULT_OPEN");
         vaults[address(yToken)][msg.sender].isOpen = true;
         emit OpenVault(yToken, msg.sender);

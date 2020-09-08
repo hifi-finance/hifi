@@ -105,7 +105,6 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @return bool true=success, otherwise it reverts.
      */
     function listBond(YTokenInterface yToken) external override onlyAdmin returns (bool) {
-        /* Sanity check. */
         yToken.isYToken();
         bonds[address(yToken)] = Bond({
             isBorrowAllowed: false,

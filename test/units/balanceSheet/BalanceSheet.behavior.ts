@@ -1,6 +1,7 @@
 import shouldBehaveLikeDepositCollateral from "./effects/depositCollateral";
 import shouldBehaveLikeFreeCollateral from "./effects/freeCollateral";
 import shouldBehaveLikeLockCollateral from "./effects/lockCollateral";
+import shouldBehaveLikeOpenVault from "./effects/openVault";
 import shouldBehaveLikeWithdrawCollateral from "./effects/withdrawCollateral";
 
 import shouldBehaveLikeFintrollerGetter from "./view/fintroller";
@@ -19,6 +20,10 @@ export function shouldBehaveLikeBalanceSheet(): void {
 
     describe("lockCollateral", function () {
       shouldBehaveLikeLockCollateral();
+    });
+
+    describe("openVault", function () {
+      shouldBehaveLikeOpenVault();
     });
 
     describe("withdrawCollateral", function () {

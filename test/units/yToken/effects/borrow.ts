@@ -3,9 +3,9 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { BalanceSheetConstants, FintrollerConstants, YTokenConstants } from "../../../helpers/constants";
+import { BalanceSheetErrors, YTokenErrors } from "../../../helpers/errors";
 import { FintrollerErrors } from "../../../helpers/errors";
 import { OneHundredTokens, TenTokens } from "../../../helpers/constants";
-import { YTokenErrors } from "../../../helpers/errors";
 import { contextForTimeDependentTests } from "../../../helpers/mochaContexts";
 import { increaseTime } from "../../../helpers/jsonRpcHelpers";
 import { stubVaultFreeCollateral, stubVaultLockedCollateral } from "../../../helpers/stubs";
@@ -91,7 +91,7 @@ export default function shouldBehaveLikeBorrow(): void {
                 it("reverts", async function () {
                   await expect(
                     this.contracts.yToken.connect(this.signers.brad).borrow(OneHundredTokens),
-                  ).to.be.revertedWith(YTokenErrors.BelowThresholdCollateralizationRatio);
+                  ).to.be.revertedWith(BalanceSheetErrors.BelowThresholdCollateralizationRatio);
                 });
               });
             });
@@ -100,7 +100,7 @@ export default function shouldBehaveLikeBorrow(): void {
               it("reverts", async function () {
                 await expect(
                   this.contracts.yToken.connect(this.signers.brad).borrow(OneHundredTokens),
-                ).to.be.revertedWith(YTokenErrors.BelowThresholdCollateralizationRatio);
+                ).to.be.revertedWith(BalanceSheetErrors.BelowThresholdCollateralizationRatio);
               });
             });
           });
@@ -164,7 +164,7 @@ export default function shouldBehaveLikeBorrow(): void {
 
     it("reverts", async function () {
       await expect(this.contracts.yToken.connect(this.signers.brad).borrow(OneHundredTokens)).to.be.revertedWith(
-        YTokenErrors.VaultNotOpen,
+        BalanceSheetErrors.VaultNotOpen,
       );
     });
   });

@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { CarefulMathErrors, YTokenErrors } from "../../../helpers/errors";
+import { BalanceSheetErrors, CarefulMathErrors } from "../../../helpers/errors";
 import { FintrollerConstants, OneDollar, OneHundredDollars, OneToken, TenTokens } from "../../../helpers/constants";
 import { Vault } from "../../../../@types";
 
@@ -17,7 +17,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
         beforeEach(async function () {
           /* Mock the required functions on the Fintroller and the Collateral stubs. */
           await this.stubs.fintroller.mock.getBond
-            .withArgs(this.contracts.balanceSheet.address)
+            .withArgs(this.stubs.yToken.address)
             .returns(FintrollerConstants.DefaultCollateralizationRatioMantissa);
           await this.stubs.fintroller.mock.depositCollateralAllowed.withArgs(this.stubs.yToken.address).returns(true);
           await this.stubs.collateral.mock.transferFrom
@@ -106,7 +106,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
                   this.contracts.balanceSheet
                     .connect(this.signers.brad)
                     .freeCollateral(this.stubs.yToken.address, OneToken),
-                ).to.be.revertedWith(YTokenErrors.BelowThresholdCollateralizationRatio);
+                ).to.be.revertedWith(BalanceSheetErrors.BelowThresholdCollateralizationRatio);
               });
             });
           });
@@ -141,13 +141,13 @@ export default function shouldBehaveLikeLockCollateral(): void {
           });
         });
 
-        describe("but did not lock it", function () {
+        describe("when the caller did not lock the collateral", function () {
           it("reverts", async function () {
             await expect(
               this.contracts.balanceSheet
                 .connect(this.signers.brad)
                 .freeCollateral(this.stubs.yToken.address, TenTokens),
-            ).to.be.revertedWith(YTokenErrors.FreeCollateralInsufficientLockedCollateral);
+            ).to.be.revertedWith(BalanceSheetErrors.FreeCollateralInsufficientLockedCollateral);
           });
         });
       });
@@ -156,7 +156,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
         it("reverts", async function () {
           await expect(
             this.contracts.balanceSheet.connect(this.signers.brad).freeCollateral(this.stubs.yToken.address, TenTokens),
-          ).to.be.revertedWith(YTokenErrors.FreeCollateralInsufficientLockedCollateral);
+          ).to.be.revertedWith(BalanceSheetErrors.FreeCollateralInsufficientLockedCollateral);
         });
       });
     });
@@ -165,7 +165,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
       it("reverts", async function () {
         await expect(
           this.contracts.balanceSheet.connect(this.signers.brad).freeCollateral(this.stubs.yToken.address, Zero),
-        ).to.be.revertedWith(YTokenErrors.FreeCollateralZero);
+        ).to.be.revertedWith(BalanceSheetErrors.FreeCollateralZero);
       });
     });
   });
@@ -174,7 +174,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
     it("reverts", async function () {
       await expect(
         this.contracts.balanceSheet.connect(this.signers.brad).freeCollateral(this.stubs.yToken.address, TenTokens),
-      ).to.be.revertedWith(YTokenErrors.VaultNotOpen);
+      ).to.be.revertedWith(BalanceSheetErrors.VaultNotOpen);
     });
   });
 }

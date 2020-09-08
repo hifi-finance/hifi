@@ -1,8 +1,8 @@
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
+import { BalanceSheetErrors, FintrollerErrors } from "../../../helpers/errors";
 import { FintrollerConstants, TenTokens } from "../../../helpers/constants";
-import { FintrollerErrors, YTokenErrors } from "../../../helpers/errors";
 
 export default function shouldBehaveLikeDepositCollateral(): void {
   describe("when the vault is open", function () {
@@ -76,7 +76,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
               this.contracts.balanceSheet
                 .connect(this.signers.brad)
                 .depositCollateral(this.stubs.yToken.address, TenTokens),
-            ).to.be.revertedWith(YTokenErrors.DepositCollateralNotAllowed);
+            ).to.be.revertedWith(BalanceSheetErrors.DepositCollateralNotAllowed);
           });
         });
       });
@@ -102,7 +102,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
       it("reverts", async function () {
         await expect(
           this.contracts.balanceSheet.connect(this.signers.brad).depositCollateral(this.stubs.yToken.address, Zero),
-        ).to.be.revertedWith(YTokenErrors.DepositCollateralZero);
+        ).to.be.revertedWith(BalanceSheetErrors.DepositCollateralZero);
       });
     });
   });
@@ -111,7 +111,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
     it("reverts", async function () {
       await expect(
         this.contracts.balanceSheet.connect(this.signers.brad).depositCollateral(this.stubs.yToken.address, TenTokens),
-      ).to.be.revertedWith(YTokenErrors.VaultNotOpen);
+      ).to.be.revertedWith(BalanceSheetErrors.VaultNotOpen);
     });
   });
 }

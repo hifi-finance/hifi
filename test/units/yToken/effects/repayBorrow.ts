@@ -3,8 +3,8 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { BalanceSheetConstants, FintrollerConstants, OneHundredTokens, TenTokens } from "../../../helpers/constants";
+import { BalanceSheetErrors, YTokenErrors } from "../../../helpers/errors";
 import { FintrollerErrors } from "../../../helpers/errors";
-import { YTokenErrors } from "../../../helpers/errors";
 import { stubVaultLockedCollateral, stubVaultDebt } from "../../../helpers/stubs";
 
 export default function shouldBehaveLikeRepayBorrow(): void {
@@ -156,7 +156,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
 
     it("reverts", async function () {
       await expect(this.contracts.yToken.connect(this.signers.brad).repayBorrow(OneHundredTokens)).to.be.revertedWith(
-        YTokenErrors.VaultNotOpen,
+        BalanceSheetErrors.VaultNotOpen,
       );
     });
   });

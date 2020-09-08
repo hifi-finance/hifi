@@ -1,7 +1,7 @@
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { YTokenErrors } from "../../../helpers/errors";
+import { BalanceSheetErrors } from "../../../helpers/errors";
 import { TenTokens } from "../../../helpers/constants";
 
 export default function shouldBehaveLikeWithdrawCollateral(): void {
@@ -56,7 +56,7 @@ export default function shouldBehaveLikeWithdrawCollateral(): void {
               this.contracts.balanceSheet
                 .connect(this.signers.brad)
                 .withdrawCollateral(this.stubs.yToken.address, TenTokens),
-            ).to.be.revertedWith(YTokenErrors.WithdrawCollateralInsufficientFreeCollateral);
+            ).to.be.revertedWith(BalanceSheetErrors.WithdrawCollateralInsufficientFreeCollateral);
           });
         });
       });
@@ -67,7 +67,7 @@ export default function shouldBehaveLikeWithdrawCollateral(): void {
             this.contracts.balanceSheet
               .connect(this.signers.brad)
               .withdrawCollateral(this.stubs.yToken.address, TenTokens),
-          ).to.be.revertedWith(YTokenErrors.WithdrawCollateralInsufficientFreeCollateral);
+          ).to.be.revertedWith(BalanceSheetErrors.WithdrawCollateralInsufficientFreeCollateral);
         });
       });
     });
@@ -76,7 +76,7 @@ export default function shouldBehaveLikeWithdrawCollateral(): void {
       it("reverts", async function () {
         await expect(
           this.contracts.balanceSheet.connect(this.signers.brad).withdrawCollateral(this.stubs.yToken.address, Zero),
-        ).to.be.revertedWith(YTokenErrors.WithdrawCollateralZero);
+        ).to.be.revertedWith(BalanceSheetErrors.WithdrawCollateralZero);
       });
     });
   });
@@ -85,7 +85,7 @@ export default function shouldBehaveLikeWithdrawCollateral(): void {
     it("reverts", async function () {
       await expect(
         this.contracts.balanceSheet.connect(this.signers.brad).withdrawCollateral(this.stubs.yToken.address, TenTokens),
-      ).to.be.revertedWith(YTokenErrors.VaultNotOpen);
+      ).to.be.revertedWith(BalanceSheetErrors.VaultNotOpen);
     });
   });
 }
