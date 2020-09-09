@@ -1,9 +1,5 @@
-import { waffle } from "@nomiclabs/buidler";
-
-import { yTokenFixture } from "../../helpers/fixtures";
+import { loadFixture, yTokenFixture } from "../../helpers/fixtures";
 import { shouldBehaveLikeYToken } from "./YToken.behavior";
-
-const { loadFixture } = waffle;
 
 export function testYToken(): void {
   describe("YToken", function () {
@@ -17,7 +13,7 @@ export function testYToken(): void {
         redemptionPool,
         underlying,
         yToken,
-      } = await loadFixture(yTokenFixture);
+      } = await loadFixture.call(this)(yTokenFixture);
       this.contracts.yToken = yToken;
       this.stubs.balanceSheet = balanceSheet;
       this.stubs.collateral = collateral;
