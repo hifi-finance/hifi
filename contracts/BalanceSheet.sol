@@ -119,7 +119,6 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
 
     struct FreeCollateralLocalVars {
         MathError mathErr;
-        uint256 collateralPriceInUsd;
         uint256 collateralizationRatioMantissa;
         uint256 debtValueInUsd;
         Exp newCollateralizationRatio;
@@ -150,17 +149,18 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
     {
         FreeCollateralLocalVars memory vars;
 
-        /* Avoid the zero edge case. */
+        /* Checks: the zero edge case. */
         require(collateralAmount > 0, "ERR_FREE_COLLATERAL_ZERO");
 
+        /* Checks: sufficient locked collateral. */
         Vault memory vault = vaults[address(yToken)][msg.sender];
         require(vault.lockedCollateral >= collateralAmount, "ERR_FREE_COLLATERAL_INSUFFICIENT_LOCKED_COLLATERAL");
 
         /* This operation can't fail because of the first `require` in this function. */
         (vars.mathErr, vars.newLockedCollateral) = subUInt(vault.lockedCollateral, collateralAmount);
         assert(vars.mathErr == MathError.NO_ERROR);
-        vaults[address(yToken)][msg.sender].lockedCollateral = vars.newLockedCollateral;
 
+        /* Checks: the new collateralization ratio is above the threshold. */
         if (vault.debt > 0) {
             SimpleOracleInterface oracle = fintroller.oracle();
             (vars.mathErr, vars.newLockedCollateralValueInUsd) = oracle.multiplyCollateralAmountByItsPriceInUsd(
@@ -185,6 +185,8 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
             );
         }
 
+        /* Effects: update the storage properties. */
+        vaults[address(yToken)][msg.sender].lockedCollateral = vars.newLockedCollateral;
         (vars.mathErr, vars.newFreeCollateral) = addUInt(vault.freeCollateral, collateralAmount);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_FREE_COLLATERAL_MATH_ERROR");
         vaults[address(yToken)][msg.sender].freeCollateral = vars.newFreeCollateral;

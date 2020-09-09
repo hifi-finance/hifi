@@ -142,7 +142,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
 
         /* TODO: check liquidity in the Guarantor Pool and Redemption Pool. */
 
-        /* Checks: the new collateralization ratio is higher or equal to the threshold. */
+        /* Checks: the new collateralization ratio is above the threshold. */
         (vars.debt, , vars.lockedCollateral, ) = balanceSheet.getVault(this, msg.sender);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
 

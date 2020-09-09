@@ -3,15 +3,21 @@ import shouldBehaveLikeSetCollateralizationRatio from "./effects/setCollateraliz
 import shouldBehaveLikeSetDepositAllowed from "./effects/setDepositAllowed";
 import shouldBehaveLikeSetBorrowAllowed from "./effects/setBorrowAllowed";
 import shouldBehaveLikeSetOracle from "./effects/setOracle";
+import shouldBehaveLikeSetRedeemAllowed from "./effects/setRedeemAllowed";
+import shouldBehaveLikeSetRepayBorrowAllowed from "./effects/setRepayBorrowAllowed";
+import shouldBehaveLikeSetSupplyUnderlyingAllowed from "./effects/setSupplyUnderlyingAllowed";
 
 import shouldBehaveLikeBondGetter from "./view/bond";
-import shouldBehaveLikeBorrowAllowed from "./view/borrowAllowed";
+import shouldBehaveLikeBorrowAllowedGetter from "./view/borrowAllowed";
 import shouldBehaveLikeCollateralizationRatioLowerBoundMantissaGetter from "./view/collateralizationRatioLowerBoundMantissa";
 import shouldBehaveLikeCollateralizationRatioUpperBoundMantissaGetter from "./view/collateralizationRatioUpperBoundMantissa";
-import shouldBehaveLikeIsFintrollerGetter from "./view/isFintroller";
 import shouldBehaveLikeDefaultCollateralizationRatioMantissaGetter from "./view/defaultCollateralizationRatioMantissa";
 import shouldBehaveLikeDepositCollateralAllowed from "./view/depositCollateralAllowed";
+import shouldBehaveLikeIsFintrollerGetter from "./view/isFintroller";
 import shouldBehaveLikeOracleGetter from "./view/oracle";
+import shouldBehaveLikeRedeemAllowedGetter from "./view/redeemAllowed";
+import shouldBehaveLikeRepayBorrowAllowedGetter from "./view/repayBorrowAllowed";
+import shouldBehaveLikeSupplyUnderlyingAllowedGetter from "./view/supplyUnderlyingAllowed";
 
 export function shouldBehaveLikeFintroller(): void {
   describe("Effects Functions", function () {
@@ -34,6 +40,18 @@ export function shouldBehaveLikeFintroller(): void {
     describe("setOracle", function () {
       shouldBehaveLikeSetOracle();
     });
+
+    describe("setRedeemAllowed", function () {
+      shouldBehaveLikeSetRedeemAllowed();
+    });
+
+    describe("setRepayBorrowAllowed", function () {
+      shouldBehaveLikeSetRepayBorrowAllowed();
+    });
+
+    describe("setSupplyUnderlyingAllowed", function () {
+      shouldBehaveLikeSetSupplyUnderlyingAllowed();
+    });
   });
 
   describe("View Functions", function () {
@@ -42,7 +60,7 @@ export function shouldBehaveLikeFintroller(): void {
     });
 
     describe("borrowAllowed", function () {
-      shouldBehaveLikeBorrowAllowed();
+      shouldBehaveLikeBorrowAllowedGetter();
     });
 
     describe("collateralizationRatioLowerBoundMantissa", function () {
@@ -67,6 +85,18 @@ export function shouldBehaveLikeFintroller(): void {
 
     describe("oracle", function () {
       shouldBehaveLikeOracleGetter();
+    });
+
+    describe("redeemAllowed", function () {
+      shouldBehaveLikeRedeemAllowedGetter();
+    });
+
+    describe("repayBorrowAllowed", function () {
+      shouldBehaveLikeRepayBorrowAllowedGetter();
+    });
+
+    describe("supplyUnderlyingAllowed", function () {
+      shouldBehaveLikeSupplyUnderlyingAllowedGetter();
     });
   });
 }

@@ -291,7 +291,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      */
     function setSupplyUnderlyingAllowed(YTokenInterface yToken, bool state) external override onlyAdmin returns (bool) {
         require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
-        bonds[address(yToken)].isRedeemAllowed = state;
+        bonds[address(yToken)].isSupplyUnderlyingAllowed = state;
         emit SetSupplyUnderlyingAllowed(yToken, state);
         return NO_ERROR;
     }
