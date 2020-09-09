@@ -35,6 +35,7 @@ contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorRep
      * Requirements:
      * - Must be called post maturation.
      * - The amount to redeem cannot be zero.
+     * - The Fintroller must allow this action to be performed.
      * - There must be enough liquidity in the Redemption Pool.
      *
      * @param redeemAmount The amount of yTokens to redeem for the underlying asset.
@@ -53,7 +54,7 @@ contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorRep
         require(fintroller.redeemAllowed(yToken), "ERR_REDEEM_NOT_ALLOWED");
 
         /* Checks: there is sufficient liquidity. */
-        require(redeemAmount <= underlyingTotalSupply, "ERR_REDEEM_INSUFFICIENT_REDEEMABLE_UNDERLYING");
+        require(redeemAmount <= underlyingTotalSupply, "ERR_REDEEM_INSUFFICIENT_UNDERLYING");
 
         /* Effects: decrease the remaining supply of underlying. */
         (vars.mathErr, vars.newUnderlyingTotalSupply) = subUInt(underlyingTotalSupply, redeemAmount);
@@ -82,8 +83,9 @@ contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorRep
      * @dev Emits a {SupplyUnderlying} event.
      *
      * Requirements:
-     * - Must be called before the maturation of the yToken.
+     * - Must be called prior to maturation.
      * - The amount to supply cannot be zero.
+     * - The Fintroller must allow this action to be performed.
      * - The caller must have allowed this contract to spend `underlyingAmount` tokens.
      *
      * @param underlyingAmount The amount of underlying to supply to the Redemption Pool.
@@ -101,7 +103,7 @@ contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorRep
         /* Checks: the Fintroller allows this action to be performed. */
         require(fintroller.supplyUnderlyingAllowed(yToken), "ERR_SUPPLY_UNDERLYING_NOT_ALLOWED");
 
-        /* Effects: update the redeemable underlying total supply in storage. */
+        /* Effects: update the storage property. */
         (vars.mathErr, vars.newUnderlyingTotalSupply) = addUInt(underlyingTotalSupply, underlyingAmount);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_SUPPLY_UNDERLYING_MATH_ERROR");
         underlyingTotalSupply = vars.newUnderlyingTotalSupply;

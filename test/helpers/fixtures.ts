@@ -6,13 +6,13 @@ import { waffle } from "@nomiclabs/buidler";
 
 import BalanceSheetArtifact from "../../artifacts/GodModeBalanceSheet.json";
 import FintrollerArtifact from "../../artifacts/Fintroller.json";
-import RedemptionPoolArtifact from "../../artifacts/RedemptionPool.json";
+import RedemptionPoolArtifact from "../../artifacts/GodModeRedemptionPool.json";
 import YTokenArtifact from "../../artifacts/YToken.json";
 
-import { DefaultBlockGasLimit } from "./constants";
+import { DefaultBlockGasLimit, YTokenConstants } from "./constants";
 import { Fintroller } from "../../typechain/Fintroller";
 import { GodModeBalanceSheet as BalanceSheet } from "../../typechain/GodModeBalanceSheet";
-import { RedemptionPool } from "../../typechain/RedemptionPool";
+import { GodModeRedemptionPool as RedemptionPool } from "../../typechain/GodModeRedemptionPool";
 import { YToken } from "../../typechain/YToken";
 
 import {
@@ -71,15 +71,25 @@ export async function fintrollerFixture(
 
 export async function redemptionPoolFixture(
   signers: Signer[],
-): Promise<{ fintroller: MockContract; redemptionPool: RedemptionPool; yToken: MockContract }> {
+): Promise<{
+  fintroller: MockContract;
+  redemptionPool: RedemptionPool;
+  underlying: MockContract;
+  yToken: MockContract;
+}> {
   const deployer: Signer = signers[0];
   const fintroller: MockContract = await deployStubFintroller(deployer);
+  const underlying: MockContract = await deployStubUnderlying(deployer);
+
+  /* TODO: handle the case when the oracle isn't set. */
   const yToken: MockContract = await deployStubYToken(deployer);
+  await yToken.mock.underlying.returns(underlying.address);
+
   const redemptionPool: RedemptionPool = ((await deployContract(deployer, RedemptionPoolArtifact, [
     fintroller.address,
     yToken.address,
   ])) as unknown) as RedemptionPool;
-  return { fintroller, redemptionPool, yToken };
+  return { fintroller, redemptionPool, underlying, yToken };
 }
 
 export async function yTokenFixture(
@@ -96,10 +106,11 @@ export async function yTokenFixture(
 }> {
   const deployer: Signer = signers[0];
 
-  /* TODO: handle the case when the oracle isn't set. */
   const balanceSheet: MockContract = await deployStubBalanceSheet(deployer);
-  const fintroller: MockContract = await deployStubFintroller(deployer);
   const oracle: MockContract = await deployStubOracle(deployer);
+
+  /* TODO: handle the case when the oracle isn't set. */
+  const fintroller: MockContract = await deployStubFintroller(deployer);
   await fintroller.mock.oracle.returns(oracle.address);
 
   const underlying: MockContract = await deployStubUnderlying(deployer);
@@ -110,8 +121,7 @@ export async function yTokenFixture(
   const name: string = "DAI/ETH (2021-01-01)";
   const symbol: string = "yDAI-JAN21";
   const decimals: BigNumber = BigNumber.from(18);
-  /* December 31, 2020 at 23:59:59 */
-  const expirationTime: BigNumber = BigNumber.from(1609459199);
+  const expirationTime: BigNumber = YTokenConstants.DefaultExpirationTime; /* December 31, 2020 at 23:59:59 */
 
   const yToken: YToken = ((await deployContract(
     deployer,

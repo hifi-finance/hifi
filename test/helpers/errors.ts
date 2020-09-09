@@ -27,14 +27,20 @@ export enum FintrollerErrors {
   SetOracleZeroAddress = "ERR_SET_ORACLE_ZERO_ADDRESS",
 }
 
+export enum RedemptionPoolErrors {
+  RedeemInsufficientUnderlying = "ERR_REDEEM_INSUFFICIENT_UNDERLYING",
+  RedeemNotAllowed = "ERR_REDEEM_NOT_ALLOWED",
+  RedeemZero = "ERR_REDEEM_ZERO",
+  SupplyUnderlyingNotAllowed = "ERR_SUPPLY_UNDERLYING_NOT_ALLOWED",
+  SupplyUnderlyingZero = "ERR_SUPPLY_UNDERLYING_ZERO",
+}
+
 export enum YTokenErrors {
   BondMatured = "ERR_BOND_MATURED",
   BondNotMatured = "ERR_BOND_NOT_MATURED",
   BorrowInsufficientLiquidity = "ERR_REDEEM_INSUFFICIENT_LIQUIDITY",
   BorrowNotAllowed = "ERR_BORROW_NOT_ALLOWED",
   BorrowZero = "ERR_BORROW_ZERO",
-  RedeemNotAllowed = "ERR_REDEEM_NOT_ALLOWED",
-  RedeemZero = "ERR_REDEEM_ZERO",
   RepayBorrowInsufficientBalance = "ERR_REPAY_BORROW_INSUFFICIENT_BALANCE",
   RepayBorrowInsufficientDebt = "ERR_REPAY_BORROW_INSUFFICIENT_DEBT",
   RepayBorrowNotAllowed = "ERR_REPAY_BORROW_NOT_ALLOWED",

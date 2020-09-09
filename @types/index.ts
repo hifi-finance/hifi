@@ -5,7 +5,7 @@ import { GodModeBalanceSheet as BalanceSheet } from "../typechain/GodModeBalance
 import { SimpleOracle } from "../typechain/SimpleOracle";
 import { Fintroller } from "../typechain/Fintroller";
 import { GuarantorPool } from "../typechain/GuarantorPool";
-import { RedemptionPool } from "../typechain/RedemptionPool";
+import { GodModeRedemptionPool as RedemptionPool } from "../typechain/GodModeRedemptionPool";
 import { YToken } from "../typechain/YToken";
 import { BigNumber } from "ethers";
 
@@ -16,6 +16,7 @@ export interface Accounts {
   eve: string;
   grace: string;
   lucy: string;
+  mark: string;
 }
 
 export interface Contracts {
@@ -33,6 +34,7 @@ export interface Signers {
   eve: Signer;
   grace: Signer;
   lucy: Signer;
+  mark: Signer;
 }
 
 export interface Stubs {

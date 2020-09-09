@@ -76,7 +76,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
      * Requirements:
      * - The vault must be open.
      * - The amount to deposit cannot be zero.
-     * - The Fintroller must allow new deposits.
+     * - The Fintroller must allow this action to be performed.
      * - The caller must have allowed this contract to spend `collateralAmount` tokens.
      *
      * @param yToken The address of the yToken contract.

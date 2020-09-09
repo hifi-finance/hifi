@@ -24,15 +24,17 @@ describe("Unit Tests", function () {
     const signers: Signer[] = await ethers.getSigners();
     this.signers.admin = signers[0];
     this.signers.brad = signers[1];
-    this.signers.grace = signers[2];
-    this.signers.lucy = signers[3];
-    this.signers.eve = signers[4];
+    this.signers.eve = signers[2];
+    this.signers.grace = signers[3];
+    this.signers.lucy = signers[4];
+    this.signers.mark = signers[5];
 
     this.accounts.admin = await signers[0].getAddress();
     this.accounts.brad = await signers[1].getAddress();
-    this.accounts.grace = await signers[2].getAddress();
-    this.accounts.lucy = await signers[3].getAddress();
-    this.accounts.eve = await signers[4].getAddress();
+    this.accounts.eve = await signers[2].getAddress();
+    this.accounts.grace = await signers[3].getAddress();
+    this.accounts.lucy = await signers[4].getAddress();
+    this.accounts.mark = await signers[5].getAddress();
   });
 
   testBalanceSheet();

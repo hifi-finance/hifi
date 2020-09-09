@@ -96,14 +96,14 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
 
     /**
      * @notice Increases the debt of the caller and mints new yToken.
-     * @dev Emits a {Borrow} and a {Transfer} event.
+     * @dev Emits a {Borrow}, {Mint} and {Transfer} event.
      *
      * Requirements:
      *
      * - The vault must be open.
-     * - Must be called before maturation.
+     * - Must be called prior to maturation.
      * - The amount to borrow cannot be zero.
-     * - The Fintroller must allow borrows.
+     * - The Fintroller must allow this action to be performed.
      * - The caller must not fall below the threshold collateralization ratio.
      *
      * @param borrowAmount The amount of yTokens to borrow and print into existence.
@@ -153,8 +153,9 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
         require(balanceSheet.setVaultDebt(this, msg.sender, vars.newDebt), "ERR_BORROW_SET_VAULT_DEBT");
 
-        /* Emit both a Borrow and a Transfer event. */
+        /* Emit a Borrow, Mint and Transfer event. */
         emit Borrow(msg.sender, borrowAmount);
+        emit Mint(msg.sender, borrowAmount);
         emit Transfer(address(this), msg.sender, borrowAmount);
 
         return NO_ERROR;
@@ -166,9 +167,9 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
      * @dev Emits a {Burn} event.
      *
      * Requirements:
-     * - Must be called before maturation.
+     * - Must be called prior to maturation.
      * - Can only be called by the Redemption Pool, the sole ochestrated contract.
-     * - The amount to mint cannot be zero.
+     * - The amount to burn cannot be zero.
      *
      * @param holder The account whose yTokens to burn.
      * @param burnAmount The amount of yTokens to burn
@@ -178,13 +179,16 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         require(burnAmount > 0, "ERR_BURN_ZERO");
 
         /* Effects: burns the yTokens. */
-        mintInternal(holder, burnAmount);
+        burnInternal(holder, burnAmount);
 
         emit Burn(holder, burnAmount);
 
         return NO_ERROR;
     }
 
+    /**
+     * @notice Pending.
+     */
     function liquidateBorrow(address borrower, uint256 repayUnderlyingAmount)
         external
         override
@@ -197,6 +201,8 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
     }
 
     /**
+     * @notice Prints new yTokens into existence.
+     *
      * @dev Emits a {Mint} event.
      *
      * Requirements:
@@ -225,9 +231,9 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
      * Requirements:
      * - The vault must be open.
      * - The amount to repay cannot be zero.
+     * - The Fintroller must allow this action to be performed.
      * - The caller must have at least `repayAmount` yTokens.
-     * - The caller must have at least `repayAmount` as debt yTokens.
-     * - The caller cannot fall below the threshold collateralization ratio.
+     * - The caller must have at least `repayAmount` debt.
      *
      * @param repayAmount Lorem ipsum.
      * @return bool=success, otherwise it reverts.
@@ -235,16 +241,17 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
     function repayBorrow(uint256 repayAmount) external override isVaultOpen(msg.sender) nonReentrant returns (bool) {
         repayBorrowInternal(msg.sender, msg.sender, repayAmount);
 
-        /* Emit both a RepayBorrow and a Transfer event. */
+        /* Emit a RepayBorrow, Burn and Transfer event. */
         emit RepayBorrow(msg.sender, msg.sender, repayAmount);
+        emit Burn(msg.sender, repayAmount);
         emit Transfer(msg.sender, address(this), repayAmount);
 
         return NO_ERROR;
     }
 
     /**
-     * @notice Deletes the borrower's debt from the registry and take the yTokens out of circulation.
-     * @dev Emits a {RepayBorrow}, {RepayBorrowBehalf} and a {Transfer} event.
+     * @notice Clears the borrower's debt from the registry and take the yTokens out of circulation.
+     * @dev Emits a {RepayBorrow}, {Burn} and {Transfer} event.
      *
      * Requirements: same as the `repayBorrow` function, but here `borrower` is the user who must have
      * at least `repayAmount` yTokens to repay the borrow.
@@ -262,14 +269,17 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
     {
         repayBorrowInternal(msg.sender, borrower, repayAmount);
 
-        /* Emit a RepayBorrow and a Transfer event. */
+        /* Emit a RepayBorrow, Burn and Transfer event. */
         emit RepayBorrow(msg.sender, borrower, repayAmount);
+        emit Burn(borrower, repayAmount);
         emit Transfer(msg.sender, address(this), repayAmount);
 
         return NO_ERROR;
     }
 
-    /*** Internal Functions ***/
+    /**
+     * INTERNAL FUNCTIONS
+     */
     struct BurnInternalLocalVars {
         MathError mathErr;
         uint256 newHolderBalance;
@@ -314,7 +324,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         /* Checks: the zero edge case. */
         require(repayAmount > 0, "ERR_REPAY_BORROW_ZERO");
 
-        /* Checks: verify that the Fintroller allows this action to be performed. */
+        /* Checks: the Fintroller allows this action to be performed. */
         require(fintroller.repayBorrowAllowed(this), "ERR_REPAY_BORROW_NOT_ALLOWED");
 
         /* Checks: the payer has enough yTokens. */

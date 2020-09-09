@@ -1,10 +1,14 @@
+import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { BalanceSheetErrors, FintrollerErrors } from "../../../helpers/errors";
-import { FintrollerConstants, TenTokens } from "../../../helpers/constants";
+import { TenTokens } from "../../../helpers/constants";
+import { stubGetBond } from "../../../helpers/stubs";
 
 export default function shouldBehaveLikeDepositCollateral(): void {
+  const collateralAmount: BigNumber = TenTokens;
+
   describe("when the vault is open", function () {
     beforeEach(async function () {
       await this.contracts.balanceSheet.connect(this.signers.brad).openVault(this.stubs.yToken.address);
@@ -13,12 +17,10 @@ export default function shouldBehaveLikeDepositCollateral(): void {
     describe("when the amount to deposit is not zero", function () {
       describe("when the bond is listed", function () {
         beforeEach(async function () {
-          await this.stubs.fintroller.mock.getBond
-            .withArgs(this.contracts.balanceSheet.address)
-            .returns(FintrollerConstants.DefaultCollateralizationRatioMantissa);
+          await stubGetBond.call(this, this.stubs.yToken.address);
         });
 
-        describe("when the fintroller allows new deposits", function () {
+        describe("when the fintroller allows deposit", function () {
           beforeEach(async function () {
             await this.stubs.fintroller.mock.depositCollateralAllowed.withArgs(this.stubs.yToken.address).returns(true);
           });
@@ -26,31 +28,31 @@ export default function shouldBehaveLikeDepositCollateral(): void {
           describe("when the yToken contract has enough allowance", function () {
             beforeEach(async function () {
               await this.stubs.collateral.mock.transferFrom
-                .withArgs(this.accounts.brad, this.contracts.balanceSheet.address, TenTokens)
+                .withArgs(this.accounts.brad, this.contracts.balanceSheet.address, collateralAmount)
                 .returns(true);
             });
 
             it("makes the collateral deposit", async function () {
               await this.contracts.balanceSheet
                 .connect(this.signers.brad)
-                .depositCollateral(this.stubs.yToken.address, TenTokens);
+                .depositCollateral(this.stubs.yToken.address, collateralAmount);
             });
 
             it("emits a DepositCollateral event", async function () {
               await expect(
                 this.contracts.balanceSheet
                   .connect(this.signers.brad)
-                  .depositCollateral(this.stubs.yToken.address, TenTokens),
+                  .depositCollateral(this.stubs.yToken.address, collateralAmount),
               )
                 .to.emit(this.contracts.balanceSheet, "DepositCollateral")
-                .withArgs(this.stubs.yToken.address, this.accounts.brad, TenTokens);
+                .withArgs(this.stubs.yToken.address, this.accounts.brad, collateralAmount);
             });
           });
 
           describe("when the yToken contract does not have enough allowance", function () {
             beforeEach(async function () {
               await this.stubs.collateral.mock.transferFrom
-                .withArgs(this.accounts.brad, this.contracts.balanceSheet.address, TenTokens)
+                .withArgs(this.accounts.brad, this.contracts.balanceSheet.address, collateralAmount)
                 .returns(false);
             });
 
@@ -58,13 +60,13 @@ export default function shouldBehaveLikeDepositCollateral(): void {
               await expect(
                 this.contracts.balanceSheet
                   .connect(this.signers.brad)
-                  .depositCollateral(this.stubs.yToken.address, TenTokens),
+                  .depositCollateral(this.stubs.yToken.address, collateralAmount),
               ).to.be.reverted;
             });
           });
         });
 
-        describe("when the fintroller does not allow new deposits", function () {
+        describe("when the fintroller does not allow deposit", function () {
           beforeEach(async function () {
             await this.stubs.fintroller.mock.depositCollateralAllowed
               .withArgs(this.stubs.yToken.address)
@@ -75,7 +77,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
             await expect(
               this.contracts.balanceSheet
                 .connect(this.signers.brad)
-                .depositCollateral(this.stubs.yToken.address, TenTokens),
+                .depositCollateral(this.stubs.yToken.address, collateralAmount),
             ).to.be.revertedWith(BalanceSheetErrors.DepositCollateralNotAllowed);
           });
         });
@@ -92,7 +94,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
           await expect(
             this.contracts.balanceSheet
               .connect(this.signers.brad)
-              .depositCollateral(this.stubs.yToken.address, TenTokens),
+              .depositCollateral(this.stubs.yToken.address, collateralAmount),
           ).to.be.revertedWith(FintrollerErrors.BondNotListed);
         });
       });
@@ -100,8 +102,11 @@ export default function shouldBehaveLikeDepositCollateral(): void {
 
     describe("when the amount to deposit is zero", function () {
       it("reverts", async function () {
+        const zeroCollateralAmount: BigNumber = Zero;
         await expect(
-          this.contracts.balanceSheet.connect(this.signers.brad).depositCollateral(this.stubs.yToken.address, Zero),
+          this.contracts.balanceSheet
+            .connect(this.signers.brad)
+            .depositCollateral(this.stubs.yToken.address, zeroCollateralAmount),
         ).to.be.revertedWith(BalanceSheetErrors.DepositCollateralZero);
       });
     });
@@ -110,7 +115,9 @@ export default function shouldBehaveLikeDepositCollateral(): void {
   describe("when the vault is not open", function () {
     it("reverts", async function () {
       await expect(
-        this.contracts.balanceSheet.connect(this.signers.brad).depositCollateral(this.stubs.yToken.address, TenTokens),
+        this.contracts.balanceSheet
+          .connect(this.signers.brad)
+          .depositCollateral(this.stubs.yToken.address, collateralAmount),
       ).to.be.revertedWith(BalanceSheetErrors.VaultNotOpen);
     });
   });

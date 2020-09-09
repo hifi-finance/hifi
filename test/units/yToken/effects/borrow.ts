@@ -2,15 +2,23 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { BalanceSheetConstants, FintrollerConstants, YTokenConstants } from "../../../helpers/constants";
+import { BalanceSheetConstants, YTokenConstants } from "../../../helpers/constants";
 import { BalanceSheetErrors, YTokenErrors } from "../../../helpers/errors";
 import { FintrollerErrors } from "../../../helpers/errors";
 import { OneHundredTokens, TenTokens } from "../../../helpers/constants";
 import { contextForTimeDependentTests } from "../../../helpers/mochaContexts";
 import { increaseTime } from "../../../helpers/jsonRpcHelpers";
-import { stubVaultFreeCollateral, stubVaultLockedCollateral } from "../../../helpers/stubs";
+import { stubGetBond, stubVaultFreeCollateral, stubVaultLockedCollateral } from "../../../helpers/stubs";
 
+/**
+ * Write tests for the following scenarios:
+ * - collateral value too small
+ * - not enough liquidity in the guarantor pool
+ */
 export default function shouldBehaveLikeBorrow(): void {
+  const borrowAmount: BigNumber = OneHundredTokens;
+  const collateralAmount: BigNumber = TenTokens;
+
   describe("when the vault is open", function () {
     beforeEach(async function () {
       await this.stubs.balanceSheet.mock.getVault
@@ -25,9 +33,7 @@ export default function shouldBehaveLikeBorrow(): void {
       describe("when the amount to borrow is not zero", function () {
         describe("when the bond is listed", function () {
           beforeEach(async function () {
-            await this.stubs.fintroller.mock.getBond
-              .withArgs(this.contracts.yToken.address)
-              .returns(FintrollerConstants.DefaultCollateralizationRatioMantissa);
+            await stubGetBond.call(this, this.contracts.yToken.address);
           });
 
           describe("when the fintroller allows borrows", function () {
@@ -35,11 +41,6 @@ export default function shouldBehaveLikeBorrow(): void {
               await this.stubs.fintroller.mock.borrowAllowed.withArgs(this.contracts.yToken.address).returns(true);
             });
 
-            /**
-             * TODO: Write tests for the following scenarios:
-             * - collateral value too small
-             * - not enough liquidity in the guarantor pool
-             */
             describe("when the caller deposited collateral", function () {
               describe("when the caller locked the collateral", function () {
                 beforeEach(async function () {
@@ -48,32 +49,38 @@ export default function shouldBehaveLikeBorrow(): void {
                     this,
                     this.contracts.yToken.address,
                     this.accounts.brad,
-                    TenTokens,
+                    collateralAmount,
                   );
 
                   /* The yToken makes an internal call to this stubbed function. */
                   await this.stubs.balanceSheet.mock.setVaultDebt
-                    .withArgs(this.contracts.yToken.address, this.accounts.brad, OneHundredTokens)
+                    .withArgs(this.contracts.yToken.address, this.accounts.brad, borrowAmount)
                     .returns(true);
                 });
 
                 it("borrows yTokens", async function () {
                   const oldBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.brad);
-                  await this.contracts.yToken.connect(this.signers.brad).borrow(OneHundredTokens);
+                  await this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount);
                   const newBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.brad);
-                  expect(oldBalance).to.equal(newBalance.sub(OneHundredTokens));
+                  expect(oldBalance).to.equal(newBalance.sub(borrowAmount));
                 });
 
                 it("emits a Borrow event", async function () {
-                  await expect(this.contracts.yToken.connect(this.signers.brad).borrow(OneHundredTokens))
+                  await expect(this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount))
                     .to.emit(this.contracts.yToken, "Borrow")
-                    .withArgs(this.accounts.brad, OneHundredTokens);
+                    .withArgs(this.accounts.brad, borrowAmount);
+                });
+
+                it("emits a Mint event", async function () {
+                  await expect(this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount))
+                    .to.emit(this.contracts.yToken, "Mint")
+                    .withArgs(this.accounts.brad, borrowAmount);
                 });
 
                 it("emits a Transfer event", async function () {
-                  await expect(this.contracts.yToken.connect(this.signers.brad).borrow(OneHundredTokens))
+                  await expect(this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount))
                     .to.emit(this.contracts.yToken, "Transfer")
-                    .withArgs(this.contracts.yToken.address, this.accounts.brad, OneHundredTokens);
+                    .withArgs(this.contracts.yToken.address, this.accounts.brad, borrowAmount);
                 });
               });
 
@@ -84,13 +91,13 @@ export default function shouldBehaveLikeBorrow(): void {
                     this,
                     this.contracts.yToken.address,
                     this.accounts.brad,
-                    TenTokens,
+                    collateralAmount,
                   );
                 });
 
                 it("reverts", async function () {
                   await expect(
-                    this.contracts.yToken.connect(this.signers.brad).borrow(OneHundredTokens),
+                    this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount),
                   ).to.be.revertedWith(BalanceSheetErrors.BelowThresholdCollateralizationRatio);
                 });
               });
@@ -98,9 +105,9 @@ export default function shouldBehaveLikeBorrow(): void {
 
             describe("when the caller did not deposit any collateral", function () {
               it("reverts", async function () {
-                await expect(
-                  this.contracts.yToken.connect(this.signers.brad).borrow(OneHundredTokens),
-                ).to.be.revertedWith(BalanceSheetErrors.BelowThresholdCollateralizationRatio);
+                await expect(this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount)).to.be.revertedWith(
+                  BalanceSheetErrors.BelowThresholdCollateralizationRatio,
+                );
               });
             });
           });
@@ -111,9 +118,9 @@ export default function shouldBehaveLikeBorrow(): void {
             });
 
             it("reverts", async function () {
-              await expect(
-                this.contracts.yToken.connect(this.signers.brad).borrow(OneHundredTokens),
-              ).to.be.revertedWith(YTokenErrors.BorrowNotAllowed);
+              await expect(this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount)).to.be.revertedWith(
+                YTokenErrors.BorrowNotAllowed,
+              );
             });
           });
         });
@@ -126,7 +133,7 @@ export default function shouldBehaveLikeBorrow(): void {
           });
 
           it("reverts", async function () {
-            await expect(this.contracts.yToken.connect(this.signers.brad).borrow(OneHundredTokens)).to.be.revertedWith(
+            await expect(this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount)).to.be.revertedWith(
               FintrollerErrors.BondNotListed,
             );
           });
@@ -148,7 +155,7 @@ export default function shouldBehaveLikeBorrow(): void {
       });
 
       it("reverts", async function () {
-        await expect(this.contracts.yToken.connect(this.signers.brad).borrow(OneHundredTokens)).to.be.revertedWith(
+        await expect(this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount)).to.be.revertedWith(
           YTokenErrors.BondMatured,
         );
       });
@@ -163,7 +170,7 @@ export default function shouldBehaveLikeBorrow(): void {
     });
 
     it("reverts", async function () {
-      await expect(this.contracts.yToken.connect(this.signers.brad).borrow(OneHundredTokens)).to.be.revertedWith(
+      await expect(this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount)).to.be.revertedWith(
         BalanceSheetErrors.VaultNotOpen,
       );
     });

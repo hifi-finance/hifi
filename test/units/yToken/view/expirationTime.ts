@@ -5,7 +5,7 @@ import { YTokenConstants } from "../../../helpers/constants";
 
 export default function shouldBehaveLikeGetExpirationTime(): void {
   it("retrieves the expiration time", async function () {
-    const storedExpirationTime: BigNumber = await this.contracts.yToken.expirationTime();
-    expect(storedExpirationTime).to.equal(YTokenConstants.DefaultExpirationTime);
+    const expirationTime: BigNumber = await this.contracts.yToken.expirationTime();
+    expect(expirationTime).to.equal(YTokenConstants.DefaultExpirationTime);
   });
 }

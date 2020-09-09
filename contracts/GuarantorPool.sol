@@ -74,7 +74,7 @@ contract GuarantorPool is GuarantorPoolInterface, Erc20, Admin, Exponential, Ree
         (vars.mathErr, vars.newEndowment) = addUInt(vars.currentEndowment, endowment);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_SUPPLY_MATH_ERROR");
 
-        /* Effects: update the endowment storage property. */
+        /* Effects: update the storage property. */
         endowments[msg.sender][collateral] = vars.newEndowment;
 
         /* Effects: mint new ownership tokens */

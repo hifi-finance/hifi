@@ -8,13 +8,14 @@ import BalanceSheetArtifact from "../../artifacts/GodModeBalanceSheet.json";
 import Erc20MintableArtifact from "../../artifacts/Erc20Mintable.json";
 import FintrollerArtifact from "../../artifacts/Fintroller.json";
 import GuarantorPoolArtifact from "../../artifacts/GuarantorPool.json";
-import RedemptionPoolArtifact from "../../artifacts/RedemptionPool.json";
+import RedemptionPoolArtifact from "../../artifacts/GodModeRedemptionPool.json";
 import SimpleOracleArtifact from "../../artifacts/SimpleOracle.json";
 import YTokenArtifact from "../../artifacts/YToken.json";
 
 import { CarefulMathErrors } from "./errors";
 import {
   BalanceSheetConstants,
+  FintrollerConstants,
   OneDollar,
   OneHundredDollars,
   OneHundredTokens,
@@ -118,6 +119,16 @@ export async function deployStubYToken(deployer: Signer): Promise<MockContract> 
  * --------------
  */
 
+export async function stubGetBond(
+  this: Mocha.Context,
+  yTokenAddress: string,
+  collateralizationRatioMantissa?: BigNumber,
+): Promise<void> {
+  await this.stubs.fintroller.mock.getBond
+    .withArgs(yTokenAddress)
+    .returns(collateralizationRatioMantissa || FintrollerConstants.DefaultCollateralizationRatioMantissa);
+}
+
 export async function stubGetVault(
   this: Mocha.Context,
   yTokenAddress: string,
@@ -126,13 +137,18 @@ export async function stubGetVault(
   freeCollateral: BigNumber,
   lockedCollateral: BigNumber,
   isOpen: boolean,
-) {
+): Promise<void> {
   await this.stubs.balanceSheet.mock.getVault
     .withArgs(yTokenAddress, user)
     .returns(debt, freeCollateral, lockedCollateral, isOpen);
 }
 
-export async function stubVaultDebt(this: Mocha.Context, yTokenAddress: string, user: string, debt: BigNumber) {
+export async function stubVaultDebt(
+  this: Mocha.Context,
+  yTokenAddress: string,
+  user: string,
+  debt: BigNumber,
+): Promise<void> {
   await stubGetVault.call(
     this,
     yTokenAddress,
@@ -149,7 +165,7 @@ export async function stubVaultFreeCollateral(
   yTokenAddress: string,
   user: string,
   freeCollateral: BigNumber,
-) {
+): Promise<void> {
   await stubGetVault.call(
     this,
     yTokenAddress,
@@ -166,7 +182,7 @@ export async function stubVaultLockedCollateral(
   yTokenAddress: string,
   user: string,
   lockedCollateral: BigNumber,
-) {
+): Promise<void> {
   await stubGetVault.call(
     this,
     yTokenAddress,
@@ -178,7 +194,12 @@ export async function stubVaultLockedCollateral(
   );
 }
 
-export async function stuVaultIsOpen(this: Mocha.Context, yTokenAddress: string, user: string, isOpen: boolean) {
+export async function stuVaultIsOpen(
+  this: Mocha.Context,
+  yTokenAddress: string,
+  user: string,
+  isOpen: boolean,
+): Promise<void> {
   await stubGetVault.call(
     this,
     yTokenAddress,

@@ -3,10 +3,13 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { BalanceSheetErrors, CarefulMathErrors } from "../../../helpers/errors";
-import { FintrollerConstants, OneDollar, OneHundredDollars, OneToken, TenTokens } from "../../../helpers/constants";
+import { OneDollar, OneHundredDollars, OneToken, TenTokens } from "../../../helpers/constants";
 import { Vault } from "../../../../@types";
+import { stubGetBond } from "../../../helpers/stubs";
 
 export default function shouldBehaveLikeLockCollateral(): void {
+  const fullDepositCollateralAmount: BigNumber = TenTokens;
+
   describe("when the vault is open", function () {
     beforeEach(async function () {
       await this.contracts.balanceSheet.connect(this.signers.brad).openVault(this.stubs.yToken.address);
@@ -16,25 +19,23 @@ export default function shouldBehaveLikeLockCollateral(): void {
       describe("when the caller deposited collateral", function () {
         beforeEach(async function () {
           /* Mock the required functions on the Fintroller and the Collateral stubs. */
-          await this.stubs.fintroller.mock.getBond
-            .withArgs(this.stubs.yToken.address)
-            .returns(FintrollerConstants.DefaultCollateralizationRatioMantissa);
+          await stubGetBond.call(this, this.stubs.yToken.address);
           await this.stubs.fintroller.mock.depositCollateralAllowed.withArgs(this.stubs.yToken.address).returns(true);
           await this.stubs.collateral.mock.transferFrom
-            .withArgs(this.accounts.brad, this.contracts.balanceSheet.address, TenTokens)
+            .withArgs(this.accounts.brad, this.contracts.balanceSheet.address, fullDepositCollateralAmount)
             .returns(true);
 
           /* Deposit 10 WETH. */
           await this.contracts.balanceSheet
             .connect(this.signers.brad)
-            .depositCollateral(this.stubs.yToken.address, TenTokens);
+            .depositCollateral(this.stubs.yToken.address, fullDepositCollateralAmount);
         });
 
         describe("when the caller locked the collateral", function () {
           beforeEach(async function () {
             await this.contracts.balanceSheet
               .connect(this.signers.brad)
-              .lockCollateral(this.stubs.yToken.address, TenTokens);
+              .lockCollateral(this.stubs.yToken.address, fullDepositCollateralAmount);
           });
 
           describe("when the caller has a debt", function () {
@@ -42,7 +43,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
               await this.stubs.fintroller.mock.borrowAllowed.withArgs(this.stubs.yToken.address).returns(true);
               /* The balance sheet will ask the oracle what's the value of 9 WETH collateral. */
               await this.stubs.oracle.mock.multiplyCollateralAmountByItsPriceInUsd
-                .withArgs(TenTokens.sub(OneToken))
+                .withArgs(fullDepositCollateralAmount.sub(OneToken))
                 .returns(CarefulMathErrors.NoError, OneDollar.mul(900));
             });
 
@@ -119,24 +120,24 @@ export default function shouldBehaveLikeLockCollateral(): void {
               );
               await this.contracts.balanceSheet
                 .connect(this.signers.brad)
-                .freeCollateral(this.stubs.yToken.address, TenTokens);
+                .freeCollateral(this.stubs.yToken.address, fullDepositCollateralAmount);
               const newVault: Vault = await this.contracts.balanceSheet.getVault(
                 this.stubs.yToken.address,
                 this.accounts.brad,
               );
 
-              expect(oldVault.freeCollateral).to.equal(newVault.freeCollateral.sub(TenTokens));
-              expect(oldVault.lockedCollateral).to.equal(newVault.lockedCollateral.add(TenTokens));
+              expect(oldVault.freeCollateral).to.equal(newVault.freeCollateral.sub(fullDepositCollateralAmount));
+              expect(oldVault.lockedCollateral).to.equal(newVault.lockedCollateral.add(fullDepositCollateralAmount));
             });
 
             it("emits a FreeCollateral event", async function () {
               await expect(
                 this.contracts.balanceSheet
                   .connect(this.signers.brad)
-                  .freeCollateral(this.stubs.yToken.address, TenTokens),
+                  .freeCollateral(this.stubs.yToken.address, fullDepositCollateralAmount),
               )
                 .to.emit(this.contracts.balanceSheet, "FreeCollateral")
-                .withArgs(this.stubs.yToken.address, this.accounts.brad, TenTokens);
+                .withArgs(this.stubs.yToken.address, this.accounts.brad, fullDepositCollateralAmount);
             });
           });
         });
@@ -146,7 +147,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
             await expect(
               this.contracts.balanceSheet
                 .connect(this.signers.brad)
-                .freeCollateral(this.stubs.yToken.address, TenTokens),
+                .freeCollateral(this.stubs.yToken.address, fullDepositCollateralAmount),
             ).to.be.revertedWith(BalanceSheetErrors.FreeCollateralInsufficientLockedCollateral);
           });
         });
@@ -155,7 +156,9 @@ export default function shouldBehaveLikeLockCollateral(): void {
       describe("when the caller did not deposit any collateral", function () {
         it("reverts", async function () {
           await expect(
-            this.contracts.balanceSheet.connect(this.signers.brad).freeCollateral(this.stubs.yToken.address, TenTokens),
+            this.contracts.balanceSheet
+              .connect(this.signers.brad)
+              .freeCollateral(this.stubs.yToken.address, fullDepositCollateralAmount),
           ).to.be.revertedWith(BalanceSheetErrors.FreeCollateralInsufficientLockedCollateral);
         });
       });
@@ -173,7 +176,9 @@ export default function shouldBehaveLikeLockCollateral(): void {
   describe("when the vault is not open", function () {
     it("reverts", async function () {
       await expect(
-        this.contracts.balanceSheet.connect(this.signers.brad).freeCollateral(this.stubs.yToken.address, TenTokens),
+        this.contracts.balanceSheet
+          .connect(this.signers.brad)
+          .freeCollateral(this.stubs.yToken.address, fullDepositCollateralAmount),
       ).to.be.revertedWith(BalanceSheetErrors.VaultNotOpen);
     });
   });

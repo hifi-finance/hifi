@@ -25,6 +25,7 @@ export const OneToken: BigNumber = UnitsPerToken;
 export const TenTokens: BigNumber = OneToken.mul(10);
 export const OneHundredTokens: BigNumber = OneToken.mul(100);
 export const OneThousandTokens: BigNumber = OneToken.mul(1000);
+export const OneMillionTokens: BigNumber = OneToken.mul(1000000);
 
 /**
  * CONTRACT-SPECIFIC CONSTANTS

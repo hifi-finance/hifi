@@ -18,7 +18,7 @@ abstract contract RedemptionPoolInterface is RedemptionPoolStorage {
     /**
      * EVENTS
      */
-    event Redeem(address indexed user, uint256 settleAmount);
+    event Redeem(address indexed user, uint256 redeemAmount);
 
     event SupplyUnderlying(address indexed user, uint256 underlyingAmount);
 }
