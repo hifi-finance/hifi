@@ -8,6 +8,9 @@ import "./RedemptionPoolStorage.sol";
  * @author Mainframe
  */
 abstract contract RedemptionPoolInterface is RedemptionPoolStorage {
+    /**
+     * NON-CONSTANT FUNCTIONS
+     */
     function redeem(uint256 redeemAomunt) external virtual returns (bool);
 
     function supplyUnderlying(uint256 underlyingAmount) external virtual returns (bool);

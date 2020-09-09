@@ -6,6 +6,7 @@ import shouldBehaveLikeWithdrawCollateral from "./effects/withdrawCollateral";
 
 import shouldBehaveLikeFintrollerGetter from "./view/fintroller";
 import shouldBehaveLikeIsBalanceSheetGetter from "./view/isBalanceSheet";
+import shouldBehaveLikeIsVaultOpenGetter from "./view/isVaultOpen";
 import shouldBehaveLikeGetValut from "./view/getVault";
 
 export function shouldBehaveLikeBalanceSheet(): void {
@@ -32,16 +33,20 @@ export function shouldBehaveLikeBalanceSheet(): void {
   });
 
   describe("View Functions", function () {
-    describe("balanceSheet", function () {
-      shouldBehaveLikeIsBalanceSheetGetter();
-    });
-
     describe("fintroller", function () {
       shouldBehaveLikeFintrollerGetter();
     });
 
     describe("getVault", function () {
       shouldBehaveLikeGetValut();
+    });
+
+    describe("isBalanceSheet", function () {
+      shouldBehaveLikeIsBalanceSheetGetter();
+    });
+
+    describe("isVaultOpen", function () {
+      shouldBehaveLikeIsVaultOpenGetter();
     });
   });
 }

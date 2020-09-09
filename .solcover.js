@@ -16,5 +16,5 @@ module.exports = {
   providerOptions: {
     default_balance_ether: 100000000,
   },
-  skipFiles: ["erc20", "math", "test"],
+  skipFiles: ["erc20", "math", "test", "utils"],
 };

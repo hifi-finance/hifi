@@ -18,9 +18,9 @@ export default function shouldBehaveLikeSupplyUnderlyingAllowedGetter(): void {
 
   describe("when the bond is not listed", function () {
     it("reverts", async function () {
-      await expect(
-        this.contracts.fintroller.connect(this.signers.admin).supplyUnderlyingAllowed(this.stubs.yToken.address),
-      ).to.be.revertedWith(FintrollerErrors.BondNotListed);
+      await expect(this.contracts.fintroller.supplyUnderlyingAllowed(this.stubs.yToken.address)).to.be.revertedWith(
+        FintrollerErrors.BondNotListed,
+      );
     });
   });
 }

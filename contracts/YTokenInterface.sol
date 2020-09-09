@@ -9,11 +9,6 @@ import "./YTokenStorage.sol";
  */
 abstract contract YTokenInterface is YTokenStorage {
     /**
-     * VIEW FUNCTIONS
-     */
-    function timeToLive() public virtual view returns (uint256);
-
-    /**
      * NON-CONSTANT FUNCTIONS
      */
     function borrow(uint256 borrowAmount) external virtual returns (bool);

@@ -18,11 +18,6 @@ import "./utils/ReentrancyGuard.sol";
  * @author Mainframe
  */
 contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter, Exponential, ReentrancyGuard {
-    modifier isMatured() {
-        require(block.timestamp >= expirationTime, "ERR_BOND_NOT_MATURED");
-        _;
-    }
-
     modifier isNotMatured() {
         require(block.timestamp < expirationTime, "ERR_BOND_MATURED");
         _;
@@ -82,23 +77,6 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
 
         /* Set the Guarantor Pool contract. */
         guarantorPool = guarantorPool_;
-    }
-
-    /**
-     * VIEW FUNCTIONS
-     */
-
-    /**
-     * @notice Returns the number of seconds left before the yToken expires.
-     * @dev Also useful for stubbing in testing.
-     * @return uint256=number of seconds if not expired or zero if expired, otherwise it reverts.
-     */
-    function timeToLive() public override view returns (uint256) {
-        if (expirationTime > block.timestamp) {
-            return expirationTime - block.timestamp;
-        } else {
-            return 0;
-        }
     }
 
     /**
@@ -222,20 +200,13 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
      * @dev Emits a {Mint} event.
      *
      * Requirements:
-     * - Must be called before maturation.
      * - Can only be called by the Redemption Pool, the sole ochestrated contract.
      * - The amount to mint cannot be zero.
      *
      * @param beneficiary The account for whom to mint the tokens.
      * @param mintAmount The amount of yTokens to print into existence.
      */
-    function mint(address beneficiary, uint256 mintAmount)
-        external
-        override
-        isNotMatured
-        onlyOrchestrated
-        returns (bool)
-    {
+    function mint(address beneficiary, uint256 mintAmount) external override onlyOrchestrated returns (bool) {
         /* Checks: the zero edge case. */
         require(mintAmount > 0, "ERR_MINT_ZERO");
 
@@ -318,7 +289,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
 
         /* Effects: burn the yTokens. */
         (vars.mathErr, vars.newHolderBalance) = subUInt(balances[holder], burnAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_BURN_INSUFFICIENT_BALANCE");
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_BURN_UNDERFLOW_BALANCE");
         balances[holder] = vars.newHolderBalance;
     }
 

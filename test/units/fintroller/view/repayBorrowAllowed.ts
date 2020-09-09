@@ -16,9 +16,9 @@ export default function shouldBehaveLikeRepayBorrowAllowedGetter(): void {
 
   describe("when the bond is not listed", function () {
     it("reverts", async function () {
-      await expect(
-        this.contracts.fintroller.connect(this.signers.admin).repayBorrowAllowed(this.stubs.yToken.address),
-      ).to.be.revertedWith(FintrollerErrors.BondNotListed);
+      await expect(this.contracts.fintroller.repayBorrowAllowed(this.stubs.yToken.address)).to.be.revertedWith(
+        FintrollerErrors.BondNotListed,
+      );
     });
   });
 }

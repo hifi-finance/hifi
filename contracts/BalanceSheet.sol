@@ -55,8 +55,8 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
     /**
      * @notice Checks whether a user has a vault opened for a particular yToken.
      */
-    function isVaultOpen(YTokenInterface yToken, address user) external override returns (bool) {
-        require(vaults[address(yToken)][user].isOpen, "ERR_VAULT_NOT_OPEN");
+    function isVaultOpen(YTokenInterface yToken, address user) external override view returns (bool) {
+        return vaults[address(yToken)][user].isOpen;
     }
 
     /**

@@ -23,7 +23,7 @@ abstract contract BalanceSheetInterface is BalanceSheetStorage {
             bool
         );
 
-    function isVaultOpen(YTokenInterface yToken, address user) external virtual returns (bool);
+    function isVaultOpen(YTokenInterface yToken, address user) external virtual view returns (bool);
 
     /**
      * NON-CONSTANT FUNCTIONS
