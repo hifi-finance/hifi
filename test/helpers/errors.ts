@@ -28,9 +28,11 @@ export enum FintrollerErrors {
 }
 
 export enum RedemptionPoolErrors {
+  RedeemBurn = "ERR_REDEEM_BURN",
   RedeemInsufficientUnderlying = "ERR_REDEEM_INSUFFICIENT_UNDERLYING",
   RedeemNotAllowed = "ERR_REDEEM_NOT_ALLOWED",
   RedeemZero = "ERR_REDEEM_ZERO",
+  SupplyUnderlyingMint = "ERR_SUPPLY_UNDERLYING_MINT",
   SupplyUnderlyingNotAllowed = "ERR_SUPPLY_UNDERLYING_NOT_ALLOWED",
   SupplyUnderlyingZero = "ERR_SUPPLY_UNDERLYING_ZERO",
 }

@@ -31,31 +31,48 @@ export default function shouldBehaveLikeRedeem(): void {
             await this.stubs.fintroller.mock.redeemAllowed.withArgs(this.stubs.yToken.address).returns(true);
           });
 
-          describe("when there is enough underlying liquidity", function () {
+          describe.only("when there is enough underlying liquidity", function () {
             beforeEach(async function () {
               const underlyingTotalSupply: BigNumber = OneMillionTokens;
               await this.contracts.redemptionPool.__godMode_setUnderlyingTotalSupply(underlyingTotalSupply);
-
-              /* The Redemption Pool makes internal calls to these stubbed functions. */
-              await this.stubs.yToken.mock.burn.withArgs(this.accounts.mark, redeemAmount).returns(true);
-              await this.stubs.underlying.mock.transfer.withArgs(this.accounts.mark, redeemAmount).returns(true);
             });
 
-            it("redeems the underlying asset", async function () {
-              const oldUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.underlyingTotalSupply();
-              await this.contracts.redemptionPool.connect(this.signers.mark).redeem(redeemAmount);
-              const newUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.underlyingTotalSupply();
-              expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.add(redeemAmount));
+            describe("when the yToken burn function executes successfully", function () {
+              beforeEach(async function () {
+                /* The Redemption Pool makes internal calls to these stubbed functions. */
+                await this.stubs.yToken.mock.burn.withArgs(this.accounts.mark, redeemAmount).returns(true);
+                await this.stubs.underlying.mock.transfer.withArgs(this.accounts.mark, redeemAmount).returns(true);
+              });
+
+              it("redeems the underlying asset", async function () {
+                const oldUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.underlyingTotalSupply();
+                await this.contracts.redemptionPool.connect(this.signers.mark).redeem(redeemAmount);
+                const newUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.underlyingTotalSupply();
+                expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.add(redeemAmount));
+              });
+
+              it("emits a Redeem event", async function () {
+                await expect(this.contracts.redemptionPool.connect(this.signers.mark).redeem(redeemAmount))
+                  .to.emit(this.contracts.redemptionPool, "Redeem")
+                  .withArgs(this.accounts.mark, redeemAmount);
+              });
             });
 
-            it("emits a Redeem event", async function () {
-              await expect(this.contracts.redemptionPool.connect(this.signers.mark).redeem(redeemAmount))
-                .to.emit(this.contracts.redemptionPool, "Redeem")
-                .withArgs(this.accounts.mark, redeemAmount);
+            describe("when the yToken burn function fails", function () {
+              beforeEach(async function () {
+                await this.stubs.yToken.mock.burn.withArgs(this.accounts.mark, redeemAmount).returns(false);
+              });
+
+              it("reverts", async function () {
+                await expect(
+                  this.contracts.redemptionPool.connect(this.signers.mark).redeem(redeemAmount),
+                ).to.be.revertedWith(RedemptionPoolErrors.RedeemBurn);
+              });
             });
           });
 
-          describe("when there is not enough underlying liquidity", function () {
+          /* TODO: this doesn't work in coverage mode */
+          describe.skip("when there is not enough underlying liquidity", function () {
             it("reverts", async function () {
               await expect(
                 this.contracts.redemptionPool.connect(this.signers.mark).redeem(redeemAmount),
