@@ -6,5 +6,5 @@ pragma solidity ^0.7.1;
  * @author Mainframe
  */
 abstract contract SimpleOracleStorage {
-    uint256 todo;
+    uint256 public foo;
 }

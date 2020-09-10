@@ -8,10 +8,19 @@ import "./OrchestratableStorage.sol";
  * @author Mainframe
  */
 abstract contract OrchestratableInterface is OrchestratableStorage {
+    /**
+     * NON-CONSTANTS FUNCTIONS
+     */
+    function orchestrate(address user, bytes4 signature) external virtual;
+
     function renounceConductor() external virtual;
 
     function transferConductor(address newConductor) external virtual;
 
+    /**
+     * EVENTS
+     */
     event GrantAccess(address access);
+
     event TransferConductor(address indexed oldConductor, address indexed newConductor);
 }

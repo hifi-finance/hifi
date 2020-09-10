@@ -49,7 +49,7 @@ contract Orchestratable is OrchestratableInterface {
      * @param signature bytes4 signature of the function to be given orchestrated access to.
      * It seems to me a bad idea to give access to humans, and would use this only for predictable smart contracts.
      */
-    function orchestrate(address user, bytes4 signature) public onlyConductor {
+    function orchestrate(address user, bytes4 signature) external override onlyConductor {
         orchestration[user][signature] = true;
         emit GrantAccess(user);
     }
