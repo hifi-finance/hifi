@@ -22,7 +22,7 @@ contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorRep
         yToken.isYToken();
     }
 
-    struct RedeemLocalVars {
+    struct RedeemUnderlyingLocalVars {
         MathError mathErr;
         uint256 newUnderlyingTotalSupply;
     }
@@ -30,7 +30,7 @@ contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorRep
     /**
      * @notice Pays the token holder the face value at maturation time.
      *
-     * @dev Emits a {Redeem} event.
+     * @dev Emits a {RedeemUnderlying} event.
      *
      * Requirements:
      * - Must be called post maturation.
@@ -38,36 +38,36 @@ contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorRep
      * - The Fintroller must allow this action to be performed.
      * - There must be enough liquidity in the Redemption Pool.
      *
-     * @param redeemAmount The amount of yTokens to redeem for the underlying asset.
+     * @param underlyingAmount The amount of yTokens to redeem for the underlying asset.
      * @return bool=success, otherwise it reverts.
      */
-    function redeem(uint256 redeemAmount) external override returns (bool) {
-        RedeemLocalVars memory vars;
+    function redeemUnderlying(uint256 underlyingAmount) external override returns (bool) {
+        RedeemUnderlyingLocalVars memory vars;
 
         /* Checks: maturation time. */
         require(block.timestamp >= yToken.expirationTime(), "ERR_BOND_NOT_MATURED");
 
         /* Checks: the zero edge case. */
-        require(redeemAmount > 0, "ERR_REDEEM_ZERO");
+        require(underlyingAmount > 0, "ERR_REDEEM_UNDERLYING_ZERO");
 
         /* Checks: the Fintroller allows this action to be performed. */
-        require(fintroller.redeemAllowed(yToken), "ERR_REDEEM_NOT_ALLOWED");
+        require(fintroller.redeemUnderlyingAllowed(yToken), "ERR_REDEEM_UNDERLYING_NOT_ALLOWED");
 
         /* Checks: there is sufficient liquidity. */
-        require(redeemAmount <= underlyingTotalSupply, "ERR_REDEEM_INSUFFICIENT_UNDERLYING");
+        require(underlyingAmount <= underlyingTotalSupply, "ERR_REDEEM_UNDERLYING_INSUFFICIENT_UNDERLYING");
 
         /* Effects: decrease the remaining supply of underlying. */
-        (vars.mathErr, vars.newUnderlyingTotalSupply) = subUInt(underlyingTotalSupply, redeemAmount);
+        (vars.mathErr, vars.newUnderlyingTotalSupply) = subUInt(underlyingTotalSupply, underlyingAmount);
         assert(vars.mathErr == MathError.NO_ERROR);
         underlyingTotalSupply = vars.newUnderlyingTotalSupply;
 
         /* Interactions: burn the yTokens. */
-        require(yToken.burn(msg.sender, redeemAmount), "ERR_REDEEM_BURN");
+        require(yToken.burn(msg.sender, underlyingAmount), "ERR_REDEEM_UNDERLYING_BURN");
 
         /* Interactions: transfer the underlying */
-        require(yToken.underlying().transfer(msg.sender, redeemAmount), "ERR_REDEEM_ERC20_TRANSFER");
+        require(yToken.underlying().transfer(msg.sender, underlyingAmount), "ERR_REDEEM_UNDERLYING_ERC20_TRANSFER");
 
-        emit Redeem(msg.sender, redeemAmount);
+        emit RedeemUnderlying(msg.sender, underlyingAmount);
 
         return NO_ERROR;
     }

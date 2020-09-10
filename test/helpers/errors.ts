@@ -28,10 +28,10 @@ export enum FintrollerErrors {
 }
 
 export enum RedemptionPoolErrors {
-  RedeemBurn = "ERR_REDEEM_BURN",
-  RedeemInsufficientUnderlying = "ERR_REDEEM_INSUFFICIENT_UNDERLYING",
-  RedeemNotAllowed = "ERR_REDEEM_NOT_ALLOWED",
-  RedeemZero = "ERR_REDEEM_ZERO",
+  RedeemUnderlyingBurn = "ERR_REDEEM_UNDERLYING_BURN",
+  RedeemUnderlyingInsufficientUnderlying = "ERR_REDEEM_UNDERLYING_INSUFFICIENT_UNDERLYING",
+  RedeemUnderlyingNotAllowed = "ERR_REDEEM_UNDERLYING_NOT_ALLOWED",
+  RedeemUnderlyingZero = "ERR_REDEEM_UNDERLYING_ZERO",
   SupplyUnderlyingMint = "ERR_SUPPLY_UNDERLYING_MINT",
   SupplyUnderlyingNotAllowed = "ERR_SUPPLY_UNDERLYING_NOT_ALLOWED",
   SupplyUnderlyingZero = "ERR_SUPPLY_UNDERLYING_ZERO",
@@ -40,7 +40,7 @@ export enum RedemptionPoolErrors {
 export enum YTokenErrors {
   BondMatured = "ERR_BOND_MATURED",
   BondNotMatured = "ERR_BOND_NOT_MATURED",
-  BorrowInsufficientLiquidity = "ERR_REDEEM_INSUFFICIENT_LIQUIDITY",
+  BorrowInsufficientLiquidity = "ERR_REDEEM_UNDERLYING_INSUFFICIENT_LIQUIDITY",
   BorrowNotAllowed = "ERR_BORROW_NOT_ALLOWED",
   BorrowZero = "ERR_BORROW_ZERO",
   RepayBorrowInsufficientBalance = "ERR_REPAY_BORROW_INSUFFICIENT_BALANCE",

@@ -24,7 +24,7 @@ contract GuarantorPool is GuarantorPoolInterface, Erc20, Admin, Exponential, Ree
         uint8 decimals_
     ) public Erc20(name_, symbol_, decimals_) Admin() {} /* solhint-disable-line no-empty-blocks */
 
-    struct RedeemLocalVars {
+    struct RedeemUnderlyingLocalVars {
         MathError mathErr;
         uint256 currentEndowment;
         uint256 newEndowment;
@@ -42,14 +42,17 @@ contract GuarantorPool is GuarantorPoolInterface, Erc20, Admin, Exponential, Ree
         /* TODO */
 
         /* Effects: update the storage properties/ */
-        RedeemLocalVars memory vars;
+        RedeemUnderlyingLocalVars memory vars;
         vars.currentEndowment = endowments[msg.sender][collateral];
         (vars.mathErr, vars.newEndowment) = subUInt(vars.currentEndowment, endowment);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_WITHDRAW_ENDOWMENT_MATH_ERROR");
         endowments[msg.sender][collateral] = vars.newEndowment;
 
         /* Interactions: attempt to perform the ERC20 transfer. */
-        require(Erc20Interface(collateral).transfer(msg.sender, endowment), "ERR_REDEEM_ENDOWMENT_ERC20_TRANSFER");
+        require(
+            Erc20Interface(collateral).transfer(msg.sender, endowment),
+            "ERR_REDEEM_UNDERLYING_ENDOWMENT_ERC20_TRANSFER"
+        );
         return true;
     }
 

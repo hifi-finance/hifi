@@ -14,7 +14,7 @@ abstract contract FintrollerInterface is FintrollerStorage {
 
     function getBond(YTokenInterface yToken) external virtual view returns (uint256 collateralizationRatioMantissa);
 
-    function redeemAllowed(YTokenInterface yToken) external virtual view returns (bool);
+    function redeemUnderlyingAllowed(YTokenInterface yToken) external virtual view returns (bool);
 
     function repayBorrowAllowed(YTokenInterface yToken) external virtual view returns (bool);
 
@@ -36,7 +36,7 @@ abstract contract FintrollerInterface is FintrollerStorage {
 
     function setOracle(SimpleOracleInterface oracle_) external virtual returns (bool);
 
-    function setRedeemAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
+    function setRedeemUnderlyingAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
 
     function setRepayBorrowAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
 
@@ -59,7 +59,7 @@ abstract contract FintrollerInterface is FintrollerStorage {
 
     event SetBorrowAllowed(YTokenInterface indexed yToken, bool state);
 
-    event SetRedeemAllowed(YTokenInterface indexed yToken, bool state);
+    event SetRedeemUnderlyingAllowed(YTokenInterface indexed yToken, bool state);
 
     event SetRepayBorrowAllowed(YTokenInterface indexed yToken, bool state);
 

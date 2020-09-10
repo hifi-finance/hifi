@@ -59,10 +59,10 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @param yToken The bond to make the check against.
      * @return bool true=allowed, false=not allowed.
      */
-    function redeemAllowed(YTokenInterface yToken) external override view returns (bool) {
+    function redeemUnderlyingAllowed(YTokenInterface yToken) external override view returns (bool) {
         Bond memory bond = bonds[address(yToken)];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
-        return bond.isRedeemAllowed;
+        return bond.isRedeemUnderlyingAllowed;
     }
 
     /**
@@ -110,7 +110,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
             isBorrowAllowed: false,
             isDepositCollateralAllowed: false,
             isListed: true,
-            isRedeemAllowed: false,
+            isRedeemUnderlyingAllowed: false,
             isRepayBorrowAllowed: false,
             isSupplyUnderlyingAllowed: false,
             thresholdCollateralizationRatio: Exp({ mantissa: defaultCollateralizationRatioMantissa })
@@ -242,7 +242,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     /**
      * @notice Updates the state of the permission accessed by the Redemption Pool before a redemption of underlying.
      *
-     * @dev Emits a {SetRedeemAllowed} event.
+     * @dev Emits a {SetRedeemUnderlyingAllowed} event.
      *
      * Requirements:
      * - Caller must be the administrator
@@ -251,10 +251,10 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @param state The new state to be put in storage.
      * @return bool true=success, otherwise it reverts.
      */
-    function setRedeemAllowed(YTokenInterface yToken, bool state) external override onlyAdmin returns (bool) {
+    function setRedeemUnderlyingAllowed(YTokenInterface yToken, bool state) external override onlyAdmin returns (bool) {
         require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
-        bonds[address(yToken)].isRedeemAllowed = state;
-        emit SetRedeemAllowed(yToken, state);
+        bonds[address(yToken)].isRedeemUnderlyingAllowed = state;
+        emit SetRedeemUnderlyingAllowed(yToken, state);
         return NO_ERROR;
     }
 

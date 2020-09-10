@@ -11,7 +11,7 @@ import { stubGetBond } from "../../../helpers/stubs";
  * - Erc20 `transferFrom` function fails
  * - yToken `burn` function fails
  */
-export default function shouldBehaveLikeRedeem(): void {
+export default function shouldBehaveLikeRedeemUnderlying(): void {
   const redeemAmount: BigNumber = OneHundredTokens;
 
   describe("when the bond matured", function () {
@@ -20,18 +20,18 @@ export default function shouldBehaveLikeRedeem(): void {
       await this.stubs.yToken.mock.expirationTime.returns(Math.round(new Date().getTime() / 1000));
     });
 
-    describe("when the amount to redeem is not zero", function () {
+    describe("when the amount to redeemUnderlying is not zero", function () {
       describe("when the bond is listed", function () {
         beforeEach(async function () {
           await stubGetBond.call(this, this.stubs.yToken.address);
         });
 
-        describe("when the fintroller allows redeem", function () {
+        describe("when the fintroller allows redeemUnderlying", function () {
           beforeEach(async function () {
-            await this.stubs.fintroller.mock.redeemAllowed.withArgs(this.stubs.yToken.address).returns(true);
+            await this.stubs.fintroller.mock.redeemUnderlyingAllowed.withArgs(this.stubs.yToken.address).returns(true);
           });
 
-          describe.only("when there is enough underlying liquidity", function () {
+          describe("when there is enough underlying liquidity", function () {
             beforeEach(async function () {
               const underlyingTotalSupply: BigNumber = OneMillionTokens;
               await this.contracts.redemptionPool.__godMode_setUnderlyingTotalSupply(underlyingTotalSupply);
@@ -46,14 +46,14 @@ export default function shouldBehaveLikeRedeem(): void {
 
               it("redeems the underlying asset", async function () {
                 const oldUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.underlyingTotalSupply();
-                await this.contracts.redemptionPool.connect(this.signers.mark).redeem(redeemAmount);
+                await this.contracts.redemptionPool.connect(this.signers.mark).redeemUnderlying(redeemAmount);
                 const newUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.underlyingTotalSupply();
                 expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.add(redeemAmount));
               });
 
-              it("emits a Redeem event", async function () {
-                await expect(this.contracts.redemptionPool.connect(this.signers.mark).redeem(redeemAmount))
-                  .to.emit(this.contracts.redemptionPool, "Redeem")
+              it("emits a RedeemUnderlying event", async function () {
+                await expect(this.contracts.redemptionPool.connect(this.signers.mark).redeemUnderlying(redeemAmount))
+                  .to.emit(this.contracts.redemptionPool, "RedeemUnderlying")
                   .withArgs(this.accounts.mark, redeemAmount);
               });
             });
@@ -65,8 +65,8 @@ export default function shouldBehaveLikeRedeem(): void {
 
               it("reverts", async function () {
                 await expect(
-                  this.contracts.redemptionPool.connect(this.signers.mark).redeem(redeemAmount),
-                ).to.be.revertedWith(RedemptionPoolErrors.RedeemBurn);
+                  this.contracts.redemptionPool.connect(this.signers.mark).redeemUnderlying(redeemAmount),
+                ).to.be.revertedWith(RedemptionPoolErrors.RedeemUnderlyingBurn);
               });
             });
           });
@@ -75,46 +75,46 @@ export default function shouldBehaveLikeRedeem(): void {
           describe.skip("when there is not enough underlying liquidity", function () {
             it("reverts", async function () {
               await expect(
-                this.contracts.redemptionPool.connect(this.signers.mark).redeem(redeemAmount),
-              ).to.be.revertedWith(RedemptionPoolErrors.RedeemInsufficientUnderlying);
+                this.contracts.redemptionPool.connect(this.signers.mark).redeemUnderlying(redeemAmount),
+              ).to.be.revertedWith(RedemptionPoolErrors.RedeemUnderlyingInsufficientUnderlying);
             });
           });
         });
 
-        describe("when the fintroller does not allow redeem", function () {
+        describe("when the fintroller does not allow redeemUnderlying", function () {
           beforeEach(async function () {
-            await this.stubs.fintroller.mock.redeemAllowed.withArgs(this.stubs.yToken.address).returns(false);
+            await this.stubs.fintroller.mock.redeemUnderlyingAllowed.withArgs(this.stubs.yToken.address).returns(false);
           });
 
           it("reverts", async function () {
             await expect(
-              this.contracts.redemptionPool.connect(this.signers.mark).redeem(redeemAmount),
-            ).to.be.revertedWith(RedemptionPoolErrors.RedeemNotAllowed);
+              this.contracts.redemptionPool.connect(this.signers.mark).redeemUnderlying(redeemAmount),
+            ).to.be.revertedWith(RedemptionPoolErrors.RedeemUnderlyingNotAllowed);
           });
         });
       });
 
       describe("when the bond is not listed", function () {
         beforeEach(async function () {
-          await this.stubs.fintroller.mock.redeemAllowed
+          await this.stubs.fintroller.mock.redeemUnderlyingAllowed
             .withArgs(this.stubs.yToken.address)
             .revertsWithReason(FintrollerErrors.BondNotListed);
         });
 
         it("reverts", async function () {
           await expect(
-            this.contracts.redemptionPool.connect(this.signers.mark).redeem(redeemAmount),
+            this.contracts.redemptionPool.connect(this.signers.mark).redeemUnderlying(redeemAmount),
           ).to.be.revertedWith(FintrollerErrors.BondNotListed);
         });
       });
     });
 
-    describe("when the amount to redeem is zero", function () {
+    describe("when the amount to redeemUnderlying is zero", function () {
       it("reverts", async function () {
-        const zeroRedeemAmount: BigNumber = Zero;
+        const zeroRedeemUnderlyingAmount: BigNumber = Zero;
         await expect(
-          this.contracts.redemptionPool.connect(this.signers.mark).redeem(zeroRedeemAmount),
-        ).to.be.revertedWith(RedemptionPoolErrors.RedeemZero);
+          this.contracts.redemptionPool.connect(this.signers.mark).redeemUnderlying(zeroRedeemUnderlyingAmount),
+        ).to.be.revertedWith(RedemptionPoolErrors.RedeemUnderlyingZero);
       });
     });
   });
@@ -125,9 +125,9 @@ export default function shouldBehaveLikeRedeem(): void {
     });
 
     it("reverts", async function () {
-      await expect(this.contracts.redemptionPool.connect(this.signers.mark).redeem(redeemAmount)).to.be.revertedWith(
-        YTokenErrors.BondNotMatured,
-      );
+      await expect(
+        this.contracts.redemptionPool.connect(this.signers.mark).redeemUnderlying(redeemAmount),
+      ).to.be.revertedWith(YTokenErrors.BondNotMatured);
     });
   });
 }

@@ -1,4 +1,4 @@
-import shouldBehaveLikeRedeem from "./effects/redeem";
+import shouldBehaveLikeRedeemUnderlying from "./effects/redeemUnderlying";
 import shouldBehaveLikeSupplyUnderlying from "./effects/supplyUnderlying";
 
 import shouldBehaveLikeIsRedemptionPoolGetter from "./view/isRedemptionPool";
@@ -7,8 +7,8 @@ import shouldBehaveLikeOracleYTokenGetter from "./view/yToken";
 
 export function shouldBehaveLikeRedemptionPool(): void {
   describe("Effects Functions", function () {
-    describe("redeem", function () {
-      shouldBehaveLikeRedeem();
+    describe("redeemUnderlying", function () {
+      shouldBehaveLikeRedeemUnderlying();
     });
 
     describe("supplyUnderlying", function () {

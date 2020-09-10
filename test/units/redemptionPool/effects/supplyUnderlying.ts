@@ -25,7 +25,7 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
           await stubGetBond.call(this, this.stubs.yToken.address);
         });
 
-        describe.only("when the fintroller allows supply underlying", function () {
+        describe("when the fintroller allows supply underlying", function () {
           beforeEach(async function () {
             await this.stubs.fintroller.mock.supplyUnderlyingAllowed.withArgs(this.stubs.yToken.address).returns(true);
           });

@@ -3,7 +3,7 @@ import shouldBehaveLikeSetCollateralizationRatio from "./effects/setCollateraliz
 import shouldBehaveLikeSetDepositAllowed from "./effects/setDepositAllowed";
 import shouldBehaveLikeSetBorrowAllowed from "./effects/setBorrowAllowed";
 import shouldBehaveLikeSetOracle from "./effects/setOracle";
-import shouldBehaveLikeSetRedeemAllowed from "./effects/setRedeemAllowed";
+import shouldBehaveLikeSetRedeemUnderlyingAllowed from "./effects/setRedeemUnderlyingAllowed";
 import shouldBehaveLikeSetRepayBorrowAllowed from "./effects/setRepayBorrowAllowed";
 import shouldBehaveLikeSetSupplyUnderlyingAllowed from "./effects/setSupplyUnderlyingAllowed";
 
@@ -15,7 +15,7 @@ import shouldBehaveLikeDefaultCollateralizationRatioMantissaGetter from "./view/
 import shouldBehaveLikeDepositCollateralAllowed from "./view/depositCollateralAllowed";
 import shouldBehaveLikeIsFintrollerGetter from "./view/isFintroller";
 import shouldBehaveLikeOracleGetter from "./view/oracle";
-import shouldBehaveLikeRedeemAllowedGetter from "./view/redeemAllowed";
+import shouldBehaveLikeRedeemUnderlyingAllowedGetter from "./view/redeemUnderlyingAllowed";
 import shouldBehaveLikeRepayBorrowAllowedGetter from "./view/repayBorrowAllowed";
 import shouldBehaveLikeSupplyUnderlyingAllowedGetter from "./view/supplyUnderlyingAllowed";
 
@@ -41,8 +41,8 @@ export function shouldBehaveLikeFintroller(): void {
       shouldBehaveLikeSetOracle();
     });
 
-    describe("setRedeemAllowed", function () {
-      shouldBehaveLikeSetRedeemAllowed();
+    describe("setRedeemUnderlyingAllowed", function () {
+      shouldBehaveLikeSetRedeemUnderlyingAllowed();
     });
 
     describe("setRepayBorrowAllowed", function () {
@@ -87,8 +87,8 @@ export function shouldBehaveLikeFintroller(): void {
       shouldBehaveLikeOracleGetter();
     });
 
-    describe("redeemAllowed", function () {
-      shouldBehaveLikeRedeemAllowedGetter();
+    describe("redeemUnderlyingAllowed", function () {
+      shouldBehaveLikeRedeemUnderlyingAllowedGetter();
     });
 
     describe("repayBorrowAllowed", function () {
