@@ -71,8 +71,7 @@ export default function shouldBehaveLikeRedeemUnderlying(): void {
             });
           });
 
-          /* TODO: this doesn't work in coverage mode */
-          describe.skip("when there is not enough underlying liquidity", function () {
+          describe("when there is not enough underlying liquidity", function () {
             it("reverts", async function () {
               await expect(
                 this.contracts.redemptionPool.connect(this.signers.mark).redeemUnderlying(redeemAmount),

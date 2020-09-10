@@ -1,7 +1,8 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
-pragma solidity ^0.6.10;
+pragma solidity ^0.7.1;
 
 import "../erc20/Erc20.sol";
+import "../math/SafeMath.sol";
 
 /**
  * @title Erc20Mintable
@@ -10,11 +11,13 @@ import "../erc20/Erc20.sol";
  * @dev Strictly for test purposes. Do not use in production.
  */
 contract Erc20Mintable is Erc20 {
+    using SafeMath for uint256;
+
     constructor(
         string memory name,
         string memory symbol,
         uint8 decimals
-    ) public Erc20(name, symbol, decimals) {} /* solhint-disable-line no-empty-blocks */
+    ) Erc20(name, symbol, decimals) {} /* solhint-disable-line no-empty-blocks */
 
     /**
      * @notice Function to mint tokens.

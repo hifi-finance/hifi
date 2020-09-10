@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 /* solhint-disable func-name-mixedcase */
-pragma solidity ^0.6.10;
+pragma solidity ^0.7.1;
 
 import "../BalanceSheet.sol";
 import "../YTokenInterface.sol";
@@ -12,7 +12,7 @@ import "../YTokenInterface.sol";
  */
 contract GodModeBalanceSheet is BalanceSheet {
     /* solhint-disable-next-line no-empty-blocks */
-    constructor(FintrollerInterface fintroller_) public BalanceSheet(fintroller_) {}
+    constructor(FintrollerInterface fintroller_) BalanceSheet(fintroller_) {}
 
     function __godMode_setVaultDebt(
         YTokenInterface yToken,

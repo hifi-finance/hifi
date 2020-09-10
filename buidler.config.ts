@@ -88,7 +88,7 @@ const config: BuidlerConfig = {
       enabled: process.env.ETHEREUM_NETWORK === "mainnet" ? true : false,
       runs: 200,
     },
-    version: "0.6.10",
+    version: "0.7.1",
   },
   typechain: {
     outDir: "typechain",

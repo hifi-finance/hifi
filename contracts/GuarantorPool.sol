@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
-pragma solidity ^0.6.10;
+pragma solidity ^0.7.1;
 
 import "./GuarantorPoolInterface.sol";
 import "./erc20/Erc20.sol";
@@ -22,7 +22,7 @@ contract GuarantorPool is GuarantorPoolInterface, Erc20, Admin, Exponential, Ree
         string memory name_,
         string memory symbol_,
         uint8 decimals_
-    ) public Erc20(name_, symbol_, decimals_) Admin() {} /* solhint-disable-line no-empty-blocks */
+    ) Erc20(name_, symbol_, decimals_) Admin() {} /* solhint-disable-line no-empty-blocks */
 
     struct RedeemUnderlyingLocalVars {
         MathError mathErr;

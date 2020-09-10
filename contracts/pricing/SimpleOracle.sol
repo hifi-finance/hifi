@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
-pragma solidity ^0.6.10;
+pragma solidity ^0.7.1;
 
 import "./SimpleOracleInterface.sol";
 
@@ -12,14 +12,14 @@ contract SimpleOracle is SimpleOracleInterface {
     /**
      * @dev TODO: use Exp
      */
-    function getCollateralPriceInUsd() public override view returns (uint256) {
+    function getCollateralPriceInUsd() public override pure returns (uint256) {
         return 200;
     }
 
     /**
      * @dev TODO: use Exp
      */
-    function getUnderlyingPriceInUsd() public override view returns (uint256) {
+    function getUnderlyingPriceInUsd() public override pure returns (uint256) {
         return 1;
     }
 
@@ -32,7 +32,7 @@ contract SimpleOracle is SimpleOracleInterface {
     function multiplyCollateralAmountByItsPriceInUsd(uint256 collateralAmount)
         external
         override
-        view
+        pure
         returns (MathError, uint256)
     {
         MultiplyCollateralAmountLocalVars memory vars;
@@ -50,7 +50,7 @@ contract SimpleOracle is SimpleOracleInterface {
     function multiplyUnderlyingAmountByItsPriceInUsd(uint256 underlyingAmount)
         external
         override
-        view
+        pure
         returns (MathError, uint256)
     {
         MultiplyUnderlyingAmountLocalVars memory vars;

@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
-pragma solidity ^0.6.10;
+pragma solidity ^0.7.1;
 
 import "./FintrollerInterface.sol";
 import "./YTokenInterface.sol";
@@ -13,7 +13,7 @@ import "./utils/ErrorReporter.sol";
  */
 contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     /* solhint-disable-next-line no-empty-blocks */
-    constructor() public Admin() {}
+    constructor() Admin() {}
 
     /**
      * VIEW FUNCTIONS

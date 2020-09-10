@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
-pragma solidity ^0.6.10;
+pragma solidity ^0.7.1;
 
 import "./FintrollerInterface.sol";
 import "./RedemptionPoolInterface.sol";
@@ -12,7 +12,7 @@ import "./utils/ErrorReporter.sol";
  * @author Mainframe
  */
 contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorReporter {
-    constructor(FintrollerInterface fintroller_, YTokenInterface yToken_) public Admin() {
+    constructor(FintrollerInterface fintroller_, YTokenInterface yToken_) Admin() {
         /* Set the Fintroller contract and sanity check it. */
         fintroller = fintroller_;
         fintroller.isFintroller();

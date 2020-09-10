@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
-pragma solidity ^0.6.10;
+pragma solidity ^0.7.1;
 
 /**
  * @title ReentrancyGuard
@@ -21,7 +21,7 @@ pragma solidity ^0.6.10;
 abstract contract ReentrancyGuard {
     bool private notEntered;
 
-    constructor() internal {
+    constructor() {
         /*
          * Storing an initial non-zero value makes deployment a bit more
          * expensive, but in exchange the refund on every call to nonReentrant
@@ -42,7 +42,7 @@ abstract contract ReentrancyGuard {
      */
     modifier nonReentrant() {
         /* On the first call to nonReentrant, _notEntered will be true. */
-        require(notEntered, "GUARD_REENTRANT_CALL");
+        require(notEntered, "ERR_REENTRANT_CALL");
 
         /* Any calls to nonReentrant after this point will fail. */
         notEntered = false;

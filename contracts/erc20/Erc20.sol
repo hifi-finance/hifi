@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
-pragma solidity ^0.6.10;
+pragma solidity ^0.7.1;
 
 import "./Erc20Interface.sol";
 import "../math/SafeMath.sol";
@@ -40,7 +40,7 @@ contract Erc20 is Erc20Interface {
         string memory name_,
         string memory symbol_,
         uint8 decimals_
-    ) public {
+    ) {
         name = name_;
         symbol = symbol_;
         decimals = decimals_;

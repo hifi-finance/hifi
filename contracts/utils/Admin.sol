@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
-pragma solidity ^0.6.10;
+pragma solidity ^0.7.1;
 
 import "./AdminInterface.sol";
 
@@ -30,7 +30,7 @@ abstract contract Admin is AdminInterface {
     /**
      * @notice Initializes the contract setting the deployer as the initial admin.
      */
-    constructor() internal {
+    constructor() {
         address msgSender = msg.sender;
         admin = msgSender;
         emit TransferAdmin(address(0x00), msgSender);

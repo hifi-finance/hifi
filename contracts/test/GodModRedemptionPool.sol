@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 /* solhint-disable func-name-mixedcase */
-pragma solidity ^0.6.10;
+pragma solidity ^0.7.1;
 
 import "../RedemptionPool.sol";
 import "../YTokenInterface.sol";
@@ -12,7 +12,7 @@ import "../YTokenInterface.sol";
  */
 contract GodModeRedemptionPool is RedemptionPool {
     /* solhint-disable-next-line no-empty-blocks */
-    constructor(FintrollerInterface fintroller_, YTokenInterface yToken_) public RedemptionPool(fintroller_, yToken_) {}
+    constructor(FintrollerInterface fintroller_, YTokenInterface yToken_) RedemptionPool(fintroller_, yToken_) {}
 
     function __godMode_setUnderlyingTotalSupply(uint256 newUnderlyingTotalSupply) external {
         underlyingTotalSupply = newUnderlyingTotalSupply;

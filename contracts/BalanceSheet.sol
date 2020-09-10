@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
-pragma solidity ^0.6.10;
+pragma solidity ^0.7.1;
 
 import "./BalanceSheetInterface.sol";
 import "./FintrollerInterface.sol";
@@ -22,7 +22,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
     /**
      * @param fintroller_ The address of the Fintroller contract.
      */
-    constructor(FintrollerInterface fintroller_) public Admin() {
+    constructor(FintrollerInterface fintroller_) Admin() {
         /* Set the yToken contract and sanity check it. */
         fintroller = fintroller_;
         fintroller.isFintroller();

@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
-pragma solidity ^0.6.10;
+pragma solidity ^0.7.1;
 
 import "./BalanceSheetInterface.sol";
 import "./FintrollerInterface.sol";
@@ -52,7 +52,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         Erc20Interface collateral_,
         address guarantorPool_,
         RedemptionPoolInterface redemptionPool_
-    ) public Erc20(name_, symbol_, decimals_) Admin() Orchestratable() {
+    ) Erc20(name_, symbol_, decimals_) Admin() Orchestratable() {
         /* Set the unix expiration time. */
         expirationTime = expirationTime_;
 
@@ -192,6 +192,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
     function liquidateBorrow(address borrower, uint256 repayUnderlyingAmount)
         external
         override
+        view
         isVaultOpen(borrower)
         returns (bool)
     {
