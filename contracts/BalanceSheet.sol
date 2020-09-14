@@ -4,6 +4,8 @@ pragma solidity ^0.7.1;
 import "./BalanceSheetInterface.sol";
 import "./FintrollerInterface.sol";
 import "./YTokenInterface.sol";
+import "./erc20/Erc20Interface.sol";
+import "./erc20/SafeErc20.sol";
 import "./math/Exponential.sol";
 import "./utils/Admin.sol";
 import "./utils/ErrorReporter.sol";
@@ -14,6 +16,8 @@ import "./utils/ReentrancyGuard.sol";
  * @author Mainframe
  */
 contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponential, ReentrancyGuard {
+    using SafeErc20 for Erc20Interface;
+
     modifier isVaultOpenForMsgSender(YTokenInterface yToken) {
         require(vaults[address(yToken)][msg.sender].isOpen, "ERR_VAULT_NOT_OPEN");
         _;
@@ -344,7 +348,11 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
         vaults[address(yToken)][msg.sender].freeCollateral = vars.newFreeCollateral;
 
         /* Interactions */
-        require(yToken.collateral().transfer(msg.sender, collateralAmount), "ERR_WITHDRAW_COLLATERAL_ERC20_TRANSFER");
+        // yToken.collateral().safeTransfer
+        // require(
+        //     yToken.collateral().safeTransfer(msg.sender, collateralAmount),
+        //     "ERR_WITHDRAW_COLLATERAL_ERC20_TRANSFER"
+        // );
 
         emit WithdrawCollateral(yToken, msg.sender, collateralAmount);
 

@@ -2,7 +2,6 @@
 pragma solidity ^0.7.1;
 
 import "./BalanceSheetStorage.sol";
-import "./YTokenInterface.sol";
 
 /**
  * @title BalanceSheetInterface
