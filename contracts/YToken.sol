@@ -29,7 +29,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
     }
 
     /**
-     * @dev This implementation assumes that the yToken has the same number of decimals as the underlying.
+     * @dev The yToken must have the same number as decimals as the underlying.
      * @param name_ Erc20 name of this token.
      * @param symbol_ Erc20 symbol of this token.
      * @param decimals_ Erc20 decimal precision of this token.
@@ -66,14 +66,15 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
 
         /* Set the underlying and collateral contracts and sanity check them. */
         underlying = underlying_;
-        Erc20Interface(underlying_).totalSupply();
+        Erc20Interface(underlying).totalSupply();
+        require(decimals == Erc20Interface(underlying).decimals(), "ERR_CONSTRUCTOR_DECIMALS");
 
         collateral = collateral_;
-        Erc20Interface(collateral_).totalSupply();
+        Erc20Interface(collateral).totalSupply();
 
         /* Set the Redemption Pool contract and sanity check it. */
-        redemptionPool_.isRedemptionPool();
         redemptionPool = redemptionPool_;
+        redemptionPool_.isRedemptionPool();
 
         /* Set the Guarantor Pool contract. */
         guarantorPool = guarantorPool_;
