@@ -16,7 +16,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     constructor() Admin() {}
 
     /**
-     * CONSTANT FUNCTION
+     * CONSTANT FUNCTIONS
      */
 
     /**
@@ -236,7 +236,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @param oracle_ The new oracle contract.
      * @return bool true=success, otherwise it reverts.
      */
-    function setOracle(SimpleOracleInterface oracle_) external override onlyAdmin returns (bool) {
+    function setOracle(UniswapAnchoredViewInterface oracle_) external override onlyAdmin returns (bool) {
         require(address(oracle_) != address(0x00), "ERR_SET_ORACLE_ZERO_ADDRESS");
         address oldOracle = address(oracle);
         oracle = oracle_;

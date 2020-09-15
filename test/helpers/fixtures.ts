@@ -43,6 +43,7 @@ export async function balanceSheetFixture(
 }> {
   const deployer: Signer = signers[0];
   const collateral: MockContract = await deployStubCollateral(deployer);
+  const underlying: MockContract = await deployStubUnderlying(deployer);
   const oracle: MockContract = await deployStubOracle(deployer);
 
   /* TODO: handle the case when the oracle isn't set. */
@@ -52,6 +53,7 @@ export async function balanceSheetFixture(
   /* TODO: handle the case when the collateral isn't set. */
   const yToken: MockContract = await deployStubYToken(deployer);
   await yToken.mock.collateral.returns(collateral.address);
+  await yToken.mock.underlying.returns(underlying.address);
 
   const balanceSheet: BalanceSheet = ((await deployContract(deployer, BalanceSheetArtifact, [
     fintroller.address,

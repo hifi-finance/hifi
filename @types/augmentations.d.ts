@@ -1,5 +1,3 @@
-import { Signer } from "@ethersproject/abstract-signer";
-
 import { Accounts, Contracts, Signers, Stubs } from "./";
 
 export interface TypechainConfig {

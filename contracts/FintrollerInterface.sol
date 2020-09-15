@@ -6,7 +6,7 @@ import "./YTokenInterface.sol";
 
 abstract contract FintrollerInterface is FintrollerStorage {
     /**
-     * CONSTANT FUNCTION
+     * CONSTANT FUNCTIONS
      */
     function borrowAllowed(YTokenInterface yToken) external virtual view returns (bool);
 
@@ -34,7 +34,7 @@ abstract contract FintrollerInterface is FintrollerStorage {
 
     function setDepositCollateralAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
 
-    function setOracle(SimpleOracleInterface oracle_) external virtual returns (bool);
+    function setOracle(UniswapAnchoredViewInterface oracle_) external virtual returns (bool);
 
     function setRedeemUnderlyingAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
 

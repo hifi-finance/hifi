@@ -9,7 +9,7 @@ import "./BalanceSheetStorage.sol";
  */
 abstract contract BalanceSheetInterface is BalanceSheetStorage {
     /**
-     * CONSTANT FUNCTION
+     * CONSTANT FUNCTIONS
      */
     function getVault(YTokenInterface yToken, address user)
         external

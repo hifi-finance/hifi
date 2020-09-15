@@ -45,7 +45,7 @@ contract Erc20 is Erc20Interface {
     }
 
     /**
-     * CONSTANT FUNCTION
+     * CONSTANT FUNCTIONS
      */
 
     /**

@@ -7,7 +7,7 @@ import "./YTokenInterface.sol";
 import "./erc20/Erc20.sol";
 import "./erc20/Erc20Interface.sol";
 import "./math/Exponential.sol";
-import "./pricing/SimpleOracleInterface.sol";
+import "./oracles/UniswapAnchoredViewInterface.sol";
 import "./utils/Admin.sol";
 import "./utils/ErrorReporter.sol";
 import "./utils/Orchestratable.sol";
@@ -86,6 +86,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
 
     struct BorrowLocalVars {
         MathError mathErr;
+        uint256 collateralPriceInUsd;
         uint256 debt;
         uint256 lockedCollateral;
         uint256 lockedCollateralValueInUsd;
@@ -93,6 +94,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         Exp newCollateralizationRatio;
         uint256 newDebt;
         uint256 thresholdCollateralizationRatioMantissa;
+        uint256 underlyingPriceInUsd;
     }
 
     /**
@@ -125,19 +127,20 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         (vars.debt, , vars.lockedCollateral, ) = balanceSheet.getVault(this, msg.sender);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
 
-        SimpleOracleInterface oracle = fintroller.oracle();
-        (vars.mathErr, vars.lockedCollateralValueInUsd) = oracle.multiplyCollateralAmountByItsPriceInUsd(
-            vars.lockedCollateral
-        );
+        UniswapAnchoredViewInterface oracle = fintroller.oracle();
+        vars.collateralPriceInUsd = oracle.price(collateral.symbol());
+        require(vars.collateralPriceInUsd > 0, "ERR_COLLATERAL_PRICE_ZERO");
+
+        (vars.mathErr, vars.lockedCollateralValueInUsd) = mulUInt(vars.lockedCollateral, vars.collateralPriceInUsd);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
 
-        (vars.mathErr, vars.borrowValueInUsd) = oracle.multiplyUnderlyingAmountByItsPriceInUsd(borrowAmount);
+        vars.underlyingPriceInUsd = oracle.price(underlying.symbol());
+        require(vars.underlyingPriceInUsd > 0, "ERR_UNDERLYING_PRICE_ZERO");
+
+        (vars.mathErr, vars.borrowValueInUsd) = mulUInt(borrowAmount, vars.underlyingPriceInUsd);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
 
-        (vars.mathErr, vars.newCollateralizationRatio) = divExp(
-            Exp({ mantissa: vars.lockedCollateralValueInUsd }),
-            Exp({ mantissa: vars.borrowValueInUsd })
-        );
+        (vars.mathErr, vars.newCollateralizationRatio) = getExp(vars.lockedCollateralValueInUsd, vars.borrowValueInUsd);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
 
         (vars.thresholdCollateralizationRatioMantissa) = fintroller.getBond(this);

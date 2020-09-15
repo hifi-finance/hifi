@@ -1,13 +1,13 @@
+import { BigNumber } from "@ethersproject/bignumber";
 import { MockContract } from "ethereum-waffle";
 import { Signer } from "@ethersproject/abstract-signer";
 
 import { GodModeBalanceSheet as BalanceSheet } from "../typechain/GodModeBalanceSheet";
-import { SimpleOracle } from "../typechain/SimpleOracle";
 import { Fintroller } from "../typechain/Fintroller";
 import { GuarantorPool } from "../typechain/GuarantorPool";
 import { GodModeRedemptionPool as RedemptionPool } from "../typechain/GodModeRedemptionPool";
+import { SimpleUniswapAnchoredView } from "../typechain/SimpleUniswapAnchoredView";
 import { YToken } from "../typechain/YToken";
-import { BigNumber } from "ethers";
 
 /* Fingers-crossed that ethers.js or waffle will provide an easier way to cache the address */
 export interface Accounts {
@@ -23,7 +23,7 @@ export interface Contracts {
   balanceSheet: BalanceSheet;
   fintroller: Fintroller;
   guarantorPool: GuarantorPool;
-  oracle: SimpleOracle;
+  oracle: SimpleUniswapAnchoredView;
   redemptionPool: RedemptionPool;
   yToken: YToken;
 }

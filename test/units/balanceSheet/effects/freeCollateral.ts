@@ -42,9 +42,6 @@ export default function shouldBehaveLikeLockCollateral(): void {
             beforeEach(async function () {
               await this.stubs.fintroller.mock.borrowAllowed.withArgs(this.stubs.yToken.address).returns(true);
               /* The balance sheet will ask the oracle what's the value of 9 WETH collateral. */
-              await this.stubs.oracle.mock.multiplyCollateralAmountByItsPriceInUsd
-                .withArgs(fullDepositCollateralAmount.sub(OneToken))
-                .returns(CarefulMathErrors.NoError, OneDollar.mul(900));
             });
 
             describe("when the caller is safely over-collateralized", async function () {
@@ -88,11 +85,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
             describe("when the caller is dangerously collateralized", function () {
               beforeEach(async function () {
                 /* This is 150% collateralization ratio. We deposited 10 ETH and the oracle assumes 1 ETH = $100. */
-                const borrowAmount: BigNumber = OneToken.mul(666);
                 const borrowValueInUsd: BigNumber = OneDollar.mul(666);
-                await this.stubs.oracle.mock.multiplyUnderlyingAmountByItsPriceInUsd
-                  .withArgs(borrowAmount)
-                  .returns(CarefulMathErrors.NoError, borrowValueInUsd);
 
                 /* Cannot call the usual `setVaultDebt` since the yToken is stubbed. */
                 await this.contracts.balanceSheet.__godMode_setVaultDebt(

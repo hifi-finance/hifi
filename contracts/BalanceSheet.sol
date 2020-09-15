@@ -33,7 +33,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
     }
 
     /**
-     * CONSTANT FUNCTION
+     * CONSTANT FUNCTIONS
      */
 
     /**
@@ -121,12 +121,14 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
 
     struct FreeCollateralLocalVars {
         MathError mathErr;
+        uint256 collateralPriceInUsd;
         uint256 collateralizationRatioMantissa;
         uint256 debtValueInUsd;
         Exp newCollateralizationRatio;
         uint256 newFreeCollateral;
         uint256 newLockedCollateral;
         uint256 newLockedCollateralValueInUsd;
+        uint256 underlyingPriceInUsd;
     }
 
     /**
@@ -165,19 +167,26 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
 
         /* Checks: the new collateralization ratio is above the threshold. */
         if (vault.debt > 0) {
-            SimpleOracleInterface oracle = fintroller.oracle();
-            (vars.mathErr, vars.newLockedCollateralValueInUsd) = oracle.multiplyCollateralAmountByItsPriceInUsd(
-                vars.newLockedCollateral
+            UniswapAnchoredViewInterface oracle = fintroller.oracle();
+            vars.collateralPriceInUsd = oracle.price(yToken.collateral().symbol());
+            require(vars.collateralPriceInUsd > 0, "ERR_COLLATERAL_PRICE_ZERO");
+
+            (vars.mathErr, vars.newLockedCollateralValueInUsd) = mulUInt(
+                vars.newLockedCollateral,
+                vars.collateralPriceInUsd
             );
             require(vars.mathErr == MathError.NO_ERROR, "ERR_FREE_COLLATERAL_MATH_ERROR");
 
-            (vars.mathErr, vars.debtValueInUsd) = oracle.multiplyUnderlyingAmountByItsPriceInUsd(vault.debt);
+            vars.underlyingPriceInUsd = oracle.price(yToken.underlying().symbol());
+            require(vars.underlyingPriceInUsd > 0, "ERR_UNDERLYING_PRICE_ZERO");
+
+            (vars.mathErr, vars.debtValueInUsd) = mulUInt(vault.debt, vars.underlyingPriceInUsd);
             require(vars.mathErr == MathError.NO_ERROR, "ERR_FREE_COLLATERAL_MATH_ERROR");
 
             /* This operation can't fail because both operands are non-zero. */
-            (vars.mathErr, vars.newCollateralizationRatio) = divExp(
-                Exp({ mantissa: vars.newLockedCollateralValueInUsd }),
-                Exp({ mantissa: vars.debtValueInUsd })
+            (vars.mathErr, vars.newCollateralizationRatio) = getExp(
+                vars.newLockedCollateralValueInUsd,
+                vars.debtValueInUsd
             );
             require(vars.mathErr == MathError.NO_ERROR, "ERR_FREE_COLLATERAL_MATH_ERROR");
 
