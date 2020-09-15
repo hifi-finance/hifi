@@ -33,7 +33,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
     }
 
     /**
-     * VIEW FUNCTIONS
+     * CONSTANT FUNCTION
      */
 
     /**
@@ -78,6 +78,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
      * @dev Emits a {DepositCollateral} event.
      *
      * Requirements:
+     *
      * - The vault must be open.
      * - The amount to deposit cannot be zero.
      * - The Fintroller must allow this action to be performed.
@@ -110,11 +111,8 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
         require(vars.mathErr == MathError.NO_ERROR, "ERR_DEPOSIT_COLLATERAL_MATH_ERROR");
         vaults[address(yToken)][msg.sender].freeCollateral = vars.newFreeCollateral;
 
-        /* Interactions */
-        require(
-            yToken.collateral().transferFrom(msg.sender, address(this), collateralAmount),
-            "ERR_DEPOSIT_COLLATERAL_ERC20_TRANSFER"
-        );
+        /* Interactions: perform the Erc20 transfer. */
+        yToken.collateral().safeTransferFrom(msg.sender, address(this), collateralAmount);
 
         emit DepositCollateral(yToken, msg.sender, collateralAmount);
 
@@ -136,6 +134,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
      * @dev Emits a {FreeCollateral} event.
      *
      * Requirements:
+     *
      * - The vault must be open.
      * - The amount to free cannot be zero.
      * - There must be enough locked collateral.
@@ -211,6 +210,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
      * @dev Emits a {LockCollateral} event.
      *
      * Requirements:
+     *
      * - The vault must be open.
      * - The amount to lock cannot be zero.
      * - There must be enough free collateral.
@@ -252,6 +252,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
      * @dev Emits an {OpenVault} event.
      *
      * Requirements:
+     *
      * - The vault must not be open.
      *
      * @param yToken The address of the yToken contract for which to open the vault.
@@ -275,6 +276,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
      * @dev Emits a {SetVaultDebt} event.
      *
      * Requirements:
+     *
      * - The vault must be open.
      * - Can only be called by the yToken contract.
      *
@@ -312,6 +314,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
      * @dev Emits a {WithdrawCollateral} event.
      *
      * Requirements:
+     *
      * - The vault must be open.
      * - The amount to withdraw cannot be zero.
      * - There must be sufficient free collateral in the vault.
@@ -347,12 +350,8 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Exponentia
         assert(vars.mathErr == MathError.NO_ERROR);
         vaults[address(yToken)][msg.sender].freeCollateral = vars.newFreeCollateral;
 
-        /* Interactions */
-        // yToken.collateral().safeTransfer
-        // require(
-        //     yToken.collateral().safeTransfer(msg.sender, collateralAmount),
-        //     "ERR_WITHDRAW_COLLATERAL_ERC20_TRANSFER"
-        // );
+        /* Interactions: perform the Erc20 transfer. */
+        yToken.collateral().safeTransfer(msg.sender, collateralAmount);
 
         emit WithdrawCollateral(yToken, msg.sender, collateralAmount);
 

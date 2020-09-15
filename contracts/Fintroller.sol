@@ -16,7 +16,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     constructor() Admin() {}
 
     /**
-     * VIEW FUNCTIONS
+     * CONSTANT FUNCTION
      */
 
     /**
@@ -99,7 +99,8 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @dev Emits a {ListBond} event.
      *
      * Requirements:
-     * - Caller must be the administrator
+     *
+     * - The caller must be the administrator
      *
      * @param yToken The yToken contract to list.
      * @return bool true=success, otherwise it reverts.
@@ -130,7 +131,8 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @dev Emits a {SetCollateralizationRatio} event.
      *
      * Requirements:
-     * - Caller must be the administrator
+     *
+     * - The caller must be the administrator
      * - the bond must be listed
      * - `newCollateralizationRatioMantissa` cannot be higher than 10,000%
      * - `newCollateralizationRatioMantissa` cannot be lower than 100%
@@ -182,7 +184,8 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @dev Emits a {SetBorrowAllowed} event.
      *
      * Requirements:
-     * - Caller must be the administrator
+     *
+     * - The caller must be the administrator
      *
      * @param yToken The yToken contract to update the permission for.
      * @param state The new state to be put in storage.
@@ -201,7 +204,8 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @dev Emits a {SetDepositCollateralAllowed} event.
      *
      * Requirements:
-     * - Caller must be the administrator
+     *
+     * - The caller must be the administrator
      *
      * @param yToken The yToken contract to update the permission for.
      * @param state The new state to be put in storage.
@@ -225,7 +229,8 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @dev Emits a {SetOracle} event.
      *
      * Requirements:
-     * - Caller must be the administrator
+     *
+     * - The caller must be the administrator
      * - the new address must not be the zero address
      *
      * @param oracle_ The new oracle contract.
@@ -245,7 +250,8 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @dev Emits a {SetRedeemUnderlyingAllowed} event.
      *
      * Requirements:
-     * - Caller must be the administrator
+     *
+     * - The caller must be the administrator
      *
      * @param yToken The yToken contract to update the permission for.
      * @param state The new state to be put in storage.
@@ -264,7 +270,8 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @dev Emits a {SetRepayBorrowAllowed} event.
      *
      * Requirements:
-     * - Caller must be the administrator
+     *
+     * - The caller must be the administrator
      *
      * @param yToken The yToken contract to update the permission for.
      * @param state The new state to be put in storage.
@@ -283,7 +290,8 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @dev Emits a {SetSupplyUnderlyingAllowed} event.
      *
      * Requirements:
-     * - Caller must be the administrator
+     *
+     * - The caller must be the administrator
      *
      * @param yToken The yToken contract to update the permission for.
      * @param state The new state to be put in storage.

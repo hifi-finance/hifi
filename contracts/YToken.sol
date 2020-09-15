@@ -167,6 +167,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
      * @dev Emits a {Burn} event.
      *
      * Requirements:
+     *
      * - Must be called prior to maturation.
      * - Can only be called by the Redemption Pool, the sole ochestrated contract.
      * - The amount to burn cannot be zero.
@@ -207,6 +208,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
      * @dev Emits a {Mint} event.
      *
      * Requirements:
+     *
      * - Can only be called by the Redemption Pool, the sole ochestrated contract.
      * - The amount to mint cannot be zero.
      *
@@ -230,6 +232,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
      * @dev Emits a {RepayBorrow} and a {Transfer} event.
      *
      * Requirements:
+     *
      * - The vault must be open.
      * - The amount to repay cannot be zero.
      * - The Fintroller must allow this action to be performed.

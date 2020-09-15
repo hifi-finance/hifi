@@ -41,7 +41,8 @@ abstract contract Admin is AdminInterface {
      * `onlyAdmin` functions anymore.
      *
      * Requirements:
-     * - Can only be called by the current admin.
+     *
+     * - The caller must be the current administrator.
      *
      * WARNING: Doing this will leave the contract without an admin,
      * thereby removing any functionality that is only available to the admin.

@@ -6,7 +6,7 @@ import "./YTokenInterface.sol";
 
 abstract contract FintrollerInterface is FintrollerStorage {
     /**
-     * VIEW FUNCTIONS
+     * CONSTANT FUNCTION
      */
     function borrowAllowed(YTokenInterface yToken) external virtual view returns (bool);
 

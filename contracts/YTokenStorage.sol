@@ -11,7 +11,9 @@ import "./erc20/Erc20Interface.sol";
  * @author Mainframe
  */
 abstract contract YTokenStorage {
-    /*** Structs ***/
+    /**
+     * STRUCTS
+     */
     struct Vault {
         uint256 debt;
         uint256 freeCollateral;
@@ -19,7 +21,9 @@ abstract contract YTokenStorage {
         bool isOpen;
     }
 
-    /*** Storage Properties ***/
+    /**
+     * STORAGE PROPERTIES
+     */
 
     /**
      * @notice The global debt registry.

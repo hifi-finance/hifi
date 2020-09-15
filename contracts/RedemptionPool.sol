@@ -3,6 +3,7 @@ pragma solidity ^0.7.1;
 
 import "./FintrollerInterface.sol";
 import "./RedemptionPoolInterface.sol";
+import "./erc20/SafeErc20.sol";
 import "./math/CarefulMath.sol";
 import "./utils/Admin.sol";
 import "./utils/ErrorReporter.sol";
@@ -12,6 +13,8 @@ import "./utils/ErrorReporter.sol";
  * @author Mainframe
  */
 contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorReporter {
+    using SafeErc20 for Erc20Interface;
+
     constructor(FintrollerInterface fintroller_, YTokenInterface yToken_) Admin() {
         /* Set the Fintroller contract and sanity check it. */
         fintroller = fintroller_;
@@ -33,6 +36,7 @@ contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorRep
      * @dev Emits a {RedeemUnderlying} event.
      *
      * Requirements:
+     *
      * - Must be called post maturation.
      * - The amount to redeem cannot be zero.
      * - The Fintroller must allow this action to be performed.
@@ -64,8 +68,8 @@ contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorRep
         /* Interactions: burn the yTokens. */
         require(yToken.burn(msg.sender, underlyingAmount), "ERR_REDEEM_UNDERLYING_BURN");
 
-        /* Interactions: transfer the underlying */
-        require(yToken.underlying().transfer(msg.sender, underlyingAmount), "ERR_REDEEM_UNDERLYING_ERC20_TRANSFER");
+        /* Interactions: perform the Erc20 transfer. */
+        yToken.underlying().safeTransfer(msg.sender, underlyingAmount);
 
         emit RedeemUnderlying(msg.sender, underlyingAmount);
 
@@ -83,6 +87,7 @@ contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorRep
      * @dev Emits a {SupplyUnderlying} event.
      *
      * Requirements:
+     *
      * - Must be called prior to maturation.
      * - The amount to supply cannot be zero.
      * - The Fintroller must allow this action to be performed.
@@ -111,11 +116,8 @@ contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorRep
         /* Interactions: mint the yTokens. */
         require(yToken.mint(msg.sender, underlyingAmount), "ERR_SUPPLY_UNDERLYING_MINT");
 
-        /* Interactions: deposit the underlying */
-        require(
-            yToken.underlying().transferFrom(msg.sender, address(this), underlyingAmount),
-            "ERR_SUPPLY_UNDERLYING_ERC20_TRANSFER"
-        );
+        /* Interactions: perform the Erc20 transfer. */
+        yToken.underlying().safeTransferFrom(msg.sender, address(this), underlyingAmount);
 
         emit SupplyUnderlying(msg.sender, underlyingAmount);
 

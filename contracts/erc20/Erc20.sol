@@ -28,8 +28,6 @@ import "../math/SafeMath.sol";
 contract Erc20 is Erc20Interface {
     using SafeMath for uint256;
 
-    /*** Contract Logic Starts Here ***/
-
     /**
      * @dev All three of these values are immutable: they can only be set once during construction.
      * @param name_ Erc20 name of this token.
@@ -47,28 +45,8 @@ contract Erc20 is Erc20Interface {
     }
 
     /**
-     * @notice Returns the amount of tokens owned by `account`.
+     * CONSTANT FUNCTION
      */
-    function balanceOf(address account) public virtual override view returns (uint256) {
-        return balances[account];
-    }
-
-    /**
-     * @notice Moves `amount` tokens from the caller's account to `recipient`.
-     *
-     * @dev Emits a {Transfer} event.
-     *
-     * @return a boolean value indicating whether the operation succeeded.
-     *
-     * Requirements:
-     *
-     * - `recipient` cannot be the zero address.
-     * - the caller must have a balance of at least `amount`.
-     */
-    function transfer(address recipient, uint256 amount) external virtual override returns (bool) {
-        transferInternal(msg.sender, recipient, amount);
-        return true;
-    }
 
     /**
      * @notice Returns the remaining number of tokens that `spender` will be
@@ -80,6 +58,17 @@ contract Erc20 is Erc20Interface {
     function allowance(address owner, address spender) external virtual override view returns (uint256) {
         return allowances[owner][spender];
     }
+
+    /**
+     * @notice Returns the amount of tokens owned by `account`.
+     */
+    function balanceOf(address account) public virtual override view returns (uint256) {
+        return balances[account];
+    }
+
+    /**
+     * NON-CONSTANT FUNCTIONS
+     */
 
     /**
      * @notice Sets `amount` as the allowance of `spender` over the caller's tokens.
@@ -101,54 +90,6 @@ contract Erc20 is Erc20Interface {
      */
     function approve(address spender, uint256 amount) external virtual override returns (bool) {
         approveInternal(msg.sender, spender, amount);
-        return true;
-    }
-
-    /**
-     * @notice See Moves `amount` tokens from `sender` to `recipient` using the
-     * allowance mechanism. `amount` is then deducted from the caller's
-     * allowance.
-     *
-     * @dev Emits a {Transfer} event. Emits an {Approval} event indicating the
-     * updated allowance. This is not required by the EIP. See the note at the
-     * beginning of {Erc20};
-     *
-     * @return a boolean value indicating whether the operation succeeded.
-     *
-     * Requirements:
-     * - `sender` and `recipient` cannot be the zero address.
-     * - `sender` must have a balance of at least `amount`.
-     * - the caller must have allowance for ``sender``'s tokens of at least
-     * `amount`.
-     */
-    function transferFrom(
-        address sender,
-        address recipient,
-        uint256 amount
-    ) external virtual override returns (bool) {
-        transferInternal(sender, recipient, amount);
-        approveInternal(
-            sender,
-            msg.sender,
-            allowances[sender][msg.sender].sub(amount, "Erc20: transfer amount exceeds allowance")
-        );
-        return true;
-    }
-
-    /**
-     * @notice Atomically increases the allowance granted to `spender` by the caller.
-     *
-     * @dev This is an alternative to {approve} that can be used as a mitigation for
-     * problems described above.
-     *
-     * Emits an {Approval} event indicating the updated allowance.
-     *
-     * Requirements:
-     *
-     * - `spender` cannot be the zero address.
-     */
-    function increaseAllowance(address spender, uint256 addedValue) external virtual returns (bool) {
-        approveInternal(msg.sender, spender, allowances[msg.sender][spender].add(addedValue));
         return true;
     }
 
@@ -176,7 +117,77 @@ contract Erc20 is Erc20Interface {
     }
 
     /**
-     * @notice Moves tokens `amount` from `sender` to `recipient`.
+     * @notice Atomically increases the allowance granted to `spender` by the caller.
+     *
+     * @dev This is an alternative to {approve} that can be used as a mitigation for
+     * problems described above.
+     *
+     * Emits an {Approval} event indicating the updated allowance.
+     *
+     * Requirements:
+     *
+     * - `spender` cannot be the zero address.
+     */
+    function increaseAllowance(address spender, uint256 addedValue) external virtual returns (bool) {
+        approveInternal(msg.sender, spender, allowances[msg.sender][spender].add(addedValue));
+        return true;
+    }
+
+    /**
+     * @notice Moves `amount` tokens from the caller's account to `recipient`.
+     *
+     * @dev Emits a {Transfer} event.
+     *
+     * @return a boolean value indicating whether the operation succeeded.
+     *
+     * Requirements:
+     *
+     * - `recipient` cannot be the zero address.
+     * - The caller must have a balance of at least `amount`.
+     */
+    function transfer(address recipient, uint256 amount) external virtual override returns (bool) {
+        transferInternal(msg.sender, recipient, amount);
+        return true;
+    }
+
+    /**
+     * @notice See Moves `amount` tokens from `sender` to `recipient` using the
+     * allowance mechanism. `amount` is then deducted from the caller's
+     * allowance.
+     *
+     * @dev Emits a {Transfer} event. Emits an {Approval} event indicating the
+     * updated allowance. This is not required by the EIP. See the note at the
+     * beginning of {Erc20};
+     *
+     * @return a boolean value indicating whether the operation succeeded.
+     *
+     * Requirements:
+     *
+     * - `sender` and `recipient` cannot be the zero address.
+     * - `sender` must have a balance of at least `amount`.
+     * - The caller must have allowance for ``sender``'s tokens of at least
+     * `amount`.
+     */
+    function transferFrom(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) external virtual override returns (bool) {
+        transferInternal(sender, recipient, amount);
+        approveInternal(
+            sender,
+            msg.sender,
+            allowances[sender][msg.sender].sub(amount, "Erc20: transfer amount exceeds allowance")
+        );
+        return true;
+    }
+
+    /**
+     * INTERNAL FUNCTIONS
+     */
+
+    /**
+     * @notice Moves `amount` tokens from `sender` to `recipient`.
      *
      * @dev This is internal function is equivalent to {transfer}, and can be used to
      * e.g. implement automatic token fees, slashing mechanisms, etc.

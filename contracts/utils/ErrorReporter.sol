@@ -9,8 +9,6 @@ pragma solidity ^0.7.1;
  * https://github.com/compound-finance/compound-protocol/blob/v2.6/contracts/ErrorReporter.sol
  */
 abstract contract ErrorReporter {
-    /*** Storage Properties ***/
-
     /**
      * @notice Returned by functions when executed successfully.
      */

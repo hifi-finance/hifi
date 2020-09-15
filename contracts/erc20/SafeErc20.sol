@@ -1,31 +1,35 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.7.1;
 
-import "./Erc20Interface.sol";
-import "../math/SafeMath.sol";
+import "../erc20/Erc20Interface.sol";
 import "../utils/Address.sol";
 
 /**
- * @title SafeERC20
+ * @title MySafeErc20.sol
+ * @author Mainframe
  * @notice Wraps around Erc20 operations that throw on failure (when the token contract
  * returns false). Tokens that return no value (and instead revert or throw
  * on failure) are also supported, non-reverting calls are assumed to be successful.
  *
  * To use this library you can add a `using SafeErc20 for Erc20Interface;` statement to your contract,
  * which allows you to call the safe operations as `token.safeTransfer(...)`, etc.
- * @dev Forked from OpenZeppelin.
- * https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/v3.1.0/contracts/token/ERC20/SafeERC20.sol
+ *
+ * @dev Forked from OpenZeppelin
+ * https://raw.githubusercontent.com/OpenZeppelin/openzeppelin-contracts/v3.1.0/contracts/utils/Address.sol
  */
 library SafeErc20 {
-    using SafeMath for uint256;
     using Address for address;
+
+    /**
+     * INTERNAL FUNCTIONS
+     */
 
     function safeTransfer(
         Erc20Interface token,
         address to,
         uint256 value
     ) internal {
-        _callOptionalReturn(token, abi.encodeWithSelector(token.transfer.selector, to, value));
+        callOptionalReturn(token, abi.encodeWithSelector(token.transfer.selector, to, value));
     }
 
     function safeTransferFrom(
@@ -34,54 +38,12 @@ library SafeErc20 {
         address to,
         uint256 value
     ) internal {
-        _callOptionalReturn(token, abi.encodeWithSelector(token.transferFrom.selector, from, to, value));
+        callOptionalReturn(token, abi.encodeWithSelector(token.transferFrom.selector, from, to, value));
     }
 
     /**
-     * @dev Deprecated. This function has issues similar to the ones found in
-     * {IERC20-approve}, and its usage is discouraged.
-     *
-     * Whenever possible, use {safeIncreaseAllowance} and
-     * {safeDecreaseAllowance} instead.
+     * PRIVATE FUNCTIONS
      */
-    function safeApprove(
-        Erc20Interface token,
-        address spender,
-        uint256 value
-    ) internal {
-        /**
-         * safeApprove should only be called when setting an initial allowance,
-         * or when resetting it to zero. To increase and decrease it, use
-         * 'safeIncreaseAllowance' and 'safeDecreaseAllowance'.
-         */
-        /* solhint-disable-next-line max-line-length */
-        require(
-            (value == 0) || (token.allowance(address(this), spender) == 0),
-            "SafeERC20: approve from non-zero to non-zero allowance"
-        );
-        _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, value));
-    }
-
-    function safeIncreaseAllowance(
-        Erc20Interface token,
-        address spender,
-        uint256 value
-    ) internal {
-        uint256 newAllowance = token.allowance(address(this), spender).add(value);
-        _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, newAllowance));
-    }
-
-    function safeDecreaseAllowance(
-        Erc20Interface token,
-        address spender,
-        uint256 value
-    ) internal {
-        uint256 newAllowance = token.allowance(address(this), spender).sub(
-            value,
-            "SafeERC20: decreased allowance below zero"
-        );
-        _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, newAllowance));
-    }
 
     /**
      * @dev Imitates a Solidity high-level call (i.e. a regular function call to a contract), relaxing the requirement
@@ -89,16 +51,41 @@ library SafeErc20 {
      * @param token The token targeted by the call.
      * @param data The call data (encoded using abi.encode or one of its variants).
      */
-    function _callOptionalReturn(Erc20Interface token, bytes memory data) private {
+    function callOptionalReturn(Erc20Interface token, bytes memory data) private {
         // We need to perform a low level call here, to bypass Solidity's return data size checking mechanism, since
         // we're implementing it ourselves. We use {Address.functionCall} to perform this call, which verifies that
         // the target address contains contract code and also asserts for success in the low-level call.
-
-        bytes memory returndata = address(token).functionCall(data, "SafeERC20: low-level call failed");
+        bytes memory returndata = functionCallWithValue(address(token), data, "ERR_SAFE_ERC20_LOW_LEVEL_CALL");
         if (returndata.length > 0) {
-            // Return data is optional
-            // solhint-disable-next-line max-line-length
-            require(abi.decode(returndata, (bool)), "SafeERC20: ERC20 operation did not succeed");
+            /* Return data is optional. */
+            require(abi.decode(returndata, (bool)), "ERR_SAFE_ERC20_ERC20_OPERATION");
+        }
+    }
+
+    function functionCallWithValue(
+        address target,
+        bytes memory data,
+        string memory errorMessage
+    ) private returns (bytes memory) {
+        require(target.isContract(), "ERR_SAFE_ERC20_CALL_TO_NON_CONTRACT");
+
+        /* solhint-disable-next-line avoid-low-level-calls */
+        (bool success, bytes memory returndata) = target.call(data);
+        if (success) {
+            return returndata;
+        } else {
+            /* Look for revert reason and bubble it up if present */
+            if (returndata.length > 0) {
+                /* The easiest way to bubble the revert reason is using memory via assembly. */
+
+                /* solhint-disable-next-line no-inline-assembly */
+                assembly {
+                    let returndata_size := mload(returndata)
+                    revert(add(32, returndata), returndata_size)
+                }
+            } else {
+                revert(errorMessage);
+            }
         }
     }
 }
