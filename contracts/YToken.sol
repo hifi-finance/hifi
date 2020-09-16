@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.7.1;
 
+import "@nomiclabs/buidler/console.sol";
 import "./BalanceSheetInterface.sol";
 import "./FintrollerInterface.sol";
 import "./YTokenInterface.sol";
@@ -29,10 +30,9 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
     }
 
     /**
-     * @dev The yToken must have the same number as decimals as the underlying.
+     * @dev The yToken always has 18 decimals
      * @param name_ Erc20 name of this token.
      * @param symbol_ Erc20 symbol of this token.
-     * @param decimals_ Erc20 decimal precision of this token.
      * @param expirationTime_ Unix timestamp in seconds for when this token expires.
      * @param balanceSheet_ The address of the BalanceSheet contract.
      * @param fintroller_ The address of the Fintroller contract.
@@ -44,7 +44,6 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
     constructor(
         string memory name_,
         string memory symbol_,
-        uint8 decimals_,
         uint256 expirationTime_,
         BalanceSheetInterface balanceSheet_,
         FintrollerInterface fintroller_,
@@ -52,7 +51,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         Erc20Interface collateral_,
         address guarantorPool_,
         RedemptionPoolInterface redemptionPool_
-    ) Erc20(name_, symbol_, decimals_) Admin() Orchestratable() {
+    ) Erc20(name_, symbol_, defaultNumberOfDecimals) Admin() Orchestratable() {
         /* Set the unix expiration time. */
         expirationTime = expirationTime_;
 
@@ -66,17 +65,24 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
 
         /* Set the underlying and collateral contracts and sanity check them. */
         underlying = underlying_;
-        Erc20Interface(underlying).totalSupply();
-        require(decimals == Erc20Interface(underlying).decimals(), "ERR_CONSTRUCTOR_DECIMALS");
+        require(
+            defaultNumberOfDecimals >= Erc20Interface(underlying).decimals(),
+            "ERR_CONSTRUCTOR_UNDERLYING_DECIMALS_OVERFLOW"
+        );
+        underlyingPrecisionScalar = defaultNumberOfDecimals / Erc20Interface(underlying).decimals();
 
         collateral = collateral_;
-        Erc20Interface(collateral).totalSupply();
+        require(
+            defaultNumberOfDecimals >= Erc20Interface(collateral).decimals(),
+            "ERR_CONSTRUCTOR_COLLATERAL_DECIMALS_OVERFLOW"
+        );
+        collateralPrecisionScalar = defaultNumberOfDecimals / Erc20Interface(collateral).decimals();
 
         /* Set the Redemption Pool contract and sanity check it. */
         redemptionPool = redemptionPool_;
         redemptionPool_.isRedemptionPool();
 
-        /* Set the Guarantor Pool contract. */
+        /* Set the Guarantor Pool contract and sanity check it. */
         guarantorPool = guarantorPool_;
     }
 
@@ -86,15 +92,18 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
 
     struct BorrowLocalVars {
         MathError mathErr;
-        uint256 collateralPriceInUsd;
+        Exp borrowValue;
+        uint256 collateralPriceFromOracle;
+        uint256 collateralPriceNormalized;
         uint256 debt;
         uint256 lockedCollateral;
-        uint256 lockedCollateralValueInUsd;
-        uint256 borrowValueInUsd;
-        Exp newCollateralizationRatio;
+        uint256 lockedCollateralUpscaled;
+        Exp lockedCollateralValue;
+        Exp hypotheticalCollateralizationRatio;
         uint256 newDebt;
         uint256 thresholdCollateralizationRatioMantissa;
-        uint256 underlyingPriceInUsd;
+        uint256 underlyingPriceFromOracle;
+        uint256 underlyingPriceUpscaled;
     }
 
     /**
@@ -123,29 +132,57 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
 
         /* TODO: check liquidity in the Guarantor Pool and Redemption Pool. */
 
-        /* Checks: the new collateralization ratio is above the threshold. */
+        /* Checks: the hypothetical collateralization ratio is above the threshold. */
         (vars.debt, , vars.lockedCollateral, ) = balanceSheet.getVault(this, msg.sender);
+        // console.log("vars.debt: %d", vars.debt);
+        // console.log("vars.lockedCollateral: %d", vars.lockedCollateral);
+
+        (vars.mathErr, vars.lockedCollateralUpscaled) = mulUInt(vars.lockedCollateral, collateralPrecisionScalar);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
+        // console.log("vars.lockedCollateralUpscaled: %d", vars.lockedCollateralUpscaled);
 
         UniswapAnchoredViewInterface oracle = fintroller.oracle();
-        vars.collateralPriceInUsd = oracle.price(collateral.symbol());
-        require(vars.collateralPriceInUsd > 0, "ERR_COLLATERAL_PRICE_ZERO");
+        vars.collateralPriceFromOracle = oracle.price(collateral.symbol());
+        // console.log("vars.collateralPriceFromOracle: %d", vars.collateralPriceFromOracle);
+        require(vars.collateralPriceFromOracle > 0, "ERR_COLLATERAL_PRICE_ZERO");
 
-        (vars.mathErr, vars.lockedCollateralValueInUsd) = mulUInt(vars.lockedCollateral, vars.collateralPriceInUsd);
+        (vars.mathErr, vars.collateralPriceNormalized) = mulUInt(vars.collateralPriceFromOracle, 1e12);
+        // console.log("vars.collateralPriceNormalized: %d", vars.collateralPriceNormalized);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_FREE_COLLATERAL_MATH_ERROR");
+
+        (vars.mathErr, vars.lockedCollateralValue) = mulExp(
+            Exp({ mantissa: vars.lockedCollateralUpscaled }),
+            Exp({ mantissa: vars.collateralPriceNormalized })
+        );
+        // console.log("vars.lockedCollateralValue.mantissa: %d", vars.lockedCollateralValue.mantissa);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
 
-        vars.underlyingPriceInUsd = oracle.price(underlying.symbol());
-        require(vars.underlyingPriceInUsd > 0, "ERR_UNDERLYING_PRICE_ZERO");
+        vars.underlyingPriceFromOracle = oracle.price(underlying.symbol());
+        // console.log("vars.underlyingPriceFromOracle: %d", vars.underlyingPriceFromOracle);
+        require(vars.underlyingPriceFromOracle > 0, "ERR_UNDERLYING_PRICE_ZERO");
 
-        (vars.mathErr, vars.borrowValueInUsd) = mulUInt(borrowAmount, vars.underlyingPriceInUsd);
+        (vars.mathErr, vars.underlyingPriceUpscaled) = mulUInt(vars.underlyingPriceFromOracle, 1e12);
+        // console.log("vars.underlyingPriceUpscaled: %d", vars.underlyingPriceUpscaled);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
 
-        (vars.mathErr, vars.newCollateralizationRatio) = getExp(vars.lockedCollateralValueInUsd, vars.borrowValueInUsd);
+        (vars.mathErr, vars.borrowValue) = mulExp(
+            Exp({ mantissa: borrowAmount }),
+            Exp({ mantissa: vars.underlyingPriceUpscaled })
+        );
+        // console.log("vars.borrowValue.mantissa: %d", vars.borrowValue.mantissa);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
+
+        (vars.mathErr, vars.hypotheticalCollateralizationRatio) = divExp(vars.lockedCollateralValue, vars.borrowValue);
+        // console.log(
+        //     "vars.hypotheticalCollateralizationRatio.mantissa: %d",
+        //     vars.hypotheticalCollateralizationRatio.mantissa
+        // );
         require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
 
         (vars.thresholdCollateralizationRatioMantissa) = fintroller.getBond(this);
+        // console.log("vars.thresholdCollateralizationRatioMantissa: %d", vars.thresholdCollateralizationRatioMantissa);
         require(
-            vars.newCollateralizationRatio.mantissa >= vars.thresholdCollateralizationRatioMantissa,
+            vars.hypotheticalCollateralizationRatio.mantissa >= vars.thresholdCollateralizationRatioMantissa,
             "ERR_BELOW_THRESHOLD_COLLATERALIZATION_RATIO"
         );
 

@@ -2,8 +2,8 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { BalanceSheetErrors, CarefulMathErrors } from "../../../helpers/errors";
-import { OneDollar, OneHundredDollars, OneToken, TenTokens } from "../../../helpers/constants";
+import { BalanceSheetErrors } from "../../../helpers/errors";
+import { OneToken, TenTokens, OneHundredTokens } from "../../../helpers/constants";
 import { Vault } from "../../../../@types";
 import { stubGetBond } from "../../../helpers/stubs";
 
@@ -50,7 +50,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
                 await this.contracts.balanceSheet.__godMode_setVaultDebt(
                   this.stubs.yToken.address,
                   this.accounts.brad,
-                  OneHundredDollars,
+                  OneHundredTokens,
                 );
               });
 
@@ -84,14 +84,14 @@ export default function shouldBehaveLikeLockCollateral(): void {
 
             describe("when the caller is dangerously collateralized", function () {
               beforeEach(async function () {
-                /* This is 150% collateralization ratio. We deposited 10 ETH and the oracle assumes 1 ETH = $100. */
-                const borrowValueInUsd: BigNumber = OneDollar.mul(666);
+                /* This is precisely a 150% collateralization ratio. We deposited 10 ETH and the oracle assumes 1 ETH = $100. */
+                const debtValue: BigNumber = OneToken.mul(666);
 
                 /* Cannot call the usual `setVaultDebt` since the yToken is stubbed. */
                 await this.contracts.balanceSheet.__godMode_setVaultDebt(
                   this.stubs.yToken.address,
                   this.accounts.brad,
-                  borrowValueInUsd,
+                  debtValue,
                 );
               });
 

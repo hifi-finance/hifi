@@ -51,11 +51,6 @@ abstract contract YTokenStorage {
     address public guarantorPool;
 
     /**
-     * @notice Indicator that this is a YToken contract, for inspection.
-     */
-    bool public constant isYToken = true;
-
-    /**
      * @notice The unique Redemption Pool associated with this contract.
      */
     RedemptionPoolInterface public redemptionPool;
@@ -69,4 +64,24 @@ abstract contract YTokenStorage {
      * @dev One vault for each user.
      */
     mapping(address => Vault) internal vaults;
+
+    /**
+     * @notice The difference between mantissa precision and the collateral precision.
+     */
+    uint8 public collateralPrecisionScalar;
+
+    /**
+     * @notice The difference between mantissa precision and the underlying precision.
+     */
+    uint8 public underlyingPrecisionScalar;
+
+    /**
+     * @notice The standard number of decimals a yToken has.
+     */
+    uint8 public constant defaultNumberOfDecimals = 18;
+
+    /**
+     * @notice Indicator that this is a YToken contract, for inspection.
+     */
+    bool public constant isYToken = true;
 }

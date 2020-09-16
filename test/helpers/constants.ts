@@ -12,10 +12,6 @@ export const AddressOne: string = "0x0000000000000000000000000000000000000001";
 export const DefaultBlockGasLimit: BigNumber = BigNumber.from("10000000");
 export const UnitsPerToken: BigNumber = BigNumber.from("1000000000000000000");
 
-export const OneDollar: BigNumber = UnitsPerToken;
-export const OneHundredDollars: BigNumber = OneDollar.mul(100);
-export const OneThousandDollars: BigNumber = OneDollar.mul(1000);
-
 export const OnePercent: BigNumber = BigNumber.from("10000000000000000");
 export const OneHundredPercent: BigNumber = OnePercent.mul(100);
 export const OneHundredAndFiftyPercent: BigNumber = OnePercent.mul(150);

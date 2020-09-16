@@ -22,12 +22,12 @@ abstract contract BalanceSheetStorage {
     FintrollerInterface public fintroller;
 
     /**
-     * @notice Indicator that this is a BalanceSheet contract, for inspection.
-     */
-    bool public constant isBalanceSheet = true;
-
-    /**
      * @dev One vault for each yToken for each user.
      */
     mapping(address => mapping(address => Vault)) internal vaults;
+
+    /**
+     * @notice Indicator that this is a BalanceSheet contract, for inspection.
+     */
+    bool public constant isBalanceSheet = true;
 }

@@ -37,12 +37,12 @@ abstract contract FintrollerStorage is Exponential {
     uint256 public constant defaultCollateralizationRatioMantissa = 1500000000000000000;
 
     /**
-     * @notice Indicator that this is a Fintroller contract, for inspection.
-     */
-    bool public constant isFintroller = true;
-
-    /**
      * @notice The contract that provides price data for the collateral and the underlying asset.
      */
     UniswapAnchoredViewInterface public oracle;
+
+    /**
+     * @notice Indicator that this is a Fintroller contract, for inspection.
+     */
+    bool public constant isFintroller = true;
 }

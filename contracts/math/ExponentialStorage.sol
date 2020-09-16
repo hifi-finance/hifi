@@ -14,7 +14,7 @@ abstract contract ExponentialStorage {
     /**
      * @notice In Exponential denomination, 1e18 is 1.
      */
-    uint256 public constant EXP_SCALE = 1e18;
-    uint256 public constant HALF_EXP_SCALE = EXP_SCALE / 2;
-    uint256 public constant MANTISSA_ONE = EXP_SCALE;
+    uint256 public constant expScale = 1e18;
+    uint256 public constant halfExpScale = expScale / 2;
+    uint256 public constant mantissaOne = expScale;
 }

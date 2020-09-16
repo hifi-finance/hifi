@@ -10,11 +10,6 @@ import "./YTokenInterface.sol";
  */
 abstract contract RedemptionPoolStorage {
     /**
-     * @notice Indicator that this is a Redemption Pool contract, for inspection.
-     */
-    bool public constant isRedemptionPool = true;
-
-    /**
      * @notice The unique Fintroller associated with this contract.
      */
     FintrollerInterface public fintroller;
@@ -28,4 +23,9 @@ abstract contract RedemptionPoolStorage {
      * The unique yToken associated with this Redemption Pool.
      */
     YTokenInterface public yToken;
+
+    /**
+     * @notice Indicator that this is a Redemption Pool contract, for inspection.
+     */
+    bool public constant isRedemptionPool = true;
 }

@@ -53,7 +53,9 @@ export async function balanceSheetFixture(
   /* TODO: handle the case when the collateral isn't set. */
   const yToken: MockContract = await deployStubYToken(deployer);
   await yToken.mock.collateral.returns(collateral.address);
+  await yToken.mock.collateralPrecisionScalar.returns(BigNumber.from(1));
   await yToken.mock.underlying.returns(underlying.address);
+  await yToken.mock.underlyingPrecisionScalar.returns(BigNumber.from(1));
 
   const balanceSheet: BalanceSheet = ((await deployContract(deployer, BalanceSheetArtifact, [
     fintroller.address,
@@ -86,6 +88,7 @@ export async function redemptionPoolFixture(
   /* TODO: handle the case when the oracle isn't set. */
   const yToken: MockContract = await deployStubYToken(deployer);
   await yToken.mock.underlying.returns(underlying.address);
+  await yToken.mock.underlyingPrecisionScalar.returns(BigNumber.from(1));
 
   const redemptionPool: RedemptionPool = ((await deployContract(deployer, RedemptionPoolArtifact, [
     fintroller.address,
@@ -122,7 +125,6 @@ export async function yTokenFixture(
 
   const name: string = "DAI/ETH (2021-01-01)";
   const symbol: string = "yDAI-JAN21";
-  const decimals: BigNumber = BigNumber.from(18);
   const expirationTime: BigNumber = YTokenConstants.DefaultExpirationTime; /* December 31, 2020 at 23:59:59 */
 
   const yToken: YToken = ((await deployContract(
@@ -131,7 +133,6 @@ export async function yTokenFixture(
     [
       name,
       symbol,
-      decimals,
       expirationTime,
       balanceSheet.address,
       fintroller.address,

@@ -12,23 +12,13 @@ import RedemptionPoolArtifact from "../../artifacts/GodModeRedemptionPool.json";
 import SimpleUniswapAnchoredViewArtifact from "../../artifacts/SimpleUniswapAnchoredView.json";
 import YTokenArtifact from "../../artifacts/YToken.json";
 
-import { CarefulMathErrors } from "./errors";
-import {
-  BalanceSheetConstants,
-  FintrollerConstants,
-  OneDollar,
-  OneHundredDollars,
-  OneHundredTokens,
-  OneThousandDollars,
-  OneToken,
-  TenTokens,
-} from "./constants";
+import { BalanceSheetConstants, FintrollerConstants } from "./constants";
 
 const { deployMockContract: deployStubContract } = waffle;
 
 /**
  * ---------
- * Deployers
+ * DEPLOYERS
  * ---------
  */
 
@@ -93,7 +83,7 @@ export async function deployStubYToken(deployer: Signer): Promise<MockContract> 
 
 /**
  * --------------
- * Function Stubs
+ * FUNCTION STUBS
  * --------------
  */
 

@@ -28,6 +28,7 @@ contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorRep
     struct RedeemUnderlyingLocalVars {
         MathError mathErr;
         uint256 newUnderlyingTotalSupply;
+        uint256 yTokenAmount;
     }
 
     /**
@@ -65,7 +66,9 @@ contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorRep
         assert(vars.mathErr == MathError.NO_ERROR);
         underlyingTotalSupply = vars.newUnderlyingTotalSupply;
 
-        /* Interactions: burn the yTokens. */
+        /* Interactions: yTokens always have 18 decimals so we have to upscale the underlying amount. */
+        (vars.mathErr, vars.yTokenAmount) = mulUInt(underlyingAmount, yToken.underlyingPrecisionScalar());
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_REDEEM_UNDERLYING_MATH_ERROR");
         require(yToken.burn(msg.sender, underlyingAmount), "ERR_REDEEM_UNDERLYING_BURN");
 
         /* Interactions: perform the Erc20 transfer. */
@@ -79,6 +82,7 @@ contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorRep
     struct SupplyUnderlyingLocalVars {
         MathError mathErr;
         uint256 newUnderlyingTotalSupply;
+        uint256 yTokenAmount;
     }
 
     /**
@@ -113,8 +117,10 @@ contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorRep
         require(vars.mathErr == MathError.NO_ERROR, "ERR_SUPPLY_UNDERLYING_MATH_ERROR");
         underlyingTotalSupply = vars.newUnderlyingTotalSupply;
 
-        /* Interactions: mint the yTokens. */
-        require(yToken.mint(msg.sender, underlyingAmount), "ERR_SUPPLY_UNDERLYING_MINT");
+        /* Interactions: yTokens always have 18 decimals so we have to upscale the underlying amount. */
+        (vars.mathErr, vars.yTokenAmount) = mulUInt(underlyingAmount, yToken.underlyingPrecisionScalar());
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_SUPPLY_UNDERLYING_MATH_ERROR");
+        require(yToken.mint(msg.sender, vars.yTokenAmount), "ERR_SUPPLY_UNDERLYING_MINT");
 
         /* Interactions: perform the Erc20 transfer. */
         yToken.underlying().safeTransferFrom(msg.sender, address(this), underlyingAmount);

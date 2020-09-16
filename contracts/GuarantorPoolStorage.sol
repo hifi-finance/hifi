@@ -8,10 +8,10 @@ pragma solidity ^0.7.1;
 abstract contract GuarantorPoolStorage {
     mapping(address => mapping(address => uint256)) public endowments;
 
+    mapping(address => bool) public supportedCollaterals;
+
     /**
      * @notice Indicator that this is a Guarantor Pool contract, for inspection.
      */
     bool public constant isGuarantorPool = true;
-
-    mapping(address => bool) public supportedCollaterals;
 }

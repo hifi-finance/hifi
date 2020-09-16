@@ -14,16 +14,14 @@ contract SimpleUniswapAnchoredView is UniswapAnchoredViewInterface {
      * https://compound.finance/docs/prices#price
      */
     function price(string memory symbol) external override pure returns (uint256) {
-        /* 1 ETH = $200 */
         if (areStringsEqual(symbol, "WETH")) {
+            /* 1 ETH = $200 */
             return 100000000;
-        }
-        /* 1 DAI = $1 */
-        else if (areStringsEqual(symbol, "DAI")) {
+        } else if (areStringsEqual(symbol, "DAI")) {
+            /* 1 DAI = $1 */
             return 1000000;
-        }
-        /* Anything else = $0 */
-        else {
+        } else {
+            /* Anything else = $0 */
             return 0;
         }
     }

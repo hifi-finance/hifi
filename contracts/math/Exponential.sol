@@ -18,7 +18,7 @@ abstract contract Exponential is ExponentialStorage, CarefulMath {
      * NOTE: Returns an error if (`num` * 10e18) > MAX_INT, or if `denom` is zero.
      */
     function getExp(uint256 num, uint256 denom) internal pure returns (MathError, Exp memory) {
-        (MathError err0, uint256 scaledNumerator) = mulUInt(num, EXP_SCALE);
+        (MathError err0, uint256 scaledNumerator) = mulUInt(num, expScale);
         if (err0 != MathError.NO_ERROR) {
             return (err0, Exp({ mantissa: 0 }));
         }
@@ -107,14 +107,14 @@ abstract contract Exponential is ExponentialStorage, CarefulMath {
     function divScalarByExp(uint256 scalar, Exp memory divisor) internal pure returns (MathError, Exp memory) {
         /*
          * We are doing this as:
-         * getExp(mulUInt(EXP_SCALE, scalar), divisor.mantissa)
+         * getExp(mulUInt(expScale, scalar), divisor.mantissa)
          *
          * How it works:
          * Exp = a / b;
          * Scalar = s;
-         * `s / (a / b)` = `b * s / a` and since for an Exp `a = mantissa, b = EXP_SCALE`
+         * `s / (a / b)` = `b * s / a` and since for an Exp `a = mantissa, b = expScale`
          */
-        (MathError err0, uint256 numerator) = mulUInt(EXP_SCALE, scalar);
+        (MathError err0, uint256 numerator) = mulUInt(expScale, scalar);
         if (err0 != MathError.NO_ERROR) {
             return (err0, Exp({ mantissa: 0 }));
         }
@@ -147,13 +147,13 @@ abstract contract Exponential is ExponentialStorage, CarefulMath {
          * See "Listing 6" and text above it at https://accu.org/index.php/journals/1717
          * Without this change, a result like 6.6...e-19 will be truncated to 0 instead of being rounded to 1e-18.
          */
-        (MathError err1, uint256 doubleScaledProductWithHalfScale) = addUInt(HALF_EXP_SCALE, doubleScaledProduct);
+        (MathError err1, uint256 doubleScaledProductWithHalfScale) = addUInt(halfExpScale, doubleScaledProduct);
         if (err1 != MathError.NO_ERROR) {
             return (err1, Exp({ mantissa: 0 }));
         }
 
-        (MathError err2, uint256 product) = divUInt(doubleScaledProductWithHalfScale, EXP_SCALE);
-        /* The only possible error `div` is MathError.DIVISION_BY_ZERO but we control `EXP_SCALE` and it's not zero. */
+        (MathError err2, uint256 product) = divUInt(doubleScaledProductWithHalfScale, expScale);
+        /* The only possible error `div` is MathError.DIVISION_BY_ZERO but we control `expScale` and it's not zero. */
         assert(err2 == MathError.NO_ERROR);
 
         return (MathError.NO_ERROR, Exp({ mantissa: product }));
@@ -192,11 +192,11 @@ abstract contract Exponential is ExponentialStorage, CarefulMath {
 
     /**
      * @dev Truncates the given exp to a whole number value.
-     * For example, truncate(Exp{mantissa: 15 * EXP_SCALE}) = 15
+     * For example, truncate(Exp{mantissa: 15 * expScale}) = 15
      */
     function truncate(Exp memory exp) internal pure returns (uint256) {
         // Note: We are not using careful math here as we're performing a division that cannot fail
-        return exp.mantissa / EXP_SCALE;
+        return exp.mantissa / expScale;
     }
 
     /**
