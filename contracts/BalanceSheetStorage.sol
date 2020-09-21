@@ -22,6 +22,11 @@ abstract contract BalanceSheetStorage {
     FintrollerInterface public fintroller;
 
     /**
+     * @notice The ratio between mantissa precision (1e18) and the oracle price precision (1e6).
+     */
+    uint256 public constant oraclePricePrecisionScalar = 1e12;
+
+    /**
      * @dev One vault for each yToken for each account.
      */
     mapping(address => mapping(address => Vault)) internal vaults;

@@ -36,14 +36,24 @@ abstract contract YTokenStorage {
     Erc20Interface public collateral;
 
     /**
-     * @notice The unique Fintroller associated with this contract.
+     * @notice The ratio between mantissa precision (1e18) and the collateral precision.
      */
-    FintrollerInterface public fintroller;
+    uint256 public collateralPrecisionScalar;
+
+    /**
+     * @notice The standard number of decimals a yToken has.
+     */
+    uint8 public constant defaultNumberOfDecimals = 18;
 
     /**
      * @notice Unix timestamp in seconds for when this token expires.
      */
     uint256 public expirationTime;
+
+    /**
+     * @notice The unique Fintroller associated with this contract.
+     */
+    FintrollerInterface public fintroller;
 
     /**
      * @notice The unique Guarantor Pool associated with this contract.
@@ -66,19 +76,9 @@ abstract contract YTokenStorage {
     mapping(address => Vault) internal vaults;
 
     /**
-     * @notice The difference between mantissa precision and the collateral precision.
+     * @notice The ratio between mantissa precision (1e18) and the underlying precision.
      */
-    uint8 public collateralPrecisionScalar;
-
-    /**
-     * @notice The difference between mantissa precision and the underlying precision.
-     */
-    uint8 public underlyingPrecisionScalar;
-
-    /**
-     * @notice The standard number of decimals a yToken has.
-     */
-    uint8 public constant defaultNumberOfDecimals = 18;
+    uint256 public underlyingPrecisionScalar;
 
     /**
      * @notice Indicator that this is a YToken contract, for inspection.

@@ -101,7 +101,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Reentrancy
         vars.collateralPriceFromOracle = oracle.price(yToken.collateral().symbol());
         require(vars.collateralPriceFromOracle > 0, "ERR_COLLATERAL_PRICE_ZERO");
 
-        (vars.mathErr, vars.collateralPriceUpscaled) = mulUInt(vars.collateralPriceFromOracle, 1e12);
+        (vars.mathErr, vars.collateralPriceUpscaled) = mulUInt(vars.collateralPriceFromOracle, oraclePricePrecisionScalar);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_ACCOUNT_LIQUIDITY_MATH_ERROR");
 
         (vars.mathErr, vars.hypotheticalLockedCollateralUpscaled) = mulUInt(
@@ -119,7 +119,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Reentrancy
         vars.underlyingPriceFromOracle = oracle.price(yToken.underlying().symbol());
         require(vars.underlyingPriceFromOracle > 0, "ERR_UNDERLYING_PRICE_ZERO");
 
-        (vars.mathErr, vars.underlyingPriceUpscaled) = mulUInt(vars.underlyingPriceFromOracle, 1e12);
+        (vars.mathErr, vars.underlyingPriceUpscaled) = mulUInt(vars.underlyingPriceFromOracle, oraclePricePrecisionScalar);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_ACCOUNT_LIQUIDITY_MATH_ERROR");
 
         (vars.mathErr, vars.debtValue) = mulExp(
