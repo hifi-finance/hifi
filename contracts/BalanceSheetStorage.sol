@@ -22,7 +22,7 @@ abstract contract BalanceSheetStorage {
     FintrollerInterface public fintroller;
 
     /**
-     * @dev One vault for each yToken for each user.
+     * @dev One vault for each yToken for each account.
      */
     mapping(address => mapping(address => Vault)) internal vaults;
 

@@ -61,7 +61,7 @@ abstract contract YTokenStorage {
     Erc20Interface public underlying;
 
     /**
-     * @dev One vault for each user.
+     * @dev One vault for each account.
      */
     mapping(address => Vault) internal vaults;
 

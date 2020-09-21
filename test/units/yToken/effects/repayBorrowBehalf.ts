@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { BalanceSheetConstants, OneHundredTokens, TenTokens } from "../../../helpers/constants";
+import { BalanceSheetConstants, OneHundredTokens, OneThousandPercent, TenTokens } from "../../../helpers/constants";
 import { BalanceSheetErrors, YTokenErrors } from "../../../helpers/errors";
 import { stubGetBond, stubVaultDebt, stubVaultLockedCollateral } from "../../../helpers/stubs";
 
@@ -44,6 +44,9 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
                 collateralAmount,
               );
               await this.stubs.fintroller.mock.borrowAllowed.withArgs(this.contracts.yToken.address).returns(true);
+              await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
+                .withArgs(this.contracts.yToken.address, this.accounts.brad, collateralAmount, repayBorrowAmount)
+                .returns(OneThousandPercent);
               await this.stubs.balanceSheet.mock.setVaultDebt
                 .withArgs(this.contracts.yToken.address, this.accounts.brad, repayBorrowAmount)
                 .returns(true);
@@ -114,13 +117,16 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
 
               /* Lucy borrows 100 yDAI. */
               await this.stubs.fintroller.mock.borrowAllowed.withArgs(this.contracts.yToken.address).returns(true);
+              await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
+                .withArgs(this.contracts.yToken.address, this.accounts.lucy, collateralAmount, repayBorrowAmount)
+                .returns(OneThousandPercent);
               await this.stubs.balanceSheet.mock.setVaultDebt
                 .withArgs(this.contracts.yToken.address, this.accounts.lucy, repayBorrowAmount)
                 .returns(true);
               await this.contracts.yToken.connect(this.signers.lucy).borrow(repayBorrowAmount);
               await stubVaultDebt.call(this, this.contracts.yToken.address, this.accounts.lucy, repayBorrowAmount);
 
-              /* The yToken's makes an internal call to this stubbed function. */
+              /* The yToken makes an internal call to this stubbed function. */
               await this.stubs.balanceSheet.mock.setVaultDebt
                 .withArgs(this.contracts.yToken.address, this.accounts.lucy, Zero)
                 .returns(true);

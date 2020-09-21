@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.7.1;
 
-import "@nomiclabs/buidler/console.sol";
 import "./BalanceSheetInterface.sol";
 import "./FintrollerInterface.sol";
 import "./YTokenInterface.sol";
@@ -24,8 +23,8 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         _;
     }
 
-    modifier isVaultOpen(address user) {
-        require(balanceSheet.isVaultOpen(this, user), "ERR_VAULT_NOT_OPEN");
+    modifier isVaultOpen(address account) {
+        require(balanceSheet.isVaultOpen(this, account), "ERR_VAULT_NOT_OPEN");
         _;
     }
 
@@ -100,6 +99,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         uint256 lockedCollateralUpscaled;
         Exp lockedCollateralValue;
         Exp hypotheticalCollateralizationRatio;
+        uint256 hypotheticalCollateralizationRatioMantissa;
         uint256 newDebt;
         uint256 thresholdCollateralizationRatioMantissa;
         uint256 underlyingPriceFromOracle;
@@ -132,66 +132,29 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
 
         /* TODO: check liquidity in the Guarantor Pool and Redemption Pool. */
 
-        /* Checks: the hypothetical collateralization ratio is above the threshold. */
+        /* Add the borrow amount to the current debt. */
         (vars.debt, , vars.lockedCollateral, ) = balanceSheet.getVault(this, msg.sender);
-        // console.log("vars.debt: %d", vars.debt);
-        // console.log("vars.lockedCollateral: %d", vars.lockedCollateral);
-
-        (vars.mathErr, vars.lockedCollateralUpscaled) = mulUInt(vars.lockedCollateral, collateralPrecisionScalar);
+        require(vars.lockedCollateral > 0, "ERR_BORROW_LOCKED_COLLATERAL_ZERO");
+        (vars.mathErr, vars.newDebt) = addUInt(vars.debt, borrowAmount);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
-        // console.log("vars.lockedCollateralUpscaled: %d", vars.lockedCollateralUpscaled);
 
-        UniswapAnchoredViewInterface oracle = fintroller.oracle();
-        vars.collateralPriceFromOracle = oracle.price(collateral.symbol());
-        // console.log("vars.collateralPriceFromOracle: %d", vars.collateralPriceFromOracle);
-        require(vars.collateralPriceFromOracle > 0, "ERR_COLLATERAL_PRICE_ZERO");
-
-        (vars.mathErr, vars.collateralPriceNormalized) = mulUInt(vars.collateralPriceFromOracle, 1e12);
-        // console.log("vars.collateralPriceNormalized: %d", vars.collateralPriceNormalized);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_FREE_COLLATERAL_MATH_ERROR");
-
-        (vars.mathErr, vars.lockedCollateralValue) = mulExp(
-            Exp({ mantissa: vars.lockedCollateralUpscaled }),
-            Exp({ mantissa: vars.collateralPriceNormalized })
+        /* Checks: the hypothetical collateralization ratio is above the threshold. */
+        vars.hypotheticalCollateralizationRatioMantissa = balanceSheet.getHypotheticalCollateralizationRatio(
+            this,
+            msg.sender,
+            vars.lockedCollateral,
+            vars.newDebt
         );
-        // console.log("vars.lockedCollateralValue.mantissa: %d", vars.lockedCollateralValue.mantissa);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
-
-        vars.underlyingPriceFromOracle = oracle.price(underlying.symbol());
-        // console.log("vars.underlyingPriceFromOracle: %d", vars.underlyingPriceFromOracle);
-        require(vars.underlyingPriceFromOracle > 0, "ERR_UNDERLYING_PRICE_ZERO");
-
-        (vars.mathErr, vars.underlyingPriceUpscaled) = mulUInt(vars.underlyingPriceFromOracle, 1e12);
-        // console.log("vars.underlyingPriceUpscaled: %d", vars.underlyingPriceUpscaled);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
-
-        (vars.mathErr, vars.borrowValue) = mulExp(
-            Exp({ mantissa: borrowAmount }),
-            Exp({ mantissa: vars.underlyingPriceUpscaled })
-        );
-        // console.log("vars.borrowValue.mantissa: %d", vars.borrowValue.mantissa);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
-
-        (vars.mathErr, vars.hypotheticalCollateralizationRatio) = divExp(vars.lockedCollateralValue, vars.borrowValue);
-        // console.log(
-        //     "vars.hypotheticalCollateralizationRatio.mantissa: %d",
-        //     vars.hypotheticalCollateralizationRatio.mantissa
-        // );
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
-
         (vars.thresholdCollateralizationRatioMantissa) = fintroller.getBond(this);
-        // console.log("vars.thresholdCollateralizationRatioMantissa: %d", vars.thresholdCollateralizationRatioMantissa);
         require(
-            vars.hypotheticalCollateralizationRatio.mantissa >= vars.thresholdCollateralizationRatioMantissa,
+            vars.hypotheticalCollateralizationRatioMantissa >= vars.thresholdCollateralizationRatioMantissa,
             "ERR_BELOW_THRESHOLD_COLLATERALIZATION_RATIO"
         );
 
         /* Effects: print the new yTokens into existence. */
         mintInternal(msg.sender, borrowAmount);
 
-        /* Interactions: increase the debt of the user. */
-        (vars.mathErr, vars.newDebt) = addUInt(vars.debt, borrowAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
+        /* Interactions: increase the debt of the account. */
         require(balanceSheet.setVaultDebt(this, msg.sender, vars.newDebt), "ERR_BORROW_SET_VAULT_DEBT");
 
         /* Emit a Borrow, Mint and Transfer event. */
@@ -269,7 +232,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
     }
 
     /**
-     * @notice Deletes the user's debt from the registry and take the yTokens out of circulation.
+     * @notice Deletes the account's debt from the registry and take the yTokens out of circulation.
      * @dev Emits a {RepayBorrow} and a {Transfer} event.
      *
      * Requirements:
@@ -298,7 +261,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
      * @notice Clears the borrower's debt from the registry and take the yTokens out of circulation.
      * @dev Emits a {RepayBorrow}, {Burn} and {Transfer} event.
      *
-     * Requirements: same as the `repayBorrow` function, but here `borrower` is the user who must have
+     * Requirements: same as the `repayBorrow` function, but here `borrower` is the account who must have
      * at least `repayAmount` yTokens to repay the borrow.
      *
      * @param borrower The account for whom to repay the borrow.
@@ -375,11 +338,11 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         /* Checks: the payer has enough yTokens. */
         require(balanceOf(payer) >= repayAmount, "ERR_REPAY_BORROW_INSUFFICIENT_BALANCE");
 
-        /* Checks: user has a debt to pay. */
+        /* Checks: account has a debt to pay. */
         (vars.debt, , , ) = balanceSheet.getVault(this, borrower);
         require(vars.debt >= repayAmount, "ERR_REPAY_BORROW_INSUFFICIENT_DEBT");
 
-        /* Effects: reduce the debt of the user. */
+        /* Effects: reduce the debt of the account. */
         (vars.mathErr, vars.newDebt) = subUInt(vars.debt, repayAmount);
         /* This operation can't fail because of the previous `require`. */
         assert(vars.mathErr == MathError.NO_ERROR);
@@ -387,7 +350,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         /* Effects: burn the yTokens. */
         burnInternal(payer, repayAmount);
 
-        /* Interactions: reduce the debt of the user. */
+        /* Interactions: reduce the debt of the account. */
         require(balanceSheet.setVaultDebt(this, borrower, vars.newDebt), "ERR_REPAY_BORROW_SET_VAULT_DEBT");
     }
 

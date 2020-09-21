@@ -15,6 +15,7 @@ export const UnitsPerToken: BigNumber = BigNumber.from("1000000000000000000");
 export const OnePercent: BigNumber = BigNumber.from("10000000000000000");
 export const OneHundredPercent: BigNumber = OnePercent.mul(100);
 export const OneHundredAndFiftyPercent: BigNumber = OnePercent.mul(150);
+export const OneThousandPercent: BigNumber = OnePercent.mul(1000);
 export const TenThousandPercent: BigNumber = OnePercent.mul(10000);
 
 export const OneToken: BigNumber = UnitsPerToken;

@@ -26,11 +26,11 @@ abstract contract YTokenInterface is YTokenStorage {
     /**
      * EVENTS
      */
-    event Borrow(address indexed user, uint256 repayAmount);
+    event Borrow(address indexed account, uint256 repayAmount);
 
-    event Burn(address indexed user, uint256 burnAmount);
+    event Burn(address indexed account, uint256 burnAmount);
 
-    event Mint(address indexed user, uint256 mintAmount);
+    event Mint(address indexed account, uint256 mintAmount);
 
     event RepayBorrow(address indexed payer, address indexed borrower, uint256 repayAmount);
 }

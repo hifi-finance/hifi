@@ -5,7 +5,7 @@ import { expect } from "chai";
 import { BalanceSheetConstants, YTokenConstants } from "../../../helpers/constants";
 import { BalanceSheetErrors, YTokenErrors } from "../../../helpers/errors";
 import { FintrollerErrors } from "../../../helpers/errors";
-import { OneHundredTokens, TenTokens } from "../../../helpers/constants";
+import { OneHundredTokens, OneThousandPercent, TenTokens } from "../../../helpers/constants";
 import { contextForTimeDependentTests } from "../../../helpers/mochaContexts";
 import { increaseTime } from "../../../helpers/jsonRpcHelpers";
 import { stubGetBond, stubVaultFreeCollateral, stubVaultLockedCollateral } from "../../../helpers/stubs";
@@ -52,7 +52,10 @@ export default function shouldBehaveLikeBorrow(): void {
                     collateralAmount,
                   );
 
-                  /* The yToken makes an internal call to this stubbed function. */
+                  /* The yToken makes an internal call to these stubbed functions. */
+                  await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
+                    .withArgs(this.contracts.yToken.address, this.accounts.brad, collateralAmount, borrowAmount)
+                    .returns(OneThousandPercent);
                   await this.stubs.balanceSheet.mock.setVaultDebt
                     .withArgs(this.contracts.yToken.address, this.accounts.brad, borrowAmount)
                     .returns(true);
@@ -93,20 +96,32 @@ export default function shouldBehaveLikeBorrow(): void {
                     this.accounts.brad,
                     collateralAmount,
                   );
+
+                  /* The yToken makes an internal call to this stubbed function. */
+                  await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
+                    .withArgs(this.contracts.yToken.address, this.accounts.brad, Zero, borrowAmount)
+                    .returns(Zero);
                 });
 
                 it("reverts", async function () {
                   await expect(
                     this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount),
-                  ).to.be.revertedWith(BalanceSheetErrors.BelowThresholdCollateralizationRatio);
+                  ).to.be.revertedWith(YTokenErrors.BorrowLockedCollateralZero);
                 });
               });
             });
 
             describe("when the caller did not deposit any collateral", function () {
+              beforeEach(async function () {
+                /* The yToken makes an internal call to this stubbed function. */
+                await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
+                  .withArgs(this.contracts.yToken.address, this.accounts.brad, Zero, borrowAmount)
+                  .returns(Zero);
+              });
+
               it("reverts", async function () {
                 await expect(this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount)).to.be.revertedWith(
-                  BalanceSheetErrors.BelowThresholdCollateralizationRatio,
+                  YTokenErrors.BorrowLockedCollateralZero,
                 );
               });
             });

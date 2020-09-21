@@ -29,7 +29,7 @@ contract Orchestratable is OrchestratableInterface {
     }
 
     /**
-     * @notice Restricts usage to authorized users.
+     * @notice Restricts usage to authorized accounts.
      */
     modifier onlyOrchestrated() {
         require(orchestration[msg.sender][msg.sig], "ERR_NOT_ORCHESTRATED");
@@ -45,13 +45,12 @@ contract Orchestratable is OrchestratableInterface {
 
     /**
      * @notice Adds new orchestrated address.
-     * @param user Address of user or contract to give access to this contract.
+     * @param account Address of EOA or contract to give access to this contract.
      * @param signature bytes4 signature of the function to be given orchestrated access to.
-     * It seems to me a bad idea to give access to humans, and would use this only for predictable smart contracts.
      */
-    function orchestrate(address user, bytes4 signature) external override onlyConductor {
-        orchestration[user][signature] = true;
-        emit GrantAccess(user);
+    function orchestrate(address account, bytes4 signature) external override onlyConductor {
+        orchestration[account][signature] = true;
+        emit GrantAccess(account);
     }
 
     /**

@@ -20,7 +20,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      */
 
     /**
-     * @notice Check if the user should be allowed to borrow yTokens.
+     * @notice Check if the account should be allowed to borrow yTokens.
      * @dev Reverts it the bond is not listed.
      * @param yToken The bond to make the check against.
      * @return bool true=allowed, false=not allowed.
@@ -32,7 +32,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     }
 
     /**
-     * @notice Checks if the user should be allowed to deposit new collateral.
+     * @notice Checks if the account should be allowed to deposit new collateral.
      * @dev Reverts it the bond is not listed.
      * @param yToken The bond to make the check against.
      * @return bool true=allowed, false=not allowed.
@@ -54,7 +54,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     }
 
     /**
-     * @notice Checks if the user should be allowed to redeem the underlying asset from the Redemption Pool.
+     * @notice Checks if the account should be allowed to redeem the underlying asset from the Redemption Pool.
      * @dev Reverts it the bond is not listed.
      * @param yToken The bond to make the check against.
      * @return bool true=allowed, false=not allowed.
@@ -66,7 +66,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     }
 
     /**
-     * @notice Checks if the user should be allowed to repay borrows.
+     * @notice Checks if the account should be allowed to repay borrows.
      * @dev Reverts it the bond is not listed.
      * @param yToken The bond to make the check against.
      * @return bool true=allowed, false=not allowed.
@@ -78,7 +78,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     }
 
     /**
-     * @notice Checks if the user should be allowed to the supply underlying asset to the Redemption Pool.
+     * @notice Checks if the account should be allowed to the supply underlying asset to the Redemption Pool.
      * @dev Reverts it the bond is not listed.
      * @param yToken The bond to make the check against.
      * @return bool true=allowed, false=not allowed.
