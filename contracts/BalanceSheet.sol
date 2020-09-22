@@ -75,14 +75,14 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Reentrancy
      *
      * @param yToken The yToken for which to make the query against.
      * @param account The account for whom to make the query against.
-     * @param lockedCollateral The hypothetical locked collateral.
+     * @param lockedCollateralAmount The hypothetical locked collateral.
      * @param debt The hypothetical debt.
      * @return A quotient if locked collateral is non-zero, otherwise zero.
      */
     function getHypotheticalCollateralizationRatio(
         YTokenInterface yToken,
         address account,
-        uint256 lockedCollateral,
+        uint256 lockedCollateralAmount,
         uint256 debt
     ) public override view returns (uint256) {
         GetHypotheticalAccountLiquidityLocalVars memory vars;
@@ -91,7 +91,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Reentrancy
         require(vaults[address(yToken)][account].isOpen, "ERR_VAULT_NOT_OPEN");
 
         /* Avoid the zero edge cases. */
-        if (lockedCollateral == 0) {
+        if (lockedCollateralAmount == 0) {
             return 0;
         }
         require(debt > 0, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_DEBT_ZERO");
@@ -114,7 +114,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Reentrancy
 
         /* Upscale the collateral amount, which can have any precision, to mantissa precision. */
         (vars.mathErr, vars.hypotheticalLockedCollateralUpscaled) = mulUInt(
-            lockedCollateral,
+            lockedCollateralAmount,
             yToken.collateralPrecisionScalar()
         );
         require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
