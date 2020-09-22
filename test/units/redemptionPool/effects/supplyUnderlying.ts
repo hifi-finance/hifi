@@ -30,7 +30,7 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
             await this.stubs.fintroller.mock.supplyUnderlyingAllowed.withArgs(this.stubs.yToken.address).returns(true);
           });
 
-          describe("when the yToken mint function executes successfully", function () {
+          describe("when the call to mint the yTokens succeeds", function () {
             beforeEach(async function () {
               /* The Redemption Pool makes internal calls to these stubbed functions. */
               await this.stubs.yToken.mock.mint.withArgs(this.accounts.mark, underlyingAmount).returns(true);
@@ -53,7 +53,7 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
             });
           });
 
-          describe("when the yToken mint function fails", function () {
+          describe("when the call to mint the yTokens does not succeed", function () {
             beforeEach(async function () {
               await this.stubs.yToken.mock.mint.withArgs(this.accounts.mark, underlyingAmount).returns(false);
             });
@@ -66,7 +66,7 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
           });
         });
 
-        describe("when the fintroller does not allow supply underling", function () {
+        describe("when the fintroller does not allow supply underlying", function () {
           beforeEach(async function () {
             await this.stubs.fintroller.mock.supplyUnderlyingAllowed.withArgs(this.stubs.yToken.address).returns(false);
           });
@@ -105,17 +105,16 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
   });
 
   describe("when the bond matured", function () {
-    describe("when the bond matured", function () {
-      beforeEach(async function () {
-        /* Set the expiration time to now. */
-        await this.stubs.yToken.mock.expirationTime.returns(Math.round(new Date().getTime() / 1000));
-      });
+    beforeEach(async function () {
+      /* Set the expiration time to now minus one hour. */
+      const nowMinusOneHour: BigNumber = BigNumber.from(Math.round(new Date().getTime() / 1000) - 3600);
+      await this.stubs.yToken.mock.expirationTime.returns(nowMinusOneHour);
+    });
 
-      it("reverts", async function () {
-        await expect(
-          this.contracts.redemptionPool.connect(this.signers.mark).supplyUnderlying(underlyingAmount),
-        ).to.be.revertedWith(YTokenErrors.BondMatured);
-      });
+    it("reverts", async function () {
+      await expect(
+        this.contracts.redemptionPool.connect(this.signers.mark).supplyUnderlying(underlyingAmount),
+      ).to.be.revertedWith(YTokenErrors.BondMatured);
     });
   });
 }

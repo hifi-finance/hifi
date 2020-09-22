@@ -16,8 +16,9 @@ export default function shouldBehaveLikeRedeemUnderlying(): void {
 
   describe("when the bond matured", function () {
     beforeEach(async function () {
-      /* Set the expiration time to now. */
-      await this.stubs.yToken.mock.expirationTime.returns(Math.round(new Date().getTime() / 1000));
+      /* Set the expiration time to now minus one hour. */
+      const nowMinusOneHour: BigNumber = BigNumber.from(Math.round(new Date().getTime() / 1000) - 3600);
+      await this.stubs.yToken.mock.expirationTime.returns(nowMinusOneHour);
     });
 
     describe("when the amount to redeemUnderlying is not zero", function () {
@@ -37,7 +38,7 @@ export default function shouldBehaveLikeRedeemUnderlying(): void {
               await this.contracts.redemptionPool.__godMode_setUnderlyingTotalSupply(underlyingTotalSupply);
             });
 
-            describe("when the yToken burn function executes successfully", function () {
+            describe("when the call to burn the yTokens succeeds", function () {
               beforeEach(async function () {
                 /* The Redemption Pool makes internal calls to these stubbed functions. */
                 await this.stubs.yToken.mock.burn.withArgs(this.accounts.mark, redeemAmount).returns(true);
@@ -58,7 +59,7 @@ export default function shouldBehaveLikeRedeemUnderlying(): void {
               });
             });
 
-            describe("when the yToken burn function fails", function () {
+            describe("when the call to burn the yTokens does not succeed", function () {
               beforeEach(async function () {
                 await this.stubs.yToken.mock.burn.withArgs(this.accounts.mark, redeemAmount).returns(false);
               });
@@ -80,7 +81,7 @@ export default function shouldBehaveLikeRedeemUnderlying(): void {
           });
         });
 
-        describe("when the fintroller does not allow redeemUnderlying", function () {
+        describe("when the fintroller does not allow redeem underlying", function () {
           beforeEach(async function () {
             await this.stubs.fintroller.mock.redeemUnderlyingAllowed.withArgs(this.stubs.yToken.address).returns(false);
           });

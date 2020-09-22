@@ -49,6 +49,7 @@ export enum YTokenErrors {
   BorrowInsufficientLiquidity = "ERR_REDEEM_UNDERLYING_INSUFFICIENT_LIQUIDITY",
   BorrowLockedCollateralZero = "ERR_BORROW_LOCKED_COLLATERAL_ZERO",
   BorrowNotAllowed = "ERR_BORROW_NOT_ALLOWED",
+  BorrowSetVaultDebt = "ERR_BORROW_SET_VAULT_DEBT",
   BorrowZero = "ERR_BORROW_ZERO",
   RepayBorrowInsufficientBalance = "ERR_REPAY_BORROW_INSUFFICIENT_BALANCE",
   RepayBorrowInsufficientDebt = "ERR_REPAY_BORROW_INSUFFICIENT_DEBT",
