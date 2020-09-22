@@ -5,9 +5,10 @@ import shouldBehaveLikeOpenVault from "./effects/openVault";
 import shouldBehaveLikeWithdrawCollateral from "./effects/withdrawCollateral";
 
 import shouldBehaveLikeFintrollerGetter from "./view/fintroller";
+import shouldBehaveLikeGetHypotheticalCollateralizationRatio from "./view/getHypotheticalCollateralizationRatio";
+import shouldBehaveLikeGetValut from "./view/getVault";
 import shouldBehaveLikeIsBalanceSheetGetter from "./view/isBalanceSheet";
 import shouldBehaveLikeIsVaultOpenGetter from "./view/isVaultOpen";
-import shouldBehaveLikeGetValut from "./view/getVault";
 
 export function shouldBehaveLikeBalanceSheet(): void {
   describe("Effects Functions", function () {
@@ -39,6 +40,10 @@ export function shouldBehaveLikeBalanceSheet(): void {
 
     describe("getVault", function () {
       shouldBehaveLikeGetValut();
+    });
+
+    describe("getHypotheticalCollateralizationRatio", function () {
+      shouldBehaveLikeGetHypotheticalCollateralizationRatio();
     });
 
     describe("isBalanceSheet", function () {

@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.7.1;
 
-import "@nomiclabs/buidler/console.sol";
 import "./BalanceSheetInterface.sol";
 import "./FintrollerInterface.sol";
 import "./YTokenInterface.sol";
@@ -41,9 +40,9 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Reentrancy
         uint256 collateralPriceFromOracle;
         uint256 collateralPriceUpscaled;
         uint256 collateralizationRatioMantissa;
-        Exp debtValue;
+        Exp debtUsdValue;
         Exp hypotheticalCollateralizationRatio;
-        Exp hypotheticalLockedCollateralValue;
+        Exp hypotheticalLockedCollateralUsdValue;
         uint256 hypotheticalLockedCollateralUpscaled;
         uint256 underlyingPriceFromOracle;
         uint256 underlyingPriceUpscaled;
@@ -53,7 +52,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Reentrancy
      * @notice Determines the current collateralization ratio for the given account;
      * @param yToken The yToken to make the query against.
      * @param account The account to make the query against.
-     * @return hypotheticalCollateralizationRatioMantissa A quotient if locked collateral is non-zero, otherwise zero.
+     * @return A quotient if locked collateral is non-zero, otherwise zero.
      */
     function getCurrentCollateralizationRatio(YTokenInterface yToken, address account)
         external
@@ -78,61 +77,78 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Reentrancy
      * @param account The account for whom to make the query against.
      * @param lockedCollateral The hypothetical locked collateral.
      * @param debt The hypothetical debt.
-     * @return hypotheticalCollateralizationRatioMantissa A quotient if locked collateral is non-zero, otherwise zero.
+     * @return A quotient if locked collateral is non-zero, otherwise zero.
      */
     function getHypotheticalCollateralizationRatio(
         YTokenInterface yToken,
         address account,
         uint256 lockedCollateral,
         uint256 debt
-    ) public override view returns (uint256 hypotheticalCollateralizationRatioMantissa) {
+    ) public override view returns (uint256) {
         GetHypotheticalAccountLiquidityLocalVars memory vars;
+
+        /* If the vault is not open, a hypothetical collateralization ratio cannot be calculated. */
+        require(vaults[address(yToken)][account].isOpen, "ERR_VAULT_NOT_OPEN");
 
         /* Avoid the zero edge cases. */
         if (lockedCollateral == 0) {
             return 0;
         }
-        require(debt > 0, "ERR_GET_HYPOTHETICAL_ACCOUNT_LIQUIDITY_DEBT_ZERO");
+        require(debt > 0, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_DEBT_ZERO");
 
-        /* If the vault is not open, a hypothetical collateralization ratio cannot be calculated. */
-        require(vaults[address(yToken)][account].isOpen, "ERR_VAULT_NOT_OPEN");
-
+        /* Grab the collateral's USD price from the oracle. */
         UniswapAnchoredViewInterface oracle = fintroller.oracle();
         vars.collateralPriceFromOracle = oracle.price(yToken.collateral().symbol());
         require(vars.collateralPriceFromOracle > 0, "ERR_COLLATERAL_PRICE_ZERO");
 
-        (vars.mathErr, vars.collateralPriceUpscaled) = mulUInt(vars.collateralPriceFromOracle, oraclePricePrecisionScalar);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_ACCOUNT_LIQUIDITY_MATH_ERROR");
+        /* Grab the underlying's USD price from the oracle. */
+        vars.underlyingPriceFromOracle = oracle.price(yToken.underlying().symbol());
+        require(vars.underlyingPriceFromOracle > 0, "ERR_UNDERLYING_PRICE_ZERO");
 
+        /* Upscale the 6 decimal oracle price to mantissa precision. */
+        (vars.mathErr, vars.collateralPriceUpscaled) = mulUInt(
+            vars.collateralPriceFromOracle,
+            oraclePricePrecisionScalar
+        );
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
+
+        /* Upscale the collateral amount, which can have any precision, to mantissa precision. */
         (vars.mathErr, vars.hypotheticalLockedCollateralUpscaled) = mulUInt(
             lockedCollateral,
             yToken.collateralPrecisionScalar()
         );
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_ACCOUNT_LIQUIDITY_MATH_ERROR");
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
 
-        (vars.mathErr, vars.hypotheticalLockedCollateralValue) = mulExp(
+        /* Calculate the value of the collateral in USD. */
+        (vars.mathErr, vars.hypotheticalLockedCollateralUsdValue) = mulExp(
             Exp({ mantissa: vars.hypotheticalLockedCollateralUpscaled }),
             Exp({ mantissa: vars.collateralPriceUpscaled })
         );
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_ACCOUNT_LIQUIDITY_MATH_ERROR");
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
 
-        vars.underlyingPriceFromOracle = oracle.price(yToken.underlying().symbol());
-        require(vars.underlyingPriceFromOracle > 0, "ERR_UNDERLYING_PRICE_ZERO");
+        /* Upscale the 6 decimal oracle price to mantissa precision. */
+        (vars.mathErr, vars.underlyingPriceUpscaled) = mulUInt(
+            vars.underlyingPriceFromOracle,
+            oraclePricePrecisionScalar
+        );
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
 
-        (vars.mathErr, vars.underlyingPriceUpscaled) = mulUInt(vars.underlyingPriceFromOracle, oraclePricePrecisionScalar);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_ACCOUNT_LIQUIDITY_MATH_ERROR");
-
-        (vars.mathErr, vars.debtValue) = mulExp(
+        /* Calculate the value of the debt in USD. */
+        (vars.mathErr, vars.debtUsdValue) = mulExp(
             Exp({ mantissa: debt }),
             Exp({ mantissa: vars.underlyingPriceUpscaled })
         );
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_ACCOUNT_LIQUIDITY_MATH_ERROR");
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
 
+        /**
+         * Calculate the collateralization ratio by dividing the USD value of the hypothetical locked collateral by
+         * the USD value of the debt.
+         */
         (vars.mathErr, vars.hypotheticalCollateralizationRatio) = divExp(
-            vars.hypotheticalLockedCollateralValue,
-            vars.debtValue
+            vars.hypotheticalLockedCollateralUsdValue,
+            vars.debtUsdValue
         );
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_ACCOUNT_LIQUIDITY_MATH_ERROR");
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
 
         return vars.hypotheticalCollateralizationRatio.mantissa;
     }

@@ -6,9 +6,9 @@ import {
   BalanceSheetConstants,
   OneHundredTokens,
   TenTokens,
-  OneThousandPercent,
+  OneThousandPercentMantissa,
 } from "../../../helpers/constants";
-import { BalanceSheetErrors, YTokenErrors } from "../../../helpers/errors";
+import { BalanceSheetErrors, GenericErrors, YTokenErrors } from "../../../helpers/errors";
 import { FintrollerErrors } from "../../../helpers/errors";
 import { stubGetBond, stubVaultDebt, stubVaultLockedCollateral } from "../../../helpers/stubs";
 
@@ -49,7 +49,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
               await this.stubs.fintroller.mock.borrowAllowed.withArgs(this.contracts.yToken.address).returns(true);
               await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
                 .withArgs(this.contracts.yToken.address, this.accounts.brad, collateralAmount, repayBorrowAmount)
-                .returns(OneThousandPercent);
+                .returns(OneThousandPercentMantissa);
               await this.stubs.balanceSheet.mock.setVaultDebt
                 .withArgs(this.contracts.yToken.address, this.accounts.brad, repayBorrowAmount)
                 .returns(true);
@@ -100,7 +100,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
               await this.stubs.fintroller.mock.borrowAllowed.withArgs(this.contracts.yToken.address).returns(true);
               await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
                 .withArgs(this.contracts.yToken.address, this.accounts.brad, collateralAmount, repayBorrowAmount)
-                .returns(OneThousandPercent);
+                .returns(OneThousandPercentMantissa);
               await this.stubs.balanceSheet.mock.setVaultDebt
                 .withArgs(this.contracts.yToken.address, this.accounts.brad, repayBorrowAmount)
                 .returns(true);
@@ -184,7 +184,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
 
     it("reverts", async function () {
       await expect(this.contracts.yToken.connect(this.signers.brad).repayBorrow(repayBorrowAmount)).to.be.revertedWith(
-        BalanceSheetErrors.VaultNotOpen,
+        GenericErrors.VaultNotOpen,
       );
     });
   });

@@ -2,11 +2,11 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { OnePercent } from "../../../helpers/constants";
+import { OnePercentMantissa } from "../../../helpers/constants";
 
 export default function shouldBehaveLikeGetBond(): void {
   /* Equivalent to 175% */
-  const newCollateralizationRatioMantissa: BigNumber = OnePercent.mul(175);
+  const newCollateralizationRatioMantissa: BigNumber = OnePercentMantissa.mul(175);
 
   describe("when the bond is listed", function () {
     beforeEach(async function () {

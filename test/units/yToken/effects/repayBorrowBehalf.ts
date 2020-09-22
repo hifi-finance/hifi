@@ -2,8 +2,13 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { BalanceSheetConstants, OneHundredTokens, OneThousandPercent, TenTokens } from "../../../helpers/constants";
-import { BalanceSheetErrors, YTokenErrors } from "../../../helpers/errors";
+import {
+  BalanceSheetConstants,
+  OneHundredTokens,
+  OneThousandPercentMantissa,
+  TenTokens,
+} from "../../../helpers/constants";
+import { GenericErrors, YTokenErrors } from "../../../helpers/errors";
 import { stubGetBond, stubVaultDebt, stubVaultLockedCollateral } from "../../../helpers/stubs";
 
 /**
@@ -46,7 +51,7 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
               await this.stubs.fintroller.mock.borrowAllowed.withArgs(this.contracts.yToken.address).returns(true);
               await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
                 .withArgs(this.contracts.yToken.address, this.accounts.brad, collateralAmount, repayBorrowAmount)
-                .returns(OneThousandPercent);
+                .returns(OneThousandPercentMantissa);
               await this.stubs.balanceSheet.mock.setVaultDebt
                 .withArgs(this.contracts.yToken.address, this.accounts.brad, repayBorrowAmount)
                 .returns(true);
@@ -119,7 +124,7 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
               await this.stubs.fintroller.mock.borrowAllowed.withArgs(this.contracts.yToken.address).returns(true);
               await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
                 .withArgs(this.contracts.yToken.address, this.accounts.lucy, collateralAmount, repayBorrowAmount)
-                .returns(OneThousandPercent);
+                .returns(OneThousandPercentMantissa);
               await this.stubs.balanceSheet.mock.setVaultDebt
                 .withArgs(this.contracts.yToken.address, this.accounts.lucy, repayBorrowAmount)
                 .returns(true);
@@ -176,7 +181,7 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
     it("reverts", async function () {
       await expect(
         this.contracts.yToken.connect(this.signers.lucy).repayBorrowBehalf(this.accounts.brad, repayBorrowAmount),
-      ).to.be.revertedWith(BalanceSheetErrors.VaultNotOpen);
+      ).to.be.revertedWith(GenericErrors.VaultNotOpen);
     });
   });
 }

@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { BalanceSheetErrors, FintrollerErrors } from "../../../helpers/errors";
+import { BalanceSheetErrors, FintrollerErrors, GenericErrors } from "../../../helpers/errors";
 import { TenTokens } from "../../../helpers/constants";
 import { stubGetBond } from "../../../helpers/stubs";
 
@@ -118,7 +118,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
         this.contracts.balanceSheet
           .connect(this.signers.brad)
           .depositCollateral(this.stubs.yToken.address, collateralAmount),
-      ).to.be.revertedWith(BalanceSheetErrors.VaultNotOpen);
+      ).to.be.revertedWith(GenericErrors.VaultNotOpen);
     });
   });
 }

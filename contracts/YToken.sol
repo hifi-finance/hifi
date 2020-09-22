@@ -68,7 +68,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
             defaultNumberOfDecimals >= Erc20Interface(underlying).decimals(),
             "ERR_CONSTRUCTOR_UNDERLYING_DECIMALS_OVERFLOW"
         );
-        underlyingPrecisionScalar = 1 ** (defaultNumberOfDecimals / Erc20Interface(underlying).decimals());
+        underlyingPrecisionScalar = 1**(defaultNumberOfDecimals / Erc20Interface(underlying).decimals());
 
         collateral = collateral_;
         require(

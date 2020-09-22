@@ -3,9 +3,9 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { BalanceSheetConstants, YTokenConstants } from "../../../helpers/constants";
-import { BalanceSheetErrors, YTokenErrors } from "../../../helpers/errors";
+import { GenericErrors, YTokenErrors } from "../../../helpers/errors";
 import { FintrollerErrors } from "../../../helpers/errors";
-import { OneHundredTokens, OneThousandPercent, TenTokens } from "../../../helpers/constants";
+import { OneHundredTokens, OneThousandPercentMantissa, TenTokens } from "../../../helpers/constants";
 import { contextForTimeDependentTests } from "../../../helpers/mochaContexts";
 import { increaseTime } from "../../../helpers/jsonRpcHelpers";
 import { stubGetBond, stubVaultFreeCollateral, stubVaultLockedCollateral } from "../../../helpers/stubs";
@@ -55,7 +55,7 @@ export default function shouldBehaveLikeBorrow(): void {
                   /* The yToken makes an internal call to these stubbed functions. */
                   await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
                     .withArgs(this.contracts.yToken.address, this.accounts.brad, collateralAmount, borrowAmount)
-                    .returns(OneThousandPercent);
+                    .returns(OneThousandPercentMantissa);
                   await this.stubs.balanceSheet.mock.setVaultDebt
                     .withArgs(this.contracts.yToken.address, this.accounts.brad, borrowAmount)
                     .returns(true);
@@ -186,7 +186,7 @@ export default function shouldBehaveLikeBorrow(): void {
 
     it("reverts", async function () {
       await expect(this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount)).to.be.revertedWith(
-        BalanceSheetErrors.VaultNotOpen,
+        GenericErrors.VaultNotOpen,
       );
     });
   });

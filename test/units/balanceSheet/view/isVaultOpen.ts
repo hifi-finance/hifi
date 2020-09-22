@@ -9,7 +9,7 @@ export default function shouldBehaveLikeOpenVault() {
       await this.contracts.balanceSheet.connect(this.signers.brad).openVault(this.stubs.yToken.address);
     });
 
-    it("returns true", async function () {
+    it("retrieves true", async function () {
       const isVaultOpen: boolean = await this.contracts.balanceSheet.isVaultOpen(
         this.stubs.yToken.address,
         this.accounts.brad,
@@ -19,7 +19,7 @@ export default function shouldBehaveLikeOpenVault() {
   });
 
   describe("when the vault is not open", function () {
-    it("returns false", async function () {
+    it("retrieves false", async function () {
       const isVaultOpen: boolean = await this.contracts.balanceSheet.isVaultOpen(
         this.stubs.yToken.address,
         this.accounts.brad,

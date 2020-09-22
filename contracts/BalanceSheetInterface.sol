@@ -23,7 +23,7 @@ abstract contract BalanceSheetInterface is BalanceSheetStorage, Exponential {
         address account,
         uint256 lockedCollateralAmount,
         uint256 debt
-    ) public virtual view returns (uint256 hypotheticalCollateralizationRatioMantissa);
+    ) public virtual view returns (uint256);
 
     function getVault(YTokenInterface yToken, address account)
         external

@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { BalanceSheetErrors } from "../../../helpers/errors";
+import { BalanceSheetErrors, GenericErrors } from "../../../helpers/errors";
 import { TenTokens } from "../../../helpers/constants";
 import { Vault } from "../../../../@types";
 
@@ -80,7 +80,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
         this.contracts.balanceSheet
           .connect(this.signers.brad)
           .lockCollateral(this.stubs.yToken.address, collateralAmount),
-      ).to.be.revertedWith(BalanceSheetErrors.VaultNotOpen);
+      ).to.be.revertedWith(GenericErrors.VaultNotOpen);
     });
   });
 }

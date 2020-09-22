@@ -8,10 +8,9 @@ export enum BalanceSheetErrors {
   DepositCollateralNotAllowed = "ERR_DEPOSIT_COLLATERAL_NOT_ALLOWED",
   FreeCollateralInsufficientLockedCollateral = "ERR_FREE_COLLATERAL_INSUFFICIENT_LOCKED_COLLATERAL",
   FreeCollateralZero = "ERR_FREE_COLLATERAL_ZERO",
+  GetHypotheticalCollateralizationRatioDebtZero = "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_DEBT_ZERO",
   LockCollateralInsufficientFreeCollateral = "ERR_LOCK_COLLATERAL_INSUFFICIENT_FREE_COLLATERAL",
   LockCollateralZero = "ERR_LOCK_COLLATERAL_ZERO",
-  VaultOpen = "ERR_VAULT_OPEN",
-  VaultNotOpen = "ERR_VAULT_NOT_OPEN",
   WithdrawCollateralInsufficientFreeCollateral = "ERR_WITHDRAW_COLLATERAL_INSUFFICIENT_FREE_COLLATERAL",
   WithdrawCollateralZero = "ERR_WITHDRAW_COLLATERAL_ZERO",
 }
@@ -25,6 +24,13 @@ export enum FintrollerErrors {
   SetCollateralizationRatioOverflow = "ERR_SET_COLLATERALIZATION_RATIO_OVERFLOW",
   SetCollateralizationRatioUnderflow = "ERR_SET_COLLATERALIZATION_RATIO_UNDERFLOW",
   SetOracleZeroAddress = "ERR_SET_ORACLE_ZERO_ADDRESS",
+}
+
+export enum GenericErrors {
+  CollateralPriceZero = "ERR_COLLATERAL_PRICE_ZERO",
+  UnderlyingPriceZero = "ERR_UNDERLYING_PRICE_ZERO",
+  VaultOpen = "ERR_VAULT_OPEN",
+  VaultNotOpen = "ERR_VAULT_NOT_OPEN",
 }
 
 export enum RedemptionPoolErrors {

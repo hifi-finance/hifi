@@ -1,7 +1,7 @@
 import { AddressZero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { BalanceSheetErrors } from "../../../helpers/errors";
+import { GenericErrors } from "../../../helpers/errors";
 
 export default function shouldBehaveLikeOpenVault() {
   describe("when the vault is not open", function () {
@@ -32,7 +32,7 @@ export default function shouldBehaveLikeOpenVault() {
     it("reverts", async function () {
       await expect(
         this.contracts.balanceSheet.connect(this.signers.brad).openVault(this.stubs.yToken.address),
-      ).to.be.revertedWith(BalanceSheetErrors.VaultOpen);
+      ).to.be.revertedWith(GenericErrors.VaultOpen);
     });
   });
 }

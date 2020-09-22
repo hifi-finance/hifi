@@ -12,11 +12,11 @@ export const AddressOne: string = "0x0000000000000000000000000000000000000001";
 export const DefaultBlockGasLimit: BigNumber = BigNumber.from("10000000");
 export const UnitsPerToken: BigNumber = BigNumber.from("1000000000000000000");
 
-export const OnePercent: BigNumber = BigNumber.from("10000000000000000");
-export const OneHundredPercent: BigNumber = OnePercent.mul(100);
-export const OneHundredAndFiftyPercent: BigNumber = OnePercent.mul(150);
-export const OneThousandPercent: BigNumber = OnePercent.mul(1000);
-export const TenThousandPercent: BigNumber = OnePercent.mul(10000);
+export const OnePercentMantissa: BigNumber = BigNumber.from("10000000000000000");
+export const OneHundredPercentMantissa: BigNumber = OnePercentMantissa.mul(100);
+export const OneHundredAndFiftyPercentMantissa: BigNumber = OnePercentMantissa.mul(150);
+export const OneThousandPercentMantissa: BigNumber = OnePercentMantissa.mul(1000);
+export const TenThousandPercentMantissa: BigNumber = OnePercentMantissa.mul(10000);
 
 export const OneToken: BigNumber = UnitsPerToken;
 export const TenTokens: BigNumber = OneToken.mul(10);
@@ -37,9 +37,9 @@ export const BalanceSheetConstants = {
 };
 
 export const FintrollerConstants = {
-  CollateralizationRatioLowerBoundMantissa: OneHundredPercent,
-  CollateralizationRatioUpperBoundMantissa: TenThousandPercent,
-  DefaultCollateralizationRatioMantissa: OneHundredAndFiftyPercent,
+  CollateralizationRatioLowerBoundMantissa: OneHundredPercentMantissa,
+  CollateralizationRatioUpperBoundMantissa: TenThousandPercentMantissa,
+  DefaultCollateralizationRatioMantissa: OneHundredAndFiftyPercentMantissa,
 };
 
 export const YTokenConstants = {

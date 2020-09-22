@@ -39,6 +39,7 @@ export async function balanceSheetFixture(
   collateral: MockContract;
   fintroller: MockContract;
   oracle: MockContract;
+  underlying: MockContract;
   yToken: MockContract;
 }> {
   const deployer: Signer = signers[0];
@@ -60,7 +61,7 @@ export async function balanceSheetFixture(
   const balanceSheet: BalanceSheet = ((await deployContract(deployer, BalanceSheetArtifact, [
     fintroller.address,
   ])) as unknown) as BalanceSheet;
-  return { balanceSheet, collateral, fintroller, oracle, yToken };
+  return { balanceSheet, collateral, fintroller, oracle, underlying, yToken };
 }
 
 export async function fintrollerFixture(
