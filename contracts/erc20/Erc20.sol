@@ -2,7 +2,7 @@
 pragma solidity ^0.7.1;
 
 import "./Erc20Interface.sol";
-import "../math/SafeMath.sol";
+import "../math/CarefulMath.sol";
 
 /**
  * @title Erc20
@@ -25,9 +25,7 @@ import "../math/SafeMath.sol";
  * @dev Forked from OpenZeppelin
  * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v3.1.0/contracts/token/Erc20/Erc20.sol
  */
-contract Erc20 is Erc20Interface {
-    using SafeMath for uint256;
-
+contract Erc20 is Erc20Interface, CarefulMath {
     /**
      * @dev All three of these values are immutable: they can only be set once during construction.
      * @param name_ Erc20 name of this token.
@@ -108,11 +106,11 @@ contract Erc20 is Erc20Interface {
      * `subtractedValue`.
      */
     function decreaseAllowance(address spender, uint256 subtractedValue) external virtual returns (bool) {
-        approveInternal(
-            msg.sender,
-            spender,
-            allowances[msg.sender][spender].sub(subtractedValue, "Erc20: decreased allowance below zero")
-        );
+        MathError mathErr;
+        uint256 newAllowance;
+        (mathErr, newAllowance) = subUInt(allowances[msg.sender][spender], subtractedValue);
+        require(mathErr == MathError.NO_ERROR, "ERR_ERC20_DECREASE_ALLOWANCE_UNDERFLOW");
+        approveInternal(msg.sender, spender, newAllowance);
         return true;
     }
 
@@ -129,7 +127,11 @@ contract Erc20 is Erc20Interface {
      * - `spender` cannot be the zero address.
      */
     function increaseAllowance(address spender, uint256 addedValue) external virtual returns (bool) {
-        approveInternal(msg.sender, spender, allowances[msg.sender][spender].add(addedValue));
+        MathError mathErr;
+        uint256 newAllowance;
+        (mathErr, newAllowance) = addUInt(allowances[msg.sender][spender], addedValue);
+        require(mathErr == MathError.NO_ERROR, "ERR_ERC20_INCREASE_ALLOWANCE_OVERFLOW");
+        approveInternal(msg.sender, spender, newAllowance);
         return true;
     }
 
@@ -174,17 +176,80 @@ contract Erc20 is Erc20Interface {
         uint256 amount
     ) external virtual override returns (bool) {
         transferInternal(sender, recipient, amount);
-        approveInternal(
-            sender,
-            msg.sender,
-            allowances[sender][msg.sender].sub(amount, "Erc20: transfer amount exceeds allowance")
-        );
+        MathError mathErr;
+        uint256 newAllowance;
+        (mathErr, newAllowance) = subUInt(allowances[sender][msg.sender], amount);
+        require(mathErr == MathError.NO_ERROR, "ERR_ERC20_TRANSFER_FROM_INSUFFICIENT_ALLOWANCE");
+        approveInternal(sender, msg.sender, newAllowance);
         return true;
     }
 
     /**
      * INTERNAL FUNCTIONS
      */
+
+    /**
+     * @notice Sets `amount` as the allowance of `spender` over the `owner`s tokens.
+     *
+     * @dev This is internal function is equivalent to `approve`, and can be used to
+     * e.g. set automatic allowances for certain subsystems, etc.
+     *
+     * Emits an {Approval} event.
+     *
+     * Requirements:
+     *
+     * - `owner` cannot be the zero address.
+     * - `spender` cannot be the zero address.
+     */
+    function approveInternal(
+        address owner,
+        address spender,
+        uint256 amount
+    ) internal virtual {
+        require(owner != address(0x00), "ERR_ERC20_APPROVE_FROM_ZERO_ADDRESS");
+        require(spender != address(0x00), "ERR_ERC20_APPROVE_TO_ZERO_ADDRESS");
+
+        allowances[owner][spender] = amount;
+        emit Approval(owner, spender, amount);
+    }
+
+    /**
+     * @dev See the documentation for the public functions that call this internal function.
+     */
+    function burnInternal(address holder, uint256 burnAmount) internal {
+        MathError mathErr;
+        uint256 newHolderBalance;
+        uint256 newTotalSupply;
+
+        /* Effects: reduce the yToken supply. */
+        (mathErr, newTotalSupply) = subUInt(totalSupply, burnAmount);
+        require(mathErr == MathError.NO_ERROR, "ERR_ERC20_BURN_TOTAL_SUPPLY_UNDERFLOW");
+        totalSupply = newTotalSupply;
+
+        /* Effects: burn the yTokens. */
+        (mathErr, newHolderBalance) = subUInt(balances[holder], burnAmount);
+        require(mathErr == MathError.NO_ERROR, "ERR_ERC20_BURN_BALANCE_UNDERFLOW");
+        balances[holder] = newHolderBalance;
+    }
+
+    /**
+     * @dev See the documentation for the public functions that call this internal function.
+     */
+    function mintInternal(address beneficiary, uint256 mintAmount) internal {
+        MathError mathErr;
+        uint256 newBeneficiaryBalance;
+        uint256 newTotalSupply;
+
+        /* Increase the yToken supply. */
+        (mathErr, newTotalSupply) = addUInt(totalSupply, mintAmount);
+        require(mathErr == MathError.NO_ERROR, "ERR_ERC20_MINT_TOTAL_SUPPLY_OVERFLOW");
+        totalSupply = newTotalSupply;
+
+        /* Mint the yTokens. */
+        (mathErr, newBeneficiaryBalance) = addUInt(balances[beneficiary], mintAmount);
+        require(mathErr == MathError.NO_ERROR, "ERR_ERC20_MINT_BALANCE_OVERFLOW");
+        balances[beneficiary] = newBeneficiaryBalance;
+    }
 
     /**
      * @notice Moves `amount` tokens from `sender` to `recipient`.
@@ -208,33 +273,18 @@ contract Erc20 is Erc20Interface {
         require(sender != address(0x00), "Erc20: transfer from the zero address");
         require(recipient != address(0x00), "Erc20: transfer to the zero address");
 
-        balances[sender] = balances[sender].sub(amount, "Erc20: transfer amount exceeds balance");
-        balances[recipient] = balances[recipient].add(amount);
+        MathError mathErr;
+        uint256 newSenderBalance;
+        uint256 newRecipientBalance;
+
+        (mathErr, newSenderBalance) = subUInt(balances[sender], amount);
+        require(mathErr == MathError.NO_ERROR, "ERR_ERC20_TRANSFER_SENDER_BALANCE_UNDERFLOW");
+        balances[sender] = newSenderBalance;
+
+        (mathErr, newRecipientBalance) = addUInt(balances[recipient], amount);
+        assert(mathErr == MathError.NO_ERROR);
+        balances[recipient] = newRecipientBalance;
+
         emit Transfer(sender, recipient, amount);
-    }
-
-    /**
-     * @notice Sets `amount` as the allowance of `spender` over the `owner`s tokens.
-     *
-     * @dev This is internal function is equivalent to `approve`, and can be used to
-     * e.g. set automatic allowances for certain subsystems, etc.
-     *
-     * Emits an {Approval} event.
-     *
-     * Requirements:
-     *
-     * - `owner` cannot be the zero address.
-     * - `spender` cannot be the zero address.
-     */
-    function approveInternal(
-        address owner,
-        address spender,
-        uint256 amount
-    ) internal virtual {
-        require(owner != address(0x00), "Erc20: approve from the zero address");
-        require(spender != address(0x00), "Erc20: approve to the zero address");
-
-        allowances[owner][spender] = amount;
-        emit Approval(owner, spender, amount);
     }
 }

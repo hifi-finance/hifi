@@ -5,7 +5,7 @@ import { Zero } from "@ethersproject/constants";
 import { waffle } from "@nomiclabs/buidler";
 
 import BalanceSheetArtifact from "../../artifacts/GodModeBalanceSheet.json";
-import Erc20MintableArtifact from "../../artifacts/Erc20Mintable.json";
+import Erc20Artifact from "../../artifacts/Erc20.json";
 import FintrollerArtifact from "../../artifacts/Fintroller.json";
 import GuarantorPoolArtifact from "../../artifacts/GuarantorPool.json";
 import RedemptionPoolArtifact from "../../artifacts/GodModeRedemptionPool.json";
@@ -17,9 +17,7 @@ import { BalanceSheetConstants, DefaultNumberOfDecimals, FintrollerConstants } f
 const { deployMockContract: deployStubContract } = waffle;
 
 /**
- * ---------
  * DEPLOYERS
- * ---------
  */
 
 export async function deployStubBalanceSheet(deployer: Signer): Promise<MockContract> {
@@ -29,7 +27,7 @@ export async function deployStubBalanceSheet(deployer: Signer): Promise<MockCont
 }
 
 export async function deployStubCollateral(deployer: Signer): Promise<MockContract> {
-  const collateral: MockContract = await deployStubContract(deployer, Erc20MintableArtifact.abi);
+  const collateral: MockContract = await deployStubContract(deployer, Erc20Artifact.abi);
   await collateral.mock.decimals.returns(DefaultNumberOfDecimals);
   await collateral.mock.name.returns("Wrapped Ether");
   await collateral.mock.symbol.returns("WETH");
@@ -67,7 +65,7 @@ export async function deployStubRedemptionPool(deployer: Signer): Promise<MockCo
 }
 
 export async function deployStubUnderlying(deployer: Signer): Promise<MockContract> {
-  const underlying: MockContract = await deployStubContract(deployer, Erc20MintableArtifact.abi);
+  const underlying: MockContract = await deployStubContract(deployer, Erc20Artifact.abi);
   await underlying.mock.decimals.returns(DefaultNumberOfDecimals);
   await underlying.mock.name.returns("Dai Stablecoin");
   await underlying.mock.symbol.returns("DAI");
@@ -82,9 +80,7 @@ export async function deployStubYToken(deployer: Signer): Promise<MockContract> 
 }
 
 /**
- * --------------
  * FUNCTION STUBS
- * --------------
  */
 
 export async function stubGetBond(

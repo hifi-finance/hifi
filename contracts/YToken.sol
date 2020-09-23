@@ -288,29 +288,6 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
     /**
      * INTERNAL FUNCTIONS
      */
-    struct BurnInternalLocalVars {
-        MathError mathErr;
-        uint256 newHolderBalance;
-        uint256 newTotalSupply;
-    }
-
-    /**
-     * @dev See the documentation for the public functions that call this internal function.
-     */
-    function burnInternal(address holder, uint256 burnAmount) internal {
-        BurnInternalLocalVars memory vars;
-
-        /* Effects: reduce the yToken supply. */
-        (vars.mathErr, vars.newTotalSupply) = subUInt(totalSupply, burnAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_BURN_UNDERFLOW_TOTAL_SUPPLY");
-        totalSupply = vars.newTotalSupply;
-
-        /* Effects: burn the yTokens. */
-        (vars.mathErr, vars.newHolderBalance) = subUInt(balances[holder], burnAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_BURN_UNDERFLOW_BALANCE");
-        balances[holder] = vars.newHolderBalance;
-    }
-
     struct RepayBorrowInternalLocalVars {
         MathError mathErr;
         uint256 debt;
@@ -352,28 +329,5 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
 
         /* Interactions: reduce the debt of the account. */
         require(balanceSheet.setVaultDebt(this, borrower, vars.newDebt), "ERR_REPAY_BORROW_SET_VAULT_DEBT");
-    }
-
-    struct MintInternalLocalVars {
-        MathError mathErr;
-        uint256 newBeneficiaryBalance;
-        uint256 newTotalSupply;
-    }
-
-    /**
-     * @dev See the documentation for the public functions that call this internal function.
-     */
-    function mintInternal(address beneficiary, uint256 mintAmount) internal {
-        MintInternalLocalVars memory vars;
-
-        /* Increase the yToken supply. */
-        (vars.mathErr, vars.newTotalSupply) = addUInt(totalSupply, mintAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_OVERFLOW_TOTAL_SUPPLY");
-        totalSupply = vars.newTotalSupply;
-
-        /* Mint the yTokens. */
-        (vars.mathErr, vars.newBeneficiaryBalance) = addUInt(balances[beneficiary], mintAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_MINT_OVERFLOW_BALANCE");
-        balances[beneficiary] = vars.newBeneficiaryBalance;
     }
 }
