@@ -12,7 +12,7 @@ import RedemptionPoolArtifact from "../../artifacts/GodModeRedemptionPool.json";
 import SimpleUniswapAnchoredViewArtifact from "../../artifacts/SimpleUniswapAnchoredView.json";
 import YTokenArtifact from "../../artifacts/YToken.json";
 
-import { BalanceSheetConstants, FintrollerConstants } from "./constants";
+import { BalanceSheetConstants, DefaultNumberOfDecimals, FintrollerConstants } from "./constants";
 
 const { deployMockContract: deployStubContract } = waffle;
 
@@ -30,7 +30,7 @@ export async function deployStubBalanceSheet(deployer: Signer): Promise<MockCont
 
 export async function deployStubCollateral(deployer: Signer): Promise<MockContract> {
   const collateral: MockContract = await deployStubContract(deployer, Erc20MintableArtifact.abi);
-  await collateral.mock.decimals.returns(BigNumber.from(18));
+  await collateral.mock.decimals.returns(DefaultNumberOfDecimals);
   await collateral.mock.name.returns("Wrapped Ether");
   await collateral.mock.symbol.returns("WETH");
   await collateral.mock.totalSupply.returns(Zero);
@@ -45,7 +45,7 @@ export async function deployStubFintroller(deployer: Signer): Promise<MockContra
 
 export async function deployStubGuarantorPool(deployer: Signer): Promise<MockContract> {
   const guarantorPool: MockContract = await deployStubContract(deployer, GuarantorPoolArtifact.abi);
-  await guarantorPool.mock.decimals.returns(BigNumber.from(18));
+  await guarantorPool.mock.decimals.returns(DefaultNumberOfDecimals);
   await guarantorPool.mock.isGuarantorPool.returns(true);
   await guarantorPool.mock.name.returns("Mainframe Guarantor Pool Shares");
   await guarantorPool.mock.symbol.returns("MGP-SHARES");
@@ -68,7 +68,7 @@ export async function deployStubRedemptionPool(deployer: Signer): Promise<MockCo
 
 export async function deployStubUnderlying(deployer: Signer): Promise<MockContract> {
   const underlying: MockContract = await deployStubContract(deployer, Erc20MintableArtifact.abi);
-  await underlying.mock.decimals.returns(BigNumber.from(18));
+  await underlying.mock.decimals.returns(DefaultNumberOfDecimals);
   await underlying.mock.name.returns("Dai Stablecoin");
   await underlying.mock.symbol.returns("DAI");
   await underlying.mock.totalSupply.returns(Zero);

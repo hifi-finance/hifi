@@ -1,3 +1,5 @@
+import shouldBehaveLikeConstructor from "./constructor";
+
 import shouldBehaveLikeBorrow from "./effects/borrow";
 import shouldBehaveLikeRepayBorrow from "./effects/repayBorrow";
 import shouldBehaveLikeRepayBorrowBehalf from "./effects/repayBorrowBehalf";
@@ -12,6 +14,10 @@ import shouldBehaveLikeUnderlyingGetter from "./view/underlying";
 import shouldBehaveLikeIsYTokenGetter from "./view/isYToken";
 
 export function shouldBehaveLikeYToken(): void {
+  describe("Constructor", function () {
+    shouldBehaveLikeConstructor();
+  });
+
   describe("Effects Functions", function () {
     describe("borrow", function () {
       shouldBehaveLikeBorrow();

@@ -9,11 +9,11 @@ import FintrollerArtifact from "../../artifacts/Fintroller.json";
 import RedemptionPoolArtifact from "../../artifacts/GodModeRedemptionPool.json";
 import YTokenArtifact from "../../artifacts/YToken.json";
 
-import { DefaultBlockGasLimit, YTokenConstants } from "./constants";
 import { Fintroller } from "../../typechain/Fintroller";
 import { GodModeBalanceSheet as BalanceSheet } from "../../typechain/GodModeBalanceSheet";
 import { GodModeRedemptionPool as RedemptionPool } from "../../typechain/GodModeRedemptionPool";
 import { YToken } from "../../typechain/YToken";
+import { YTokenConstants } from "./constants";
 
 import {
   deployStubBalanceSheet,
@@ -128,22 +128,17 @@ export async function yTokenFixture(
   const symbol: string = "yDAI-JAN21";
   const expirationTime: BigNumber = YTokenConstants.DefaultExpirationTime; /* December 31, 2020 at 23:59:59 */
 
-  const yToken: YToken = ((await deployContract(
-    deployer,
-    YTokenArtifact,
-    [
-      name,
-      symbol,
-      expirationTime,
-      balanceSheet.address,
-      fintroller.address,
-      underlying.address,
-      collateral.address,
-      guarantorPool.address,
-      redemptionPool.address,
-    ],
-    { gasLimit: DefaultBlockGasLimit },
-  )) as unknown) as YToken;
+  const yToken: YToken = ((await deployContract(deployer, YTokenArtifact, [
+    name,
+    symbol,
+    expirationTime,
+    balanceSheet.address,
+    fintroller.address,
+    underlying.address,
+    collateral.address,
+    guarantorPool.address,
+    redemptionPool.address,
+  ])) as unknown) as YToken;
 
   return { balanceSheet, collateral, fintroller, guarantorPool, oracle, redemptionPool, underlying, yToken };
 }
