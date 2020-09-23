@@ -1,8 +1,6 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.7.1;
 
-import "../math/SafeMath.sol";
-
 /**
  * @title NonStandardErc20
  * @author Mainframe
@@ -11,8 +9,6 @@ import "../math/SafeMath.sol";
  * https://medium.com/coinmonks/missing-return-value-bug-at-least-130-tokens-affected-d67bf08521ca
  */
 contract NonStandardErc20 {
-    using SafeMath for uint256;
-
     uint8 public decimals;
 
     string public name;
@@ -68,11 +64,7 @@ contract NonStandardErc20 {
         uint256 amount
     ) external {
         transferInternal(sender, recipient, amount);
-        approveInternal(
-            sender,
-            msg.sender,
-            allowances[sender][msg.sender].sub(amount, "NonStandardErc20: transfer amount exceeds allowance")
-        );
+        approveInternal(sender, msg.sender, allowances[sender][msg.sender] - amount);
     }
 
     function transferInternal(
@@ -80,8 +72,8 @@ contract NonStandardErc20 {
         address recipient,
         uint256 amount
     ) internal virtual {
-        balances[sender] = balances[sender].sub(amount, "NonStandardErc20: transfer amount exceeds balance");
-        balances[recipient] = balances[recipient].add(amount);
+        balances[sender] = balances[sender] - amount;
+        balances[recipient] = balances[recipient] + amount;
         emit Transfer(sender, recipient, amount);
     }
 
