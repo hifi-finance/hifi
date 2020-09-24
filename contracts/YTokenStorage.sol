@@ -3,6 +3,7 @@ pragma solidity ^0.7.1;
 
 import "./BalanceSheetInterface.sol";
 import "./FintrollerInterface.sol";
+import "./GuarantorPoolInterface.sol";
 import "./RedemptionPoolInterface.sol";
 import "./erc20/Erc20Interface.sol";
 
@@ -31,7 +32,7 @@ abstract contract YTokenStorage {
     BalanceSheetInterface public balanceSheet;
 
     /**
-     * @notice The collateral asset backing borows of this yToken.
+     * @notice The Erc20 asset that backs the borows of this yToken.
      */
     Erc20Interface public collateral;
 
@@ -39,11 +40,6 @@ abstract contract YTokenStorage {
      * @notice The ratio between mantissa precision (1e18) and the collateral precision.
      */
     uint256 public collateralPrecisionScalar;
-
-    /**
-     * @notice The standard number of decimals a yToken has.
-     */
-    uint8 public constant defaultNumberOfDecimals = 18;
 
     /**
      * @notice Unix timestamp in seconds for when this token expires.
@@ -58,7 +54,7 @@ abstract contract YTokenStorage {
     /**
      * @notice The unique Guarantor Pool associated with this contract.
      */
-    address public guarantorPool;
+    GuarantorPoolInterface public guarantorPool;
 
     /**
      * @notice The unique Redemption Pool associated with this contract.
@@ -66,7 +62,7 @@ abstract contract YTokenStorage {
     RedemptionPoolInterface public redemptionPool;
 
     /**
-     * @notice The underlying, or target, asset for this yToken.
+     * @notice The Erc20 underlying, or target, asset for this yToken.
      */
     Erc20Interface public underlying;
 

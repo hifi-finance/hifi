@@ -3,6 +3,7 @@ pragma solidity ^0.7.1;
 
 import "./BalanceSheetInterface.sol";
 import "./FintrollerInterface.sol";
+import "./GuarantorPoolInterface.sol";
 import "./YTokenInterface.sol";
 import "./erc20/Erc20.sol";
 import "./erc20/Erc20Interface.sol";
@@ -29,40 +30,46 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
     }
 
     /**
-     * @dev The yToken always has 18 decimals
+     * @notice The yToken always has 18 decimals.
      * @param name_ Erc20 name of this token.
      * @param symbol_ Erc20 symbol of this token.
      * @param expirationTime_ Unix timestamp in seconds for when this token expires.
-     * @param balanceSheet_ The address of the BalanceSheet contract.
      * @param fintroller_ The address of the Fintroller contract.
-     * @param underlying_ The contract address of the underlying asset.
-     * @param collateral_ The contract address of the collateral asset.
+     * @param balanceSheet_ The address of the BalanceSheet contract.
      * @param guarantorPool_ The address of the GuarantorPool contract.
+     * @param collateral_ The contract address of the collateral asset.
+     * @param underlying_ The contract address of the underlying asset.
      * @param redemptionPool_ The address of the RedemptionPool contract.
      */
     constructor(
         string memory name_,
         string memory symbol_,
         uint256 expirationTime_,
-        BalanceSheetInterface balanceSheet_,
         FintrollerInterface fintroller_,
+        BalanceSheetInterface balanceSheet_,
+        GuarantorPoolInterface guarantorPool_,
         Erc20Interface underlying_,
         Erc20Interface collateral_,
-        address guarantorPool_,
         RedemptionPoolInterface redemptionPool_
-    ) Erc20(name_, symbol_, defaultNumberOfDecimals) Admin() Orchestratable() {
+    ) Erc20(name_, symbol_, 18) Admin() Orchestratable() {
+        uint8 defaultNumberOfDecimals = 18;
+
         /* Set the unix expiration time. */
         expirationTime = expirationTime_;
-
-        /* Set the Balance Sheet contract and sanity check it. */
-        balanceSheet = balanceSheet_;
-        balanceSheet.isBalanceSheet();
 
         /* Set the Fintroller contract and sanity check it. */
         fintroller = fintroller_;
         fintroller.isFintroller();
 
-        /* Set the underlying and collateral contracts and sanity check them. */
+        /* Set the Balance Sheet contract and sanity check it. */
+        balanceSheet = balanceSheet_;
+        balanceSheet.isBalanceSheet();
+
+        /* Set the Guarantor Pool contract and sanity check it. */
+        guarantorPool = guarantorPool_;
+        guarantorPool.isGuarantorPool();
+
+        /* Set the underlying and collateral contracts and calculate the decimal scalar offsets. */
         underlying = underlying_;
         require(
             defaultNumberOfDecimals >= Erc20Interface(underlying).decimals(),
@@ -80,9 +87,6 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         /* Set the Redemption Pool contract and sanity check it. */
         redemptionPool = redemptionPool_;
         redemptionPool_.isRedemptionPool();
-
-        /* Set the Guarantor Pool contract and sanity check it. */
-        guarantorPool = guarantorPool_;
     }
 
     /**

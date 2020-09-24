@@ -38,6 +38,7 @@ export interface Signers {
 }
 
 export interface Stubs {
+  asset: MockContract;
   balanceSheet: MockContract;
   collateral: MockContract;
   fintroller: MockContract;

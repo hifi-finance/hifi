@@ -6,12 +6,14 @@ import { waffle } from "@nomiclabs/buidler";
 
 import BalanceSheetArtifact from "../../artifacts/GodModeBalanceSheet.json";
 import FintrollerArtifact from "../../artifacts/Fintroller.json";
+import GuarantorPoolArtifact from "../../artifacts/GuarantorPool.json";
 import RedemptionPoolArtifact from "../../artifacts/GodModeRedemptionPool.json";
 import YTokenArtifact from "../../artifacts/YToken.json";
 
 import { Fintroller } from "../../typechain/Fintroller";
 import { GodModeBalanceSheet as BalanceSheet } from "../../typechain/GodModeBalanceSheet";
 import { GodModeRedemptionPool as RedemptionPool } from "../../typechain/GodModeRedemptionPool";
+import { GuarantorPool } from "../../typechain/GuarantorPool";
 import { YToken } from "../../typechain/YToken";
 import { YTokenConstants } from "./constants";
 
@@ -45,13 +47,11 @@ export async function balanceSheetFixture(
   const deployer: Signer = signers[0];
   const collateral: MockContract = await deployStubCollateral(deployer);
   const underlying: MockContract = await deployStubUnderlying(deployer);
-  const oracle: MockContract = await deployStubOracle(deployer);
 
-  /* TODO: handle the case when the oracle isn't set. */
+  const oracle: MockContract = await deployStubOracle(deployer);
   const fintroller: MockContract = await deployStubFintroller(deployer);
   await fintroller.mock.oracle.returns(oracle.address);
 
-  /* TODO: handle the case when the collateral isn't set. */
   const yToken: MockContract = await deployStubYToken(deployer);
   await yToken.mock.collateral.returns(collateral.address);
   await yToken.mock.collateralPrecisionScalar.returns(BigNumber.from(1));
@@ -74,6 +74,28 @@ export async function fintrollerFixture(
   return { fintroller, oracle, yToken };
 }
 
+export async function guarantorPoolFixture(
+  signers: Signer[],
+): Promise<{ asset: MockContract; fintroller: MockContract; guarantorPool: GuarantorPool; yToken: MockContract }> {
+  const deployer: Signer = signers[0];
+
+  const fintroller: MockContract = await deployStubFintroller(deployer);
+  const yToken: MockContract = await deployStubYToken(deployer);
+  const asset: MockContract = await deployStubUnderlying(deployer);
+
+  const name: string = "Mainframe Guarantor Shares V1";
+  const symbol: string = "MGS-V1";
+  const guarantorPool: GuarantorPool = ((await deployContract(deployer, GuarantorPoolArtifact, [
+    name,
+    symbol,
+    fintroller.address,
+    yToken.address,
+    asset.address,
+  ])) as unknown) as GuarantorPool;
+
+  return { asset, fintroller, guarantorPool, yToken };
+}
+
 export async function redemptionPoolFixture(
   signers: Signer[],
 ): Promise<{
@@ -83,10 +105,10 @@ export async function redemptionPoolFixture(
   yToken: MockContract;
 }> {
   const deployer: Signer = signers[0];
+
   const fintroller: MockContract = await deployStubFintroller(deployer);
   const underlying: MockContract = await deployStubUnderlying(deployer);
 
-  /* TODO: handle the case when the oracle isn't set. */
   const yToken: MockContract = await deployStubYToken(deployer);
   await yToken.mock.underlying.returns(underlying.address);
   await yToken.mock.underlyingPrecisionScalar.returns(BigNumber.from(1));
@@ -112,16 +134,15 @@ export async function yTokenFixture(
 }> {
   const deployer: Signer = signers[0];
 
-  const balanceSheet: MockContract = await deployStubBalanceSheet(deployer);
   const oracle: MockContract = await deployStubOracle(deployer);
-
-  /* TODO: handle the case when the oracle isn't set. */
   const fintroller: MockContract = await deployStubFintroller(deployer);
   await fintroller.mock.oracle.returns(oracle.address);
 
+  const balanceSheet: MockContract = await deployStubBalanceSheet(deployer);
+  const guarantorPool: MockContract = await deployStubGuarantorPool(deployer);
+
   const underlying: MockContract = await deployStubUnderlying(deployer);
   const collateral: MockContract = await deployStubCollateral(deployer);
-  const guarantorPool: MockContract = await deployStubGuarantorPool(deployer);
   const redemptionPool: MockContract = await deployStubRedemptionPool(deployer);
 
   const name: string = "DAI/ETH (2021-01-01)";
@@ -132,11 +153,11 @@ export async function yTokenFixture(
     name,
     symbol,
     expirationTime,
-    balanceSheet.address,
     fintroller.address,
+    balanceSheet.address,
+    guarantorPool.address,
     underlying.address,
     collateral.address,
-    guarantorPool.address,
     redemptionPool.address,
   ])) as unknown) as YToken;
 

@@ -45,8 +45,8 @@ export async function deployStubGuarantorPool(deployer: Signer): Promise<MockCon
   const guarantorPool: MockContract = await deployStubContract(deployer, GuarantorPoolArtifact.abi);
   await guarantorPool.mock.decimals.returns(DefaultNumberOfDecimals);
   await guarantorPool.mock.isGuarantorPool.returns(true);
-  await guarantorPool.mock.name.returns("Mainframe Guarantor Pool Shares");
-  await guarantorPool.mock.symbol.returns("MGP-SHARES");
+  await guarantorPool.mock.name.returns("Mainframe Guarantor Shares V1");
+  await guarantorPool.mock.symbol.returns("MGS-V1");
   await guarantorPool.mock.totalSupply.returns(Zero);
   return guarantorPool;
 }

@@ -221,15 +221,15 @@ contract Erc20 is Erc20Interface, CarefulMath {
         uint256 newHolderBalance;
         uint256 newTotalSupply;
 
-        /* Effects: reduce the yToken supply. */
-        (mathErr, newTotalSupply) = subUInt(totalSupply, burnAmount);
-        require(mathErr == MathError.NO_ERROR, "ERR_ERC20_BURN_TOTAL_SUPPLY_UNDERFLOW");
-        totalSupply = newTotalSupply;
-
-        /* Effects: burn the yTokens. */
+        /* Burn the yTokens. */
         (mathErr, newHolderBalance) = subUInt(balances[holder], burnAmount);
         require(mathErr == MathError.NO_ERROR, "ERR_ERC20_BURN_BALANCE_UNDERFLOW");
         balances[holder] = newHolderBalance;
+
+        /* Reduce the total supply. */
+        (mathErr, newTotalSupply) = subUInt(totalSupply, burnAmount);
+        require(mathErr == MathError.NO_ERROR, "ERR_ERC20_BURN_TOTAL_SUPPLY_UNDERFLOW");
+        totalSupply = newTotalSupply;
     }
 
     /**
@@ -240,15 +240,15 @@ contract Erc20 is Erc20Interface, CarefulMath {
         uint256 newBeneficiaryBalance;
         uint256 newTotalSupply;
 
-        /* Increase the yToken supply. */
-        (mathErr, newTotalSupply) = addUInt(totalSupply, mintAmount);
-        require(mathErr == MathError.NO_ERROR, "ERR_ERC20_MINT_TOTAL_SUPPLY_OVERFLOW");
-        totalSupply = newTotalSupply;
-
         /* Mint the yTokens. */
         (mathErr, newBeneficiaryBalance) = addUInt(balances[beneficiary], mintAmount);
         require(mathErr == MathError.NO_ERROR, "ERR_ERC20_MINT_BALANCE_OVERFLOW");
         balances[beneficiary] = newBeneficiaryBalance;
+
+        /* Increase the total supply. */
+        (mathErr, newTotalSupply) = addUInt(totalSupply, mintAmount);
+        require(mathErr == MathError.NO_ERROR, "ERR_ERC20_MINT_TOTAL_SUPPLY_OVERFLOW");
+        totalSupply = newTotalSupply;
     }
 
     /**
@@ -270,8 +270,8 @@ contract Erc20 is Erc20Interface, CarefulMath {
         address recipient,
         uint256 amount
     ) internal virtual {
-        require(sender != address(0x00), "Erc20: transfer from the zero address");
-        require(recipient != address(0x00), "Erc20: transfer to the zero address");
+        require(sender != address(0x00), "ERR_ERC20_TRANSFER_FROM_ZERO_ADDRESS");
+        require(recipient != address(0x00), "ERR_ERC20_TRANSFER_TO_ZERO_ADDRESS");
 
         MathError mathErr;
         uint256 newSenderBalance;

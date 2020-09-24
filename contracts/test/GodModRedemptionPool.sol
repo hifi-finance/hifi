@@ -14,7 +14,7 @@ contract GodModeRedemptionPool is RedemptionPool {
     /* solhint-disable-next-line no-empty-blocks */
     constructor(FintrollerInterface fintroller_, YTokenInterface yToken_) RedemptionPool(fintroller_, yToken_) {}
 
-    function __godMode_setUnderlyingTotalSupply(uint256 newUnderlyingTotalSupply) external {
-        underlyingTotalSupply = newUnderlyingTotalSupply;
+    function __godMode_setTotalUnderlyingSupply(uint256 newTotalUnderlyingSupply) external {
+        totalUnderlyingSupply = newTotalUnderlyingSupply;
     }
 }

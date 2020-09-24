@@ -33,6 +33,10 @@ export enum GenericErrors {
   VaultNotOpen = "ERR_VAULT_NOT_OPEN",
 }
 
+export enum GuarantorPoolErrors {
+  AddLiquidityZero = "ERR_ADD_LIQUIDITY_ZERO",
+}
+
 export enum RedemptionPoolErrors {
   RedeemUnderlyingBurn = "ERR_REDEEM_UNDERLYING_BURN",
   RedeemUnderlyingInsufficientUnderlying = "ERR_REDEEM_UNDERLYING_INSUFFICIENT_UNDERLYING",
