@@ -17,7 +17,7 @@ abstract contract RedemptionPoolStorage {
     /**
      * @notice The amount of the underyling asset available to be redeemed after maturation.
      */
-    uint256 public underlyingTotalSupply;
+    uint256 public totalUnderlyingSupply;
 
     /**
      * The unique yToken associated with this Redemption Pool.

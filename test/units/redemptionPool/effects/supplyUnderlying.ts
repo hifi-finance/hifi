@@ -40,9 +40,9 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
             });
 
             it("supplies the underlying", async function () {
-              const oldUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.underlyingTotalSupply();
+              const oldUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
               await this.contracts.redemptionPool.connect(this.signers.mark).supplyUnderlying(underlyingAmount);
-              const newUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.underlyingTotalSupply();
+              const newUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
               expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.sub(underlyingAmount));
             });
 

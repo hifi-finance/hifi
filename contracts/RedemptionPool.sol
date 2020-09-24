@@ -15,6 +15,10 @@ import "./utils/ErrorReporter.sol";
 contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorReporter {
     using SafeErc20 for Erc20Interface;
 
+    /**
+     * @param fintroller_ The address of the Fintroller contract.
+     * @param yToken_ The address of the yToken contract.
+     */
     constructor(FintrollerInterface fintroller_, YTokenInterface yToken_) Admin() {
         /* Set the Fintroller contract and sanity check it. */
         fintroller = fintroller_;
@@ -59,16 +63,18 @@ contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorRep
         require(fintroller.redeemUnderlyingAllowed(yToken), "ERR_REDEEM_UNDERLYING_NOT_ALLOWED");
 
         /* Checks: there is sufficient liquidity. */
-        require(underlyingAmount <= underlyingTotalSupply, "ERR_REDEEM_UNDERLYING_INSUFFICIENT_UNDERLYING");
+        require(underlyingAmount <= totalUnderlyingSupply, "ERR_REDEEM_UNDERLYING_INSUFFICIENT_UNDERLYING");
 
         /* Effects: decrease the remaining supply of underlying. */
-        (vars.mathErr, vars.newUnderlyingTotalSupply) = subUInt(underlyingTotalSupply, underlyingAmount);
+        (vars.mathErr, vars.newUnderlyingTotalSupply) = subUInt(totalUnderlyingSupply, underlyingAmount);
         assert(vars.mathErr == MathError.NO_ERROR);
-        underlyingTotalSupply = vars.newUnderlyingTotalSupply;
+        totalUnderlyingSupply = vars.newUnderlyingTotalSupply;
 
-        /* Interactions: yTokens always have 18 decimals so we have to upscale the underlying amount. */
+        /* yTokens always have 18 decimals so we have to upscale the underlying amount. */
         (vars.mathErr, vars.yTokenAmount) = mulUInt(underlyingAmount, yToken.underlyingPrecisionScalar());
         require(vars.mathErr == MathError.NO_ERROR, "ERR_REDEEM_UNDERLYING_MATH_ERROR");
+
+        /* Interactions: burn the yTokens. */
         require(yToken.burn(msg.sender, underlyingAmount), "ERR_REDEEM_UNDERLYING_BURN");
 
         /* Interactions: perform the Erc20 transfer. */
@@ -113,13 +119,15 @@ contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorRep
         require(fintroller.supplyUnderlyingAllowed(yToken), "ERR_SUPPLY_UNDERLYING_NOT_ALLOWED");
 
         /* Effects: update the storage property. */
-        (vars.mathErr, vars.newUnderlyingTotalSupply) = addUInt(underlyingTotalSupply, underlyingAmount);
+        (vars.mathErr, vars.newUnderlyingTotalSupply) = addUInt(totalUnderlyingSupply, underlyingAmount);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_SUPPLY_UNDERLYING_MATH_ERROR");
-        underlyingTotalSupply = vars.newUnderlyingTotalSupply;
+        totalUnderlyingSupply = vars.newUnderlyingTotalSupply;
 
-        /* Interactions: yTokens always have 18 decimals so we have to upscale the underlying amount. */
+        /* yTokens always have 18 decimals so we have to upscale the underlying amount. */
         (vars.mathErr, vars.yTokenAmount) = mulUInt(underlyingAmount, yToken.underlyingPrecisionScalar());
         require(vars.mathErr == MathError.NO_ERROR, "ERR_SUPPLY_UNDERLYING_MATH_ERROR");
+
+        /* Interactions: mint the yTokens. */
         require(yToken.mint(msg.sender, vars.yTokenAmount), "ERR_SUPPLY_UNDERLYING_MINT");
 
         /* Interactions: perform the Erc20 transfer. */

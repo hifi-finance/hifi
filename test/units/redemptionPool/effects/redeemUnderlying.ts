@@ -34,8 +34,8 @@ export default function shouldBehaveLikeRedeemUnderlying(): void {
 
           describe("when there is enough underlying liquidity", function () {
             beforeEach(async function () {
-              const underlyingTotalSupply: BigNumber = OneMillionTokens;
-              await this.contracts.redemptionPool.__godMode_setUnderlyingTotalSupply(underlyingTotalSupply);
+              const totalUnderlyingSupply: BigNumber = OneMillionTokens;
+              await this.contracts.redemptionPool.__godMode_setTotalUnderlyingSupply(totalUnderlyingSupply);
             });
 
             describe("when the call to burn the yTokens succeeds", function () {
@@ -46,9 +46,9 @@ export default function shouldBehaveLikeRedeemUnderlying(): void {
               });
 
               it("redeems the underlying asset", async function () {
-                const oldUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.underlyingTotalSupply();
+                const oldUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
                 await this.contracts.redemptionPool.connect(this.signers.mark).redeemUnderlying(redeemAmount);
-                const newUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.underlyingTotalSupply();
+                const newUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
                 expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.add(redeemAmount));
               });
 

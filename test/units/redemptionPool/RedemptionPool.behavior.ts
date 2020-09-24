@@ -2,8 +2,8 @@ import shouldBehaveLikeRedeemUnderlying from "./effects/redeemUnderlying";
 import shouldBehaveLikeSupplyUnderlying from "./effects/supplyUnderlying";
 
 import shouldBehaveLikeIsRedemptionPoolGetter from "./view/isRedemptionPool";
-import shouldBehaveLikeUnderlyingTotalSupplyGetter from "./view/underlyingTotalSupply";
 import shouldBehaveLikeOracleYTokenGetter from "./view/yToken";
+import shouldBehaveLikeTotalUnderlyingSupplyGetter from "./view/totalUnderlyingSupply";
 
 export function shouldBehaveLikeRedemptionPool(): void {
   describe("Effects Functions", function () {
@@ -21,8 +21,8 @@ export function shouldBehaveLikeRedemptionPool(): void {
       shouldBehaveLikeIsRedemptionPoolGetter();
     });
 
-    describe("underlyingTotalSupply", function () {
-      shouldBehaveLikeUnderlyingTotalSupplyGetter();
+    describe("totalUnderlyingSupply", function () {
+      shouldBehaveLikeTotalUnderlyingSupplyGetter();
     });
 
     describe("yToken", function () {
