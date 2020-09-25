@@ -13,7 +13,7 @@ abstract contract GuarantorPoolStorage {
     /**
      * @notice The Erc20 asset that is used to liquidate under-collateralized users.
      */
-    Erc20Interface public asset;
+    Erc20Interface public guaranty;
 
     /**
      * @notice The unique Fintroller associated with this contract.
@@ -23,7 +23,7 @@ abstract contract GuarantorPoolStorage {
     /**
      * @notice The total amount of liquid assets that this contracts holds.
      */
-    uint256 public totalLiquidity;
+    uint256 public totalGuaranty;
 
     /**
      * @notice The unique yToken associated with this contract.
@@ -35,7 +35,7 @@ abstract contract GuarantorPoolStorage {
      * @dev This prevents an attacker from taking the price of one share (1e-18) to an abnormally high value.
      * Refer to section 3.4 from the Uniswap v2 whitepaper.
      */
-    uint16 public constant minimumLiquidity = 1000;
+    uint16 public constant minimumShares = 1000;
 
     /**
      * @notice Indicator that this is a Guarantor Pool contract, for inspection.

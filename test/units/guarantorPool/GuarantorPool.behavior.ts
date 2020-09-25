@@ -1,12 +1,12 @@
-import shouldBehaveLikeAddLiquidity from "./effects/addLiquidity";
+import shouldBehaveLikeDepositGuaranty from "./effects/depositGuaranty";
 
 import shouldBehaveLikeIsGuarantorPoolGetter from "./view/isGuarantorPool";
-import shouldBehaveLikeTotalLiquidityGetter from "./view/totalLiquidity";
+import shouldBehaveLikeTotalGuarantyGetter from "./view/totalGuaranty";
 
 export function shouldBehaveLikeGuarantorPool(): void {
   describe("Effects Functions", function () {
-    describe("addLiquidity", function () {
-      shouldBehaveLikeAddLiquidity();
+    describe("depositGuaranty", function () {
+      shouldBehaveLikeDepositGuaranty();
     });
   });
 
@@ -15,8 +15,8 @@ export function shouldBehaveLikeGuarantorPool(): void {
       shouldBehaveLikeIsGuarantorPoolGetter();
     });
 
-    describe("totalLiquidity", function () {
-      shouldBehaveLikeTotalLiquidityGetter();
+    describe("totalGuaranty", function () {
+      shouldBehaveLikeTotalGuarantyGetter();
     });
   });
 }

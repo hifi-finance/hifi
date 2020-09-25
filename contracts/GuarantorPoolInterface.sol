@@ -16,12 +16,10 @@ abstract contract GuarantorPoolInterface is GuarantorPoolStorage {
     /**
      * NON-CONSTANT FUNCTIONS
      */
-    function addLiquidity(uint256 liquidityAmount) external virtual returns (bool);
-
-    function removeLiquidity(uint256 liquidityAmount) external virtual pure returns (bool);
+    function depositGuaranty(uint256 guarantyAmount) external virtual returns (bool);
 
     /**
      * EVENTS
      */
-    event AddLiquidity(address indexed guarantor, uint256 amount);
+    event DepositGuaranty(address indexed guarantor, uint256 amount);
 }

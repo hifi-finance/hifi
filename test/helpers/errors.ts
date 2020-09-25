@@ -34,7 +34,7 @@ export enum GenericErrors {
 }
 
 export enum GuarantorPoolErrors {
-  AddLiquidityZero = "ERR_ADD_LIQUIDITY_ZERO",
+  DepositGuarantyZero = "ERR_DEPOSIT_GUARANTY_ZERO",
 }
 
 export enum RedemptionPoolErrors {
