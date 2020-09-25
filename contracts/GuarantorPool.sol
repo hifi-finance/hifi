@@ -85,9 +85,10 @@ contract GuarantorPool is GuarantorPoolInterface, Erc20, Admin, ErrorReporter, E
             (vars.mathErr, vars.sharesToMint) = subUInt(liquidityAmount, minimumLiquidity);
             require(vars.mathErr == MathError.NO_ERROR, "ERR_ADD_LIQUIDITY_MINIMUM_LIQUIDITY_UNDERFLOW");
             mintInternal(address(0x00), minimumLiquidity);
+            emit Mint(address(0x00), minimumLiquidity);
         } else {
             /**
-             * The formula applied in this block is:
+             * The formula applied in this code block is:
              * sMinted = xDeposited / xStarting * sStarting
              * Where "s" stands for supply of guarantor shares and "x" for supply of liquidity asset.
              */
@@ -119,6 +120,7 @@ contract GuarantorPool is GuarantorPoolInterface, Erc20, Admin, ErrorReporter, E
         asset.safeTransferFrom(msg.sender, address(this), liquidityAmount);
 
         emit AddLiquidity(msg.sender, liquidityAmount);
+        emit Mint(msg.sender, vars.sharesToMint);
 
         return NO_ERROR;
     }
