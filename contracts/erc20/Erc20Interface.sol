@@ -12,35 +12,33 @@ import "./Erc20Storage.sol";
  */
 abstract contract Erc20Interface is Erc20Storage {
     /**
-     * EVENTS
+     * CONSTANT FUNCTIONS
      */
-
-    /**
-     * @notice Emitted when `value` tokens are moved from one account (`from`) to
-     * another (`to`).
-     *
-     * Note that `value` may be zero.
-     */
-    event Transfer(address indexed from, address indexed to, uint256 value);
-
-    /**
-     * @notice Emitted when the allowance of a `spender` for an `owner` is set by
-     * a call to {approve}. `value` is the new allowance.
-     */
-    event Approval(address indexed owner, address indexed spender, uint256 value);
-
-    /*** User Functions ***/
-    function balanceOf(address account) external virtual view returns (uint256);
-
-    function transfer(address recipient, uint256 amount) external virtual returns (bool);
-
     function allowance(address owner, address spender) external virtual view returns (uint256);
 
+    function balanceOf(address account) external virtual view returns (uint256);
+
+    /**
+     * NON-CONSTANT FUNCTIONS
+     */
     function approve(address spender, uint256 amount) external virtual returns (bool);
+
+    function transfer(address recipient, uint256 amount) external virtual returns (bool);
 
     function transferFrom(
         address sender,
         address recipient,
         uint256 amount
     ) external virtual returns (bool);
+
+    /**
+     * EVENTS
+     */
+    event Approval(address indexed owner, address indexed spender, uint256 value);
+
+    event Burn(address indexed account, uint256 burnAmount);
+
+    event Mint(address indexed account, uint256 mintAmount);
+
+    event Transfer(address indexed from, address indexed to, uint256 value);
 }
