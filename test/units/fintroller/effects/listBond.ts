@@ -6,14 +6,14 @@ import { AdminErrors } from "../../../helpers/errors";
 export default function shouldBehaveLikeListBond(): void {
   describe("when the caller is the admin", function () {
     describe("when the contract to be listed is compliant", function () {
-      it("lists the new bond", async function () {
+      it("lists the bond", async function () {
         await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.yToken.address);
       });
 
       it("emits a ListBond event", async function () {
         await expect(this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.yToken.address))
           .to.emit(this.contracts.fintroller, "ListBond")
-          .withArgs(this.stubs.yToken.address);
+          .withArgs(this.accounts.admin, this.stubs.yToken.address);
       });
     });
 

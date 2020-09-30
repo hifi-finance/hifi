@@ -2,14 +2,14 @@ import { expect } from "chai";
 
 import { AdminErrors, FintrollerErrors } from "../../../helpers/errors";
 
-export default function shouldBehaveLikeSetDepositAllowed(): void {
+export default function shouldBehaveLikeSetDepositCollateralAllowed(): void {
   describe("when the caller is the admin", function () {
     describe("when the bond is listed", function () {
       beforeEach(async function () {
         await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.yToken.address);
       });
 
-      it("sets the value of the property to true", async function () {
+      it("sets the value to true", async function () {
         await this.contracts.fintroller
           .connect(this.signers.admin)
           .setDepositCollateralAllowed(this.stubs.yToken.address, true);
@@ -17,7 +17,7 @@ export default function shouldBehaveLikeSetDepositAllowed(): void {
         expect(newState).to.equal(true);
       });
 
-      it("sets the value of the property to false", async function () {
+      it("sets the value to false", async function () {
         await this.contracts.fintroller
           .connect(this.signers.admin)
           .setDepositCollateralAllowed(this.stubs.yToken.address, false);
@@ -25,14 +25,14 @@ export default function shouldBehaveLikeSetDepositAllowed(): void {
         expect(newState).to.equal(false);
       });
 
-      it("emits a SetDepositAllowed event", async function () {
+      it("emits a SetDepositCollateralAllowed event", async function () {
         await expect(
           this.contracts.fintroller
             .connect(this.signers.admin)
             .setDepositCollateralAllowed(this.stubs.yToken.address, true),
         )
           .to.emit(this.contracts.fintroller, "SetDepositCollateralAllowed")
-          .withArgs(this.stubs.yToken.address, true);
+          .withArgs(this.accounts.admin, this.stubs.yToken.address, true);
       });
     });
 

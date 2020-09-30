@@ -31,6 +31,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
           )
             .to.emit(this.contracts.fintroller, "NewCollateralizationRatio")
             .withArgs(
+              this.accounts.admin,
               this.stubs.yToken.address,
               FintrollerConstants.DefaultCollateralizationRatioMantissa,
               newCollateralizationRatioMantissa,

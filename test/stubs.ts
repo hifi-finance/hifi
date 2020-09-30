@@ -4,15 +4,20 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { Zero } from "@ethersproject/constants";
 import { waffle } from "@nomiclabs/buidler";
 
-import BalanceSheetArtifact from "../../artifacts/GodModeBalanceSheet.json";
-import Erc20Artifact from "../../artifacts/Erc20.json";
-import FintrollerArtifact from "../../artifacts/Fintroller.json";
-import GuarantorPoolArtifact from "../../artifacts/GuarantorPool.json";
-import RedemptionPoolArtifact from "../../artifacts/GodModeRedemptionPool.json";
-import SimpleUniswapAnchoredViewArtifact from "../../artifacts/SimpleUniswapAnchoredView.json";
-import YTokenArtifact from "../../artifacts/YToken.json";
+import BalanceSheetArtifact from "../artifacts/GodModeBalanceSheet.json";
+import Erc20Artifact from "../artifacts/Erc20.json";
+import FintrollerArtifact from "../artifacts/Fintroller.json";
+import GuarantorPoolArtifact from "../artifacts/GuarantorPool.json";
+import RedemptionPoolArtifact from "../artifacts/GodModeRedemptionPool.json";
+import SimpleUniswapAnchoredViewArtifact from "../artifacts/SimpleUniswapAnchoredView.json";
+import YTokenArtifact from "../artifacts/YToken.json";
 
-import { BalanceSheetConstants, DefaultNumberOfDecimals, FintrollerConstants } from "./constants";
+import {
+  BalanceSheetConstants,
+  DefaultNumberOfDecimals,
+  FintrollerConstants,
+  OraclePrecisionScalar,
+} from "./helpers/constants";
 
 const { deployMockContract: deployStubContract } = waffle;
 
@@ -38,6 +43,7 @@ export async function deployStubCollateral(deployer: Signer): Promise<MockContra
 export async function deployStubFintroller(deployer: Signer): Promise<MockContract> {
   const fintroller: MockContract = await deployStubContract(deployer, FintrollerArtifact.abi);
   await fintroller.mock.isFintroller.returns(true);
+  await fintroller.mock.oraclePricePrecisionScalar.returns(OraclePrecisionScalar);
   return fintroller;
 }
 
@@ -83,12 +89,12 @@ export async function deployStubYToken(deployer: Signer): Promise<MockContract> 
  * FUNCTION STUBS
  */
 
-export async function stubGetBond(
+export async function stubGetBondThresholdCollateralizationRatio(
   this: Mocha.Context,
   yTokenAddress: string,
   collateralizationRatioMantissa?: BigNumber,
 ): Promise<void> {
-  await this.stubs.fintroller.mock.getBond
+  await this.stubs.fintroller.mock.getBondThresholdCollateralizationRatio
     .withArgs(yTokenAddress)
     .returns(collateralizationRatioMantissa || FintrollerConstants.DefaultCollateralizationRatioMantissa);
 }

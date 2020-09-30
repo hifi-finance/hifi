@@ -5,7 +5,7 @@ import { expect } from "chai";
 import { BalanceSheetErrors, GenericErrors } from "../../../helpers/errors";
 import { OneToken, TenTokens, OneHundredTokens } from "../../../helpers/constants";
 import { Vault } from "../../../../@types";
-import { stubGetBond } from "../../../helpers/stubs";
+import { stubGetBondThresholdCollateralizationRatio } from "../../../stubs";
 
 export default function shouldBehaveLikeLockCollateral(): void {
   const fullDepositCollateralAmount: BigNumber = TenTokens;
@@ -19,7 +19,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
       describe("when the caller deposited collateral", function () {
         beforeEach(async function () {
           /* Mock the required functions on the Fintroller and the Collateral stubs. */
-          await stubGetBond.call(this, this.stubs.yToken.address);
+          await stubGetBondThresholdCollateralizationRatio.call(this, this.stubs.yToken.address);
           await this.stubs.fintroller.mock.depositCollateralAllowed.withArgs(this.stubs.yToken.address).returns(true);
           await this.stubs.collateral.mock.transferFrom
             .withArgs(this.accounts.brad, this.contracts.balanceSheet.address, fullDepositCollateralAmount)

@@ -1,4 +1,4 @@
-import { loadFixture, redemptionPoolFixture } from "../../helpers/fixtures";
+import { loadFixture, redemptionPoolFixture } from "../../fixtures";
 import { shouldBehaveLikeRedemptionPool } from "./RedemptionPool.behavior";
 
 export function testRedemptionPool(): void {

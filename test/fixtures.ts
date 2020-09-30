@@ -4,18 +4,18 @@ import { MockContract } from "ethereum-waffle";
 import { Signer } from "@ethersproject/abstract-signer";
 import { waffle } from "@nomiclabs/buidler";
 
-import BalanceSheetArtifact from "../../artifacts/GodModeBalanceSheet.json";
-import FintrollerArtifact from "../../artifacts/Fintroller.json";
-import GuarantorPoolArtifact from "../../artifacts/GuarantorPool.json";
-import RedemptionPoolArtifact from "../../artifacts/GodModeRedemptionPool.json";
-import YTokenArtifact from "../../artifacts/YToken.json";
+import BalanceSheetArtifact from "../artifacts/GodModeBalanceSheet.json";
+import FintrollerArtifact from "../artifacts/Fintroller.json";
+import GuarantorPoolArtifact from "../artifacts/GuarantorPool.json";
+import RedemptionPoolArtifact from "../artifacts/GodModeRedemptionPool.json";
+import YTokenArtifact from "../artifacts/YToken.json";
 
-import { Fintroller } from "../../typechain/Fintroller";
-import { GodModeBalanceSheet as BalanceSheet } from "../../typechain/GodModeBalanceSheet";
-import { GodModeRedemptionPool as RedemptionPool } from "../../typechain/GodModeRedemptionPool";
-import { GuarantorPool } from "../../typechain/GuarantorPool";
-import { YToken } from "../../typechain/YToken";
-import { YTokenConstants } from "./constants";
+import { Fintroller } from "../typechain/Fintroller";
+import { GodModeBalanceSheet as BalanceSheet } from "../typechain/GodModeBalanceSheet";
+import { GodModeRedemptionPool as RedemptionPool } from "../typechain/GodModeRedemptionPool";
+import { GuarantorPool } from "../typechain/GuarantorPool";
+import { YToken } from "../typechain/YToken";
+import { YTokenConstants } from "./helpers/constants";
 
 import {
   deployStubBalanceSheet,
@@ -66,22 +66,23 @@ export async function balanceSheetFixture(
 
 export async function fintrollerFixture(
   signers: Signer[],
-): Promise<{ fintroller: Fintroller; oracle: MockContract; yToken: MockContract }> {
+): Promise<{ fintroller: Fintroller; guarantorPool: MockContract; oracle: MockContract; yToken: MockContract }> {
   const deployer: Signer = signers[0];
+  const guarantorPool: MockContract = await deployStubGuarantorPool(deployer);
   const oracle: MockContract = await deployStubOracle(deployer);
   const yToken: MockContract = await deployStubYToken(deployer);
   const fintroller: Fintroller = ((await deployContract(deployer, FintrollerArtifact, [])) as unknown) as Fintroller;
-  return { fintroller, oracle, yToken };
+  return { fintroller, guarantorPool, oracle, yToken };
 }
 
 export async function guarantorPoolFixture(
   signers: Signer[],
-): Promise<{ asset: MockContract; fintroller: MockContract; guarantorPool: GuarantorPool; yToken: MockContract }> {
+): Promise<{ fintroller: MockContract; guarantorPool: GuarantorPool; guaranty: MockContract; yToken: MockContract }> {
   const deployer: Signer = signers[0];
 
   const fintroller: MockContract = await deployStubFintroller(deployer);
+  const guaranty: MockContract = await deployStubUnderlying(deployer);
   const yToken: MockContract = await deployStubYToken(deployer);
-  const asset: MockContract = await deployStubUnderlying(deployer);
 
   const name: string = "Mainframe Guarantor Shares V1";
   const symbol: string = "MGS-V1";
@@ -90,10 +91,10 @@ export async function guarantorPoolFixture(
     symbol,
     fintroller.address,
     yToken.address,
-    asset.address,
+    guaranty.address,
   ])) as unknown) as GuarantorPool;
 
-  return { asset, fintroller, guarantorPool, yToken };
+  return { fintroller, guarantorPool, guaranty, yToken };
 }
 
 export async function redemptionPoolFixture(

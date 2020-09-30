@@ -4,7 +4,7 @@ import { expect } from "chai";
 
 import { FintrollerErrors, RedemptionPoolErrors, YTokenErrors } from "../../../helpers/errors";
 import { OneHundredTokens, YTokenConstants } from "../../../helpers/constants";
-import { stubGetBond } from "../../../helpers/stubs";
+import { stubGetBondThresholdCollateralizationRatio } from "../../../stubs";
 
 /**
  * Write tests for the following scenarios:
@@ -22,7 +22,7 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
     describe("when the amount of underlying to supply is not zero", function () {
       describe("when the bond is listed", function () {
         beforeEach(async function () {
-          await stubGetBond.call(this, this.stubs.yToken.address);
+          await stubGetBondThresholdCollateralizationRatio.call(this, this.stubs.yToken.address);
         });
 
         describe("when the fintroller allows supply underlying", function () {

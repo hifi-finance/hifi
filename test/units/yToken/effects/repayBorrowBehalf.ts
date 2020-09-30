@@ -9,7 +9,7 @@ import {
   TenTokens,
 } from "../../../helpers/constants";
 import { GenericErrors, YTokenErrors } from "../../../helpers/errors";
-import { stubGetBond, stubVaultDebt, stubVaultLockedCollateral } from "../../../helpers/stubs";
+import { stubGetBondThresholdCollateralizationRatio, stubVaultDebt, stubVaultLockedCollateral } from "../../../stubs";
 
 /**
  * This test suite assumes that Lucy pays the debt on behalf of Brad.
@@ -31,7 +31,7 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
     describe("when the amount to repay is not zero", function () {
       describe("when the bond is listed", function () {
         beforeEach(async function () {
-          await stubGetBond.call(this, this.contracts.yToken.address);
+          await stubGetBondThresholdCollateralizationRatio.call(this, this.contracts.yToken.address);
         });
 
         describe("when the fintroller allows repay borrow", function () {

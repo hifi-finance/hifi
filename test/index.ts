@@ -34,9 +34,9 @@ describe("Unit Tests", function () {
     this.accounts.mark = await signers[5].getAddress();
   });
 
-  // testBalanceSheet();
-  // testFintroller();
+  testBalanceSheet();
+  testFintroller();
   testGuarantorPool();
-  // testRedemptionPool();
-  // testYToken();
+  testRedemptionPool();
+  testYToken();
 });

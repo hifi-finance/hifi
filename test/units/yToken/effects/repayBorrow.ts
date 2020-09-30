@@ -10,7 +10,7 @@ import {
 } from "../../../helpers/constants";
 import { BalanceSheetErrors, GenericErrors, YTokenErrors } from "../../../helpers/errors";
 import { FintrollerErrors } from "../../../helpers/errors";
-import { stubGetBond, stubVaultDebt, stubVaultLockedCollateral } from "../../../helpers/stubs";
+import { stubGetBondThresholdCollateralizationRatio, stubVaultDebt, stubVaultLockedCollateral } from "../../../stubs";
 
 export default function shouldBehaveLikeRepayBorrow(): void {
   const collateralAmount: BigNumber = TenTokens;
@@ -29,7 +29,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
     describe("when the amount to is not zero", function () {
       describe("when the bond is listed", function () {
         beforeEach(async function () {
-          await stubGetBond.call(this, this.contracts.yToken.address);
+          await stubGetBondThresholdCollateralizationRatio.call(this, this.contracts.yToken.address);
         });
 
         describe("when the fintroller allows repay borrow", function () {

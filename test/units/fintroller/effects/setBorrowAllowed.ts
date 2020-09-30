@@ -9,13 +9,13 @@ export default function shouldBehaveLikeSetBorrowAllowed(): void {
         await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.yToken.address);
       });
 
-      it("sets the value of the property to true", async function () {
+      it("sets the value to true", async function () {
         await this.contracts.fintroller.connect(this.signers.admin).setBorrowAllowed(this.stubs.yToken.address, true);
         const newState: boolean = await this.contracts.fintroller.borrowAllowed(this.stubs.yToken.address);
         expect(newState).to.equal(true);
       });
 
-      it("sets the value of the property to false", async function () {
+      it("sets the value to false", async function () {
         await this.contracts.fintroller.connect(this.signers.admin).setBorrowAllowed(this.stubs.yToken.address, false);
         const newState: boolean = await this.contracts.fintroller.borrowAllowed(this.stubs.yToken.address);
         expect(newState).to.equal(false);
@@ -26,7 +26,7 @@ export default function shouldBehaveLikeSetBorrowAllowed(): void {
           this.contracts.fintroller.connect(this.signers.admin).setBorrowAllowed(this.stubs.yToken.address, true),
         )
           .to.emit(this.contracts.fintroller, "SetBorrowAllowed")
-          .withArgs(this.stubs.yToken.address, true);
+          .withArgs(this.accounts.admin, this.stubs.yToken.address, true);
       });
     });
 

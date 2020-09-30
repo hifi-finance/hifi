@@ -12,6 +12,7 @@ export const AddressOne: string = "0x0000000000000000000000000000000000000001";
 export const DefaultBlockGasLimit: BigNumber = BigNumber.from("10000000");
 export const DefaultNumberOfDecimals: BigNumber = BigNumber.from(18);
 export const MinimumGuarantorPoolShares: BigNumber = BigNumber.from("1000");
+export const OraclePrecisionScalar: BigNumber = BigNumber.from("1000000000000");
 export const UnitsPerToken: BigNumber = BigNumber.from("1000000000000000000");
 
 export const OnePercentMantissa: BigNumber = BigNumber.from("10000000000000000");

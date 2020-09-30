@@ -9,7 +9,7 @@ export default function shouldBehaveLikeSetRepayBorrowAllowed(): void {
         await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.yToken.address);
       });
 
-      it("sets the value of the property to true", async function () {
+      it("sets the value to true", async function () {
         await this.contracts.fintroller
           .connect(this.signers.admin)
           .setRepayBorrowAllowed(this.stubs.yToken.address, true);
@@ -17,7 +17,7 @@ export default function shouldBehaveLikeSetRepayBorrowAllowed(): void {
         expect(newState).to.equal(true);
       });
 
-      it("sets the value of the property to false", async function () {
+      it("sets the value to false", async function () {
         await this.contracts.fintroller
           .connect(this.signers.admin)
           .setRepayBorrowAllowed(this.stubs.yToken.address, false);
@@ -30,7 +30,7 @@ export default function shouldBehaveLikeSetRepayBorrowAllowed(): void {
           this.contracts.fintroller.connect(this.signers.admin).setRepayBorrowAllowed(this.stubs.yToken.address, true),
         )
           .to.emit(this.contracts.fintroller, "SetRepayBorrowAllowed")
-          .withArgs(this.stubs.yToken.address, true);
+          .withArgs(this.accounts.admin, this.stubs.yToken.address, true);
       });
     });
 

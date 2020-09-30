@@ -16,8 +16,14 @@ abstract contract FintrollerStorage is Exponential {
         bool isSupplyUnderlyingAllowed;
     }
 
+    struct GuarantorPoolStruct {
+        bool isDepositGuarantyAllowed;
+        bool isListed;
+        bool isWithdrawGuarantyAndClutchedCollateralAllowed;
+    }
+
     /**
-     * @dev Official mapping of yToken -> Bond metadata.
+     * @dev Maps the yToken address to the Bond structs.
      */
     mapping(address => Bond) internal bonds;
 
@@ -37,9 +43,19 @@ abstract contract FintrollerStorage is Exponential {
     uint256 public constant defaultCollateralizationRatioMantissa = 1500000000000000000;
 
     /**
+     * @dev Maps the Guarantor Pool addresses to the GuarantorPool structs.
+     */
+    mapping(address => GuarantorPoolStruct) internal guarantorPools;
+
+    /**
      * @notice The contract that provides price data for the collateral and the underlying asset.
      */
     UniswapAnchoredViewInterface public oracle;
+
+    /**
+     * @notice The ratio between mantissa precision (1e18) and the oracle price precision (1e6).
+     */
+    uint256 public constant oraclePricePrecisionScalar = 1e12;
 
     /**
      * @notice Indicator that this is a Fintroller contract, for inspection.

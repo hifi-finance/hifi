@@ -21,6 +21,16 @@ abstract contract GuarantorPoolStorage {
     FintrollerInterface public fintroller;
 
     /**
+     * @notice The ratio between mantissa precision (1e18) and the guaranty precision.
+     */
+    uint256 public guarantyPrecisionScalar;
+
+    /**
+     * @notice The total amount of collateral that was clutched from yTokens.
+     */
+    uint256 public totalClutchedCollateral;
+
+    /**
      * @notice The total amount of liquid assets that this contracts holds.
      */
     uint256 public totalGuaranty;

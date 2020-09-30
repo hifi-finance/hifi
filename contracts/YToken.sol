@@ -71,18 +71,12 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
 
         /* Set the underlying and collateral contracts and calculate the decimal scalar offsets. */
         underlying = underlying_;
-        require(
-            defaultNumberOfDecimals >= Erc20Interface(underlying).decimals(),
-            "ERR_CONSTRUCTOR_UNDERLYING_DECIMALS_OVERFLOW"
-        );
-        underlyingPrecisionScalar = 1**(defaultNumberOfDecimals / Erc20Interface(underlying).decimals());
+        require(defaultNumberOfDecimals >= underlying.decimals(), "ERR_CONSTRUCTOR_UNDERLYING_DECIMALS_OVERFLOW");
+        underlyingPrecisionScalar = 1**(defaultNumberOfDecimals / underlying.decimals());
 
         collateral = collateral_;
-        require(
-            defaultNumberOfDecimals >= Erc20Interface(collateral).decimals(),
-            "ERR_CONSTRUCTOR_COLLATERAL_DECIMALS_OVERFLOW"
-        );
-        collateralPrecisionScalar = defaultNumberOfDecimals / Erc20Interface(collateral).decimals();
+        require(defaultNumberOfDecimals >= collateral.decimals(), "ERR_CONSTRUCTOR_COLLATERAL_DECIMALS_OVERFLOW");
+        collateralPrecisionScalar = 1**(defaultNumberOfDecimals / collateral.decimals());
 
         /* Set the Redemption Pool contract and sanity check it. */
         redemptionPool = redemptionPool_;
@@ -149,7 +143,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
             vars.lockedCollateral,
             vars.newDebt
         );
-        (vars.thresholdCollateralizationRatioMantissa) = fintroller.getBond(this);
+        vars.thresholdCollateralizationRatioMantissa = fintroller.getBondThresholdCollateralizationRatio(this);
         require(
             vars.hypotheticalCollateralizationRatioMantissa >= vars.thresholdCollateralizationRatioMantissa,
             "ERR_BELOW_THRESHOLD_COLLATERALIZATION_RATIO"

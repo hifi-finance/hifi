@@ -21,11 +21,11 @@ function createDeployYTokenPromise(this: Mocha.Context): Promise<Contract> {
     name,
     symbol,
     expirationTime,
-    this.stubs.balanceSheet.address,
     this.stubs.fintroller.address,
+    this.stubs.balanceSheet.address,
+    this.stubs.guarantorPool.address,
     this.stubs.underlying.address,
     this.stubs.collateral.address,
-    this.stubs.guarantorPool.address,
     this.stubs.redemptionPool.address,
   ]);
   return deployYTokenPromise;

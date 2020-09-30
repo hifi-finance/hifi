@@ -6,6 +6,7 @@ import "./FintrollerInterface.sol";
 import "./YTokenInterface.sol";
 import "./erc20/Erc20Interface.sol";
 import "./erc20/SafeErc20.sol";
+import "./oracles/UniswapAnchoredViewInterface.sol";
 import "./utils/Admin.sol";
 import "./utils/ErrorReporter.sol";
 import "./utils/ReentrancyGuard.sol";
@@ -40,9 +41,9 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Reentrancy
         uint256 collateralPriceFromOracle;
         uint256 collateralPriceUpscaled;
         uint256 collateralizationRatioMantissa;
-        Exp debtUsdValue;
+        Exp debtValueUsd;
         Exp hypotheticalCollateralizationRatio;
-        Exp hypotheticalLockedCollateralUsdValue;
+        Exp hypotheticalLockedCollateralValueUsd;
         uint256 hypotheticalLockedCollateralUpscaled;
         uint256 underlyingPriceFromOracle;
         uint256 underlyingPriceUpscaled;
@@ -65,9 +66,10 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Reentrancy
     }
 
     /**
-     * @notice Determines the account collateralization ratio for the given locked collateral and debt.
+     * @notice Determines the account collateralization ratio for the given locked collateral amount and debt.
      *
      * @dev Requirements:
+     *
      * - The vault must be open.
      * - `debt` must be non-zero.
      * - The oracle prices must be non-zero.
@@ -96,45 +98,45 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Reentrancy
         }
         require(debt > 0, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_DEBT_ZERO");
 
-        /* Grab the collateral's USD price from the oracle. */
+        /* Grab the USD price of the collateral from the oracle. */
         UniswapAnchoredViewInterface oracle = fintroller.oracle();
         vars.collateralPriceFromOracle = oracle.price(yToken.collateral().symbol());
         require(vars.collateralPriceFromOracle > 0, "ERR_COLLATERAL_PRICE_ZERO");
 
-        /* Grab the underlying's USD price from the oracle. */
+        /* Upscale the 6 decimal oracle price to mantissa precision. */
+        (vars.mathErr, vars.collateralPriceUpscaled) = mulUInt(
+            vars.collateralPriceFromOracle,
+            fintroller.oraclePricePrecisionScalar()
+        );
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
+
+        /* Grab the USD price of the underlying from the oracle. */
         vars.underlyingPriceFromOracle = oracle.price(yToken.underlying().symbol());
         require(vars.underlyingPriceFromOracle > 0, "ERR_UNDERLYING_PRICE_ZERO");
 
         /* Upscale the 6 decimal oracle price to mantissa precision. */
-        (vars.mathErr, vars.collateralPriceUpscaled) = mulUInt(
-            vars.collateralPriceFromOracle,
-            oraclePricePrecisionScalar
+        (vars.mathErr, vars.underlyingPriceUpscaled) = mulUInt(
+            vars.underlyingPriceFromOracle,
+            fintroller.oraclePricePrecisionScalar()
         );
         require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
 
-        /* Upscale the collateral amount, which can have any precision, to mantissa precision. */
+        /* Upscale the collateral, which can have any precision, to mantissa precision. */
         (vars.mathErr, vars.hypotheticalLockedCollateralUpscaled) = mulUInt(
             lockedCollateralAmount,
             yToken.collateralPrecisionScalar()
         );
         require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
 
-        /* Calculate the value of the collateral in USD. */
-        (vars.mathErr, vars.hypotheticalLockedCollateralUsdValue) = mulExp(
+        /* Calculate the USD value of the collateral. */
+        (vars.mathErr, vars.hypotheticalLockedCollateralValueUsd) = mulExp(
             Exp({ mantissa: vars.hypotheticalLockedCollateralUpscaled }),
             Exp({ mantissa: vars.collateralPriceUpscaled })
         );
         require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
 
-        /* Upscale the 6 decimal oracle price to mantissa precision. */
-        (vars.mathErr, vars.underlyingPriceUpscaled) = mulUInt(
-            vars.underlyingPriceFromOracle,
-            oraclePricePrecisionScalar
-        );
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
-
-        /* Calculate the value of the debt in USD. */
-        (vars.mathErr, vars.debtUsdValue) = mulExp(
+        /* Calculate the USD value of the debt. */
+        (vars.mathErr, vars.debtValueUsd) = mulExp(
             Exp({ mantissa: debt }),
             Exp({ mantissa: vars.underlyingPriceUpscaled })
         );
@@ -145,8 +147,8 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Reentrancy
          * the USD value of the debt.
          */
         (vars.mathErr, vars.hypotheticalCollateralizationRatio) = divExp(
-            vars.hypotheticalLockedCollateralUsdValue,
-            vars.debtUsdValue
+            vars.hypotheticalLockedCollateralValueUsd,
+            vars.debtValueUsd
         );
         require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
 
@@ -154,7 +156,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Reentrancy
     }
 
     /**
-     * @notice Returns the vault data.
+     * @notice Reads all the storage properties of a vault.
      */
     function getVault(YTokenInterface yToken, address account)
         external
@@ -184,7 +186,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Reentrancy
      * NON-CONSTANT FUNCTIONS
      */
 
-    struct DepositLocalVars {
+    struct DepositCollateralLocalVars {
         MathError mathErr;
         uint256 hypotheticalFreeCollateral;
     }
@@ -212,7 +214,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Reentrancy
         nonReentrant
         returns (bool)
     {
-        DepositLocalVars memory vars;
+        DepositCollateralLocalVars memory vars;
 
         /* Checks: the zero edge case. */
         require(collateralAmount > 0, "ERR_DEPOSIT_COLLATERAL_ZERO");
@@ -286,7 +288,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Reentrancy
                 vars.newLockedCollateral,
                 vault.debt
             );
-            (vars.thresholdCollateralizationRatioMantissa) = fintroller.getBond(yToken);
+            vars.thresholdCollateralizationRatioMantissa = fintroller.getBondThresholdCollateralizationRatio(yToken);
             require(
                 vars.hypotheticalCollateralizationRatioMantissa >= vars.thresholdCollateralizationRatioMantissa,
                 "ERR_BELOW_THRESHOLD_COLLATERALIZATION_RATIO"

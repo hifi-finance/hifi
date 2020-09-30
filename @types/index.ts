@@ -38,11 +38,11 @@ export interface Signers {
 }
 
 export interface Stubs {
-  asset: MockContract;
   balanceSheet: MockContract;
   collateral: MockContract;
   fintroller: MockContract;
   guarantorPool: MockContract;
+  guaranty: MockContract;
   oracle: MockContract;
   redemptionPool: MockContract;
   underlying: MockContract;

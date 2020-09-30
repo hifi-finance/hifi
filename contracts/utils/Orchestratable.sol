@@ -58,6 +58,7 @@ contract Orchestratable is OrchestratableInterface {
      * `onlyConductor` functions anymore.
      *
      * @dev Requirements:
+     *
      * - Can only be called by the current conductor.
      */
     function renounceConductor() external virtual override onlyConductor {
@@ -69,6 +70,7 @@ contract Orchestratable is OrchestratableInterface {
      * @notice Transfers the conductor of the contract to a new account (`newConductor`).
      *
      * @dev Requirements
+     *
      * - Can only be called by the current conductor.
      *
      * @param newConductor The acount of the new conductor.

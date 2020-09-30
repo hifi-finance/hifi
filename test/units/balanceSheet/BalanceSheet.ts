@@ -1,4 +1,4 @@
-import { balanceSheetFixture, loadFixture } from "../../helpers/fixtures";
+import { balanceSheetFixture, loadFixture } from "../../fixtures";
 import { shouldBehaveLikeBalanceSheet } from "./BalanceSheet.behavior";
 
 export function testBalanceSheet(): void {

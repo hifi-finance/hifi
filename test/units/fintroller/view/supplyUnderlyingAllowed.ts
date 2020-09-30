@@ -8,7 +8,7 @@ export default function shouldBehaveLikeSupplyUnderlyingAllowedGetter(): void {
       await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.yToken.address);
     });
 
-    it("retrieves the supplyUnderlyingAllowed state", async function () {
+    it("retrieves the 'supplyUnderlyingAllowed' state", async function () {
       const supplyUnderlyingAllowed: boolean = await this.contracts.fintroller.supplyUnderlyingAllowed(
         this.stubs.yToken.address,
       );

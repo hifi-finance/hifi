@@ -4,7 +4,7 @@ import { expect } from "chai";
 
 import { BalanceSheetErrors, FintrollerErrors, GenericErrors } from "../../../helpers/errors";
 import { TenTokens } from "../../../helpers/constants";
-import { stubGetBond } from "../../../helpers/stubs";
+import { stubGetBondThresholdCollateralizationRatio } from "../../../stubs";
 
 export default function shouldBehaveLikeDepositCollateral(): void {
   const collateralAmount: BigNumber = TenTokens;
@@ -17,15 +17,15 @@ export default function shouldBehaveLikeDepositCollateral(): void {
     describe("when the amount to deposit is not zero", function () {
       describe("when the bond is listed", function () {
         beforeEach(async function () {
-          await stubGetBond.call(this, this.stubs.yToken.address);
+          await stubGetBondThresholdCollateralizationRatio.call(this, this.stubs.yToken.address);
         });
 
-        describe("when the fintroller allows deposit", function () {
+        describe("when the fintroller allows deposit collateral", function () {
           beforeEach(async function () {
             await this.stubs.fintroller.mock.depositCollateralAllowed.withArgs(this.stubs.yToken.address).returns(true);
           });
 
-          describe("when the yToken contract has enough allowance", function () {
+          describe("when the call to transfer the collateral token succeeds", function () {
             beforeEach(async function () {
               await this.stubs.collateral.mock.transferFrom
                 .withArgs(this.accounts.brad, this.contracts.balanceSheet.address, collateralAmount)
@@ -49,7 +49,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
             });
           });
 
-          describe("when the yToken contract does not have enough allowance", function () {
+          describe("when the call to transfer the collateral token fails", function () {
             beforeEach(async function () {
               await this.stubs.collateral.mock.transferFrom
                 .withArgs(this.accounts.brad, this.contracts.balanceSheet.address, collateralAmount)
@@ -66,7 +66,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
           });
         });
 
-        describe("when the fintroller does not allow deposit", function () {
+        describe("when the fintroller does not allow deposit collateral", function () {
           beforeEach(async function () {
             await this.stubs.fintroller.mock.depositCollateralAllowed
               .withArgs(this.stubs.yToken.address)

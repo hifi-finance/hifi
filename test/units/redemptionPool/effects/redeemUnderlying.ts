@@ -4,7 +4,7 @@ import { expect } from "chai";
 
 import { FintrollerErrors, RedemptionPoolErrors, YTokenErrors } from "../../../helpers/errors";
 import { OneHundredTokens, OneMillionTokens, YTokenConstants } from "../../../helpers/constants";
-import { stubGetBond } from "../../../helpers/stubs";
+import { stubGetBondThresholdCollateralizationRatio } from "../../../stubs";
 
 /**
  * Write tests for the following scenarios:
@@ -24,7 +24,7 @@ export default function shouldBehaveLikeRedeemUnderlying(): void {
     describe("when the amount to redeemUnderlying is not zero", function () {
       describe("when the bond is listed", function () {
         beforeEach(async function () {
-          await stubGetBond.call(this, this.stubs.yToken.address);
+          await stubGetBondThresholdCollateralizationRatio.call(this, this.stubs.yToken.address);
         });
 
         describe("when the fintroller allows redeemUnderlying", function () {
@@ -45,7 +45,7 @@ export default function shouldBehaveLikeRedeemUnderlying(): void {
                 await this.stubs.underlying.mock.transfer.withArgs(this.accounts.mark, redeemAmount).returns(true);
               });
 
-              it("redeems the underlying asset", async function () {
+              it("redeems the underlying", async function () {
                 const oldUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
                 await this.contracts.redemptionPool.connect(this.signers.mark).redeemUnderlying(redeemAmount);
                 const newUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();

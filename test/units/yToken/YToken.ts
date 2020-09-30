@@ -1,4 +1,4 @@
-import { loadFixture, yTokenFixture } from "../../helpers/fixtures";
+import { loadFixture, yTokenFixture } from "../../fixtures";
 import { shouldBehaveLikeYToken } from "./YToken.behavior";
 
 export function testYToken(): void {

@@ -8,7 +8,11 @@ import { FintrollerErrors } from "../../../helpers/errors";
 import { OneHundredTokens, OneThousandPercentMantissa, TenTokens } from "../../../helpers/constants";
 import { contextForTimeDependentTests } from "../../../helpers/mochaContexts";
 import { increaseTime } from "../../../helpers/jsonRpcHelpers";
-import { stubGetBond, stubVaultFreeCollateral, stubVaultLockedCollateral } from "../../../helpers/stubs";
+import {
+  stubGetBondThresholdCollateralizationRatio,
+  stubVaultFreeCollateral,
+  stubVaultLockedCollateral,
+} from "../../../stubs";
 
 /**
  * Write tests for the following scenarios:
@@ -33,7 +37,7 @@ export default function shouldBehaveLikeBorrow(): void {
       describe("when the amount to borrow is not zero", function () {
         describe("when the bond is listed", function () {
           beforeEach(async function () {
-            await stubGetBond.call(this, this.contracts.yToken.address);
+            await stubGetBondThresholdCollateralizationRatio.call(this, this.contracts.yToken.address);
           });
 
           describe("when the fintroller allows borrows", function () {
