@@ -32,6 +32,7 @@ contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorRep
     struct RedeemUnderlyingLocalVars {
         MathError mathErr;
         uint256 newUnderlyingTotalSupply;
+        uint256 underlyingPrecisionScalar;
         uint256 yTokenAmount;
     }
 
@@ -70,9 +71,17 @@ contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorRep
         assert(vars.mathErr == MathError.NO_ERROR);
         totalUnderlyingSupply = vars.newUnderlyingTotalSupply;
 
-        /* yTokens always have 18 decimals so we have to upscale the underlying amount. */
-        (vars.mathErr, vars.yTokenAmount) = mulUInt(underlyingAmount, yToken.underlyingPrecisionScalar());
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_REDEEM_UNDERLYING_MATH_ERROR");
+        /**
+         * yTokens always have 18 decimals so we have to upscale the underlying amount.
+         * If the precision scalar is 1, it means that the underlying also has 18 decimals.
+         */
+        vars.underlyingPrecisionScalar = yToken.underlyingPrecisionScalar();
+        if (vars.underlyingPrecisionScalar != 1) {
+            (vars.mathErr, vars.yTokenAmount) = mulUInt(underlyingAmount, vars.underlyingPrecisionScalar);
+            require(vars.mathErr == MathError.NO_ERROR, "ERR_REDEEM_UNDERLYING_MATH_ERROR");
+        } else {
+            vars.yTokenAmount = underlyingAmount;
+        }
 
         /* Interactions: burn the yTokens. */
         require(yToken.burn(msg.sender, underlyingAmount), "ERR_REDEEM_UNDERLYING_BURN");
@@ -88,6 +97,7 @@ contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorRep
     struct SupplyUnderlyingLocalVars {
         MathError mathErr;
         uint256 newUnderlyingTotalSupply;
+        uint256 underlyingPrecisionScalar;
         uint256 yTokenAmount;
     }
 
@@ -123,9 +133,17 @@ contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorRep
         require(vars.mathErr == MathError.NO_ERROR, "ERR_SUPPLY_UNDERLYING_MATH_ERROR");
         totalUnderlyingSupply = vars.newUnderlyingTotalSupply;
 
-        /* yTokens always have 18 decimals so we have to upscale the underlying amount. */
-        (vars.mathErr, vars.yTokenAmount) = mulUInt(underlyingAmount, yToken.underlyingPrecisionScalar());
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_SUPPLY_UNDERLYING_MATH_ERROR");
+        /**
+         * yTokens always have 18 decimals so we have to upscale the underlying amount.
+         * If the precision scalar is 1, it means that the underlying also has 18 decimals.
+         */
+        vars.underlyingPrecisionScalar = yToken.underlyingPrecisionScalar();
+        if (vars.underlyingPrecisionScalar != 1) {
+            (vars.mathErr, vars.yTokenAmount) = mulUInt(underlyingAmount, vars.underlyingPrecisionScalar);
+            require(vars.mathErr == MathError.NO_ERROR, "ERR_SUPPLY_UNDERLYING_MATH_ERROR");
+        } else {
+            vars.yTokenAmount = underlyingAmount;
+        }
 
         /* Interactions: mint the yTokens. */
         require(yToken.mint(msg.sender, vars.yTokenAmount), "ERR_SUPPLY_UNDERLYING_MINT");

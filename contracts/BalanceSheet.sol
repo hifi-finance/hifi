@@ -40,11 +40,13 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Reentrancy
         MathError mathErr;
         uint256 collateralPriceFromOracle;
         uint256 collateralPriceUpscaled;
+        uint256 collateralPrecisionScalar;
         uint256 collateralizationRatioMantissa;
         Exp debtValueUsd;
         Exp hypotheticalCollateralizationRatio;
-        Exp hypotheticalLockedCollateralValueUsd;
-        uint256 hypotheticalLockedCollateralUpscaled;
+        Exp lockedCollateralValueUsd;
+        uint256 lockedCollateralUpscaled;
+        uint256 oraclePricePrecisionScalar;
         uint256 underlyingPriceFromOracle;
         uint256 underlyingPriceUpscaled;
     }
@@ -104,9 +106,10 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Reentrancy
         require(vars.collateralPriceFromOracle > 0, "ERR_COLLATERAL_PRICE_ZERO");
 
         /* Upscale the 6 decimal oracle price to mantissa precision. */
+        vars.oraclePricePrecisionScalar = fintroller.oraclePricePrecisionScalar();
         (vars.mathErr, vars.collateralPriceUpscaled) = mulUInt(
             vars.collateralPriceFromOracle,
-            fintroller.oraclePricePrecisionScalar()
+            vars.oraclePricePrecisionScalar
         );
         require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
 
@@ -117,20 +120,25 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Reentrancy
         /* Upscale the 6 decimal oracle price to mantissa precision. */
         (vars.mathErr, vars.underlyingPriceUpscaled) = mulUInt(
             vars.underlyingPriceFromOracle,
-            fintroller.oraclePricePrecisionScalar()
+            vars.oraclePricePrecisionScalar
         );
         require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
 
         /* Upscale the collateral, which can have any precision, to mantissa precision. */
-        (vars.mathErr, vars.hypotheticalLockedCollateralUpscaled) = mulUInt(
-            lockedCollateralAmount,
-            yToken.collateralPrecisionScalar()
-        );
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
+        vars.collateralPrecisionScalar = yToken.collateralPrecisionScalar();
+        if (vars.collateralPrecisionScalar != 1) {
+            (vars.mathErr, vars.lockedCollateralUpscaled) = mulUInt(
+                lockedCollateralAmount,
+                vars.collateralPrecisionScalar
+            );
+            require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
+        } else {
+            vars.lockedCollateralUpscaled = lockedCollateralAmount;
+        }
 
         /* Calculate the USD value of the collateral. */
-        (vars.mathErr, vars.hypotheticalLockedCollateralValueUsd) = mulExp(
-            Exp({ mantissa: vars.hypotheticalLockedCollateralUpscaled }),
+        (vars.mathErr, vars.lockedCollateralValueUsd) = mulExp(
+            Exp({ mantissa: vars.lockedCollateralUpscaled }),
             Exp({ mantissa: vars.collateralPriceUpscaled })
         );
         require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
@@ -147,7 +155,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Reentrancy
          * the USD value of the debt.
          */
         (vars.mathErr, vars.hypotheticalCollateralizationRatio) = divExp(
-            vars.hypotheticalLockedCollateralValueUsd,
+            vars.lockedCollateralValueUsd,
             vars.debtValueUsd
         );
         require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
