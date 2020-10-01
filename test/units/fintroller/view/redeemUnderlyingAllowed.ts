@@ -9,7 +9,7 @@ export default function shouldBehaveLikeRedeemUnderlyingAllowedGetter(): void {
     });
 
     it("retrieves the 'redeemUnderlyingAllowed' state", async function () {
-      const redeemUnderlyingAllowed: boolean = await this.contracts.fintroller.redeemUnderlyingAllowed(
+      const redeemUnderlyingAllowed: boolean = await this.contracts.fintroller.getRedeemUnderlyingAllowed(
         this.stubs.yToken.address,
       );
       expect(redeemUnderlyingAllowed).to.equal(false);
@@ -18,7 +18,7 @@ export default function shouldBehaveLikeRedeemUnderlyingAllowedGetter(): void {
 
   describe("when the bond is not listed", function () {
     it("reverts", async function () {
-      await expect(this.contracts.fintroller.redeemUnderlyingAllowed(this.stubs.yToken.address)).to.be.revertedWith(
+      await expect(this.contracts.fintroller.getRedeemUnderlyingAllowed(this.stubs.yToken.address)).to.be.revertedWith(
         FintrollerErrors.BondNotListed,
       );
     });

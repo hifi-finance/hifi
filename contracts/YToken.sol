@@ -119,7 +119,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         require(borrowAmount > 0, "ERR_BORROW_ZERO");
 
         /* Checks: the Fintroller allows this action to be performed. */
-        require(fintroller.borrowAllowed(this), "ERR_BORROW_NOT_ALLOWED");
+        require(fintroller.getBorrowAllowed(this), "ERR_BORROW_NOT_ALLOWED");
 
         /* TODO: check debt ceiling. */
 
@@ -301,7 +301,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         require(repayAmount > 0, "ERR_REPAY_BORROW_ZERO");
 
         /* Checks: the Fintroller allows this action to be performed. */
-        require(fintroller.repayBorrowAllowed(this), "ERR_REPAY_BORROW_NOT_ALLOWED");
+        require(fintroller.getRepayBorrowAllowed(this), "ERR_REPAY_BORROW_NOT_ALLOWED");
 
         /* Checks: the payer has enough yTokens. */
         require(balanceOf(payer) >= repayAmount, "ERR_REPAY_BORROW_INSUFFICIENT_BALANCE");

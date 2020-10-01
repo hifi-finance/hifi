@@ -60,7 +60,7 @@ contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorRep
         require(underlyingAmount > 0, "ERR_REDEEM_UNDERLYING_ZERO");
 
         /* Checks: the Fintroller allows this action to be performed. */
-        require(fintroller.redeemUnderlyingAllowed(yToken), "ERR_REDEEM_UNDERLYING_NOT_ALLOWED");
+        require(fintroller.getRedeemUnderlyingAllowed(yToken), "ERR_REDEEM_UNDERLYING_NOT_ALLOWED");
 
         /* Checks: there is sufficient liquidity. */
         require(underlyingAmount <= totalUnderlyingSupply, "ERR_REDEEM_UNDERLYING_INSUFFICIENT_UNDERLYING");
@@ -116,7 +116,7 @@ contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorRep
         require(underlyingAmount > 0, "ERR_SUPPLY_UNDERLYING_ZERO");
 
         /* Checks: the Fintroller allows this action to be performed. */
-        require(fintroller.supplyUnderlyingAllowed(yToken), "ERR_SUPPLY_UNDERLYING_NOT_ALLOWED");
+        require(fintroller.getSupplyUnderlyingAllowed(yToken), "ERR_SUPPLY_UNDERLYING_NOT_ALLOWED");
 
         /* Effects: update the storage property. */
         (vars.mathErr, vars.newUnderlyingTotalSupply) = addUInt(totalUnderlyingSupply, underlyingAmount);

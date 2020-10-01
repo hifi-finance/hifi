@@ -27,7 +27,9 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
 
         describe("when the fintroller allows supply underlying", function () {
           beforeEach(async function () {
-            await this.stubs.fintroller.mock.supplyUnderlyingAllowed.withArgs(this.stubs.yToken.address).returns(true);
+            await this.stubs.fintroller.mock.getSupplyUnderlyingAllowed
+              .withArgs(this.stubs.yToken.address)
+              .returns(true);
           });
 
           describe("when the call to mint the yTokens succeeds", function () {
@@ -68,7 +70,9 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
 
         describe("when the fintroller does not allow supply underlying", function () {
           beforeEach(async function () {
-            await this.stubs.fintroller.mock.supplyUnderlyingAllowed.withArgs(this.stubs.yToken.address).returns(false);
+            await this.stubs.fintroller.mock.getSupplyUnderlyingAllowed
+              .withArgs(this.stubs.yToken.address)
+              .returns(false);
           });
 
           it("reverts", async function () {
@@ -81,7 +85,7 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
 
       describe("when the bond is not listed", function () {
         beforeEach(async function () {
-          await this.stubs.fintroller.mock.supplyUnderlyingAllowed
+          await this.stubs.fintroller.mock.getSupplyUnderlyingAllowed
             .withArgs(this.stubs.yToken.address)
             .revertsWithReason(FintrollerErrors.BondNotListed);
         });

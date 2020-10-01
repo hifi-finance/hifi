@@ -13,7 +13,7 @@ export default function shouldBehaveLikeSetRedeemUnderlyingAllowed(): void {
         await this.contracts.fintroller
           .connect(this.signers.admin)
           .setRedeemUnderlyingAllowed(this.stubs.yToken.address, true);
-        const newState: boolean = await this.contracts.fintroller.redeemUnderlyingAllowed(this.stubs.yToken.address);
+        const newState: boolean = await this.contracts.fintroller.getRedeemUnderlyingAllowed(this.stubs.yToken.address);
         expect(newState).to.equal(true);
       });
 
@@ -21,7 +21,7 @@ export default function shouldBehaveLikeSetRedeemUnderlyingAllowed(): void {
         await this.contracts.fintroller
           .connect(this.signers.admin)
           .setRedeemUnderlyingAllowed(this.stubs.yToken.address, false);
-        const newState: boolean = await this.contracts.fintroller.redeemUnderlyingAllowed(this.stubs.yToken.address);
+        const newState: boolean = await this.contracts.fintroller.getRedeemUnderlyingAllowed(this.stubs.yToken.address);
         expect(newState).to.equal(false);
       });
 

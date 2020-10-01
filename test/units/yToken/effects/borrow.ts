@@ -42,7 +42,7 @@ export default function shouldBehaveLikeBorrow(): void {
 
           describe("when the fintroller allows borrows", function () {
             beforeEach(async function () {
-              await this.stubs.fintroller.mock.borrowAllowed.withArgs(this.contracts.yToken.address).returns(true);
+              await this.stubs.fintroller.mock.getBorrowAllowed.withArgs(this.contracts.yToken.address).returns(true);
             });
 
             describe("when the caller deposited collateral", function () {
@@ -153,7 +153,7 @@ export default function shouldBehaveLikeBorrow(): void {
 
           describe("when the fintroller does not allow borrows", function () {
             beforeEach(async function () {
-              await this.stubs.fintroller.mock.borrowAllowed.withArgs(this.contracts.yToken.address).returns(false);
+              await this.stubs.fintroller.mock.getBorrowAllowed.withArgs(this.contracts.yToken.address).returns(false);
             });
 
             it("reverts", async function () {
@@ -166,7 +166,7 @@ export default function shouldBehaveLikeBorrow(): void {
 
         describe("when the bond is not listed", function () {
           beforeEach(async function () {
-            await this.stubs.fintroller.mock.borrowAllowed
+            await this.stubs.fintroller.mock.getBorrowAllowed
               .withArgs(this.contracts.yToken.address)
               .revertsWithReason(FintrollerErrors.BondNotListed);
           });

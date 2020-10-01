@@ -17,7 +17,9 @@ export default function shouldBehaveLikeLockCollateral(): void {
     describe("when the collateral amount to lock is not zero", function () {
       describe("when the caller deposited collateral", function () {
         beforeEach(async function () {
-          await this.stubs.fintroller.mock.depositCollateralAllowed.withArgs(this.stubs.yToken.address).returns(true);
+          await this.stubs.fintroller.mock.getDepositCollateralAllowed
+            .withArgs(this.stubs.yToken.address)
+            .returns(true);
           await this.stubs.collateral.mock.transferFrom
             .withArgs(this.accounts.brad, this.contracts.balanceSheet.address, collateralAmount)
             .returns(true);

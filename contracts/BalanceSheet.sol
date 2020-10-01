@@ -220,7 +220,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Reentrancy
         require(collateralAmount > 0, "ERR_DEPOSIT_COLLATERAL_ZERO");
 
         /* Checks: the Fintroller allows this action to be performed. */
-        require(fintroller.depositCollateralAllowed(yToken), "ERR_DEPOSIT_COLLATERAL_NOT_ALLOWED");
+        require(fintroller.getDepositCollateralAllowed(yToken), "ERR_DEPOSIT_COLLATERAL_NOT_ALLOWED");
 
         /* Effects: update the storage properties. */
         (vars.mathErr, vars.hypotheticalFreeCollateral) = addUInt(

@@ -22,7 +22,9 @@ export default function shouldBehaveLikeDepositCollateral(): void {
 
         describe("when the fintroller allows deposit collateral", function () {
           beforeEach(async function () {
-            await this.stubs.fintroller.mock.depositCollateralAllowed.withArgs(this.stubs.yToken.address).returns(true);
+            await this.stubs.fintroller.mock.getDepositCollateralAllowed
+              .withArgs(this.stubs.yToken.address)
+              .returns(true);
           });
 
           describe("when the call to transfer the collateral token succeeds", function () {
@@ -68,7 +70,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
 
         describe("when the fintroller does not allow deposit collateral", function () {
           beforeEach(async function () {
-            await this.stubs.fintroller.mock.depositCollateralAllowed
+            await this.stubs.fintroller.mock.getDepositCollateralAllowed
               .withArgs(this.stubs.yToken.address)
               .returns(false);
           });
@@ -85,7 +87,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
 
       describe("when the bond is not listed", function () {
         beforeEach(async function () {
-          await this.stubs.fintroller.mock.depositCollateralAllowed
+          await this.stubs.fintroller.mock.getDepositCollateralAllowed
             .withArgs(this.stubs.yToken.address)
             .revertsWithReason(FintrollerErrors.BondNotListed);
         });

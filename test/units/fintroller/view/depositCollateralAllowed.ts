@@ -9,7 +9,7 @@ export default function shouldBehaveLikeDepositCollateralAllowed(): void {
     });
 
     it("retrieves the 'depositCollateralAllowed' state", async function () {
-      const depositCollateralAllowed: boolean = await this.contracts.fintroller.depositCollateralAllowed(
+      const depositCollateralAllowed: boolean = await this.contracts.fintroller.getDepositCollateralAllowed(
         this.stubs.yToken.address,
       );
       expect(depositCollateralAllowed).to.equal(false);
@@ -18,7 +18,7 @@ export default function shouldBehaveLikeDepositCollateralAllowed(): void {
 
   describe("when the bond is not listed", function () {
     it("reverts", async function () {
-      await expect(this.contracts.fintroller.depositCollateralAllowed(this.stubs.yToken.address)).to.be.revertedWith(
+      await expect(this.contracts.fintroller.getDepositCollateralAllowed(this.stubs.yToken.address)).to.be.revertedWith(
         FintrollerErrors.BondNotListed,
       );
     });

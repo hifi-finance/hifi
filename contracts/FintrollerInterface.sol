@@ -8,9 +8,6 @@ abstract contract FintrollerInterface is FintrollerStorage {
     /**
      * CONSTANT FUNCTIONS
      */
-    function borrowAllowed(YTokenInterface yToken) external virtual view returns (bool);
-
-    function depositCollateralAllowed(YTokenInterface yToken) external virtual view returns (bool);
 
     function getBond(YTokenInterface yToken)
         external
@@ -26,13 +23,17 @@ abstract contract FintrollerInterface is FintrollerStorage {
             bool isSupplyUnderlyingAllowed
         );
 
+    function getBorrowAllowed(YTokenInterface yToken) external virtual view returns (bool);
+
     function getBondThresholdCollateralizationRatio(YTokenInterface yToken) external virtual view returns (uint256);
 
-    function redeemUnderlyingAllowed(YTokenInterface yToken) external virtual view returns (bool);
+    function getDepositCollateralAllowed(YTokenInterface yToken) external virtual view returns (bool);
 
-    function repayBorrowAllowed(YTokenInterface yToken) external virtual view returns (bool);
+    function getRedeemUnderlyingAllowed(YTokenInterface yToken) external virtual view returns (bool);
 
-    function supplyUnderlyingAllowed(YTokenInterface yToken) external virtual view returns (bool);
+    function getRepayBorrowAllowed(YTokenInterface yToken) external virtual view returns (bool);
+
+    function getSupplyUnderlyingAllowed(YTokenInterface yToken) external virtual view returns (bool);
 
     /**
      * NON-CONSTANT FUNCTIONS

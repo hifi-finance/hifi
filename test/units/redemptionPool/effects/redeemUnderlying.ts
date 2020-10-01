@@ -29,7 +29,9 @@ export default function shouldBehaveLikeRedeemUnderlying(): void {
 
         describe("when the fintroller allows redeemUnderlying", function () {
           beforeEach(async function () {
-            await this.stubs.fintroller.mock.redeemUnderlyingAllowed.withArgs(this.stubs.yToken.address).returns(true);
+            await this.stubs.fintroller.mock.getRedeemUnderlyingAllowed
+              .withArgs(this.stubs.yToken.address)
+              .returns(true);
           });
 
           describe("when there is enough underlying liquidity", function () {
@@ -83,7 +85,9 @@ export default function shouldBehaveLikeRedeemUnderlying(): void {
 
         describe("when the fintroller does not allow redeem underlying", function () {
           beforeEach(async function () {
-            await this.stubs.fintroller.mock.redeemUnderlyingAllowed.withArgs(this.stubs.yToken.address).returns(false);
+            await this.stubs.fintroller.mock.getRedeemUnderlyingAllowed
+              .withArgs(this.stubs.yToken.address)
+              .returns(false);
           });
 
           it("reverts", async function () {
@@ -96,7 +100,7 @@ export default function shouldBehaveLikeRedeemUnderlying(): void {
 
       describe("when the bond is not listed", function () {
         beforeEach(async function () {
-          await this.stubs.fintroller.mock.redeemUnderlyingAllowed
+          await this.stubs.fintroller.mock.getRedeemUnderlyingAllowed
             .withArgs(this.stubs.yToken.address)
             .revertsWithReason(FintrollerErrors.BondNotListed);
         });

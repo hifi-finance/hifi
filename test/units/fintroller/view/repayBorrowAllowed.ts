@@ -9,14 +9,16 @@ export default function shouldBehaveLikeRepayBorrowAllowedGetter(): void {
     });
 
     it("retrieves the 'repayBorrowAllowed' state", async function () {
-      const repayBorrowAllowed: boolean = await this.contracts.fintroller.repayBorrowAllowed(this.stubs.yToken.address);
+      const repayBorrowAllowed: boolean = await this.contracts.fintroller.getRepayBorrowAllowed(
+        this.stubs.yToken.address,
+      );
       expect(repayBorrowAllowed).to.equal(false);
     });
   });
 
   describe("when the bond is not listed", function () {
     it("reverts", async function () {
-      await expect(this.contracts.fintroller.repayBorrowAllowed(this.stubs.yToken.address)).to.be.revertedWith(
+      await expect(this.contracts.fintroller.getRepayBorrowAllowed(this.stubs.yToken.address)).to.be.revertedWith(
         FintrollerErrors.BondNotListed,
       );
     });

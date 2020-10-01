@@ -20,30 +20,6 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      */
 
     /**
-     * @notice Check if the account should be allowed to borrow yTokens.
-     * @dev Reverts it the bond is not listed.
-     * @param yToken The bond to make the check against.
-     * @return bool true=allowed, false=not allowed.
-     */
-    function borrowAllowed(YTokenInterface yToken) external override view returns (bool) {
-        Bond memory bond = bonds[address(yToken)];
-        require(bond.isListed, "ERR_BOND_NOT_LISTED");
-        return bond.isBorrowAllowed;
-    }
-
-    /**
-     * @notice Checks if the account should be allowed to deposit new collateral.
-     * @dev Reverts it the bond is not listed.
-     * @param yToken The bond to make the check against.
-     * @return bool true=allowed, false=not allowed.
-     */
-    function depositCollateralAllowed(YTokenInterface yToken) external override view returns (bool) {
-        Bond memory bond = bonds[address(yToken)];
-        require(bond.isListed, "ERR_BOND_NOT_LISTED");
-        return bond.isDepositCollateralAllowed;
-    }
-
-    /**
      * @notice Reads all the storage properties of a bond struct.
      * @dev It is not an error to provide an invalid yToken address. The returned values would all be zero.
      * @param yToken The address of the bond contract.
@@ -82,12 +58,36 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     }
 
     /**
+     * @notice Check if the account should be allowed to borrow yTokens.
+     * @dev Reverts it the bond is not listed.
+     * @param yToken The bond to make the check against.
+     * @return bool true=allowed, false=not allowed.
+     */
+    function getBorrowAllowed(YTokenInterface yToken) external override view returns (bool) {
+        Bond memory bond = bonds[address(yToken)];
+        require(bond.isListed, "ERR_BOND_NOT_LISTED");
+        return bond.isBorrowAllowed;
+    }
+
+    /**
+     * @notice Checks if the account should be allowed to deposit new collateral.
+     * @dev Reverts it the bond is not listed.
+     * @param yToken The bond to make the check against.
+     * @return bool true=allowed, false=not allowed.
+     */
+    function getDepositCollateralAllowed(YTokenInterface yToken) external override view returns (bool) {
+        Bond memory bond = bonds[address(yToken)];
+        require(bond.isListed, "ERR_BOND_NOT_LISTED");
+        return bond.isDepositCollateralAllowed;
+    }
+
+    /**
      * @notice Checks if the account should be allowed to redeem the underlying asset from the Redemption Pool.
      * @dev Reverts it the bond is not listed.
      * @param yToken The bond to make the check against.
      * @return bool true=allowed, false=not allowed.
      */
-    function redeemUnderlyingAllowed(YTokenInterface yToken) external override view returns (bool) {
+    function getRedeemUnderlyingAllowed(YTokenInterface yToken) external override view returns (bool) {
         Bond memory bond = bonds[address(yToken)];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
         return bond.isRedeemUnderlyingAllowed;
@@ -99,7 +99,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @param yToken The bond to make the check against.
      * @return bool true=allowed, false=not allowed.
      */
-    function repayBorrowAllowed(YTokenInterface yToken) external override view returns (bool) {
+    function getRepayBorrowAllowed(YTokenInterface yToken) external override view returns (bool) {
         Bond memory bond = bonds[address(yToken)];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
         return bond.isRepayBorrowAllowed;
@@ -111,7 +111,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * @param yToken The bond to make the check against.
      * @return bool true=allowed, false=not allowed.
      */
-    function supplyUnderlyingAllowed(YTokenInterface yToken) external override view returns (bool) {
+    function getSupplyUnderlyingAllowed(YTokenInterface yToken) external override view returns (bool) {
         Bond memory bond = bonds[address(yToken)];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
         return bond.isSupplyUnderlyingAllowed;

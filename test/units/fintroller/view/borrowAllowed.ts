@@ -9,14 +9,14 @@ export default function shouldBehaveLikeBorrowAllowedGetter(): void {
     });
 
     it("retrieves the 'borrowAllowed' state", async function () {
-      const borrowAllowed: boolean = await this.contracts.fintroller.borrowAllowed(this.stubs.yToken.address);
+      const borrowAllowed: boolean = await this.contracts.fintroller.getBorrowAllowed(this.stubs.yToken.address);
       expect(borrowAllowed).to.equal(false);
     });
   });
 
   describe("when the bond is not listed", function () {
     it("reverts", async function () {
-      await expect(this.contracts.fintroller.borrowAllowed(this.stubs.yToken.address)).to.be.revertedWith(
+      await expect(this.contracts.fintroller.getBorrowAllowed(this.stubs.yToken.address)).to.be.revertedWith(
         FintrollerErrors.BondNotListed,
       );
     });

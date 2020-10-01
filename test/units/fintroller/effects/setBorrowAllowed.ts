@@ -11,13 +11,13 @@ export default function shouldBehaveLikeSetBorrowAllowed(): void {
 
       it("sets the value to true", async function () {
         await this.contracts.fintroller.connect(this.signers.admin).setBorrowAllowed(this.stubs.yToken.address, true);
-        const newState: boolean = await this.contracts.fintroller.borrowAllowed(this.stubs.yToken.address);
+        const newState: boolean = await this.contracts.fintroller.getBorrowAllowed(this.stubs.yToken.address);
         expect(newState).to.equal(true);
       });
 
       it("sets the value to false", async function () {
         await this.contracts.fintroller.connect(this.signers.admin).setBorrowAllowed(this.stubs.yToken.address, false);
-        const newState: boolean = await this.contracts.fintroller.borrowAllowed(this.stubs.yToken.address);
+        const newState: boolean = await this.contracts.fintroller.getBorrowAllowed(this.stubs.yToken.address);
         expect(newState).to.equal(false);
       });
 

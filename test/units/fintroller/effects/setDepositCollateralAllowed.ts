@@ -13,7 +13,9 @@ export default function shouldBehaveLikeSetDepositCollateralAllowed(): void {
         await this.contracts.fintroller
           .connect(this.signers.admin)
           .setDepositCollateralAllowed(this.stubs.yToken.address, true);
-        const newState: boolean = await this.contracts.fintroller.depositCollateralAllowed(this.stubs.yToken.address);
+        const newState: boolean = await this.contracts.fintroller.getDepositCollateralAllowed(
+          this.stubs.yToken.address,
+        );
         expect(newState).to.equal(true);
       });
 
@@ -21,7 +23,9 @@ export default function shouldBehaveLikeSetDepositCollateralAllowed(): void {
         await this.contracts.fintroller
           .connect(this.signers.admin)
           .setDepositCollateralAllowed(this.stubs.yToken.address, false);
-        const newState: boolean = await this.contracts.fintroller.depositCollateralAllowed(this.stubs.yToken.address);
+        const newState: boolean = await this.contracts.fintroller.getDepositCollateralAllowed(
+          this.stubs.yToken.address,
+        );
         expect(newState).to.equal(false);
       });
 

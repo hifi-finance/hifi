@@ -34,7 +34,9 @@ export default function shouldBehaveLikeRepayBorrow(): void {
 
         describe("when the fintroller allows repay borrow", function () {
           beforeEach(async function () {
-            await this.stubs.fintroller.mock.repayBorrowAllowed.withArgs(this.contracts.yToken.address).returns(true);
+            await this.stubs.fintroller.mock.getRepayBorrowAllowed
+              .withArgs(this.contracts.yToken.address)
+              .returns(true);
           });
 
           describe("when the caller has a debt", function () {
@@ -46,7 +48,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
                 this.accounts.brad,
                 collateralAmount,
               );
-              await this.stubs.fintroller.mock.borrowAllowed.withArgs(this.contracts.yToken.address).returns(true);
+              await this.stubs.fintroller.mock.getBorrowAllowed.withArgs(this.contracts.yToken.address).returns(true);
               await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
                 .withArgs(this.contracts.yToken.address, this.accounts.brad, collateralAmount, repayBorrowAmount)
                 .returns(OneThousandPercentMantissa);
@@ -97,7 +99,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
                 this.accounts.brad,
                 collateralAmount,
               );
-              await this.stubs.fintroller.mock.borrowAllowed.withArgs(this.contracts.yToken.address).returns(true);
+              await this.stubs.fintroller.mock.getBorrowAllowed.withArgs(this.contracts.yToken.address).returns(true);
               await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
                 .withArgs(this.contracts.yToken.address, this.accounts.brad, collateralAmount, repayBorrowAmount)
                 .returns(OneThousandPercentMantissa);
@@ -140,7 +142,9 @@ export default function shouldBehaveLikeRepayBorrow(): void {
 
         describe("when the fintroller does not allow repay borrow", function () {
           beforeEach(async function () {
-            await this.stubs.fintroller.mock.repayBorrowAllowed.withArgs(this.contracts.yToken.address).returns(false);
+            await this.stubs.fintroller.mock.getRepayBorrowAllowed
+              .withArgs(this.contracts.yToken.address)
+              .returns(false);
           });
 
           it("reverts", async function () {
@@ -153,7 +157,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
 
       describe("when the bond is not listed", function () {
         beforeEach(async function () {
-          await this.stubs.fintroller.mock.repayBorrowAllowed
+          await this.stubs.fintroller.mock.getRepayBorrowAllowed
             .withArgs(this.contracts.yToken.address)
             .revertsWithReason(FintrollerErrors.BondNotListed);
         });

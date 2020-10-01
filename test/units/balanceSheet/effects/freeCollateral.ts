@@ -20,7 +20,9 @@ export default function shouldBehaveLikeLockCollateral(): void {
         beforeEach(async function () {
           /* Mock the required functions on the Fintroller and the Collateral stubs. */
           await stubGetBondThresholdCollateralizationRatio.call(this, this.stubs.yToken.address);
-          await this.stubs.fintroller.mock.depositCollateralAllowed.withArgs(this.stubs.yToken.address).returns(true);
+          await this.stubs.fintroller.mock.getDepositCollateralAllowed
+            .withArgs(this.stubs.yToken.address)
+            .returns(true);
           await this.stubs.collateral.mock.transferFrom
             .withArgs(this.accounts.brad, this.contracts.balanceSheet.address, fullDepositCollateralAmount)
             .returns(true);
@@ -40,7 +42,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
 
           describe("when the caller has a debt", function () {
             beforeEach(async function () {
-              await this.stubs.fintroller.mock.borrowAllowed.withArgs(this.stubs.yToken.address).returns(true);
+              await this.stubs.fintroller.mock.getBorrowAllowed.withArgs(this.stubs.yToken.address).returns(true);
               /* The balance sheet will ask the oracle what's the value of 9 WETH collateral. */
             });
 

@@ -9,7 +9,7 @@ export default function shouldBehaveLikeSupplyUnderlyingAllowedGetter(): void {
     });
 
     it("retrieves the 'supplyUnderlyingAllowed' state", async function () {
-      const supplyUnderlyingAllowed: boolean = await this.contracts.fintroller.supplyUnderlyingAllowed(
+      const supplyUnderlyingAllowed: boolean = await this.contracts.fintroller.getSupplyUnderlyingAllowed(
         this.stubs.yToken.address,
       );
       expect(supplyUnderlyingAllowed).to.equal(false);
@@ -18,7 +18,7 @@ export default function shouldBehaveLikeSupplyUnderlyingAllowedGetter(): void {
 
   describe("when the bond is not listed", function () {
     it("reverts", async function () {
-      await expect(this.contracts.fintroller.supplyUnderlyingAllowed(this.stubs.yToken.address)).to.be.revertedWith(
+      await expect(this.contracts.fintroller.getSupplyUnderlyingAllowed(this.stubs.yToken.address)).to.be.revertedWith(
         FintrollerErrors.BondNotListed,
       );
     });

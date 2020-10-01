@@ -13,7 +13,7 @@ export default function shouldBehaveLikeSetRepayBorrowAllowed(): void {
         await this.contracts.fintroller
           .connect(this.signers.admin)
           .setRepayBorrowAllowed(this.stubs.yToken.address, true);
-        const newState: boolean = await this.contracts.fintroller.repayBorrowAllowed(this.stubs.yToken.address);
+        const newState: boolean = await this.contracts.fintroller.getRepayBorrowAllowed(this.stubs.yToken.address);
         expect(newState).to.equal(true);
       });
 
@@ -21,7 +21,7 @@ export default function shouldBehaveLikeSetRepayBorrowAllowed(): void {
         await this.contracts.fintroller
           .connect(this.signers.admin)
           .setRepayBorrowAllowed(this.stubs.yToken.address, false);
-        const newState: boolean = await this.contracts.fintroller.repayBorrowAllowed(this.stubs.yToken.address);
+        const newState: boolean = await this.contracts.fintroller.getRepayBorrowAllowed(this.stubs.yToken.address);
         expect(newState).to.equal(false);
       });
 
