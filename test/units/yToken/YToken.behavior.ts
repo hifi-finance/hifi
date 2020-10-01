@@ -19,20 +19,6 @@ export function shouldBehaveLikeYToken(): void {
     shouldBehaveLikeConstructor();
   });
 
-  describe("Effects Functions", function () {
-    describe("borrow", function () {
-      shouldBehaveLikeBorrow();
-    });
-
-    describe("repayBorrow", function () {
-      shouldBehaveLikeRepayBorrow();
-    });
-
-    describe("repayBorrowBehalf", function () {
-      shouldBehaveLikeRepayBorrowBehalf();
-    });
-  });
-
   describe("View Functions", function () {
     describe("balanceSheet", function () {
       shouldBehaveLikeBalanceSheetGetter();
@@ -68,6 +54,20 @@ export function shouldBehaveLikeYToken(): void {
 
     describe("underlyingPrecisionScalar", function () {
       shouldBehaveLikeUnderlyingPrecisionScalarGetter();
+    });
+  });
+
+  describe("Effects Functions", function () {
+    describe("borrow", function () {
+      shouldBehaveLikeBorrow();
+    });
+
+    describe("repayBorrow", function () {
+      shouldBehaveLikeRepayBorrow();
+    });
+
+    describe("repayBorrowBehalf", function () {
+      shouldBehaveLikeRepayBorrowBehalf();
     });
   });
 }

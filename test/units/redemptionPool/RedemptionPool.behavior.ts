@@ -6,16 +6,6 @@ import shouldBehaveLikeOracleYTokenGetter from "./view/yToken";
 import shouldBehaveLikeTotalUnderlyingSupplyGetter from "./view/totalUnderlyingSupply";
 
 export function shouldBehaveLikeRedemptionPool(): void {
-  describe("Effects Functions", function () {
-    describe("redeemUnderlying", function () {
-      shouldBehaveLikeRedeemUnderlying();
-    });
-
-    describe("supplyUnderlying", function () {
-      shouldBehaveLikeSupplyUnderlying();
-    });
-  });
-
   describe("View Functions", function () {
     describe("isRedemptionPool", function () {
       shouldBehaveLikeIsRedemptionPoolGetter();
@@ -27,6 +17,16 @@ export function shouldBehaveLikeRedemptionPool(): void {
 
     describe("yToken", function () {
       shouldBehaveLikeOracleYTokenGetter();
+    });
+  });
+
+  describe("Effects Functions", function () {
+    describe("redeemUnderlying", function () {
+      shouldBehaveLikeRedeemUnderlying();
+    });
+
+    describe("supplyUnderlying", function () {
+      shouldBehaveLikeSupplyUnderlying();
     });
   });
 }

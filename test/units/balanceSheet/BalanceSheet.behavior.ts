@@ -12,28 +12,6 @@ import shouldBehaveLikeIsBalanceSheetGetter from "./view/isBalanceSheet";
 import shouldBehaveLikeIsVaultOpenGetter from "./view/isVaultOpen";
 
 export function shouldBehaveLikeBalanceSheet(): void {
-  describe("Effects Functions", function () {
-    describe("depositCollateral", function () {
-      shouldBehaveLikeDepositCollateral();
-    });
-
-    describe("freeCollateral", function () {
-      shouldBehaveLikeFreeCollateral();
-    });
-
-    describe("lockCollateral", function () {
-      shouldBehaveLikeLockCollateral();
-    });
-
-    describe("openVault", function () {
-      shouldBehaveLikeOpenVault();
-    });
-
-    describe("withdrawCollateral", function () {
-      shouldBehaveLikeWithdrawCollateral();
-    });
-  });
-
   describe("View Functions", function () {
     describe("fintroller", function () {
       shouldBehaveLikeFintrollerGetter();
@@ -57,6 +35,28 @@ export function shouldBehaveLikeBalanceSheet(): void {
 
     describe("isVaultOpen", function () {
       shouldBehaveLikeIsVaultOpenGetter();
+    });
+  });
+
+  describe("Effects Functions", function () {
+    describe("depositCollateral", function () {
+      shouldBehaveLikeDepositCollateral();
+    });
+
+    describe("freeCollateral", function () {
+      shouldBehaveLikeFreeCollateral();
+    });
+
+    describe("lockCollateral", function () {
+      shouldBehaveLikeLockCollateral();
+    });
+
+    describe("openVault", function () {
+      shouldBehaveLikeOpenVault();
+    });
+
+    describe("withdrawCollateral", function () {
+      shouldBehaveLikeWithdrawCollateral();
     });
   });
 }

@@ -22,40 +22,6 @@ import shouldBehaveLikeRepayBorrowAllowed from "./view/repayBorrowAllowed";
 import shouldBehaveLikeSupplyUnderlyingAllowed from "./view/supplyUnderlyingAllowed";
 
 export function shouldBehaveLikeFintroller(): void {
-  describe("Effects Functions", function () {
-    describe("listBond", function () {
-      shouldBehaveLikeListBond();
-    });
-
-    describe("setBorrowAllowed", function () {
-      shouldBehaveLikeSetBorrowAllowed();
-    });
-
-    describe("setCollateralizationRatio", function () {
-      shouldBehaveLikeSetCollateralizationRatio();
-    });
-
-    describe("setDepositCollateralAllowed", function () {
-      shouldBehaveLikeSetDepositCollateralAllowed();
-    });
-
-    describe("setOracle", function () {
-      shouldBehaveLikeSetOracle();
-    });
-
-    describe("setRedeemUnderlyingAllowed", function () {
-      shouldBehaveLikeSetRedeemUnderlyingAllowed();
-    });
-
-    describe("setRepayBorrowAllowed", function () {
-      shouldBehaveLikeSetRepayBorrowAllowed();
-    });
-
-    describe("setSupplyUnderlyingAllowed", function () {
-      shouldBehaveLikeSetSupplyUnderlyingAllowed();
-    });
-  });
-
   describe("View Functions", function () {
     describe("borrowAllowed", function () {
       shouldBehaveLikeBorrowAllowed();
@@ -107,6 +73,40 @@ export function shouldBehaveLikeFintroller(): void {
 
     describe("supplyUnderlyingAllowed", function () {
       shouldBehaveLikeSupplyUnderlyingAllowed();
+    });
+  });
+
+  describe("Effects Functions", function () {
+    describe("listBond", function () {
+      shouldBehaveLikeListBond();
+    });
+
+    describe("setBorrowAllowed", function () {
+      shouldBehaveLikeSetBorrowAllowed();
+    });
+
+    describe("setCollateralizationRatio", function () {
+      shouldBehaveLikeSetCollateralizationRatio();
+    });
+
+    describe("setDepositCollateralAllowed", function () {
+      shouldBehaveLikeSetDepositCollateralAllowed();
+    });
+
+    describe("setOracle", function () {
+      shouldBehaveLikeSetOracle();
+    });
+
+    describe("setRedeemUnderlyingAllowed", function () {
+      shouldBehaveLikeSetRedeemUnderlyingAllowed();
+    });
+
+    describe("setRepayBorrowAllowed", function () {
+      shouldBehaveLikeSetRepayBorrowAllowed();
+    });
+
+    describe("setSupplyUnderlyingAllowed", function () {
+      shouldBehaveLikeSetSupplyUnderlyingAllowed();
     });
   });
 }
