@@ -15,7 +15,7 @@ import "../math/CarefulMath.sol";
  *
  * Additionally, an {Approval} event is emitted on calls to {transferFrom}.
  * This allows applications to reconstruct the allowance for all accounts just
- * by listening to said events. Other implementations of the EIP may not emit
+ * by listening to said events. Other implementations of the Erc may not emit
  * these events, as it isn't required by the specification.
  *
  * Finally, the non-standard {decreaseAllowance} and {increaseAllowance}
@@ -27,7 +27,7 @@ import "../math/CarefulMath.sol";
  */
 contract Erc20 is Erc20Interface, CarefulMath {
     /**
-     * @dev All three of these values are immutable: they can only be set once during construction.
+     * @notice All three of these values are immutable: they can only be set once during construction.
      * @param name_ Erc20 name of this token.
      * @param symbol_ Erc20 symbol of this token.
      * @param decimals_ Erc20 decimal precision of this token.
@@ -158,7 +158,7 @@ contract Erc20 is Erc20Interface, CarefulMath {
      * allowance.
      *
      * @dev Emits a {Transfer} event. Emits an {Approval} event indicating the
-     * updated allowance. This is not required by the EIP. See the note at the
+     * updated allowance. This is not required by the Erc. See the note at the
      * beginning of {Erc20};
      *
      * @return a boolean value indicating whether the operation succeeded.
@@ -230,6 +230,8 @@ contract Erc20 is Erc20Interface, CarefulMath {
         (mathErr, newTotalSupply) = subUInt(totalSupply, burnAmount);
         require(mathErr == MathError.NO_ERROR, "ERR_ERC20_BURN_TOTAL_SUPPLY_UNDERFLOW");
         totalSupply = newTotalSupply;
+
+        emit Burn(holder, burnAmount);
     }
 
     /**
@@ -249,6 +251,8 @@ contract Erc20 is Erc20Interface, CarefulMath {
         (mathErr, newTotalSupply) = addUInt(totalSupply, mintAmount);
         require(mathErr == MathError.NO_ERROR, "ERR_ERC20_MINT_TOTAL_SUPPLY_OVERFLOW");
         totalSupply = newTotalSupply;
+
+        emit Mint(beneficiary, mintAmount);
     }
 
     /**

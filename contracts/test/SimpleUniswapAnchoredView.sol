@@ -10,8 +10,8 @@ import "../oracles/UniswapAnchoredViewInterface.sol";
  */
 contract SimpleUniswapAnchoredView is UniswapAnchoredViewInterface {
     /**
-     * @dev Prices are returned in the format that the Open Price Feed uses: 6 decimals of precision.
-     * https://compound.finance/docs/prices#price
+     * @notice Prices are returned in the format that the Open Price Feed uses: 6 decimals of precision.
+     * @dev See https://compound.finance/docs/prices#price
      */
     function price(string memory symbol) external override pure returns (uint256) {
         if (areStringsEqual(symbol, "WETH")) {

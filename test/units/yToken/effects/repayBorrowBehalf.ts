@@ -95,7 +95,7 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
                   .repayBorrowBehalf(this.accounts.brad, repayBorrowAmount),
               )
                 .to.emit(this.contracts.yToken, "Burn")
-                .withArgs(this.accounts.brad, repayBorrowAmount);
+                .withArgs(this.accounts.lucy, repayBorrowAmount);
             });
 
             it("emits a Transfer event", async function () {

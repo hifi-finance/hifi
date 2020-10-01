@@ -5,7 +5,7 @@ pragma solidity ^0.7.1;
  * @title CarefulMath
  * @author Mainframe
  * @notice Exponential module for storing fixed-precision decimals.
- * @dev Forked from Compound, but Derived from OpenZeppelin's SafeMath library
+ * @dev Forked from Compound
  * https://github.com/compound-finance/compound-protocol/blob/v2.6/contracts/CarefulMath.sol
  */
 abstract contract CarefulMath {

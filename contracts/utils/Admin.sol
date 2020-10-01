@@ -37,7 +37,7 @@ abstract contract Admin is AdminInterface {
     }
 
     /**
-     * @dev Leaves the contract without admin, so it will not be possible to call
+     * @notice Leaves the contract without admin, so it will not be possible to call
      * `onlyAdmin` functions anymore.
      *
      * Requirements:
@@ -53,7 +53,7 @@ abstract contract Admin is AdminInterface {
     }
 
     /**
-     * @dev Transfers the admin of the contract to a new account (`newAdmin`).
+     * @notice Transfers the admin of the contract to a new account (`newAdmin`).
      * Can only be called by the current admin.
      * @param newAdmin The acount of the new admin.
      */

@@ -4,7 +4,7 @@ pragma solidity ^0.7.1;
 import "./BalanceSheetInterface.sol";
 import "./FintrollerInterface.sol";
 import "./YTokenInterface.sol";
-import "./erc20/Erc20.sol";
+import "./erc20/Erc20Permit.sol";
 import "./erc20/Erc20Interface.sol";
 import "./math/Exponential.sol";
 import "./oracles/UniswapAnchoredViewInterface.sol";
@@ -17,7 +17,7 @@ import "./utils/ReentrancyGuard.sol";
  * @title YToken
  * @author Mainframe
  */
-contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter, Exponential, ReentrancyGuard {
+contract YToken is YTokenInterface, Erc20Permit, Admin, Orchestratable, ErrorReporter, Exponential, ReentrancyGuard {
     modifier isNotMatured() {
         require(block.timestamp < expirationTime, "ERR_BOND_MATURED");
         _;
@@ -48,7 +48,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         Erc20Interface underlying_,
         Erc20Interface collateral_,
         RedemptionPoolInterface redemptionPool_
-    ) Erc20(name_, symbol_, 18) Admin() Orchestratable() {
+    ) Erc20Permit(name_, symbol_, 18) Admin() Orchestratable() {
         uint8 defaultNumberOfDecimals = 18;
 
         /* Set the unix expiration time. */
@@ -150,7 +150,6 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
 
         /* Emit a Borrow, Mint and Transfer event. */
         emit Borrow(msg.sender, borrowAmount);
-        emit Mint(msg.sender, borrowAmount);
         emit Transfer(address(this), msg.sender, borrowAmount);
 
         return NO_ERROR;
@@ -176,8 +175,6 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
 
         /* Effects: burns the yTokens. */
         burnInternal(holder, burnAmount);
-
-        emit Burn(holder, burnAmount);
 
         return NO_ERROR;
     }
@@ -217,8 +214,6 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         /* Effects: print the new yTokens into existence. */
         mintInternal(beneficiary, mintAmount);
 
-        emit Mint(beneficiary, mintAmount);
-
         return NO_ERROR;
     }
 
@@ -242,7 +237,6 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
 
         /* Emit a RepayBorrow, Burn and Transfer event. */
         emit RepayBorrow(msg.sender, msg.sender, repayAmount);
-        emit Burn(msg.sender, repayAmount);
         emit Transfer(msg.sender, address(this), repayAmount);
 
         return NO_ERROR;
@@ -270,7 +264,6 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
 
         /* Emit a RepayBorrow, Burn and Transfer event. */
         emit RepayBorrow(msg.sender, borrower, repayAmount);
-        emit Burn(borrower, repayAmount);
         emit Transfer(msg.sender, address(this), repayAmount);
 
         return NO_ERROR;

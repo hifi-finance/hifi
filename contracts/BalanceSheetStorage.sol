@@ -8,7 +8,6 @@ import "./YTokenInterface.sol";
  * @author Mainframe
  */
 abstract contract BalanceSheetStorage {
-    /*** Structs ***/
     struct Vault {
         uint256 debt;
         uint256 freeCollateral;
