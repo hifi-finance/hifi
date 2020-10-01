@@ -1,8 +1,6 @@
 import shouldBehaveLikeListBond from "./effects/listBond";
-import shouldBehaveLikeListGuarantorPool from "./effects/listGuarantorPool";
 import shouldBehaveLikeSetCollateralizationRatio from "./effects/setCollateralizationRatio";
 import shouldBehaveLikeSetDepositCollateralAllowed from "./effects/setDepositCollateralAllowed";
-import shouldBehaveLikeSetDepositGuarantyAllowed from "./effects/setDepositGuarantyAllowed";
 import shouldBehaveLikeSetBorrowAllowed from "./effects/setBorrowAllowed";
 import shouldBehaveLikeSetOracle from "./effects/setOracle";
 import shouldBehaveLikeSetRedeemUnderlyingAllowed from "./effects/setRedeemUnderlyingAllowed";
@@ -14,10 +12,8 @@ import shouldBehaveLikeCollateralizationRatioLowerBoundMantissaGetter from "./vi
 import shouldBehaveLikeCollateralizationRatioUpperBoundMantissaGetter from "./view/collateralizationRatioUpperBoundMantissa";
 import shouldBehaveLikeDefaultCollateralizationRatioMantissaGetter from "./view/defaultCollateralizationRatioMantissa";
 import shouldBehaveLikeDepositCollateralAllowed from "./view/depositCollateralAllowed";
-import shouldBehaveLikeDepositGuarantyAllowed from "./view/depositGuarantyAllowed";
 import shouldBehaveLikeGetBond from "./view/getBond";
 import shouldBehaveLikeGetBondThresholdCollateralizationRatio from "./view/getBondThresholdCollateralizationRatio";
-import shouldBehaveLikeGetGuarantorPool from "./view/getGuarantorPool";
 import shouldBehaveLikeIsFintrollerGetter from "./view/isFintroller";
 import shouldBehaveLikeOracleGetter from "./view/oracle";
 import shouldBehaveLikeOraclePricePrecisionScalarGetter from "./view/oraclePricePrecisionScalar";
@@ -31,10 +27,6 @@ export function shouldBehaveLikeFintroller(): void {
       shouldBehaveLikeListBond();
     });
 
-    describe("listGuarantorPool", function () {
-      shouldBehaveLikeListGuarantorPool();
-    });
-
     describe("setBorrowAllowed", function () {
       shouldBehaveLikeSetBorrowAllowed();
     });
@@ -45,10 +37,6 @@ export function shouldBehaveLikeFintroller(): void {
 
     describe("setDepositCollateralAllowed", function () {
       shouldBehaveLikeSetDepositCollateralAllowed();
-    });
-
-    describe("setDepositGuarantyAllowed", function () {
-      shouldBehaveLikeSetDepositGuarantyAllowed();
     });
 
     describe("setOracle", function () {
@@ -89,20 +77,12 @@ export function shouldBehaveLikeFintroller(): void {
       shouldBehaveLikeDepositCollateralAllowed();
     });
 
-    describe("depositGuarantyAllowed", function () {
-      shouldBehaveLikeDepositGuarantyAllowed();
-    });
-
     describe("getBond", function () {
       shouldBehaveLikeGetBond();
     });
 
     describe("getBondThresholdCollateralizationRatio", function () {
       shouldBehaveLikeGetBondThresholdCollateralizationRatio();
-    });
-
-    describe("getGuarantorPool", function () {
-      shouldBehaveLikeGetGuarantorPool();
     });
 
     describe("isFintroller", function () {

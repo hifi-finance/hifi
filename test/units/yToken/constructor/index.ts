@@ -23,7 +23,6 @@ function createDeployYTokenPromise(this: Mocha.Context): Promise<Contract> {
     expirationTime,
     this.stubs.fintroller.address,
     this.stubs.balanceSheet.address,
-    this.stubs.guarantorPool.address,
     this.stubs.underlying.address,
     this.stubs.collateral.address,
     this.stubs.redemptionPool.address,

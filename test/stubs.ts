@@ -7,7 +7,6 @@ import { waffle } from "@nomiclabs/buidler";
 import BalanceSheetArtifact from "../artifacts/GodModeBalanceSheet.json";
 import Erc20Artifact from "../artifacts/Erc20.json";
 import FintrollerArtifact from "../artifacts/Fintroller.json";
-import GuarantorPoolArtifact from "../artifacts/GuarantorPool.json";
 import RedemptionPoolArtifact from "../artifacts/GodModeRedemptionPool.json";
 import SimpleUniswapAnchoredViewArtifact from "../artifacts/SimpleUniswapAnchoredView.json";
 import YTokenArtifact from "../artifacts/YToken.json";
@@ -45,16 +44,6 @@ export async function deployStubFintroller(deployer: Signer): Promise<MockContra
   await fintroller.mock.isFintroller.returns(true);
   await fintroller.mock.oraclePricePrecisionScalar.returns(OraclePrecisionScalar);
   return fintroller;
-}
-
-export async function deployStubGuarantorPool(deployer: Signer): Promise<MockContract> {
-  const guarantorPool: MockContract = await deployStubContract(deployer, GuarantorPoolArtifact.abi);
-  await guarantorPool.mock.decimals.returns(DefaultNumberOfDecimals);
-  await guarantorPool.mock.isGuarantorPool.returns(true);
-  await guarantorPool.mock.name.returns("Mainframe Guarantor Shares V1");
-  await guarantorPool.mock.symbol.returns("MGS-V1");
-  await guarantorPool.mock.totalSupply.returns(Zero);
-  return guarantorPool;
 }
 
 export async function deployStubOracle(deployer: Signer): Promise<MockContract> {

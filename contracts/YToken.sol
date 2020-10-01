@@ -3,7 +3,6 @@ pragma solidity ^0.7.1;
 
 import "./BalanceSheetInterface.sol";
 import "./FintrollerInterface.sol";
-import "./GuarantorPoolInterface.sol";
 import "./YTokenInterface.sol";
 import "./erc20/Erc20.sol";
 import "./erc20/Erc20Interface.sol";
@@ -36,7 +35,6 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
      * @param expirationTime_ Unix timestamp in seconds for when this token expires.
      * @param fintroller_ The address of the Fintroller contract.
      * @param balanceSheet_ The address of the BalanceSheet contract.
-     * @param guarantorPool_ The address of the GuarantorPool contract.
      * @param collateral_ The contract address of the collateral asset.
      * @param underlying_ The contract address of the underlying asset.
      * @param redemptionPool_ The address of the RedemptionPool contract.
@@ -47,7 +45,6 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         uint256 expirationTime_,
         FintrollerInterface fintroller_,
         BalanceSheetInterface balanceSheet_,
-        GuarantorPoolInterface guarantorPool_,
         Erc20Interface underlying_,
         Erc20Interface collateral_,
         RedemptionPoolInterface redemptionPool_
@@ -64,10 +61,6 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         /* Set the Balance Sheet contract and sanity check it. */
         balanceSheet = balanceSheet_;
         balanceSheet.isBalanceSheet();
-
-        /* Set the Guarantor Pool contract and sanity check it. */
-        guarantorPool = guarantorPool_;
-        guarantorPool.isGuarantorPool();
 
         /* Set the underlying and collateral contracts and calculate the decimal scalar offsets. */
         underlying = underlying_;
@@ -128,7 +121,7 @@ contract YToken is YTokenInterface, Erc20, Admin, Orchestratable, ErrorReporter,
         /* Checks: the Fintroller allows this action to be performed. */
         require(fintroller.borrowAllowed(this), "ERR_BORROW_NOT_ALLOWED");
 
-        /* TODO: check liquidity in the Guarantor Pool and Redemption Pool. */
+        /* TODO: check debt ceiling. */
 
         /* Add the borrow amount to the current debt. */
         (vars.debt, , vars.lockedCollateral, ) = balanceSheet.getVault(this, msg.sender);

@@ -2,7 +2,6 @@
 pragma solidity ^0.7.1;
 
 import "./FintrollerInterface.sol";
-import "./GuarantorPoolInterface.sol";
 import "./YTokenInterface.sol";
 import "./math/Exponential.sol";
 import "./utils/Admin.sol";
@@ -45,18 +44,6 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     }
 
     /**
-     * @notice Checks if the account should be allowed to deposit new guaranty.
-     * @dev Reverts it the pool is not listed.
-     * @param guarantorPool The pool to make the check against.
-     * @return bool true=allowed, false=not allowed.
-     */
-    function depositGuarantyAllowed(GuarantorPoolInterface guarantorPool) external override view returns (bool) {
-        GuarantorPoolStruct memory guarantorPoolStruct = guarantorPools[address(guarantorPool)];
-        require(guarantorPoolStruct.isListed, "ERR_GUARANTOR_POOL_NOT_LISTED");
-        return guarantorPoolStruct.isDepositGuarantyAllowed;
-    }
-
-    /**
      * @notice Reads all the storage properties of a bond struct.
      * @dev It is not an error to provide an invalid yToken address. The returned values would all be zero.
      * @param yToken The address of the bond contract.
@@ -92,27 +79,6 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      */
     function getBondThresholdCollateralizationRatio(YTokenInterface yToken) external override view returns (uint256) {
         return bonds[address(yToken)].thresholdCollateralizationRatio.mantissa;
-    }
-
-    /**
-     * @notice Reads all the storage properties of a guarantor pool struct.
-     * @dev It is not an error to provide an invalid pool address. The returned values would all be zero.
-     * @param guarantorPool The address of the pool contract.
-     */
-    function getGuarantorPool(GuarantorPoolInterface guarantorPool)
-        external
-        override
-        view
-        returns (
-            bool isDepositGuarantyAllowed,
-            bool isListed,
-            bool isWithdrawGuarantyAndClutchedCollateralAllowed
-        )
-    {
-        isDepositGuarantyAllowed = guarantorPools[address(guarantorPool)].isDepositGuarantyAllowed;
-        isListed = guarantorPools[address(guarantorPool)].isListed;
-        isWithdrawGuarantyAndClutchedCollateralAllowed = guarantorPools[address(guarantorPool)]
-            .isWithdrawGuarantyAndClutchedCollateralAllowed;
     }
 
     /**
@@ -152,23 +118,6 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     }
 
     /**
-     * @notice Checks if the account should be allowed to deposit new guaranty.
-     * @dev Reverts it the pool is not listed.
-     * @param guarantorPool The pool to make the check against.
-     * @return bool true=allowed, false=not allowed.
-     */
-    function withdrawGuarantyAndClutchedCollateralAllowed(GuarantorPoolInterface guarantorPool)
-        external
-        override
-        view
-        returns (bool)
-    {
-        GuarantorPoolStruct memory guarantorPoolStruct = guarantorPools[address(guarantorPool)];
-        require(guarantorPoolStruct.isListed, "ERR_GUARANTOR_POOL_NOT_LISTED");
-        return guarantorPoolStruct.isWithdrawGuarantyAndClutchedCollateralAllowed;
-    }
-
-    /**
      * NON-CONSTANT FUNCTIONS
      */
 
@@ -196,29 +145,6 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
             thresholdCollateralizationRatio: Exp({ mantissa: defaultCollateralizationRatioMantissa })
         });
         emit ListBond(admin, yToken);
-        return NO_ERROR;
-    }
-
-    /**
-     * @notice Marks the pool Pool as listed in this Fintroller's registry. It is not an error to list a pool twice.
-     *
-     * @dev Emits a {ListGuarantorPool} event.
-     *
-     * Requirements:
-     *
-     * - The caller must be the administrator
-     *
-     * @param guarantorPool The pool contract to list.
-     * @return bool true=success, otherwise it reverts.
-     */
-    function listGuarantorPool(GuarantorPoolInterface guarantorPool) external override onlyAdmin returns (bool) {
-        guarantorPool.isGuarantorPool();
-        guarantorPools[address(guarantorPool)] = GuarantorPoolStruct({
-            isDepositGuarantyAllowed: false,
-            isListed: true,
-            isWithdrawGuarantyAndClutchedCollateralAllowed: false
-        });
-        emit ListGuarantorPool(admin, guarantorPool);
         return NO_ERROR;
     }
 
@@ -327,31 +253,6 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
     }
 
     /**
-     * @notice Updates the state of the permission accessed by the pool before a new guaranty deposit.
-     *
-     * @dev Emits a {SetDepositGuarantyAllowed} event.
-     *
-     * Requirements:
-     *
-     * - The caller must be the administrator
-     *
-     * @param guarantorPool The pool contract to update the permission for.
-     * @param state The new state to be put in storage.
-     * @return bool true=success, otherwise it reverts.
-     */
-    function setDepositGuarantyAllowed(GuarantorPoolInterface guarantorPool, bool state)
-        external
-        override
-        onlyAdmin
-        returns (bool)
-    {
-        require(guarantorPools[address(guarantorPool)].isListed, "ERR_GUARANTOR_POOL_NOT_LISTED");
-        guarantorPools[address(guarantorPool)].isDepositGuarantyAllowed = state;
-        emit SetDepositGuarantyAllowed(admin, guarantorPool, state);
-        return NO_ERROR;
-    }
-
-    /**
      * @notice Updates the oracle contract's address saved in storage.
      *
      * @dev Emits a {SetOracle} event.
@@ -428,30 +329,6 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
         require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
         bonds[address(yToken)].isSupplyUnderlyingAllowed = state;
         emit SetSupplyUnderlyingAllowed(admin, yToken, state);
-        return NO_ERROR;
-    }
-
-    /**
-     * @notice Updates the state of the permission accessed by the pool before a new withdrawal.
-     *
-     * @dev Emits a {SetWithdrawGuarantyAndClutchedCollateralAllowed} event.
-     *
-     * Requirements:
-     *
-     * - The caller must be the administrator
-     *
-     * @param guarantorPool The pool contract to update the permission for.
-     * @param state The new state to be put in storage.
-     * @return bool true=success, otherwise it reverts.
-     */
-    function setWithdrawGuarantyAndClutchedCollateralAllowed(GuarantorPoolInterface guarantorPool, bool state)
-        external
-        override
-        returns (bool)
-    {
-        require(guarantorPools[address(guarantorPool)].isListed, "ERR_GUARANTOR_POOL_NOT_LISTED");
-        guarantorPools[address(guarantorPool)].isWithdrawGuarantyAndClutchedCollateralAllowed = state;
-        emit SetWithdrawGuarantyAndClutchedCollateralAllowed(admin, guarantorPool, state);
         return NO_ERROR;
     }
 }

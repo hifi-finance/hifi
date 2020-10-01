@@ -16,12 +16,6 @@ abstract contract FintrollerStorage is Exponential {
         bool isSupplyUnderlyingAllowed;
     }
 
-    struct GuarantorPoolStruct {
-        bool isDepositGuarantyAllowed;
-        bool isListed;
-        bool isWithdrawGuarantyAndClutchedCollateralAllowed;
-    }
-
     /**
      * @dev Maps the yToken address to the Bond structs.
      */
@@ -41,11 +35,6 @@ abstract contract FintrollerStorage is Exponential {
      * @notice The dafault collateralization ratio set when a new bond is listed.
      */
     uint256 public constant defaultCollateralizationRatioMantissa = 1500000000000000000;
-
-    /**
-     * @dev Maps the Guarantor Pool addresses to the GuarantorPool structs.
-     */
-    mapping(address => GuarantorPoolStruct) internal guarantorPools;
 
     /**
      * @notice The contract that provides price data for the collateral and the underlying asset.

@@ -8,7 +8,6 @@ export function testYToken(): void {
         balanceSheet,
         collateral,
         fintroller,
-        guarantorPool,
         oracle,
         redemptionPool,
         underlying,
@@ -18,7 +17,6 @@ export function testYToken(): void {
       this.stubs.balanceSheet = balanceSheet;
       this.stubs.collateral = collateral;
       this.stubs.fintroller = fintroller;
-      this.stubs.guarantorPool = guarantorPool;
       this.stubs.oracle = oracle;
       this.stubs.redemptionPool = redemptionPool;
       this.stubs.underlying = underlying;

@@ -4,7 +4,6 @@ import { ethers } from "@nomiclabs/buidler";
 import { Accounts, Contracts, Signers, Stubs } from "../@types/index";
 import { testBalanceSheet } from "./units/balanceSheet/BalanceSheet";
 import { testFintroller } from "./units/fintroller/Fintroller";
-import { testGuarantorPool } from "./units/guarantorPool/GuarantorPool";
 import { testRedemptionPool } from "./units/redemptionPool/RedemptionPool";
 import { testYToken } from "./units/yToken/YToken";
 
@@ -36,7 +35,6 @@ describe("Unit Tests", function () {
 
   testBalanceSheet();
   testFintroller();
-  testGuarantorPool();
   testRedemptionPool();
   testYToken();
 });

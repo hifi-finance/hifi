@@ -4,7 +4,6 @@ import { Signer } from "@ethersproject/abstract-signer";
 
 import { GodModeBalanceSheet as BalanceSheet } from "../typechain/GodModeBalanceSheet";
 import { Fintroller } from "../typechain/Fintroller";
-import { GuarantorPool } from "../typechain/GuarantorPool";
 import { GodModeRedemptionPool as RedemptionPool } from "../typechain/GodModeRedemptionPool";
 import { SimpleUniswapAnchoredView } from "../typechain/SimpleUniswapAnchoredView";
 import { YToken } from "../typechain/YToken";
@@ -22,7 +21,6 @@ export interface Accounts {
 export interface Contracts {
   balanceSheet: BalanceSheet;
   fintroller: Fintroller;
-  guarantorPool: GuarantorPool;
   oracle: SimpleUniswapAnchoredView;
   redemptionPool: RedemptionPool;
   yToken: YToken;
@@ -41,8 +39,6 @@ export interface Stubs {
   balanceSheet: MockContract;
   collateral: MockContract;
   fintroller: MockContract;
-  guarantorPool: MockContract;
-  guaranty: MockContract;
   oracle: MockContract;
   redemptionPool: MockContract;
   underlying: MockContract;

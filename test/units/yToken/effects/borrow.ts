@@ -17,7 +17,7 @@ import {
 /**
  * Write tests for the following scenarios:
  * - collateral value too small
- * - not enough liquidity in the guarantor pool
+ * - overflow the pre-defined debt ceiling
  */
 export default function shouldBehaveLikeBorrow(): void {
   const borrowAmount: BigNumber = OneHundredTokens;

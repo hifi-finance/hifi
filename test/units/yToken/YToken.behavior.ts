@@ -9,7 +9,6 @@ import shouldBehaveLikeBalanceSheetGetter from "./view/balanceSheet";
 import shouldBehaveLikeCollateralGetter from "./view/collateral";
 import shouldBehaveLikeExpirationTimeGetter from "./view/expirationTime";
 import shouldBehaveLikeFintrollerGetter from "./view/fintroller";
-import shouldBehaveLikeGuarantorPoolGetter from "./view/guarantorPool";
 import shouldBehaveLikeRedemptionPoolGetter from "./view/redemptionPool";
 import shouldBehaveLikeUnderlyingGetter from "./view/underlying";
 import shouldBehaveLikeIsYTokenGetter from "./view/isYToken";
@@ -53,10 +52,6 @@ export function shouldBehaveLikeYToken(): void {
 
     describe("fintroller", function () {
       shouldBehaveLikeFintrollerGetter();
-    });
-
-    describe("guarantorPool", function () {
-      shouldBehaveLikeGuarantorPoolGetter();
     });
 
     describe("isYToken", function () {

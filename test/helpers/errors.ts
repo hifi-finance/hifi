@@ -21,7 +21,6 @@ export enum CarefulMathErrors {
 
 export enum FintrollerErrors {
   BondNotListed = "ERR_BOND_NOT_LISTED",
-  GuarantorPoolNotListed = "ERR_GUARANTOR_POOL_NOT_LISTED",
   SetCollateralizationRatioOverflow = "ERR_SET_COLLATERALIZATION_RATIO_OVERFLOW",
   SetCollateralizationRatioUnderflow = "ERR_SET_COLLATERALIZATION_RATIO_UNDERFLOW",
   SetOracleZeroAddress = "ERR_SET_ORACLE_ZERO_ADDRESS",
@@ -32,12 +31,6 @@ export enum GenericErrors {
   UnderlyingPriceZero = "ERR_UNDERLYING_PRICE_ZERO",
   VaultOpen = "ERR_VAULT_OPEN",
   VaultNotOpen = "ERR_VAULT_NOT_OPEN",
-}
-
-export enum GuarantorPoolErrors {
-  ConstructorGuarantyDecimalsOverflow = "ERR_CONSTRUCTOR_GUARANTY_DECIMALS_OVERFLOW",
-  DepositGuarantyNotAllowed = "ERR_DEPOSIT_GUARANTY_NOT_ALLOWED",
-  DepositGuarantyZero = "ERR_DEPOSIT_GUARANTY_ZERO",
 }
 
 export enum RedemptionPoolErrors {

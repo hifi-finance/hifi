@@ -3,7 +3,6 @@ pragma solidity ^0.7.1;
 
 import "./BalanceSheetInterface.sol";
 import "./FintrollerInterface.sol";
-import "./GuarantorPoolInterface.sol";
 import "./RedemptionPoolInterface.sol";
 import "./erc20/Erc20Interface.sol";
 
@@ -50,11 +49,6 @@ abstract contract YTokenStorage {
      * @notice The unique Fintroller associated with this contract.
      */
     FintrollerInterface public fintroller;
-
-    /**
-     * @notice The unique Guarantor Pool associated with this contract.
-     */
-    GuarantorPoolInterface public guarantorPool;
 
     /**
      * @notice The unique Redemption Pool associated with this contract.
