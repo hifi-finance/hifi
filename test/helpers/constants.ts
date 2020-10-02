@@ -7,11 +7,11 @@ import { Zero } from "@ethersproject/constants";
 export const AddressOne: string = "0x0000000000000000000000000000000000000001";
 
 /**
- * AMOUNTS
+ * Numbers
  */
+export const BuidlerEvmChainId: BigNumber = BigNumber.from(31337);
 export const DefaultBlockGasLimit: BigNumber = BigNumber.from("10000000");
 export const DefaultNumberOfDecimals: BigNumber = BigNumber.from(18);
-export const OraclePrecisionScalar: BigNumber = BigNumber.from("1000000000000");
 export const UnitsPerToken: BigNumber = BigNumber.from("1000000000000000000");
 
 export const OnePercentMantissa: BigNumber = BigNumber.from("10000000000000000");
@@ -38,10 +38,17 @@ export const BalanceSheetConstants = {
   },
 };
 
+export const Erc20PermitConstants = {
+  decimals: BigNumber.from(18),
+  name: "Erc20 Permit",
+  symbol: "ERC20",
+};
+
 export const FintrollerConstants = {
   CollateralizationRatioLowerBoundMantissa: OneHundredPercentMantissa,
   CollateralizationRatioUpperBoundMantissa: TenThousandPercentMantissa,
   DefaultCollateralizationRatioMantissa: OneHundredAndFiftyPercentMantissa,
+  OraclePrecisionScalar: BigNumber.from("1000000000000"),
 };
 
 export const YTokenConstants = {

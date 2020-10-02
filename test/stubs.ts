@@ -11,12 +11,7 @@ import RedemptionPoolArtifact from "../artifacts/GodModeRedemptionPool.json";
 import SimpleUniswapAnchoredViewArtifact from "../artifacts/SimpleUniswapAnchoredView.json";
 import YTokenArtifact from "../artifacts/YToken.json";
 
-import {
-  BalanceSheetConstants,
-  DefaultNumberOfDecimals,
-  FintrollerConstants,
-  OraclePrecisionScalar,
-} from "./helpers/constants";
+import { BalanceSheetConstants, DefaultNumberOfDecimals, FintrollerConstants } from "./helpers/constants";
 
 const { deployMockContract: deployStubContract } = waffle;
 
@@ -42,7 +37,7 @@ export async function deployStubCollateral(deployer: Signer): Promise<MockContra
 export async function deployStubFintroller(deployer: Signer): Promise<MockContract> {
   const fintroller: MockContract = await deployStubContract(deployer, FintrollerArtifact.abi);
   await fintroller.mock.isFintroller.returns(true);
-  await fintroller.mock.oraclePricePrecisionScalar.returns(OraclePrecisionScalar);
+  await fintroller.mock.oraclePricePrecisionScalar.returns(FintrollerConstants.OraclePrecisionScalar);
   return fintroller;
 }
 

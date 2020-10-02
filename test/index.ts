@@ -3,14 +3,12 @@ import { ethers } from "@nomiclabs/buidler";
 
 import { Accounts, Contracts, Signers, Stubs } from "../@types/index";
 import { testBalanceSheet } from "./units/balanceSheet/BalanceSheet";
+import { testErc20Permit } from "./units/erc20Permit/Erc20Permit";
 import { testFintroller } from "./units/fintroller/Fintroller";
 import { testRedemptionPool } from "./units/redemptionPool/RedemptionPool";
 import { testYToken } from "./units/yToken/YToken";
 
 describe("Unit Tests", function () {
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  let snapshot: any;
-
   before(async function () {
     this.accounts = {} as Accounts;
     this.contracts = {} as Contracts;
@@ -34,6 +32,7 @@ describe("Unit Tests", function () {
   });
 
   testBalanceSheet();
+  testErc20Permit();
   testFintroller();
   testRedemptionPool();
   testYToken();

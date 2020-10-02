@@ -1,16 +1,16 @@
-import shouldBehaveLikeBorrowAllowed from "./view/borrowAllowed";
 import shouldBehaveLikeCollateralizationRatioLowerBoundMantissaGetter from "./view/collateralizationRatioLowerBoundMantissa";
 import shouldBehaveLikeCollateralizationRatioUpperBoundMantissaGetter from "./view/collateralizationRatioUpperBoundMantissa";
 import shouldBehaveLikeDefaultCollateralizationRatioMantissaGetter from "./view/defaultCollateralizationRatioMantissa";
-import shouldBehaveLikeDepositCollateralAllowed from "./view/depositCollateralAllowed";
 import shouldBehaveLikeGetBond from "./view/getBond";
 import shouldBehaveLikeGetBondThresholdCollateralizationRatio from "./view/getBondThresholdCollateralizationRatio";
+import shouldBehaveLikeGetBorrowAllowed from "./view/getBorrowAllowed";
+import shouldBehaveLikeGetDepositCollateralAllowed from "./view/getDepositCollateralAllowed";
+import shouldBehaveLikeGetRedeemUnderlyingAllowed from "./view/getRedeemUnderlyingAllowed";
+import shouldBehaveLikeGetRepayBorrowAllowed from "./view/getRepayBorrowAllowed";
+import shouldBehaveLikeGetSupplyUnderlyingAllowed from "./view/getSupplyUnderlyingAllowed";
 import shouldBehaveLikeIsFintrollerGetter from "./view/isFintroller";
 import shouldBehaveLikeOracleGetter from "./view/oracle";
 import shouldBehaveLikeOraclePricePrecisionScalarGetter from "./view/oraclePricePrecisionScalar";
-import shouldBehaveLikeRedeemUnderlyingAllowed from "./view/redeemUnderlyingAllowed";
-import shouldBehaveLikeRepayBorrowAllowed from "./view/repayBorrowAllowed";
-import shouldBehaveLikeSupplyUnderlyingAllowed from "./view/supplyUnderlyingAllowed";
 
 import shouldBehaveLikeListBond from "./effects/listBond";
 import shouldBehaveLikeSetCollateralizationRatio from "./effects/setCollateralizationRatio";
@@ -23,10 +23,6 @@ import shouldBehaveLikeSetSupplyUnderlyingAllowed from "./effects/setSupplyUnder
 
 export function shouldBehaveLikeFintroller(): void {
   describe("View Functions", function () {
-    describe("borrowAllowed", function () {
-      shouldBehaveLikeBorrowAllowed();
-    });
-
     describe("collateralizationRatioLowerBoundMantissa", function () {
       shouldBehaveLikeCollateralizationRatioLowerBoundMantissaGetter();
     });
@@ -39,16 +35,32 @@ export function shouldBehaveLikeFintroller(): void {
       shouldBehaveLikeDefaultCollateralizationRatioMantissaGetter();
     });
 
-    describe("depositCollateralAllowed", function () {
-      shouldBehaveLikeDepositCollateralAllowed();
-    });
-
     describe("getBond", function () {
       shouldBehaveLikeGetBond();
     });
 
     describe("getBondThresholdCollateralizationRatio", function () {
       shouldBehaveLikeGetBondThresholdCollateralizationRatio();
+    });
+
+    describe("getBorrowAllowed", function () {
+      shouldBehaveLikeGetBorrowAllowed();
+    });
+
+    describe("getDepositCollateralAllowed", function () {
+      shouldBehaveLikeGetDepositCollateralAllowed();
+    });
+
+    describe("getRedeemUnderlyingAllowed", function () {
+      shouldBehaveLikeGetRedeemUnderlyingAllowed();
+    });
+
+    describe("getRepayBorrowAllowed", function () {
+      shouldBehaveLikeGetRepayBorrowAllowed();
+    });
+
+    describe("getSupplyUnderlyingAllowed", function () {
+      shouldBehaveLikeGetSupplyUnderlyingAllowed();
     });
 
     describe("isFintroller", function () {
@@ -61,18 +73,6 @@ export function shouldBehaveLikeFintroller(): void {
 
     describe("oraclePricePrecisionScalar", function () {
       shouldBehaveLikeOraclePricePrecisionScalarGetter();
-    });
-
-    describe("redeemUnderlyingAllowed", function () {
-      shouldBehaveLikeRedeemUnderlyingAllowed();
-    });
-
-    describe("repayBorrowAllowed", function () {
-      shouldBehaveLikeRepayBorrowAllowed();
-    });
-
-    describe("supplyUnderlyingAllowed", function () {
-      shouldBehaveLikeSupplyUnderlyingAllowed();
     });
   });
 

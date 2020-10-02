@@ -5,15 +5,17 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { waffle } from "@nomiclabs/buidler";
 
 import BalanceSheetArtifact from "../artifacts/GodModeBalanceSheet.json";
+import Erc20PermitArtifact from "../artifacts/Erc20Permit.json";
 import FintrollerArtifact from "../artifacts/Fintroller.json";
 import RedemptionPoolArtifact from "../artifacts/GodModeRedemptionPool.json";
 import YTokenArtifact from "../artifacts/YToken.json";
 
+import { Erc20Permit } from "../typechain/Erc20Permit";
+import { Erc20PermitConstants, YTokenConstants } from "./helpers/constants";
 import { Fintroller } from "../typechain/Fintroller";
 import { GodModeBalanceSheet as BalanceSheet } from "../typechain/GodModeBalanceSheet";
 import { GodModeRedemptionPool as RedemptionPool } from "../typechain/GodModeRedemptionPool";
 import { YToken } from "../typechain/YToken";
-import { YTokenConstants } from "./helpers/constants";
 
 import {
   deployStubBalanceSheet,
@@ -59,6 +61,19 @@ export async function balanceSheetFixture(
     fintroller.address,
   ])) as unknown) as BalanceSheet;
   return { balanceSheet, collateral, fintroller, oracle, underlying, yToken };
+}
+
+export async function erc20PermitFixture(signers: Signer[]): Promise<{ erc20Permit: Erc20Permit }> {
+  const deployer: Signer = signers[0];
+  const name: string = Erc20PermitConstants.name;
+  const symbol: string = Erc20PermitConstants.symbol;
+  const decimals = Erc20PermitConstants.decimals;
+  const erc20Permit: Erc20Permit = ((await deployContract(deployer, Erc20PermitArtifact, [
+    name,
+    symbol,
+    decimals,
+  ])) as unknown) as Erc20Permit;
+  return { erc20Permit };
 }
 
 export async function fintrollerFixture(

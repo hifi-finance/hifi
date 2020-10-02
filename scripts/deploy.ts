@@ -3,7 +3,7 @@
 // When running the script with `buidler run <script>` you'll find the Buidler
 // Runtime Environment's members available in the global scope.
 import { ethers } from "@nomiclabs/buidler";
-import { Contract, ContractFactory } from "ethers";
+import { Contract, ContractFactory } from "@ethersproject/contracts";
 
 async function main(): Promise<void> {
   // Buidler always runs the compile task when running scripts through it.
