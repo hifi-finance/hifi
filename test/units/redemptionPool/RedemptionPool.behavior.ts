@@ -1,9 +1,8 @@
-import shouldBehaveLikeRedeemUnderlying from "./effects/redeemUnderlying";
-import shouldBehaveLikeSupplyUnderlying from "./effects/supplyUnderlying";
-
 import shouldBehaveLikeIsRedemptionPoolGetter from "./view/isRedemptionPool";
 import shouldBehaveLikeOracleYTokenGetter from "./view/yToken";
 import shouldBehaveLikeTotalUnderlyingSupplyGetter from "./view/totalUnderlyingSupply";
+import shouldBehaveLikeRedeemUnderlying from "./effects/redeemUnderlying";
+import shouldBehaveLikeSupplyUnderlying from "./effects/supplyUnderlying";
 
 export function shouldBehaveLikeRedemptionPool(): void {
   describe("View Functions", function () {

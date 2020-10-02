@@ -1,12 +1,3 @@
-import shouldBehaveLikeListBond from "./effects/listBond";
-import shouldBehaveLikeSetCollateralizationRatio from "./effects/setCollateralizationRatio";
-import shouldBehaveLikeSetDepositCollateralAllowed from "./effects/setDepositCollateralAllowed";
-import shouldBehaveLikeSetBorrowAllowed from "./effects/setBorrowAllowed";
-import shouldBehaveLikeSetOracle from "./effects/setOracle";
-import shouldBehaveLikeSetRedeemUnderlyingAllowed from "./effects/setRedeemUnderlyingAllowed";
-import shouldBehaveLikeSetRepayBorrowAllowed from "./effects/setRepayBorrowAllowed";
-import shouldBehaveLikeSetSupplyUnderlyingAllowed from "./effects/setSupplyUnderlyingAllowed";
-
 import shouldBehaveLikeBorrowAllowed from "./view/borrowAllowed";
 import shouldBehaveLikeCollateralizationRatioLowerBoundMantissaGetter from "./view/collateralizationRatioLowerBoundMantissa";
 import shouldBehaveLikeCollateralizationRatioUpperBoundMantissaGetter from "./view/collateralizationRatioUpperBoundMantissa";
@@ -20,6 +11,15 @@ import shouldBehaveLikeOraclePricePrecisionScalarGetter from "./view/oraclePrice
 import shouldBehaveLikeRedeemUnderlyingAllowed from "./view/redeemUnderlyingAllowed";
 import shouldBehaveLikeRepayBorrowAllowed from "./view/repayBorrowAllowed";
 import shouldBehaveLikeSupplyUnderlyingAllowed from "./view/supplyUnderlyingAllowed";
+
+import shouldBehaveLikeListBond from "./effects/listBond";
+import shouldBehaveLikeSetCollateralizationRatio from "./effects/setCollateralizationRatio";
+import shouldBehaveLikeSetDepositCollateralAllowed from "./effects/setDepositCollateralAllowed";
+import shouldBehaveLikeSetBorrowAllowed from "./effects/setBorrowAllowed";
+import shouldBehaveLikeSetOracle from "./effects/setOracle";
+import shouldBehaveLikeSetRedeemUnderlyingAllowed from "./effects/setRedeemUnderlyingAllowed";
+import shouldBehaveLikeSetRepayBorrowAllowed from "./effects/setRepayBorrowAllowed";
+import shouldBehaveLikeSetSupplyUnderlyingAllowed from "./effects/setSupplyUnderlyingAllowed";
 
 export function shouldBehaveLikeFintroller(): void {
   describe("View Functions", function () {

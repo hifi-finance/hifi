@@ -1,9 +1,5 @@
 import shouldBehaveLikeConstructor from "./constructor";
 
-import shouldBehaveLikeBorrow from "./effects/borrow";
-import shouldBehaveLikeRepayBorrow from "./effects/repayBorrow";
-import shouldBehaveLikeRepayBorrowBehalf from "./effects/repayBorrowBehalf";
-
 import shouldBehaveLikeCollateralPrecisionScalarGetter from "./view/collateralPrecisionScalar";
 import shouldBehaveLikeBalanceSheetGetter from "./view/balanceSheet";
 import shouldBehaveLikeCollateralGetter from "./view/collateral";
@@ -13,6 +9,10 @@ import shouldBehaveLikeRedemptionPoolGetter from "./view/redemptionPool";
 import shouldBehaveLikeUnderlyingGetter from "./view/underlying";
 import shouldBehaveLikeIsYTokenGetter from "./view/isYToken";
 import shouldBehaveLikeUnderlyingPrecisionScalarGetter from "./view/underlyingPrecisionScalar";
+
+import shouldBehaveLikeBorrow from "./effects/borrow";
+import shouldBehaveLikeRepayBorrow from "./effects/repayBorrow";
+import shouldBehaveLikeRepayBorrowBehalf from "./effects/repayBorrowBehalf";
 
 export function shouldBehaveLikeYToken(): void {
   describe("Constructor", function () {
