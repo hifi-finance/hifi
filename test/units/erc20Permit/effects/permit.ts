@@ -5,7 +5,7 @@ import { SigningKey } from "@ethersproject/signing-key";
 import { Signature } from "@ethersproject/bytes";
 import { expect } from "chai";
 
-import { BuidlerEvmChainId, DefaultPrivateKeys } from "../../../../utils/constants";
+import { ChainIds, DefaultPrivateKeys } from "../../../../utils/constants";
 import { Erc20PermitErrors } from "../../../../utils/errors";
 import { getPermitDigest } from "../../../../utils/eip2612";
 
@@ -39,7 +39,7 @@ async function createSignature(
   /* Get the EIP712 digest. */
   const digest: string = await getPermitDigest(
     this.contracts.erc20Permit,
-    bre.network.config.chainId ? BigNumber.from(bre.network.config.chainId) : BuidlerEvmChainId,
+    BigNumber.from(bre.network.config.chainId ? bre.network.config.chainId : ChainIds.BuidlerEvm),
     approve,
     nonce,
     deadline,

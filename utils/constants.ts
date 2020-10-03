@@ -7,9 +7,21 @@ import { Zero } from "@ethersproject/constants";
 export const AddressOne: string = "0x0000000000000000000000000000000000000001";
 
 /**
+ * CHAIN IDs
+ */
+export const ChainIds = {
+  BuidlerEvm: 31337,
+  Ganache: 1337,
+  Goerli: 5,
+  Kovan: 42,
+  Mainnet: 1,
+  Rinkeby: 4,
+  Ropsten: 3,
+};
+
+/**
  * NUMBERS
  */
-export const BuidlerEvmChainId: BigNumber = BigNumber.from(31337);
 export const DefaultBlockGasLimit: BigNumber = BigNumber.from("10000000");
 export const DefaultNumberOfDecimals: BigNumber = BigNumber.from(18);
 export const UnitsPerToken: BigNumber = BigNumber.from("1000000000000000000");

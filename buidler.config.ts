@@ -3,7 +3,7 @@ import { resolve } from "path";
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
 import { BuidlerConfig, usePlugin } from "@nomiclabs/buidler/config";
-import { BuidlerEvmChainId, DefaultBlockGasLimit, DefaultPrivateKeys } from "./utils/constants";
+import { ChainIds, DefaultBlockGasLimit, DefaultPrivateKeys } from "./utils/constants";
 import { BuidlerNetworkAccount, HDAccountsConfig } from "@nomiclabs/buidler/types";
 import "./tasks/accounts";
 import "./tasks/clean";
@@ -87,27 +87,28 @@ const config: BuidlerConfig = {
     buidlerevm: {
       accounts: createBuidlerEvmAccounts(),
       blockGasLimit: DefaultBlockGasLimit.toNumber(),
-      chainId: BuidlerEvmChainId.toNumber(),
+      chainId: ChainIds.BuidlerEvm,
       gas: DefaultBlockGasLimit.toNumber(),
     },
     coverage: {
+      chainId: ChainIds.Ganache,
       url: "http://127.0.0.1:8555",
     },
     goerli: {
       ...createNetworkConfig("goerli"),
-      chainId: 5,
+      chainId: ChainIds.Goerli,
     },
     kovan: {
       ...createNetworkConfig("kovan"),
-      chainId: 42,
+      chainId: ChainIds.Kovan,
     },
     rinkeby: {
       ...createNetworkConfig("rinkeby"),
-      chainId: 4,
+      chainId: ChainIds.Rinkeby,
     },
     ropsten: {
       ...createNetworkConfig("ropsten"),
-      chainId: 3,
+      chainId: ChainIds.Ropsten,
     },
   },
   paths: {

@@ -19,7 +19,7 @@ describe("Unit Tests", function () {
     this.stubs = {} as Stubs;
 
     const signers: Signer[] = await ethers.getSigners();
-    /* Delete this when https://github.com/nomiclabs/buidler/issues/849 gets fixed. */
+    /* Get rid of this when https://github.com/nomiclabs/buidler/issues/849 gets fixed. */
     this.loadFixture = createFixtureLoader(signers as Wallet[]);
 
     this.signers.admin = signers[0];
