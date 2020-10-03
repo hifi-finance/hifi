@@ -1,67 +1,159 @@
 import bre from "@nomiclabs/buidler";
+import { AddressZero } from "@ethersproject/constants";
 import { BigNumber } from "@ethersproject/bignumber";
 import { SigningKey } from "@ethersproject/signing-key";
-// import { expect } from "chai";
-import { keccak256 } from "@ethersproject/keccak256";
+import { Signature } from "@ethersproject/bytes";
+import { expect } from "chai";
 
-import { BuidlerEvmChainId, Erc20PermitConstants } from "../../../../utils/constants";
-import { getPermitDigest, sign } from "../../../../utils/eip2612";
+import { BuidlerEvmChainId, DefaultPrivateKeys } from "../../../../utils/constants";
+import { Erc20PermitErrors } from "../../../../utils/errors";
+import { getPermitDigest } from "../../../../utils/eip2612";
+
+const allowanceAmount: BigNumber = BigNumber.from(100);
+const dummySignature: { v: BigNumber; r: string; s: string } = {
+  v: BigNumber.from(27),
+  r: "0x0000000000000000000000000000000000000000000000000000000000000001",
+  s: "0x0000000000000000000000000000000000000000000000000000000000000002",
+};
+/* December 31, 1999 at 16:00 GMT */
+const december1999: BigNumber = BigNumber.from(946656000);
+/* December 31, 2099 at 16:00 GMT */
+const december2099: BigNumber = BigNumber.from(4102416000);
+
+async function createSignature(
+  this: Mocha.Context,
+  deadline: BigNumber,
+  owner: string,
+  spender: string,
+): Promise<Signature> {
+  /* Get the user's nonce. */
+  const nonce: BigNumber = BigNumber.from(await this.contracts.erc20Permit.nonces(this.accounts.brad));
+
+  /* Create the approval request. */
+  const approve = {
+    amount: allowanceAmount,
+    owner,
+    spender,
+  };
+
+  /* Get the EIP712 digest. */
+  const digest: string = await getPermitDigest(
+    this.contracts.erc20Permit,
+    bre.network.config.chainId ? BigNumber.from(bre.network.config.chainId) : BuidlerEvmChainId,
+    approve,
+    nonce,
+    deadline,
+  );
+
+  /* Sign the digest. */
+  const bradSigningKey = new SigningKey(DefaultPrivateKeys.Brad);
+  const signature: Signature = bradSigningKey.signDigest(digest);
+
+  return signature;
+}
 
 export default function shouldBehaveLikePermit(): void {
-  it.only("lets the spender claim the allowance signed by the owner", async function () {
-    /* December 31, 2099 at 16:00 GMT */
-    const deadline: BigNumber = BigNumber.from(4102416000);
+  describe("when the owner is not the zero address", function () {
+    describe("when the spender is not the zero address", function () {
+      describe("when the deadline is in the future", function () {
+        const deadline: BigNumber = december2099;
 
-    /* Get the user's nonce. */
-    const nonce: BigNumber = BigNumber.from(await this.contracts.erc20Permit.nonces(this.accounts.brad));
+        describe("when the recovered owner is not the zero address", function () {
+          describe("when the signature is valid", function () {
+            it("lets the spender claim the allowance signed by the owner", async function () {
+              const owner: string = this.accounts.brad;
+              const spender: string = this.accounts.admin;
+              const signature = await createSignature.call(this, deadline, owner, spender);
 
-    /* Create the approval request. */
-    const approve = {
-      owner: this.accounts.brad,
-      spender: this.accounts.admin,
-      amount: BigNumber.from(100),
-    };
+              await this.contracts.erc20Permit
+                .connect(this.signers.admin)
+                .permit(owner, spender, allowanceAmount, deadline, signature.v, signature.r, signature.s);
+              const allowance: BigNumber = await this.contracts.erc20Permit.allowance(owner, spender);
+              expect(allowance).to.equal(allowanceAmount);
+            });
+          });
 
-    /* Get the EIP712 digest. */
-    console.log("bre.network.config.chainId", bre.network.config.chainId);
-    const digest: string = await getPermitDigest(
-      this.contracts.erc20Permit,
-      bre.network.config.chainId ? BigNumber.from(bre.network.config.chainId) : BuidlerEvmChainId,
-      approve,
-      nonce,
-      deadline,
-    );
+          describe("when the signature is not valid", function () {
+            it("reverts", async function () {
+              const owner: string = this.accounts.brad;
+              const spender: string = this.accounts.admin;
+              await expect(
+                this.contracts.erc20Permit
+                  .connect(this.signers.admin)
+                  .permit(
+                    owner,
+                    spender,
+                    allowanceAmount,
+                    deadline,
+                    dummySignature.v,
+                    dummySignature.r,
+                    dummySignature.s,
+                  ),
+              ).to.be.revertedWith(Erc20PermitErrors.InvalidSignature);
+            });
+          });
+        });
 
-    /* Sign the digest. */
-    const bradPrivateKey: string = "0xd49743deccbccc5dc7baa8e69e5be03298da8688a15dd202e20f15d5e0e9a9fb";
-    console.log({
-      admin: {
-        account: this.accounts.admin,
-        privateKey: "0xc5e8f61d1ab959b397eecc0a37a6517b8e67a0e7cf1f4bce5591f3ed80199122",
-      },
-      brad: {
-        account: this.accounts.brad,
-        privateKey: bradPrivateKey,
-      },
+        describe("when the recovered owner is the zero address", function () {
+          it("reverts", async function () {
+            const owner: string = this.accounts.brad;
+            const spender: string = this.accounts.admin;
+            const signature = await createSignature.call(this, deadline, owner, spender);
+            /**
+             * Providing any number but 27 or 28 for the `v` argument of the ECDSA signature makes
+             * the `ecrecover` precompile return the zero address.
+             * https://ethereum.stackexchange.com/questions/69328/how-to-get-the-zero-address-from-ecrecover
+             */
+            const goofedV: BigNumber = BigNumber.from(10);
+            await expect(
+              this.contracts.erc20Permit
+                .connect(this.signers.admin)
+                .permit(owner, spender, allowanceAmount, deadline, goofedV, signature.r, signature.s),
+            ).to.be.revertedWith(Erc20PermitErrors.RecoveredOwnerZeroAddress);
+          });
+        });
+      });
+
+      describe("when the deadline is in the past", function () {
+        const deadline: BigNumber = december1999;
+
+        it("reverts", async function () {
+          const owner: string = this.accounts.brad;
+          const spender: string = this.accounts.admin;
+          const signature = await createSignature.call(this, deadline, owner, spender);
+          await expect(
+            this.contracts.erc20Permit
+              .connect(this.signers.admin)
+              .permit(owner, spender, allowanceAmount, deadline, signature.v, signature.r, signature.s),
+          ).to.be.revertedWith(Erc20PermitErrors.Expired);
+        });
+      });
     });
 
-    const foo = sign(digest, Buffer.from(bradPrivateKey.slice(2), "hex"));
-    const bradSigningKey = new SigningKey(bradPrivateKey);
-    const bar = bradSigningKey.signDigest(digest);
+    describe("when the spender is the zero address", function () {
+      it("reverts", async function () {
+        const owner: string = this.accounts.brad;
+        const spender: string = AddressZero;
+        const deadline: BigNumber = december2099;
+        await expect(
+          this.contracts.erc20Permit
+            .connect(this.signers.admin)
+            .permit(owner, spender, allowanceAmount, deadline, dummySignature.v, dummySignature.r, dummySignature.s),
+        ).to.be.revertedWith(Erc20PermitErrors.SpenderZeroAddress);
+      });
+    });
+  });
 
-    // console.log({
-    //   foo: "0x" + foo.r.toString("hex") + foo.s.toString("hex") + foo.v.toString(16),
-    //   bar: bar.r + bar.s.slice(2) + bar.v.toString(16),
-    // });
-
-    /* Approve it. */
-    // const v: number = 27;
-    // const r: string = "0xee67163f3c9910939a6b45bc201d9b772186037b5b249e4956b24eb5ad3ce379";
-    // const s: string = "0x5c56679a934a2e8d245177dfb021c621e40119373072f0d5d0a0909ff0e141aa";
-    // const receipt = await this.contracts.erc20Permit
-    //   .connect(this.signers.admin)
-    //   .permit(approve.owner, approve.spender, approve.amount, deadline, foo.v, foo.r, foo.s);
-
-    // console.log({ receipt });
+  describe("when the owner is the zero address", function () {
+    it("reverts", async function () {
+      const owner: string = AddressZero;
+      const spender: string = this.accounts.admin;
+      const deadline: BigNumber = december2099;
+      await expect(
+        this.contracts.erc20Permit
+          .connect(this.signers.admin)
+          .permit(owner, spender, allowanceAmount, deadline, dummySignature.v, dummySignature.r, dummySignature.s),
+      ).to.be.revertedWith(Erc20PermitErrors.OwnerZeroAddress);
+    });
   });
 }

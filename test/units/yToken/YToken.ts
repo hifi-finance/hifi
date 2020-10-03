@@ -1,5 +1,5 @@
-import { loadFixture, yTokenFixture } from "../../fixtures";
 import { shouldBehaveLikeYToken } from "./YToken.behavior";
+import { yTokenFixture } from "../../fixtures";
 
 export function testYToken(): void {
   describe("YToken", function () {
@@ -12,7 +12,7 @@ export function testYToken(): void {
         redemptionPool,
         underlying,
         yToken,
-      } = await loadFixture.call(this)(yTokenFixture);
+      } = await this.loadFixture(yTokenFixture);
       this.contracts.yToken = yToken;
       this.stubs.balanceSheet = balanceSheet;
       this.stubs.collateral = collateral;

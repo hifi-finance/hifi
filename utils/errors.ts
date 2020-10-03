@@ -19,6 +19,14 @@ export enum CarefulMathErrors {
   NoError = 0,
 }
 
+export enum Erc20PermitErrors {
+  Expired = "ERR_ERC20_PERMIT_EXPIRED",
+  InvalidSignature = "ERR_ERC20_PERMIT_INVALID_SIGNATURE",
+  OwnerZeroAddress = "ERR_ERC20_PERMIT_OWNER_ZERO_ADDRESS",
+  RecoveredOwnerZeroAddress = "ERR_ERC20_PERMIT_RECOVERED_OWNER_ZERO_ADDRESS",
+  SpenderZeroAddress = "ERR_ERC20_PERMIT_SPENDER_ZERO_ADDRESS",
+}
+
 export enum FintrollerErrors {
   BondNotListed = "ERR_BOND_NOT_LISTED",
   SetCollateralizationRatioOverflow = "ERR_SET_COLLATERALIZATION_RATIO_OVERFLOW",

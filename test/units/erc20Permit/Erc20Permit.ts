@@ -1,10 +1,10 @@
-import { erc20PermitFixture, loadFixture } from "../../fixtures";
+import { erc20PermitFixture } from "../../fixtures";
 import { shouldBehaveLikeErc20Permit } from "./Erc20Permit.behavior";
 
 export function testErc20Permit(): void {
-  describe.only("Erc20 Permit", function () {
+  describe("Erc20 Permit", function () {
     beforeEach(async function () {
-      const { erc20Permit } = await loadFixture.call(this)(erc20PermitFixture);
+      const { erc20Permit } = await this.loadFixture(erc20PermitFixture);
       this.contracts.erc20Permit = erc20Permit;
     });
 

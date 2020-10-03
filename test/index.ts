@@ -1,5 +1,6 @@
 import { Signer } from "@ethersproject/abstract-signer";
-import { ethers } from "@nomiclabs/buidler";
+import { Wallet } from "@ethersproject/wallet";
+import { ethers, waffle } from "@nomiclabs/buidler";
 
 import { Accounts, Contracts, Signers, Stubs } from "../@types/index";
 import { testBalanceSheet } from "./units/balanceSheet/BalanceSheet";
@@ -7,6 +8,8 @@ import { testErc20Permit } from "./units/erc20Permit/Erc20Permit";
 import { testFintroller } from "./units/fintroller/Fintroller";
 import { testRedemptionPool } from "./units/redemptionPool/RedemptionPool";
 import { testYToken } from "./units/yToken/YToken";
+
+const { createFixtureLoader } = waffle;
 
 describe("Unit Tests", function () {
   before(async function () {
@@ -16,6 +19,9 @@ describe("Unit Tests", function () {
     this.stubs = {} as Stubs;
 
     const signers: Signer[] = await ethers.getSigners();
+    /* Delete this when https://github.com/nomiclabs/buidler/issues/849 gets fixed. */
+    this.loadFixture = createFixtureLoader(signers as Wallet[]);
+
     this.signers.admin = signers[0];
     this.signers.brad = signers[1];
     this.signers.eve = signers[2];

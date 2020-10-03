@@ -1,10 +1,10 @@
-import { balanceSheetFixture, loadFixture } from "../../fixtures";
+import { balanceSheetFixture } from "../../fixtures";
 import { shouldBehaveLikeBalanceSheet } from "./BalanceSheet.behavior";
 
 export function testBalanceSheet(): void {
   describe("BalanceSheet", function () {
     beforeEach(async function () {
-      const { balanceSheet, collateral, fintroller, oracle, underlying, yToken } = await loadFixture.call(this)(
+      const { balanceSheet, collateral, fintroller, oracle, underlying, yToken } = await this.loadFixture(
         balanceSheetFixture,
       );
       this.contracts.balanceSheet = balanceSheet;

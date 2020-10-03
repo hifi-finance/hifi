@@ -1,6 +1,5 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { defaultAbiCoder } from "@ethersproject/abi";
-import { ecsign } from "ethereumjs-util";
 import { keccak256 } from "@ethersproject/keccak256";
 import { pack as solidityPack } from "@ethersproject/solidity";
 import { toUtf8Bytes } from "@ethersproject/strings";
@@ -67,7 +66,3 @@ export async function getPermitDigest(
     ),
   );
 }
-
-export const sign = (digest: string, privateKey: Buffer) => {
-  return ecsign(Buffer.from(digest.slice(2), "hex"), privateKey);
-};

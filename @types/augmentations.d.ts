@@ -1,3 +1,4 @@
+import { Fixture } from "ethereum-waffle";
 import { Accounts, Contracts, Signers, Stubs } from "./";
 
 export interface TypechainConfig {
@@ -20,6 +21,7 @@ declare module "mocha" {
   export interface Context {
     accounts: Accounts;
     contracts: Contracts;
+    loadFixture: <T>(fixture: Fixture<T>) => Promise<T>;
     signers: Signers;
     stubs: Stubs;
   }

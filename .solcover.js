@@ -1,5 +1,11 @@
 const shell = require("shelljs");
 
+/* The environment variables are loaded in buidler.config.ts */
+const mnemonic = process.env.MNEMONIC;
+if (!mnemonic) {
+  throw new Error("Please set your MNEMONIC in a .env file");
+}
+
 module.exports = {
   istanbulReporter: ["html"],
   mocha: {
@@ -14,7 +20,9 @@ module.exports = {
     shell.rm("-rf", "./typechain");
   },
   providerOptions: {
+    /* 100 hundred million ETH */
     default_balance_ether: 100000000,
+    mnemonic,
   },
   skipFiles: ["math", "test", "utils"],
 };

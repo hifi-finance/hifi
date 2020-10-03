@@ -7,7 +7,7 @@ import { Zero } from "@ethersproject/constants";
 export const AddressOne: string = "0x0000000000000000000000000000000000000001";
 
 /**
- * Numbers
+ * NUMBERS
  */
 export const BuidlerEvmChainId: BigNumber = BigNumber.from(31337);
 export const DefaultBlockGasLimit: BigNumber = BigNumber.from("10000000");
@@ -25,6 +25,18 @@ export const TenTokens: BigNumber = OneToken.mul(10);
 export const OneHundredTokens: BigNumber = OneToken.mul(100);
 export const OneThousandTokens: BigNumber = OneToken.mul(1000);
 export const OneMillionTokens: BigNumber = OneToken.mul(1000000);
+
+/**
+ * PRIVATE KEYS
+ */
+export const DefaultPrivateKeys = {
+  Admin: "0x907eb204083c9b1c24fdfc26bb120a8713fcc3323edf1b8423a2ad58d0fbaeb8",
+  Brad: "0xd0792a518700b34f3cf29d533f1d8bb81262eabca4f1817212a5044ee866c3a6",
+  Eve: "0xc0152f90ad35f85568c66192307be596aaa3431cb23dda6d99e7393b959b0930",
+  Grace: "0x2630b870626d4f8d344cb7a3eb9f775a66b19a8a00779a30bb401739a4c9ec6b",
+  Lucy: "0x6a9bff3d641bc1311f1f67d58440c76acaa81a273d287aeb6af96950ad59df65",
+  Mark: "0x638b667580ca2334d72ed39f20c802b7a07cd0614a9a43c64f91d8058cfe884b",
+};
 
 /**
  * CONTRACT-SPECIFIC CONSTANTS

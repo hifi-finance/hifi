@@ -1,5 +1,4 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { Fixture } from "ethereum-waffle";
 import { MockContract } from "ethereum-waffle";
 import { Signer } from "@ethersproject/abstract-signer";
 import { waffle } from "@nomiclabs/buidler";
@@ -27,11 +26,7 @@ import {
   deployStubUnderlying,
 } from "./stubs";
 
-const { createFixtureLoader, deployContract } = waffle;
-
-export function loadFixture(this: Mocha.Context): <T>(fixture: Fixture<T>) => Promise<T> {
-  return createFixtureLoader(Object.values(this.signers));
-}
+const { deployContract } = waffle;
 
 export async function balanceSheetFixture(
   signers: Signer[],

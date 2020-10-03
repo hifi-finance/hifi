@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.7.1;
 
+import "@nomiclabs/buidler/console.sol";
 import "./Erc20.sol";
 import "./Erc20PermitStorage.sol";
 
@@ -44,9 +45,9 @@ contract Erc20Permit is Erc20, Erc20PermitStorage {
      *
      * Requirements:
      *
-     * - `deadline` must be a timestamp in the future.
      * - `owner` cannot be the zero address.
      * - `spender` cannot be the zero address.
+     * - `deadline` must be a timestamp in the future.
      * - `v`, `r` and `s` must be a valid `secp256k1` signature from `owner`
      * over the Eip712-formatted function arguments.
      * - The signature must use `owner`'s current nonce.
@@ -60,12 +61,18 @@ contract Erc20Permit is Erc20, Erc20PermitStorage {
         bytes32 r,
         bytes32 s
     ) external {
+        require(owner != address(0x00), "ERR_ERC20_PERMIT_OWNER_ZERO_ADDRESS");
+        require(spender != address(0x00), "ERR_ERC20_PERMIT_SPENDER_ZERO_ADDRESS");
         require(deadline >= block.timestamp, "ERR_ERC20_PERMIT_EXPIRED");
+
+        /* It's safe to use the "+" operator here because the nonce cannot realistically overflow, ever. */
         bytes32 hashStruct = keccak256(abi.encode(PERMIT_TYPEHASH, owner, spender, amount, nonces[owner]++, deadline));
         bytes32 digest = keccak256(abi.encodePacked("\x19\x01", DOMAIN_SEPARATOR, hashStruct));
-        address recoveredAddress = ecrecover(digest, v, r, s);
-        require(recoveredAddress != address(0x00), "ERR_ERC20_PERMIT_ZERO_ADDRESS");
-        require(recoveredAddress == owner, "ERR_ERC20_PERMIT_INVALID_SIGNATURE");
+        address recoveredOwner = ecrecover(digest, v, r, s);
+
+        require(recoveredOwner != address(0x00), "ERR_ERC20_PERMIT_RECOVERED_OWNER_ZERO_ADDRESS");
+        require(recoveredOwner == owner, "ERR_ERC20_PERMIT_INVALID_SIGNATURE");
+
         approveInternal(owner, spender, amount);
     }
 }
