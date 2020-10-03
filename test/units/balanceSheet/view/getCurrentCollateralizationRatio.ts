@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
-import { OneHundredTokens, OneThousandPercentMantissa, TenTokens } from "../../../helpers/constants";
+import { OneHundredTokens, OneThousandPercentMantissa, TenTokens } from "../../../../utils/constants";
 
 export default function shouldBehaveLikeGetCurrentCollateralizationRatio(): void {
   const lockedCollateralAmount: BigNumber = TenTokens;

@@ -2,8 +2,8 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { FintrollerErrors, RedemptionPoolErrors, YTokenErrors } from "../../../helpers/errors";
-import { OneHundredTokens, YTokenConstants } from "../../../helpers/constants";
+import { FintrollerErrors, RedemptionPoolErrors, YTokenErrors } from "../../../../utils/errors";
+import { OneHundredTokens, YTokenConstants } from "../../../../utils/constants";
 import { stubGetBondThresholdCollateralizationRatio } from "../../../stubs";
 
 /**

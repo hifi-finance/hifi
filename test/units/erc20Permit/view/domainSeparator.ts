@@ -1,8 +1,8 @@
 import bre from "@nomiclabs/buidler";
 import { expect } from "chai";
 
-import { BuidlerEvmChainId, Erc20PermitConstants } from "../../../helpers/constants";
-import { getDomainSeparator } from "../../../helpers/eip2612";
+import { BuidlerEvmChainId, Erc20PermitConstants } from "../../../../utils/constants";
+import { getDomainSeparator } from "../../../../utils/eip2612";
 
 export default function shouldBehaveLikePermitTypehashGetter(): void {
   it("retrieves the proper domain separator", async function () {

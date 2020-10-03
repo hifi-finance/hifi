@@ -1,7 +1,7 @@
 import { AddressZero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { GenericErrors } from "../../../helpers/errors";
+import { GenericErrors } from "../../../../utils/errors";
 
 export default function shouldBehaveLikeOpenVault() {
   describe("when the vault is not open", function () {

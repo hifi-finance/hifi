@@ -1,6 +1,6 @@
 import { expect } from "chai";
 
-import { FintrollerErrors } from "../../../helpers/errors";
+import { FintrollerErrors } from "../../../../utils/errors";
 
 export default function shouldBehaveLikeRepayBorrowAllowedGetter(): void {
   describe("when the bond is listed", function () {

@@ -7,9 +7,9 @@ import {
   OneHundredTokens,
   TenTokens,
   OneThousandPercentMantissa,
-} from "../../../helpers/constants";
-import { BalanceSheetErrors, GenericErrors, YTokenErrors } from "../../../helpers/errors";
-import { FintrollerErrors } from "../../../helpers/errors";
+} from "../../../../utils/constants";
+import { BalanceSheetErrors, GenericErrors, YTokenErrors } from "../../../../utils/errors";
+import { FintrollerErrors } from "../../../../utils/errors";
 import { stubGetBondThresholdCollateralizationRatio, stubVaultDebt, stubVaultLockedCollateral } from "../../../stubs";
 
 export default function shouldBehaveLikeRepayBorrow(): void {

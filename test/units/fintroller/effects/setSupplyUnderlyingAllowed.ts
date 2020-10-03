@@ -1,6 +1,6 @@
 import { expect } from "chai";
 
-import { AdminErrors, FintrollerErrors } from "../../../helpers/errors";
+import { AdminErrors, FintrollerErrors } from "../../../../utils/errors";
 
 export default function shouldBehaveLikeSetSupplyUnderlyingAllowed(): void {
   describe("when the caller is the admin", function () {

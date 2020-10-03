@@ -6,8 +6,8 @@ import { waffle } from "@nomiclabs/buidler";
 
 import YTokenArtifact from "../../../../artifacts/YToken.json";
 
-import { YTokenConstants } from "../../../helpers/constants";
-import { YTokenErrors } from "../../../helpers/errors";
+import { YTokenConstants } from "../../../../utils/constants";
+import { YTokenErrors } from "../../../../utils/errors";
 
 const { deployContract } = waffle;
 

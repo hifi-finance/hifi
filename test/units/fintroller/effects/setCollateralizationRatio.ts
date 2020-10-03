@@ -2,8 +2,8 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { AdminErrors, FintrollerErrors } from "../../../helpers/errors";
-import { FintrollerConstants, OnePercentMantissa } from "../../../helpers/constants";
+import { AdminErrors, FintrollerErrors } from "../../../../utils/errors";
+import { FintrollerConstants, OnePercentMantissa } from "../../../../utils/constants";
 
 export default function shouldBehaveLikeSetCollateralizationRatio(): void {
   /* Equivalent to 175% */

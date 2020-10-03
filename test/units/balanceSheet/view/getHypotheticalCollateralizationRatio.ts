@@ -2,8 +2,8 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { BalanceSheetErrors, GenericErrors } from "../../../helpers/errors";
-import { OneHundredTokens, OneThousandPercentMantissa, TenTokens } from "../../../helpers/constants";
+import { BalanceSheetErrors, GenericErrors } from "../../../../utils/errors";
+import { OneHundredTokens, OneThousandPercentMantissa, TenTokens } from "../../../../utils/constants";
 
 export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio(): void {
   const lockedCollateralAmount: BigNumber = TenTokens;

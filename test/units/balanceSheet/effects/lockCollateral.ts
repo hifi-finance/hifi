@@ -2,8 +2,8 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { BalanceSheetErrors, GenericErrors } from "../../../helpers/errors";
-import { TenTokens } from "../../../helpers/constants";
+import { BalanceSheetErrors, GenericErrors } from "../../../../utils/errors";
+import { TenTokens } from "../../../../utils/constants";
 import { Vault } from "../../../../@types";
 
 export default function shouldBehaveLikeLockCollateral(): void {

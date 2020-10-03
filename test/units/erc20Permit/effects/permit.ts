@@ -4,8 +4,8 @@ import { SigningKey } from "@ethersproject/signing-key";
 // import { expect } from "chai";
 import { keccak256 } from "@ethersproject/keccak256";
 
-import { BuidlerEvmChainId, Erc20PermitConstants } from "../../../helpers/constants";
-import { getPermitDigest, sign } from "../../../helpers/eip2612";
+import { BuidlerEvmChainId, Erc20PermitConstants } from "../../../../utils/constants";
+import { getPermitDigest, sign } from "../../../../utils/eip2612";
 
 export default function shouldBehaveLikePermit(): void {
   it.only("lets the spender claim the allowance signed by the owner", async function () {

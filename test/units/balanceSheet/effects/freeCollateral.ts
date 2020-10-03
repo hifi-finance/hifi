@@ -2,8 +2,8 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { BalanceSheetErrors, GenericErrors } from "../../../helpers/errors";
-import { OneToken, TenTokens, OneHundredTokens } from "../../../helpers/constants";
+import { BalanceSheetErrors, GenericErrors } from "../../../../utils/errors";
+import { OneToken, TenTokens, OneHundredTokens } from "../../../../utils/constants";
 import { Vault } from "../../../../@types";
 import { stubGetBondThresholdCollateralizationRatio } from "../../../stubs";
 

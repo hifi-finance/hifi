@@ -2,12 +2,12 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { BalanceSheetConstants, YTokenConstants } from "../../../helpers/constants";
-import { GenericErrors, YTokenErrors } from "../../../helpers/errors";
-import { FintrollerErrors } from "../../../helpers/errors";
-import { OneHundredTokens, OneThousandPercentMantissa, TenTokens } from "../../../helpers/constants";
-import { contextForTimeDependentTests } from "../../../helpers/mochaContexts";
-import { increaseTime } from "../../../helpers/jsonRpcHelpers";
+import { BalanceSheetConstants, YTokenConstants } from "../../../../utils/constants";
+import { GenericErrors, YTokenErrors } from "../../../../utils/errors";
+import { FintrollerErrors } from "../../../../utils/errors";
+import { OneHundredTokens, OneThousandPercentMantissa, TenTokens } from "../../../../utils/constants";
+import { contextForTimeDependentTests } from "../../../../utils/mochaContexts";
+import { increaseTime } from "../../../../utils/jsonRpcHelpers";
 import {
   stubGetBondThresholdCollateralizationRatio,
   stubVaultFreeCollateral,

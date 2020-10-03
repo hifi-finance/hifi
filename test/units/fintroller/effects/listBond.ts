@@ -1,7 +1,7 @@
 import { AddressZero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { AdminErrors } from "../../../helpers/errors";
+import { AdminErrors } from "../../../../utils/errors";
 
 export default function shouldBehaveLikeListBond(): void {
   describe("when the caller is the admin", function () {

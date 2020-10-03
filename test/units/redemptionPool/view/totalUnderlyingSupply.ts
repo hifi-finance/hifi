@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { TenTokens } from "../../../helpers/constants";
+import { TenTokens } from "../../../../utils/constants";
 
 export default function shouldBehaveLikeTotalUnderlyingSupplyGetter(): void {
   const underlyingAmount: BigNumber = TenTokens;

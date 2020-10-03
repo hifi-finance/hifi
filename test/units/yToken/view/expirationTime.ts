@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
-import { YTokenConstants } from "../../../helpers/constants";
+import { YTokenConstants } from "../../../../utils/constants";
 
 export default function shouldBehaveLikeGetExpirationTime(): void {
   it("retrieves the expiration time", async function () {

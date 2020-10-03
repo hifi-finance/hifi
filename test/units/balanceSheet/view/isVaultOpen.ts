@@ -1,7 +1,7 @@
 import { AddressZero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { BalanceSheetErrors } from "../../../helpers/errors";
+import { BalanceSheetErrors } from "../../../../utils/errors";
 
 export default function shouldBehaveLikeOpenVault() {
   describe("when the vault is open", function () {

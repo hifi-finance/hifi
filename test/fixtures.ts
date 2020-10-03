@@ -11,7 +11,7 @@ import RedemptionPoolArtifact from "../artifacts/GodModeRedemptionPool.json";
 import YTokenArtifact from "../artifacts/YToken.json";
 
 import { Erc20Permit } from "../typechain/Erc20Permit";
-import { Erc20PermitConstants, YTokenConstants } from "./helpers/constants";
+import { Erc20PermitConstants, YTokenConstants } from "../utils/constants";
 import { Fintroller } from "../typechain/Fintroller";
 import { GodModeBalanceSheet as BalanceSheet } from "../typechain/GodModeBalanceSheet";
 import { GodModeRedemptionPool as RedemptionPool } from "../typechain/GodModeRedemptionPool";

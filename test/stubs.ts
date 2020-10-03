@@ -11,7 +11,7 @@ import RedemptionPoolArtifact from "../artifacts/GodModeRedemptionPool.json";
 import SimpleUniswapAnchoredViewArtifact from "../artifacts/SimpleUniswapAnchoredView.json";
 import YTokenArtifact from "../artifacts/YToken.json";
 
-import { BalanceSheetConstants, DefaultNumberOfDecimals, FintrollerConstants } from "./helpers/constants";
+import { BalanceSheetConstants, DefaultNumberOfDecimals, FintrollerConstants } from "../utils/constants";
 
 const { deployMockContract: deployStubContract } = waffle;
 

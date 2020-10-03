@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { OnePercentMantissa } from "../../../helpers/constants";
+import { OnePercentMantissa } from "../../../../utils/constants";
 
 export default function shouldBehaveLikeGetBondThresholdCollateralizationRatio(): void {
   /* Equivalent to 175% */

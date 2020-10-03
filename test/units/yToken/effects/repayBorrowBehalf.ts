@@ -7,8 +7,8 @@ import {
   OneHundredTokens,
   OneThousandPercentMantissa,
   TenTokens,
-} from "../../../helpers/constants";
-import { GenericErrors, YTokenErrors } from "../../../helpers/errors";
+} from "../../../../utils/constants";
+import { GenericErrors, YTokenErrors } from "../../../../utils/errors";
 import { stubGetBondThresholdCollateralizationRatio, stubVaultDebt, stubVaultLockedCollateral } from "../../../stubs";
 
 /**
