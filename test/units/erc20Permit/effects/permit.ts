@@ -71,6 +71,33 @@ export default function shouldBehaveLikePermit(): void {
               const allowance: BigNumber = await this.contracts.erc20Permit.allowance(owner, spender);
               expect(allowance).to.equal(allowanceAmount);
             });
+
+            it("increases the nonce of the user", async function () {
+              const owner: string = this.accounts.brad;
+              const spender: string = this.accounts.admin;
+              const signature = await createSignature.call(this, deadline, owner, spender);
+
+              const oldNonce = await this.contracts.erc20Permit.nonces(owner);
+              await this.contracts.erc20Permit
+                .connect(this.signers.admin)
+                .permit(owner, spender, allowanceAmount, deadline, signature.v, signature.r, signature.s);
+              const newNonce = await this.contracts.erc20Permit.nonces(owner);
+              expect(oldNonce).to.equal(newNonce.sub(1));
+            });
+
+            it("emits an Approval event", async function () {
+              const owner: string = this.accounts.brad;
+              const spender: string = this.accounts.admin;
+              const signature = await createSignature.call(this, deadline, owner, spender);
+
+              await expect(
+                this.contracts.erc20Permit
+                  .connect(this.signers.admin)
+                  .permit(owner, spender, allowanceAmount, deadline, signature.v, signature.r, signature.s),
+              )
+                .to.emit(this.contracts.erc20Permit, "Approval")
+                .withArgs(owner, spender, allowanceAmount);
+            });
           });
 
           describe("when the signature is not valid", function () {
