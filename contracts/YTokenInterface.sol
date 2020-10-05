@@ -15,7 +15,7 @@ abstract contract YTokenInterface is YTokenStorage {
 
     function burn(address holder, uint256 burnAmount) external virtual returns (bool);
 
-    function liquidateBorrow(address borrower, uint256 repayAmount) external virtual view returns (bool);
+    function liquidateBorrow(address borrower, uint256 repayAmount) external virtual returns (bool);
 
     function mint(address beneficiary, uint256 borrowAmount) external virtual returns (bool);
 

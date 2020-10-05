@@ -260,7 +260,7 @@ contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
      * Requirements:
      *
      * - The caller must be the administrator
-     * - The new address must not be the zero address
+     * - The new address cannot be the zero address
      *
      * @param oracle_ The new oracle contract.
      * @return bool true=success, otherwise it reverts.

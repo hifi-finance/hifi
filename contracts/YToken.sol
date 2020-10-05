@@ -11,13 +11,23 @@ import "./oracles/UniswapAnchoredViewInterface.sol";
 import "./utils/Admin.sol";
 import "./utils/ErrorReporter.sol";
 import "./utils/Orchestratable.sol";
+import "./utils/RecoverableDepot.sol";
 import "./utils/ReentrancyGuard.sol";
 
 /**
  * @title YToken
  * @author Mainframe
  */
-contract YToken is YTokenInterface, Erc20Permit, Admin, Orchestratable, ErrorReporter, Exponential, ReentrancyGuard {
+contract YToken is
+    YTokenInterface,
+    Erc20Permit,
+    Admin,
+    Orchestratable,
+    RecoverableDepot,
+    ErrorReporter,
+    Exponential,
+    ReentrancyGuard
+{
     modifier isNotMatured() {
         require(block.timestamp < expirationTime, "ERR_BOND_MATURED");
         _;
@@ -112,7 +122,14 @@ contract YToken is YTokenInterface, Erc20Permit, Admin, Orchestratable, ErrorRep
      * @param borrowAmount The amount of yTokens to borrow and print into existence.
      * @return bool true=success, otherwise it reverts.
      */
-    function borrow(uint256 borrowAmount) public override isVaultOpen(msg.sender) isNotMatured returns (bool) {
+    function borrow(uint256 borrowAmount)
+        public
+        override
+        isVaultOpen(msg.sender)
+        isNotMatured
+        nonReentrant
+        returns (bool)
+    {
         BorrowLocalVars memory vars;
 
         /* Checks: the zero edge case. */
@@ -167,9 +184,10 @@ contract YToken is YTokenInterface, Erc20Permit, Admin, Orchestratable, ErrorRep
      * - The amount to burn cannot be zero.
      *
      * @param holder The account whose yTokens to burn.
-     * @param burnAmount The amount of yTokens to burn
+     * @param burnAmount The amount of yTokens to burn.
+     * @return bool true=success, otherwise it reverts.
      */
-    function burn(address holder, uint256 burnAmount) external override onlyOrchestrated returns (bool) {
+    function burn(address holder, uint256 burnAmount) external override nonReentrant onlyOrchestrated returns (bool) {
         /* Checks: the zero edge case. */
         require(burnAmount > 0, "ERR_BURN_ZERO");
 
@@ -185,8 +203,8 @@ contract YToken is YTokenInterface, Erc20Permit, Admin, Orchestratable, ErrorRep
     function liquidateBorrow(address borrower, uint256 repayUnderlyingAmount)
         external
         override
-        view
         isVaultOpen(borrower)
+        nonReentrant
         returns (bool)
     {
         borrower;
@@ -206,8 +224,15 @@ contract YToken is YTokenInterface, Erc20Permit, Admin, Orchestratable, ErrorRep
      *
      * @param beneficiary The account for whom to mint the tokens.
      * @param mintAmount The amount of yTokens to print into existence.
+     * @return bool true=success, otherwise it reverts.
      */
-    function mint(address beneficiary, uint256 mintAmount) external override onlyOrchestrated returns (bool) {
+    function mint(address beneficiary, uint256 mintAmount)
+        external
+        override
+        nonReentrant
+        onlyOrchestrated
+        returns (bool)
+    {
         /* Checks: the zero edge case. */
         require(mintAmount > 0, "ERR_MINT_ZERO");
 

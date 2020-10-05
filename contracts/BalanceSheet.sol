@@ -368,7 +368,7 @@ contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, Reentrancy
      *
      * Requirements:
      *
-     * - The vault must not be open.
+     * - The vault cannot be already open.
      *
      * @param yToken The address of the yToken contract for which to open the vault.
      * @return bool=success, otherwise it reverts.

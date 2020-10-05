@@ -42,7 +42,7 @@ abstract contract Admin is AdminInterface {
      *
      * Requirements:
      *
-     * - The caller must be the current administrator.
+     * - The caller must be the administrator.
      *
      * WARNING: Doing this will leave the contract without an admin,
      * thereby removing any functionality that is only available to the admin.

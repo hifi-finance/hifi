@@ -7,12 +7,13 @@ import "./erc20/SafeErc20.sol";
 import "./math/CarefulMath.sol";
 import "./utils/Admin.sol";
 import "./utils/ErrorReporter.sol";
+import "./utils/ReentrancyGuard.sol";
 
 /**
  * @title RedemptionPool
  * @author Mainframe
  */
-contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorReporter {
+contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorReporter, ReentrancyGuard {
     using SafeErc20 for Erc20Interface;
 
     /**
@@ -51,7 +52,7 @@ contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorRep
      * @param underlyingAmount The amount of yTokens to redeem for the underlying asset.
      * @return bool=success, otherwise it reverts.
      */
-    function redeemUnderlying(uint256 underlyingAmount) external override returns (bool) {
+    function redeemUnderlying(uint256 underlyingAmount) external override nonReentrant returns (bool) {
         RedeemUnderlyingLocalVars memory vars;
 
         /* Checks: maturation time. */
@@ -116,7 +117,7 @@ contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorRep
      * @param underlyingAmount The amount of underlying to supply to the Redemption Pool.
      * @return bool=success, otherwise it reverts.
      */
-    function supplyUnderlying(uint256 underlyingAmount) external override returns (bool) {
+    function supplyUnderlying(uint256 underlyingAmount) external override nonReentrant returns (bool) {
         SupplyUnderlyingLocalVars memory vars;
 
         /* Checks: maturation time. */
