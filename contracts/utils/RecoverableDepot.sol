@@ -25,7 +25,7 @@ abstract contract RecoverableDepot is
      *
      * Requirements:
      * - The caller must be the administrator.
-     * - `initialized` must be false.
+     * - The contract must be non-initialized.
      * - The array of given tokens cannot be empty.
      *
      * @param tokens The array of tokens to set as non-recoverable.
