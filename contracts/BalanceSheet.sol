@@ -15,7 +15,12 @@ import "./utils/ReentrancyGuard.sol";
  * @title BalanceSheet
  * @author Mainframe
  */
-contract BalanceSheet is BalanceSheetInterface, Admin, ErrorReporter, ReentrancyGuard {
+contract BalanceSheet is
+    ErrorReporter, /* no depedency */
+    ReentrancyGuard, /* no depedency */
+    Admin, /* two dependencies */
+    BalanceSheetInterface /* four dependencies */
+{
     using SafeErc20 for Erc20Interface;
 
     modifier isVaultOpenForMsgSender(YTokenInterface yToken) {

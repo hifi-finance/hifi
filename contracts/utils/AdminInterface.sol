@@ -8,9 +8,15 @@ import "./AdminStorage.sol";
  * @author Mainframe
  */
 abstract contract AdminInterface is AdminStorage {
+    /**
+     * NON-CONSTANT FUNCTIONS
+     */
     function renounceAdmin() external virtual;
 
     function transferAdmin(address newAdmin) external virtual;
 
+    /**
+     * EVENTS
+     */
     event TransferAdmin(address indexed oldAdmin, address indexed newAdmin);
 }

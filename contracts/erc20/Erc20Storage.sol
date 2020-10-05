@@ -18,8 +18,8 @@ abstract contract Erc20Storage {
     string public name;
 
     /**
-     * @notice Returns the symbol of the token, usually a shorter version of the
-     * name.
+     * @notice Returns the symbol of the token, usually a shorter version of
+     * the name.
      */
     string public symbol;
 

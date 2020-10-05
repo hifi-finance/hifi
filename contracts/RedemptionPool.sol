@@ -13,7 +13,13 @@ import "./utils/ReentrancyGuard.sol";
  * @title RedemptionPool
  * @author Mainframe
  */
-contract RedemptionPool is RedemptionPoolInterface, Admin, CarefulMath, ErrorReporter, ReentrancyGuard {
+contract RedemptionPool is
+    ErrorReporter, /* no dependency */
+    CarefulMath, /* no dependency */
+    ReentrancyGuard, /* no dependency */
+    RedemptionPoolInterface, /* one dependency */
+    Admin /* two dependencies */
+{
     using SafeErc20 for Erc20Interface;
 
     /**

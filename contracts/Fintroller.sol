@@ -11,7 +11,11 @@ import "./utils/ErrorReporter.sol";
  * @notice Fintroller
  * @author Mainframe
  */
-contract Fintroller is FintrollerInterface, Admin, ErrorReporter {
+contract Fintroller is
+    ErrorReporter, /* no depedency */
+    FintrollerInterface, /* one dependency */
+    Admin /* two dependencies */
+{
     /* solhint-disable-next-line no-empty-blocks */
     constructor() Admin() {}
 

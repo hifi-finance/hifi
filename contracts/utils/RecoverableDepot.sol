@@ -12,7 +12,10 @@ import "../utils/Admin.sol";
  * @notice Gives the administrator the ability to recover the Erc20 tokens sent (accidentally, or not)
  * to the contract.
  */
-abstract contract RecoverableDepot is RecoverableDepotInterface, Admin {
+abstract contract RecoverableDepot is
+    RecoverableDepotInterface, /* one dependency */
+    Admin /* two dependencies */
+{
     using SafeErc20 for Erc20Interface;
 
     /**

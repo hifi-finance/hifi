@@ -12,7 +12,10 @@ import "./ExponentialStorage.sol";
  * @dev Forked from Compound
  * https://github.com/compound-finance/compound-protocol/blob/v2.6/contracts/Exponential.sol
  */
-abstract contract Exponential is ExponentialStorage, CarefulMath {
+abstract contract Exponential is
+    CarefulMath, /* no dependency */
+    ExponentialStorage /* no dependency */
+{
     /**
      * @dev Creates an exponential from numerator and denominator values.
      * NOTE: Returns an error if (`num` * 10e18) > MAX_INT, or if `denom` is zero.

@@ -1,9 +1,8 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.7.1;
 
-// import "@nomiclabs/buidler/console.sol";
 import "./Erc20.sol";
-import "./Erc20PermitStorage.sol";
+import "./Erc20PermitInterface.sol";
 
 /**
  * @title Erc20Permit
@@ -13,7 +12,10 @@ import "./Erc20PermitStorage.sol";
  * using the `permit` method, and then spend them via `transferFrom`.
  * @dev See https://eips.ethereum.org/EIPS/eip-2612.
  */
-contract Erc20Permit is Erc20, Erc20PermitStorage {
+contract Erc20Permit is
+    Erc20PermitInterface, /* one dependency */
+    Erc20 /* three dependencies */
+{
     constructor(
         string memory name_,
         string memory symbol_,
@@ -60,7 +62,7 @@ contract Erc20Permit is Erc20, Erc20PermitStorage {
         uint8 v,
         bytes32 r,
         bytes32 s
-    ) external {
+    ) external override {
         require(owner != address(0x00), "ERR_ERC20_PERMIT_OWNER_ZERO_ADDRESS");
         require(spender != address(0x00), "ERR_ERC20_PERMIT_SPENDER_ZERO_ADDRESS");
         require(deadline >= block.timestamp, "ERR_ERC20_PERMIT_EXPIRED");

@@ -8,7 +8,10 @@ import "./math/Exponential.sol";
  * @title BalanceSheetInterface
  * @author Mainframe
  */
-abstract contract BalanceSheetInterface is BalanceSheetStorage, Exponential {
+abstract contract BalanceSheetInterface is
+    BalanceSheetStorage, /* no dependency */
+    Exponential /* two dependencies */
+{
     /**
      * CONSTANT FUNCTIONS
      */

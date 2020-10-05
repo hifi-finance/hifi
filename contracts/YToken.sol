@@ -4,6 +4,7 @@ pragma solidity ^0.7.1;
 import "./BalanceSheetInterface.sol";
 import "./FintrollerInterface.sol";
 import "./YTokenInterface.sol";
+import "./erc20/Erc20.sol";
 import "./erc20/Erc20Permit.sol";
 import "./erc20/Erc20Interface.sol";
 import "./math/Exponential.sol";
@@ -19,14 +20,15 @@ import "./utils/ReentrancyGuard.sol";
  * @author Mainframe
  */
 contract YToken is
-    YTokenInterface,
-    Erc20Permit,
-    Admin,
-    Orchestratable,
-    RecoverableDepot,
-    ErrorReporter,
-    Exponential,
-    ReentrancyGuard
+    ErrorReporter, /* no depedency */
+    ReentrancyGuard, /* no depedency */
+    YTokenInterface, /* one dependency */
+    Admin, /* two dependencies */
+    Exponential, /* two dependencies */
+    Orchestratable, /* two depdendencies */
+    Erc20, /* three dependencies */
+    Erc20Permit, /* five dependencies */
+    RecoverableDepot /* five dependencies */
 {
     modifier isNotMatured() {
         require(block.timestamp < expirationTime, "ERR_BOND_MATURED");
