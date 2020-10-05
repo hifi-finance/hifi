@@ -3,6 +3,8 @@ pragma solidity ^0.7.1;
 
 import "./FintrollerInterface.sol";
 import "./RedemptionPoolInterface.sol";
+import "./erc20/Erc20Interface.sol";
+import "./erc20/Erc20Recover.sol";
 import "./erc20/SafeErc20.sol";
 import "./math/CarefulMath.sol";
 import "./utils/Admin.sol";
@@ -18,7 +20,8 @@ contract RedemptionPool is
     CarefulMath, /* no dependency */
     ReentrancyGuard, /* no dependency */
     RedemptionPoolInterface, /* one dependency */
-    Admin /* two dependencies */
+    Admin, /* two dependencies */
+    Erc20Recover /* five dependencies */
 {
     using SafeErc20 for Erc20Interface;
 

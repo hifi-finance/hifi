@@ -3,6 +3,7 @@ pragma solidity ^0.7.1;
 
 import "./FintrollerInterface.sol";
 import "./YTokenInterface.sol";
+import "./erc20/Erc20Recover.sol";
 import "./math/Exponential.sol";
 import "./utils/Admin.sol";
 import "./utils/ErrorReporter.sol";
@@ -14,7 +15,8 @@ import "./utils/ErrorReporter.sol";
 contract Fintroller is
     ErrorReporter, /* no depedency */
     FintrollerInterface, /* one dependency */
-    Admin /* two dependencies */
+    Admin, /* two dependencies */
+    Erc20Recover /* five dependencies */
 {
     /* solhint-disable-next-line no-empty-blocks */
     constructor() Admin() {}
