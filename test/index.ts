@@ -5,6 +5,7 @@ import { ethers, waffle } from "@nomiclabs/buidler";
 import { Accounts, Contracts, Signers, Stubs } from "../@types/index";
 import { testBalanceSheet } from "./units/balanceSheet/BalanceSheet";
 import { testErc20Permit } from "./units/erc20Permit/Erc20Permit";
+import { testErc20Recover } from "./units/erc20Recover/Erc20Recover";
 import { testFintroller } from "./units/fintroller/Fintroller";
 import { testRedemptionPool } from "./units/redemptionPool/RedemptionPool";
 import { testYToken } from "./units/yToken/YToken";
@@ -39,6 +40,7 @@ describe("Unit Tests", function () {
 
   testBalanceSheet();
   testErc20Permit();
+  testErc20Recover();
   testFintroller();
   testRedemptionPool();
   testYToken();

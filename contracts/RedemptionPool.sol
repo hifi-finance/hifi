@@ -135,7 +135,7 @@ contract RedemptionPool is
         /* Checks: the Fintroller allows this action to be performed. */
         require(fintroller.getSupplyUnderlyingAllowed(yToken), "ERR_SUPPLY_UNDERLYING_NOT_ALLOWED");
 
-        /* Effects: update the storage property. */
+        /* Effects */
         (vars.mathErr, vars.newUnderlyingTotalSupply) = addUInt(totalUnderlyingSupply, underlyingAmount);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_SUPPLY_UNDERLYING_MATH_ERROR");
         totalUnderlyingSupply = vars.newUnderlyingTotalSupply;

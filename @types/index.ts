@@ -6,6 +6,7 @@ import { GodModeBalanceSheet as BalanceSheet } from "../typechain/GodModeBalance
 import { Erc20Permit } from "../typechain/Erc20Permit";
 import { Fintroller } from "../typechain/Fintroller";
 import { GodModeRedemptionPool as RedemptionPool } from "../typechain/GodModeRedemptionPool";
+import { GodModeErc20Recover as Erc20Recover } from "../typechain/GodModeErc20Recover";
 import { SimpleUniswapAnchoredView } from "../typechain/SimpleUniswapAnchoredView";
 import { YToken } from "../typechain/YToken";
 
@@ -22,6 +23,7 @@ export interface Accounts {
 export interface Contracts {
   balanceSheet: BalanceSheet;
   erc20Permit: Erc20Permit;
+  erc20Recover: Erc20Recover;
   fintroller: Fintroller;
   oracle: SimpleUniswapAnchoredView;
   redemptionPool: RedemptionPool;
@@ -43,6 +45,7 @@ export interface Stubs {
   fintroller: MockContract;
   oracle: MockContract;
   redemptionPool: MockContract;
+  thirdPartyToken: MockContract;
   underlying: MockContract;
   yToken: MockContract;
 }

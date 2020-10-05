@@ -36,9 +36,17 @@ export enum FintrollerErrors {
 
 export enum GenericErrors {
   CollateralPriceZero = "ERR_COLLATERAL_PRICE_ZERO",
+  Initialized = "ERR_INITALIZED",
+  NotInitialized = "ERR_NOT_INITALIZED",
   UnderlyingPriceZero = "ERR_UNDERLYING_PRICE_ZERO",
   VaultOpen = "ERR_VAULT_OPEN",
   VaultNotOpen = "ERR_VAULT_NOT_OPEN",
+}
+
+export enum Erc20RecoverErrors {
+  RecoverZero = "ERR_RECOVER_ZERO",
+  RecoverNonRecoverableToken = "ERR_RECOVER_NON_RECOVERABLE_TOKEN",
+  SetNonRecoverableTokensEmptyArray = "ERR_SET_NON_RECOVERABLE_TOKENS_EMPTY_ARRAY",
 }
 
 export enum RedemptionPoolErrors {

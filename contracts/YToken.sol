@@ -6,13 +6,13 @@ import "./FintrollerInterface.sol";
 import "./YTokenInterface.sol";
 import "./erc20/Erc20.sol";
 import "./erc20/Erc20Permit.sol";
+import "./erc20/Erc20Recover.sol";
 import "./erc20/Erc20Interface.sol";
 import "./math/Exponential.sol";
 import "./oracles/UniswapAnchoredViewInterface.sol";
 import "./utils/Admin.sol";
 import "./utils/ErrorReporter.sol";
 import "./utils/Orchestratable.sol";
-import "./utils/RecoverableDepot.sol";
 import "./utils/ReentrancyGuard.sol";
 
 /**
@@ -28,7 +28,7 @@ contract YToken is
     Orchestratable, /* two depdendencies */
     Erc20, /* three dependencies */
     Erc20Permit, /* five dependencies */
-    RecoverableDepot /* five dependencies */
+    Erc20Recover /* five dependencies */
 {
     modifier isNotMatured() {
         require(block.timestamp < expirationTime, "ERR_BOND_MATURED");

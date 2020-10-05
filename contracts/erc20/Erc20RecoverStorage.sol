@@ -3,7 +3,7 @@ pragma solidity ^0.7.1;
 
 import "../erc20/Erc20Interface.sol";
 
-abstract contract RecoverableDepotStorage {
+abstract contract Erc20RecoverStorage {
     /**
      * @notice The tokens that can be recovered cannot be in this mapping.
      */
@@ -12,5 +12,5 @@ abstract contract RecoverableDepotStorage {
     /**
      * @notice A flag that signals whether the the non-recoverable tokens were set or not.
      */
-    bool public initialized;
+    bool public isInitialized;
 }

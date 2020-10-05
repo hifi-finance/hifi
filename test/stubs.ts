@@ -18,7 +18,6 @@ const { deployMockContract: deployStubContract } = waffle;
 /**
  * DEPLOYERS
  */
-
 export async function deployStubBalanceSheet(deployer: Signer): Promise<MockContract> {
   const balanceSheet: MockContract = await deployStubContract(deployer, BalanceSheetArtifact.abi);
   await balanceSheet.mock.isBalanceSheet.returns(true);
@@ -26,10 +25,20 @@ export async function deployStubBalanceSheet(deployer: Signer): Promise<MockCont
 }
 
 export async function deployStubCollateral(deployer: Signer): Promise<MockContract> {
+  const collateral: MockContract = await deployStubErc20(deployer, DefaultNumberOfDecimals, "Wrapped Ether", "WETH");
+  return collateral;
+}
+
+export async function deployStubErc20(
+  deployer: Signer,
+  decimals: BigNumber,
+  name: string,
+  symbol: string,
+): Promise<MockContract> {
   const collateral: MockContract = await deployStubContract(deployer, Erc20Artifact.abi);
-  await collateral.mock.decimals.returns(DefaultNumberOfDecimals);
-  await collateral.mock.name.returns("Wrapped Ether");
-  await collateral.mock.symbol.returns("WETH");
+  await collateral.mock.decimals.returns(decimals);
+  await collateral.mock.name.returns(name);
+  await collateral.mock.symbol.returns(symbol);
   await collateral.mock.totalSupply.returns(Zero);
   return collateral;
 }
@@ -55,11 +64,7 @@ export async function deployStubRedemptionPool(deployer: Signer): Promise<MockCo
 }
 
 export async function deployStubUnderlying(deployer: Signer): Promise<MockContract> {
-  const underlying: MockContract = await deployStubContract(deployer, Erc20Artifact.abi);
-  await underlying.mock.decimals.returns(DefaultNumberOfDecimals);
-  await underlying.mock.name.returns("Dai Stablecoin");
-  await underlying.mock.symbol.returns("DAI");
-  await underlying.mock.totalSupply.returns(Zero);
+  const underlying: MockContract = await deployStubErc20(deployer, DefaultNumberOfDecimals, "Dai Stablecoin", "DAI");
   return underlying;
 }
 

@@ -1,19 +1,19 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.7.1;
 
-import "./RecoverableDepotInterface.sol";
-import "../erc20/Erc20Interface.sol";
-import "../erc20/SafeErc20.sol";
+import "./Erc20RecoverInterface.sol";
+import "./Erc20Interface.sol";
+import "./SafeErc20.sol";
 import "../utils/Admin.sol";
 
 /**
- * @title RecoverableDepot
+ * @title Erc20Recover
  * @author Mainframe
- * @notice Gives the administrator the ability to recover the Erc20 tokens sent (accidentally, or not)
- * to the contract.
+ * @notice Gives the administrator the ability to recover the Erc20 tokens that
+ * had been sent (accidentally, or not) to the contract.
  */
-abstract contract RecoverableDepot is
-    RecoverableDepotInterface, /* one dependency */
+abstract contract Erc20Recover is
+    Erc20RecoverInterface, /* one dependency */
     Admin /* two dependencies */
 {
     using SafeErc20 for Erc20Interface;
@@ -32,7 +32,7 @@ abstract contract RecoverableDepot is
      */
     function setNonRecoverableTokens(Erc20Interface[] calldata tokens) external override onlyAdmin {
         /* Checks */
-        require(initialized == false, "ERR_SET_NON_RECOVERABLE_TOKENS_INITIALIZED");
+        require(isInitialized == false, "ERR_INITALIZED");
         require(tokens.length > 0, "ERR_SET_NON_RECOVERABLE_TOKENS_EMPTY_ARRAY");
 
         /* Iterate over the token list, sanity check each and update the mapping. */
@@ -43,7 +43,9 @@ abstract contract RecoverableDepot is
         }
 
         /* Prevents this function from ever being called again. */
-        initialized = true;
+        isInitialized = true;
+
+        emit SetNonRecoverableTokens(admin, tokens);
     }
 
     /**
@@ -59,10 +61,10 @@ abstract contract RecoverableDepot is
      * @param token The token to make the recover for.
      * @param recoverAmount The amount to recover, measured in the token's decimal system.
      */
-    function recoverErc20(Erc20Interface token, uint256 recoverAmount) external override onlyAdmin {
+    function recover(Erc20Interface token, uint256 recoverAmount) external override onlyAdmin {
         /* Checks */
-        require(initialized == true, "ERR_RECOVER_ERC20_NOT_INITALIZED");
-        require(recoverAmount > 0, "ERR_RECOVER_ERC20_ZERO");
+        require(isInitialized == true, "ERR_NOT_INITALIZED");
+        require(recoverAmount > 0, "ERR_RECOVER_ZERO");
 
         bytes32 tokenSymbolHash = keccak256(bytes(token.symbol()));
         uint256 length = nonRecoverableTokens.length;
@@ -80,13 +82,13 @@ abstract contract RecoverableDepot is
             require(
                 address(token) != address(nonRecoverableTokens[i]) &&
                     tokenSymbolHash != keccak256(bytes(nonRecoverableTokens[i].symbol())),
-                "ERR_RECOVER_ERC20_NON_RECOVERABLE_TOKEN"
+                "ERR_RECOVER_NON_RECOVERABLE_TOKEN"
             );
         }
 
         /* Interactions */
         token.safeTransfer(admin, recoverAmount);
 
-        emit RecoverToken(admin, token, recoverAmount);
+        emit Recover(admin, token, recoverAmount);
     }
 }

@@ -414,7 +414,7 @@ contract BalanceSheet is
         /* Checks: the caller is the yToken contract. */
         require(msg.sender == address(yToken), "ERR_SET_DEBT_NOT_AUTHORIZED");
 
-        /* Effects: update the storage property. */
+        /* Effects */
         vars.oldVaultDebt = vaults[address(yToken)][account].debt;
         vaults[address(yToken)][account].debt = newVaultDebt;
 

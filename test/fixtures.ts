@@ -5,20 +5,23 @@ import { waffle } from "@nomiclabs/buidler";
 
 import BalanceSheetArtifact from "../artifacts/GodModeBalanceSheet.json";
 import Erc20PermitArtifact from "../artifacts/Erc20Permit.json";
+import Erc20RecoverArtifact from "../artifacts/GodModeErc20Recover.json";
 import FintrollerArtifact from "../artifacts/Fintroller.json";
 import RedemptionPoolArtifact from "../artifacts/GodModeRedemptionPool.json";
 import YTokenArtifact from "../artifacts/YToken.json";
 
+import { DefaultNumberOfDecimals, Erc20PermitConstants, YTokenConstants } from "../utils/constants";
 import { Erc20Permit } from "../typechain/Erc20Permit";
-import { Erc20PermitConstants, YTokenConstants } from "../utils/constants";
 import { Fintroller } from "../typechain/Fintroller";
 import { GodModeBalanceSheet as BalanceSheet } from "../typechain/GodModeBalanceSheet";
+import { GodModeErc20Recover as Erc20Recover } from "../typechain/GodModeErc20Recover";
 import { GodModeRedemptionPool as RedemptionPool } from "../typechain/GodModeRedemptionPool";
 import { YToken } from "../typechain/YToken";
 
 import {
   deployStubBalanceSheet,
   deployStubCollateral,
+  deployStubErc20,
   deployStubFintroller,
   deployStubOracle,
   deployStubRedemptionPool,
@@ -79,6 +82,21 @@ export async function fintrollerFixture(
   const yToken: MockContract = await deployStubYToken(deployer);
   const fintroller: Fintroller = ((await deployContract(deployer, FintrollerArtifact, [])) as unknown) as Fintroller;
   return { fintroller, oracle, yToken };
+}
+
+export async function erc20RecoverFixture(
+  signers: Signer[],
+): Promise<{ collateral: MockContract; erc20Recover: Erc20Recover; thirdPartyToken: MockContract }> {
+  const deployer: Signer = signers[0];
+  const collateral: MockContract = await deployStubCollateral(deployer);
+  const thirdPartyToken: MockContract = await deployStubErc20(
+    deployer,
+    DefaultNumberOfDecimals,
+    "Third-Party Token",
+    "TPT",
+  );
+  const erc20Recover = ((await deployContract(deployer, Erc20RecoverArtifact, [])) as unknown) as Erc20Recover;
+  return { collateral, erc20Recover, thirdPartyToken };
 }
 
 export async function redemptionPoolFixture(

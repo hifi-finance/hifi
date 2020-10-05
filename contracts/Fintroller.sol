@@ -215,7 +215,7 @@ contract Fintroller is
             "ERR_SET_COLLATERALIZATION_RATIO_UNDERFLOW"
         );
 
-        /* Effects: update the storage property. */
+        /* Effects */
         vars.oldCollateralizationRatioMantissa = bonds[vars.yTokenAddress].thresholdCollateralizationRatio.mantissa;
         bonds[vars.yTokenAddress].thresholdCollateralizationRatio = Exp({
             mantissa: newCollateralizationRatioMantissa
