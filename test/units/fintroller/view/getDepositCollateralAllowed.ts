@@ -8,7 +8,7 @@ export default function shouldBehaveLikeDepositCollateralAllowed(): void {
       await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.yToken.address);
     });
 
-    it("retrieves the 'depositCollateralAllowed' state", async function () {
+    it("retrieves the default value", async function () {
       const depositCollateralAllowed: boolean = await this.contracts.fintroller.getDepositCollateralAllowed(
         this.stubs.yToken.address,
       );

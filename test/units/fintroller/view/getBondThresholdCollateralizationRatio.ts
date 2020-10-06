@@ -26,7 +26,7 @@ export default function shouldBehaveLikeGetBondThresholdCollateralizationRatio()
   });
 
   describe("when the bond is not listed", function () {
-    it("retrieves a zero value", async function () {
+    it("retrieves zero", async function () {
       const bondCollateralizationRatio: BigNumber = await this.contracts.fintroller.getBondThresholdCollateralizationRatio(
         this.stubs.yToken.address,
       );

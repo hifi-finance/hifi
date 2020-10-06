@@ -25,7 +25,10 @@ import "../math/CarefulMath.sol";
  * @dev Forked from OpenZeppelin
  * https://github.com/OpenZeppelin/openzeppelin-contracts/blob/v3.1.0/contracts/token/Erc20/Erc20.sol
  */
-contract Erc20 is Erc20Interface, CarefulMath {
+contract Erc20 is
+    CarefulMath, /* no dependency */
+    Erc20Interface /* one dependency */
+{
     /**
      * @notice All three of these values are immutable: they can only be set once during construction.
      * @param name_ Erc20 name of this token.

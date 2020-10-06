@@ -14,12 +14,10 @@ export default function shouldBehaveLikeGetVault(): void {
       expect(vault.lockedCollateral).to.equal(Zero);
       expect(vault.isOpen).to.equal(true);
     });
-
-    /* TODO: test for other collateral values */
   });
 
   describe("when the bond is not open", function () {
-    it("retrieves zero values", async function () {
+    it("retrieves the default values", async function () {
       const vault = await this.contracts.balanceSheet.getVault(this.stubs.yToken.address, this.accounts.brad);
       expect(vault.debt).to.equal(Zero);
       expect(vault.freeCollateral).to.equal(Zero);

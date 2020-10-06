@@ -39,9 +39,9 @@ describe("Unit Tests", function () {
   });
 
   testBalanceSheet();
-  testErc20Permit();
-  testErc20Recover();
-  testFintroller();
-  testRedemptionPool();
-  testYToken();
+  // testErc20Permit();
+  // testErc20Recover();
+  // testFintroller();
+  // testRedemptionPool();
+  // testYToken();
 });

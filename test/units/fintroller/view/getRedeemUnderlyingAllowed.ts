@@ -8,7 +8,7 @@ export default function shouldBehaveLikeRedeemUnderlyingAllowedGetter(): void {
       await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.yToken.address);
     });
 
-    it("retrieves the 'redeemUnderlyingAllowed' state", async function () {
+    it("retrieves the default value", async function () {
       const redeemUnderlyingAllowed: boolean = await this.contracts.fintroller.getRedeemUnderlyingAllowed(
         this.stubs.yToken.address,
       );

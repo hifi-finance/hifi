@@ -30,7 +30,7 @@ export default function shouldBehaveLikeGetBondThresholdCollateralizationRatio()
   });
 
   describe("when the bond is not listed", function () {
-    it("retrieves a non-listed bond", async function () {
+    it("retrieves the default values", async function () {
       const bond = await this.contracts.fintroller.getBond(this.stubs.yToken.address);
       expect(bond.isListed).to.equal(false);
     });
