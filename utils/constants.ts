@@ -76,6 +76,6 @@ export const FintrollerConstants = {
 };
 
 export const YTokenConstants = {
-  /* TODO: find a way to make this a runtime-generated constant */
+  /* TODO: make this relative to the time at which the tests are run. */
   DefaultExpirationTime: BigNumber.from(1609459199) /* December 31, 2020 at 23:59:59 */,
 };

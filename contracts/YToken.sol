@@ -94,19 +94,13 @@ contract YToken is
 
     struct BorrowLocalVars {
         MathError mathErr;
-        Exp borrowValue;
-        uint256 collateralPriceFromOracle;
-        uint256 collateralPriceNormalized;
+        uint256 collateralizationRatioMantissa;
         uint256 debt;
+        uint256 debtCeiling;
         uint256 lockedCollateral;
-        uint256 lockedCollateralUpscaled;
-        Exp lockedCollateralValue;
-        Exp hypotheticalCollateralizationRatio;
         uint256 hypotheticalCollateralizationRatioMantissa;
+        uint256 hypotheticalTotalSupply;
         uint256 newDebt;
-        uint256 thresholdCollateralizationRatioMantissa;
-        uint256 underlyingPriceFromOracle;
-        uint256 underlyingPriceUpscaled;
     }
 
     /**
@@ -119,6 +113,7 @@ contract YToken is
      * - Must be called prior to maturation.
      * - The amount to borrow cannot be zero.
      * - The Fintroller must allow this action to be performed.
+     * - The
      * - The caller must not fall below the threshold collateralization ratio.
      *
      * @param borrowAmount The amount of yTokens to borrow and print into existence.
@@ -140,9 +135,13 @@ contract YToken is
         /* Checks: the Fintroller allows this action to be performed. */
         require(fintroller.getBorrowAllowed(this), "ERR_BORROW_NOT_ALLOWED");
 
-        /* TODO: check debt ceiling. */
+        /* Checks: debt ceiling. */
+        (vars.mathErr, vars.hypotheticalTotalSupply) = addUInt(totalSupply, borrowAmount);
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
+        vars.debtCeiling = fintroller.getBondDebtCeiling(this);
+        require(vars.hypotheticalTotalSupply <= vars.debtCeiling, "ERR_BORROW_DEBT_CEILING_OVERFLOW");
 
-        /* Add the borrow amount to the current debt. */
+        /* Add the borrow amount to the account's current debt. */
         (vars.debt, , vars.lockedCollateral, ) = balanceSheet.getVault(this, msg.sender);
         require(vars.lockedCollateral > 0, "ERR_BORROW_LOCKED_COLLATERAL_ZERO");
         (vars.mathErr, vars.newDebt) = addUInt(vars.debt, borrowAmount);
@@ -155,10 +154,10 @@ contract YToken is
             vars.lockedCollateral,
             vars.newDebt
         );
-        vars.thresholdCollateralizationRatioMantissa = fintroller.getBondThresholdCollateralizationRatio(this);
+        vars.collateralizationRatioMantissa = fintroller.getBondCollateralizationRatio(this);
         require(
-            vars.hypotheticalCollateralizationRatioMantissa >= vars.thresholdCollateralizationRatioMantissa,
-            "ERR_BELOW_THRESHOLD_COLLATERALIZATION_RATIO"
+            vars.hypotheticalCollateralizationRatioMantissa >= vars.collateralizationRatioMantissa,
+            "ERR_BELOW_COLLATERALIZATION_RATIO"
         );
 
         /* Effects: print the new yTokens into existence. */
@@ -302,9 +301,7 @@ contract YToken is
     struct RepayBorrowInternalLocalVars {
         MathError mathErr;
         uint256 debt;
-        uint256 newPayerBalance;
         uint256 newDebt;
-        uint256 newTotalSupply;
     }
 
     /**

@@ -5,16 +5,16 @@ import shouldBehaveLikeVersionGetter from "./view/version";
 import shouldBehaveLikePermit from "./effects/permit";
 
 export function shouldBehaveLikeErc20Permit() {
-  describe("View", function() {
-    describe("DOMAIN_SEPARATOR", function() {
+  describe("View", function () {
+    describe("DOMAIN_SEPARATOR", function () {
       shouldBehaveLikeDomainSeparatorGetter();
     });
 
-    describe("PERMIT_TYPEHASH", function() {
+    describe("PERMIT_TYPEHASH", function () {
       shouldBehaveLikePermitTypehashGetter();
     });
 
-    describe("version", function() {
+    describe("version", function () {
       shouldBehaveLikeVersionGetter();
     });
   });

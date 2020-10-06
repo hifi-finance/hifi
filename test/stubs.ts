@@ -78,12 +78,12 @@ export async function deployStubYToken(deployer: Signer): Promise<MockContract> 
  * FUNCTION STUBS
  */
 
-export async function stubGetBondThresholdCollateralizationRatio(
+export async function stubGetBondCollateralizationRatio(
   this: Mocha.Context,
   yTokenAddress: string,
   collateralizationRatioMantissa?: BigNumber,
 ): Promise<void> {
-  await this.stubs.fintroller.mock.getBondThresholdCollateralizationRatio
+  await this.stubs.fintroller.mock.getBondCollateralizationRatio
     .withArgs(yTokenAddress)
     .returns(collateralizationRatioMantissa || FintrollerConstants.DefaultCollateralizationRatioMantissa);
 }

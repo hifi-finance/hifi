@@ -5,7 +5,7 @@ import { expect } from "chai";
 import { BalanceSheetErrors, GenericErrors } from "../../../../utils/errors";
 import { OneToken, TenTokens, OneHundredTokens } from "../../../../utils/constants";
 import { Vault } from "../../../../@types";
-import { stubGetBondThresholdCollateralizationRatio } from "../../../stubs";
+import { stubGetBondCollateralizationRatio } from "../../../stubs";
 
 export default function shouldBehaveLikeLockCollateral(): void {
   const fullDepositCollateralAmount: BigNumber = TenTokens;
@@ -19,7 +19,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
       describe("when the caller deposited collateral", function () {
         beforeEach(async function () {
           /* Mock the required functions on the Fintroller and the Collateral stubs. */
-          await stubGetBondThresholdCollateralizationRatio.call(this, this.stubs.yToken.address);
+          await stubGetBondCollateralizationRatio.call(this, this.stubs.yToken.address);
           await this.stubs.fintroller.mock.getDepositCollateralAllowed
             .withArgs(this.stubs.yToken.address)
             .returns(true);
@@ -102,7 +102,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
                   this.contracts.balanceSheet
                     .connect(this.signers.brad)
                     .freeCollateral(this.stubs.yToken.address, OneToken),
-                ).to.be.revertedWith(BalanceSheetErrors.BelowThresholdCollateralizationRatio);
+                ).to.be.revertedWith(BalanceSheetErrors.BelowCollateralizationRatio);
               });
             });
           });

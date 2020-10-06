@@ -10,7 +10,7 @@ import {
 } from "../../../../utils/constants";
 import { BalanceSheetErrors, GenericErrors, YTokenErrors } from "../../../../utils/errors";
 import { FintrollerErrors } from "../../../../utils/errors";
-import { stubGetBondThresholdCollateralizationRatio, stubVaultDebt, stubVaultLockedCollateral } from "../../../stubs";
+import { stubGetBondCollateralizationRatio, stubVaultDebt, stubVaultLockedCollateral } from "../../../stubs";
 
 export default function shouldBehaveLikeRepayBorrow(): void {
   const collateralAmount: BigNumber = TenTokens;
@@ -29,7 +29,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
     describe("when the amount to is not zero", function () {
       describe("when the bond is listed", function () {
         beforeEach(async function () {
-          await stubGetBondThresholdCollateralizationRatio.call(this, this.contracts.yToken.address);
+          await stubGetBondCollateralizationRatio.call(this, this.contracts.yToken.address);
         });
 
         describe("when the fintroller allows repay borrow", function () {
@@ -49,6 +49,9 @@ export default function shouldBehaveLikeRepayBorrow(): void {
                 collateralAmount,
               );
               await this.stubs.fintroller.mock.getBorrowAllowed.withArgs(this.contracts.yToken.address).returns(true);
+              await this.stubs.fintroller.mock.getBondDebtCeiling
+                .withArgs(this.contracts.yToken.address)
+                .returns(OneHundredTokens);
               await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
                 .withArgs(this.contracts.yToken.address, this.accounts.brad, collateralAmount, repayBorrowAmount)
                 .returns(OneThousandPercentMantissa);
@@ -100,6 +103,9 @@ export default function shouldBehaveLikeRepayBorrow(): void {
                 collateralAmount,
               );
               await this.stubs.fintroller.mock.getBorrowAllowed.withArgs(this.contracts.yToken.address).returns(true);
+              await this.stubs.fintroller.mock.getBondDebtCeiling
+                .withArgs(this.contracts.yToken.address)
+                .returns(OneHundredTokens);
               await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
                 .withArgs(this.contracts.yToken.address, this.accounts.brad, collateralAmount, repayBorrowAmount)
                 .returns(OneThousandPercentMantissa);

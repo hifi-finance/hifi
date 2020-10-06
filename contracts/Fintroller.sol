@@ -35,7 +35,8 @@ contract Fintroller is
         override
         view
         returns (
-            uint256 thresholdCollateralizationRatioMantissa,
+            uint256 collateralizationRatioMantissa,
+            uint256 debtCeiling,
             bool isBorrowAllowed,
             bool isDepositCollateralAllowed,
             bool isListed,
@@ -44,7 +45,8 @@ contract Fintroller is
             bool isSupplyUnderlyingAllowed
         )
     {
-        thresholdCollateralizationRatioMantissa = bonds[address(yToken)].thresholdCollateralizationRatio.mantissa;
+        collateralizationRatioMantissa = bonds[address(yToken)].collateralizationRatio.mantissa;
+        debtCeiling = bonds[address(yToken)].debtCeiling;
         isBorrowAllowed = bonds[address(yToken)].isBorrowAllowed;
         isDepositCollateralAllowed = bonds[address(yToken)].isDepositCollateralAllowed;
         isListed = bonds[address(yToken)].isListed;
@@ -54,13 +56,23 @@ contract Fintroller is
     }
 
     /**
-     * @notice Reads the threshold collateralization ratio of the given bond.
+     * @notice Reads the debt ceiling of the given bond.
      * @dev It is not an error to provide an invalid yToken address.
      * @param yToken The address of the bond contract.
-     * @return The threshold collateralization ratio as a uint256, or zero if an invalid address was provided.
+     * @return The debt ceiling as a uint256, or zero if an invalid address was provided.
      */
-    function getBondThresholdCollateralizationRatio(YTokenInterface yToken) external override view returns (uint256) {
-        return bonds[address(yToken)].thresholdCollateralizationRatio.mantissa;
+    function getBondDebtCeiling(YTokenInterface yToken) external override view returns (uint256) {
+        return bonds[address(yToken)].debtCeiling;
+    }
+
+    /**
+     * @notice Reads the collateralization ratio of the given bond.
+     * @dev It is not an error to provide an invalid yToken address.
+     * @param yToken The address of the bond contract.
+     * @return The collateralization ratio as a mantissa, or zero if an invalid address was provided.
+     */
+    function getBondCollateralizationRatio(YTokenInterface yToken) external override view returns (uint256) {
+        return bonds[address(yToken)].collateralizationRatio.mantissa;
     }
 
     /**
@@ -134,7 +146,7 @@ contract Fintroller is
      *
      * Requirements:
      *
-     * - The caller must be the administrator
+     * - The caller must be the administrator.
      *
      * @param yToken The yToken contract to list.
      * @return bool true=success, otherwise it reverts.
@@ -142,21 +154,17 @@ contract Fintroller is
     function listBond(YTokenInterface yToken) external override onlyAdmin returns (bool) {
         yToken.isYToken();
         bonds[address(yToken)] = Bond({
+            collateralizationRatio: Exp({ mantissa: defaultCollateralizationRatioMantissa }),
+            debtCeiling: 0,
             isBorrowAllowed: false,
             isDepositCollateralAllowed: false,
             isListed: true,
             isRedeemUnderlyingAllowed: false,
             isRepayBorrowAllowed: false,
-            isSupplyUnderlyingAllowed: false,
-            thresholdCollateralizationRatio: Exp({ mantissa: defaultCollateralizationRatioMantissa })
+            isSupplyUnderlyingAllowed: false
         });
         emit ListBond(admin, yToken);
         return NO_ERROR;
-    }
-
-    struct SetCollateralizationRatioLocalVars {
-        uint256 oldCollateralizationRatioMantissa;
-        address yTokenAddress;
     }
 
     /**
@@ -166,7 +174,7 @@ contract Fintroller is
      *
      * Requirements:
      *
-     * - The caller must be the administrator
+     * - The caller must be the administrator.
      *
      * @param yToken The yToken contract to update the permission for.
      * @param state The new state to be put in storage.
@@ -179,17 +187,22 @@ contract Fintroller is
         return NO_ERROR;
     }
 
+    struct SetCollateralizationRatioLocalVars {
+        uint256 oldCollateralizationRatioMantissa;
+        address yTokenAddress;
+    }
+
     /**
-     * @notice Updates the collateralization ratio, which ensures that the protocol is sufficiently collateralized.
+     * @notice Updates the collateralization ratio, which ensures that the bond market is sufficiently collateralized.
      *
      * @dev Emits a {SetCollateralizationRatio} event.
      *
      * Requirements:
      *
-     * - The caller must be the administrator
-     * - the bond must be listed
-     * - `newCollateralizationRatioMantissa` cannot be higher than 10,000%
-     * - `newCollateralizationRatioMantissa` cannot be lower than 100%
+     * - The caller must be the administrator.
+     * - The bond must be listed.
+     * - The new collateralization ratio cannot be higher than 10,000%.
+     * - The new collateralization ratio cannot be lower than 100%.
      *
      * @param yToken The bond for which to update the collateralization ratio.
      * @param newCollateralizationRatioMantissa The mantissa value of the new collateralization ratio.
@@ -218,17 +231,54 @@ contract Fintroller is
         );
 
         /* Effects */
-        vars.oldCollateralizationRatioMantissa = bonds[vars.yTokenAddress].thresholdCollateralizationRatio.mantissa;
-        bonds[vars.yTokenAddress].thresholdCollateralizationRatio = Exp({
-            mantissa: newCollateralizationRatioMantissa
-        });
+        vars.oldCollateralizationRatioMantissa = bonds[vars.yTokenAddress].collateralizationRatio.mantissa;
+        bonds[vars.yTokenAddress].collateralizationRatio = Exp({ mantissa: newCollateralizationRatioMantissa });
 
-        emit NewCollateralizationRatio(
+        emit SetCollateralizationRatio(
             admin,
             yToken,
             vars.oldCollateralizationRatioMantissa,
             newCollateralizationRatioMantissa
         );
+
+        return NO_ERROR;
+    }
+
+    struct SetDebtCeilingVars {
+        uint256 oldDebtCeiling;
+        address yTokenAddress;
+    }
+
+    /**
+     * @notice Updates the debt ceiling, which limits how much debt can be created in the bond market.
+     *
+     * @dev Emits a {SetDebtCeiling} event.
+     *
+     * Requirements:
+     *
+     * - The caller must be the administrator.
+     * - The bond must be listed.
+     * - The debt ceiling cannot be zero.
+     *
+     * @param yToken The bond for which to update the debt ceiling.
+     * @param newDebtCeiling The uint256 value of the new debt ceiling, measured in the bond's decimal system.
+     * @return bool true=success, otherwise it reverts.
+     */
+    function setDebtCeiling(YTokenInterface yToken, uint256 newDebtCeiling) external override onlyAdmin returns (bool) {
+        SetDebtCeilingVars memory vars;
+        vars.yTokenAddress = address(yToken);
+
+        /* Checks: bond is listed. */
+        require(bonds[vars.yTokenAddress].isListed, "ERR_BOND_NOT_LISTED");
+
+        /* Checks: the zero edge case. */
+        require(newDebtCeiling > 0, "ERR_SET_DEBT_CEILING_ZERO");
+
+        /* Effects */
+        vars.oldDebtCeiling = bonds[vars.yTokenAddress].debtCeiling;
+        bonds[vars.yTokenAddress].debtCeiling = newDebtCeiling;
+
+        emit SetDebtCeiling(admin, yToken, vars.oldDebtCeiling, newDebtCeiling);
 
         return NO_ERROR;
     }
@@ -240,7 +290,7 @@ contract Fintroller is
      *
      * Requirements:
      *
-     * - The caller must be the administrator
+     * - The caller must be the administrator.
      *
      * @param yToken The yToken contract to update the permission for.
      * @param state The new state to be put in storage.
@@ -265,8 +315,8 @@ contract Fintroller is
      *
      * Requirements:
      *
-     * - The caller must be the administrator
-     * - The new address cannot be the zero address
+     * - The caller must be the administrator.
+     * - The new address cannot be the zero address.
      *
      * @param oracle_ The new oracle contract.
      * @return bool true=success, otherwise it reverts.
@@ -275,7 +325,7 @@ contract Fintroller is
         require(address(oracle_) != address(0x00), "ERR_SET_ORACLE_ZERO_ADDRESS");
         address oldOracle = address(oracle);
         oracle = oracle_;
-        emit NewOracle(admin, oldOracle, address(oracle));
+        emit SetOracle(admin, oldOracle, address(oracle));
         return NO_ERROR;
     }
 

@@ -253,10 +253,10 @@ contract BalanceSheet is
 
     struct FreeCollateralLocalVars {
         MathError mathErr;
+        uint256 collateralizationRatioMantissa;
         uint256 hypotheticalCollateralizationRatioMantissa;
         uint256 newFreeCollateral;
         uint256 newLockedCollateral;
-        uint256 thresholdCollateralizationRatioMantissa;
     }
 
     /**
@@ -301,10 +301,10 @@ contract BalanceSheet is
                 vars.newLockedCollateral,
                 vault.debt
             );
-            vars.thresholdCollateralizationRatioMantissa = fintroller.getBondThresholdCollateralizationRatio(yToken);
+            vars.collateralizationRatioMantissa = fintroller.getBondCollateralizationRatio(yToken);
             require(
-                vars.hypotheticalCollateralizationRatioMantissa >= vars.thresholdCollateralizationRatioMantissa,
-                "ERR_BELOW_THRESHOLD_COLLATERALIZATION_RATIO"
+                vars.hypotheticalCollateralizationRatioMantissa >= vars.collateralizationRatioMantissa,
+                "ERR_BELOW_COLLATERALIZATION_RATIO"
             );
         }
 

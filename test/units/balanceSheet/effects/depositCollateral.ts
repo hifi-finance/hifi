@@ -4,7 +4,7 @@ import { expect } from "chai";
 
 import { BalanceSheetErrors, FintrollerErrors, GenericErrors } from "../../../../utils/errors";
 import { TenTokens } from "../../../../utils/constants";
-import { stubGetBondThresholdCollateralizationRatio } from "../../../stubs";
+import { stubGetBondCollateralizationRatio } from "../../../stubs";
 
 export default function shouldBehaveLikeDepositCollateral(): void {
   const collateralAmount: BigNumber = TenTokens;
@@ -17,7 +17,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
     describe("when the amount to deposit is not zero", function () {
       describe("when the bond is listed", function () {
         beforeEach(async function () {
-          await stubGetBondThresholdCollateralizationRatio.call(this, this.stubs.yToken.address);
+          await stubGetBondCollateralizationRatio.call(this, this.stubs.yToken.address);
         });
 
         describe("when the fintroller allows deposit collateral", function () {

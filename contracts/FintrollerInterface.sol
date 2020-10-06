@@ -14,7 +14,8 @@ abstract contract FintrollerInterface is FintrollerStorage {
         virtual
         view
         returns (
-            uint256 thresholdCollateralizationRatioMantissa,
+            uint256 debtCeiling,
+            uint256 collateralizationRatioMantissa,
             bool isBorrowAllowed,
             bool isDepositCollateralAllowed,
             bool isListed,
@@ -25,7 +26,9 @@ abstract contract FintrollerInterface is FintrollerStorage {
 
     function getBorrowAllowed(YTokenInterface yToken) external virtual view returns (bool);
 
-    function getBondThresholdCollateralizationRatio(YTokenInterface yToken) external virtual view returns (uint256);
+    function getBondDebtCeiling(YTokenInterface yToken) external virtual view returns (uint256);
+
+    function getBondCollateralizationRatio(YTokenInterface yToken) external virtual view returns (uint256);
 
     function getDepositCollateralAllowed(YTokenInterface yToken) external virtual view returns (bool);
 
@@ -47,6 +50,8 @@ abstract contract FintrollerInterface is FintrollerStorage {
         virtual
         returns (bool);
 
+    function setDebtCeiling(YTokenInterface yToken, uint256 newDebtCeiling) external virtual returns (bool);
+
     function setDepositCollateralAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
 
     function setOracle(UniswapAnchoredViewInterface oracle_) external virtual returns (bool);
@@ -62,22 +67,29 @@ abstract contract FintrollerInterface is FintrollerStorage {
      */
     event ListBond(address indexed admin, YTokenInterface indexed yToken);
 
-    event NewCollateralizationRatio(
+    event SetBorrowAllowed(address indexed admin, YTokenInterface indexed yToken, bool state);
+
+    event SetCollateralizationRatio(
         address indexed admin,
         YTokenInterface indexed yToken,
         uint256 oldCollateralizationRatio,
         uint256 newCollateralizationRatio
     );
 
-    event NewOracle(address indexed admin, address oldOracle, address newOracle);
+    event SetDebtCeiling(
+        address indexed admin,
+        YTokenInterface indexed yToken,
+        uint256 oldDebtCeiling,
+        uint256 newDebtCeiling
+    );
 
     event SetDepositCollateralAllowed(address indexed admin, YTokenInterface indexed yToken, bool state);
-
-    event SetBorrowAllowed(address indexed admin, YTokenInterface indexed yToken, bool state);
 
     event SetRedeemUnderlyingAllowed(address indexed admin, YTokenInterface indexed yToken, bool state);
 
     event SetRepayBorrowAllowed(address indexed admin, YTokenInterface indexed yToken, bool state);
+
+    event SetOracle(address indexed admin, address oldOracle, address newOracle);
 
     event SetSupplyUnderlyingAllowed(address indexed admin, YTokenInterface indexed yToken, bool state);
 }

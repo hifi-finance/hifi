@@ -24,6 +24,7 @@ abstract contract Erc20Recover is
      * @dev Emits a {SetNonRecoverableTokens} event.
      *
      * Requirements:
+     *
      * - The caller must be the administrator.
      * - The contract must be non-initialized.
      * - The array of given tokens cannot be empty.
@@ -53,13 +54,14 @@ abstract contract Erc20Recover is
      * @dev Emits a {RecoverToken} event.
      *
      * Requirements:
+     *
      * - The caller must be the administrator.
      * - The contract must be initialized.
      * - The amount to recover cannot be zero.
      * - The token to recover cannot be among the non-recoverable tokens.
      *
      * @param token The token to make the recover for.
-     * @param recoverAmount The amount to recover, measured in the token's decimal system.
+     * @param recoverAmount The uint256 amount to recover, measured in the token's decimal system.
      */
     function recover(Erc20Interface token, uint256 recoverAmount) external override onlyAdmin {
         /* Checks */

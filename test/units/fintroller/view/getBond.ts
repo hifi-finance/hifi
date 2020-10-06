@@ -4,7 +4,7 @@ import { expect } from "chai";
 
 import { OnePercentMantissa } from "../../../../utils/constants";
 
-export default function shouldBehaveLikeGetBondThresholdCollateralizationRatio(): void {
+export default function shouldBehaveLikeGetBondCollateralizationRatio(): void {
   /* Equivalent to 175% */
   const newCollateralizationRatioMantissa: BigNumber = OnePercentMantissa.mul(175);
 
@@ -17,15 +17,16 @@ export default function shouldBehaveLikeGetBondThresholdCollateralizationRatio()
       );
     });
 
-    it("retrieves all the storage properties of the bond", async function () {
+    it("retrieves the default values", async function () {
       const bond = await this.contracts.fintroller.getBond(this.stubs.yToken.address);
+      expect(bond.collateralizationRatioMantissa).to.equal(newCollateralizationRatioMantissa);
+      expect(bond.debtCeiling).to.equal(Zero);
       expect(bond.isBorrowAllowed).to.equal(false);
       expect(bond.isDepositCollateralAllowed).to.equal(false);
       expect(bond.isListed).to.equal(true);
       expect(bond.isRedeemUnderlyingAllowed).to.equal(false);
       expect(bond.isRepayBorrowAllowed).to.equal(false);
       expect(bond.isSupplyUnderlyingAllowed).to.equal(false);
-      expect(bond.thresholdCollateralizationRatioMantissa).to.equal(newCollateralizationRatioMantissa);
     });
   });
 

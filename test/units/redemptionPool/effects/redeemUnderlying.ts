@@ -4,7 +4,7 @@ import { expect } from "chai";
 
 import { FintrollerErrors, RedemptionPoolErrors, YTokenErrors } from "../../../../utils/errors";
 import { OneHundredTokens, OneMillionTokens, YTokenConstants } from "../../../../utils/constants";
-import { stubGetBondThresholdCollateralizationRatio } from "../../../stubs";
+import { stubGetBondCollateralizationRatio } from "../../../stubs";
 
 /**
  * Write tests for the following scenarios:
@@ -24,7 +24,7 @@ export default function shouldBehaveLikeRedeemUnderlying(): void {
     describe("when the amount to redeemUnderlying is not zero", function () {
       describe("when the bond is listed", function () {
         beforeEach(async function () {
-          await stubGetBondThresholdCollateralizationRatio.call(this, this.stubs.yToken.address);
+          await stubGetBondCollateralizationRatio.call(this, this.stubs.yToken.address);
         });
 
         describe("when the fintroller allows redeemUnderlying", function () {

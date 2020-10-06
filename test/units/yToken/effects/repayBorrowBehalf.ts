@@ -9,7 +9,7 @@ import {
   TenTokens,
 } from "../../../../utils/constants";
 import { GenericErrors, YTokenErrors } from "../../../../utils/errors";
-import { stubGetBondThresholdCollateralizationRatio, stubVaultDebt, stubVaultLockedCollateral } from "../../../stubs";
+import { stubGetBondCollateralizationRatio, stubVaultDebt, stubVaultLockedCollateral } from "../../../stubs";
 
 /**
  * This test suite assumes that Lucy pays the debt on behalf of Brad.
@@ -31,7 +31,7 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
     describe("when the amount to repay is not zero", function () {
       describe("when the bond is listed", function () {
         beforeEach(async function () {
-          await stubGetBondThresholdCollateralizationRatio.call(this, this.contracts.yToken.address);
+          await stubGetBondCollateralizationRatio.call(this, this.contracts.yToken.address);
         });
 
         describe("when the fintroller allows repay borrow", function () {
@@ -51,6 +51,9 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
                 collateralAmount,
               );
               await this.stubs.fintroller.mock.getBorrowAllowed.withArgs(this.contracts.yToken.address).returns(true);
+              await this.stubs.fintroller.mock.getBondDebtCeiling
+                .withArgs(this.contracts.yToken.address)
+                .returns(OneHundredTokens);
               await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
                 .withArgs(this.contracts.yToken.address, this.accounts.brad, collateralAmount, repayBorrowAmount)
                 .returns(OneThousandPercentMantissa);
@@ -124,6 +127,9 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
 
               /* Lucy borrows 100 yDAI. */
               await this.stubs.fintroller.mock.getBorrowAllowed.withArgs(this.contracts.yToken.address).returns(true);
+              await this.stubs.fintroller.mock.getBondDebtCeiling
+                .withArgs(this.contracts.yToken.address)
+                .returns(OneHundredTokens);
               await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
                 .withArgs(this.contracts.yToken.address, this.accounts.lucy, collateralAmount, repayBorrowAmount)
                 .returns(OneThousandPercentMantissa);

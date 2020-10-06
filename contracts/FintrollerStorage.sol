@@ -6,8 +6,8 @@ import "./oracles/UniswapAnchoredViewInterface.sol";
 
 abstract contract FintrollerStorage is Exponential {
     struct Bond {
-        /* The percentage that dictates the threshold under which loans become under-collateralized. */
-        Exp thresholdCollateralizationRatio;
+        Exp collateralizationRatio;
+        uint256 debtCeiling;
         bool isBorrowAllowed;
         bool isDepositCollateralAllowed;
         bool isListed;

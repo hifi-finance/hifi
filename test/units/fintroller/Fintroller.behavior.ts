@@ -2,7 +2,8 @@ import shouldBehaveLikeCollateralizationRatioLowerBoundMantissaGetter from "./vi
 import shouldBehaveLikeCollateralizationRatioUpperBoundMantissaGetter from "./view/collateralizationRatioUpperBoundMantissa";
 import shouldBehaveLikeDefaultCollateralizationRatioMantissaGetter from "./view/defaultCollateralizationRatioMantissa";
 import shouldBehaveLikeGetBond from "./view/getBond";
-import shouldBehaveLikeGetBondThresholdCollateralizationRatio from "./view/getBondThresholdCollateralizationRatio";
+import shouldBehaveLikeGetBondCollateralizationRatio from "./view/getBondCollateralizationRatio";
+import shouldBehaveLikeGetBondDebtCeiling from "./view/getBondDebtCeiling";
 import shouldBehaveLikeGetBorrowAllowed from "./view/getBorrowAllowed";
 import shouldBehaveLikeGetDepositCollateralAllowed from "./view/getDepositCollateralAllowed";
 import shouldBehaveLikeGetRedeemUnderlyingAllowed from "./view/getRedeemUnderlyingAllowed";
@@ -14,6 +15,7 @@ import shouldBehaveLikeOraclePricePrecisionScalarGetter from "./view/oraclePrice
 
 import shouldBehaveLikeListBond from "./effects/listBond";
 import shouldBehaveLikeSetCollateralizationRatio from "./effects/setCollateralizationRatio";
+import shouldBehaveLikeSetDebtCeiling from "./effects/setDebtCeiling";
 import shouldBehaveLikeSetDepositCollateralAllowed from "./effects/setDepositCollateralAllowed";
 import shouldBehaveLikeSetBorrowAllowed from "./effects/setBorrowAllowed";
 import shouldBehaveLikeSetOracle from "./effects/setOracle";
@@ -39,8 +41,12 @@ export function shouldBehaveLikeFintroller(): void {
       shouldBehaveLikeGetBond();
     });
 
-    describe("getBondThresholdCollateralizationRatio", function () {
-      shouldBehaveLikeGetBondThresholdCollateralizationRatio();
+    describe("getBondCollateralizationRatio", function () {
+      shouldBehaveLikeGetBondCollateralizationRatio();
+    });
+
+    describe("getBondDebtCeiling", function () {
+      shouldBehaveLikeGetBondDebtCeiling();
     });
 
     describe("getBorrowAllowed", function () {
@@ -87,6 +93,10 @@ export function shouldBehaveLikeFintroller(): void {
 
     describe("setCollateralizationRatio", function () {
       shouldBehaveLikeSetCollateralizationRatio();
+    });
+
+    describe("setDebtCeiling", function () {
+      shouldBehaveLikeSetDebtCeiling();
     });
 
     describe("setDepositCollateralAllowed", function () {
