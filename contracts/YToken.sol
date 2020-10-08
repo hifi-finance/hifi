@@ -113,7 +113,8 @@ contract YToken is
      * - Must be called prior to maturation.
      * - The amount to borrow cannot be zero.
      * - The Fintroller must allow this action to be performed.
-     * - The
+     * - The locked collateral cannot be zero.
+     * - The total supply of yTokens cannot exceed the debt ceiling.
      * - The caller must not fall below the threshold collateralization ratio.
      *
      * @param borrowAmount The amount of yTokens to borrow and print into existence.
@@ -261,10 +262,6 @@ contract YToken is
     function repayBorrow(uint256 repayAmount) external override isVaultOpen(msg.sender) nonReentrant returns (bool) {
         repayBorrowInternal(msg.sender, msg.sender, repayAmount);
 
-        /* Emit a RepayBorrow, Burn and Transfer event. */
-        emit RepayBorrow(msg.sender, msg.sender, repayAmount);
-        emit Transfer(msg.sender, address(this), repayAmount);
-
         return NO_ERROR;
     }
 
@@ -287,10 +284,6 @@ contract YToken is
         returns (bool)
     {
         repayBorrowInternal(msg.sender, borrower, repayAmount);
-
-        /* Emit a RepayBorrow, Burn and Transfer event. */
-        emit RepayBorrow(msg.sender, borrower, repayAmount);
-        emit Transfer(msg.sender, address(this), repayAmount);
 
         return NO_ERROR;
     }
@@ -336,6 +329,10 @@ contract YToken is
         burnInternal(payer, repayAmount);
 
         /* Interactions: reduce the debt of the account. */
-        require(balanceSheet.setVaultDebt(this, borrower, vars.newDebt), "ERR_REPAY_BORROW_SET_VAULT_DEBT");
+        require(balanceSheet.setVaultDebt(this, borrower, vars.newDebt));
+
+        /* Emit a RepayBorrow and Transfer event. */
+        emit RepayBorrow(payer, borrower, repayAmount, vars.newDebt);
+        emit Transfer(payer, address(this), repayAmount);
     }
 }

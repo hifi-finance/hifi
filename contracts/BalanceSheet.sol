@@ -73,9 +73,13 @@ contract BalanceSheet is
     }
 
     /**
-     * @notice Determines the account collateralization ratio for the given locked collateral amount and debt.
+     * @notice Determines the hypothetical account collateralization ratio for the locked collateral and debt,
+     * at the current prices provided by the oracle.
      *
-     * @dev Requirements:
+     * @dev @dev The formula applied is: `colRatio = lcValueUsd / dValueUsd`, where "lc" stands for
+     * locked collateral and "d" for debt.
+     *
+     * Requirements:
      *
      * - The vault must be open.
      * - `debt` must be non-zero.

@@ -77,7 +77,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
             it("emits a RepayBorrow event", async function () {
               await expect(this.contracts.yToken.connect(this.signers.brad).repayBorrow(repayBorrowAmount))
                 .to.emit(this.contracts.yToken, "RepayBorrow")
-                .withArgs(this.accounts.brad, this.accounts.brad, repayBorrowAmount);
+                .withArgs(this.accounts.brad, this.accounts.brad, repayBorrowAmount, Zero);
             });
 
             it("emits a Burn event", async function () {

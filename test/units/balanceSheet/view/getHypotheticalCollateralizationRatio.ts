@@ -14,10 +14,10 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
       await this.contracts.balanceSheet.connect(this.signers.brad).openVault(this.stubs.yToken.address);
     });
 
-    describe("when the locked collateral is non-zero", function () {
-      describe("when the debt is non-zero", function () {
-        describe("when the collateral price from the oracle is non-zero", function () {
-          describe("when the collateral price from the oracle is non-zero", function () {
+    describe("when the locked collateral is not zero", function () {
+      describe("when the debt is not zero", function () {
+        describe("when the collateral price from the oracle is not zero", function () {
+          describe("when the collateral price from the oracle is not zero", function () {
             it("retrieves the hypothetical collateralization ratio mantissa", async function () {
               const hypotheticalCollateralizationRatioMantissa: BigNumber = await this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
                 this.stubs.yToken.address,

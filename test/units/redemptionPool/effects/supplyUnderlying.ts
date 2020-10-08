@@ -61,9 +61,8 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
             });
 
             it("reverts", async function () {
-              await expect(
-                this.contracts.redemptionPool.connect(this.signers.mark).supplyUnderlying(underlyingAmount),
-              ).to.be.revertedWith(RedemptionPoolErrors.SupplyUnderlyingMint);
+              await expect(this.contracts.redemptionPool.connect(this.signers.mark).supplyUnderlying(underlyingAmount))
+                .to.be.reverted;
             });
           });
         });

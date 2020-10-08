@@ -13,7 +13,6 @@ import { stubGetBondCollateralizationRatio, stubVaultFreeCollateral, stubVaultLo
 /**
  * Write tests for the following scenarios:
  * - collateral value too small
- * - overflow the pre-defined debt ceiling
  */
 export default function shouldBehaveLikeBorrow(): void {
   const borrowAmount: BigNumber = OneHundredTokens;
@@ -109,7 +108,7 @@ export default function shouldBehaveLikeBorrow(): void {
                     it("reverts", async function () {
                       await expect(
                         this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount),
-                      ).to.be.revertedWith(YTokenErrors.BorrowSetVaultDebt);
+                      ).to.be.reverted;
                     });
                   });
                 });

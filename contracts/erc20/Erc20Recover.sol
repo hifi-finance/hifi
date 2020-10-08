@@ -61,7 +61,7 @@ abstract contract Erc20Recover is
      * - The token to recover cannot be among the non-recoverable tokens.
      *
      * @param token The token to make the recover for.
-     * @param recoverAmount The uint256 amount to recover, measured in the token's decimal system.
+     * @param recoverAmount The uint256 amount to recover, specified in the token's decimal system.
      */
     function recover(Erc20Interface token, uint256 recoverAmount) external override onlyAdmin {
         /* Checks */

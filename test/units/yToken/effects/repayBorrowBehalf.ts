@@ -88,7 +88,7 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
                   .repayBorrowBehalf(this.accounts.brad, repayBorrowAmount),
               )
                 .to.emit(this.contracts.yToken, "RepayBorrow")
-                .withArgs(this.accounts.lucy, this.accounts.brad, repayBorrowAmount);
+                .withArgs(this.accounts.lucy, this.accounts.brad, repayBorrowAmount, Zero);
             });
 
             it("emits a Burn event", async function () {

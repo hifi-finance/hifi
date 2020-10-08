@@ -261,7 +261,7 @@ contract Fintroller is
      * - The debt ceiling cannot be zero.
      *
      * @param yToken The bond for which to update the debt ceiling.
-     * @param newDebtCeiling The uint256 value of the new debt ceiling, measured in the bond's decimal system.
+     * @param newDebtCeiling The uint256 value of the new debt ceiling, specified in the bond's decimal system.
      * @return bool true=success, otherwise it reverts.
      */
     function setDebtCeiling(YTokenInterface yToken, uint256 newDebtCeiling) external override onlyAdmin returns (bool) {

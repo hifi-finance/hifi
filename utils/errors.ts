@@ -51,11 +51,9 @@ export enum Erc20RecoverErrors {
 }
 
 export enum RedemptionPoolErrors {
-  RedeemUnderlyingBurn = "ERR_REDEEM_UNDERLYING_BURN",
   RedeemUnderlyingInsufficientUnderlying = "ERR_REDEEM_UNDERLYING_INSUFFICIENT_UNDERLYING",
   RedeemUnderlyingNotAllowed = "ERR_REDEEM_UNDERLYING_NOT_ALLOWED",
   RedeemUnderlyingZero = "ERR_REDEEM_UNDERLYING_ZERO",
-  SupplyUnderlyingMint = "ERR_SUPPLY_UNDERLYING_MINT",
   SupplyUnderlyingNotAllowed = "ERR_SUPPLY_UNDERLYING_NOT_ALLOWED",
   SupplyUnderlyingZero = "ERR_SUPPLY_UNDERLYING_ZERO",
 }
@@ -67,7 +65,6 @@ export enum YTokenErrors {
   BorrowDebtCeilingOverflow = "ERR_BORROW_DEBT_CEILING_OVERFLOW",
   BorrowLockedCollateralZero = "ERR_BORROW_LOCKED_COLLATERAL_ZERO",
   BorrowNotAllowed = "ERR_BORROW_NOT_ALLOWED",
-  BorrowSetVaultDebt = "ERR_BORROW_SET_VAULT_DEBT",
   BorrowZero = "ERR_BORROW_ZERO",
   ConstructorCollateralDecimalsOverflow = "ERR_CONSTRUCTOR_COLLATERAL_DECIMALS_OVERFLOW",
   ConstructorUnderlyingDecimalsOverflow = "ERR_CONSTRUCTOR_UNDERLYING_DECIMALS_OVERFLOW",

@@ -67,9 +67,8 @@ export default function shouldBehaveLikeRedeemUnderlying(): void {
               });
 
               it("reverts", async function () {
-                await expect(
-                  this.contracts.redemptionPool.connect(this.signers.mark).redeemUnderlying(redeemAmount),
-                ).to.be.revertedWith(RedemptionPoolErrors.RedeemUnderlyingBurn);
+                await expect(this.contracts.redemptionPool.connect(this.signers.mark).redeemUnderlying(redeemAmount)).to
+                  .be.reverted;
               });
             });
           });

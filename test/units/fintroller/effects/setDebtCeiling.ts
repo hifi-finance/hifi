@@ -15,12 +15,14 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
         await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.yToken.address);
       });
 
-      describe("when the debt ceiling is non-zero", function () {
+      describe("when the debt ceiling is not zero", function () {
         it("sets the new debt ceiling", async function () {
           await this.contracts.fintroller
             .connect(this.signers.admin)
             .setDebtCeiling(this.stubs.yToken.address, newDebtCeiling);
-          const contractDebtCeiling: BigNumber = await this.contracts.fintroller.getBondDebtCeiling(this.stubs.yToken.address);
+          const contractDebtCeiling: BigNumber = await this.contracts.fintroller.getBondDebtCeiling(
+            this.stubs.yToken.address,
+          );
           expect(contractDebtCeiling).to.equal(newDebtCeiling);
         });
 
@@ -49,7 +51,7 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
         await expect(
           this.contracts.fintroller
             .connect(this.signers.admin)
-            .setCollateralizationRatio(this.stubs.yToken.address, newDebtCeiling),
+            .setDebtCeiling(this.stubs.yToken.address, newDebtCeiling),
         ).to.be.revertedWith(FintrollerErrors.BondNotListed);
       });
     });

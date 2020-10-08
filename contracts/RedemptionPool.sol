@@ -94,7 +94,7 @@ contract RedemptionPool is
         }
 
         /* Interactions: burn the yTokens. */
-        require(yToken.burn(msg.sender, underlyingAmount), "ERR_REDEEM_UNDERLYING_BURN");
+        require(yToken.burn(msg.sender, underlyingAmount));
 
         /* Interactions: perform the Erc20 transfer. */
         yToken.underlying().safeTransfer(msg.sender, underlyingAmount);
@@ -156,7 +156,7 @@ contract RedemptionPool is
         }
 
         /* Interactions: mint the yTokens. */
-        require(yToken.mint(msg.sender, vars.yTokenAmount), "ERR_SUPPLY_UNDERLYING_MINT");
+        require(yToken.mint(msg.sender, vars.yTokenAmount));
 
         /* Interactions: perform the Erc20 transfer. */
         yToken.underlying().safeTransferFrom(msg.sender, address(this), underlyingAmount);

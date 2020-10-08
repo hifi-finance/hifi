@@ -61,11 +61,6 @@ abstract contract YTokenStorage {
     Erc20Interface public underlying;
 
     /**
-     * @dev One vault for each account.
-     */
-    mapping(address => Vault) internal vaults;
-
-    /**
      * @notice The ratio between mantissa precision (1e18) and the underlying precision.
      */
     uint256 public underlyingPrecisionScalar;

@@ -27,7 +27,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
               .returns(true);
           });
 
-          describe("when the call to transfer the collateral token succeeds", function () {
+          describe("when the call to transfer the collateral succeeds", function () {
             beforeEach(async function () {
               await this.stubs.collateral.mock.transferFrom
                 .withArgs(this.accounts.brad, this.contracts.balanceSheet.address, collateralAmount)
@@ -51,7 +51,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
             });
           });
 
-          describe("when the call to transfer the collateral token fails", function () {
+          describe("when the call to transfer the collateral fails", function () {
             beforeEach(async function () {
               await this.stubs.collateral.mock.transferFrom
                 .withArgs(this.accounts.brad, this.contracts.balanceSheet.address, collateralAmount)

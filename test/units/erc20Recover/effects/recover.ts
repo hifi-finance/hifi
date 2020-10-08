@@ -15,7 +15,7 @@ export default function shouldBehaveLikeRecover(): void {
         await this.contracts.erc20Recover.setNonRecoverableTokens([collateralAddress]);
       });
 
-      describe("when the amount to recover is non-zero", function () {
+      describe("when the amount to recover is not zero", function () {
         describe("when the token is recoverable", function () {
           beforeEach(async function () {
             await this.stubs.thirdPartyToken.mock.transfer.withArgs(this.accounts.admin, recoverAmount).returns(true);
