@@ -3,12 +3,16 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { BalanceSheetConstants, YTokenConstants } from "../../../../utils/constants";
-import { GenericErrors, YTokenErrors } from "../../../../utils/errors";
-import { FintrollerErrors } from "../../../../utils/errors";
+import { FintrollerErrors, GenericErrors, YTokenErrors } from "../../../../utils/errors";
 import { OneHundredTokens, OneThousandPercentMantissa, TenTokens } from "../../../../utils/constants";
 import { contextForTimeDependentTests } from "../../../../utils/mochaContexts";
 import { increaseTime } from "../../../../utils/jsonRpcHelpers";
-import { stubGetBondCollateralizationRatio, stubVaultFreeCollateral, stubVaultLockedCollateral } from "../../../stubs";
+import {
+  stubGetBondCollateralizationRatio,
+  stubOpenVault,
+  stubVaultFreeCollateral,
+  stubVaultLockedCollateral,
+} from "../../../stubs";
 
 /**
  * Write tests for the following scenarios:
@@ -20,12 +24,7 @@ export default function shouldBehaveLikeBorrow(): void {
 
   describe("when the vault is open", function () {
     beforeEach(async function () {
-      await this.stubs.balanceSheet.mock.getVault
-        .withArgs(this.contracts.yToken.address, this.accounts.brad)
-        .returns(...Object.values(BalanceSheetConstants.DefaultVault));
-      await this.stubs.balanceSheet.mock.isVaultOpen
-        .withArgs(this.contracts.yToken.address, this.accounts.brad)
-        .returns(true);
+      await stubOpenVault.call(this, this.contracts.yToken.address, this.accounts.brad);
     });
 
     describe("when the bond did not mature", function () {
@@ -106,9 +105,8 @@ export default function shouldBehaveLikeBorrow(): void {
                     });
 
                     it("reverts", async function () {
-                      await expect(
-                        this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount),
-                      ).to.be.reverted;
+                      await expect(this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount)).to.be
+                        .reverted;
                     });
                   });
                 });
@@ -212,7 +210,7 @@ export default function shouldBehaveLikeBorrow(): void {
 
       it("reverts", async function () {
         await expect(this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount)).to.be.revertedWith(
-          YTokenErrors.BondMatured,
+          GenericErrors.BondMatured,
         );
       });
     });

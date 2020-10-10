@@ -11,7 +11,6 @@ import "./erc20/Erc20Interface.sol";
 import "./math/Exponential.sol";
 import "./oracles/UniswapAnchoredViewInterface.sol";
 import "./utils/Admin.sol";
-import "./utils/ErrorReporter.sol";
 import "./utils/Orchestratable.sol";
 import "./utils/ReentrancyGuard.sol";
 
@@ -20,7 +19,6 @@ import "./utils/ReentrancyGuard.sol";
  * @author Mainframe
  */
 contract YToken is
-    ErrorReporter, /* no depedency */
     ReentrancyGuard, /* no depedency */
     YTokenInterface, /* one dependency */
     Admin, /* two dependencies */
@@ -171,7 +169,7 @@ contract YToken is
         emit Borrow(msg.sender, borrowAmount);
         emit Transfer(address(this), msg.sender, borrowAmount);
 
-        return NO_ERROR;
+        return true;
     }
 
     /**
@@ -196,22 +194,44 @@ contract YToken is
         /* Effects: burns the yTokens. */
         burnInternal(holder, burnAmount);
 
-        return NO_ERROR;
+        return true;
+    }
+
+    struct LiquidateBorrowsLocalVars {
+        MathError mathErr;
+        uint256 collateralizationRatioMantissa;
+        bool isAccountUnderwater;
     }
 
     /**
      * @notice Pending.
      */
-    function liquidateBorrow(address borrower, uint256 repayUnderlyingAmount)
+    function liquidateBorrow(address borrower, uint256 repayAmount)
         external
         override
         isVaultOpen(borrower)
         nonReentrant
         returns (bool)
     {
-        borrower;
-        repayUnderlyingAmount;
-        return NO_ERROR;
+        LiquidateBorrowsLocalVars memory vars;
+
+        /* Checks: borrowers cannot self liquidate. */
+        require(msg.sender != borrower, "ERR_LIQUIDATE_BORROW_SELF");
+
+        /* Checks: the zero edge case. */
+        require(repayAmount > 0, "ERR_LIQUIDATE_BORROW_ZERO");
+
+        /* Checks: the Fintroller allows this action to be performed. */
+        require(fintroller.getLiquidateBorrowAllowed(this), "ERR_LIQUIDATE_BORROW_NOT_ALLOWED");
+
+        /* Checks: the borrower fell below the threshold collateraliation ratio. */
+        vars.isAccountUnderwater = balanceSheet.isAccountUnderwater(this, borrower);
+        require(vars.isAccountUnderwater, "ERR_ACCOUNT_NOT_UNDERWATER");
+
+        /* Effects: repay the borrower's debt. */
+        repayBorrowInternal(msg.sender, borrower, repayAmount);
+
+        return true;
     }
 
     /**
@@ -224,7 +244,7 @@ contract YToken is
      * - Can only be called by the Redemption Pool, the sole ochestrated contract.
      * - The amount to mint cannot be zero.
      *
-     * @param beneficiary The account for whom to mint the tokens.
+     * @param beneficiary The account for which to mint the tokens.
      * @param mintAmount The amount of yTokens to print into existence.
      * @return bool true=success, otherwise it reverts.
      */
@@ -241,7 +261,7 @@ contract YToken is
         /* Effects: print the new yTokens into existence. */
         mintInternal(beneficiary, mintAmount);
 
-        return NO_ERROR;
+        return true;
     }
 
     /**
@@ -257,12 +277,12 @@ contract YToken is
      * - The caller must have at least `repayAmount` debt.
      *
      * @param repayAmount Lorem ipsum.
-     * @return bool=success, otherwise it reverts.
+     * @return true = success, otherwise it reverts.
      */
     function repayBorrow(uint256 repayAmount) external override isVaultOpen(msg.sender) nonReentrant returns (bool) {
         repayBorrowInternal(msg.sender, msg.sender, repayAmount);
 
-        return NO_ERROR;
+        return true;
     }
 
     /**
@@ -272,9 +292,9 @@ contract YToken is
      * Requirements: same as the `repayBorrow` function, but here `borrower` is the account who must have
      * at least `repayAmount` yTokens to repay the borrow.
      *
-     * @param borrower The account for whom to repay the borrow.
+     * @param borrower The account for which to repay the borrow.
      * @param repayAmount The amount of yTokens to repay.
-     * @return bool=success, otherwise it reverts.
+     * @return true = success, otherwise it reverts.
      */
     function repayBorrowBehalf(address borrower, uint256 repayAmount)
         external
@@ -285,7 +305,7 @@ contract YToken is
     {
         repayBorrowInternal(msg.sender, borrower, repayAmount);
 
-        return NO_ERROR;
+        return true;
     }
 
     /**

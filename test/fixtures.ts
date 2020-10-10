@@ -8,7 +8,7 @@ import Erc20PermitArtifact from "../artifacts/Erc20Permit.json";
 import Erc20RecoverArtifact from "../artifacts/GodModeErc20Recover.json";
 import FintrollerArtifact from "../artifacts/Fintroller.json";
 import RedemptionPoolArtifact from "../artifacts/GodModeRedemptionPool.json";
-import YTokenArtifact from "../artifacts/YToken.json";
+import YTokenArtifact from "../artifacts/GodModeYToken.json";
 
 import { DefaultNumberOfDecimals, Erc20PermitConstants, YTokenConstants } from "../utils/constants";
 import { Erc20Permit } from "../typechain/Erc20Permit";
@@ -16,7 +16,7 @@ import { Fintroller } from "../typechain/Fintroller";
 import { GodModeBalanceSheet as BalanceSheet } from "../typechain/GodModeBalanceSheet";
 import { GodModeErc20Recover as Erc20Recover } from "../typechain/GodModeErc20Recover";
 import { GodModeRedemptionPool as RedemptionPool } from "../typechain/GodModeRedemptionPool";
-import { YToken } from "../typechain/YToken";
+import { GodModeYToken as YToken } from "../typechain/GodModeYToken";
 
 import {
   deployStubBalanceSheet,

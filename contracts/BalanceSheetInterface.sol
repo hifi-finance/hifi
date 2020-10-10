@@ -16,7 +16,7 @@ abstract contract BalanceSheetInterface is
      * CONSTANT FUNCTIONS
      */
     function getCurrentCollateralizationRatio(YTokenInterface yToken, address account)
-        external
+        public
         virtual
         view
         returns (uint256);
@@ -38,6 +38,8 @@ abstract contract BalanceSheetInterface is
             uint256,
             bool
         );
+
+    function isAccountUnderwater(YTokenInterface yToken, address account) external virtual view returns (bool);
 
     function isVaultOpen(YTokenInterface yToken, address account) external virtual view returns (bool);
 

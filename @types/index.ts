@@ -7,8 +7,8 @@ import { Erc20Permit } from "../typechain/Erc20Permit";
 import { Fintroller } from "../typechain/Fintroller";
 import { GodModeRedemptionPool as RedemptionPool } from "../typechain/GodModeRedemptionPool";
 import { GodModeErc20Recover as Erc20Recover } from "../typechain/GodModeErc20Recover";
+import { GodModeYToken as YToken } from "../typechain/GodModeYToken";
 import { SimpleUniswapAnchoredView } from "../typechain/SimpleUniswapAnchoredView";
-import { YToken } from "../typechain/YToken";
 
 /* Fingers-crossed that ethers.js or waffle will provide an easier way to cache the address */
 export interface Accounts {

@@ -11,7 +11,12 @@ import RedemptionPoolArtifact from "../artifacts/GodModeRedemptionPool.json";
 import SimpleUniswapAnchoredViewArtifact from "../artifacts/SimpleUniswapAnchoredView.json";
 import YTokenArtifact from "../artifacts/YToken.json";
 
-import { BalanceSheetConstants, DefaultNumberOfDecimals, FintrollerConstants } from "../utils/constants";
+import {
+  BalanceSheetConstants,
+  DefaultNumberOfDecimals,
+  FintrollerConstants,
+  OneThousandPercentMantissa,
+} from "../utils/constants";
 
 const { deployMockContract: deployStubContract } = waffle;
 
@@ -78,6 +83,26 @@ export async function deployStubYToken(deployer: Signer): Promise<MockContract> 
  * FUNCTION STUBS
  */
 
+/**
+ * Intended to be used in the yToken tests.
+ */
+export async function stubBorrowInternalCalls(
+  this: Mocha.Context,
+  borrowAmount: BigNumber,
+  borrowerAccount: string,
+  collateralAmount: BigNumber,
+): Promise<void> {
+  await stubVaultLockedCollateral.call(this, this.contracts.yToken.address, borrowerAccount, collateralAmount);
+  await this.stubs.fintroller.mock.getBorrowAllowed.withArgs(this.contracts.yToken.address).returns(true);
+  await this.stubs.fintroller.mock.getBondDebtCeiling.withArgs(this.contracts.yToken.address).returns(borrowAmount);
+  await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
+    .withArgs(this.contracts.yToken.address, borrowerAccount, collateralAmount, borrowAmount)
+    .returns(OneThousandPercentMantissa);
+  await this.stubs.balanceSheet.mock.setVaultDebt
+    .withArgs(this.contracts.yToken.address, borrowerAccount, borrowAmount)
+    .returns(true);
+}
+
 export async function stubGetBondCollateralizationRatio(
   this: Mocha.Context,
   yTokenAddress: string,
@@ -91,27 +116,34 @@ export async function stubGetBondCollateralizationRatio(
 export async function stubGetVault(
   this: Mocha.Context,
   yTokenAddress: string,
-  user: string,
+  account: string,
   debt: BigNumber,
   freeCollateral: BigNumber,
   lockedCollateral: BigNumber,
   isOpen: boolean,
 ): Promise<void> {
   await this.stubs.balanceSheet.mock.getVault
-    .withArgs(yTokenAddress, user)
+    .withArgs(yTokenAddress, account)
     .returns(debt, freeCollateral, lockedCollateral, isOpen);
+}
+
+export async function stubOpenVault(this: Mocha.Context, yTokenAddress: string, account: string): Promise<void> {
+  await this.stubs.balanceSheet.mock.getVault
+    .withArgs(yTokenAddress, account)
+    .returns(...Object.values(BalanceSheetConstants.DefaultVault));
+  await this.stubs.balanceSheet.mock.isVaultOpen.withArgs(yTokenAddress, account).returns(true);
 }
 
 export async function stubVaultDebt(
   this: Mocha.Context,
   yTokenAddress: string,
-  user: string,
+  account: string,
   debt: BigNumber,
 ): Promise<void> {
   await stubGetVault.call(
     this,
     yTokenAddress,
-    user,
+    account,
     debt,
     BalanceSheetConstants.DefaultVault.freeCollateral,
     BalanceSheetConstants.DefaultVault.lockedCollateral,
@@ -122,13 +154,13 @@ export async function stubVaultDebt(
 export async function stubVaultFreeCollateral(
   this: Mocha.Context,
   yTokenAddress: string,
-  user: string,
+  account: string,
   freeCollateral: BigNumber,
 ): Promise<void> {
   await stubGetVault.call(
     this,
     yTokenAddress,
-    user,
+    account,
     BalanceSheetConstants.DefaultVault.debt,
     freeCollateral,
     BalanceSheetConstants.DefaultVault.lockedCollateral,
@@ -139,13 +171,13 @@ export async function stubVaultFreeCollateral(
 export async function stubVaultLockedCollateral(
   this: Mocha.Context,
   yTokenAddress: string,
-  user: string,
+  account: string,
   lockedCollateral: BigNumber,
 ): Promise<void> {
   await stubGetVault.call(
     this,
     yTokenAddress,
-    user,
+    account,
     BalanceSheetConstants.DefaultVault.debt,
     BalanceSheetConstants.DefaultVault.freeCollateral,
     lockedCollateral,
@@ -156,13 +188,13 @@ export async function stubVaultLockedCollateral(
 export async function stuVaultIsOpen(
   this: Mocha.Context,
   yTokenAddress: string,
-  user: string,
+  account: string,
   isOpen: boolean,
 ): Promise<void> {
   await stubGetVault.call(
     this,
     yTokenAddress,
-    user,
+    account,
     BalanceSheetConstants.DefaultVault.debt,
     BalanceSheetConstants.DefaultVault.freeCollateral,
     BalanceSheetConstants.DefaultVault.lockedCollateral,

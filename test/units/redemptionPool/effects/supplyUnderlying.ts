@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { FintrollerErrors, RedemptionPoolErrors, YTokenErrors } from "../../../../utils/errors";
+import { FintrollerErrors, GenericErrors, RedemptionPoolErrors } from "../../../../utils/errors";
 import { OneHundredTokens, YTokenConstants } from "../../../../utils/constants";
 import { stubGetBondCollateralizationRatio } from "../../../stubs";
 
@@ -117,7 +117,7 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
     it("reverts", async function () {
       await expect(
         this.contracts.redemptionPool.connect(this.signers.mark).supplyUnderlying(underlyingAmount),
-      ).to.be.revertedWith(YTokenErrors.BondMatured);
+      ).to.be.revertedWith(GenericErrors.BondMatured);
     });
   });
 }

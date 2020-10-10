@@ -13,10 +13,6 @@ abstract contract OrchestratableInterface is OrchestratableStorage {
      */
     function orchestrate(address account, bytes4 signature) external virtual;
 
-    function renounceConductor() external virtual;
-
-    function transferConductor(address newConductor) external virtual;
-
     /**
      * EVENTS
      */

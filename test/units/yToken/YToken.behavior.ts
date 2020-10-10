@@ -63,7 +63,7 @@ export function shouldBehaveLikeYToken(): void {
       shouldBehaveLikeBorrow();
     });
 
-    describe.skip("liquidateBorrow", function () {
+    describe("liquidateBorrow", function () {
       shouldBehaveLikeLiquidateBorrow();
     });
 

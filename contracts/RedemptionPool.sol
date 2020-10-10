@@ -8,7 +8,6 @@ import "./erc20/Erc20Recover.sol";
 import "./erc20/SafeErc20.sol";
 import "./math/CarefulMath.sol";
 import "./utils/Admin.sol";
-import "./utils/ErrorReporter.sol";
 import "./utils/ReentrancyGuard.sol";
 
 /**
@@ -16,7 +15,6 @@ import "./utils/ReentrancyGuard.sol";
  * @author Mainframe
  */
 contract RedemptionPool is
-    ErrorReporter, /* no dependency */
     CarefulMath, /* no dependency */
     ReentrancyGuard, /* no dependency */
     RedemptionPoolInterface, /* one dependency */
@@ -59,7 +57,7 @@ contract RedemptionPool is
      * - There must be enough liquidity in the Redemption Pool.
      *
      * @param underlyingAmount The amount of yTokens to redeem for the underlying asset.
-     * @return bool=success, otherwise it reverts.
+     * @return true = success, otherwise it reverts.
      */
     function redeemUnderlying(uint256 underlyingAmount) external override nonReentrant returns (bool) {
         RedeemUnderlyingLocalVars memory vars;
@@ -101,7 +99,7 @@ contract RedemptionPool is
 
         emit RedeemUnderlying(msg.sender, underlyingAmount);
 
-        return NO_ERROR;
+        return true;
     }
 
     struct SupplyUnderlyingLocalVars {
@@ -124,7 +122,7 @@ contract RedemptionPool is
      * - The caller must have allowed this contract to spend `underlyingAmount` tokens.
      *
      * @param underlyingAmount The amount of underlying to supply to the Redemption Pool.
-     * @return bool=success, otherwise it reverts.
+     * @return true = success, otherwise it reverts.
      */
     function supplyUnderlying(uint256 underlyingAmount) external override nonReentrant returns (bool) {
         SupplyUnderlyingLocalVars memory vars;
@@ -163,6 +161,6 @@ contract RedemptionPool is
 
         emit SupplyUnderlying(msg.sender, underlyingAmount);
 
-        return NO_ERROR;
+        return true;
     }
 }

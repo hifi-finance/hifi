@@ -36,6 +36,9 @@ export enum FintrollerErrors {
 }
 
 export enum GenericErrors {
+  AccountNotUnderwater = "ERR_ACCOUNT_NOT_UNDERWATER",
+  BondMatured = "ERR_BOND_MATURED",
+  BondNotMatured = "ERR_BOND_NOT_MATURED",
   CollateralPriceZero = "ERR_COLLATERAL_PRICE_ZERO",
   Initialized = "ERR_INITALIZED",
   NotInitialized = "ERR_NOT_INITALIZED",
@@ -59,8 +62,6 @@ export enum RedemptionPoolErrors {
 }
 
 export enum YTokenErrors {
-  BondMatured = "ERR_BOND_MATURED",
-  BondNotMatured = "ERR_BOND_NOT_MATURED",
   BorrowInsufficientLiquidity = "ERR_REDEEM_UNDERLYING_INSUFFICIENT_LIQUIDITY",
   BorrowDebtCeilingOverflow = "ERR_BORROW_DEBT_CEILING_OVERFLOW",
   BorrowLockedCollateralZero = "ERR_BORROW_LOCKED_COLLATERAL_ZERO",
@@ -68,6 +69,9 @@ export enum YTokenErrors {
   BorrowZero = "ERR_BORROW_ZERO",
   ConstructorCollateralDecimalsOverflow = "ERR_CONSTRUCTOR_COLLATERAL_DECIMALS_OVERFLOW",
   ConstructorUnderlyingDecimalsOverflow = "ERR_CONSTRUCTOR_UNDERLYING_DECIMALS_OVERFLOW",
+  LiquidateBorrowNotAllowed = "ERR_LIQUIDATE_BORROW_NOT_ALLOWED",
+  LiquidateBorrowSelf = "ERR_LIQUIDATE_BORROW_SELF",
+  LiquidateBorrowZero = "ERR_LIQUIDATE_BORROW_ZERO",
   RepayBorrowInsufficientBalance = "ERR_REPAY_BORROW_INSUFFICIENT_BALANCE",
   RepayBorrowInsufficientDebt = "ERR_REPAY_BORROW_INSUFFICIENT_DEBT",
   RepayBorrowNotAllowed = "ERR_REPAY_BORROW_NOT_ALLOWED",

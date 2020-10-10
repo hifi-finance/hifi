@@ -121,8 +121,9 @@ const config: BuidlerConfig = {
     tests: "./test",
   },
   solc: {
+    /* Disable the optimizer when debugging: https://buidler.dev/buidler-evm/#solidity-optimizer-support */
     optimizer: {
-      enabled: process.env.ETHEREUM_NETWORK === "mainnet" ? true : false,
+      enabled: true,
       runs: 200,
     },
     version: "0.7.1",

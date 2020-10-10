@@ -32,6 +32,8 @@ abstract contract FintrollerInterface is FintrollerStorage {
 
     function getDepositCollateralAllowed(YTokenInterface yToken) external virtual view returns (bool);
 
+    function getLiquidateBorrowAllowed(YTokenInterface yToken) external virtual view returns (bool);
+
     function getRedeemUnderlyingAllowed(YTokenInterface yToken) external virtual view returns (bool);
 
     function getRepayBorrowAllowed(YTokenInterface yToken) external virtual view returns (bool);

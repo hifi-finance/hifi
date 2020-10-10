@@ -6,14 +6,12 @@ import "./YTokenInterface.sol";
 import "./erc20/Erc20Recover.sol";
 import "./math/Exponential.sol";
 import "./utils/Admin.sol";
-import "./utils/ErrorReporter.sol";
 
 /**
  * @notice Fintroller
  * @author Mainframe
  */
 contract Fintroller is
-    ErrorReporter, /* no depedency */
     FintrollerInterface, /* one dependency */
     Admin, /* two dependencies */
     Erc20Recover /* five dependencies */
@@ -100,6 +98,17 @@ contract Fintroller is
     }
 
     /**
+     * @notice Check if the account should be allowed to liquidate yToken borrows.
+     * @dev Reverts it the bond is not listed.
+     * @param yToken The bond to make the check against.
+     * @return bool true=allowed, false=not allowed.
+     */
+    function getLiquidateBorrowAllowed(YTokenInterface yToken) external override view returns (bool) {
+        yToken;
+        return true;
+    }
+
+    /**
      * @notice Checks if the account should be allowed to redeem the underlying asset from the Redemption Pool.
      * @dev Reverts it the bond is not listed.
      * @param yToken The bond to make the check against.
@@ -164,7 +173,7 @@ contract Fintroller is
             isSupplyUnderlyingAllowed: false
         });
         emit ListBond(admin, yToken);
-        return NO_ERROR;
+        return true;
     }
 
     /**
@@ -184,7 +193,7 @@ contract Fintroller is
         require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
         bonds[address(yToken)].isBorrowAllowed = state;
         emit SetBorrowAllowed(admin, yToken, state);
-        return NO_ERROR;
+        return true;
     }
 
     struct SetCollateralizationRatioLocalVars {
@@ -241,7 +250,7 @@ contract Fintroller is
             newCollateralizationRatioMantissa
         );
 
-        return NO_ERROR;
+        return true;
     }
 
     struct SetDebtCeilingVars {
@@ -280,7 +289,7 @@ contract Fintroller is
 
         emit SetDebtCeiling(admin, yToken, vars.oldDebtCeiling, newDebtCeiling);
 
-        return NO_ERROR;
+        return true;
     }
 
     /**
@@ -305,7 +314,7 @@ contract Fintroller is
         require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
         bonds[address(yToken)].isDepositCollateralAllowed = state;
         emit SetDepositCollateralAllowed(admin, yToken, state);
-        return NO_ERROR;
+        return true;
     }
 
     /**
@@ -326,7 +335,7 @@ contract Fintroller is
         address oldOracle = address(oracle);
         oracle = oracle_;
         emit SetOracle(admin, oldOracle, address(oracle));
-        return NO_ERROR;
+        return true;
     }
 
     /**
@@ -346,7 +355,7 @@ contract Fintroller is
         require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
         bonds[address(yToken)].isRedeemUnderlyingAllowed = state;
         emit SetRedeemUnderlyingAllowed(admin, yToken, state);
-        return NO_ERROR;
+        return true;
     }
 
     /**
@@ -366,7 +375,7 @@ contract Fintroller is
         require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
         bonds[address(yToken)].isRepayBorrowAllowed = state;
         emit SetRepayBorrowAllowed(admin, yToken, state);
-        return NO_ERROR;
+        return true;
     }
 
     /**
@@ -385,6 +394,6 @@ contract Fintroller is
         require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
         bonds[address(yToken)].isSupplyUnderlyingAllowed = state;
         emit SetSupplyUnderlyingAllowed(admin, yToken, state);
-        return NO_ERROR;
+        return true;
     }
 }

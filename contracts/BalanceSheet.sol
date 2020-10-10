@@ -8,7 +8,6 @@ import "./erc20/Erc20Interface.sol";
 import "./erc20/SafeErc20.sol";
 import "./oracles/UniswapAnchoredViewInterface.sol";
 import "./utils/Admin.sol";
-import "./utils/ErrorReporter.sol";
 import "./utils/ReentrancyGuard.sol";
 
 /**
@@ -16,7 +15,6 @@ import "./utils/ReentrancyGuard.sol";
  * @author Mainframe
  */
 contract BalanceSheet is
-    ErrorReporter, /* no depedency */
     ReentrancyGuard, /* no depedency */
     Admin, /* two dependencies */
     BalanceSheetInterface /* four dependencies */
@@ -41,6 +39,22 @@ contract BalanceSheet is
      * CONSTANT FUNCTIONS
      */
 
+    /**
+     * @notice Determines the current collateralization ratio for the given account;
+     * @param yToken The yToken to make the query against.
+     * @param account The account to make the query against.
+     * @return A quotient if locked collateral is non-zero, otherwise zero.
+     */
+    function getCurrentCollateralizationRatio(YTokenInterface yToken, address account)
+        public
+        override
+        view
+        returns (uint256)
+    {
+        Vault memory vault = vaults[address(yToken)][account];
+        return getHypotheticalCollateralizationRatio(yToken, account, vault.lockedCollateral, vault.debt);
+    }
+
     struct GetHypotheticalAccountLiquidityLocalVars {
         MathError mathErr;
         uint256 collateralPriceFromOracle;
@@ -57,26 +71,10 @@ contract BalanceSheet is
     }
 
     /**
-     * @notice Determines the current collateralization ratio for the given account;
-     * @param yToken The yToken to make the query against.
-     * @param account The account to make the query against.
-     * @return A quotient if locked collateral is non-zero, otherwise zero.
-     */
-    function getCurrentCollateralizationRatio(YTokenInterface yToken, address account)
-        external
-        override
-        view
-        returns (uint256)
-    {
-        Vault memory vault = vaults[address(yToken)][account];
-        return getHypotheticalCollateralizationRatio(yToken, account, vault.lockedCollateral, vault.debt);
-    }
-
-    /**
-     * @notice Determines the hypothetical account collateralization ratio for the locked collateral and debt,
-     * at the current prices provided by the oracle.
+     * @notice Determines the hypothetical account collateralization ratio for the given locked
+     * collateral and debt, at the current prices provided by the oracle.
      *
-     * @dev @dev The formula applied is: `colRatio = lcValueUsd / dValueUsd`, where "lc" stands for
+     * @dev The formula applied is: `colRatio = lcValueUsd / dValueUsd`, where "lc" stands for
      * locked collateral and "d" for debt.
      *
      * Requirements:
@@ -87,10 +85,11 @@ contract BalanceSheet is
      * - There must be no math error.
      *
      * @param yToken The yToken for which to make the query against.
-     * @param account The account for whom to make the query against.
+     * @param account The account for which to make the query against.
      * @param lockedCollateralAmount The hypothetical locked collateral.
      * @param debt The hypothetical debt.
-     * @return A quotient if locked collateral is non-zero, otherwise zero.
+     * @return The hypothetical collateralization ratio as a percentage mantissa if locked
+     * collateral is non-zero, otherwise zero.
      */
     function getHypotheticalCollateralizationRatio(
         YTokenInterface yToken,
@@ -192,6 +191,31 @@ contract BalanceSheet is
         isOpen = vaults[address(yToken)][account].isOpen;
     }
 
+    struct IsAccountUnderwaterLocalVars {
+        MathError mathErr;
+        uint256 currentCollateralizationRatioMantissa;
+        uint256 thresholdCollateralizationRatioMantissa;
+    }
+
+    /**
+     * @notice Checks whether the account can be liquidated or not.
+     * @param yToken The yToken for which to make the query against.
+     * @param account The account for which to make the query against.
+     * @return true = is underwater, otherwise not.
+     */
+    function isAccountUnderwater(YTokenInterface yToken, address account) external override view returns (bool) {
+        IsAccountUnderwaterLocalVars memory vars;
+
+        Vault memory vault = vaults[address(yToken)][account];
+        if (!vault.isOpen || vault.debt == 0) {
+            return false;
+        }
+
+        vars.currentCollateralizationRatioMantissa = getCurrentCollateralizationRatio(yToken, account);
+        vars.thresholdCollateralizationRatioMantissa = fintroller.getBondCollateralizationRatio(yToken);
+        return vars.currentCollateralizationRatioMantissa >= vars.thresholdCollateralizationRatioMantissa;
+    }
+
     /**
      * @notice Checks whether the account has a vault opened for a particular yToken.
      */
@@ -222,7 +246,7 @@ contract BalanceSheet is
      *
      * @param yToken The address of the yToken contract.
      * @param collateralAmount The amount of collateral to withdraw.
-     * @return bool=success, otherwise it reverts.
+     * @return true = success, otherwise it reverts.
      */
     function depositCollateral(YTokenInterface yToken, uint256 collateralAmount)
         external
@@ -252,7 +276,7 @@ contract BalanceSheet is
 
         emit DepositCollateral(yToken, msg.sender, collateralAmount);
 
-        return NO_ERROR;
+        return true;
     }
 
     struct FreeCollateralLocalVars {
@@ -320,7 +344,7 @@ contract BalanceSheet is
 
         emit FreeCollateral(yToken, msg.sender, collateralAmount);
 
-        return NO_ERROR;
+        return true;
     }
 
     struct LockCollateralLocalVars {
@@ -368,7 +392,7 @@ contract BalanceSheet is
 
         emit LockCollateral(yToken, msg.sender, collateralAmount);
 
-        return NO_ERROR;
+        return true;
     }
 
     /**
@@ -380,14 +404,14 @@ contract BalanceSheet is
      * - The vault cannot be already open.
      *
      * @param yToken The address of the yToken contract for which to open the vault.
-     * @return bool=success, otherwise it reverts.
+     * @return true = success, otherwise it reverts.
      */
     function openVault(YTokenInterface yToken) external override returns (bool) {
         yToken.isYToken();
         require(vaults[address(yToken)][msg.sender].isOpen == false, "ERR_VAULT_OPEN");
         vaults[address(yToken)][msg.sender].isOpen = true;
         emit OpenVault(yToken, msg.sender);
-        return NO_ERROR;
+        return true;
     }
 
     struct SetDebtLocalVars {
@@ -405,7 +429,7 @@ contract BalanceSheet is
      * - Can only be called by the yToken contract.
      *
      * @param yToken The address of the yToken contract.
-     * @param account The account for whom to update the debt.
+     * @param account The account for which to update the debt.
      * @return bool=true success, otherwise it reverts.
      */
     function setVaultDebt(
@@ -424,7 +448,7 @@ contract BalanceSheet is
 
         emit SetVaultDebt(yToken, account, vars.oldVaultDebt, newVaultDebt);
 
-        return NO_ERROR;
+        return true;
     }
 
     struct WithdrawCollateralLocalVars {
@@ -445,7 +469,7 @@ contract BalanceSheet is
      *
      * @param yToken The address of the yToken contract.
      * @param collateralAmount The amount of collateral to withdraw.
-     * @return bool=success, otherwise it reverts.
+     * @return true = success, otherwise it reverts.
      */
     function withdrawCollateral(YTokenInterface yToken, uint256 collateralAmount)
         external
@@ -479,6 +503,6 @@ contract BalanceSheet is
 
         emit WithdrawCollateral(yToken, msg.sender, collateralAmount);
 
-        return NO_ERROR;
+        return true;
     }
 }
