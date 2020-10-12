@@ -103,7 +103,7 @@ contract Fintroller is
      * @param yToken The bond to make the check against.
      * @return bool true=allowed, false=not allowed.
      */
-    function getLiquidateBorrowAllowed(YTokenInterface yToken) external override view returns (bool) {
+    function getLiquidateBorrowAllowed(YTokenInterface yToken) external override pure returns (bool) {
         yToken;
         return true;
     }
@@ -196,11 +196,6 @@ contract Fintroller is
         return true;
     }
 
-    struct SetCollateralizationRatioLocalVars {
-        uint256 oldCollateralizationRatioMantissa;
-        address yTokenAddress;
-    }
-
     /**
      * @notice Updates the collateralization ratio, which ensures that the bond market is sufficiently collateralized.
      *
@@ -223,11 +218,10 @@ contract Fintroller is
         onlyAdmin
         returns (bool)
     {
-        SetCollateralizationRatioLocalVars memory vars;
-        vars.yTokenAddress = address(yToken);
+        address yTokenAddress = address(yToken);
 
         /* Checks: bond is listed. */
-        require(bonds[vars.yTokenAddress].isListed, "ERR_BOND_NOT_LISTED");
+        require(bonds[yTokenAddress].isListed, "ERR_BOND_NOT_LISTED");
 
         /* Checks: collateralization ratio is within the accepted bounds. */
         require(
@@ -240,22 +234,17 @@ contract Fintroller is
         );
 
         /* Effects */
-        vars.oldCollateralizationRatioMantissa = bonds[vars.yTokenAddress].collateralizationRatio.mantissa;
-        bonds[vars.yTokenAddress].collateralizationRatio = Exp({ mantissa: newCollateralizationRatioMantissa });
+        uint256 oldCollateralizationRatioMantissa = bonds[yTokenAddress].collateralizationRatio.mantissa;
+        bonds[yTokenAddress].collateralizationRatio = Exp({ mantissa: newCollateralizationRatioMantissa });
 
         emit SetCollateralizationRatio(
             admin,
             yToken,
-            vars.oldCollateralizationRatioMantissa,
+            oldCollateralizationRatioMantissa,
             newCollateralizationRatioMantissa
         );
 
         return true;
-    }
-
-    struct SetDebtCeilingVars {
-        uint256 oldDebtCeiling;
-        address yTokenAddress;
     }
 
     /**
@@ -274,20 +263,19 @@ contract Fintroller is
      * @return bool true=success, otherwise it reverts.
      */
     function setDebtCeiling(YTokenInterface yToken, uint256 newDebtCeiling) external override onlyAdmin returns (bool) {
-        SetDebtCeilingVars memory vars;
-        vars.yTokenAddress = address(yToken);
+        address yTokenAddress = address(yToken);
 
         /* Checks: bond is listed. */
-        require(bonds[vars.yTokenAddress].isListed, "ERR_BOND_NOT_LISTED");
+        require(bonds[yTokenAddress].isListed, "ERR_BOND_NOT_LISTED");
 
         /* Checks: the zero edge case. */
         require(newDebtCeiling > 0, "ERR_SET_DEBT_CEILING_ZERO");
 
         /* Effects */
-        vars.oldDebtCeiling = bonds[vars.yTokenAddress].debtCeiling;
-        bonds[vars.yTokenAddress].debtCeiling = newDebtCeiling;
+        uint256 oldDebtCeiling = bonds[yTokenAddress].debtCeiling;
+        bonds[yTokenAddress].debtCeiling = newDebtCeiling;
 
-        emit SetDebtCeiling(admin, yToken, vars.oldDebtCeiling, newDebtCeiling);
+        emit SetDebtCeiling(admin, yToken, oldDebtCeiling, newDebtCeiling);
 
         return true;
     }

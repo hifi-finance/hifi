@@ -39,10 +39,9 @@ export enum GenericErrors {
   AccountNotUnderwater = "ERR_ACCOUNT_NOT_UNDERWATER",
   BondMatured = "ERR_BOND_MATURED",
   BondNotMatured = "ERR_BOND_NOT_MATURED",
-  CollateralPriceZero = "ERR_COLLATERAL_PRICE_ZERO",
   Initialized = "ERR_INITALIZED",
   NotInitialized = "ERR_NOT_INITALIZED",
-  UnderlyingPriceZero = "ERR_UNDERLYING_PRICE_ZERO",
+  PriceZero = "ERR_PRICE_ZERO",
   VaultOpen = "ERR_VAULT_OPEN",
   VaultNotOpen = "ERR_VAULT_NOT_OPEN",
 }

@@ -3,13 +3,21 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { FintrollerErrors, GenericErrors, YTokenErrors } from "../../../../utils/errors";
-import { BalanceSheetConstants, OneHundredTokens, TenTokens } from "../../../../utils/constants";
-import { stubBorrowInternalCalls, stubGetBondCollateralizationRatio, stubOpenVault } from "../../../stubs";
+import { OneHundredTokens, TenTokens } from "../../../../utils/constants";
+import {
+  stubGetBondCollateralizationRatio,
+  stubGetVault,
+  stubLiquidateBorrowInternalCalls,
+  stubOpenVault,
+  stubVaultDebt,
+} from "../../../stubs";
 
 export default function shouldBehaveLikeLiquidateBorrow(): void {
   const borrowAmount: BigNumber = OneHundredTokens;
-  const collateralAmount: BigNumber = TenTokens;
+  const clutchedCollateralAmount: BigNumber = TenTokens.div(2).add(TenTokens.div(20));
+  const lockedCollateral: BigNumber = TenTokens;
   const repayAmount: BigNumber = OneHundredTokens.div(2);
+  const newBorrowAmount: BigNumber = borrowAmount.sub(repayAmount);
 
   describe("when the vault is open", function () {
     beforeEach(async function () {
@@ -35,35 +43,115 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
                 .returns(true);
             });
 
-            describe("when the borrower has a debt", function () {
+            describe("when the account is underwater", function () {
               beforeEach(async function () {
-                /* Brad borrows 100 yDAI. */
-                await stubBorrowInternalCalls.call(this, borrowAmount, this.accounts.brad, collateralAmount);
-                await this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount);
+                await this.stubs.balanceSheet.mock.isAccountUnderwater
+                  .withArgs(this.contracts.yToken.address, this.accounts.brad)
+                  .returns(true);
+
+                /* The yToken makes internal calls to these stubbed functions. */
+                await stubLiquidateBorrowInternalCalls.call(
+                  this,
+                  this.contracts.yToken.address,
+                  newBorrowAmount,
+                  repayAmount,
+                  clutchedCollateralAmount,
+                );
               });
 
-              describe("when the caller has enough yTokens", function () {});
+              describe("when the borrower has a debt", function () {
+                beforeEach(async function () {
+                  /* Brad borrows 100 yDAI. */
+                  await this.contracts.yToken.__godMode_mint(this.accounts.brad, borrowAmount);
+                  await stubGetVault.call(
+                    this,
+                    this.contracts.yToken.address,
+                    this.accounts.brad,
+                    borrowAmount,
+                    Zero,
+                    lockedCollateral,
+                    true,
+                  );
+                });
 
-              /* TODO: stub `isAccountUnderwater` */
-              describe.skip("when the caller does not have enough yTokens", function () {
+                describe("when the caller has enough yTokens", function () {
+                  beforeEach(async function () {
+                    /* Grace borrows 100 yDAI. */
+                    await this.contracts.yToken.__godMode_mint(this.accounts.grace, repayAmount);
+                  });
+
+                  it("liquidates the user", async function () {
+                    await this.contracts.yToken
+                      .connect(this.signers.grace)
+                      .liquidateBorrow(this.accounts.brad, repayAmount);
+                  });
+
+                  it("emits a LiquidateBorrow event", async function () {
+                    await expect(
+                      this.contracts.yToken
+                        .connect(this.signers.grace)
+                        .liquidateBorrow(this.accounts.brad, repayAmount),
+                    )
+                      .to.emit(this.contracts.yToken, "LiquidateBorrow")
+                      .withArgs(this.accounts.grace, this.accounts.brad, repayAmount, clutchedCollateralAmount);
+                  });
+
+                  it("emits a RepayBorrow event", async function () {
+                    await expect(
+                      this.contracts.yToken
+                        .connect(this.signers.grace)
+                        .liquidateBorrow(this.accounts.brad, repayAmount),
+                    )
+                      .to.emit(this.contracts.yToken, "RepayBorrow")
+                      .withArgs(this.accounts.grace, this.accounts.brad, repayAmount, newBorrowAmount);
+                  });
+
+                  it("emits a Transfer event", async function () {
+                    await expect(
+                      this.contracts.yToken
+                        .connect(this.signers.grace)
+                        .liquidateBorrow(this.accounts.brad, repayAmount),
+                    )
+                      .to.emit(this.contracts.yToken, "Transfer")
+                      .withArgs(this.accounts.grace, this.contracts.yToken.address, repayAmount);
+                  });
+                });
+
+                describe("when the caller does not have enough yTokens", function () {
+                  it("reverts", async function () {
+                    await expect(
+                      this.contracts.yToken
+                        .connect(this.signers.grace)
+                        .liquidateBorrow(this.accounts.brad, repayAmount),
+                    ).to.be.revertedWith(YTokenErrors.RepayBorrowInsufficientBalance);
+                  });
+                });
+              });
+
+              describe("when the borrower does not have a debt", function () {
+                beforeEach(async function () {
+                  await this.contracts.yToken.__godMode_mint(this.accounts.grace, repayAmount);
+                });
+
                 it("reverts", async function () {
                   await expect(
                     this.contracts.yToken.connect(this.signers.grace).liquidateBorrow(this.accounts.brad, repayAmount),
-                  ).to.be.revertedWith(YTokenErrors.RepayBorrowInsufficientBalance);
+                  ).to.be.revertedWith(YTokenErrors.RepayBorrowInsufficientDebt);
                 });
               });
             });
 
-            /* TODO: stub `isAccountUnderwater` */
-            describe.skip("when the borrower does not have a debt", function () {
+            describe("when the account is not underwater", function () {
               beforeEach(async function () {
-                await this.contracts.yToken.__godMode_mint(this.accounts.grace, repayAmount);
+                await this.stubs.balanceSheet.mock.isAccountUnderwater
+                  .withArgs(this.contracts.yToken.address, this.accounts.brad)
+                  .returns(false);
               });
 
               it("reverts", async function () {
                 await expect(
                   this.contracts.yToken.connect(this.signers.grace).liquidateBorrow(this.accounts.brad, repayAmount),
-                ).to.be.revertedWith(YTokenErrors.RepayBorrowInsufficientDebt);
+                ).to.be.revertedWith(GenericErrors.AccountNotUnderwater);
               });
             });
           });
@@ -110,8 +198,8 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
     describe("when the caller is the borrower", function () {
       beforeEach(async function () {
         await stubGetBondCollateralizationRatio.call(this, this.contracts.yToken.address);
-        await stubBorrowInternalCalls.call(this, borrowAmount, this.accounts.brad, collateralAmount);
-        await this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount);
+        await this.contracts.yToken.__godMode_mint(this.accounts.brad, borrowAmount);
+        await stubVaultDebt.call(this, this.contracts.yToken.address, this.accounts.brad, borrowAmount);
       });
 
       it("reverts", async function () {

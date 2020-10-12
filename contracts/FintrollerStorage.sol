@@ -42,6 +42,11 @@ abstract contract FintrollerStorage is Exponential {
     UniswapAnchoredViewInterface public oracle;
 
     /**
+     * @notice Multiplier representing the discount on collateral that a liquidator receives.
+     */
+    uint256 public liquidationIncentiveMantissa = 1100000000000000000;
+
+    /**
      * @notice The ratio between mantissa precision (1e18) and the oracle price precision (1e6).
      */
     uint256 public constant oraclePricePrecisionScalar = 1e12;

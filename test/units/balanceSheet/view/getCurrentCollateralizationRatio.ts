@@ -4,7 +4,7 @@ import { expect } from "chai";
 import { OneHundredTokens, OneThousandPercentMantissa, TenTokens } from "../../../../utils/constants";
 
 export default function shouldBehaveLikeGetCurrentCollateralizationRatio(): void {
-  const lockedCollateralAmount: BigNumber = TenTokens;
+  const lockedCollateral: BigNumber = TenTokens;
   const debt: BigNumber = OneHundredTokens;
 
   beforeEach(async function () {
@@ -12,7 +12,7 @@ export default function shouldBehaveLikeGetCurrentCollateralizationRatio(): void
     await this.contracts.balanceSheet.__godMode_setVaultLockedCollateral(
       this.stubs.yToken.address,
       this.accounts.brad,
-      lockedCollateralAmount,
+      lockedCollateral,
     );
     await this.contracts.balanceSheet.__godMode_setVaultDebt(this.stubs.yToken.address, this.accounts.brad, debt);
   });

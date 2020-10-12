@@ -11,12 +11,7 @@ import RedemptionPoolArtifact from "../artifacts/GodModeRedemptionPool.json";
 import SimpleUniswapAnchoredViewArtifact from "../artifacts/SimpleUniswapAnchoredView.json";
 import YTokenArtifact from "../artifacts/YToken.json";
 
-import {
-  BalanceSheetConstants,
-  DefaultNumberOfDecimals,
-  FintrollerConstants,
-  OneThousandPercentMantissa,
-} from "../utils/constants";
+import { BalanceSheetConstants, DefaultNumberOfDecimals, FintrollerConstants } from "../utils/constants";
 
 const { deployMockContract: deployStubContract } = waffle;
 
@@ -82,25 +77,22 @@ export async function deployStubYToken(deployer: Signer): Promise<MockContract> 
 /**
  * FUNCTION STUBS
  */
-
-/**
- * Intended to be used in the yToken tests.
- */
-export async function stubBorrowInternalCalls(
+export async function stubLiquidateBorrowInternalCalls(
   this: Mocha.Context,
-  borrowAmount: BigNumber,
-  borrowerAccount: string,
-  collateralAmount: BigNumber,
+  yTokenAddress: string,
+  newBorrowAmount: BigNumber,
+  repayAmount: BigNumber,
+  clutchedCollateralAmount: BigNumber,
 ): Promise<void> {
-  await stubVaultLockedCollateral.call(this, this.contracts.yToken.address, borrowerAccount, collateralAmount);
-  await this.stubs.fintroller.mock.getBorrowAllowed.withArgs(this.contracts.yToken.address).returns(true);
-  await this.stubs.fintroller.mock.getBondDebtCeiling.withArgs(this.contracts.yToken.address).returns(borrowAmount);
-  await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
-    .withArgs(this.contracts.yToken.address, borrowerAccount, collateralAmount, borrowAmount)
-    .returns(OneThousandPercentMantissa);
   await this.stubs.balanceSheet.mock.setVaultDebt
-    .withArgs(this.contracts.yToken.address, borrowerAccount, borrowAmount)
+    .withArgs(yTokenAddress, this.accounts.brad, newBorrowAmount)
     .returns(true);
+  await this.stubs.balanceSheet.mock.getClutchableCollateral
+    .withArgs(yTokenAddress, repayAmount)
+    .returns(clutchedCollateralAmount);
+  await this.stubs.balanceSheet.mock.clutchCollateral
+    .withArgs(yTokenAddress, this.accounts.grace, this.accounts.brad, clutchedCollateralAmount)
+    .returns(clutchedCollateralAmount);
 }
 
 export async function stubGetBondCollateralizationRatio(

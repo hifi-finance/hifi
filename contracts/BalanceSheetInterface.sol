@@ -15,6 +15,12 @@ abstract contract BalanceSheetInterface is
     /**
      * CONSTANT FUNCTIONS
      */
+    function getClutchableCollateral(YTokenInterface yToken, uint256 repayAmount)
+        external
+        virtual
+        view
+        returns (uint256);
+
     function getCurrentCollateralizationRatio(YTokenInterface yToken, address account)
         public
         virtual
@@ -24,7 +30,7 @@ abstract contract BalanceSheetInterface is
     function getHypotheticalCollateralizationRatio(
         YTokenInterface yToken,
         address account,
-        uint256 lockedCollateralAmount,
+        uint256 lockedCollateral,
         uint256 debt
     ) public virtual view returns (uint256);
 
@@ -39,6 +45,13 @@ abstract contract BalanceSheetInterface is
             bool
         );
 
+    function clutchCollateral(
+        YTokenInterface yToken,
+        address liquidator,
+        address borrower,
+        uint256 clutchedCollateralAmount
+    ) external virtual returns (bool);
+
     function isAccountUnderwater(YTokenInterface yToken, address account) external virtual view returns (bool);
 
     function isVaultOpen(YTokenInterface yToken, address account) external virtual view returns (bool);
@@ -50,9 +63,9 @@ abstract contract BalanceSheetInterface is
 
     function freeCollateral(YTokenInterface yToken, uint256 collateralAmount) external virtual returns (bool);
 
-    function openVault(YTokenInterface yToken) external virtual returns (bool);
-
     function lockCollateral(YTokenInterface yToken, uint256 collateralAmount) external virtual returns (bool);
+
+    function openVault(YTokenInterface yToken) external virtual returns (bool);
 
     function setVaultDebt(
         YTokenInterface yToken,
@@ -65,13 +78,21 @@ abstract contract BalanceSheetInterface is
     /**
      * EVENTS
      */
+
+    event ClutchCollateral(
+        YTokenInterface indexed yToken,
+        address indexed liquidator,
+        address indexed borrower,
+        uint256 clutchedCollateralAmount
+    );
+
     event DepositCollateral(YTokenInterface indexed yToken, address indexed account, uint256 collateralAmount);
 
     event FreeCollateral(YTokenInterface indexed yToken, address indexed account, uint256 collateralAmount);
 
-    event OpenVault(YTokenInterface indexed yToken, address indexed account);
-
     event LockCollateral(YTokenInterface indexed yToken, address indexed account, uint256 collateralAmount);
+
+    event OpenVault(YTokenInterface indexed yToken, address indexed account);
 
     event SetVaultDebt(YTokenInterface indexed yToken, address indexed account, uint256 oldDebt, uint256 newDebt);
 

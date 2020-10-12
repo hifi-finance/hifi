@@ -6,6 +6,8 @@ import "./FintrollerInterface.sol";
 import "./YTokenInterface.sol";
 import "./erc20/Erc20Interface.sol";
 import "./erc20/SafeErc20.sol";
+import "./math/CarefulMath.sol";
+import "./oracles/OraclePriceScalar.sol";
 import "./oracles/UniswapAnchoredViewInterface.sol";
 import "./utils/Admin.sol";
 import "./utils/ReentrancyGuard.sol";
@@ -19,6 +21,7 @@ contract BalanceSheet is
     Admin, /* two dependencies */
     BalanceSheetInterface /* four dependencies */
 {
+    using OraclePriceScalar for UniswapAnchoredViewInterface;
     using SafeErc20 for Erc20Interface;
 
     modifier isVaultOpenForMsgSender(YTokenInterface yToken) {
@@ -39,6 +42,85 @@ contract BalanceSheet is
      * CONSTANT FUNCTIONS
      */
 
+    struct CalculateClutchableCollateralLocalVars {
+        MathError mathErr;
+        Exp clutchedCollateralUpscaled;
+        uint256 clutchedCollateral;
+        uint256 collateralPrecisionScalar;
+        uint256 collateralPriceUpscaled;
+        Exp numerator;
+        uint256 oraclePricePrecisionScalar;
+        uint256 underlyingPriceUpscaled;
+    }
+
+    /**
+     * @notice Determines the amount of collateral that can be clutched when liquidating a borrow.
+     *
+     * @dev The formula applied is:
+     * clutchedCollateral = repayAmount * liquidationIncentive * underlyingPriceUsd / priceCollateralUsd
+     *
+     * Requirements:
+     * - `repayAmount` must be non-zero.
+     *
+     * @param yToken The yToken to make the query against.
+     * @param repayAmount The amount of yTokens to repay.
+     * @return The amount of clutchable collateral as uint256, specified in the collateral's decimal system.
+     */
+    function getClutchableCollateral(YTokenInterface yToken, uint256 repayAmount)
+        external
+        override
+        view
+        returns (uint256)
+    {
+        CalculateClutchableCollateralLocalVars memory vars;
+
+        /* Avoid the zero edge cases. */
+        require(repayAmount > 0, "ERR_CALCULATE_CLUTCHABLE_COLLATERAL_ZERO");
+
+        /* Grab the upscaled USD price of the underlying. */
+        UniswapAnchoredViewInterface oracle = fintroller.oracle();
+        vars.oraclePricePrecisionScalar = fintroller.oraclePricePrecisionScalar();
+        (vars.mathErr, vars.underlyingPriceUpscaled) = oracle.getScaledPrice(
+            yToken.underlying().symbol(),
+            vars.oraclePricePrecisionScalar
+        );
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_CALCULATE_CLUTCHABLE_COLLATERAL_MATH_ERROR");
+
+        /* Grab the upscaled USD price of the collateral. */
+        (vars.mathErr, vars.collateralPriceUpscaled) = oracle.getScaledPrice(
+            yToken.collateral().symbol(),
+            vars.oraclePricePrecisionScalar
+        );
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_CALCULATE_CLUTCHABLE_COLLATERAL_MATH_ERROR");
+
+        /* Calculate the top part of the equation. */
+        (vars.mathErr, vars.numerator) = mulExp3(
+            Exp({ mantissa: repayAmount }),
+            Exp({ mantissa: fintroller.liquidationIncentiveMantissa() }),
+            Exp({ mantissa: vars.underlyingPriceUpscaled })
+        );
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_CALCULATE_CLUTCHABLE_COLLATERAL_MATH_ERROR");
+
+        /* Calculate the mantissa form of the clutched collateral amount. */
+        (vars.mathErr, vars.clutchedCollateralUpscaled) = divExp(
+            vars.numerator,
+            Exp({ mantissa: vars.collateralPriceUpscaled })
+        );
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_CALCULATE_CLUTCHABLE_COLLATERAL_MATH_ERROR");
+
+        /* If the precision scalar is not 1, calculate the final form of the clutched collateral amount. */
+        vars.collateralPrecisionScalar = yToken.collateralPrecisionScalar();
+        if (vars.collateralPrecisionScalar != 1) {
+            (vars.mathErr, vars.clutchedCollateral) = divUInt(
+                vars.clutchedCollateralUpscaled.mantissa,
+                vars.collateralPrecisionScalar
+            );
+            require(vars.mathErr == MathError.NO_ERROR, "ERR_CALCULATE_CLUTCHABLE_COLLATERAL_MATH_ERROR");
+        }
+
+        return vars.clutchedCollateral;
+    }
+
     /**
      * @notice Determines the current collateralization ratio for the given account;
      * @param yToken The yToken to make the query against.
@@ -57,7 +139,6 @@ contract BalanceSheet is
 
     struct GetHypotheticalAccountLiquidityLocalVars {
         MathError mathErr;
-        uint256 collateralPriceFromOracle;
         uint256 collateralPriceUpscaled;
         uint256 collateralPrecisionScalar;
         uint256 collateralizationRatioMantissa;
@@ -66,16 +147,15 @@ contract BalanceSheet is
         Exp lockedCollateralValueUsd;
         uint256 lockedCollateralUpscaled;
         uint256 oraclePricePrecisionScalar;
-        uint256 underlyingPriceFromOracle;
         uint256 underlyingPriceUpscaled;
+        uint256 underlyingPrecisionScalar;
     }
 
     /**
      * @notice Determines the hypothetical account collateralization ratio for the given locked
      * collateral and debt, at the current prices provided by the oracle.
      *
-     * @dev The formula applied is: `colRatio = lcValueUsd / dValueUsd`, where "lc" stands for
-     * locked collateral and "d" for debt.
+     * @dev The formula applied is: collateralizationRatio = lockedCollateralValueUsd / debtValueUsd
      *
      * Requirements:
      *
@@ -86,7 +166,7 @@ contract BalanceSheet is
      *
      * @param yToken The yToken for which to make the query against.
      * @param account The account for which to make the query against.
-     * @param lockedCollateralAmount The hypothetical locked collateral.
+     * @param lockedCollateral The hypothetical locked collateral.
      * @param debt The hypothetical debt.
      * @return The hypothetical collateralization ratio as a percentage mantissa if locked
      * collateral is non-zero, otherwise zero.
@@ -94,7 +174,7 @@ contract BalanceSheet is
     function getHypotheticalCollateralizationRatio(
         YTokenInterface yToken,
         address account,
-        uint256 lockedCollateralAmount,
+        uint256 lockedCollateral,
         uint256 debt
     ) public override view returns (uint256) {
         GetHypotheticalAccountLiquidityLocalVars memory vars;
@@ -103,31 +183,23 @@ contract BalanceSheet is
         require(vaults[address(yToken)][account].isOpen, "ERR_VAULT_NOT_OPEN");
 
         /* Avoid the zero edge cases. */
-        if (lockedCollateralAmount == 0) {
+        if (lockedCollateral == 0) {
             return 0;
         }
         require(debt > 0, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_DEBT_ZERO");
 
-        /* Grab the USD price of the collateral from the oracle. */
+        /* Grab the upscaled USD price of the collateral. */
         UniswapAnchoredViewInterface oracle = fintroller.oracle();
-        vars.collateralPriceFromOracle = oracle.price(yToken.collateral().symbol());
-        require(vars.collateralPriceFromOracle > 0, "ERR_COLLATERAL_PRICE_ZERO");
-
-        /* Upscale the 6 decimal oracle price to mantissa precision. */
         vars.oraclePricePrecisionScalar = fintroller.oraclePricePrecisionScalar();
-        (vars.mathErr, vars.collateralPriceUpscaled) = mulUInt(
-            vars.collateralPriceFromOracle,
+        (vars.mathErr, vars.collateralPriceUpscaled) = oracle.getScaledPrice(
+            yToken.collateral().symbol(),
             vars.oraclePricePrecisionScalar
         );
         require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
 
-        /* Grab the USD price of the underlying from the oracle. */
-        vars.underlyingPriceFromOracle = oracle.price(yToken.underlying().symbol());
-        require(vars.underlyingPriceFromOracle > 0, "ERR_UNDERLYING_PRICE_ZERO");
-
-        /* Upscale the 6 decimal oracle price to mantissa precision. */
-        (vars.mathErr, vars.underlyingPriceUpscaled) = mulUInt(
-            vars.underlyingPriceFromOracle,
+        /* Grab the upscaled USD price of the underlying. */
+        (vars.mathErr, vars.underlyingPriceUpscaled) = oracle.getScaledPrice(
+            yToken.underlying().symbol(),
             vars.oraclePricePrecisionScalar
         );
         require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
@@ -135,13 +207,10 @@ contract BalanceSheet is
         /* Upscale the collateral, which can have any precision, to mantissa precision. */
         vars.collateralPrecisionScalar = yToken.collateralPrecisionScalar();
         if (vars.collateralPrecisionScalar != 1) {
-            (vars.mathErr, vars.lockedCollateralUpscaled) = mulUInt(
-                lockedCollateralAmount,
-                vars.collateralPrecisionScalar
-            );
+            (vars.mathErr, vars.lockedCollateralUpscaled) = mulUInt(lockedCollateral, vars.collateralPrecisionScalar);
             require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
         } else {
-            vars.lockedCollateralUpscaled = lockedCollateralAmount;
+            vars.lockedCollateralUpscaled = lockedCollateral;
         }
 
         /* Calculate the USD value of the collateral. */
@@ -191,12 +260,6 @@ contract BalanceSheet is
         isOpen = vaults[address(yToken)][account].isOpen;
     }
 
-    struct IsAccountUnderwaterLocalVars {
-        MathError mathErr;
-        uint256 currentCollateralizationRatioMantissa;
-        uint256 thresholdCollateralizationRatioMantissa;
-    }
-
     /**
      * @notice Checks whether the account can be liquidated or not.
      * @param yToken The yToken for which to make the query against.
@@ -204,16 +267,14 @@ contract BalanceSheet is
      * @return true = is underwater, otherwise not.
      */
     function isAccountUnderwater(YTokenInterface yToken, address account) external override view returns (bool) {
-        IsAccountUnderwaterLocalVars memory vars;
-
         Vault memory vault = vaults[address(yToken)][account];
         if (!vault.isOpen || vault.debt == 0) {
             return false;
         }
 
-        vars.currentCollateralizationRatioMantissa = getCurrentCollateralizationRatio(yToken, account);
-        vars.thresholdCollateralizationRatioMantissa = fintroller.getBondCollateralizationRatio(yToken);
-        return vars.currentCollateralizationRatioMantissa >= vars.thresholdCollateralizationRatioMantissa;
+        uint256 currentCollateralizationRatioMantissa = getCurrentCollateralizationRatio(yToken, account);
+        uint256 thresholdCollateralizationRatioMantissa = fintroller.getBondCollateralizationRatio(yToken);
+        return currentCollateralizationRatioMantissa >= thresholdCollateralizationRatioMantissa;
     }
 
     /**
@@ -227,9 +288,36 @@ contract BalanceSheet is
      * NON-CONSTANT FUNCTIONS
      */
 
-    struct DepositCollateralLocalVars {
+    /**
+     * @dev Emits a {ClutchCollateral} event.
+     */
+    function clutchCollateral(
+        YTokenInterface yToken,
+        address liquidator,
+        address borrower,
+        uint256 clutchedCollateralAmount
+    ) external override nonReentrant returns (bool) {
+        /* Checks: the caller is the yToken contract. */
+        require(msg.sender == address(yToken), "ERR_CLUTCH_COLLATERAL_NOT_AUTHORIZED");
+
+        /* Calculate the new locked collateral amount. */
         MathError mathErr;
-        uint256 hypotheticalFreeCollateral;
+        uint256 newLockedCollateral;
+        (mathErr, newLockedCollateral) = subUInt(
+            vaults[address(yToken)][borrower].lockedCollateral,
+            clutchedCollateralAmount
+        );
+        require(mathErr == MathError.NO_ERROR, "ERR_CLUTCH_COLLATERAL_MATH_ERROR");
+
+        /* Effects: update the vault. */
+        vaults[address(yToken)][borrower].lockedCollateral = newLockedCollateral;
+
+        /* Interactions: transfer the collateral. */
+        yToken.collateral().safeTransfer(liquidator, clutchedCollateralAmount);
+
+        emit ClutchCollateral(yToken, liquidator, borrower, clutchedCollateralAmount);
+
+        return true;
     }
 
     /**
@@ -255,8 +343,6 @@ contract BalanceSheet is
         nonReentrant
         returns (bool)
     {
-        DepositCollateralLocalVars memory vars;
-
         /* Checks: the zero edge case. */
         require(collateralAmount > 0, "ERR_DEPOSIT_COLLATERAL_ZERO");
 
@@ -264,12 +350,14 @@ contract BalanceSheet is
         require(fintroller.getDepositCollateralAllowed(yToken), "ERR_DEPOSIT_COLLATERAL_NOT_ALLOWED");
 
         /* Effects: update the storage properties. */
-        (vars.mathErr, vars.hypotheticalFreeCollateral) = addUInt(
+        MathError mathErr;
+        uint256 hypotheticalFreeCollateral;
+        (mathErr, hypotheticalFreeCollateral) = addUInt(
             vaults[address(yToken)][msg.sender].freeCollateral,
             collateralAmount
         );
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_DEPOSIT_COLLATERAL_MATH_ERROR");
-        vaults[address(yToken)][msg.sender].freeCollateral = vars.hypotheticalFreeCollateral;
+        require(mathErr == MathError.NO_ERROR, "ERR_DEPOSIT_COLLATERAL_MATH_ERROR");
+        vaults[address(yToken)][msg.sender].freeCollateral = hypotheticalFreeCollateral;
 
         /* Interactions: perform the Erc20 transfer. */
         yToken.collateral().safeTransferFrom(msg.sender, address(this), collateralAmount);
@@ -347,12 +435,6 @@ contract BalanceSheet is
         return true;
     }
 
-    struct LockCollateralLocalVars {
-        MathError mathErr;
-        uint256 hypotheticalFreeCollateral;
-        uint256 newLockedCollateral;
-    }
-
     /**
      * @notice Locks a portion or all of the free collateral to make it eligible for borrowing.
      * @dev Emits a {LockCollateral} event.
@@ -373,22 +455,23 @@ contract BalanceSheet is
         isVaultOpenForMsgSender(yToken)
         returns (bool)
     {
-        LockCollateralLocalVars memory vars;
-
         /* Avoid the zero edge case. */
         require(collateralAmount > 0, "ERR_LOCK_COLLATERAL_ZERO");
 
         Vault memory vault = vaults[address(yToken)][msg.sender];
         require(vault.freeCollateral >= collateralAmount, "ERR_LOCK_COLLATERAL_INSUFFICIENT_FREE_COLLATERAL");
 
-        (vars.mathErr, vars.newLockedCollateral) = addUInt(vault.lockedCollateral, collateralAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_LOCK_COLLATERAL_MATH_ERROR");
-        vaults[address(yToken)][msg.sender].lockedCollateral = vars.newLockedCollateral;
+        MathError mathErr;
+        uint256 newLockedCollateral;
+        (mathErr, newLockedCollateral) = addUInt(vault.lockedCollateral, collateralAmount);
+        require(mathErr == MathError.NO_ERROR, "ERR_LOCK_COLLATERAL_MATH_ERROR");
+        vaults[address(yToken)][msg.sender].lockedCollateral = newLockedCollateral;
 
         /* This operation can't fail because of the first `require` in this function. */
-        (vars.mathErr, vars.hypotheticalFreeCollateral) = subUInt(vault.freeCollateral, collateralAmount);
-        assert(vars.mathErr == MathError.NO_ERROR);
-        vaults[address(yToken)][msg.sender].freeCollateral = vars.hypotheticalFreeCollateral;
+        uint256 hypotheticalFreeCollateral;
+        (mathErr, hypotheticalFreeCollateral) = subUInt(vault.freeCollateral, collateralAmount);
+        assert(mathErr == MathError.NO_ERROR);
+        vaults[address(yToken)][msg.sender].freeCollateral = hypotheticalFreeCollateral;
 
         emit LockCollateral(yToken, msg.sender, collateralAmount);
 
@@ -414,10 +497,6 @@ contract BalanceSheet is
         return true;
     }
 
-    struct SetDebtLocalVars {
-        uint256 oldVaultDebt;
-    }
-
     /**
      * @notice Updates the debt accrued by a particular account.
      *
@@ -437,23 +516,16 @@ contract BalanceSheet is
         address account,
         uint256 newVaultDebt
     ) external override isVaultOpenForMsgSender(yToken) returns (bool) {
-        SetDebtLocalVars memory vars;
-
         /* Checks: the caller is the yToken contract. */
         require(msg.sender == address(yToken), "ERR_SET_DEBT_NOT_AUTHORIZED");
 
-        /* Effects */
-        vars.oldVaultDebt = vaults[address(yToken)][account].debt;
+        /* Effects: update the storage property. */
+        uint256 oldVaultDebt = vaults[address(yToken)][account].debt;
         vaults[address(yToken)][account].debt = newVaultDebt;
 
-        emit SetVaultDebt(yToken, account, vars.oldVaultDebt, newVaultDebt);
+        emit SetVaultDebt(yToken, account, oldVaultDebt, newVaultDebt);
 
         return true;
-    }
-
-    struct WithdrawCollateralLocalVars {
-        MathError mathErr;
-        uint256 newFreeCollateral;
     }
 
     /**
@@ -478,8 +550,6 @@ contract BalanceSheet is
         nonReentrant
         returns (bool)
     {
-        WithdrawCollateralLocalVars memory vars;
-
         /* Checks: the zero edge case. */
         require(collateralAmount > 0, "ERR_WITHDRAW_COLLATERAL_ZERO");
 
@@ -490,13 +560,12 @@ contract BalanceSheet is
         );
 
         /* Effects: update the storage properties. */
-        (vars.mathErr, vars.newFreeCollateral) = subUInt(
-            vaults[address(yToken)][msg.sender].freeCollateral,
-            collateralAmount
-        );
+        MathError mathErr;
+        uint256 newFreeCollateral;
+        (mathErr, newFreeCollateral) = subUInt(vaults[address(yToken)][msg.sender].freeCollateral, collateralAmount);
         /* This operation can't fail because of the first `require` in this function. */
-        assert(vars.mathErr == MathError.NO_ERROR);
-        vaults[address(yToken)][msg.sender].freeCollateral = vars.newFreeCollateral;
+        assert(mathErr == MathError.NO_ERROR);
+        vaults[address(yToken)][msg.sender].freeCollateral = newFreeCollateral;
 
         /* Interactions: perform the Erc20 transfer. */
         yToken.collateral().safeTransfer(msg.sender, collateralAmount);

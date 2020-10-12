@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.7.1;
 
+import "./Erc20Interface.sol";
 import "./Erc20RecoverStorage.sol";
-import "../erc20/Erc20Interface.sol";
 
 abstract contract Erc20RecoverInterface is Erc20RecoverStorage {
     /**

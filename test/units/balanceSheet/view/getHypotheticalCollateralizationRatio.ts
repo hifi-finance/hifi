@@ -6,7 +6,7 @@ import { BalanceSheetErrors, GenericErrors } from "../../../../utils/errors";
 import { OneHundredTokens, OneThousandPercentMantissa, TenTokens } from "../../../../utils/constants";
 
 export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio(): void {
-  const lockedCollateralAmount: BigNumber = TenTokens;
+  const lockedCollateral: BigNumber = TenTokens;
   const debt: BigNumber = OneHundredTokens;
 
   describe("when the vault is not open", function () {
@@ -22,7 +22,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
               const hypotheticalCollateralizationRatioMantissa: BigNumber = await this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
                 this.stubs.yToken.address,
                 this.accounts.brad,
-                lockedCollateralAmount,
+                lockedCollateral,
                 debt,
               );
               expect(hypotheticalCollateralizationRatioMantissa).to.equal(OneThousandPercentMantissa);
@@ -41,10 +41,10 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
                 this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
                   this.stubs.yToken.address,
                   this.accounts.brad,
-                  lockedCollateralAmount,
+                  lockedCollateral,
                   debt,
                 ),
-              ).to.be.revertedWith(GenericErrors.UnderlyingPriceZero);
+              ).to.be.revertedWith(GenericErrors.PriceZero);
             });
           });
         });
@@ -61,10 +61,10 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
               this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
                 this.stubs.yToken.address,
                 this.accounts.brad,
-                lockedCollateralAmount,
+                lockedCollateral,
                 debt,
               ),
-            ).to.be.revertedWith(GenericErrors.CollateralPriceZero);
+            ).to.be.revertedWith(GenericErrors.PriceZero);
           });
         });
       });
@@ -76,7 +76,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
             this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
               this.stubs.yToken.address,
               this.accounts.brad,
-              lockedCollateralAmount,
+              lockedCollateral,
               zeroDebt,
             ),
           ).to.be.revertedWith(BalanceSheetErrors.GetHypotheticalCollateralizationRatioDebtZero);
@@ -103,12 +103,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
       await expect(
         this.contracts.balanceSheet
           .connect(this.signers.brad)
-          .getHypotheticalCollateralizationRatio(
-            this.stubs.yToken.address,
-            this.accounts.brad,
-            lockedCollateralAmount,
-            debt,
-          ),
+          .getHypotheticalCollateralizationRatio(this.stubs.yToken.address, this.accounts.brad, lockedCollateral, debt),
       ).to.be.revertedWith(GenericErrors.VaultNotOpen);
     });
   });

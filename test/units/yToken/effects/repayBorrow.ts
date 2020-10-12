@@ -2,18 +2,13 @@ import { Zero } from "@ethersproject/constants";
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
-import { AddressOne, BalanceSheetConstants, OneHundredTokens, TenTokens } from "../../../../utils/constants";
+import { AddressOne, OneHundredTokens, TenTokens } from "../../../../utils/constants";
 import { GenericErrors, YTokenErrors } from "../../../../utils/errors";
 import { FintrollerErrors } from "../../../../utils/errors";
-import {
-  stubBorrowInternalCalls,
-  stubGetBondCollateralizationRatio,
-  stubOpenVault,
-  stubVaultDebt,
-} from "../../../stubs";
+import { stubGetBondCollateralizationRatio, stubOpenVault, stubVaultDebt } from "../../../stubs";
 
 export default function shouldBehaveLikeRepayBorrow(): void {
-  const collateralAmount: BigNumber = TenTokens;
+  const borrowAmount: BigNumber = OneHundredTokens;
   const repayAmount: BigNumber = OneHundredTokens;
 
   describe("when the vault is open", function () {
@@ -37,8 +32,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
           describe("when the caller has a debt", function () {
             beforeEach(async function () {
               /* Brad borrows 100 yDAI. */
-              await stubBorrowInternalCalls.call(this, repayAmount, this.accounts.brad, collateralAmount);
-              await this.contracts.yToken.connect(this.signers.brad).borrow(repayAmount);
+              await this.contracts.yToken.__godMode_mint(this.accounts.brad, borrowAmount);
               await stubVaultDebt.call(this, this.contracts.yToken.address, this.accounts.brad, repayAmount);
 
               /* The yToken makes an internal call to this stubbed function. */

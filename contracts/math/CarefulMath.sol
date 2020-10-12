@@ -2,18 +2,17 @@
 pragma solidity ^0.7.1;
 
 /**
+ * @notice Possible error codes that can be returned.
+ */
+enum MathError { NO_ERROR, DIVISION_BY_ZERO, INTEGER_OVERFLOW, INTEGER_UNDERFLOW, MODULO_BY_ZERO }
+
+/**
  * @title CarefulMath
  * @author Mainframe
- * @notice Exponential module for storing fixed-precision decimals.
  * @dev Forked from Compound
  * https://github.com/compound-finance/compound-protocol/blob/v2.6/contracts/CarefulMath.sol
  */
 abstract contract CarefulMath {
-    /**
-     * @notice Possible error codes that can be returned.
-     */
-    enum MathError { NO_ERROR, DIVISION_BY_ZERO, INTEGER_OVERFLOW, INTEGER_UNDERFLOW, MODULO_BY_ZERO }
-
     /**
      * @notice Adds two numbers, returns an error on overflow.
      */

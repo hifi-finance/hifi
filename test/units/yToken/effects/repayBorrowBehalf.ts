@@ -2,20 +2,15 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { BalanceSheetConstants, OneHundredTokens, TenTokens } from "../../../../utils/constants";
+import { OneHundredTokens } from "../../../../utils/constants";
 import { GenericErrors, YTokenErrors } from "../../../../utils/errors";
-import {
-  stubBorrowInternalCalls,
-  stubGetBondCollateralizationRatio,
-  stubOpenVault,
-  stubVaultDebt,
-} from "../../../stubs";
+import { stubGetBondCollateralizationRatio, stubOpenVault, stubVaultDebt } from "../../../stubs";
 
 /**
  * This test suite assumes that Lucy pays the debt on behalf of Brad.
  */
 export default function shouldBehaveLikeRepayBorrowBehalf(): void {
-  const collateralAmount: BigNumber = TenTokens;
+  const borrowAmount: BigNumber = OneHundredTokens;
   const repayAmount: BigNumber = OneHundredTokens;
 
   describe("when the vault is open", function () {
@@ -39,12 +34,10 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
           describe("when the user has a debt", function () {
             beforeEach(async function () {
               /* Brads borrows 100 yDAI. */
-              await stubBorrowInternalCalls.call(this, repayAmount, this.accounts.brad, collateralAmount);
-              await this.contracts.yToken.connect(this.signers.brad).borrow(repayAmount);
               await stubVaultDebt.call(this, this.contracts.yToken.address, this.accounts.brad, repayAmount);
 
               /* And sends it all to Lucy. */
-              await this.contracts.yToken.connect(this.signers.brad).transfer(this.accounts.lucy, repayAmount);
+              await this.contracts.yToken.__godMode_mint(this.accounts.lucy, borrowAmount);
 
               /* The yToken makes an internal call to this stubbed function. */
               await this.stubs.balanceSheet.mock.setVaultDebt

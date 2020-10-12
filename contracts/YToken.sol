@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.7.1;
 
+import "@nomiclabs/buidler/console.sol";
 import "./BalanceSheetInterface.sol";
 import "./FintrollerInterface.sol";
 import "./YTokenInterface.sol";
@@ -200,6 +201,7 @@ contract YToken is
     struct LiquidateBorrowsLocalVars {
         MathError mathErr;
         uint256 collateralizationRatioMantissa;
+        uint256 lockedCollateral;
         bool isAccountUnderwater;
     }
 
@@ -228,8 +230,19 @@ contract YToken is
         vars.isAccountUnderwater = balanceSheet.isAccountUnderwater(this, borrower);
         require(vars.isAccountUnderwater, "ERR_ACCOUNT_NOT_UNDERWATER");
 
-        /* Effects: repay the borrower's debt. */
+        /* Effects & Interactions: repay the borrower's debt. */
         repayBorrowInternal(msg.sender, borrower, repayAmount);
+
+        /* Checks: there is sufficient clutchable collateral in the vault. */
+        uint256 lockedCollateral;
+        (, , lockedCollateral, ) = balanceSheet.getVault(this, borrower);
+        uint256 clutchedCollateralAmount = balanceSheet.getClutchableCollateral(this, repayAmount);
+        require(lockedCollateral >= clutchedCollateralAmount, "ERR_LIQUIDATE_BORROW_CLUTCH_COLLATERAL_OVERFLOW");
+
+        /* Interactions: clutch the collateral. */
+        require(balanceSheet.clutchCollateral(this, msg.sender, borrower, clutchedCollateralAmount));
+
+        emit LiquidateBorrow(msg.sender, borrower, repayAmount, clutchedCollateralAmount);
 
         return true;
     }
@@ -311,12 +324,6 @@ contract YToken is
     /**
      * INTERNAL FUNCTIONS
      */
-    struct RepayBorrowInternalLocalVars {
-        MathError mathErr;
-        uint256 debt;
-        uint256 newDebt;
-    }
-
     /**
      * @dev See the documentation for the public functions that call this internal function.
      */
@@ -325,8 +332,6 @@ contract YToken is
         address borrower,
         uint256 repayAmount
     ) internal {
-        RepayBorrowInternalLocalVars memory vars;
-
         /* Checks: the zero edge case. */
         require(repayAmount > 0, "ERR_REPAY_BORROW_ZERO");
 
@@ -337,22 +342,25 @@ contract YToken is
         require(balanceOf(payer) >= repayAmount, "ERR_REPAY_BORROW_INSUFFICIENT_BALANCE");
 
         /* Checks: account has a debt to pay. */
-        (vars.debt, , , ) = balanceSheet.getVault(this, borrower);
-        require(vars.debt >= repayAmount, "ERR_REPAY_BORROW_INSUFFICIENT_DEBT");
+        uint256 debt;
+        (debt, , , ) = balanceSheet.getVault(this, borrower);
+        require(debt >= repayAmount, "ERR_REPAY_BORROW_INSUFFICIENT_DEBT");
 
         /* Effects: reduce the debt of the account. */
-        (vars.mathErr, vars.newDebt) = subUInt(vars.debt, repayAmount);
+        MathError mathErr;
+        uint256 newDebt;
+        (mathErr, newDebt) = subUInt(debt, repayAmount);
         /* This operation can't fail because of the previous `require`. */
-        assert(vars.mathErr == MathError.NO_ERROR);
+        assert(mathErr == MathError.NO_ERROR);
 
         /* Effects: burn the yTokens. */
         burnInternal(payer, repayAmount);
 
         /* Interactions: reduce the debt of the account. */
-        require(balanceSheet.setVaultDebt(this, borrower, vars.newDebt));
+        require(balanceSheet.setVaultDebt(this, borrower, newDebt));
 
         /* Emit a RepayBorrow and Transfer event. */
-        emit RepayBorrow(payer, borrower, repayAmount, vars.newDebt);
+        emit RepayBorrow(payer, borrower, repayAmount, newDebt);
         emit Transfer(payer, address(this), repayAmount);
     }
 }
