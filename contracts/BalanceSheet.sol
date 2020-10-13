@@ -68,8 +68,8 @@ contract BalanceSheet is
      */
     function getClutchableCollateral(YTokenInterface yToken, uint256 repayAmount)
         external
-        override
         view
+        override
         returns (uint256)
     {
         CalculateClutchableCollateralLocalVars memory vars;
@@ -129,8 +129,8 @@ contract BalanceSheet is
      */
     function getCurrentCollateralizationRatio(YTokenInterface yToken, address account)
         public
-        override
         view
+        override
         returns (uint256)
     {
         Vault memory vault = vaults[address(yToken)][account];
@@ -176,7 +176,7 @@ contract BalanceSheet is
         address account,
         uint256 lockedCollateral,
         uint256 debt
-    ) public override view returns (uint256) {
+    ) public view override returns (uint256) {
         GetHypotheticalAccountLiquidityLocalVars memory vars;
 
         /* If the vault is not open, a hypothetical collateralization ratio cannot be calculated. */
@@ -245,8 +245,8 @@ contract BalanceSheet is
      */
     function getVault(YTokenInterface yToken, address account)
         external
-        override
         view
+        override
         returns (
             uint256 debt,
             uint256 freeCollateral,
@@ -260,13 +260,26 @@ contract BalanceSheet is
         isOpen = vaults[address(yToken)][account].isOpen;
     }
 
+    function getVaultDebt(YTokenInterface yToken, address account) external view override returns (uint256) {
+        return vaults[address(yToken)][account].debt;
+    }
+
+    function getVaultLockedCollateral(YTokenInterface yToken, address account)
+        external
+        view
+        override
+        returns (uint256)
+    {
+        return vaults[address(yToken)][account].lockedCollateral;
+    }
+
     /**
      * @notice Checks whether the account can be liquidated or not.
      * @param yToken The yToken for which to make the query against.
      * @param account The account for which to make the query against.
      * @return true = is underwater, otherwise not.
      */
-    function isAccountUnderwater(YTokenInterface yToken, address account) external override view returns (bool) {
+    function isAccountUnderwater(YTokenInterface yToken, address account) external view override returns (bool) {
         Vault memory vault = vaults[address(yToken)][account];
         if (!vault.isOpen || vault.debt == 0) {
             return false;
@@ -280,7 +293,7 @@ contract BalanceSheet is
     /**
      * @notice Checks whether the account has a vault opened for a particular yToken.
      */
-    function isVaultOpen(YTokenInterface yToken, address account) external override view returns (bool) {
+    function isVaultOpen(YTokenInterface yToken, address account) external view override returns (bool) {
         return vaults[address(yToken)][account].isOpen;
     }
 

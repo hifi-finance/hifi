@@ -42,7 +42,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
         });
       });
 
-      describe("when the value of the collateralization ratio is not valid", function () {
+      describe("when the collateralization ratio is not valid", function () {
         describe("when the collateralization ratio is higher than 10,000%", function () {
           it("reverts", async function () {
             const overflowCollateralizationRatioMantissa: BigNumber = OnePercentMantissa.mul(10000).add(1);
@@ -50,7 +50,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
               this.contracts.fintroller
                 .connect(this.signers.admin)
                 .setCollateralizationRatio(this.stubs.yToken.address, overflowCollateralizationRatioMantissa),
-            ).to.be.revertedWith(FintrollerErrors.SetCollateralizationRatioOverflow);
+            ).to.be.revertedWith(FintrollerErrors.SetCollateralizationRatioUpperBound);
           });
         });
 
@@ -61,7 +61,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
               this.contracts.fintroller
                 .connect(this.signers.admin)
                 .setCollateralizationRatio(this.stubs.yToken.address, underflowCollateralizationRatioMantissa),
-            ).to.be.revertedWith(FintrollerErrors.SetCollateralizationRatioUnderflow);
+            ).to.be.revertedWith(FintrollerErrors.SetCollateralizationRatioLowerBound);
           });
         });
 
@@ -71,7 +71,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
               this.contracts.fintroller
                 .connect(this.signers.admin)
                 .setCollateralizationRatio(this.stubs.yToken.address, Zero),
-            ).to.be.revertedWith(FintrollerErrors.SetCollateralizationRatioUnderflow);
+            ).to.be.revertedWith(FintrollerErrors.SetCollateralizationRatioLowerBound);
           });
         });
       });

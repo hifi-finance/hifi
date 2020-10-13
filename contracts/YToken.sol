@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.7.1;
 
-import "@nomiclabs/buidler/console.sol";
 import "./BalanceSheetInterface.sol";
 import "./FintrollerInterface.sol";
 import "./YTokenInterface.sol";
@@ -234,8 +233,7 @@ contract YToken is
         repayBorrowInternal(msg.sender, borrower, repayAmount);
 
         /* Checks: there is sufficient clutchable collateral in the vault. */
-        uint256 lockedCollateral;
-        (, , lockedCollateral, ) = balanceSheet.getVault(this, borrower);
+        uint256 lockedCollateral = balanceSheet.getVaultLockedCollateral(this, borrower);
         uint256 clutchedCollateralAmount = balanceSheet.getClutchableCollateral(this, repayAmount);
         require(lockedCollateral >= clutchedCollateralAmount, "ERR_LIQUIDATE_BORROW_CLUTCH_COLLATERAL_OVERFLOW");
 
@@ -342,8 +340,7 @@ contract YToken is
         require(balanceOf(payer) >= repayAmount, "ERR_REPAY_BORROW_INSUFFICIENT_BALANCE");
 
         /* Checks: account has a debt to pay. */
-        uint256 debt;
-        (debt, , , ) = balanceSheet.getVault(this, borrower);
+        uint256 debt = balanceSheet.getVaultDebt(this, borrower);
         require(debt >= repayAmount, "ERR_REPAY_BORROW_INSUFFICIENT_DEBT");
 
         /* Effects: reduce the debt of the account. */

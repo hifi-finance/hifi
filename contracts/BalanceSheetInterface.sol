@@ -17,14 +17,14 @@ abstract contract BalanceSheetInterface is
      */
     function getClutchableCollateral(YTokenInterface yToken, uint256 repayAmount)
         external
-        virtual
         view
+        virtual
         returns (uint256);
 
     function getCurrentCollateralizationRatio(YTokenInterface yToken, address account)
         public
-        virtual
         view
+        virtual
         returns (uint256);
 
     function getHypotheticalCollateralizationRatio(
@@ -32,18 +32,22 @@ abstract contract BalanceSheetInterface is
         address account,
         uint256 lockedCollateral,
         uint256 debt
-    ) public virtual view returns (uint256);
+    ) public view virtual returns (uint256);
 
     function getVault(YTokenInterface yToken, address account)
         external
-        virtual
         view
+        virtual
         returns (
             uint256,
             uint256,
             uint256,
             bool
         );
+
+    function getVaultDebt(YTokenInterface yToken, address account) external view virtual returns (uint256);
+
+    function getVaultLockedCollateral(YTokenInterface yToken, address account) external view virtual returns (uint256);
 
     function clutchCollateral(
         YTokenInterface yToken,
@@ -52,9 +56,9 @@ abstract contract BalanceSheetInterface is
         uint256 clutchedCollateralAmount
     ) external virtual returns (bool);
 
-    function isAccountUnderwater(YTokenInterface yToken, address account) external virtual view returns (bool);
+    function isAccountUnderwater(YTokenInterface yToken, address account) external view virtual returns (bool);
 
-    function isVaultOpen(YTokenInterface yToken, address account) external virtual view returns (bool);
+    function isVaultOpen(YTokenInterface yToken, address account) external view virtual returns (bool);
 
     /**
      * NON-CONSTANT FUNCTIONS

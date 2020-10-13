@@ -2,10 +2,10 @@ import { Zero } from "@ethersproject/constants";
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
-import { AddressOne, OneHundredTokens, TenTokens } from "../../../utils/constants";
+import { AddressOne, OneHundredTokens } from "../../../utils/constants";
 import { GenericErrors, YTokenErrors } from "../../../utils/errors";
 import { FintrollerErrors } from "../../../utils/errors";
-import { stubGetBondCollateralizationRatio, stubOpenVault, stubVaultDebt } from "../../stubs";
+import { stubGetBondCollateralizationRatio, stubOpenVault } from "../../stubs";
 
 export default function shouldBehaveLikeRepayBorrow(): void {
   const borrowAmount: BigNumber = OneHundredTokens;
@@ -33,7 +33,9 @@ export default function shouldBehaveLikeRepayBorrow(): void {
             beforeEach(async function () {
               /* Brad borrows 100 yDAI. */
               await this.contracts.yToken.__godMode_mint(this.accounts.brad, borrowAmount);
-              await stubVaultDebt.call(this, this.contracts.yToken.address, this.accounts.brad, repayAmount);
+              await this.stubs.balanceSheet.mock.getVaultDebt
+                .withArgs(this.contracts.yToken.address, this.accounts.brad)
+                .returns(repayAmount);
 
               /* The yToken makes an internal call to this stubbed function. */
               await this.stubs.balanceSheet.mock.setVaultDebt
@@ -84,8 +86,11 @@ export default function shouldBehaveLikeRepayBorrow(): void {
 
           describe("when the caller does not have a debt", function () {
             beforeEach(async function () {
-              await this.contracts.yToken.__godMode_mint(this.accounts.lucy, repayAmount);
               await stubOpenVault.call(this, this.contracts.yToken.address, this.accounts.lucy);
+              await this.stubs.balanceSheet.mock.getVaultDebt
+                .withArgs(this.contracts.yToken.address, this.accounts.lucy)
+                .returns(Zero);
+              await this.contracts.yToken.__godMode_mint(this.accounts.lucy, repayAmount);
             });
 
             it("reverts", async function () {

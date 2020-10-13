@@ -30,8 +30,8 @@ contract Fintroller is
      */
     function getBond(YTokenInterface yToken)
         external
-        override
         view
+        override
         returns (
             uint256 collateralizationRatioMantissa,
             uint256 debtCeiling,
@@ -61,7 +61,7 @@ contract Fintroller is
      * @param yToken The address of the bond contract.
      * @return The debt ceiling as a uint256, or zero if an invalid address was provided.
      */
-    function getBondDebtCeiling(YTokenInterface yToken) external override view returns (uint256) {
+    function getBondDebtCeiling(YTokenInterface yToken) external view override returns (uint256) {
         return bonds[address(yToken)].debtCeiling;
     }
 
@@ -71,7 +71,7 @@ contract Fintroller is
      * @param yToken The address of the bond contract.
      * @return The collateralization ratio as a mantissa, or zero if an invalid address was provided.
      */
-    function getBondCollateralizationRatio(YTokenInterface yToken) external override view returns (uint256) {
+    function getBondCollateralizationRatio(YTokenInterface yToken) external view override returns (uint256) {
         return bonds[address(yToken)].collateralizationRatio.mantissa;
     }
 
@@ -81,7 +81,7 @@ contract Fintroller is
      * @param yToken The bond to make the check against.
      * @return bool true=allowed, false=not allowed.
      */
-    function getBorrowAllowed(YTokenInterface yToken) external override view returns (bool) {
+    function getBorrowAllowed(YTokenInterface yToken) external view override returns (bool) {
         Bond memory bond = bonds[address(yToken)];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
         return bond.isBorrowAllowed;
@@ -93,7 +93,7 @@ contract Fintroller is
      * @param yToken The bond to make the check against.
      * @return bool true=allowed, false=not allowed.
      */
-    function getDepositCollateralAllowed(YTokenInterface yToken) external override view returns (bool) {
+    function getDepositCollateralAllowed(YTokenInterface yToken) external view override returns (bool) {
         Bond memory bond = bonds[address(yToken)];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
         return bond.isDepositCollateralAllowed;
@@ -105,7 +105,7 @@ contract Fintroller is
      * @param yToken The bond to make the check against.
      * @return bool true=allowed, false=not allowed.
      */
-    function getLiquidateBorrowAllowed(YTokenInterface yToken) external override view returns (bool) {
+    function getLiquidateBorrowAllowed(YTokenInterface yToken) external view override returns (bool) {
         Bond memory bond = bonds[address(yToken)];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
         return bond.isLiquidateBorrowAllowed;
@@ -117,7 +117,7 @@ contract Fintroller is
      * @param yToken The bond to make the check against.
      * @return bool true=allowed, false=not allowed.
      */
-    function getRedeemUnderlyingAllowed(YTokenInterface yToken) external override view returns (bool) {
+    function getRedeemUnderlyingAllowed(YTokenInterface yToken) external view override returns (bool) {
         Bond memory bond = bonds[address(yToken)];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
         return bond.isRedeemUnderlyingAllowed;
@@ -129,7 +129,7 @@ contract Fintroller is
      * @param yToken The bond to make the check against.
      * @return bool true=allowed, false=not allowed.
      */
-    function getRepayBorrowAllowed(YTokenInterface yToken) external override view returns (bool) {
+    function getRepayBorrowAllowed(YTokenInterface yToken) external view override returns (bool) {
         Bond memory bond = bonds[address(yToken)];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
         return bond.isRepayBorrowAllowed;
@@ -141,7 +141,7 @@ contract Fintroller is
      * @param yToken The bond to make the check against.
      * @return bool true=allowed, false=not allowed.
      */
-    function getSupplyUnderlyingAllowed(YTokenInterface yToken) external override view returns (bool) {
+    function getSupplyUnderlyingAllowed(YTokenInterface yToken) external view override returns (bool) {
         Bond memory bond = bonds[address(yToken)];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
         return bond.isSupplyUnderlyingAllowed;
@@ -210,11 +210,11 @@ contract Fintroller is
      *
      * - The caller must be the administrator.
      * - The bond must be listed.
-     * - The new collateralization ratio cannot be higher than 10,000%.
-     * - The new collateralization ratio cannot be lower than 100%.
+     * - The new collateralization ratio cannot be higher than the maximum collateralization ratio.
+     * - The new collateralization ratio cannot be lower than the minimum collateralization ratio.
      *
      * @param yToken The bond for which to update the collateralization ratio.
-     * @param newCollateralizationRatioMantissa The mantissa value of the new collateralization ratio.
+     * @param newCollateralizationRatioMantissa The new collateralization ratio as a mantissa.
      * @return bool true=success, otherwise it reverts.
      */
     function setCollateralizationRatio(YTokenInterface yToken, uint256 newCollateralizationRatioMantissa)
@@ -228,17 +228,17 @@ contract Fintroller is
         /* Checks: bond is listed. */
         require(bonds[yTokenAddress].isListed, "ERR_BOND_NOT_LISTED");
 
-        /* Checks: collateralization ratio is within the accepted bounds. */
+        /* Checks: new collateralization ratio is within the accepted bounds. */
         require(
             newCollateralizationRatioMantissa <= collateralizationRatioUpperBoundMantissa,
-            "ERR_SET_COLLATERALIZATION_RATIO_OVERFLOW"
+            "ERR_SET_COLLATERALIZATION_RATIO_UPPER_BOUND"
         );
         require(
             newCollateralizationRatioMantissa >= collateralizationRatioLowerBoundMantissa,
-            "ERR_SET_COLLATERALIZATION_RATIO_UNDERFLOW"
+            "ERR_SET_COLLATERALIZATION_RATIO_LOWER_BOUND"
         );
 
-        /* Effects */
+        /* Effects: update storage. */
         uint256 oldCollateralizationRatioMantissa = bonds[yTokenAddress].collateralizationRatio.mantissa;
         bonds[yTokenAddress].collateralizationRatio = Exp({ mantissa: newCollateralizationRatioMantissa });
 
@@ -276,7 +276,7 @@ contract Fintroller is
         /* Checks: the zero edge case. */
         require(newDebtCeiling > 0, "ERR_SET_DEBT_CEILING_ZERO");
 
-        /* Effects */
+        /* Effects: update storage. */
         uint256 oldDebtCeiling = bonds[yTokenAddress].debtCeiling;
         bonds[yTokenAddress].debtCeiling = newDebtCeiling;
 
@@ -329,6 +329,46 @@ contract Fintroller is
         require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
         bonds[address(yToken)].isLiquidateBorrowAllowed = state;
         emit SetLiquidateBorrowAllowed(admin, yToken, state);
+        return true;
+    }
+
+    /**
+     * @notice Lorem ipsum.
+     *
+     * @dev Emits a {SetLiquidationIncentive} event.
+     *
+     * Requirements:
+     *
+     * - The caller must be the administrator.
+     * - The bond must be listed.
+     * - The new liquidation incentive cannot be higher than the maximum liquidation incentive.
+     * - The new liquidation incentive cannot be lower than the minimum liquidation incentive.
+
+     * @param newLiquidationIncentiveMantissa The new liquidation incentive as a mantissa.
+     * @return bool true=success, otherwise it reverts.
+     */
+    function setLiquidationIncentive(uint256 newLiquidationIncentiveMantissa)
+        external
+        override
+        onlyAdmin
+        returns (bool)
+    {
+        /* Checks: new collateralization ratio is within the accepted bounds. */
+        require(
+            newLiquidationIncentiveMantissa <= liquidationIncentiveUpperBoundMantissa,
+            "ERR_SET_LIQUIDATION_INCENTIVE_UPPER_BOUND"
+        );
+        require(
+            newLiquidationIncentiveMantissa >= liquidationIncentiveLowerBoundMantissa,
+            "ERR_SET_LIQUIDATION_INCENTIVE_LOWER_BOUND"
+        );
+
+        /* Effects: update storage. */
+        uint256 oldLiquidationIncentiveMantissa = liquidationIncentiveMantissa;
+        liquidationIncentiveMantissa = newLiquidationIncentiveMantissa;
+
+        emit SetLiquidationIncentive(admin, oldLiquidationIncentiveMantissa, newLiquidationIncentiveMantissa);
+
         return true;
     }
 

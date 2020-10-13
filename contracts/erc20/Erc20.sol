@@ -56,14 +56,14 @@ contract Erc20 is
      *
      * This value changes when {approve} or {transferFrom} are called.
      */
-    function allowance(address owner, address spender) external virtual override view returns (uint256) {
+    function allowance(address owner, address spender) external view virtual override returns (uint256) {
         return allowances[owner][spender];
     }
 
     /**
      * @notice Returns the amount of tokens owned by `account`.
      */
-    function balanceOf(address account) public virtual override view returns (uint256) {
+    function balanceOf(address account) public view virtual override returns (uint256) {
         return balances[account];
     }
 

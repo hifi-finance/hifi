@@ -13,7 +13,7 @@ contract SimpleUniswapAnchoredView is UniswapAnchoredViewInterface {
      * @notice Prices are returned in the format that the Open Price Feed uses: 6 decimals of precision.
      * @dev See https://compound.finance/docs/prices#price
      */
-    function price(string memory symbol) external override pure returns (uint256) {
+    function price(string memory symbol) external pure override returns (uint256) {
         if (areStringsEqual(symbol, "WETH")) {
             /* 1 ETH = $200 */
             return 100000000;

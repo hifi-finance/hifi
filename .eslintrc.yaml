@@ -11,7 +11,7 @@ plugins:
 root: true
 rules:
   "@explicit-module-boundary-types":
-    - error
+    - off
 
   "@typescript-eslint/no-floating-promises":
     - error

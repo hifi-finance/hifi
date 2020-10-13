@@ -8,9 +8,6 @@ if (!mnemonic) {
 
 module.exports = {
   istanbulReporter: ["html"],
-  mocha: {
-    delay: false,
-  },
   onCompileComplete: async function (_config) {
     await run("typechain");
   },

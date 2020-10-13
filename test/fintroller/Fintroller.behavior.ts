@@ -1,6 +1,3 @@
-import shouldBehaveLikeCollateralizationRatioLowerBoundMantissaGetter from "./view/collateralizationRatioLowerBoundMantissa";
-import shouldBehaveLikeCollateralizationRatioUpperBoundMantissaGetter from "./view/collateralizationRatioUpperBoundMantissa";
-import shouldBehaveLikeDefaultCollateralizationRatioMantissaGetter from "./view/defaultCollateralizationRatioMantissa";
 import shouldBehaveLikeGetBond from "./view/getBond";
 import shouldBehaveLikeGetBondCollateralizationRatio from "./view/getBondCollateralizationRatio";
 import shouldBehaveLikeGetBondDebtCeiling from "./view/getBondDebtCeiling";
@@ -11,6 +8,7 @@ import shouldBehaveLikeGetRedeemUnderlyingAllowed from "./view/getRedeemUnderlyi
 import shouldBehaveLikeGetRepayBorrowAllowed from "./view/getRepayBorrowAllowed";
 import shouldBehaveLikeGetSupplyUnderlyingAllowed from "./view/getSupplyUnderlyingAllowed";
 import shouldBehaveLikeIsFintrollerGetter from "./view/isFintroller";
+import shouldBehaveLikeLiquidationIncentiveMantissaGetter from "./view/liquidationIncentiveMantissa";
 import shouldBehaveLikeOracleGetter from "./view/oracle";
 import shouldBehaveLikeOraclePricePrecisionScalarGetter from "./view/oraclePricePrecisionScalar";
 
@@ -20,6 +18,7 @@ import shouldBehaveLikeSetCollateralizationRatio from "./effects/setCollateraliz
 import shouldBehaveLikeSetDebtCeiling from "./effects/setDebtCeiling";
 import shouldBehaveLikeSetDepositCollateralAllowed from "./effects/setDepositCollateralAllowed";
 import shouldBehaveLikeSetLiquidateBorrowAllowed from "./effects/setLiquidateBorrowAllowed";
+import shouldBehaveLikeSetLiquidationIncentive from "./effects/setLiquidationIncentive";
 import shouldBehaveLikeSetOracle from "./effects/setOracle";
 import shouldBehaveLikeSetRedeemUnderlyingAllowed from "./effects/setRedeemUnderlyingAllowed";
 import shouldBehaveLikeSetRepayBorrowAllowed from "./effects/setRepayBorrowAllowed";
@@ -27,18 +26,6 @@ import shouldBehaveLikeSetSupplyUnderlyingAllowed from "./effects/setSupplyUnder
 
 export function shouldBehaveLikeFintroller(): void {
   describe("View Functions", function () {
-    describe("collateralizationRatioLowerBoundMantissa", function () {
-      shouldBehaveLikeCollateralizationRatioLowerBoundMantissaGetter();
-    });
-
-    describe("collateralizationRatioUpperBoundMantissa", function () {
-      shouldBehaveLikeCollateralizationRatioUpperBoundMantissaGetter();
-    });
-
-    describe("defaultCollateralizationRatioMantissa", function () {
-      shouldBehaveLikeDefaultCollateralizationRatioMantissaGetter();
-    });
-
     describe("getBond", function () {
       shouldBehaveLikeGetBond();
     });
@@ -79,6 +66,10 @@ export function shouldBehaveLikeFintroller(): void {
       shouldBehaveLikeIsFintrollerGetter();
     });
 
+    describe("liquidationIncentiveMantissa", function () {
+      shouldBehaveLikeLiquidationIncentiveMantissaGetter();
+    });
+
     describe("oracle", function () {
       shouldBehaveLikeOracleGetter();
     });
@@ -111,6 +102,10 @@ export function shouldBehaveLikeFintroller(): void {
 
     describe("setLiquidateBorrowAllowed", function () {
       shouldBehaveLikeSetLiquidateBorrowAllowed();
+    });
+
+    describe("setLiquidationIncentive", function () {
+      shouldBehaveLikeSetLiquidationIncentive();
     });
 
     describe("setOracle", function () {

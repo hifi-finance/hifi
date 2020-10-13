@@ -33,13 +33,12 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
 
           describe("when the user has a debt", function () {
             beforeEach(async function () {
-              /* Brads borrows 100 yDAI. */
-              await stubVaultDebt.call(this, this.contracts.yToken.address, this.accounts.brad, repayAmount);
-
-              /* And sends it all to Lucy. */
               await this.contracts.yToken.__godMode_mint(this.accounts.lucy, borrowAmount);
 
-              /* The yToken makes an internal call to this stubbed function. */
+              /* The yToken makes internal calls to these stubbed functions. */
+              await this.stubs.balanceSheet.mock.getVaultDebt
+                .withArgs(this.contracts.yToken.address, this.accounts.brad)
+                .returns(repayAmount);
               await this.stubs.balanceSheet.mock.setVaultDebt
                 .withArgs(this.contracts.yToken.address, this.accounts.brad, Zero)
                 .returns(true);
@@ -80,6 +79,11 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
           describe("when the user does not have a debt", function () {
             beforeEach(async function () {
               await this.contracts.yToken.__godMode_mint(this.accounts.lucy, repayAmount);
+
+              /* The yToken makes an internal call to this stubbed function. */
+              await this.stubs.balanceSheet.mock.getVaultDebt
+                .withArgs(this.contracts.yToken.address, this.accounts.brad)
+                .returns(Zero);
             });
 
             it("reverts", async function () {

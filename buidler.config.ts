@@ -79,13 +79,10 @@ function createNetworkConfig(network?: string): { accounts: HDAccountsConfig; ur
 
 const config: BuidlerConfig = {
   defaultNetwork: "buidlerevm",
-  mocha: {
-    /* Set this to "true" if you need to run a setTimeout block before tests. */
-    delay: false,
-  },
   networks: {
     buidlerevm: {
       accounts: createBuidlerEvmAccounts(),
+      allowUnlimitedContractSize: true,
       blockGasLimit: DefaultBlockGasLimit.toNumber(),
       chainId: ChainIds.BuidlerEvm,
       gas: DefaultBlockGasLimit.toNumber(),

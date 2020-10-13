@@ -4,13 +4,7 @@ import { expect } from "chai";
 
 import { FintrollerErrors, GenericErrors, YTokenErrors } from "../../../utils/errors";
 import { OneHundredTokens, TenTokens } from "../../../utils/constants";
-import {
-  stubGetBondCollateralizationRatio,
-  stubGetVault,
-  stubLiquidateBorrowInternalCalls,
-  stubOpenVault,
-  stubVaultDebt,
-} from "../../stubs";
+import { stubGetBondCollateralizationRatio, stubLiquidateBorrowInternalCalls, stubOpenVault } from "../../stubs";
 
 export default function shouldBehaveLikeLiquidateBorrow(): void {
   const borrowAmount: BigNumber = OneHundredTokens;
@@ -48,35 +42,30 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
                 await this.stubs.balanceSheet.mock.isAccountUnderwater
                   .withArgs(this.contracts.yToken.address, this.accounts.brad)
                   .returns(true);
-
-                /* The yToken makes internal calls to these stubbed functions. */
-                await stubLiquidateBorrowInternalCalls.call(
-                  this,
-                  this.contracts.yToken.address,
-                  newBorrowAmount,
-                  repayAmount,
-                  clutchedCollateralAmount,
-                );
               });
 
               describe("when the borrower has a debt", function () {
                 beforeEach(async function () {
-                  /* Brad borrows 100 yDAI. */
+                  await this.stubs.balanceSheet.mock.getVaultDebt
+                    .withArgs(this.contracts.yToken.address, this.accounts.brad)
+                    .returns(borrowAmount);
                   await this.contracts.yToken.__godMode_mint(this.accounts.brad, borrowAmount);
-                  await stubGetVault.call(
+
+                  /* The yToken makes an internal call to these stubbed functions. */
+                  await stubLiquidateBorrowInternalCalls.call(
                     this,
                     this.contracts.yToken.address,
-                    this.accounts.brad,
-                    borrowAmount,
-                    Zero,
-                    lockedCollateral,
-                    true,
+                    newBorrowAmount,
+                    repayAmount,
+                    clutchedCollateralAmount,
                   );
+                  await this.stubs.balanceSheet.mock.getVaultLockedCollateral
+                    .withArgs(this.contracts.yToken.address, this.accounts.brad)
+                    .returns(lockedCollateral);
                 });
 
                 describe("when the caller has enough yTokens", function () {
                   beforeEach(async function () {
-                    /* Grace borrows 100 yDAI. */
                     await this.contracts.yToken.__godMode_mint(this.accounts.grace, repayAmount);
                   });
 
@@ -130,6 +119,9 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
 
               describe("when the borrower does not have a debt", function () {
                 beforeEach(async function () {
+                  await this.stubs.balanceSheet.mock.getVaultDebt
+                    .withArgs(this.contracts.yToken.address, this.accounts.brad)
+                    .returns(Zero);
                   await this.contracts.yToken.__godMode_mint(this.accounts.grace, repayAmount);
                 });
 
@@ -198,8 +190,10 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
     describe("when the caller is the borrower", function () {
       beforeEach(async function () {
         await stubGetBondCollateralizationRatio.call(this, this.contracts.yToken.address);
+        await this.stubs.balanceSheet.mock.getVaultDebt
+          .withArgs(this.contracts.yToken.address, this.accounts.brad)
+          .returns(borrowAmount);
         await this.contracts.yToken.__godMode_mint(this.accounts.brad, borrowAmount);
-        await stubVaultDebt.call(this, this.contracts.yToken.address, this.accounts.brad, borrowAmount);
       });
 
       it("reverts", async function () {
