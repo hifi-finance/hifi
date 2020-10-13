@@ -1,7 +1,9 @@
 import shouldBehaveLikeFintrollerGetter from "./view/fintroller";
 import shouldBehaveLikeGetCurrentCollateralizationRatio from "./view/getCurrentCollateralizationRatio";
 import shouldBehaveLikeGetHypotheticalCollateralizationRatio from "./view/getHypotheticalCollateralizationRatio";
-import shouldBehaveLikeGetValut from "./view/getVault";
+import shouldBehaveLikeGetVault from "./view/getVault";
+import shouldBehaveLikeGetVaultDebt from "./view/getVaultDebt";
+import shouldBehaveLikeGetVaultLockedCollateral from "./view/getVaultLockedCollateral";
 import shouldBehaveLikeIsBalanceSheetGetter from "./view/isBalanceSheet";
 import shouldBehaveLikeIsVaultOpenGetter from "./view/isVaultOpen";
 
@@ -26,7 +28,15 @@ export function shouldBehaveLikeBalanceSheet(): void {
     });
 
     describe("getVault", function () {
-      shouldBehaveLikeGetValut();
+      shouldBehaveLikeGetVault();
+    });
+
+    describe("getVaultDebt", function () {
+      shouldBehaveLikeGetVaultDebt();
+    });
+
+    describe("getVaultLockedCollateral", function () {
+      shouldBehaveLikeGetVaultLockedCollateral();
     });
 
     describe("isBalanceSheet", function () {
