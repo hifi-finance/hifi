@@ -14,7 +14,7 @@ export default function shouldBehaveLikeGetBondCollateralizationRatio(): void {
       const collateralizationRatioMantissa: BigNumber = await this.contracts.fintroller.getBondCollateralizationRatio(
         this.stubs.yToken.address,
       );
-      expect(collateralizationRatioMantissa).to.equal(FintrollerConstants.DefaultCollateralizationRatioMantissa);
+      expect(collateralizationRatioMantissa).to.equal(FintrollerConstants.DefaultBond.CollateralizationRatio);
     });
   });
 

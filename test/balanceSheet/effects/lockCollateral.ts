@@ -3,11 +3,11 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { BalanceSheetErrors, GenericErrors } from "../../../utils/errors";
-import { TenTokens } from "../../../utils/constants";
+import { TokenAmounts } from "../../../utils/constants";
 import { Vault } from "../../../@types";
 
 export default function shouldBehaveLikeLockCollateral(): void {
-  const collateralAmount: BigNumber = TenTokens;
+  const collateralAmount: BigNumber = TokenAmounts.Ten;
 
   describe("when the vault is open", function () {
     beforeEach(async function () {

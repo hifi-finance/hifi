@@ -1,11 +1,11 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
-import { OneHundredTokens, OneThousandPercentMantissa, TenTokens } from "../../../utils/constants";
+import { Percentages, TokenAmounts } from "../../../utils/constants";
 
 export default function shouldBehaveLikeGetCurrentCollateralizationRatio(): void {
-  const lockedCollateral: BigNumber = TenTokens;
-  const debt: BigNumber = OneHundredTokens;
+  const lockedCollateral: BigNumber = TokenAmounts.Ten;
+  const debt: BigNumber = TokenAmounts.OneHundred;
 
   beforeEach(async function () {
     await this.contracts.balanceSheet.connect(this.signers.brad).openVault(this.stubs.yToken.address);
@@ -22,6 +22,6 @@ export default function shouldBehaveLikeGetCurrentCollateralizationRatio(): void
       this.stubs.yToken.address,
       this.accounts.brad,
     );
-    expect(currentCollateralizationRatioMantissa).to.equal(OneThousandPercentMantissa);
+    expect(currentCollateralizationRatioMantissa).to.equal(Percentages.OneThousand);
   });
 }

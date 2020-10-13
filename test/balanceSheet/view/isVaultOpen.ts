@@ -1,9 +1,6 @@
-import { AddressZero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { BalanceSheetErrors } from "../../../utils/errors";
-
-export default function shouldBehaveLikeOpenVault() {
+export default function shouldBehaveLikeOpenVault(): void {
   describe("when the vault is open", function () {
     beforeEach(async function () {
       await this.contracts.balanceSheet.connect(this.signers.brad).openVault(this.stubs.yToken.address);

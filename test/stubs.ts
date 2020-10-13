@@ -102,7 +102,7 @@ export async function stubGetBondCollateralizationRatio(
 ): Promise<void> {
   await this.stubs.fintroller.mock.getBondCollateralizationRatio
     .withArgs(yTokenAddress)
-    .returns(collateralizationRatioMantissa || FintrollerConstants.DefaultCollateralizationRatioMantissa);
+    .returns(collateralizationRatioMantissa || FintrollerConstants.DefaultBond.CollateralizationRatio);
 }
 
 export async function stubGetVault(
@@ -137,9 +137,9 @@ export async function stubVaultDebt(
     yTokenAddress,
     account,
     debt,
-    BalanceSheetConstants.DefaultVault.freeCollateral,
-    BalanceSheetConstants.DefaultVault.lockedCollateral,
-    BalanceSheetConstants.DefaultVault.isOpen,
+    BalanceSheetConstants.DefaultVault.FreeCollateral,
+    BalanceSheetConstants.DefaultVault.LockedCollateral,
+    BalanceSheetConstants.DefaultVault.IsOpen,
   );
 }
 
@@ -153,10 +153,10 @@ export async function stubVaultFreeCollateral(
     this,
     yTokenAddress,
     account,
-    BalanceSheetConstants.DefaultVault.debt,
+    BalanceSheetConstants.DefaultVault.Debt,
     freeCollateral,
-    BalanceSheetConstants.DefaultVault.lockedCollateral,
-    BalanceSheetConstants.DefaultVault.isOpen,
+    BalanceSheetConstants.DefaultVault.LockedCollateral,
+    BalanceSheetConstants.DefaultVault.IsOpen,
   );
 }
 
@@ -170,10 +170,10 @@ export async function stubVaultLockedCollateral(
     this,
     yTokenAddress,
     account,
-    BalanceSheetConstants.DefaultVault.debt,
-    BalanceSheetConstants.DefaultVault.freeCollateral,
+    BalanceSheetConstants.DefaultVault.Debt,
+    BalanceSheetConstants.DefaultVault.FreeCollateral,
     lockedCollateral,
-    BalanceSheetConstants.DefaultVault.isOpen,
+    BalanceSheetConstants.DefaultVault.IsOpen,
   );
 }
 
@@ -187,9 +187,9 @@ export async function stuVaultIsOpen(
     this,
     yTokenAddress,
     account,
-    BalanceSheetConstants.DefaultVault.debt,
-    BalanceSheetConstants.DefaultVault.freeCollateral,
-    BalanceSheetConstants.DefaultVault.lockedCollateral,
+    BalanceSheetConstants.DefaultVault.Debt,
+    BalanceSheetConstants.DefaultVault.FreeCollateral,
+    BalanceSheetConstants.DefaultVault.LockedCollateral,
     isOpen,
   );
 }

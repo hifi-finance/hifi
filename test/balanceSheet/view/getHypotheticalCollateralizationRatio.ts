@@ -3,11 +3,11 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { BalanceSheetErrors, GenericErrors } from "../../../utils/errors";
-import { OneHundredTokens, OneThousandPercentMantissa, TenTokens } from "../../../utils/constants";
+import { Percentages, TokenAmounts } from "../../../utils/constants";
 
 export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio(): void {
-  const lockedCollateral: BigNumber = TenTokens;
-  const debt: BigNumber = OneHundredTokens;
+  const lockedCollateral: BigNumber = TokenAmounts.Ten;
+  const debt: BigNumber = TokenAmounts.OneHundred;
 
   describe("when the vault is not open", function () {
     beforeEach(async function () {
@@ -25,7 +25,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
                 lockedCollateral,
                 debt,
               );
-              expect(hypotheticalCollateralizationRatioMantissa).to.equal(OneThousandPercentMantissa);
+              expect(hypotheticalCollateralizationRatioMantissa).to.equal(Percentages.OneThousand);
             });
           });
 

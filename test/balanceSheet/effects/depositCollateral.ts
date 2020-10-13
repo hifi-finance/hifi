@@ -3,11 +3,11 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { BalanceSheetErrors, FintrollerErrors, GenericErrors } from "../../../utils/errors";
-import { TenTokens } from "../../../utils/constants";
+import { TokenAmounts } from "../../../utils/constants";
 import { stubGetBondCollateralizationRatio } from "../../stubs";
 
 export default function shouldBehaveLikeDepositCollateral(): void {
-  const collateralAmount: BigNumber = TenTokens;
+  const collateralAmount: BigNumber = TokenAmounts.Ten;
 
   describe("when the vault is open", function () {
     beforeEach(async function () {

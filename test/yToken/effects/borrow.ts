@@ -2,9 +2,9 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { YTokenConstants } from "../../../utils/constants";
 import { FintrollerErrors, GenericErrors, YTokenErrors } from "../../../utils/errors";
-import { OneHundredTokens, OneThousandPercentMantissa, TenTokens } from "../../../utils/constants";
+import { Percentages, TokenAmounts } from "../../../utils/constants";
+import { YTokenConstants } from "../../../utils/constants";
 import { contextForTimeDependentTests } from "../../../utils/mochaContexts";
 import { increaseTime } from "../../../utils/jsonRpcHelpers";
 import {
@@ -19,8 +19,8 @@ import {
  * - collateral value too small
  */
 export default function shouldBehaveLikeBorrow(): void {
-  const borrowAmount: BigNumber = OneHundredTokens;
-  const collateralAmount: BigNumber = TenTokens;
+  const borrowAmount: BigNumber = TokenAmounts.OneHundred;
+  const collateralAmount: BigNumber = TokenAmounts.Ten;
 
   describe("when the vault is open", function () {
     beforeEach(async function () {
@@ -43,7 +43,7 @@ export default function shouldBehaveLikeBorrow(): void {
               beforeEach(async function () {
                 await this.stubs.fintroller.mock.getBondDebtCeiling
                   .withArgs(this.contracts.yToken.address)
-                  .returns(OneHundredTokens);
+                  .returns(TokenAmounts.OneHundred);
               });
 
               describe("when the caller deposited collateral", function () {
@@ -60,7 +60,7 @@ export default function shouldBehaveLikeBorrow(): void {
                     /* The yToken makes an internal call to this stubbed function. */
                     await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
                       .withArgs(this.contracts.yToken.address, this.accounts.brad, collateralAmount, borrowAmount)
-                      .returns(OneThousandPercentMantissa);
+                      .returns(Percentages.OneThousand);
                   });
 
                   describe("when the call to set the new vault debt succeeds", function () {

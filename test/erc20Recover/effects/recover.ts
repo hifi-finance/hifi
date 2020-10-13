@@ -3,10 +3,10 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { AdminErrors, Erc20RecoverErrors, GenericErrors } from "../../../utils/errors";
-import { OneHundredTokens } from "../../../utils/constants";
+import { TokenAmounts } from "../../../utils/constants";
 
 export default function shouldBehaveLikeRecover(): void {
-  const recoverAmount: BigNumber = OneHundredTokens;
+  const recoverAmount: BigNumber = TokenAmounts.OneHundred;
 
   describe("when the caller is the administrator", function () {
     describe("when the contract was initialized", function () {

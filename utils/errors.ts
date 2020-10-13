@@ -4,13 +4,16 @@ export enum AdminErrors {
 
 export enum BalanceSheetErrors {
   BelowCollateralizationRatio = "ERR_BELOW_COLLATERALIZATION_RATIO",
+  ClutchCollateralNotAuthorized = "ERR_CLUTCH_COLLATERAL_NOT_AUTHORIZED",
   DepositCollateralZero = "ERR_DEPOSIT_COLLATERAL_ZERO",
   DepositCollateralNotAllowed = "ERR_DEPOSIT_COLLATERAL_NOT_ALLOWED",
   FreeCollateralInsufficientLockedCollateral = "ERR_FREE_COLLATERAL_INSUFFICIENT_LOCKED_COLLATERAL",
   FreeCollateralZero = "ERR_FREE_COLLATERAL_ZERO",
+  GetClutchableCollateralZero = "ERR_GET_CLUTCHABLE_COLLATERAL_ZERO",
   GetHypotheticalCollateralizationRatioDebtZero = "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_DEBT_ZERO",
   LockCollateralInsufficientFreeCollateral = "ERR_LOCK_COLLATERAL_INSUFFICIENT_FREE_COLLATERAL",
   LockCollateralZero = "ERR_LOCK_COLLATERAL_ZERO",
+  SetVaultDebtNotAuthorized = "ERR_SET_VAULT_DEBT_NOT_AUTHORIZED",
   WithdrawCollateralInsufficientFreeCollateral = "ERR_WITHDRAW_COLLATERAL_INSUFFICIENT_FREE_COLLATERAL",
   WithdrawCollateralZero = "ERR_WITHDRAW_COLLATERAL_ZERO",
 }

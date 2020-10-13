@@ -4,7 +4,7 @@ import shouldBehaveLikeVersionGetter from "./view/version";
 
 import shouldBehaveLikePermit from "./effects/permit";
 
-export function shouldBehaveLikeErc20Permit() {
+export function shouldBehaveLikeErc20Permit(): void {
   describe("View", function () {
     describe("DOMAIN_SEPARATOR", function () {
       shouldBehaveLikeDomainSeparatorGetter();

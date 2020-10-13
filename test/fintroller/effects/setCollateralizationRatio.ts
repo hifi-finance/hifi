@@ -3,11 +3,11 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { AdminErrors, FintrollerErrors } from "../../../utils/errors";
-import { FintrollerConstants, OnePercentMantissa } from "../../../utils/constants";
+import { FintrollerConstants, Percentages } from "../../../utils/constants";
 
 export default function shouldBehaveLikeSetCollateralizationRatio(): void {
   /* Equivalent to 175% */
-  const newCollateralizationRatioMantissa: BigNumber = OnePercentMantissa.mul(175);
+  const newCollateralizationRatioMantissa: BigNumber = Percentages.One.mul(175);
 
   describe("when the caller is the admin", function () {
     describe("when the bond is listed", function () {
@@ -36,7 +36,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
             .withArgs(
               this.accounts.admin,
               this.stubs.yToken.address,
-              FintrollerConstants.DefaultCollateralizationRatioMantissa,
+              FintrollerConstants.DefaultBond.CollateralizationRatio,
               newCollateralizationRatioMantissa,
             );
         });
@@ -45,7 +45,9 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
       describe("when the collateralization ratio is not valid", function () {
         describe("when the collateralization ratio is higher than 10,000%", function () {
           it("reverts", async function () {
-            const overflowCollateralizationRatioMantissa: BigNumber = OnePercentMantissa.mul(10000).add(1);
+            const overflowCollateralizationRatioMantissa: BigNumber = FintrollerConstants.CollateralizationRatioUpperBoundMantissa.add(
+              1,
+            );
             await expect(
               this.contracts.fintroller
                 .connect(this.signers.admin)
@@ -56,7 +58,9 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
 
         describe("when the collateralization ratio is lower than 100%", function () {
           it("reverts", async function () {
-            const underflowCollateralizationRatioMantissa: BigNumber = OnePercentMantissa.mul(100).sub(1);
+            const underflowCollateralizationRatioMantissa: BigNumber = FintrollerConstants.CollateralizationRatioLowerBoundMantissa.sub(
+              1,
+            );
             await expect(
               this.contracts.fintroller
                 .connect(this.signers.admin)

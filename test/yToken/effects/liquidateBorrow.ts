@@ -3,14 +3,14 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { FintrollerErrors, GenericErrors, YTokenErrors } from "../../../utils/errors";
-import { OneHundredTokens, TenTokens } from "../../../utils/constants";
+import { TokenAmounts } from "../../../utils/constants";
 import { stubGetBondCollateralizationRatio, stubLiquidateBorrowInternalCalls, stubOpenVault } from "../../stubs";
 
 export default function shouldBehaveLikeLiquidateBorrow(): void {
-  const borrowAmount: BigNumber = OneHundredTokens;
-  const clutchedCollateralAmount: BigNumber = TenTokens.div(2).add(TenTokens.div(20));
-  const lockedCollateral: BigNumber = TenTokens;
-  const repayAmount: BigNumber = OneHundredTokens.div(2);
+  const borrowAmount: BigNumber = TokenAmounts.OneHundred;
+  const clutchedCollateralAmount: BigNumber = TokenAmounts.PointFiftyFive;
+  const lockedCollateral: BigNumber = TokenAmounts.Ten;
+  const repayAmount: BigNumber = TokenAmounts.Fifty;
   const newBorrowAmount: BigNumber = borrowAmount.sub(repayAmount);
 
   describe("when the vault is open", function () {

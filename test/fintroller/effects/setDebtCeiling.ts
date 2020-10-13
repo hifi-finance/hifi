@@ -3,11 +3,11 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { AdminErrors, FintrollerErrors } from "../../../utils/errors";
-import { OneHundredTokens } from "../../../utils/constants";
+import { TokenAmounts } from "../../../utils/constants";
 
 export default function shouldBehaveLikeSetDebtCeiling(): void {
   /* Equivalent to 175% */
-  const newDebtCeiling: BigNumber = OneHundredTokens;
+  const newDebtCeiling: BigNumber = TokenAmounts.OneHundred;
 
   describe("when the caller is the admin", function () {
     describe("when the bond is listed", function () {

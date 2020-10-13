@@ -3,7 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { FintrollerErrors, GenericErrors, RedemptionPoolErrors } from "../../../utils/errors";
-import { OneHundredTokens, YTokenConstants } from "../../../utils/constants";
+import { TokenAmounts, YTokenConstants } from "../../../utils/constants";
 import { stubGetBondCollateralizationRatio } from "../../stubs";
 
 /**
@@ -12,7 +12,7 @@ import { stubGetBondCollateralizationRatio } from "../../stubs";
  * - yToken mint function fails
  */
 export default function shouldBehaveLikeSupplyUnderlying(): void {
-  const underlyingAmount: BigNumber = OneHundredTokens;
+  const underlyingAmount: BigNumber = TokenAmounts.OneHundred;
 
   describe("when the bond did not mature", function () {
     beforeEach(async function () {

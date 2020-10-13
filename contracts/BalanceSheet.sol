@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.7.1;
 
+import "@nomiclabs/buidler/console.sol";
 import "./BalanceSheetInterface.sol";
 import "./FintrollerInterface.sol";
 import "./YTokenInterface.sol";
@@ -44,10 +45,11 @@ contract BalanceSheet is
 
     struct CalculateClutchableCollateralLocalVars {
         MathError mathErr;
-        Exp clutchedCollateralUpscaled;
-        uint256 clutchedCollateral;
+        Exp clutchableCollateralAmountUpscaled;
+        uint256 clutchableCollateralAmount;
         uint256 collateralPrecisionScalar;
         uint256 collateralPriceUpscaled;
+        uint256 liquidationIncentiveMantissa;
         Exp numerator;
         uint256 oraclePricePrecisionScalar;
         uint256 underlyingPriceUpscaled;
@@ -60,6 +62,7 @@ contract BalanceSheet is
      * clutchedCollateral = repayAmount * liquidationIncentive * underlyingPriceUsd / priceCollateralUsd
      *
      * Requirements:
+     *
      * - `repayAmount` must be non-zero.
      *
      * @param yToken The yToken to make the query against.
@@ -75,7 +78,11 @@ contract BalanceSheet is
         CalculateClutchableCollateralLocalVars memory vars;
 
         /* Avoid the zero edge cases. */
-        require(repayAmount > 0, "ERR_CALCULATE_CLUTCHABLE_COLLATERAL_ZERO");
+        require(repayAmount > 0, "ERR_GET_CLUTCHABLE_COLLATERAL_ZERO");
+        vars.liquidationIncentiveMantissa = fintroller.liquidationIncentiveMantissa();
+        if (vars.liquidationIncentiveMantissa == 0) {
+            return 0;
+        }
 
         /* Grab the upscaled USD price of the underlying. */
         UniswapAnchoredViewInterface oracle = fintroller.oracle();
@@ -84,41 +91,43 @@ contract BalanceSheet is
             yToken.underlying().symbol(),
             vars.oraclePricePrecisionScalar
         );
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_CALCULATE_CLUTCHABLE_COLLATERAL_MATH_ERROR");
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_CLUTCHABLE_COLLATERAL_MATH_ERROR");
 
         /* Grab the upscaled USD price of the collateral. */
         (vars.mathErr, vars.collateralPriceUpscaled) = oracle.getScaledPrice(
             yToken.collateral().symbol(),
             vars.oraclePricePrecisionScalar
         );
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_CALCULATE_CLUTCHABLE_COLLATERAL_MATH_ERROR");
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_CLUTCHABLE_COLLATERAL_MATH_ERROR");
 
         /* Calculate the top part of the equation. */
         (vars.mathErr, vars.numerator) = mulExp3(
             Exp({ mantissa: repayAmount }),
-            Exp({ mantissa: fintroller.liquidationIncentiveMantissa() }),
+            Exp({ mantissa: vars.liquidationIncentiveMantissa }),
             Exp({ mantissa: vars.underlyingPriceUpscaled })
         );
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_CALCULATE_CLUTCHABLE_COLLATERAL_MATH_ERROR");
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_CLUTCHABLE_COLLATERAL_MATH_ERROR");
 
         /* Calculate the mantissa form of the clutched collateral amount. */
-        (vars.mathErr, vars.clutchedCollateralUpscaled) = divExp(
+        (vars.mathErr, vars.clutchableCollateralAmountUpscaled) = divExp(
             vars.numerator,
             Exp({ mantissa: vars.collateralPriceUpscaled })
         );
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_CALCULATE_CLUTCHABLE_COLLATERAL_MATH_ERROR");
+        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_CLUTCHABLE_COLLATERAL_MATH_ERROR");
 
         /* If the precision scalar is not 1, calculate the final form of the clutched collateral amount. */
         vars.collateralPrecisionScalar = yToken.collateralPrecisionScalar();
         if (vars.collateralPrecisionScalar != 1) {
-            (vars.mathErr, vars.clutchedCollateral) = divUInt(
-                vars.clutchedCollateralUpscaled.mantissa,
+            (vars.mathErr, vars.clutchableCollateralAmount) = divUInt(
+                vars.clutchableCollateralAmountUpscaled.mantissa,
                 vars.collateralPrecisionScalar
             );
-            require(vars.mathErr == MathError.NO_ERROR, "ERR_CALCULATE_CLUTCHABLE_COLLATERAL_MATH_ERROR");
+            require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_CLUTCHABLE_COLLATERAL_MATH_ERROR");
+        } else {
+            vars.clutchableCollateralAmount = vars.clutchableCollateralAmountUpscaled.mantissa;
         }
 
-        return vars.clutchedCollateral;
+        return vars.clutchableCollateralAmount;
     }
 
     /**
@@ -162,7 +171,6 @@ contract BalanceSheet is
      * - The vault must be open.
      * - `debt` must be non-zero.
      * - The oracle prices must be non-zero.
-     * - There must be no math error.
      *
      * @param yToken The yToken for which to make the query against.
      * @param account The account for which to make the query against.
@@ -308,7 +316,7 @@ contract BalanceSheet is
         YTokenInterface yToken,
         address liquidator,
         address borrower,
-        uint256 clutchedCollateralAmount
+        uint256 collateralAmount
     ) external override nonReentrant returns (bool) {
         /* Checks: the caller is the yToken contract. */
         require(msg.sender == address(yToken), "ERR_CLUTCH_COLLATERAL_NOT_AUTHORIZED");
@@ -318,7 +326,7 @@ contract BalanceSheet is
         uint256 newLockedCollateral;
         (mathErr, newLockedCollateral) = subUInt(
             vaults[address(yToken)][borrower].lockedCollateral,
-            clutchedCollateralAmount
+            collateralAmount
         );
         require(mathErr == MathError.NO_ERROR, "ERR_CLUTCH_COLLATERAL_MATH_ERROR");
 
@@ -326,9 +334,9 @@ contract BalanceSheet is
         vaults[address(yToken)][borrower].lockedCollateral = newLockedCollateral;
 
         /* Interactions: transfer the collateral. */
-        yToken.collateral().safeTransfer(liquidator, clutchedCollateralAmount);
+        yToken.collateral().safeTransfer(liquidator, collateralAmount);
 
-        emit ClutchCollateral(yToken, liquidator, borrower, clutchedCollateralAmount);
+        emit ClutchCollateral(yToken, liquidator, borrower, collateralAmount);
 
         return true;
     }
@@ -517,7 +525,6 @@ contract BalanceSheet is
      *
      * Requirements:
      *
-     * - The vault must be open.
      * - Can only be called by the yToken contract.
      *
      * @param yToken The address of the yToken contract.
@@ -528,9 +535,9 @@ contract BalanceSheet is
         YTokenInterface yToken,
         address account,
         uint256 newVaultDebt
-    ) external override isVaultOpenForMsgSender(yToken) returns (bool) {
+    ) external override returns (bool) {
         /* Checks: the caller is the yToken contract. */
-        require(msg.sender == address(yToken), "ERR_SET_DEBT_NOT_AUTHORIZED");
+        require(msg.sender == address(yToken), "ERR_SET_VAULT_DEBT_NOT_AUTHORIZED");
 
         /* Effects: update the storage property. */
         uint256 oldVaultDebt = vaults[address(yToken)][account].debt;

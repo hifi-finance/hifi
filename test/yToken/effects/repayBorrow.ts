@@ -2,14 +2,14 @@ import { Zero } from "@ethersproject/constants";
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
-import { AddressOne, OneHundredTokens } from "../../../utils/constants";
+import { AddressOne, TokenAmounts } from "../../../utils/constants";
 import { GenericErrors, YTokenErrors } from "../../../utils/errors";
 import { FintrollerErrors } from "../../../utils/errors";
 import { stubGetBondCollateralizationRatio, stubOpenVault } from "../../stubs";
 
 export default function shouldBehaveLikeRepayBorrow(): void {
-  const borrowAmount: BigNumber = OneHundredTokens;
-  const repayAmount: BigNumber = OneHundredTokens;
+  const borrowAmount: BigNumber = TokenAmounts.OneHundred;
+  const repayAmount: BigNumber = TokenAmounts.OneHundred;
 
   describe("when the vault is open", function () {
     beforeEach(async function () {

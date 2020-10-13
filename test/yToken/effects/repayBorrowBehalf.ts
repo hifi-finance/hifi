@@ -2,16 +2,16 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { OneHundredTokens } from "../../../utils/constants";
 import { GenericErrors, YTokenErrors } from "../../../utils/errors";
-import { stubGetBondCollateralizationRatio, stubOpenVault, stubVaultDebt } from "../../stubs";
+import { TokenAmounts } from "../../../utils/constants";
+import { stubGetBondCollateralizationRatio, stubOpenVault } from "../../stubs";
 
 /**
  * This test suite assumes that Lucy pays the debt on behalf of Brad.
  */
 export default function shouldBehaveLikeRepayBorrowBehalf(): void {
-  const borrowAmount: BigNumber = OneHundredTokens;
-  const repayAmount: BigNumber = OneHundredTokens;
+  const borrowAmount: BigNumber = TokenAmounts.OneHundred;
+  const repayAmount: BigNumber = TokenAmounts.OneHundred;
 
   describe("when the vault is open", function () {
     beforeEach(async function () {

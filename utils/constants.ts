@@ -7,6 +7,34 @@ import { Zero } from "@ethersproject/constants";
 export const AddressOne: string = "0x0000000000000000000000000000000000000001";
 
 /**
+ * AMOUNTS
+ */
+export const DefaultBlockGasLimit: BigNumber = BigNumber.from("10000000");
+export const DefaultNumberOfDecimals: BigNumber = BigNumber.from(18);
+
+const Ten: BigNumber = BigNumber.from(10);
+
+/* Represented as mantissas, decimal scalars with 18 decimals. */
+export const Percentages: { [name: string]: BigNumber } = {
+  One: Ten.pow(16),
+  OneHundred: Ten.pow(18),
+  OneHundredAndTen: Ten.pow(18).add(Ten.pow(17)),
+  OneHundredAndFifty: Ten.pow(18).add(Ten.pow(17).mul(5)),
+  OneThousand: Ten.pow(19),
+  TenThousand: Ten.pow(20),
+};
+
+export const TokenAmounts: { [name: string]: BigNumber } = {
+  PointFiftyFive: Ten.pow(17).mul(5).add(Ten.pow(16).mul(5)),
+  One: Ten.pow(18),
+  Ten: Ten.pow(19),
+  Fifty: Ten.pow(18).mul(50),
+  OneHundred: Ten.pow(20),
+  OneThousand: Ten.pow(21),
+  OneMillion: Ten.pow(24),
+};
+
+/**
  * CHAIN IDs
  */
 export const ChainIds = {
@@ -18,25 +46,6 @@ export const ChainIds = {
   Rinkeby: 4,
   Ropsten: 3,
 };
-
-/**
- * NUMBERS
- */
-export const DefaultBlockGasLimit: BigNumber = BigNumber.from("10000000");
-export const DefaultNumberOfDecimals: BigNumber = BigNumber.from(18);
-export const UnitsPerToken: BigNumber = BigNumber.from("1000000000000000000");
-
-export const OnePercentMantissa: BigNumber = BigNumber.from("10000000000000000");
-export const OneHundredPercentMantissa: BigNumber = OnePercentMantissa.mul(100);
-export const OneHundredAndFiftyPercentMantissa: BigNumber = OnePercentMantissa.mul(150);
-export const OneThousandPercentMantissa: BigNumber = OnePercentMantissa.mul(1000);
-export const TenThousandPercentMantissa: BigNumber = OnePercentMantissa.mul(10000);
-
-export const OneToken: BigNumber = UnitsPerToken;
-export const TenTokens: BigNumber = OneToken.mul(10);
-export const OneHundredTokens: BigNumber = OneToken.mul(100);
-export const OneThousandTokens: BigNumber = OneToken.mul(1000);
-export const OneMillionTokens: BigNumber = OneToken.mul(1000000);
 
 /**
  * PRIVATE KEYS
@@ -55,23 +64,35 @@ export const DefaultPrivateKeys = {
  */
 export const BalanceSheetConstants = {
   DefaultVault: {
-    debt: Zero,
-    freeCollateral: Zero,
-    lockedCollateral: Zero,
-    isOpen: true,
+    Debt: Zero,
+    FreeCollateral: Zero,
+    LockedCollateral: Zero,
+    IsOpen: true,
   },
 };
 
 export const Erc20PermitConstants = {
-  decimals: BigNumber.from(18),
-  name: "Erc20 Permit",
-  symbol: "ERC20",
+  Decimals: BigNumber.from(18),
+  Name: "Erc20 Permit",
+  Symbol: "ERC20",
 };
 
 export const FintrollerConstants = {
-  CollateralizationRatioLowerBoundMantissa: OneHundredPercentMantissa,
-  CollateralizationRatioUpperBoundMantissa: TenThousandPercentMantissa,
-  DefaultCollateralizationRatioMantissa: OneHundredAndFiftyPercentMantissa,
+  CollateralizationRatioLowerBoundMantissa: Percentages.OneHundred,
+  CollateralizationRatioUpperBoundMantissa: Percentages.TenThousand,
+  DefaultBond: {
+    CollateralizationRatio: Percentages.OneHundredAndFifty,
+    DebtCeiling: Zero,
+    IsBorrowAllowed: true,
+    IsDepositCollateralAllowed: true,
+    IsLiquidateBorrowAllowed: true,
+    IsListed: true,
+    IssRedeemUnderlyingAllowed: true,
+    IsRepayBorrowAllowed: true,
+    IsSupplyUnderlyingAllowed: true,
+  },
+  LiquidationIncentiveLowerBoundMantissa: Percentages.OneHundred,
+  LiquidationIncentiveUpperBoundMantissa: Percentages.OneHundredAndFifty,
   OraclePrecisionScalar: BigNumber.from("1000000000000"),
 };
 

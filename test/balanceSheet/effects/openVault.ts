@@ -3,7 +3,7 @@ import { expect } from "chai";
 
 import { GenericErrors } from "../../../utils/errors";
 
-export default function shouldBehaveLikeOpenVault() {
+export default function shouldBehaveLikeOpenVault(): void {
   describe("when the vault is not open", function () {
     describe("when the yToken is compliant", function () {
       it("opens the vault", async function () {

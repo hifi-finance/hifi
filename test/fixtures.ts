@@ -63,9 +63,9 @@ export async function balanceSheetFixture(
 
 export async function erc20PermitFixture(signers: Signer[]): Promise<{ erc20Permit: Erc20Permit }> {
   const deployer: Signer = signers[0];
-  const name: string = Erc20PermitConstants.name;
-  const symbol: string = Erc20PermitConstants.symbol;
-  const decimals = Erc20PermitConstants.decimals;
+  const name: string = Erc20PermitConstants.Name;
+  const symbol: string = Erc20PermitConstants.Symbol;
+  const decimals = Erc20PermitConstants.Decimals;
   const erc20Permit: Erc20Permit = ((await deployContract(deployer, Erc20PermitArtifact, [
     name,
     symbol,

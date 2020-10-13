@@ -2,10 +2,10 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { TenTokens } from "../../../utils/constants";
+import { TokenAmounts } from "../../../utils/constants";
 
 export default function shouldBehaveLikeTotalUnderlyingSupplyGetter(): void {
-  const underlyingAmount: BigNumber = TenTokens;
+  const underlyingAmount: BigNumber = TokenAmounts.Ten;
 
   describe("when the total underlying supply is not zero", function () {
     beforeEach(async function () {

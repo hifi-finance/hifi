@@ -3,7 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { FintrollerErrors, GenericErrors, RedemptionPoolErrors } from "../../../utils/errors";
-import { OneHundredTokens, OneMillionTokens, YTokenConstants } from "../../../utils/constants";
+import { TokenAmounts, YTokenConstants } from "../../../utils/constants";
 import { stubGetBondCollateralizationRatio } from "../../stubs";
 
 /**
@@ -12,7 +12,7 @@ import { stubGetBondCollateralizationRatio } from "../../stubs";
  * - yToken `burn` function fails
  */
 export default function shouldBehaveLikeRedeemUnderlying(): void {
-  const redeemAmount: BigNumber = OneHundredTokens;
+  const redeemAmount: BigNumber = TokenAmounts.OneHundred;
 
   describe("when the bond matured", function () {
     beforeEach(async function () {
@@ -36,7 +36,7 @@ export default function shouldBehaveLikeRedeemUnderlying(): void {
 
           describe("when there is enough underlying liquidity", function () {
             beforeEach(async function () {
-              const totalUnderlyingSupply: BigNumber = OneMillionTokens;
+              const totalUnderlyingSupply: BigNumber = TokenAmounts.OneMillion;
               await this.contracts.redemptionPool.__godMode_setTotalUnderlyingSupply(totalUnderlyingSupply);
             });
 
