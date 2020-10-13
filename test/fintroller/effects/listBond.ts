@@ -8,6 +8,8 @@ export default function shouldBehaveLikeListBond(): void {
     describe("when the contract to be listed is compliant", function () {
       it("lists the bond", async function () {
         await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.yToken.address);
+        const bond = await this.contracts.fintroller.getBond(this.stubs.yToken.address);
+        expect(bond.isListed).to.equal(true);
       });
 
       it("emits a ListBond event", async function () {

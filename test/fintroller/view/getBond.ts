@@ -17,17 +17,17 @@ export default function shouldBehaveLikeGetBondCollateralizationRatio(): void {
       );
     });
 
-    it("retrieves the default values", async function () {
+    it("retrieves the default values after listing", async function () {
       const bond = await this.contracts.fintroller.getBond(this.stubs.yToken.address);
       expect(bond.collateralizationRatioMantissa).to.equal(newCollateralizationRatioMantissa);
       expect(bond.debtCeiling).to.equal(Zero);
-      expect(bond.isBorrowAllowed).to.equal(false);
-      expect(bond.isDepositCollateralAllowed).to.equal(false);
-      expect(bond.isLiquidateBorrowAllowed).to.equal(false);
+      expect(bond.isBorrowAllowed).to.equal(true);
+      expect(bond.isDepositCollateralAllowed).to.equal(true);
+      expect(bond.isLiquidateBorrowAllowed).to.equal(true);
       expect(bond.isListed).to.equal(true);
-      expect(bond.isRedeemUnderlyingAllowed).to.equal(false);
-      expect(bond.isRepayBorrowAllowed).to.equal(false);
-      expect(bond.isSupplyUnderlyingAllowed).to.equal(false);
+      expect(bond.isRedeemUnderlyingAllowed).to.equal(true);
+      expect(bond.isRepayBorrowAllowed).to.equal(true);
+      expect(bond.isSupplyUnderlyingAllowed).to.equal(true);
     });
   });
 

@@ -12,7 +12,7 @@ export default function shouldBehaveLikeGetRepayBorrowAllowed(): void {
       const repayBorrowAllowed: boolean = await this.contracts.fintroller.getRepayBorrowAllowed(
         this.stubs.yToken.address,
       );
-      expect(repayBorrowAllowed).to.equal(false);
+      expect(repayBorrowAllowed).to.equal(true);
     });
   });
 

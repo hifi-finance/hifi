@@ -12,7 +12,7 @@ export default function shouldBehaveLikeGetSupplyUnderlyingAllowed(): void {
       const supplyUnderlyingAllowed: boolean = await this.contracts.fintroller.getSupplyUnderlyingAllowed(
         this.stubs.yToken.address,
       );
-      expect(supplyUnderlyingAllowed).to.equal(false);
+      expect(supplyUnderlyingAllowed).to.equal(true);
     });
   });
 

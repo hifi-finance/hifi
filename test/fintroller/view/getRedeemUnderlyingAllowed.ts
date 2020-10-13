@@ -12,7 +12,7 @@ export default function shouldBehaveLikeGetRedeemUnderlyingAllowed(): void {
       const redeemUnderlyingAllowed: boolean = await this.contracts.fintroller.getRedeemUnderlyingAllowed(
         this.stubs.yToken.address,
       );
-      expect(redeemUnderlyingAllowed).to.equal(false);
+      expect(redeemUnderlyingAllowed).to.equal(true);
     });
   });
 

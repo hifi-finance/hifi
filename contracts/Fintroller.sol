@@ -168,13 +168,13 @@ contract Fintroller is
         bonds[address(yToken)] = Bond({
             collateralizationRatio: Exp({ mantissa: defaultCollateralizationRatioMantissa }),
             debtCeiling: 0,
-            isBorrowAllowed: false,
-            isDepositCollateralAllowed: false,
-            isLiquidateBorrowAllowed: false,
+            isBorrowAllowed: true,
+            isDepositCollateralAllowed: true,
+            isLiquidateBorrowAllowed: true,
             isListed: true,
-            isRedeemUnderlyingAllowed: false,
-            isRepayBorrowAllowed: false,
-            isSupplyUnderlyingAllowed: false
+            isRedeemUnderlyingAllowed: true,
+            isRepayBorrowAllowed: true,
+            isSupplyUnderlyingAllowed: true
         });
         emit ListBond(admin, yToken);
         return true;

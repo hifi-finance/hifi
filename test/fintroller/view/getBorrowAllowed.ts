@@ -10,7 +10,7 @@ export default function shouldBehaveLikeGetBorrowAllowed(): void {
 
     it("retrieves the default value", async function () {
       const borrowAllowed: boolean = await this.contracts.fintroller.getBorrowAllowed(this.stubs.yToken.address);
-      expect(borrowAllowed).to.equal(false);
+      expect(borrowAllowed).to.equal(true);
     });
   });
 

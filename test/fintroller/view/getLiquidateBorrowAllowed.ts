@@ -12,7 +12,7 @@ export default function shouldBehaveLikeGetLiquidateBorrowAllowed(): void {
       const liquidateBorrowAllowed: boolean = await this.contracts.fintroller.getLiquidateBorrowAllowed(
         this.stubs.yToken.address,
       );
-      expect(liquidateBorrowAllowed).to.equal(false);
+      expect(liquidateBorrowAllowed).to.equal(true);
     });
   });
 

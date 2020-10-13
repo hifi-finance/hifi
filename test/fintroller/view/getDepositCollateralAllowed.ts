@@ -12,7 +12,7 @@ export default function shouldBehaveLikeDepositCollateralAllowed(): void {
       const depositCollateralAllowed: boolean = await this.contracts.fintroller.getDepositCollateralAllowed(
         this.stubs.yToken.address,
       );
-      expect(depositCollateralAllowed).to.equal(false);
+      expect(depositCollateralAllowed).to.equal(true);
     });
   });
 
