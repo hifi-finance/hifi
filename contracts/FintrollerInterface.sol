@@ -18,6 +18,7 @@ abstract contract FintrollerInterface is FintrollerStorage {
             uint256 collateralizationRatioMantissa,
             bool isBorrowAllowed,
             bool isDepositCollateralAllowed,
+            bool isLiquidateBorrowAllowed,
             bool isListed,
             bool isRedeemUnderlyingAllowed,
             bool isRepayBorrowAllowed,
@@ -32,7 +33,7 @@ abstract contract FintrollerInterface is FintrollerStorage {
 
     function getDepositCollateralAllowed(YTokenInterface yToken) external virtual view returns (bool);
 
-    function getLiquidateBorrowAllowed(YTokenInterface yToken) external virtual pure returns (bool);
+    function getLiquidateBorrowAllowed(YTokenInterface yToken) external virtual view returns (bool);
 
     function getRedeemUnderlyingAllowed(YTokenInterface yToken) external virtual view returns (bool);
 
@@ -55,6 +56,8 @@ abstract contract FintrollerInterface is FintrollerStorage {
     function setDebtCeiling(YTokenInterface yToken, uint256 newDebtCeiling) external virtual returns (bool);
 
     function setDepositCollateralAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
+
+    function setLiquidateBorrowAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
 
     function setOracle(UniswapAnchoredViewInterface oracle_) external virtual returns (bool);
 
@@ -86,6 +89,8 @@ abstract contract FintrollerInterface is FintrollerStorage {
     );
 
     event SetDepositCollateralAllowed(address indexed admin, YTokenInterface indexed yToken, bool state);
+
+    event SetLiquidateBorrowAllowed(address indexed admin, YTokenInterface indexed yToken, bool state);
 
     event SetRedeemUnderlyingAllowed(address indexed admin, YTokenInterface indexed yToken, bool state);
 

@@ -6,6 +6,7 @@ import shouldBehaveLikeGetBondCollateralizationRatio from "./view/getBondCollate
 import shouldBehaveLikeGetBondDebtCeiling from "./view/getBondDebtCeiling";
 import shouldBehaveLikeGetBorrowAllowed from "./view/getBorrowAllowed";
 import shouldBehaveLikeGetDepositCollateralAllowed from "./view/getDepositCollateralAllowed";
+import shouldBehaveLikeGetLiquidateBorrowAllowed from "./view/getLiquidateBorrowAllowed";
 import shouldBehaveLikeGetRedeemUnderlyingAllowed from "./view/getRedeemUnderlyingAllowed";
 import shouldBehaveLikeGetRepayBorrowAllowed from "./view/getRepayBorrowAllowed";
 import shouldBehaveLikeGetSupplyUnderlyingAllowed from "./view/getSupplyUnderlyingAllowed";
@@ -14,10 +15,11 @@ import shouldBehaveLikeOracleGetter from "./view/oracle";
 import shouldBehaveLikeOraclePricePrecisionScalarGetter from "./view/oraclePricePrecisionScalar";
 
 import shouldBehaveLikeListBond from "./effects/listBond";
+import shouldBehaveLikeSetBorrowAllowed from "./effects/setBorrowAllowed";
 import shouldBehaveLikeSetCollateralizationRatio from "./effects/setCollateralizationRatio";
 import shouldBehaveLikeSetDebtCeiling from "./effects/setDebtCeiling";
 import shouldBehaveLikeSetDepositCollateralAllowed from "./effects/setDepositCollateralAllowed";
-import shouldBehaveLikeSetBorrowAllowed from "./effects/setBorrowAllowed";
+import shouldBehaveLikeSetLiquidateBorrowAllowed from "./effects/setLiquidateBorrowAllowed";
 import shouldBehaveLikeSetOracle from "./effects/setOracle";
 import shouldBehaveLikeSetRedeemUnderlyingAllowed from "./effects/setRedeemUnderlyingAllowed";
 import shouldBehaveLikeSetRepayBorrowAllowed from "./effects/setRepayBorrowAllowed";
@@ -55,6 +57,10 @@ export function shouldBehaveLikeFintroller(): void {
 
     describe("getDepositCollateralAllowed", function () {
       shouldBehaveLikeGetDepositCollateralAllowed();
+    });
+
+    describe("getLiquidateBorrowAllowed", function () {
+      shouldBehaveLikeGetLiquidateBorrowAllowed();
     });
 
     describe("getRedeemUnderlyingAllowed", function () {
@@ -101,6 +107,10 @@ export function shouldBehaveLikeFintroller(): void {
 
     describe("setDepositCollateralAllowed", function () {
       shouldBehaveLikeSetDepositCollateralAllowed();
+    });
+
+    describe("setLiquidateBorrowAllowed", function () {
+      shouldBehaveLikeSetLiquidateBorrowAllowed();
     });
 
     describe("setOracle", function () {

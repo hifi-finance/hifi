@@ -10,14 +10,15 @@ plugins:
   - "@typescript-eslint"
 root: true
 rules:
-  "@explicit-module-boundary-types"
+  "@explicit-module-boundary-types":
     - error
-    
+
   "@typescript-eslint/no-floating-promises":
     - error
     - ignoreIIFE: true
       ignoreVoid: true
-  "@typescript-eslint/no-inferrable-types": 'off'
+
+  "@typescript-eslint/no-inferrable-types": "off"
   "@typescript-eslint/no-unused-vars":
     - error
     - argsIgnorePattern: _

@@ -37,6 +37,7 @@ contract Fintroller is
             uint256 debtCeiling,
             bool isBorrowAllowed,
             bool isDepositCollateralAllowed,
+            bool isLiquidateBorrowAllowed,
             bool isListed,
             bool isRedeemUnderlyingAllowed,
             bool isRepayBorrowAllowed,
@@ -47,6 +48,7 @@ contract Fintroller is
         debtCeiling = bonds[address(yToken)].debtCeiling;
         isBorrowAllowed = bonds[address(yToken)].isBorrowAllowed;
         isDepositCollateralAllowed = bonds[address(yToken)].isDepositCollateralAllowed;
+        isLiquidateBorrowAllowed = bonds[address(yToken)].isLiquidateBorrowAllowed;
         isListed = bonds[address(yToken)].isListed;
         isRedeemUnderlyingAllowed = bonds[address(yToken)].isRedeemUnderlyingAllowed;
         isRepayBorrowAllowed = bonds[address(yToken)].isRepayBorrowAllowed;
@@ -86,7 +88,7 @@ contract Fintroller is
     }
 
     /**
-     * @notice Checks if the account should be allowed to deposit new collateral.
+     * @notice Checks if the account should be allowed to deposit collateral.
      * @dev Reverts it the bond is not listed.
      * @param yToken The bond to make the check against.
      * @return bool true=allowed, false=not allowed.
@@ -103,9 +105,10 @@ contract Fintroller is
      * @param yToken The bond to make the check against.
      * @return bool true=allowed, false=not allowed.
      */
-    function getLiquidateBorrowAllowed(YTokenInterface yToken) external override pure returns (bool) {
-        yToken;
-        return true;
+    function getLiquidateBorrowAllowed(YTokenInterface yToken) external override view returns (bool) {
+        Bond memory bond = bonds[address(yToken)];
+        require(bond.isListed, "ERR_BOND_NOT_LISTED");
+        return bond.isLiquidateBorrowAllowed;
     }
 
     /**
@@ -167,6 +170,7 @@ contract Fintroller is
             debtCeiling: 0,
             isBorrowAllowed: false,
             isDepositCollateralAllowed: false,
+            isLiquidateBorrowAllowed: false,
             isListed: true,
             isRedeemUnderlyingAllowed: false,
             isRepayBorrowAllowed: false,
@@ -184,9 +188,10 @@ contract Fintroller is
      * Requirements:
      *
      * - The caller must be the administrator.
+     * - The bond must be listed.
      *
      * @param yToken The yToken contract to update the permission for.
-     * @param state The new state to be put in storage.
+     * @param state The new state to put in storage.
      * @return bool true=success, otherwise it reverts.
      */
     function setBorrowAllowed(YTokenInterface yToken, bool state) external override onlyAdmin returns (bool) {
@@ -281,16 +286,17 @@ contract Fintroller is
     }
 
     /**
-     * @notice Updates the state of the permission accessed by the yToken before a new collateral deposit.
+     * @notice Updates the state of the permission accessed by the yToken before a collateral deposit.
      *
      * @dev Emits a {SetDepositCollateralAllowed} event.
      *
      * Requirements:
      *
      * - The caller must be the administrator.
+     * - The bond must be listed.
      *
      * @param yToken The yToken contract to update the permission for.
-     * @param state The new state to be put in storage.
+     * @param state The new state to put in storage.
      * @return bool true=success, otherwise it reverts.
      */
     function setDepositCollateralAllowed(YTokenInterface yToken, bool state)
@@ -302,6 +308,27 @@ contract Fintroller is
         require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
         bonds[address(yToken)].isDepositCollateralAllowed = state;
         emit SetDepositCollateralAllowed(admin, yToken, state);
+        return true;
+    }
+
+    /**
+     * @notice Updates the state of the permission accessed by the yToken before a liquidate borrow.
+     *
+     * @dev Emits a {SetLiquidateBorrowAllowed} event.
+     *
+     * Requirements:
+     *
+     * - The caller must be the administrator.
+     * - The bond must be listed.
+     *
+     * @param yToken The yToken contract to update the permission for.
+     * @param state The new state to put in storage.
+     * @return bool true=success, otherwise it reverts.
+     */
+    function setLiquidateBorrowAllowed(YTokenInterface yToken, bool state) external override onlyAdmin returns (bool) {
+        require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
+        bonds[address(yToken)].isLiquidateBorrowAllowed = state;
+        emit SetLiquidateBorrowAllowed(admin, yToken, state);
         return true;
     }
 
@@ -333,10 +360,11 @@ contract Fintroller is
      *
      * Requirements:
      *
-     * - The caller must be the administrator
+     * - The caller must be the administrator.
+     * - The bond must be listed.
      *
      * @param yToken The yToken contract to update the permission for.
-     * @param state The new state to be put in storage.
+     * @param state The new state to put in storage.
      * @return bool true=success, otherwise it reverts.
      */
     function setRedeemUnderlyingAllowed(YTokenInterface yToken, bool state) external override onlyAdmin returns (bool) {
@@ -353,10 +381,11 @@ contract Fintroller is
      *
      * Requirements:
      *
-     * - The caller must be the administrator
+     * - The caller must be the administrator.
+     * - The bond must be listed.
      *
      * @param yToken The yToken contract to update the permission for.
-     * @param state The new state to be put in storage.
+     * @param state The new state to put in storage.
      * @return bool true=success, otherwise it reverts.
      */
     function setRepayBorrowAllowed(YTokenInterface yToken, bool state) external override onlyAdmin returns (bool) {
@@ -375,7 +404,7 @@ contract Fintroller is
      * - The caller must be the administrator
      *
      * @param yToken The yToken contract to update the permission for.
-     * @param state The new state to be put in storage.
+     * @param state The new state to put in storage.
      * @return bool true=success, otherwise it reverts.
      */
     function setSupplyUnderlyingAllowed(YTokenInterface yToken, bool state) external override onlyAdmin returns (bool) {

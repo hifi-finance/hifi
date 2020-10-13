@@ -4,7 +4,7 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { expect } from "chai";
 import { waffle } from "@nomiclabs/buidler";
 
-import YTokenArtifact from "../../../../artifacts/YToken.json";
+import YTokenArtifact from "../../../artifacts/YToken.json";
 
 import { YTokenConstants } from "../../../utils/constants";
 import { YTokenErrors } from "../../../utils/errors";

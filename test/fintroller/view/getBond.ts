@@ -23,6 +23,7 @@ export default function shouldBehaveLikeGetBondCollateralizationRatio(): void {
       expect(bond.debtCeiling).to.equal(Zero);
       expect(bond.isBorrowAllowed).to.equal(false);
       expect(bond.isDepositCollateralAllowed).to.equal(false);
+      expect(bond.isLiquidateBorrowAllowed).to.equal(false);
       expect(bond.isListed).to.equal(true);
       expect(bond.isRedeemUnderlyingAllowed).to.equal(false);
       expect(bond.isRepayBorrowAllowed).to.equal(false);
@@ -33,7 +34,15 @@ export default function shouldBehaveLikeGetBondCollateralizationRatio(): void {
   describe("when the bond is not listed", function () {
     it("retrieves the default values", async function () {
       const bond = await this.contracts.fintroller.getBond(this.stubs.yToken.address);
+      expect(bond.collateralizationRatioMantissa).to.equal(Zero);
+      expect(bond.debtCeiling).to.equal(Zero);
+      expect(bond.isBorrowAllowed).to.equal(false);
+      expect(bond.isDepositCollateralAllowed).to.equal(false);
+      expect(bond.isLiquidateBorrowAllowed).to.equal(false);
       expect(bond.isListed).to.equal(false);
+      expect(bond.isRedeemUnderlyingAllowed).to.equal(false);
+      expect(bond.isRepayBorrowAllowed).to.equal(false);
+      expect(bond.isSupplyUnderlyingAllowed).to.equal(false);
     });
   });
 }

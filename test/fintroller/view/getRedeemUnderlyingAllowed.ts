@@ -2,7 +2,7 @@ import { expect } from "chai";
 
 import { FintrollerErrors } from "../../../utils/errors";
 
-export default function shouldBehaveLikeRedeemUnderlyingAllowedGetter(): void {
+export default function shouldBehaveLikeGetRedeemUnderlyingAllowed(): void {
   describe("when the bond is listed", function () {
     beforeEach(async function () {
       await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.yToken.address);
