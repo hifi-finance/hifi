@@ -110,7 +110,6 @@ export async function yTokenFixture(
   const balanceSheet: MockContract = await deployStubBalanceSheet(deployer);
   const underlying: MockContract = await deployStubUnderlying(deployer);
   const collateral: MockContract = await deployStubCollateral(deployer);
-  const redemptionPool: MockContract = await deployStubRedemptionPool(deployer);
 
   const name: string = "DAI/ETH (2021-01-01)";
   const symbol: string = "yDAI-JAN21";
@@ -124,8 +123,15 @@ export async function yTokenFixture(
     balanceSheet.address,
     underlying.address,
     collateral.address,
-    redemptionPool.address,
   ])) as unknown) as YToken;
+
+  /**
+   * The yToken initializes the Redemption Pool in its constructor, but we don't want
+   * it for our unit tests. With help from the god-mode, we override the Redemption Pool
+   * with a mock contract.
+   */
+  const redemptionPool: MockContract = await deployStubRedemptionPool(deployer);
+  await yToken.__godMode__setRedemptionPool(redemptionPool.address);
 
   return { balanceSheet, collateral, fintroller, oracle, redemptionPool, underlying, yToken };
 }

@@ -2,7 +2,6 @@
 pragma solidity ^0.7.1;
 
 import "@paulrberg/contracts/access/Admin.sol";
-import "@paulrberg/contracts/access/Orchestratable.sol";
 import "@paulrberg/contracts/math/CarefulMath.sol";
 import "@paulrberg/contracts/token/erc20/Erc20.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
@@ -11,6 +10,7 @@ import "@paulrberg/contracts/token/erc20/Erc20Recover.sol";
 
 import "./BalanceSheetInterface.sol";
 import "./FintrollerInterface.sol";
+import "./RedemptionPool.sol";
 import "./YTokenInterface.sol";
 import "./oracles/UniswapAnchoredViewInterface.sol";
 import "./utils/ReentrancyGuard.sol";
@@ -24,7 +24,6 @@ contract YToken is
     YTokenInterface, /* one dependency */
     Admin, /* two dependencies */
     Exponential, /* two dependencies */
-    Orchestratable, /* two depdendencies */
     Erc20, /* three dependencies */
     Erc20Permit, /* five dependencies */
     Erc20Recover /* five dependencies */
@@ -48,7 +47,6 @@ contract YToken is
      * @param balanceSheet_ The address of the BalanceSheet contract.
      * @param collateral_ The contract address of the collateral asset.
      * @param underlying_ The contract address of the underlying asset.
-     * @param redemptionPool_ The address of the RedemptionPool contract.
      */
     constructor(
         string memory name_,
@@ -57,9 +55,8 @@ contract YToken is
         FintrollerInterface fintroller_,
         BalanceSheetInterface balanceSheet_,
         Erc20Interface underlying_,
-        Erc20Interface collateral_,
-        RedemptionPoolInterface redemptionPool_
-    ) Erc20Permit(name_, symbol_, 18) Admin() Orchestratable() {
+        Erc20Interface collateral_
+    ) Erc20Permit(name_, symbol_, 18) Admin() {
         uint8 defaultNumberOfDecimals = 18;
 
         /* Set the unix expiration time. */
@@ -82,9 +79,9 @@ contract YToken is
         require(defaultNumberOfDecimals >= collateral.decimals(), "ERR_CONSTRUCTOR_COLLATERAL_DECIMALS_OVERFLOW");
         collateralPrecisionScalar = 1**(defaultNumberOfDecimals / collateral.decimals());
 
-        /* Set the Redemption Pool contract and sanity check it. */
-        redemptionPool = redemptionPool_;
-        redemptionPool_.isRedemptionPool();
+        /* Create the Redemption Pool contract and transfer the owner from the yToken itself to the current caller. */
+        redemptionPool = new RedemptionPool(fintroller_, this);
+        Admin(address(redemptionPool)).transferAdmin(msg.sender);
     }
 
     /**
@@ -104,6 +101,7 @@ contract YToken is
 
     /**
      * @notice Increases the debt of the caller and mints new yToken.
+     *
      * @dev Emits a {Borrow}, {Mint} and {Transfer} event.
      *
      * Requirements:
@@ -164,7 +162,7 @@ contract YToken is
         mintInternal(msg.sender, borrowAmount);
 
         /* Interactions: increase the debt of the account. */
-        require(balanceSheet.setVaultDebt(this, msg.sender, vars.newDebt), "ERR_BORROW_SET_VAULT_DEBT");
+        require(balanceSheet.setVaultDebt(this, msg.sender, vars.newDebt), "ERR_BORROW_CALL_SET_VAULT_DEBT");
 
         /* Emit a Borrow, Mint and Transfer event. */
         emit Borrow(msg.sender, borrowAmount);
@@ -174,21 +172,24 @@ contract YToken is
     }
 
     /**
-     * @notice Reduces the token supply by `burnAmount`.
+     * @notice Destroys `burnAmount` tokens from `holder`, reducing the token supply.
      *
      * @dev Emits a {Burn} event.
      *
      * Requirements:
      *
      * - Must be called prior to maturation.
-     * - Can only be called by the Redemption Pool, the sole ochestrated contract.
+     * - Can only be called by the Redemption Pool.
      * - The amount to burn cannot be zero.
      *
      * @param holder The account whose yTokens to burn.
      * @param burnAmount The amount of yTokens to burn.
      * @return bool true=success, otherwise it reverts.
      */
-    function burn(address holder, uint256 burnAmount) external override nonReentrant onlyOrchestrated returns (bool) {
+    function burn(address holder, uint256 burnAmount) external override nonReentrant returns (bool) {
+        /* Checks: the caller is the Redemption Pool. */
+        require(msg.sender == address(redemptionPool), "ERR_BURN_NOT_AUTHORIZED");
+
         /* Checks: the zero edge case. */
         require(burnAmount > 0, "ERR_BURN_ZERO");
 
@@ -239,7 +240,10 @@ contract YToken is
         require(lockedCollateral >= clutchedCollateralAmount, "ERR_LIQUIDATE_BORROW_CLUTCH_COLLATERAL_OVERFLOW");
 
         /* Interactions: clutch the collateral. */
-        require(balanceSheet.clutchCollateral(this, msg.sender, borrower, clutchedCollateralAmount));
+        require(
+            balanceSheet.clutchCollateral(this, msg.sender, borrower, clutchedCollateralAmount),
+            "ERR_LIQUIDATE_BORROW_CALL_CLUTCH_COLLATERAL"
+        );
 
         emit LiquidateBorrow(msg.sender, borrower, repayAmount, clutchedCollateralAmount);
 
@@ -247,26 +251,24 @@ contract YToken is
     }
 
     /**
-     * @notice Prints new yTokens into existence.
+    /** @notice Prints new tokens into existence and assigns them to `beneficiary`,
+     * increasing the total supply.
      *
      * @dev Emits a {Mint} event.
      *
      * Requirements:
      *
-     * - Can only be called by the Redemption Pool, the sole ochestrated contract.
+     * - Can only be called by the Redemption Pool.
      * - The amount to mint cannot be zero.
      *
      * @param beneficiary The account for which to mint the tokens.
      * @param mintAmount The amount of yTokens to print into existence.
      * @return bool true=success, otherwise it reverts.
      */
-    function mint(address beneficiary, uint256 mintAmount)
-        external
-        override
-        nonReentrant
-        onlyOrchestrated
-        returns (bool)
-    {
+    function mint(address beneficiary, uint256 mintAmount) external override nonReentrant returns (bool) {
+        /* Checks: the caller is the Redemption Pool. */
+        require(msg.sender == address(redemptionPool), "ERR_MINT_NOT_AUTHORIZED");
+
         /* Checks: the zero edge case. */
         require(mintAmount > 0, "ERR_MINT_ZERO");
 
@@ -355,7 +357,7 @@ contract YToken is
         burnInternal(payer, repayAmount);
 
         /* Interactions: reduce the debt of the account. */
-        require(balanceSheet.setVaultDebt(this, borrower, newDebt));
+        require(balanceSheet.setVaultDebt(this, borrower, newDebt), "ERR_REPAY_BORROW_CALL_SET_VAULT_DEBT");
 
         /* Emit a RepayBorrow and Transfer event. */
         emit RepayBorrow(payer, borrower, repayAmount, newDebt);

@@ -33,9 +33,10 @@ contract RedemptionPool is
         fintroller = fintroller_;
         fintroller.isFintroller();
 
-        /* Set the yToken contract and sanity check it. */
+        /**
+         * Set the yToken contract. It cannot be sanity-checked because the yToken creates this
+         * contract in its own constructor and contracts cannot be called while initializing. */
         yToken = yToken_;
-        yToken.isYToken();
     }
 
     struct RedeemUnderlyingLocalVars {
@@ -81,7 +82,7 @@ contract RedemptionPool is
         totalUnderlyingSupply = vars.newUnderlyingTotalSupply;
 
         /**
-         * yTokens always have 18 decimals so we have to upscale the underlying amount.
+         * yTokens always have 18 decimals so the underlying amount needs to be upscaled.
          * If the precision scalar is 1, it means that the underlying also has 18 decimals.
          */
         vars.underlyingPrecisionScalar = yToken.underlyingPrecisionScalar();
@@ -93,7 +94,8 @@ contract RedemptionPool is
         }
 
         /* Interactions: burn the yTokens. */
-        require(yToken.burn(msg.sender, underlyingAmount));
+        /* solhint-disable-next-line no-reason-string */
+        require(yToken.burn(msg.sender, underlyingAmount), "ERR_SUPPLY_UNDERLYING_CALL_BURN");
 
         /* Interactions: perform the Erc20 transfer. */
         yToken.underlying().safeTransfer(msg.sender, underlyingAmount);
@@ -143,7 +145,7 @@ contract RedemptionPool is
         totalUnderlyingSupply = vars.newUnderlyingTotalSupply;
 
         /**
-         * yTokens always have 18 decimals so we have to upscale the underlying amount.
+         * yTokens always have 18 decimals so the underlying amount needs to be upscaled
          * If the precision scalar is 1, it means that the underlying also has 18 decimals.
          */
         vars.underlyingPrecisionScalar = yToken.underlyingPrecisionScalar();
@@ -155,7 +157,8 @@ contract RedemptionPool is
         }
 
         /* Interactions: mint the yTokens. */
-        require(yToken.mint(msg.sender, vars.yTokenAmount));
+        /* solhint-disable-next-line no-reason-string */
+        require(yToken.mint(msg.sender, vars.yTokenAmount), "ERR_SUPPLY_UNDERLYING_CALL_MINT");
 
         /* Interactions: perform the Erc20 transfer. */
         yToken.underlying().safeTransferFrom(msg.sender, address(this), underlyingAmount);

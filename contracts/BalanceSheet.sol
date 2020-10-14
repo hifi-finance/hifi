@@ -249,7 +249,7 @@ contract BalanceSheet is
     }
 
     /**
-     * @notice Reads all the storage properties of a vault.
+     * @notice Reads all the properties of a vault.
      */
     function getVault(YTokenInterface yToken, address account)
         external
@@ -268,10 +268,16 @@ contract BalanceSheet is
         isOpen = vaults[address(yToken)][account].isOpen;
     }
 
+    /**
+     * @notice Reads the debt held by the given account.
+     */
     function getVaultDebt(YTokenInterface yToken, address account) external view override returns (uint256) {
         return vaults[address(yToken)][account].debt;
     }
 
+    /**
+     * @notice Reads the collateral that the given account locked in the vault.
+     */
     function getVaultLockedCollateral(YTokenInterface yToken, address account)
         external
         view
@@ -310,7 +316,20 @@ contract BalanceSheet is
      */
 
     /**
+     * @notice Transfers the collateral from the borrower's vault to the liquidator account.
+     *
      * @dev Emits a {ClutchCollateral} event.
+     *
+     * Requirements:
+     *
+     * - Can only be called by the yToken.
+     * - There must be enough collateral in the borrower's vault.
+     *
+     * @param yToken The address of the yToken contract.
+     * @param liquidator The account who repaid the borrower's debt and the receiver of the collateral.
+     * @param borrower The account who fell underwater and is liquidated.
+     * @param collateralAmount The amount of collateral to clutch, specified in the collateral's decimal system.
+     * @return true = success, otherwise it reverts.
      */
     function clutchCollateral(
         YTokenInterface yToken,
@@ -318,16 +337,13 @@ contract BalanceSheet is
         address borrower,
         uint256 collateralAmount
     ) external override nonReentrant returns (bool) {
-        /* Checks: the caller is the yToken contract. */
+        /* Checks: the caller is the yToken. */
         require(msg.sender == address(yToken), "ERR_CLUTCH_COLLATERAL_NOT_AUTHORIZED");
 
         /* Calculate the new locked collateral amount. */
         MathError mathErr;
         uint256 newLockedCollateral;
-        (mathErr, newLockedCollateral) = subUInt(
-            vaults[address(yToken)][borrower].lockedCollateral,
-            collateralAmount
-        );
+        (mathErr, newLockedCollateral) = subUInt(vaults[address(yToken)][borrower].lockedCollateral, collateralAmount);
         require(mathErr == MathError.NO_ERROR, "ERR_CLUTCH_COLLATERAL_MATH_ERROR");
 
         /* Effects: update the vault. */
@@ -525,7 +541,7 @@ contract BalanceSheet is
      *
      * Requirements:
      *
-     * - Can only be called by the yToken contract.
+     * - Can only be called by the yToken.
      *
      * @param yToken The address of the yToken contract.
      * @param account The account for which to update the debt.
@@ -536,7 +552,7 @@ contract BalanceSheet is
         address account,
         uint256 newVaultDebt
     ) external override returns (bool) {
-        /* Checks: the caller is the yToken contract. */
+        /* Checks: the caller is the yToken. */
         require(msg.sender == address(yToken), "ERR_SET_VAULT_DEBT_NOT_AUTHORIZED");
 
         /* Effects: update the storage property. */

@@ -25,7 +25,6 @@ function createDeployYTokenPromise(this: Mocha.Context): Promise<Contract> {
     this.stubs.balanceSheet.address,
     this.stubs.underlying.address,
     this.stubs.collateral.address,
-    this.stubs.redemptionPool.address,
   ]);
   return deployYTokenPromise;
 }

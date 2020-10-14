@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
-/* solhint-disable func-name-mixedcase */
+/* solhint-disable func-name-mixedcase, no-empty-blocks */
 pragma solidity ^0.7.1;
 
 import "../YToken.sol";
@@ -17,11 +17,14 @@ contract GodModeYToken is YToken {
         FintrollerInterface fintroller_,
         BalanceSheetInterface balanceSheet_,
         Erc20Interface underlying_,
-        Erc20Interface collateral_,
-        RedemptionPoolInterface redemptionPool_
-    ) YToken(name_, symbol_, expirationTime_, fintroller_, balanceSheet_, underlying_, collateral_, redemptionPool_) {}
+        Erc20Interface collateral_
+    ) YToken(name_, symbol_, expirationTime_, fintroller_, balanceSheet_, underlying_, collateral_) {}
 
     function __godMode_mint(address beneficiary, uint256 mintAmount) external {
         mintInternal(beneficiary, mintAmount);
+    }
+
+    function __godMode__setRedemptionPool(RedemptionPoolInterface redemptionPool_) external {
+        redemptionPool = redemptionPool_;
     }
 }
