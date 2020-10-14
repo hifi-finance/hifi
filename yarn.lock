@@ -958,6 +958,11 @@
     safe-buffer "^5.1.1"
     util.promisify "^1.0.0"
 
+"@paulrberg/contracts@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/@paulrberg/contracts/-/contracts-1.0.2.tgz#7a516603528d87a32a16d37dcc87a210d6a6bd13"
+  integrity sha512-SnFj00ua5IVC07I3DMZYmb5tgcq/KffWeqFL7Jm4yDWM5HnNaeJTAbtuvhr27w8LslDWzmt8aCgS5R5G9H+YOw==
+
 "@resolver-engine/core@^0.3.3":
   version "0.3.3"
   resolved "https://registry.npmjs.org/@resolver-engine/core/-/core-0.3.3.tgz#590f77d85d45bc7ecc4e06c654f41345db6ca967"

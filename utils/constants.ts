@@ -9,10 +9,10 @@ export const AddressOne: string = "0x0000000000000000000000000000000000000001";
 /**
  * AMOUNTS
  */
-export const DefaultBlockGasLimit: BigNumber = BigNumber.from("10000000");
-export const DefaultNumberOfDecimals: BigNumber = BigNumber.from(18);
-
 const Ten: BigNumber = BigNumber.from(10);
+
+export const DefaultBlockGasLimit: BigNumber = Ten.pow(8);
+export const DefaultNumberOfDecimals: BigNumber = BigNumber.from(18);
 
 /* Represented as mantissas, decimal scalars with 18 decimals. */
 export const Percentages: { [name: string]: BigNumber } = {
@@ -71,12 +71,6 @@ export const BalanceSheetConstants = {
   },
 };
 
-export const Erc20PermitConstants = {
-  Decimals: BigNumber.from(18),
-  Name: "Erc20 Permit",
-  Symbol: "ERC20",
-};
-
 export const FintrollerConstants = {
   CollateralizationRatioLowerBoundMantissa: Percentages.OneHundred,
   CollateralizationRatioUpperBoundMantissa: Percentages.TenThousand,
@@ -93,7 +87,7 @@ export const FintrollerConstants = {
   },
   LiquidationIncentiveLowerBoundMantissa: Percentages.OneHundred,
   LiquidationIncentiveUpperBoundMantissa: Percentages.OneHundredAndFifty,
-  OraclePrecisionScalar: BigNumber.from("1000000000000"),
+  OraclePrecisionScalar: Ten.pow(12),
 };
 
 export const YTokenConstants = {

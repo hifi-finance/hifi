@@ -3,10 +3,8 @@ import { MockContract } from "ethereum-waffle";
 import { Signer } from "@ethersproject/abstract-signer";
 
 import { GodModeBalanceSheet as BalanceSheet } from "../typechain/GodModeBalanceSheet";
-import { Erc20Permit } from "../typechain/Erc20Permit";
 import { Fintroller } from "../typechain/Fintroller";
 import { GodModeRedemptionPool as RedemptionPool } from "../typechain/GodModeRedemptionPool";
-import { GodModeErc20Recover as Erc20Recover } from "../typechain/GodModeErc20Recover";
 import { GodModeYToken as YToken } from "../typechain/GodModeYToken";
 import { SimpleUniswapAnchoredView } from "../typechain/SimpleUniswapAnchoredView";
 
@@ -22,8 +20,6 @@ export interface Accounts {
 
 export interface Contracts {
   balanceSheet: BalanceSheet;
-  erc20Permit: Erc20Permit;
-  erc20Recover: Erc20Recover;
   fintroller: Fintroller;
   oracle: SimpleUniswapAnchoredView;
   redemptionPool: RedemptionPool;
@@ -45,7 +41,6 @@ export interface Stubs {
   fintroller: MockContract;
   oracle: MockContract;
   redemptionPool: MockContract;
-  thirdPartyToken: MockContract;
   underlying: MockContract;
   yToken: MockContract;
 }

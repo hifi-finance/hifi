@@ -1,10 +1,10 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.7.1;
 
+import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
 import "./BalanceSheetInterface.sol";
 import "./FintrollerInterface.sol";
 import "./RedemptionPoolInterface.sol";
-import "./erc20/Erc20Interface.sol";
 
 /**
  * @title YTokenStorage

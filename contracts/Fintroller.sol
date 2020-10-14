@@ -1,11 +1,11 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.7.1;
 
+import "@paulrberg/contracts/access/Admin.sol";
+import "@paulrberg/contracts/math/Exponential.sol";
+import "@paulrberg/contracts/token/erc20/Erc20Recover.sol";
 import "./FintrollerInterface.sol";
 import "./YTokenInterface.sol";
-import "./erc20/Erc20Recover.sol";
-import "./math/Exponential.sol";
-import "./utils/Admin.sol";
 
 /**
  * @notice Fintroller

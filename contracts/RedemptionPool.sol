@@ -1,13 +1,14 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.7.1;
 
+import "@paulrberg/contracts/access/Admin.sol";
+import "@paulrberg/contracts/math/CarefulMath.sol";
+import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
+import "@paulrberg/contracts/token/erc20/Erc20Recover.sol";
+import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
+
 import "./FintrollerInterface.sol";
 import "./RedemptionPoolInterface.sol";
-import "./erc20/Erc20Interface.sol";
-import "./erc20/Erc20Recover.sol";
-import "./erc20/SafeErc20.sol";
-import "./math/CarefulMath.sol";
-import "./utils/Admin.sol";
 import "./utils/ReentrancyGuard.sol";
 
 /**

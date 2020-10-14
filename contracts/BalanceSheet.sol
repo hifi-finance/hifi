@@ -1,16 +1,16 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.7.1;
 
-import "@nomiclabs/buidler/console.sol";
+import "@paulrberg/contracts/access/Admin.sol";
+import "@paulrberg/contracts/math/CarefulMath.sol";
+import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
+import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
+
 import "./BalanceSheetInterface.sol";
 import "./FintrollerInterface.sol";
 import "./YTokenInterface.sol";
-import "./erc20/Erc20Interface.sol";
-import "./erc20/SafeErc20.sol";
-import "./math/CarefulMath.sol";
 import "./oracles/OraclePriceScalar.sol";
 import "./oracles/UniswapAnchoredViewInterface.sol";
-import "./utils/Admin.sol";
 import "./utils/ReentrancyGuard.sol";
 
 /**
