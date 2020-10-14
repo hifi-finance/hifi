@@ -124,7 +124,6 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
                   await this.stubs.balanceSheet.mock.getVaultDebt
                     .withArgs(this.contracts.yToken.address, this.accounts.brad)
                     .returns(Zero);
-                  await this.contracts.yToken.__godMode_mint(this.accounts.grace, repayAmount);
                 });
 
                 it("reverts", async function () {

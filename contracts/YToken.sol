@@ -347,24 +347,24 @@ contract YToken is
         /* Checks: the Fintroller allows this action to be performed. */
         require(fintroller.getRepayBorrowAllowed(this), "ERR_REPAY_BORROW_NOT_ALLOWED");
 
-        /* Checks: the payer has enough yTokens. */
-        require(balanceOf(payer) >= repayAmount, "ERR_REPAY_BORROW_INSUFFICIENT_BALANCE");
-
-        /* Checks: account has a debt to pay. */
+        /* Checks: borrower has a debt to pay. */
         uint256 debt = balanceSheet.getVaultDebt(this, borrower);
         require(debt >= repayAmount, "ERR_REPAY_BORROW_INSUFFICIENT_DEBT");
 
-        /* Effects: reduce the debt of the account. */
+        /* Checks: the payer has enough yTokens. */
+        require(balanceOf(payer) >= repayAmount, "ERR_REPAY_BORROW_INSUFFICIENT_BALANCE");
+
+        /* Effects: burn the yTokens. */
+        burnInternal(payer, repayAmount);
+
+        /* Calculate the new debt of the borrower. */
         MathError mathErr;
         uint256 newDebt;
         (mathErr, newDebt) = subUInt(debt, repayAmount);
         /* This operation can't fail because of the previous `require`. */
         assert(mathErr == MathError.NO_ERROR);
 
-        /* Effects: burn the yTokens. */
-        burnInternal(payer, repayAmount);
-
-        /* Interactions: reduce the debt of the account. */
+        /* Interactions: reduce the debt of the borrower . */
         require(balanceSheet.setVaultDebt(this, borrower, newDebt), "ERR_REPAY_BORROW_CALL_SET_VAULT_DEBT");
 
         /* Emit a RepayBorrow and Transfer event. */

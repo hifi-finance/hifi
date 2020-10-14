@@ -90,7 +90,6 @@ export default function shouldBehaveLikeRepayBorrow(): void {
               await this.stubs.balanceSheet.mock.getVaultDebt
                 .withArgs(this.contracts.yToken.address, this.accounts.lucy)
                 .returns(Zero);
-              await this.contracts.yToken.__godMode_mint(this.accounts.lucy, repayAmount);
             });
 
             it("reverts", async function () {

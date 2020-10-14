@@ -78,8 +78,6 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
 
           describe("when the user does not have a debt", function () {
             beforeEach(async function () {
-              await this.contracts.yToken.__godMode_mint(this.accounts.lucy, repayAmount);
-
               /* The yToken makes an internal call to this stubbed function. */
               await this.stubs.balanceSheet.mock.getVaultDebt
                 .withArgs(this.contracts.yToken.address, this.accounts.brad)
