@@ -34,7 +34,9 @@ jobs:
 
       - name: "Lint Solidity and TypeScript code"
         run: "yarn run lint"
+
       - name: "Test the contracts"
         run: "yarn run test"
+
       - name: "Run code coverage and upload report to Coveralls"
         run: "yarn run coverage | yarn coveralls"
