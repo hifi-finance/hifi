@@ -19,8 +19,11 @@ jobs:
   ci:
     runs-on: "ubuntu-18.04"
     steps:
-      - uses: "actions/checkout@v2"
-      - uses: "actions/setup-node@v1"
+      - name: "Check out the repo"
+        uses: "actions/checkout@v2"
+
+      - name: "Install Node.js"
+        uses: "actions/setup-node@v1"
         with:
           version: "12.x"
 
@@ -34,6 +37,9 @@ jobs:
 
       - name: "Lint Solidity and TypeScript code"
         run: "yarn run lint"
+
+      - name: "Compile the contracts and generate TypeChain artifacts"
+        run: "yarn run typechain"
 
       - name: "Test the contracts"
         run: "yarn run test"
