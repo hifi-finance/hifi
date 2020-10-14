@@ -1,0 +1,40 @@
+name: "Continuous Integration"
+
+env:
+  COVERAGE_GIT_BRANCH: "develop"
+  COVERAGE_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+  COVERAGE_SERVICE_NAME: "github-actions-ci"
+  INFURA: ${{ secrets.INFURA }}
+  MNEMONIC: ${{ secrets.MNEMONIC }}
+
+on:
+  pull_request:
+    branches:
+      - "develop"
+  push:
+    branches:
+      - "develop"
+
+jobs:
+  ci:
+    runs-on: "ubuntu-18.04"
+    steps:
+      - uses: "actions/checkout@v2"
+      - uses: "actions/setup-node@v1"
+        with:
+          version: "12.x"
+
+      - uses: "actions/cache@v2"
+        with:
+          key: ${{ runner.os }}-modules-${{ hashFiles("**/yarn.lock") }}
+          path: "./node_modules"
+
+      - name: "Install dependencies"
+        run: "yarn install"
+
+      - name: "Lint Solidity and TypeScript code"
+        run: "yarn run lint"
+      - name: "Test the contracts"
+        run: "yarn run test"
+      - name: "Run code coverage and upload report to Coveralls"
+        run: "yarn run coverage | yarn coveralls"

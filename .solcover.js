@@ -7,7 +7,7 @@ if (!mnemonic) {
 }
 
 module.exports = {
-  istanbulReporter: ["html"],
+  istanbulReporter: ["html", "lcov"],
   onCompileComplete: async function (_config) {
     await run("typechain");
   },
@@ -23,21 +23,5 @@ module.exports = {
     default_balance_ether: 100000000,
     mnemonic,
   },
-  skipFiles: [
-    "erc20/Erc20.sol",
-    "erc20/Erc20Interface.sol",
-    "erc20/Erc20Storage.sol",
-    "erc20/SafeErc20.sol",
-    "math",
-    "test",
-    "utils/Address.sol",
-    "utils/Admin.sol",
-    "utils/AdminInterface.sol",
-    "utils/AdminStorage.sol",
-    "utils/ErrorReporter.sol",
-    "utils/Orchestratable.sol",
-    "utils/OrchestratableInterface.sol",
-    "utils/OrchestratableStorage.sol",
-    "utils/ReentrancyGuard.sol",
-  ],
+  skipFiles: ["test", "utils/ReentrancyGuard.sol"],
 };
