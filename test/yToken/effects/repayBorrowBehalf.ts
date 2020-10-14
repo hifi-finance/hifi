@@ -4,7 +4,7 @@ import { expect } from "chai";
 
 import { GenericErrors, YTokenErrors } from "../../../utils/errors";
 import { TokenAmounts } from "../../../utils/constants";
-import { stubGetBondCollateralizationRatio, stubOpenVault } from "../../stubs";
+import { stubGetBondCollateralizationRatio, stubIsVaultOpen } from "../../stubs";
 
 /**
  * This test suite assumes that Lucy pays the debt on behalf of Brad.
@@ -15,7 +15,7 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
 
   describe("when the vault is open", function () {
     beforeEach(async function () {
-      await stubOpenVault.call(this, this.contracts.yToken.address, this.accounts.brad);
+      await stubIsVaultOpen.call(this, this.contracts.yToken.address, this.accounts.brad);
     });
 
     describe("when the amount to repay is not zero", function () {

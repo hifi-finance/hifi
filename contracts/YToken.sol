@@ -28,11 +28,6 @@ contract YToken is
     Erc20Permit, /* five dependencies */
     Erc20Recover /* five dependencies */
 {
-    modifier isNotMatured() {
-        require(block.timestamp < expirationTime, "ERR_BOND_MATURED");
-        _;
-    }
-
     modifier isVaultOpen(address account) {
         require(balanceSheet.isVaultOpen(this, account), "ERR_VAULT_NOT_OPEN");
         _;
@@ -121,11 +116,13 @@ contract YToken is
         public
         override
         isVaultOpen(msg.sender)
-        isNotMatured
         nonReentrant
         returns (bool)
     {
         BorrowLocalVars memory vars;
+
+        /* Checks: bond not matured. */
+        require(isMatured() == false, "ERR_BOND_MATURED");
 
         /* Checks: the zero edge case. */
         require(borrowAmount > 0, "ERR_BORROW_ZERO");
@@ -227,9 +224,12 @@ contract YToken is
         /* Checks: the Fintroller allows this action to be performed. */
         require(fintroller.getLiquidateBorrowAllowed(this), "ERR_LIQUIDATE_BORROW_NOT_ALLOWED");
 
-        /* Checks: the borrower fell below the threshold collateraliation ratio. */
-        vars.isAccountUnderwater = balanceSheet.isAccountUnderwater(this, borrower);
-        require(vars.isAccountUnderwater, "ERR_ACCOUNT_NOT_UNDERWATER");
+        /* After maturation, any vault can be liquidated, irrespective of collateralization ratio. */
+        if (isMatured() == false) {
+            /* Checks: the borrower fell below the threshold collateraliation ratio. */
+            vars.isAccountUnderwater = balanceSheet.isAccountUnderwater(this, borrower);
+            require(vars.isAccountUnderwater, "ERR_ACCOUNT_NOT_UNDERWATER");
+        }
 
         /* Effects & Interactions: repay the borrower's debt. */
         repayBorrowInternal(msg.sender, borrower, repayAmount);
@@ -325,6 +325,14 @@ contract YToken is
     /**
      * INTERNAL FUNCTIONS
      */
+
+    /**
+     * @dev Checks if the bond matured.
+     */
+    function isMatured() internal view returns (bool) {
+        return block.timestamp >= expirationTime;
+    }
+
     /**
      * @dev See the documentation for the public functions that call this internal function.
      */

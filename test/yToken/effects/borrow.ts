@@ -9,7 +9,7 @@ import { contextForTimeDependentTests } from "../../../utils/mochaContexts";
 import { increaseTime } from "../../../utils/jsonRpcHelpers";
 import {
   stubGetBondCollateralizationRatio,
-  stubOpenVault,
+  stubIsVaultOpen,
   stubVaultFreeCollateral,
   stubVaultLockedCollateral,
 } from "../../stubs";
@@ -24,7 +24,7 @@ export default function shouldBehaveLikeBorrow(): void {
 
   describe("when the vault is open", function () {
     beforeEach(async function () {
-      await stubOpenVault.call(this, this.contracts.yToken.address, this.accounts.brad);
+      await stubIsVaultOpen.call(this, this.contracts.yToken.address, this.accounts.brad);
     });
 
     describe("when the bond did not mature", function () {

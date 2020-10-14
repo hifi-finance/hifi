@@ -5,7 +5,7 @@ import { expect } from "chai";
 import { AddressOne, TokenAmounts } from "../../../utils/constants";
 import { GenericErrors, YTokenErrors } from "../../../utils/errors";
 import { FintrollerErrors } from "../../../utils/errors";
-import { stubGetBondCollateralizationRatio, stubOpenVault } from "../../stubs";
+import { stubGetBondCollateralizationRatio, stubIsVaultOpen } from "../../stubs";
 
 export default function shouldBehaveLikeRepayBorrow(): void {
   const borrowAmount: BigNumber = TokenAmounts.OneHundred;
@@ -13,7 +13,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
 
   describe("when the vault is open", function () {
     beforeEach(async function () {
-      await stubOpenVault.call(this, this.contracts.yToken.address, this.accounts.brad);
+      await stubIsVaultOpen.call(this, this.contracts.yToken.address, this.accounts.brad);
     });
 
     describe("when the amount to repay is not zero", function () {
@@ -86,7 +86,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
 
           describe("when the caller does not have a debt", function () {
             beforeEach(async function () {
-              await stubOpenVault.call(this, this.contracts.yToken.address, this.accounts.lucy);
+              await stubIsVaultOpen.call(this, this.contracts.yToken.address, this.accounts.lucy);
               await this.stubs.balanceSheet.mock.getVaultDebt
                 .withArgs(this.contracts.yToken.address, this.accounts.lucy)
                 .returns(Zero);

@@ -3,8 +3,10 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { FintrollerErrors, GenericErrors, YTokenErrors } from "../../../utils/errors";
-import { TokenAmounts } from "../../../utils/constants";
-import { stubGetBondCollateralizationRatio, stubLiquidateBorrowInternalCalls, stubOpenVault } from "../../stubs";
+import { TokenAmounts, YTokenConstants } from "../../../utils/constants";
+import { contextForTimeDependentTests } from "../../../utils/mochaContexts";
+import { increaseTime } from "../../../utils/jsonRpcHelpers";
+import { stubGetBondCollateralizationRatio, stubIsVaultOpen, stubLiquidateBorrowInternalCalls } from "../../stubs";
 
 export default function shouldBehaveLikeLiquidateBorrow(): void {
   const borrowAmount: BigNumber = TokenAmounts.OneHundred;
@@ -15,7 +17,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
 
   describe("when the vault is open", function () {
     beforeEach(async function () {
-      await stubOpenVault.call(this, this.contracts.yToken.address, this.accounts.brad);
+      await stubIsVaultOpen.call(this, this.contracts.yToken.address, this.accounts.brad);
     });
 
     describe("when the caller is not the borrower", function () {
@@ -46,26 +48,26 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
 
               describe("when the borrower has a debt", function () {
                 beforeEach(async function () {
+                  /* Brad borrows 100 yDAI. */
                   await this.stubs.balanceSheet.mock.getVaultDebt
                     .withArgs(this.contracts.yToken.address, this.accounts.brad)
                     .returns(borrowAmount);
                   await this.contracts.yToken.__godMode_mint(this.accounts.brad, borrowAmount);
 
-                  /* The yToken makes an internal call to these stubbed functions. */
+                  /* The yToken makes internal calls to these stubbed functions. */
                   await stubLiquidateBorrowInternalCalls.call(
                     this,
                     this.contracts.yToken.address,
                     newBorrowAmount,
                     repayAmount,
+                    lockedCollateral,
                     clutchedCollateralAmount,
                   );
-                  await this.stubs.balanceSheet.mock.getVaultLockedCollateral
-                    .withArgs(this.contracts.yToken.address, this.accounts.brad)
-                    .returns(lockedCollateral);
                 });
 
                 describe("when the caller has enough yTokens", function () {
                   beforeEach(async function () {
+                    /* Mint 100 yDAI to Grace so she can repay the debt. */
                     await this.contracts.yToken.__godMode_mint(this.accounts.grace, repayAmount);
                   });
 
@@ -140,10 +142,54 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
                   .returns(false);
               });
 
-              it("reverts", async function () {
-                await expect(
-                  this.contracts.yToken.connect(this.signers.grace).liquidateBorrow(this.accounts.brad, repayAmount),
-                ).to.be.revertedWith(GenericErrors.AccountNotUnderwater);
+              describe("when the bond did not mature", function () {
+                it("reverts", async function () {
+                  await expect(
+                    this.contracts.yToken.connect(this.signers.grace).liquidateBorrow(this.accounts.brad, repayAmount),
+                  ).to.be.revertedWith(GenericErrors.AccountNotUnderwater);
+                });
+              });
+
+              contextForTimeDependentTests("when the bond matured", function () {
+                beforeEach(async function () {
+                  await increaseTime(YTokenConstants.DefaultExpirationTime);
+                });
+
+                beforeEach(async function () {
+                  /* Brad borrows 100 yDAI. */
+                  await this.stubs.balanceSheet.mock.getVaultDebt
+                    .withArgs(this.contracts.yToken.address, this.accounts.brad)
+                    .returns(borrowAmount);
+                  await this.contracts.yToken.__godMode_mint(this.accounts.brad, borrowAmount);
+
+                  /* The yToken makes internal calls to these stubbed functions. */
+                  await stubLiquidateBorrowInternalCalls.call(
+                    this,
+                    this.contracts.yToken.address,
+                    newBorrowAmount,
+                    repayAmount,
+                    lockedCollateral,
+                    clutchedCollateralAmount,
+                  );
+
+                  /* Mint 100 yDAI to Grace so she can repay the debt. */
+                  await this.contracts.yToken.__godMode_mint(this.accounts.grace, repayAmount);
+
+                  // await stubLiquidateBorrowInternalCalls.call(
+                  //   this,
+                  //   this.contracts.yToken.address,
+                  //   newBorrowAmount,
+                  //   repayAmount,
+                  //   lockedCollateral,
+                  //   clutchedCollateralAmount,
+                  // );
+                });
+
+                it("liquidates the user", async function () {
+                  await this.contracts.yToken
+                    .connect(this.signers.grace)
+                    .liquidateBorrow(this.accounts.brad, repayAmount);
+                });
               });
             });
           });

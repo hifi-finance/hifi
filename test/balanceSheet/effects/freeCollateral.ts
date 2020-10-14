@@ -88,14 +88,14 @@ export default function shouldBehaveLikeLockCollateral(): void {
 
             describe("when the caller is dangerously collateralized", function () {
               beforeEach(async function () {
-                /* This is precisely a 150% collateralization ratio. We deposited 10 ETH and the oracle assumes 1 ETH = $100. */
-                const debtValue: BigNumber = TokenAmounts.One.mul(666);
+                /* This is a 150% collateralization ratio. We deposited 10 ETH and the oracle assumes 1 ETH = $100. */
+                const debt: BigNumber = TokenAmounts.One.mul(666);
 
                 /* Cannot call the usual `setVaultDebt` since the yToken is stubbed. */
                 await this.contracts.balanceSheet.__godMode_setVaultDebt(
                   this.stubs.yToken.address,
                   this.accounts.brad,
-                  debtValue,
+                  debt,
                 );
               });
 
@@ -126,16 +126,6 @@ export default function shouldBehaveLikeLockCollateral(): void {
 
               expect(oldVault.freeCollateral).to.equal(newVault.freeCollateral.sub(depositCollateralAmount));
               expect(oldVault.lockedCollateral).to.equal(newVault.lockedCollateral.add(depositCollateralAmount));
-            });
-
-            it("emits a FreeCollateral event", async function () {
-              await expect(
-                this.contracts.balanceSheet
-                  .connect(this.signers.brad)
-                  .freeCollateral(this.stubs.yToken.address, depositCollateralAmount),
-              )
-                .to.emit(this.contracts.balanceSheet, "FreeCollateral")
-                .withArgs(this.stubs.yToken.address, this.accounts.brad, depositCollateralAmount);
             });
           });
         });

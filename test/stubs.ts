@@ -82,6 +82,7 @@ export async function stubLiquidateBorrowInternalCalls(
   yTokenAddress: string,
   newBorrowAmount: BigNumber,
   repayAmount: BigNumber,
+  lockedCollateral: BigNumber,
   clutchedCollateralAmount: BigNumber,
 ): Promise<void> {
   await this.stubs.balanceSheet.mock.setVaultDebt
@@ -90,6 +91,9 @@ export async function stubLiquidateBorrowInternalCalls(
   await this.stubs.balanceSheet.mock.getClutchableCollateral
     .withArgs(yTokenAddress, repayAmount)
     .returns(clutchedCollateralAmount);
+  await this.stubs.balanceSheet.mock.getVaultLockedCollateral
+    .withArgs(this.contracts.yToken.address, this.accounts.brad)
+    .returns(lockedCollateral);
   await this.stubs.balanceSheet.mock.clutchCollateral
     .withArgs(yTokenAddress, this.accounts.grace, this.accounts.brad, clutchedCollateralAmount)
     .returns(clutchedCollateralAmount);
@@ -119,28 +123,11 @@ export async function stubGetVault(
     .returns(debt, freeCollateral, lockedCollateral, isOpen);
 }
 
-export async function stubOpenVault(this: Mocha.Context, yTokenAddress: string, account: string): Promise<void> {
+export async function stubIsVaultOpen(this: Mocha.Context, yTokenAddress: string, account: string): Promise<void> {
   await this.stubs.balanceSheet.mock.getVault
     .withArgs(yTokenAddress, account)
     .returns(...Object.values(BalanceSheetConstants.DefaultVault));
   await this.stubs.balanceSheet.mock.isVaultOpen.withArgs(yTokenAddress, account).returns(true);
-}
-
-export async function stubVaultDebt(
-  this: Mocha.Context,
-  yTokenAddress: string,
-  account: string,
-  debt: BigNumber,
-): Promise<void> {
-  await stubGetVault.call(
-    this,
-    yTokenAddress,
-    account,
-    debt,
-    BalanceSheetConstants.DefaultVault.FreeCollateral,
-    BalanceSheetConstants.DefaultVault.LockedCollateral,
-    BalanceSheetConstants.DefaultVault.IsOpen,
-  );
 }
 
 export async function stubVaultFreeCollateral(
@@ -174,22 +161,5 @@ export async function stubVaultLockedCollateral(
     BalanceSheetConstants.DefaultVault.FreeCollateral,
     lockedCollateral,
     BalanceSheetConstants.DefaultVault.IsOpen,
-  );
-}
-
-export async function stuVaultIsOpen(
-  this: Mocha.Context,
-  yTokenAddress: string,
-  account: string,
-  isOpen: boolean,
-): Promise<void> {
-  await stubGetVault.call(
-    this,
-    yTokenAddress,
-    account,
-    BalanceSheetConstants.DefaultVault.Debt,
-    BalanceSheetConstants.DefaultVault.FreeCollateral,
-    BalanceSheetConstants.DefaultVault.LockedCollateral,
-    isOpen,
   );
 }
