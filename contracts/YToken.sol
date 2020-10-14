@@ -112,13 +112,7 @@ contract YToken is
      * @param borrowAmount The amount of yTokens to borrow and print into existence.
      * @return bool true=success, otherwise it reverts.
      */
-    function borrow(uint256 borrowAmount)
-        public
-        override
-        isVaultOpen(msg.sender)
-        nonReentrant
-        returns (bool)
-    {
+    function borrow(uint256 borrowAmount) public override isVaultOpen(msg.sender) nonReentrant returns (bool) {
         BorrowLocalVars memory vars;
 
         /* Checks: bond not matured. */
