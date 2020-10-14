@@ -25,7 +25,7 @@ jobs:
       - name: "Install Node.js"
         uses: "actions/setup-node@v1"
         with:
-          version: "12.x"
+          node-version: "12"
 
       - uses: "actions/cache@v2"
         with:
@@ -41,7 +41,7 @@ jobs:
       - name: "Compile the contracts and generate TypeChain artifacts"
         run: "yarn run typechain"
 
-      - name: "Test the contract and run code coverage"
+      - name: "Test the contracts and run code coverage"
         run: "yarn run coverage"
 
       - name: "Upload report to Coveralls"
