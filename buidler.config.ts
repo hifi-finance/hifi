@@ -3,7 +3,7 @@ import { resolve } from "path";
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
 import { BuidlerConfig, usePlugin } from "@nomiclabs/buidler/config";
-import { ChainIds, DefaultBlockGasLimit, DefaultPrivateKeys } from "./utils/constants";
+import { ChainIds, DefaultBlockGasLimit, DefaultPrivateKeys } from "./helpers/constants";
 import { BuidlerNetworkAccount, HDAccountsConfig } from "@nomiclabs/buidler/types";
 import "./tasks/accounts";
 import "./tasks/clean";

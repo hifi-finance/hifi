@@ -79,6 +79,8 @@ contract BalanceSheet is
 
         /* Avoid the zero edge cases. */
         require(repayAmount > 0, "ERR_GET_CLUTCHABLE_COLLATERAL_ZERO");
+
+        /* When the liquidation incentive is zero, the end result would be zero anyways. */
         vars.liquidationIncentiveMantissa = fintroller.liquidationIncentiveMantissa();
         if (vars.liquidationIncentiveMantissa == 0) {
             return 0;
@@ -298,10 +300,9 @@ contract BalanceSheet is
         if (!vault.isOpen || vault.debt == 0) {
             return false;
         }
-
         uint256 currentCollateralizationRatioMantissa = getCurrentCollateralizationRatio(yToken, account);
         uint256 thresholdCollateralizationRatioMantissa = fintroller.getBondCollateralizationRatio(yToken);
-        return currentCollateralizationRatioMantissa >= thresholdCollateralizationRatioMantissa;
+        return currentCollateralizationRatioMantissa < thresholdCollateralizationRatioMantissa;
     }
 
     /**

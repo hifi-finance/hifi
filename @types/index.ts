@@ -3,6 +3,7 @@ import { MockContract } from "ethereum-waffle";
 import { Signer } from "@ethersproject/abstract-signer";
 
 import { GodModeBalanceSheet as BalanceSheet } from "../typechain/GodModeBalanceSheet";
+import { Erc20Mintable } from "../typechain/Erc20Mintable";
 import { Fintroller } from "../typechain/Fintroller";
 import { GodModeRedemptionPool as RedemptionPool } from "../typechain/GodModeRedemptionPool";
 import { GodModeYToken as YToken } from "../typechain/GodModeYToken";
@@ -20,9 +21,11 @@ export interface Accounts {
 
 export interface Contracts {
   balanceSheet: BalanceSheet;
+  collateral: Erc20Mintable;
   fintroller: Fintroller;
   oracle: SimpleUniswapAnchoredView;
   redemptionPool: RedemptionPool;
+  underlying: Erc20Mintable;
   yToken: YToken;
 }
 

@@ -3,14 +3,15 @@ import { Wallet } from "@ethersproject/wallet";
 import { ethers, waffle } from "@nomiclabs/buidler";
 
 import { Accounts, Contracts, Signers, Stubs } from "../@types/index";
-import { testBalanceSheet } from "./balanceSheet/BalanceSheet";
-import { testFintroller } from "./fintroller/Fintroller";
-import { testRedemptionPool } from "./redemptionPool/RedemptionPool";
-import { testYToken } from "./yToken/YToken";
+import { integrationTestYToken } from "./integration/yToken/YToken";
+import { unitTestBalanceSheet } from "./units/balanceSheet/BalanceSheet";
+import { unitTestFintroller } from "./units/fintroller/Fintroller";
+import { unitTestRedemptionPool } from "./units/redemptionPool/RedemptionPool";
+import { unitTestYToken } from "./units/yToken/YToken";
 
 const { createFixtureLoader } = waffle;
 
-describe("Unit Tests", function () {
+describe("Tests", function () {
   before(async function () {
     this.accounts = {} as Accounts;
     this.contracts = {} as Contracts;
@@ -36,8 +37,14 @@ describe("Unit Tests", function () {
     this.accounts.mark = await signers[5].getAddress();
   });
 
-  testBalanceSheet();
-  testFintroller();
-  testRedemptionPool();
-  testYToken();
+  describe("Tests", function () {
+    unitTestBalanceSheet();
+    unitTestFintroller();
+    unitTestRedemptionPool();
+    unitTestYToken();
+  });
+
+  describe("Integration Tests", function () {
+    integrationTestYToken();
+  });
 });

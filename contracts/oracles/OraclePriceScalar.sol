@@ -5,6 +5,19 @@ import "@paulrberg/contracts/math/CarefulMath.sol";
 import "./UniswapAnchoredViewInterface.sol";
 
 library OraclePriceScalar {
+    /**
+     * @notice Converts the 6 decimal prices returned by the Open Price Feed to mantissa form,
+     * which has 18 decimals.
+     *
+     * @dev Requirements:
+     * - The price returned by the oracle cannot be zero.
+     * - The scaled price cannot overflow.
+     *
+     * @param oracle The oracle contract.
+     * @param symbol The Erc20 symbol of the token for which to query the price.
+     * @param precisionScalar A power of 10.
+     * @return The upscaled price as a mantissa.
+     */
     function getScaledPrice(
         UniswapAnchoredViewInterface oracle,
         string memory symbol,

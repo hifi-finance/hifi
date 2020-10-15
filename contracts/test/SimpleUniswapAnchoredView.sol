@@ -9,19 +9,33 @@ import "../oracles/UniswapAnchoredViewInterface.sol";
  * @dev Strictly for testing purposes. Do not use in production.
  */
 contract SimpleUniswapAnchoredView is UniswapAnchoredViewInterface {
+    uint256 public daiPrice;
+    uint256 public wethPrice;
+
+    constructor() {
+        daiPrice = 1000000; /* $1 */
+        wethPrice = 100000000; /* $100 */
+    }
+
+    function setDaiPrice(uint256 newDaiPrice) external {
+        daiPrice = newDaiPrice;
+    }
+
+    function setWethPrice(uint256 newWethPrice) external {
+        wethPrice = newWethPrice;
+    }
+
     /**
-     * @notice Prices are returned in the format that the Open Price Feed uses: 6 decimals of precision.
+     * @notice Prices are returned in the format that the Open Price Feed uses, i.e. 6 decimals of precision.
      * @dev See https://compound.finance/docs/prices#price
      */
-    function price(string memory symbol) external pure override returns (uint256) {
+    function price(string memory symbol) external view override returns (uint256) {
         if (areStringsEqual(symbol, "WETH")) {
-            /* 1 ETH = $200 */
-            return 100000000;
+            return wethPrice;
         } else if (areStringsEqual(symbol, "DAI")) {
-            /* 1 DAI = $1 */
-            return 1000000;
+            return daiPrice;
         } else {
-            /* Anything else = $0 */
+            /* Everything else is worth $0 */
             return 0;
         }
     }

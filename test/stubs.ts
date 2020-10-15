@@ -11,7 +11,12 @@ import RedemptionPoolArtifact from "../artifacts/GodModeRedemptionPool.json";
 import SimpleUniswapAnchoredViewArtifact from "../artifacts/SimpleUniswapAnchoredView.json";
 import YTokenArtifact from "../artifacts/YToken.json";
 
-import { BalanceSheetConstants, DefaultNumberOfDecimals, FintrollerConstants } from "../utils/constants";
+import {
+  BalanceSheetConstants,
+  CollateralConstants,
+  FintrollerConstants,
+  UnderlyingConstants,
+} from "../helpers/constants";
 
 const { deployMockContract: deployStubContract } = waffle;
 
@@ -25,20 +30,25 @@ export async function deployStubBalanceSheet(deployer: Signer): Promise<MockCont
 }
 
 export async function deployStubCollateral(deployer: Signer): Promise<MockContract> {
-  const collateral: MockContract = await deployStubErc20(deployer, DefaultNumberOfDecimals, "Wrapped Ether", "WETH");
+  const collateral: MockContract = await deployStubErc20(
+    deployer,
+    CollateralConstants.Name,
+    CollateralConstants.Symbol,
+    CollateralConstants.Decimals,
+  );
   return collateral;
 }
 
 export async function deployStubErc20(
   deployer: Signer,
-  decimals: BigNumber,
   name: string,
   symbol: string,
+  decimals: BigNumber,
 ): Promise<MockContract> {
   const collateral: MockContract = await deployStubContract(deployer, Erc20Artifact.abi);
-  await collateral.mock.decimals.returns(decimals);
   await collateral.mock.name.returns(name);
   await collateral.mock.symbol.returns(symbol);
+  await collateral.mock.decimals.returns(decimals);
   await collateral.mock.totalSupply.returns(Zero);
   return collateral;
 }
@@ -52,8 +62,8 @@ export async function deployStubFintroller(deployer: Signer): Promise<MockContra
 
 export async function deployStubOracle(deployer: Signer): Promise<MockContract> {
   const oracle: MockContract = await deployStubContract(deployer, SimpleUniswapAnchoredViewArtifact.abi);
-  await oracle.mock.price.withArgs("WETH").returns(BigNumber.from(100000000));
-  await oracle.mock.price.withArgs("DAI").returns(BigNumber.from(1000000));
+  await oracle.mock.price.withArgs(CollateralConstants.Symbol).returns(BigNumber.from(100000000)); /* $100 */
+  await oracle.mock.price.withArgs(UnderlyingConstants.Symbol).returns(BigNumber.from(1000000)); /* $1 */
   return oracle;
 }
 
@@ -64,7 +74,12 @@ export async function deployStubRedemptionPool(deployer: Signer): Promise<MockCo
 }
 
 export async function deployStubUnderlying(deployer: Signer): Promise<MockContract> {
-  const underlying: MockContract = await deployStubErc20(deployer, DefaultNumberOfDecimals, "Dai Stablecoin", "DAI");
+  const underlying: MockContract = await deployStubErc20(
+    deployer,
+    UnderlyingConstants.Name,
+    UnderlyingConstants.Symbol,
+    UnderlyingConstants.Decimals,
+  );
   return underlying;
 }
 

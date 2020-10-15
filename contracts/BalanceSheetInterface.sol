@@ -49,13 +49,6 @@ abstract contract BalanceSheetInterface is
 
     function getVaultLockedCollateral(YTokenInterface yToken, address account) external view virtual returns (uint256);
 
-    function clutchCollateral(
-        YTokenInterface yToken,
-        address liquidator,
-        address borrower,
-        uint256 clutchedCollateralAmount
-    ) external virtual returns (bool);
-
     function isAccountUnderwater(YTokenInterface yToken, address account) external view virtual returns (bool);
 
     function isVaultOpen(YTokenInterface yToken, address account) external view virtual returns (bool);
@@ -63,6 +56,14 @@ abstract contract BalanceSheetInterface is
     /**
      * NON-CONSTANT FUNCTIONS
      */
+
+    function clutchCollateral(
+        YTokenInterface yToken,
+        address liquidator,
+        address borrower,
+        uint256 clutchedCollateralAmount
+    ) external virtual returns (bool);
+
     function depositCollateral(YTokenInterface yToken, uint256 collateralAmount) external virtual returns (bool);
 
     function freeCollateral(YTokenInterface yToken, uint256 collateralAmount) external virtual returns (bool);
