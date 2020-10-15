@@ -54,6 +54,20 @@ contract YToken is
     ) Erc20Permit(name_, symbol_, 18) Admin() {
         uint8 defaultNumberOfDecimals = 18;
 
+        /* Set the underlying contract and calculate the decimal scalar offsets. */
+        uint256 underlyingDecimals = underlying_.decimals();
+        require(underlyingDecimals > 0, "ERR_YTOKEN_CONSTRUCTOR_UNDERLYING_DECIMALS_ZERO");
+        require(underlyingDecimals <= defaultNumberOfDecimals, "ERR_YTOKEN_CONSTRUCTOR_UNDERLYING_DECIMALS_OVERFLOW");
+        underlyingPrecisionScalar = 1**(defaultNumberOfDecimals / underlyingDecimals);
+        underlying = underlying_;
+
+        /* Set the collateral contract and calculate the decimal scalar offsets. */
+        uint256 collateralDecimals = collateral_.decimals();
+        require(collateralDecimals > 0, "ERR_YTOKEN_CONSTRUCTOR_COLLATERAL_DECIMALS_ZERO");
+        require(defaultNumberOfDecimals >= collateralDecimals, "ERR_YTOKEN_CONSTRUCTOR_COLLATERAL_DECIMALS_OVERFLOW");
+        collateralPrecisionScalar = 1**(defaultNumberOfDecimals / collateralDecimals);
+        collateral = collateral_;
+
         /* Set the unix expiration time. */
         expirationTime = expirationTime_;
 
@@ -64,15 +78,6 @@ contract YToken is
         /* Set the Balance Sheet contract and sanity check it. */
         balanceSheet = balanceSheet_;
         balanceSheet.isBalanceSheet();
-
-        /* Set the underlying and collateral contracts and calculate the decimal scalar offsets. */
-        underlying = underlying_;
-        require(defaultNumberOfDecimals >= underlying.decimals(), "ERR_CONSTRUCTOR_UNDERLYING_DECIMALS_OVERFLOW");
-        underlyingPrecisionScalar = 1**(defaultNumberOfDecimals / underlying.decimals());
-
-        collateral = collateral_;
-        require(defaultNumberOfDecimals >= collateral.decimals(), "ERR_CONSTRUCTOR_COLLATERAL_DECIMALS_OVERFLOW");
-        collateralPrecisionScalar = 1**(defaultNumberOfDecimals / collateral.decimals());
 
         /* Create the Redemption Pool contract and transfer the owner from the yToken itself to the current caller. */
         redemptionPool = new RedemptionPool(fintroller_, this);
