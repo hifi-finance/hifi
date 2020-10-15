@@ -9,10 +9,11 @@ export const AddressOne: string = "0x0000000000000000000000000000000000000001";
 /**
  * AMOUNTS
  */
-const Ten: BigNumber = BigNumber.from(10);
 
+export const Ten: BigNumber = BigNumber.from(10);
 export const DefaultBlockGasLimit: BigNumber = Ten.pow(8);
 export const DefaultNumberOfDecimals: BigNumber = BigNumber.from(18);
+export const PrecisionScalarForTokenWithSixDecimals: BigNumber = Ten.pow(DefaultNumberOfDecimals.sub(6));
 
 /* Represented as mantissas, decimal scalars with 18 decimals. */
 export const Percentages: { [name: string]: BigNumber } = {

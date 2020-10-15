@@ -3,16 +3,13 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { FintrollerErrors, GenericErrors, RedemptionPoolErrors } from "../../../utils/errors";
-import { TokenAmounts, YTokenConstants } from "../../../utils/constants";
+import { PrecisionScalarForTokenWithSixDecimals, TokenAmounts, YTokenConstants } from "../../../utils/constants";
+import { contextForStubbedUnderlyingWithSixDecimals } from "../../../utils/mochaContexts";
 import { stubGetBondCollateralizationRatio } from "../../stubs";
 
-/**
- * Write tests for the following scenarios:
- * - Erc20 `transferFrom` function fails
- * - yToken mint function fails
- */
 export default function shouldBehaveLikeSupplyUnderlying(): void {
   const underlyingAmount: BigNumber = TokenAmounts.OneHundred;
+  const yTokenAmount: BigNumber = TokenAmounts.OneHundred;
 
   describe("when the bond did not mature", function () {
     beforeEach(async function () {
@@ -34,24 +31,51 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
 
           describe("when the call to mint the yTokens succeeds", function () {
             beforeEach(async function () {
-              /* The Redemption Pool makes internal calls to these stubbed functions. */
-              await this.stubs.yToken.mock.mint.withArgs(this.accounts.mark, underlyingAmount).returns(true);
-              await this.stubs.underlying.mock.transferFrom
-                .withArgs(this.accounts.mark, this.contracts.redemptionPool.address, underlyingAmount)
-                .returns(true);
+              await this.stubs.yToken.mock.mint.withArgs(this.accounts.mark, yTokenAmount).returns(true);
             });
 
-            it("supplies the underlying", async function () {
-              const oldUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
-              await this.contracts.redemptionPool.connect(this.signers.mark).supplyUnderlying(underlyingAmount);
-              const newUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
-              expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.sub(underlyingAmount));
+            describe("when the underlying has 18 decimals", function () {
+              beforeEach(async function () {
+                await this.stubs.underlying.mock.transferFrom
+                  .withArgs(this.accounts.mark, this.contracts.redemptionPool.address, underlyingAmount)
+                  .returns(true);
+              });
+
+              it("supplies the underlying", async function () {
+                const oldUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
+                await this.contracts.redemptionPool.connect(this.signers.mark).supplyUnderlying(underlyingAmount);
+                const newUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
+                expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.sub(underlyingAmount));
+              });
+
+              it("emits a SupplyUnderlying event", async function () {
+                await expect(
+                  this.contracts.redemptionPool.connect(this.signers.mark).supplyUnderlying(underlyingAmount),
+                )
+                  .to.emit(this.contracts.redemptionPool, "SupplyUnderlying")
+                  .withArgs(this.accounts.mark, underlyingAmount);
+              });
             });
 
-            it("emits a SupplyUnderlying event", async function () {
-              await expect(this.contracts.redemptionPool.connect(this.signers.mark).supplyUnderlying(underlyingAmount))
-                .to.emit(this.contracts.redemptionPool, "SupplyUnderlying")
-                .withArgs(this.accounts.mark, underlyingAmount);
+            contextForStubbedUnderlyingWithSixDecimals("when the underlying has 6 decimals", function () {
+              const downscaledUnderlyingAmount: BigNumber = underlyingAmount.div(
+                PrecisionScalarForTokenWithSixDecimals,
+              );
+
+              beforeEach(async function () {
+                await this.stubs.underlying.mock.transferFrom
+                  .withArgs(this.accounts.mark, this.contracts.redemptionPool.address, downscaledUnderlyingAmount)
+                  .returns(true);
+              });
+
+              it("supplies the underlying", async function () {
+                const oldUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
+                await this.contracts.redemptionPool
+                  .connect(this.signers.mark)
+                  .supplyUnderlying(downscaledUnderlyingAmount);
+                const newUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
+                expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.sub(downscaledUnderlyingAmount));
+              });
             });
           });
 

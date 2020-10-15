@@ -94,8 +94,7 @@ contract RedemptionPool is
         }
 
         /* Interactions: burn the yTokens. */
-        /* solhint-disable-next-line no-reason-string */
-        require(yToken.burn(msg.sender, underlyingAmount), "ERR_SUPPLY_UNDERLYING_CALL_BURN");
+        require(yToken.burn(msg.sender, vars.yTokenAmount), "ERR_SUPPLY_UNDERLYING_CALL_BURN");
 
         /* Interactions: perform the Erc20 transfer. */
         yToken.underlying().safeTransfer(msg.sender, underlyingAmount);
@@ -157,7 +156,6 @@ contract RedemptionPool is
         }
 
         /* Interactions: mint the yTokens. */
-        /* solhint-disable-next-line no-reason-string */
         require(yToken.mint(msg.sender, vars.yTokenAmount), "ERR_SUPPLY_UNDERLYING_CALL_MINT");
 
         /* Interactions: perform the Erc20 transfer. */

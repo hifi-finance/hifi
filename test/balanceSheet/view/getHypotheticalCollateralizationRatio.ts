@@ -3,9 +3,11 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { BalanceSheetErrors, GenericErrors } from "../../../utils/errors";
-import { Percentages, TokenAmounts } from "../../../utils/constants";
+import { Percentages, PrecisionScalarForTokenWithSixDecimals, TokenAmounts } from "../../../utils/constants";
+import { contextForStubbedCollateralWithSixDecimals } from "../../../utils/mochaContexts";
 
 export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio(): void {
+  const hypotheticalCollateralizationRatioMantissa: BigNumber = Percentages.OneThousand;
   const lockedCollateral: BigNumber = TokenAmounts.Ten;
   const debt: BigNumber = TokenAmounts.OneHundred;
 
@@ -18,14 +20,33 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
       describe("when the debt is not zero", function () {
         describe("when the collateral price from the oracle is not zero", function () {
           describe("when the collateral price from the oracle is not zero", function () {
-            it("retrieves the hypothetical collateralization ratio mantissa", async function () {
-              const hypotheticalCollateralizationRatioMantissa: BigNumber = await this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
-                this.stubs.yToken.address,
-                this.accounts.brad,
-                lockedCollateral,
-                debt,
-              );
-              expect(hypotheticalCollateralizationRatioMantissa).to.equal(Percentages.OneThousand);
+            describe("when the collateral has 18 decimals", function () {
+              it("retrieves the hypothetical collateralization ratio mantissa", async function () {
+                const contractHypotheticalCollateralizationRatioMantissa: BigNumber = await this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
+                  this.stubs.yToken.address,
+                  this.accounts.brad,
+                  lockedCollateral,
+                  debt,
+                );
+                expect(contractHypotheticalCollateralizationRatioMantissa).to.equal(
+                  hypotheticalCollateralizationRatioMantissa,
+                );
+              });
+            });
+
+            contextForStubbedCollateralWithSixDecimals("when the collateral has 6 decimals", function () {
+              it("retrieves the hypothetical collateralization ratio mantissa", async function () {
+                const downscaledLockedCollateral = lockedCollateral.div(PrecisionScalarForTokenWithSixDecimals);
+                const contractHypotheticalCollateralizationRatioMantissa: BigNumber = await this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
+                  this.stubs.yToken.address,
+                  this.accounts.brad,
+                  downscaledLockedCollateral,
+                  debt,
+                );
+                expect(contractHypotheticalCollateralizationRatioMantissa).to.equal(
+                  hypotheticalCollateralizationRatioMantissa,
+                );
+              });
             });
           });
 
