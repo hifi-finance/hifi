@@ -105,7 +105,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
                   this.contracts.balanceSheet
                     .connect(this.signers.brad)
                     .freeCollateral(this.stubs.yToken.address, collateralAmount),
-                ).to.be.revertedWith(BalanceSheetErrors.BelowCollateralizationRatio);
+                ).to.be.revertedWith(GenericErrors.BelowCollateralizationRatio);
               });
             });
           });

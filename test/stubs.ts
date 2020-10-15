@@ -96,7 +96,7 @@ export async function stubLiquidateBorrowInternalCalls(
     .returns(lockedCollateral);
   await this.stubs.balanceSheet.mock.clutchCollateral
     .withArgs(yTokenAddress, this.accounts.grace, this.accounts.brad, clutchedCollateralAmount)
-    .returns(clutchedCollateralAmount);
+    .returns(true);
 }
 
 export async function stubGetBondCollateralizationRatio(

@@ -3,7 +3,6 @@ export enum AdminErrors {
 }
 
 export enum BalanceSheetErrors {
-  BelowCollateralizationRatio = "ERR_BELOW_COLLATERALIZATION_RATIO",
   ClutchCollateralNotAuthorized = "ERR_CLUTCH_COLLATERAL_NOT_AUTHORIZED",
   DepositCollateralZero = "ERR_DEPOSIT_COLLATERAL_ZERO",
   DepositCollateralNotAllowed = "ERR_DEPOSIT_COLLATERAL_NOT_ALLOWED",
@@ -42,6 +41,7 @@ export enum FintrollerErrors {
 
 export enum GenericErrors {
   AccountNotUnderwater = "ERR_ACCOUNT_NOT_UNDERWATER",
+  BelowCollateralizationRatio = "ERR_BELOW_COLLATERALIZATION_RATIO",
   BondMatured = "ERR_BOND_MATURED",
   BondNotMatured = "ERR_BOND_NOT_MATURED",
   Initialized = "ERR_INITALIZED",
@@ -66,7 +66,6 @@ export enum RedemptionPoolErrors {
 }
 
 export enum YTokenErrors {
-  BorrowInsufficientLiquidity = "ERR_REDEEM_UNDERLYING_INSUFFICIENT_LIQUIDITY",
   BorrowDebtCeilingOverflow = "ERR_BORROW_DEBT_CEILING_OVERFLOW",
   BorrowLockedCollateralZero = "ERR_BORROW_LOCKED_COLLATERAL_ZERO",
   BorrowNotAllowed = "ERR_BORROW_NOT_ALLOWED",

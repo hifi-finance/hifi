@@ -14,13 +14,11 @@ import {
   stubVaultLockedCollateral,
 } from "../../stubs";
 
-/**
- * Write tests for the following scenarios:
- * - collateral value too small
- */
 export default function shouldBehaveLikeBorrow(): void {
   const borrowAmount: BigNumber = TokenAmounts.OneHundred;
   const collateralAmount: BigNumber = TokenAmounts.Ten;
+  const safeCollateralizationRatio: BigNumber = Percentages.OneThousand;
+  const underwaterCollateralizationRatio: BigNumber = Percentages.OneHundredAndTwenty;
 
   describe("when the vault is open", function () {
     beforeEach(async function () {
@@ -56,57 +54,73 @@ export default function shouldBehaveLikeBorrow(): void {
                       this.accounts.brad,
                       collateralAmount,
                     );
-
-                    /* The yToken makes an internal call to this stubbed function. */
-                    await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
-                      .withArgs(this.contracts.yToken.address, this.accounts.brad, collateralAmount, borrowAmount)
-                      .returns(Percentages.OneThousand);
                   });
 
-                  describe("when the call to set the new vault debt succeeds", function () {
+                  describe("when the value of the locked collateral is high enough", function () {
                     beforeEach(async function () {
-                      /* The yToken makes an internal call to this stubbed function. */
-                      await this.stubs.balanceSheet.mock.setVaultDebt
-                        .withArgs(this.contracts.yToken.address, this.accounts.brad, borrowAmount)
-                        .returns(true);
+                      await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
+                        .withArgs(this.contracts.yToken.address, this.accounts.brad, collateralAmount, borrowAmount)
+                        .returns(safeCollateralizationRatio);
                     });
 
-                    it("borrows yTokens", async function () {
-                      const oldBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.brad);
-                      await this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount);
-                      const newBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.brad);
-                      expect(oldBalance).to.equal(newBalance.sub(borrowAmount));
+                    describe("when the call to set the new vault debt succeeds", function () {
+                      beforeEach(async function () {
+                        await this.stubs.balanceSheet.mock.setVaultDebt
+                          .withArgs(this.contracts.yToken.address, this.accounts.brad, borrowAmount)
+                          .returns(true);
+                      });
+
+                      it("borrows yTokens", async function () {
+                        const oldBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.brad);
+                        await this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount);
+                        const newBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.brad);
+                        expect(oldBalance).to.equal(newBalance.sub(borrowAmount));
+                      });
+
+                      it("emits a Borrow event", async function () {
+                        await expect(this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount))
+                          .to.emit(this.contracts.yToken, "Borrow")
+                          .withArgs(this.accounts.brad, borrowAmount);
+                      });
+
+                      it("emits a Mint event", async function () {
+                        await expect(this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount))
+                          .to.emit(this.contracts.yToken, "Mint")
+                          .withArgs(this.accounts.brad, borrowAmount);
+                      });
+
+                      it("emits a Transfer event", async function () {
+                        await expect(this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount))
+                          .to.emit(this.contracts.yToken, "Transfer")
+                          .withArgs(this.contracts.yToken.address, this.accounts.brad, borrowAmount);
+                      });
                     });
 
-                    it("emits a Borrow event", async function () {
-                      await expect(this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount))
-                        .to.emit(this.contracts.yToken, "Borrow")
-                        .withArgs(this.accounts.brad, borrowAmount);
-                    });
+                    describe("when the call to set the new vault debt does not succeed", function () {
+                      beforeEach(async function () {
+                        await this.stubs.balanceSheet.mock.setVaultDebt
+                          .withArgs(this.contracts.yToken.address, this.accounts.brad, borrowAmount)
+                          .returns(false);
+                      });
 
-                    it("emits a Mint event", async function () {
-                      await expect(this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount))
-                        .to.emit(this.contracts.yToken, "Mint")
-                        .withArgs(this.accounts.brad, borrowAmount);
-                    });
-
-                    it("emits a Transfer event", async function () {
-                      await expect(this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount))
-                        .to.emit(this.contracts.yToken, "Transfer")
-                        .withArgs(this.contracts.yToken.address, this.accounts.brad, borrowAmount);
+                      it("reverts", async function () {
+                        await expect(this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount)).to.be
+                          .reverted;
+                      });
                     });
                   });
 
-                  describe("when the call to set the new vault debt does not succeed", function () {
+                  describe("when the value of the locked collateral is not high enough", function () {
                     beforeEach(async function () {
-                      await this.stubs.balanceSheet.mock.setVaultDebt
-                        .withArgs(this.contracts.yToken.address, this.accounts.brad, borrowAmount)
-                        .returns(false);
+                      await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
+                        .withArgs(this.contracts.yToken.address, this.accounts.brad, collateralAmount, borrowAmount)
+                        .returns(underwaterCollateralizationRatio);
                     });
 
                     it("reverts", async function () {
-                      await expect(this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount)).to.be
-                        .reverted;
+                      await expect(
+                        this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount),
+                      ).to.be.revertedWith(GenericErrors.BelowCollateralizationRatio);
                     });
                   });
                 });

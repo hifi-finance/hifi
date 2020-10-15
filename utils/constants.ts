@@ -20,6 +20,7 @@ export const Percentages: { [name: string]: BigNumber } = {
   One: Ten.pow(16),
   OneHundred: Ten.pow(18),
   OneHundredAndTen: Ten.pow(18).add(Ten.pow(17)),
+  OneHundredAndTwenty: Ten.pow(18).add(Ten.pow(17).mul(2)),
   OneHundredAndFifty: Ten.pow(18).add(Ten.pow(17).mul(5)),
   OneThousand: Ten.pow(19),
   TenThousand: Ten.pow(20),

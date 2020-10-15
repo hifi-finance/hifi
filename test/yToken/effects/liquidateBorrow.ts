@@ -141,14 +141,6 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
                   .returns(false);
               });
 
-              describe("when the bond did not mature", function () {
-                it("reverts", async function () {
-                  await expect(
-                    this.contracts.yToken.connect(this.signers.grace).liquidateBorrow(this.accounts.brad, repayAmount),
-                  ).to.be.revertedWith(GenericErrors.AccountNotUnderwater);
-                });
-              });
-
               contextForTimeDependentTests("when the bond matured", function () {
                 beforeEach(async function () {
                   await increaseTime(YTokenConstants.DefaultExpirationTime);
@@ -173,21 +165,20 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
 
                   /* Mint 100 yDAI to Grace so she can repay the debt. */
                   await this.contracts.yToken.__godMode_mint(this.accounts.grace, repayAmount);
-
-                  // await stubLiquidateBorrowInternalCalls.call(
-                  //   this,
-                  //   this.contracts.yToken.address,
-                  //   newBorrowAmount,
-                  //   repayAmount,
-                  //   lockedCollateral,
-                  //   clutchedCollateralAmount,
-                  // );
                 });
 
                 it("liquidates the user", async function () {
                   await this.contracts.yToken
                     .connect(this.signers.grace)
                     .liquidateBorrow(this.accounts.brad, repayAmount);
+                });
+              });
+
+              describe("when the bond did not mature", function () {
+                it("reverts", async function () {
+                  await expect(
+                    this.contracts.yToken.connect(this.signers.grace).liquidateBorrow(this.accounts.brad, repayAmount),
+                  ).to.be.revertedWith(GenericErrors.AccountNotUnderwater);
                 });
               });
             });
