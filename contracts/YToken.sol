@@ -90,13 +90,13 @@ contract YToken is
 
     struct BorrowLocalVars {
         MathError mathErr;
-        uint256 collateralizationRatioMantissa;
         uint256 debt;
         uint256 debtCeiling;
         uint256 lockedCollateral;
         uint256 hypotheticalCollateralizationRatioMantissa;
         uint256 hypotheticalTotalSupply;
         uint256 newDebt;
+        uint256 thresholdCollateralizationRatioMantissa;
     }
 
     /**
@@ -148,9 +148,9 @@ contract YToken is
             vars.lockedCollateral,
             vars.newDebt
         );
-        vars.collateralizationRatioMantissa = fintroller.getBondCollateralizationRatio(this);
+        vars.thresholdCollateralizationRatioMantissa = fintroller.getBondCollateralizationRatio(this);
         require(
-            vars.hypotheticalCollateralizationRatioMantissa >= vars.collateralizationRatioMantissa,
+            vars.hypotheticalCollateralizationRatioMantissa >= vars.thresholdCollateralizationRatioMantissa,
             "ERR_BELOW_COLLATERALIZATION_RATIO"
         );
 

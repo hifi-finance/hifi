@@ -37,7 +37,7 @@ describe("Tests", function () {
     this.accounts.mark = await signers[5].getAddress();
   });
 
-  describe("Tests", function () {
+  describe("Unit Tests", function () {
     unitTestBalanceSheet();
     unitTestFintroller();
     unitTestRedemptionPool();
