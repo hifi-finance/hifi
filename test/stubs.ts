@@ -114,16 +114,6 @@ export async function stubLiquidateBorrowInternalCalls(
     .returns(true);
 }
 
-export async function stubGetBondCollateralizationRatio(
-  this: Mocha.Context,
-  yTokenAddress: string,
-  collateralizationRatioMantissa?: BigNumber,
-): Promise<void> {
-  await this.stubs.fintroller.mock.getBondCollateralizationRatio
-    .withArgs(yTokenAddress)
-    .returns(collateralizationRatioMantissa || FintrollerConstants.DefaultBond.CollateralizationRatio);
-}
-
 export async function stubGetVault(
   this: Mocha.Context,
   yTokenAddress: string,

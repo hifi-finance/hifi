@@ -4,6 +4,7 @@ import shouldBehaveLikeGetHypotheticalCollateralizationRatio from "./view/getHyp
 import shouldBehaveLikeGetVault from "./view/getVault";
 import shouldBehaveLikeGetVaultDebt from "./view/getVaultDebt";
 import shouldBehaveLikeGetVaultLockedCollateral from "./view/getVaultLockedCollateral";
+import shouldBehaveLikeIsAccountUnderwater from "./view/isAccountUnderwater";
 import shouldBehaveLikeIsBalanceSheetGetter from "./view/isBalanceSheet";
 import shouldBehaveLikeIsVaultOpenGetter from "./view/isVaultOpen";
 
@@ -44,6 +45,10 @@ export function shouldBehaveLikeBalanceSheet(): void {
 
     describe("getVaultLockedCollateral", function () {
       shouldBehaveLikeGetVaultLockedCollateral();
+    });
+
+    describe("isAccountUnderwater", function () {
+      shouldBehaveLikeIsAccountUnderwater();
     });
 
     describe("isBalanceSheet", function () {

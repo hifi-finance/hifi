@@ -2,11 +2,11 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
+import { FintrollerConstants, TokenAmounts, YTokenConstants } from "../../../../helpers/constants";
 import { FintrollerErrors, GenericErrors, YTokenErrors } from "../../../../helpers/errors";
-import { TokenAmounts, YTokenConstants } from "../../../../helpers/constants";
 import { contextForTimeDependentTests } from "../../../../helpers/mochaContexts";
 import { increaseTime } from "../../../../helpers/jsonRpcHelpers";
-import { stubGetBondCollateralizationRatio, stubIsVaultOpen, stubLiquidateBorrowInternalCalls } from "../../../stubs";
+import { stubIsVaultOpen, stubLiquidateBorrowInternalCalls } from "../../../stubs";
 
 export default function shouldBehaveLikeLiquidateBorrow(): void {
   const borrowAmount: BigNumber = TokenAmounts.OneHundred;
@@ -24,7 +24,9 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
       describe("when the amount to repay is not zero", function () {
         describe("when the bond is listed", function () {
           beforeEach(async function () {
-            await stubGetBondCollateralizationRatio.call(this, this.contracts.yToken.address);
+            await this.stubs.fintroller.mock.getBondCollateralizationRatio
+              .withArgs(this.contracts.yToken.address)
+              .returns(FintrollerConstants.DefaultBond.CollateralizationRatio);
           });
 
           describe("when the fintroller allows liquidate borrow", function () {
@@ -231,7 +233,9 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
 
     describe("when the caller is the borrower", function () {
       beforeEach(async function () {
-        await stubGetBondCollateralizationRatio.call(this, this.contracts.yToken.address);
+        await this.stubs.fintroller.mock.getBondCollateralizationRatio
+          .withArgs(this.contracts.yToken.address)
+          .returns(FintrollerConstants.DefaultBond.CollateralizationRatio);
         await this.stubs.balanceSheet.mock.getVaultDebt
           .withArgs(this.contracts.yToken.address, this.accounts.brad)
           .returns(borrowAmount);

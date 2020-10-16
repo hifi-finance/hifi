@@ -2,10 +2,14 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
+import {
+  FintrollerConstants,
+  PrecisionScalarForTokenWithEightDecimals,
+  TokenAmounts,
+  YTokenConstants,
+} from "../../../../helpers/constants";
 import { FintrollerErrors, GenericErrors, RedemptionPoolErrors } from "../../../../helpers/errors";
-import { PrecisionScalarForTokenWithEightDecimals, TokenAmounts, YTokenConstants } from "../../../../helpers/constants";
 import { contextForStubbedUnderlyingWithEightDecimals } from "../../../../helpers/mochaContexts";
-import { stubGetBondCollateralizationRatio } from "../../../stubs";
 
 export default function shouldBehaveLikeSupplyUnderlying(): void {
   const underlyingAmount: BigNumber = TokenAmounts.OneHundred;
@@ -19,7 +23,9 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
     describe("when the amount of underlying to supply is not zero", function () {
       describe("when the bond is listed", function () {
         beforeEach(async function () {
-          await stubGetBondCollateralizationRatio.call(this, this.stubs.yToken.address);
+          await this.stubs.fintroller.mock.getBondCollateralizationRatio
+            .withArgs(this.stubs.yToken.address)
+            .returns(FintrollerConstants.DefaultBond.CollateralizationRatio);
         });
 
         describe("when the fintroller allows supply underlying", function () {

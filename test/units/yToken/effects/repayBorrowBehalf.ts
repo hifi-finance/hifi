@@ -2,9 +2,9 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
+import { FintrollerConstants, TokenAmounts } from "../../../../helpers/constants";
 import { GenericErrors, YTokenErrors } from "../../../../helpers/errors";
-import { TokenAmounts } from "../../../../helpers/constants";
-import { stubGetBondCollateralizationRatio, stubIsVaultOpen } from "../../../stubs";
+import { stubIsVaultOpen } from "../../../stubs";
 
 /**
  * This test suite assumes that Lucy pays the debt on behalf of Brad.
@@ -21,7 +21,9 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
     describe("when the amount to repay is not zero", function () {
       describe("when the bond is listed", function () {
         beforeEach(async function () {
-          await stubGetBondCollateralizationRatio.call(this, this.contracts.yToken.address);
+          await this.stubs.fintroller.mock.getBondCollateralizationRatio
+            .withArgs(this.contracts.yToken.address)
+            .returns(FintrollerConstants.DefaultBond.CollateralizationRatio);
         });
 
         describe("when the fintroller allows repay borrow", function () {

@@ -54,7 +54,8 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
     await this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount);
 
     /* Set the price of 1 WETH to $12 so that the new collateralization ratio becomes 120%. */
-    await this.contracts.oracle.setWethPrice(BigNumber.from(12).mul(OpenPriceFeedPrecisionScalar));
+    const twelveDollars: BigNumber = BigNumber.from(12).mul(OpenPriceFeedPrecisionScalar);
+    await this.contracts.oracle.setWethPrice(twelveDollars);
 
     /* Mint 100 yDAI to Grace so she can repay the debt. */
     await this.contracts.yToken.__godMode_mint(this.accounts.grace, repayAmount);

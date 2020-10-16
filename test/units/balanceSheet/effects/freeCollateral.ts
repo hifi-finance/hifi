@@ -3,9 +3,8 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { BalanceSheetErrors, GenericErrors } from "../../../../helpers/errors";
-import { TokenAmounts } from "../../../../helpers/constants";
+import { FintrollerConstants, TokenAmounts } from "../../../../helpers/constants";
 import { Vault } from "../../../../@types";
-import { stubGetBondCollateralizationRatio } from "../../../stubs";
 
 export default function shouldBehaveLikeLockCollateral(): void {
   const depositCollateralAmount: BigNumber = TokenAmounts.Ten;
@@ -18,8 +17,10 @@ export default function shouldBehaveLikeLockCollateral(): void {
     describe("when the collateral amount to free is not zero", function () {
       describe("when the caller deposited collateral", function () {
         beforeEach(async function () {
-          /* Mock the required functions on the Fintroller and the Collateral stubs. */
-          await stubGetBondCollateralizationRatio.call(this, this.stubs.yToken.address);
+          /* Mock the required functions on the Fintroller and the collateral token stubs. */
+          await this.stubs.fintroller.mock.getBondCollateralizationRatio
+            .withArgs(this.stubs.yToken.address)
+            .returns(FintrollerConstants.DefaultBond.CollateralizationRatio);
           await this.stubs.fintroller.mock.getDepositCollateralAllowed
             .withArgs(this.stubs.yToken.address)
             .returns(true);

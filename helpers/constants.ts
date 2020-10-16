@@ -32,6 +32,7 @@ export const Percentages: { [name: string]: BigNumber } = {
 export const TokenAmounts: { [name: string]: BigNumber } = {
   PointFiftyFive: Ten.pow(17).mul(5).add(Ten.pow(16).mul(5)),
   One: Ten.pow(18),
+  Two: Ten.pow(18).mul(2),
   Ten: Ten.pow(19),
   Fifty: Ten.pow(18).mul(50),
   OneHundred: Ten.pow(20),

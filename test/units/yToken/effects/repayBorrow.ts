@@ -2,10 +2,10 @@ import { Zero } from "@ethersproject/constants";
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
-import { AddressOne, TokenAmounts } from "../../../../helpers/constants";
+import { AddressOne, FintrollerConstants, TokenAmounts } from "../../../../helpers/constants";
 import { GenericErrors, YTokenErrors } from "../../../../helpers/errors";
 import { FintrollerErrors } from "../../../../helpers/errors";
-import { stubGetBondCollateralizationRatio, stubIsVaultOpen } from "../../../stubs";
+import { stubIsVaultOpen } from "../../../stubs";
 
 export default function shouldBehaveLikeRepayBorrow(): void {
   const borrowAmount: BigNumber = TokenAmounts.OneHundred;
@@ -19,7 +19,9 @@ export default function shouldBehaveLikeRepayBorrow(): void {
     describe("when the amount to repay is not zero", function () {
       describe("when the bond is listed", function () {
         beforeEach(async function () {
-          await stubGetBondCollateralizationRatio.call(this, this.contracts.yToken.address);
+          await this.stubs.fintroller.mock.getBondCollateralizationRatio
+            .withArgs(this.contracts.yToken.address)
+            .returns(FintrollerConstants.DefaultBond.CollateralizationRatio);
         });
 
         describe("when the fintroller allows repay borrow", function () {

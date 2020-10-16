@@ -2,17 +2,12 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
+import { FintrollerConstants, Percentages, TokenAmounts } from "../../../../helpers/constants";
 import { FintrollerErrors, GenericErrors, YTokenErrors } from "../../../../helpers/errors";
-import { Percentages, TokenAmounts } from "../../../../helpers/constants";
 import { YTokenConstants } from "../../../../helpers/constants";
 import { contextForTimeDependentTests } from "../../../../helpers/mochaContexts";
 import { increaseTime } from "../../../../helpers/jsonRpcHelpers";
-import {
-  stubGetBondCollateralizationRatio,
-  stubIsVaultOpen,
-  stubVaultFreeCollateral,
-  stubVaultLockedCollateral,
-} from "../../../stubs";
+import { stubIsVaultOpen, stubVaultFreeCollateral, stubVaultLockedCollateral } from "../../../stubs";
 
 export default function shouldBehaveLikeBorrow(): void {
   const borrowAmount: BigNumber = TokenAmounts.OneHundred;
@@ -29,7 +24,9 @@ export default function shouldBehaveLikeBorrow(): void {
       describe("when the amount to borrow is not zero", function () {
         describe("when the bond is listed", function () {
           beforeEach(async function () {
-            await stubGetBondCollateralizationRatio.call(this, this.contracts.yToken.address);
+            await this.stubs.fintroller.mock.getBondCollateralizationRatio
+              .withArgs(this.contracts.yToken.address)
+              .returns(FintrollerConstants.DefaultBond.CollateralizationRatio);
           });
 
           describe("when the fintroller allows borrows", function () {
