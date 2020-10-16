@@ -4,11 +4,11 @@ import { expect } from "chai";
 export default function shouldBehaveLikeGetVault(): void {
   describe("when the vault is open", function () {
     beforeEach(async function () {
-      await this.contracts.balanceSheet.connect(this.signers.brad).openVault(this.stubs.yToken.address);
+      await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.yToken.address);
     });
 
     it("retrieves all the storage properties of the vault", async function () {
-      const vault = await this.contracts.balanceSheet.getVault(this.stubs.yToken.address, this.accounts.brad);
+      const vault = await this.contracts.balanceSheet.getVault(this.stubs.yToken.address, this.accounts.borrower);
       expect(vault.debt).to.equal(Zero);
       expect(vault.freeCollateral).to.equal(Zero);
       expect(vault.lockedCollateral).to.equal(Zero);
@@ -18,7 +18,7 @@ export default function shouldBehaveLikeGetVault(): void {
 
   describe("when the bond is not open", function () {
     it("retrieves the default values", async function () {
-      const vault = await this.contracts.balanceSheet.getVault(this.stubs.yToken.address, this.accounts.brad);
+      const vault = await this.contracts.balanceSheet.getVault(this.stubs.yToken.address, this.accounts.borrower);
       expect(vault.debt).to.equal(Zero);
       expect(vault.freeCollateral).to.equal(Zero);
       expect(vault.lockedCollateral).to.equal(Zero);

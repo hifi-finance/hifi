@@ -50,7 +50,9 @@ export default function shouldBehaveLikeSetRedeemUnderlyingAllowed(): void {
   describe("when the caller is not the admin", function () {
     it("reverts", async function () {
       await expect(
-        this.contracts.fintroller.connect(this.signers.eve).setRedeemUnderlyingAllowed(this.stubs.yToken.address, true),
+        this.contracts.fintroller
+          .connect(this.signers.raider)
+          .setRedeemUnderlyingAllowed(this.stubs.yToken.address, true),
       ).to.be.revertedWith(AdminErrors.NotAdmin);
     });
   });

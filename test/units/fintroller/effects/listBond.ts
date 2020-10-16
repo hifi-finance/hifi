@@ -29,7 +29,7 @@ export default function shouldBehaveLikeListBond(): void {
   describe("when the caller is not the admin", function () {
     it("reverts", async function () {
       await expect(
-        this.contracts.fintroller.connect(this.signers.eve).listBond(this.stubs.yToken.address),
+        this.contracts.fintroller.connect(this.signers.raider).listBond(this.stubs.yToken.address),
       ).to.be.revertedWith(AdminErrors.NotAdmin);
     });
   });

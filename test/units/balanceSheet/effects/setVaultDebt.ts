@@ -11,8 +11,8 @@ export default function shouldBehaveLikeSetVaultDebt(): void {
     it("reverts", async function () {
       await expect(
         this.contracts.balanceSheet
-          .connect(this.signers.eve)
-          .setVaultDebt(this.stubs.yToken.address, this.accounts.eve, debt),
+          .connect(this.signers.raider)
+          .setVaultDebt(this.stubs.yToken.address, this.accounts.raider, debt),
       ).to.be.revertedWith(BalanceSheetErrors.SetVaultDebtNotAuthorized);
     });
   });

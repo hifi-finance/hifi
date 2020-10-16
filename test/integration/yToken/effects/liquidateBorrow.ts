@@ -11,7 +11,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
 
   beforeEach(async function () {
     /* Open the vault. */
-    await this.contracts.balanceSheet.connect(this.signers.brad).openVault(this.contracts.yToken.address);
+    await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.contracts.yToken.address);
 
     /* List the bond in the Fintroller. */
     await this.contracts.fintroller.connect(this.signers.admin).listBond(this.contracts.yToken.address);
@@ -35,47 +35,47 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
     await this.contracts.fintroller.connect(this.signers.admin).setLiquidationIncentive(Percentages.OneHundredAndTen);
 
     /* Mint 10 WETH and approve the Balance Sheet to spend it all. */
-    await this.contracts.collateral.mint(this.accounts.brad, collateralAmount);
+    await this.contracts.collateral.mint(this.accounts.borrower, collateralAmount);
     await this.contracts.collateral
-      .connect(this.signers.brad)
+      .connect(this.signers.borrower)
       .approve(this.contracts.balanceSheet.address, collateralAmount);
 
     /* Deposit the 10 WETH in the Balance Sheet. */
     await this.contracts.balanceSheet
-      .connect(this.signers.brad)
+      .connect(this.signers.borrower)
       .depositCollateral(this.contracts.yToken.address, collateralAmount);
 
     /* Lock the 10 WETH in the vault. */
     await this.contracts.balanceSheet
-      .connect(this.signers.brad)
+      .connect(this.signers.borrower)
       .lockCollateral(this.contracts.yToken.address, collateralAmount);
 
     /* Recall that the default price of 1 WETH is $100, which makes for a 1000% collateralization rate. */
-    await this.contracts.yToken.connect(this.signers.brad).borrow(borrowAmount);
+    await this.contracts.yToken.connect(this.signers.borrower).borrow(borrowAmount);
 
     /* Set the price of 1 WETH to $12 so that the new collateralization ratio becomes 120%. */
     const twelveDollars: BigNumber = BigNumber.from(12).mul(OpenPriceFeedPrecisionScalar);
     await this.contracts.oracle.setWethPrice(twelveDollars);
 
-    /* Mint 100 yDAI to Grace so she can repay the debt. */
-    await this.contracts.yToken.__godMode_mint(this.accounts.grace, repayAmount);
+    /* Mint 100 yDAI to Liquidator so he can repay the debt. */
+    await this.contracts.yToken.__godMode_mint(this.accounts.liquidator, repayAmount);
   });
 
   it("liquidates the user", async function () {
-    const oldBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.grace);
-    await this.contracts.yToken.connect(this.signers.grace).liquidateBorrow(this.accounts.brad, repayAmount);
-    const newBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.grace);
+    const oldBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.liquidator);
+    await this.contracts.yToken.connect(this.signers.liquidator).liquidateBorrow(this.accounts.borrower, repayAmount);
+    const newBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.liquidator);
     expect(oldBalance).to.equal(newBalance.add(repayAmount));
   });
 
   it("clutches the collateral", async function () {
-    const oldBalance: BigNumber = await this.contracts.collateral.balanceOf(this.accounts.grace);
+    const oldBalance: BigNumber = await this.contracts.collateral.balanceOf(this.accounts.liquidator);
     const clutchableCollateralAmount: BigNumber = await this.contracts.balanceSheet.getClutchableCollateral(
       this.contracts.yToken.address,
       repayAmount,
     );
-    await this.contracts.yToken.connect(this.signers.grace).liquidateBorrow(this.accounts.brad, repayAmount);
-    const newBalance: BigNumber = await this.contracts.collateral.balanceOf(this.accounts.grace);
+    await this.contracts.yToken.connect(this.signers.liquidator).liquidateBorrow(this.accounts.borrower, repayAmount);
+    const newBalance: BigNumber = await this.contracts.collateral.balanceOf(this.accounts.liquidator);
     expect(oldBalance).to.equal(newBalance.sub(clutchableCollateralAmount));
   });
 
@@ -84,8 +84,15 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
       this.contracts.yToken.address,
       repayAmount,
     );
-    await expect(this.contracts.yToken.connect(this.signers.grace).liquidateBorrow(this.accounts.brad, repayAmount))
+    await expect(
+      this.contracts.yToken.connect(this.signers.liquidator).liquidateBorrow(this.accounts.borrower, repayAmount),
+    )
       .to.emit(this.contracts.balanceSheet, "ClutchCollateral")
-      .withArgs(this.contracts.yToken.address, this.accounts.grace, this.accounts.brad, clutchableCollateralAmount);
+      .withArgs(
+        this.contracts.yToken.address,
+        this.accounts.liquidator,
+        this.accounts.borrower,
+        clutchableCollateralAmount,
+      );
   });
 }

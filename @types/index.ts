@@ -12,11 +12,11 @@ import { SimpleUniswapAnchoredView } from "../typechain/SimpleUniswapAnchoredVie
 /* Fingers-crossed that ethers.js or waffle will provide an easier way to cache the address */
 export interface Accounts {
   admin: string;
-  brad: string;
-  eve: string;
-  grace: string;
-  lucy: string;
-  mark: string;
+  borrower: string;
+  lender: string;
+  liquidator: string;
+  maker: string;
+  raider: string;
 }
 
 export interface Contracts {
@@ -31,11 +31,11 @@ export interface Contracts {
 
 export interface Signers {
   admin: Signer;
-  brad: Signer;
-  eve: Signer;
-  grace: Signer;
-  lucy: Signer;
-  mark: Signer;
+  borrower: Signer;
+  lender: Signer;
+  liquidator: Signer;
+  maker: Signer;
+  raider: Signer;
 }
 
 export interface Stubs {

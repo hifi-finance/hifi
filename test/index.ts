@@ -23,18 +23,18 @@ describe("Tests", function () {
     this.loadFixture = createFixtureLoader(signers as Wallet[]);
 
     this.signers.admin = signers[0];
-    this.signers.brad = signers[1];
-    this.signers.eve = signers[2];
-    this.signers.grace = signers[3];
-    this.signers.lucy = signers[4];
-    this.signers.mark = signers[5];
+    this.signers.borrower = signers[1];
+    this.signers.lender = signers[2];
+    this.signers.liquidator = signers[3];
+    this.signers.maker = signers[4];
+    this.signers.raider = signers[5];
 
     this.accounts.admin = await signers[0].getAddress();
-    this.accounts.brad = await signers[1].getAddress();
-    this.accounts.eve = await signers[2].getAddress();
-    this.accounts.grace = await signers[3].getAddress();
-    this.accounts.lucy = await signers[4].getAddress();
-    this.accounts.mark = await signers[5].getAddress();
+    this.accounts.borrower = await signers[1].getAddress();
+    this.accounts.lender = await signers[2].getAddress();
+    this.accounts.liquidator = await signers[3].getAddress();
+    this.accounts.maker = await signers[4].getAddress();
+    this.accounts.raider = await signers[5].getAddress();
   });
 
   describe("Unit Tests", function () {

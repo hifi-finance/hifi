@@ -31,7 +31,7 @@ export default function shouldBehaveLikeSetOracle(): void {
 
   describe("when the caller is not the admin", function () {
     it("reverts", async function () {
-      await expect(this.contracts.fintroller.connect(this.signers.eve).setOracle(AddressZero)).to.be.revertedWith(
+      await expect(this.contracts.fintroller.connect(this.signers.raider).setOracle(AddressZero)).to.be.revertedWith(
         AdminErrors.NotAdmin,
       );
     });

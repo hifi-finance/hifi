@@ -17,16 +17,16 @@ async function stubLiquidateBorrowInternalCalls(
   clutchedCollateralAmount: BigNumber,
 ): Promise<void> {
   await this.stubs.balanceSheet.mock.setVaultDebt
-    .withArgs(yTokenAddress, this.accounts.brad, newBorrowAmount)
+    .withArgs(yTokenAddress, this.accounts.borrower, newBorrowAmount)
     .returns(true);
   await this.stubs.balanceSheet.mock.getClutchableCollateral
     .withArgs(yTokenAddress, repayAmount)
     .returns(clutchedCollateralAmount);
   await this.stubs.balanceSheet.mock.getVaultLockedCollateral
-    .withArgs(this.contracts.yToken.address, this.accounts.brad)
+    .withArgs(this.contracts.yToken.address, this.accounts.borrower)
     .returns(lockedCollateral);
   await this.stubs.balanceSheet.mock.clutchCollateral
-    .withArgs(yTokenAddress, this.accounts.grace, this.accounts.brad, clutchedCollateralAmount)
+    .withArgs(yTokenAddress, this.accounts.liquidator, this.accounts.borrower, clutchedCollateralAmount)
     .returns(true);
 }
 
@@ -38,7 +38,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
 
   describe("when the vault is open", function () {
     beforeEach(async function () {
-      await stubIsVaultOpen.call(this, this.contracts.yToken.address, this.accounts.brad);
+      await stubIsVaultOpen.call(this, this.contracts.yToken.address, this.accounts.borrower);
     });
 
     describe("when the caller is not the borrower", function () {
@@ -66,11 +66,11 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
               const clutchableCollateralAmount: BigNumber = TokenAmounts.PointFiftyFive;
 
               beforeEach(async function () {
-                /* Brad borrows 100 yDAI. */
+                /* User borrows 100 yDAI. */
                 await this.stubs.balanceSheet.mock.getVaultDebt
-                  .withArgs(this.contracts.yToken.address, this.accounts.brad)
+                  .withArgs(this.contracts.yToken.address, this.accounts.borrower)
                   .returns(borrowAmount);
-                await this.contracts.yToken.__godMode_mint(this.accounts.brad, borrowAmount);
+                await this.contracts.yToken.__godMode_mint(this.accounts.borrower, borrowAmount);
 
                 /* The yToken makes internal calls to these stubbed functions. */
                 await stubLiquidateBorrowInternalCalls.call(
@@ -86,53 +86,58 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
               describe("when the account is underwater", function () {
                 beforeEach(async function () {
                   await this.stubs.balanceSheet.mock.isAccountUnderwater
-                    .withArgs(this.contracts.yToken.address, this.accounts.brad)
+                    .withArgs(this.contracts.yToken.address, this.accounts.borrower)
                     .returns(true);
                 });
 
                 describe("when the caller has enough yTokens", function () {
                   beforeEach(async function () {
-                    /* Mint 100 yDAI to Grace so she can repay the debt. */
-                    await this.contracts.yToken.__godMode_mint(this.accounts.grace, repayAmount);
+                    /* Mint 100 yDAI to Liquidator so he can repay the debt. */
+                    await this.contracts.yToken.__godMode_mint(this.accounts.liquidator, repayAmount);
                   });
 
                   it("liquidates the user", async function () {
-                    const oldBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.grace);
+                    const oldBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.liquidator);
                     await this.contracts.yToken
-                      .connect(this.signers.grace)
-                      .liquidateBorrow(this.accounts.brad, repayAmount);
-                    const newBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.grace);
+                      .connect(this.signers.liquidator)
+                      .liquidateBorrow(this.accounts.borrower, repayAmount);
+                    const newBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.liquidator);
                     expect(oldBalance).to.equal(newBalance.add(repayAmount));
                   });
 
                   it("emits a LiquidateBorrow event", async function () {
                     await expect(
                       this.contracts.yToken
-                        .connect(this.signers.grace)
-                        .liquidateBorrow(this.accounts.brad, repayAmount),
+                        .connect(this.signers.liquidator)
+                        .liquidateBorrow(this.accounts.borrower, repayAmount),
                     )
                       .to.emit(this.contracts.yToken, "LiquidateBorrow")
-                      .withArgs(this.accounts.grace, this.accounts.brad, repayAmount, clutchableCollateralAmount);
+                      .withArgs(
+                        this.accounts.liquidator,
+                        this.accounts.borrower,
+                        repayAmount,
+                        clutchableCollateralAmount,
+                      );
                   });
 
                   it("emits a RepayBorrow event", async function () {
                     await expect(
                       this.contracts.yToken
-                        .connect(this.signers.grace)
-                        .liquidateBorrow(this.accounts.brad, repayAmount),
+                        .connect(this.signers.liquidator)
+                        .liquidateBorrow(this.accounts.borrower, repayAmount),
                     )
                       .to.emit(this.contracts.yToken, "RepayBorrow")
-                      .withArgs(this.accounts.grace, this.accounts.brad, repayAmount, newBorrowAmount);
+                      .withArgs(this.accounts.liquidator, this.accounts.borrower, repayAmount, newBorrowAmount);
                   });
 
                   it("emits a Transfer event", async function () {
                     await expect(
                       this.contracts.yToken
-                        .connect(this.signers.grace)
-                        .liquidateBorrow(this.accounts.brad, repayAmount),
+                        .connect(this.signers.liquidator)
+                        .liquidateBorrow(this.accounts.borrower, repayAmount),
                     )
                       .to.emit(this.contracts.yToken, "Transfer")
-                      .withArgs(this.accounts.grace, this.contracts.yToken.address, repayAmount);
+                      .withArgs(this.accounts.liquidator, this.contracts.yToken.address, repayAmount);
                   });
                 });
 
@@ -140,8 +145,8 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
                   it("reverts", async function () {
                     await expect(
                       this.contracts.yToken
-                        .connect(this.signers.grace)
-                        .liquidateBorrow(this.accounts.brad, repayAmount),
+                        .connect(this.signers.liquidator)
+                        .liquidateBorrow(this.accounts.borrower, repayAmount),
                     ).to.be.revertedWith(YTokenErrors.RepayBorrowInsufficientBalance);
                   });
                 });
@@ -150,7 +155,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
               describe("when the account is not underwater", function () {
                 beforeEach(async function () {
                   await this.stubs.balanceSheet.mock.isAccountUnderwater
-                    .withArgs(this.contracts.yToken.address, this.accounts.brad)
+                    .withArgs(this.contracts.yToken.address, this.accounts.borrower)
                     .returns(false);
                 });
 
@@ -158,16 +163,16 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
                   beforeEach(async function () {
                     await increaseTime(YTokenConstants.DefaultExpirationTime);
 
-                    /* Mint 100 yDAI to Grace so she can repay the debt. */
-                    await this.contracts.yToken.__godMode_mint(this.accounts.grace, repayAmount);
+                    /* Mint 100 yDAI to Liquidator so he can repay the debt. */
+                    await this.contracts.yToken.__godMode_mint(this.accounts.liquidator, repayAmount);
                   });
 
                   it("liquidates the user", async function () {
-                    const oldBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.grace);
+                    const oldBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.liquidator);
                     await this.contracts.yToken
-                      .connect(this.signers.grace)
-                      .liquidateBorrow(this.accounts.brad, repayAmount);
-                    const newBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.grace);
+                      .connect(this.signers.liquidator)
+                      .liquidateBorrow(this.accounts.borrower, repayAmount);
+                    const newBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.liquidator);
                     expect(oldBalance).to.equal(newBalance.add(repayAmount));
                   });
                 });
@@ -176,8 +181,8 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
                   it("reverts", async function () {
                     await expect(
                       this.contracts.yToken
-                        .connect(this.signers.grace)
-                        .liquidateBorrow(this.accounts.brad, repayAmount),
+                        .connect(this.signers.liquidator)
+                        .liquidateBorrow(this.accounts.borrower, repayAmount),
                     ).to.be.revertedWith(GenericErrors.AccountNotUnderwater);
                   });
                 });
@@ -188,16 +193,18 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
               beforeEach(async function () {
                 /* Borrowers with no debt are never underwater. */
                 await this.stubs.balanceSheet.mock.isAccountUnderwater
-                  .withArgs(this.contracts.yToken.address, this.accounts.brad)
+                  .withArgs(this.contracts.yToken.address, this.accounts.borrower)
                   .returns(false);
                 await this.stubs.balanceSheet.mock.getVaultDebt
-                  .withArgs(this.contracts.yToken.address, this.accounts.brad)
+                  .withArgs(this.contracts.yToken.address, this.accounts.borrower)
                   .returns(Zero);
               });
 
               it("reverts", async function () {
                 await expect(
-                  this.contracts.yToken.connect(this.signers.grace).liquidateBorrow(this.accounts.brad, repayAmount),
+                  this.contracts.yToken
+                    .connect(this.signers.liquidator)
+                    .liquidateBorrow(this.accounts.borrower, repayAmount),
                 ).to.be.revertedWith(GenericErrors.AccountNotUnderwater);
               });
             });
@@ -212,7 +219,9 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
 
             it("reverts", async function () {
               await expect(
-                this.contracts.yToken.connect(this.signers.grace).liquidateBorrow(this.accounts.brad, repayAmount),
+                this.contracts.yToken
+                  .connect(this.signers.liquidator)
+                  .liquidateBorrow(this.accounts.borrower, repayAmount),
               ).to.be.revertedWith(YTokenErrors.LiquidateBorrowNotAllowed);
             });
           });
@@ -226,9 +235,9 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
           });
 
           it("reverts", async function () {
-            await expect(this.contracts.yToken.connect(this.signers.brad).repayBorrow(borrowAmount)).to.be.revertedWith(
-              FintrollerErrors.BondNotListed,
-            );
+            await expect(
+              this.contracts.yToken.connect(this.signers.borrower).repayBorrow(borrowAmount),
+            ).to.be.revertedWith(FintrollerErrors.BondNotListed);
           });
         });
       });
@@ -236,7 +245,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
       describe("when the amount to repay is zero", function () {
         it("reverts", async function () {
           await expect(
-            this.contracts.yToken.connect(this.signers.grace).liquidateBorrow(this.accounts.brad, Zero),
+            this.contracts.yToken.connect(this.signers.liquidator).liquidateBorrow(this.accounts.borrower, Zero),
           ).to.be.revertedWith(YTokenErrors.LiquidateBorrowZero);
         });
       });
@@ -248,14 +257,14 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
           .withArgs(this.contracts.yToken.address)
           .returns(FintrollerConstants.DefaultBond.CollateralizationRatio);
         await this.stubs.balanceSheet.mock.getVaultDebt
-          .withArgs(this.contracts.yToken.address, this.accounts.brad)
+          .withArgs(this.contracts.yToken.address, this.accounts.borrower)
           .returns(borrowAmount);
-        await this.contracts.yToken.__godMode_mint(this.accounts.brad, borrowAmount);
+        await this.contracts.yToken.__godMode_mint(this.accounts.borrower, borrowAmount);
       });
 
       it("reverts", async function () {
         await expect(
-          this.contracts.yToken.connect(this.signers.brad).liquidateBorrow(this.accounts.brad, repayAmount),
+          this.contracts.yToken.connect(this.signers.borrower).liquidateBorrow(this.accounts.borrower, repayAmount),
         ).to.be.revertedWith(YTokenErrors.LiquidateBorrowSelf);
       });
     });
@@ -264,13 +273,13 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
   describe("when the vault is not open", function () {
     beforeEach(async function () {
       await this.stubs.balanceSheet.mock.isVaultOpen
-        .withArgs(this.contracts.yToken.address, this.accounts.brad)
+        .withArgs(this.contracts.yToken.address, this.accounts.borrower)
         .returns(false);
     });
 
     it("reverts", async function () {
       await expect(
-        this.contracts.yToken.connect(this.signers.brad).liquidateBorrow(this.accounts.brad, repayAmount),
+        this.contracts.yToken.connect(this.signers.borrower).liquidateBorrow(this.accounts.borrower, repayAmount),
       ).to.be.revertedWith(GenericErrors.VaultNotOpen);
     });
   });

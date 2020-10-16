@@ -13,7 +13,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
 
   describe("when the vault is not open", function () {
     beforeEach(async function () {
-      await this.contracts.balanceSheet.connect(this.signers.brad).openVault(this.stubs.yToken.address);
+      await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.yToken.address);
     });
 
     describe("when the locked collateral is not zero", function () {
@@ -24,7 +24,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
               it("retrieves the hypothetical collateralization ratio mantissa", async function () {
                 const contractHypotheticalCollateralizationRatioMantissa: BigNumber = await this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
                   this.stubs.yToken.address,
-                  this.accounts.brad,
+                  this.accounts.borrower,
                   lockedCollateral,
                   debt,
                 );
@@ -39,7 +39,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
                 const downscaledLockedCollateral = lockedCollateral.div(PrecisionScalarForTokenWithEightDecimals);
                 const contractHypotheticalCollateralizationRatioMantissa: BigNumber = await this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
                   this.stubs.yToken.address,
-                  this.accounts.brad,
+                  this.accounts.borrower,
                   downscaledLockedCollateral,
                   debt,
                 );
@@ -61,7 +61,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
               await expect(
                 this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
                   this.stubs.yToken.address,
-                  this.accounts.brad,
+                  this.accounts.borrower,
                   lockedCollateral,
                   debt,
                 ),
@@ -81,7 +81,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
             await expect(
               this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
                 this.stubs.yToken.address,
-                this.accounts.brad,
+                this.accounts.borrower,
                 lockedCollateral,
                 debt,
               ),
@@ -96,7 +96,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
           await expect(
             this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
               this.stubs.yToken.address,
-              this.accounts.brad,
+              this.accounts.borrower,
               lockedCollateral,
               zeroDebt,
             ),
@@ -110,7 +110,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
         const zeroCollateralAmount: BigNumber = Zero;
         const hypotheticalCollateralizationRatioMantissa = await this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
           this.stubs.yToken.address,
-          this.accounts.brad,
+          this.accounts.borrower,
           zeroCollateralAmount,
           debt,
         );
@@ -123,8 +123,13 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
     it("reverts", async function () {
       await expect(
         this.contracts.balanceSheet
-          .connect(this.signers.brad)
-          .getHypotheticalCollateralizationRatio(this.stubs.yToken.address, this.accounts.brad, lockedCollateral, debt),
+          .connect(this.signers.borrower)
+          .getHypotheticalCollateralizationRatio(
+            this.stubs.yToken.address,
+            this.accounts.borrower,
+            lockedCollateral,
+            debt,
+          ),
       ).to.be.revertedWith(GenericErrors.VaultNotOpen);
     });
   });

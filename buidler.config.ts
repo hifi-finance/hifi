@@ -32,23 +32,23 @@ function createBuidlerEvmAccounts(): BuidlerNetworkAccount[] {
     },
     {
       balance: tenThousandEther,
-      privateKey: DefaultPrivateKeys.Brad,
+      privateKey: DefaultPrivateKeys.Borrower,
     },
     {
       balance: tenThousandEther,
-      privateKey: DefaultPrivateKeys.Eve,
+      privateKey: DefaultPrivateKeys.Lender,
     },
     {
       balance: tenThousandEther,
-      privateKey: DefaultPrivateKeys.Grace,
+      privateKey: DefaultPrivateKeys.Liquidator,
     },
     {
       balance: tenThousandEther,
-      privateKey: DefaultPrivateKeys.Lucy,
+      privateKey: DefaultPrivateKeys.Maker,
     },
     {
       balance: tenThousandEther,
-      privateKey: DefaultPrivateKeys.Mark,
+      privateKey: DefaultPrivateKeys.Raider,
     },
   ];
 }

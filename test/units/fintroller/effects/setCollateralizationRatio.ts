@@ -96,7 +96,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
     it("reverts", async function () {
       await expect(
         this.contracts.fintroller
-          .connect(this.signers.eve)
+          .connect(this.signers.raider)
           .setCollateralizationRatio(this.stubs.yToken.address, newCollateralizationRatioMantissa),
       ).to.be.revertedWith(AdminErrors.NotAdmin);
     });

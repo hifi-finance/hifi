@@ -60,7 +60,9 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
   describe("when the caller is not the admin", function () {
     it("reverts", async function () {
       await expect(
-        this.contracts.fintroller.connect(this.signers.eve).setDebtCeiling(this.stubs.yToken.address, newDebtCeiling),
+        this.contracts.fintroller
+          .connect(this.signers.raider)
+          .setDebtCeiling(this.stubs.yToken.address, newDebtCeiling),
       ).to.be.revertedWith(AdminErrors.NotAdmin);
     });
   });

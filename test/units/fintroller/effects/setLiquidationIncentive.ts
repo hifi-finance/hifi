@@ -70,7 +70,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
   describe("when the caller is not the admin", function () {
     it("reverts", async function () {
       await expect(
-        this.contracts.fintroller.connect(this.signers.eve).setLiquidationIncentive(newLiquidationIncentiveMantissa),
+        this.contracts.fintroller.connect(this.signers.raider).setLiquidationIncentive(newLiquidationIncentiveMantissa),
       ).to.be.revertedWith(AdminErrors.NotAdmin);
     });
   });

@@ -7,7 +7,7 @@ import { GenericErrors, YTokenErrors } from "../../../../helpers/errors";
 import { stubIsVaultOpen } from "../../../stubs";
 
 /**
- * This test suite assumes that Lucy pays the debt on behalf of Brad.
+ * This test suite assumes that the Lender pays the debt on behalf of the Borrower.
  */
 export default function shouldBehaveLikeRepayBorrowBehalf(): void {
   const borrowAmount: BigNumber = TokenAmounts.OneHundred;
@@ -15,7 +15,7 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
 
   describe("when the vault is open", function () {
     beforeEach(async function () {
-      await stubIsVaultOpen.call(this, this.contracts.yToken.address, this.accounts.brad);
+      await stubIsVaultOpen.call(this, this.contracts.yToken.address, this.accounts.borrower);
     });
 
     describe("when the amount to repay is not zero", function () {
@@ -35,46 +35,54 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
 
           describe("when the user has a debt", function () {
             beforeEach(async function () {
-              await this.contracts.yToken.__godMode_mint(this.accounts.lucy, borrowAmount);
+              await this.contracts.yToken.__godMode_mint(this.accounts.lender, borrowAmount);
 
               /* The yToken makes internal calls to these stubbed functions. */
               await this.stubs.balanceSheet.mock.getVaultDebt
-                .withArgs(this.contracts.yToken.address, this.accounts.brad)
+                .withArgs(this.contracts.yToken.address, this.accounts.borrower)
                 .returns(repayAmount);
               await this.stubs.balanceSheet.mock.setVaultDebt
-                .withArgs(this.contracts.yToken.address, this.accounts.brad, Zero)
+                .withArgs(this.contracts.yToken.address, this.accounts.borrower, Zero)
                 .returns(true);
             });
 
             it("repays the borrowed yTokens", async function () {
-              const oldBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.lucy);
-              await this.contracts.yToken.connect(this.signers.lucy).repayBorrowBehalf(this.accounts.brad, repayAmount);
-              const newBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.lucy);
+              const oldBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.lender);
+              await this.contracts.yToken
+                .connect(this.signers.lender)
+                .repayBorrowBehalf(this.accounts.borrower, repayAmount);
+              const newBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.lender);
               expect(oldBalance).to.equal(newBalance.add(repayAmount));
             });
 
             it("emits a RepayBorrow event", async function () {
               await expect(
-                this.contracts.yToken.connect(this.signers.lucy).repayBorrowBehalf(this.accounts.brad, repayAmount),
+                this.contracts.yToken
+                  .connect(this.signers.lender)
+                  .repayBorrowBehalf(this.accounts.borrower, repayAmount),
               )
                 .to.emit(this.contracts.yToken, "RepayBorrow")
-                .withArgs(this.accounts.lucy, this.accounts.brad, repayAmount, Zero);
+                .withArgs(this.accounts.lender, this.accounts.borrower, repayAmount, Zero);
             });
 
             it("emits a Burn event", async function () {
               await expect(
-                this.contracts.yToken.connect(this.signers.lucy).repayBorrowBehalf(this.accounts.brad, repayAmount),
+                this.contracts.yToken
+                  .connect(this.signers.lender)
+                  .repayBorrowBehalf(this.accounts.borrower, repayAmount),
               )
                 .to.emit(this.contracts.yToken, "Burn")
-                .withArgs(this.accounts.lucy, repayAmount);
+                .withArgs(this.accounts.lender, repayAmount);
             });
 
             it("emits a Transfer event", async function () {
               await expect(
-                this.contracts.yToken.connect(this.signers.lucy).repayBorrowBehalf(this.accounts.brad, repayAmount),
+                this.contracts.yToken
+                  .connect(this.signers.lender)
+                  .repayBorrowBehalf(this.accounts.borrower, repayAmount),
               )
                 .to.emit(this.contracts.yToken, "Transfer")
-                .withArgs(this.accounts.lucy, this.contracts.yToken.address, repayAmount);
+                .withArgs(this.accounts.lender, this.contracts.yToken.address, repayAmount);
             });
           });
 
@@ -82,14 +90,16 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
             beforeEach(async function () {
               /* The yToken makes an internal call to this stubbed function. */
               await this.stubs.balanceSheet.mock.getVaultDebt
-                .withArgs(this.contracts.yToken.address, this.accounts.brad)
+                .withArgs(this.contracts.yToken.address, this.accounts.borrower)
                 .returns(Zero);
             });
 
             it("reverts", async function () {
-              /* Lucy tries to repays Brad's debt but fails to do it because he doesn't have any. */
+              /* Lender tries to repays Borrower's debt but fails to do it because he doesn't have any. */
               await expect(
-                this.contracts.yToken.connect(this.signers.lucy).repayBorrowBehalf(this.accounts.brad, repayAmount),
+                this.contracts.yToken
+                  .connect(this.signers.lender)
+                  .repayBorrowBehalf(this.accounts.borrower, repayAmount),
               ).to.be.revertedWith(YTokenErrors.RepayBorrowInsufficientDebt);
             });
           });
@@ -104,7 +114,9 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
 
           it("reverts", async function () {
             await expect(
-              this.contracts.yToken.connect(this.signers.brad).repayBorrowBehalf(this.accounts.brad, repayAmount),
+              this.contracts.yToken
+                .connect(this.signers.borrower)
+                .repayBorrowBehalf(this.accounts.borrower, repayAmount),
             ).to.be.revertedWith(YTokenErrors.RepayBorrowNotAllowed);
           });
         });
@@ -114,7 +126,7 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
     describe("when the amount to repay is zero", function () {
       it("reverts", async function () {
         await expect(
-          this.contracts.yToken.connect(this.signers.brad).repayBorrowBehalf(this.accounts.brad, Zero),
+          this.contracts.yToken.connect(this.signers.borrower).repayBorrowBehalf(this.accounts.borrower, Zero),
         ).to.be.revertedWith(YTokenErrors.RepayBorrowZero);
       });
     });
@@ -123,13 +135,13 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
   describe("when the vault is not open", function () {
     beforeEach(async function () {
       await this.stubs.balanceSheet.mock.isVaultOpen
-        .withArgs(this.contracts.yToken.address, this.accounts.brad)
+        .withArgs(this.contracts.yToken.address, this.accounts.borrower)
         .returns(false);
     });
 
     it("reverts", async function () {
       await expect(
-        this.contracts.yToken.connect(this.signers.lucy).repayBorrowBehalf(this.accounts.brad, repayAmount),
+        this.contracts.yToken.connect(this.signers.lender).repayBorrowBehalf(this.accounts.borrower, repayAmount),
       ).to.be.revertedWith(GenericErrors.VaultNotOpen);
     });
   });

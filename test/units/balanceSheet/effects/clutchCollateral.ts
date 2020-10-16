@@ -12,7 +12,12 @@ export default function shouldBehaveLikeClutchCollateral(): void {
       await expect(
         this.contracts.balanceSheet
           .connect(this.signers.admin)
-          .clutchCollateral(this.stubs.yToken.address, this.accounts.grace, this.accounts.brad, collateralAmount),
+          .clutchCollateral(
+            this.stubs.yToken.address,
+            this.accounts.liquidator,
+            this.accounts.borrower,
+            collateralAmount,
+          ),
       ).to.be.revertedWith(BalanceSheetErrors.ClutchCollateralNotAuthorized);
     });
   });

@@ -55,7 +55,7 @@ export default function shouldBehaveLikeSetDepositCollateralAllowed(): void {
     it("reverts", async function () {
       await expect(
         this.contracts.fintroller
-          .connect(this.signers.eve)
+          .connect(this.signers.raider)
           .setDepositCollateralAllowed(this.stubs.yToken.address, true),
       ).to.be.revertedWith(AdminErrors.NotAdmin);
     });

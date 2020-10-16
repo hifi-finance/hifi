@@ -50,7 +50,9 @@ export default function shouldBehaveLikeSetSupplyUnderlyingAllowed(): void {
   describe("when the caller is not the admin", function () {
     it("reverts", async function () {
       await expect(
-        this.contracts.fintroller.connect(this.signers.eve).setSupplyUnderlyingAllowed(this.stubs.yToken.address, true),
+        this.contracts.fintroller
+          .connect(this.signers.raider)
+          .setSupplyUnderlyingAllowed(this.stubs.yToken.address, true),
       ).to.be.revertedWith(AdminErrors.NotAdmin);
     });
   });
