@@ -11,7 +11,7 @@ import { stubIsVaultOpen } from "../../../stubs";
  */
 export default function shouldBehaveLikeRepayBorrowBehalf(): void {
   const borrowAmount: BigNumber = TokenAmounts.OneHundred;
-  const repayAmount: BigNumber = TokenAmounts.OneHundred;
+  const repayAmount: BigNumber = TokenAmounts.Forty;
 
   describe("when the vault is open", function () {
     beforeEach(async function () {
@@ -55,16 +55,6 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
               expect(oldBalance).to.equal(newBalance.add(repayAmount));
             });
 
-            it("emits a RepayBorrow event", async function () {
-              await expect(
-                this.contracts.yToken
-                  .connect(this.signers.lender)
-                  .repayBorrowBehalf(this.accounts.borrower, repayAmount),
-              )
-                .to.emit(this.contracts.yToken, "RepayBorrow")
-                .withArgs(this.accounts.lender, this.accounts.borrower, repayAmount, Zero);
-            });
-
             it("emits a Burn event", async function () {
               await expect(
                 this.contracts.yToken
@@ -83,6 +73,16 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
               )
                 .to.emit(this.contracts.yToken, "Transfer")
                 .withArgs(this.accounts.lender, this.contracts.yToken.address, repayAmount);
+            });
+
+            it("emits a RepayBorrow event", async function () {
+              await expect(
+                this.contracts.yToken
+                  .connect(this.signers.lender)
+                  .repayBorrowBehalf(this.accounts.borrower, repayAmount),
+              )
+                .to.emit(this.contracts.yToken, "RepayBorrow")
+                .withArgs(this.accounts.lender, this.accounts.borrower, repayAmount, Zero);
             });
           });
 

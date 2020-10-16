@@ -33,7 +33,7 @@ async function stubLiquidateBorrowInternalCalls(
 export default function shouldBehaveLikeLiquidateBorrow(): void {
   const borrowAmount: BigNumber = TokenAmounts.OneHundred;
   const lockedCollateral: BigNumber = TokenAmounts.Ten;
-  const repayAmount: BigNumber = TokenAmounts.Fifty;
+  const repayAmount: BigNumber = TokenAmounts.Forty;
   const newBorrowAmount: BigNumber = borrowAmount.sub(repayAmount);
 
   describe("when the vault is open", function () {
@@ -96,13 +96,43 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
                     await this.contracts.yToken.__godMode_mint(this.accounts.liquidator, repayAmount);
                   });
 
-                  it("liquidates the user", async function () {
+                  it("liquidates the borrower", async function () {
                     const oldBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.liquidator);
                     await this.contracts.yToken
                       .connect(this.signers.liquidator)
                       .liquidateBorrow(this.accounts.borrower, repayAmount);
                     const newBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.liquidator);
                     expect(oldBalance).to.equal(newBalance.add(repayAmount));
+                  });
+
+                  it("emits a Burn event", async function () {
+                    await expect(
+                      this.contracts.yToken
+                        .connect(this.signers.liquidator)
+                        .liquidateBorrow(this.accounts.borrower, repayAmount),
+                    )
+                      .to.emit(this.contracts.yToken, "Burn")
+                      .withArgs(this.accounts.liquidator, repayAmount);
+                  });
+
+                  it("emits a Transfer event", async function () {
+                    await expect(
+                      this.contracts.yToken
+                        .connect(this.signers.liquidator)
+                        .liquidateBorrow(this.accounts.borrower, repayAmount),
+                    )
+                      .to.emit(this.contracts.yToken, "Transfer")
+                      .withArgs(this.accounts.liquidator, this.contracts.yToken.address, repayAmount);
+                  });
+
+                  it("emits a RepayBorrow event", async function () {
+                    await expect(
+                      this.contracts.yToken
+                        .connect(this.signers.liquidator)
+                        .liquidateBorrow(this.accounts.borrower, repayAmount),
+                    )
+                      .to.emit(this.contracts.yToken, "RepayBorrow")
+                      .withArgs(this.accounts.liquidator, this.accounts.borrower, repayAmount, newBorrowAmount);
                   });
 
                   it("emits a LiquidateBorrow event", async function () {
@@ -118,26 +148,6 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
                         repayAmount,
                         clutchableCollateralAmount,
                       );
-                  });
-
-                  it("emits a RepayBorrow event", async function () {
-                    await expect(
-                      this.contracts.yToken
-                        .connect(this.signers.liquidator)
-                        .liquidateBorrow(this.accounts.borrower, repayAmount),
-                    )
-                      .to.emit(this.contracts.yToken, "RepayBorrow")
-                      .withArgs(this.accounts.liquidator, this.accounts.borrower, repayAmount, newBorrowAmount);
-                  });
-
-                  it("emits a Transfer event", async function () {
-                    await expect(
-                      this.contracts.yToken
-                        .connect(this.signers.liquidator)
-                        .liquidateBorrow(this.accounts.borrower, repayAmount),
-                    )
-                      .to.emit(this.contracts.yToken, "Transfer")
-                      .withArgs(this.accounts.liquidator, this.contracts.yToken.address, repayAmount);
                   });
                 });
 
@@ -167,7 +177,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
                     await this.contracts.yToken.__godMode_mint(this.accounts.liquidator, repayAmount);
                   });
 
-                  it("liquidates the user", async function () {
+                  it("liquidates the borrower", async function () {
                     const oldBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.liquidator);
                     await this.contracts.yToken
                       .connect(this.signers.liquidator)

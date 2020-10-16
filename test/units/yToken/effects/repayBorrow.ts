@@ -9,7 +9,7 @@ import { stubIsVaultOpen } from "../../../stubs";
 
 export default function shouldBehaveLikeRepayBorrow(): void {
   const borrowAmount: BigNumber = TokenAmounts.OneHundred;
-  const repayAmount: BigNumber = TokenAmounts.OneHundred;
+  const repayAmount: BigNumber = TokenAmounts.Forty;
 
   describe("when the vault is open", function () {
     beforeEach(async function () {
@@ -53,12 +53,6 @@ export default function shouldBehaveLikeRepayBorrow(): void {
                 expect(oldBalance).to.equal(newBalance.add(repayAmount));
               });
 
-              it("emits a RepayBorrow event", async function () {
-                await expect(this.contracts.yToken.connect(this.signers.borrower).repayBorrow(repayAmount))
-                  .to.emit(this.contracts.yToken, "RepayBorrow")
-                  .withArgs(this.accounts.borrower, this.accounts.borrower, repayAmount, Zero);
-              });
-
               it("emits a Burn event", async function () {
                 await expect(this.contracts.yToken.connect(this.signers.borrower).repayBorrow(repayAmount))
                   .to.emit(this.contracts.yToken, "Burn")
@@ -70,12 +64,18 @@ export default function shouldBehaveLikeRepayBorrow(): void {
                   .to.emit(this.contracts.yToken, "Transfer")
                   .withArgs(this.accounts.borrower, this.contracts.yToken.address, repayAmount);
               });
+
+              it("emits a RepayBorrow event", async function () {
+                await expect(this.contracts.yToken.connect(this.signers.borrower).repayBorrow(repayAmount))
+                  .to.emit(this.contracts.yToken, "RepayBorrow")
+                  .withArgs(this.accounts.borrower, this.accounts.borrower, repayAmount, Zero);
+              });
             });
 
             describe("when the caller does not have enough yTokens", function () {
               beforeEach(async function () {
                 /* User burns all of his yTokens. */
-                await this.contracts.yToken.connect(this.signers.borrower).transfer(AddressOne, repayAmount);
+                await this.contracts.yToken.connect(this.signers.borrower).transfer(AddressOne, borrowAmount);
               });
 
               it("reverts", async function () {

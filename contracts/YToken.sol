@@ -297,7 +297,7 @@ contract YToken is
 
     /**
      * @notice Deletes the account's debt from the registry and take the yTokens out of circulation.
-     * @dev Emits a {RepayBorrow}, {Burn} and {Transfer} event.
+     * @dev Emits a {Burn}, {Transfer} and {RepayBorrow} event.
      *
      * Requirements:
      *
@@ -312,13 +312,12 @@ contract YToken is
      */
     function repayBorrow(uint256 repayAmount) external override isVaultOpen(msg.sender) nonReentrant returns (bool) {
         repayBorrowInternal(msg.sender, msg.sender, repayAmount);
-
         return true;
     }
 
     /**
      * @notice Clears the borrower's debt from the registry and take the yTokens out of circulation.
-     * @dev Emits a {RepayBorrow}, {Burn} and {Transfer} event.
+     * @dev Emits a {Burn}, {Transfer} and {RepayBorrow} event.
      *
      * Requirements: same as the `repayBorrow` function, but here `borrower` is the account that must
      * have at least `repayAmount` yTokens to repay the borrow.
@@ -335,7 +334,6 @@ contract YToken is
         returns (bool)
     {
         repayBorrowInternal(msg.sender, borrower, repayAmount);
-
         return true;
     }
 
@@ -384,8 +382,8 @@ contract YToken is
         /* Interactions: reduce the debt of the borrower . */
         require(balanceSheet.setVaultDebt(this, borrower, newDebt), "ERR_REPAY_BORROW_CALL_SET_VAULT_DEBT");
 
-        /* Emit a RepayBorrow and Transfer event. */
-        emit RepayBorrow(payer, borrower, repayAmount, newDebt);
+        /* Emit both a Transfer and a RepayBorrow event. */
         emit Transfer(payer, address(this), repayAmount);
+        emit RepayBorrow(payer, borrower, repayAmount, newDebt);
     }
 }
