@@ -11,7 +11,9 @@ import shouldBehaveLikeIsYTokenGetter from "./view/isYToken";
 import shouldBehaveLikeUnderlyingPrecisionScalarGetter from "./view/underlyingPrecisionScalar";
 
 import shouldBehaveLikeBorrow from "./effects/borrow";
+import shouldBehaveLikeBurn from "./effects/burn";
 import shouldBehaveLikeLiquidateBorrow from "./effects/liquidateBorrow";
+import shouldBehaveLikeMint from "./effects/mint";
 import shouldBehaveLikeRepayBorrow from "./effects/repayBorrow";
 import shouldBehaveLikeRepayBorrowBehalf from "./effects/repayBorrowBehalf";
 
@@ -63,8 +65,16 @@ export function shouldBehaveLikeYToken(): void {
       shouldBehaveLikeBorrow();
     });
 
+    describe.only("burn", function () {
+      shouldBehaveLikeBurn();
+    });
+
     describe("liquidateBorrow", function () {
       shouldBehaveLikeLiquidateBorrow();
+    });
+
+    describe.only("mint", function () {
+      shouldBehaveLikeMint();
     });
 
     describe("repayBorrow", function () {
