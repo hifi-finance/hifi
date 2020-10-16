@@ -78,4 +78,14 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
     const newBalance: BigNumber = await this.contracts.collateral.balanceOf(this.accounts.grace);
     expect(oldBalance).to.equal(newBalance.sub(clutchableCollateralAmount));
   });
+
+  it("emits a ClutchCollateral event", async function () {
+    const clutchableCollateralAmount: BigNumber = await this.contracts.balanceSheet.getClutchableCollateral(
+      this.contracts.yToken.address,
+      repayAmount,
+    );
+    await expect(this.contracts.yToken.connect(this.signers.grace).liquidateBorrow(this.accounts.brad, repayAmount))
+      .to.emit(this.contracts.balanceSheet, "ClutchCollateral")
+      .withArgs(this.contracts.yToken.address, this.accounts.grace, this.accounts.brad, clutchableCollateralAmount);
+  });
 }

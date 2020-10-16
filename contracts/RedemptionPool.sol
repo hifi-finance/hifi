@@ -35,7 +35,8 @@ contract RedemptionPool is
 
         /**
          * Set the yToken contract. It cannot be sanity-checked because the yToken creates this
-         * contract in its own constructor and contracts cannot be called while initializing. */
+         * contract in its own constructor and contracts cannot be called while initializing.
+         */
         yToken = yToken_;
     }
 

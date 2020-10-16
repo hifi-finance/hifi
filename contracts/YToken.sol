@@ -203,7 +203,25 @@ contract YToken is
     }
 
     /**
-     * @notice Pending.
+     * @notice Repays the debt of the borrower and rewards the liquidator with a surplus
+     * of collateral.
+     *
+     * @dev Emits a {RepayBorrow}, {Transfer}, {ClutchCollateral} and {LiquidateBorrow} event.
+     *
+     * Requirements:
+     *
+     * - The vault must be open.
+     * - The liquidator cannot liquidate themselves.
+     * - The amount to repay cannot be zero.
+     * - The Fintroller must allow this action to be performed.
+     * - The borrower must be underwater if the bond didn't mature.
+     * - The caller must have at least `repayAmount` yTokens.
+     * - The borrower must have at least `repayAmount` debt.
+     * - The collateral clutch cannot be more than what the borrower has in the vault.
+     *
+     * @param borrower The account to liquidate.
+     * @param repayAmount The amount of yTokens to repay.
+     * @return true = success, otherwise it reverts.
      */
     function liquidateBorrow(address borrower, uint256 repayAmount)
         external
@@ -279,7 +297,7 @@ contract YToken is
 
     /**
      * @notice Deletes the account's debt from the registry and take the yTokens out of circulation.
-     * @dev Emits a {RepayBorrow} and a {Transfer} event.
+     * @dev Emits a {RepayBorrow}, {Burn} and {Transfer} event.
      *
      * Requirements:
      *
@@ -302,8 +320,8 @@ contract YToken is
      * @notice Clears the borrower's debt from the registry and take the yTokens out of circulation.
      * @dev Emits a {RepayBorrow}, {Burn} and {Transfer} event.
      *
-     * Requirements: same as the `repayBorrow` function, but here `borrower` is the account who must have
-     * at least `repayAmount` yTokens to repay the borrow.
+     * Requirements: same as the `repayBorrow` function, but here `borrower` is the account that must
+     * have at least `repayAmount` yTokens to repay the borrow.
      *
      * @param borrower The account for which to repay the borrow.
      * @param repayAmount The amount of yTokens to repay.
