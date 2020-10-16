@@ -92,28 +92,6 @@ export async function deployStubYToken(deployer: Signer): Promise<MockContract> 
 /**
  * FUNCTION STUBS
  */
-export async function stubLiquidateBorrowInternalCalls(
-  this: Mocha.Context,
-  yTokenAddress: string,
-  newBorrowAmount: BigNumber,
-  repayAmount: BigNumber,
-  lockedCollateral: BigNumber,
-  clutchedCollateralAmount: BigNumber,
-): Promise<void> {
-  await this.stubs.balanceSheet.mock.setVaultDebt
-    .withArgs(yTokenAddress, this.accounts.brad, newBorrowAmount)
-    .returns(true);
-  await this.stubs.balanceSheet.mock.getClutchableCollateral
-    .withArgs(yTokenAddress, repayAmount)
-    .returns(clutchedCollateralAmount);
-  await this.stubs.balanceSheet.mock.getVaultLockedCollateral
-    .withArgs(this.contracts.yToken.address, this.accounts.brad)
-    .returns(lockedCollateral);
-  await this.stubs.balanceSheet.mock.clutchCollateral
-    .withArgs(yTokenAddress, this.accounts.grace, this.accounts.brad, clutchedCollateralAmount)
-    .returns(true);
-}
-
 export async function stubGetVault(
   this: Mocha.Context,
   yTokenAddress: string,

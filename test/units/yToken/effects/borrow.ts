@@ -12,8 +12,6 @@ import { stubIsVaultOpen, stubVaultFreeCollateral, stubVaultLockedCollateral } f
 export default function shouldBehaveLikeBorrow(): void {
   const borrowAmount: BigNumber = TokenAmounts.OneHundred;
   const collateralAmount: BigNumber = TokenAmounts.Ten;
-  const safeCollateralizationRatio: BigNumber = Percentages.OneThousand;
-  const underwaterCollateralizationRatio: BigNumber = Percentages.OneHundredAndTwenty;
 
   describe("when the vault is open", function () {
     beforeEach(async function () {
@@ -44,7 +42,6 @@ export default function shouldBehaveLikeBorrow(): void {
               describe("when the caller deposited collateral", function () {
                 describe("when the caller locked the collateral", function () {
                   beforeEach(async function () {
-                    /* Stub the value of the locked collateral. */
                     await stubVaultLockedCollateral.call(
                       this,
                       this.contracts.yToken.address,
@@ -53,7 +50,9 @@ export default function shouldBehaveLikeBorrow(): void {
                     );
                   });
 
-                  describe("when the value of the locked collateral is high enough", function () {
+                  describe("when the user is safely collateralized", function () {
+                    const safeCollateralizationRatio: BigNumber = Percentages.OneThousand;
+
                     beforeEach(async function () {
                       await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
                         .withArgs(this.contracts.yToken.address, this.accounts.brad, collateralAmount, borrowAmount)
@@ -107,11 +106,13 @@ export default function shouldBehaveLikeBorrow(): void {
                     });
                   });
 
-                  describe("when the value of the locked collateral is not high enough", function () {
+                  describe("when the user is dangerously collateralized", function () {
+                    const dangerousCollateralizationRatio: BigNumber = Percentages.OneHundredAndTwenty;
+
                     beforeEach(async function () {
                       await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
                         .withArgs(this.contracts.yToken.address, this.accounts.brad, collateralAmount, borrowAmount)
-                        .returns(underwaterCollateralizationRatio);
+                        .returns(dangerousCollateralizationRatio);
                     });
 
                     it("reverts", async function () {

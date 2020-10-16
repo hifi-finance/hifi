@@ -6,11 +6,32 @@ import { FintrollerConstants, TokenAmounts, YTokenConstants } from "../../../../
 import { FintrollerErrors, GenericErrors, YTokenErrors } from "../../../../helpers/errors";
 import { contextForTimeDependentTests } from "../../../../helpers/mochaContexts";
 import { increaseTime } from "../../../../helpers/jsonRpcHelpers";
-import { stubIsVaultOpen, stubLiquidateBorrowInternalCalls } from "../../../stubs";
+import { stubIsVaultOpen } from "../../../stubs";
+
+async function stubLiquidateBorrowInternalCalls(
+  this: Mocha.Context,
+  yTokenAddress: string,
+  newBorrowAmount: BigNumber,
+  repayAmount: BigNumber,
+  lockedCollateral: BigNumber,
+  clutchedCollateralAmount: BigNumber,
+): Promise<void> {
+  await this.stubs.balanceSheet.mock.setVaultDebt
+    .withArgs(yTokenAddress, this.accounts.brad, newBorrowAmount)
+    .returns(true);
+  await this.stubs.balanceSheet.mock.getClutchableCollateral
+    .withArgs(yTokenAddress, repayAmount)
+    .returns(clutchedCollateralAmount);
+  await this.stubs.balanceSheet.mock.getVaultLockedCollateral
+    .withArgs(this.contracts.yToken.address, this.accounts.brad)
+    .returns(lockedCollateral);
+  await this.stubs.balanceSheet.mock.clutchCollateral
+    .withArgs(yTokenAddress, this.accounts.grace, this.accounts.brad, clutchedCollateralAmount)
+    .returns(true);
+}
 
 export default function shouldBehaveLikeLiquidateBorrow(): void {
   const borrowAmount: BigNumber = TokenAmounts.OneHundred;
-  const clutchableCollateralAmount: BigNumber = TokenAmounts.PointFiftyFive;
   const lockedCollateral: BigNumber = TokenAmounts.Ten;
   const repayAmount: BigNumber = TokenAmounts.Fifty;
   const newBorrowAmount: BigNumber = borrowAmount.sub(repayAmount);
@@ -41,30 +62,32 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
                 .returns(true);
             });
 
-            describe("when the account is underwater", function () {
+            describe("when the borrower has a debt", function () {
+              const clutchableCollateralAmount: BigNumber = TokenAmounts.PointFiftyFive;
+
               beforeEach(async function () {
-                await this.stubs.balanceSheet.mock.isAccountUnderwater
+                /* Brad borrows 100 yDAI. */
+                await this.stubs.balanceSheet.mock.getVaultDebt
                   .withArgs(this.contracts.yToken.address, this.accounts.brad)
-                  .returns(true);
+                  .returns(borrowAmount);
+                await this.contracts.yToken.__godMode_mint(this.accounts.brad, borrowAmount);
+
+                /* The yToken makes internal calls to these stubbed functions. */
+                await stubLiquidateBorrowInternalCalls.call(
+                  this,
+                  this.contracts.yToken.address,
+                  newBorrowAmount,
+                  repayAmount,
+                  lockedCollateral,
+                  clutchableCollateralAmount,
+                );
               });
 
-              describe("when the borrower has a debt", function () {
+              describe("when the account is underwater", function () {
                 beforeEach(async function () {
-                  /* Brad borrows 100 yDAI. */
-                  await this.stubs.balanceSheet.mock.getVaultDebt
+                  await this.stubs.balanceSheet.mock.isAccountUnderwater
                     .withArgs(this.contracts.yToken.address, this.accounts.brad)
-                    .returns(borrowAmount);
-                  await this.contracts.yToken.__godMode_mint(this.accounts.brad, borrowAmount);
-
-                  /* The yToken makes internal calls to these stubbed functions. */
-                  await stubLiquidateBorrowInternalCalls.call(
-                    this,
-                    this.contracts.yToken.address,
-                    newBorrowAmount,
-                    repayAmount,
-                    lockedCollateral,
-                    clutchableCollateralAmount,
-                  );
+                    .returns(true);
                 });
 
                 describe("when the caller has enough yTokens", function () {
@@ -124,70 +147,58 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
                 });
               });
 
-              describe("when the borrower does not have a debt", function () {
+              describe("when the account is not underwater", function () {
                 beforeEach(async function () {
-                  await this.stubs.balanceSheet.mock.getVaultDebt
+                  await this.stubs.balanceSheet.mock.isAccountUnderwater
                     .withArgs(this.contracts.yToken.address, this.accounts.brad)
-                    .returns(Zero);
+                    .returns(false);
                 });
 
-                it("reverts", async function () {
-                  await expect(
-                    this.contracts.yToken.connect(this.signers.grace).liquidateBorrow(this.accounts.brad, repayAmount),
-                  ).to.be.revertedWith(YTokenErrors.RepayBorrowInsufficientDebt);
+                contextForTimeDependentTests("when the bond matured", function () {
+                  beforeEach(async function () {
+                    await increaseTime(YTokenConstants.DefaultExpirationTime);
+
+                    /* Mint 100 yDAI to Grace so she can repay the debt. */
+                    await this.contracts.yToken.__godMode_mint(this.accounts.grace, repayAmount);
+                  });
+
+                  it("liquidates the user", async function () {
+                    const oldBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.grace);
+                    await this.contracts.yToken
+                      .connect(this.signers.grace)
+                      .liquidateBorrow(this.accounts.brad, repayAmount);
+                    const newBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.grace);
+                    expect(oldBalance).to.equal(newBalance.add(repayAmount));
+                  });
+                });
+
+                describe("when the bond did not mature", function () {
+                  it("reverts", async function () {
+                    await expect(
+                      this.contracts.yToken
+                        .connect(this.signers.grace)
+                        .liquidateBorrow(this.accounts.brad, repayAmount),
+                    ).to.be.revertedWith(GenericErrors.AccountNotUnderwater);
+                  });
                 });
               });
             });
 
-            describe("when the account is not underwater", function () {
+            describe("when the borrower does not have a debt", function () {
               beforeEach(async function () {
+                /* Borrowers with no debt are never underwater. */
                 await this.stubs.balanceSheet.mock.isAccountUnderwater
                   .withArgs(this.contracts.yToken.address, this.accounts.brad)
                   .returns(false);
+                await this.stubs.balanceSheet.mock.getVaultDebt
+                  .withArgs(this.contracts.yToken.address, this.accounts.brad)
+                  .returns(Zero);
               });
 
-              contextForTimeDependentTests("when the bond matured", function () {
-                beforeEach(async function () {
-                  await increaseTime(YTokenConstants.DefaultExpirationTime);
-                });
-
-                beforeEach(async function () {
-                  /* Brad borrows 100 yDAI. */
-                  await this.stubs.balanceSheet.mock.getVaultDebt
-                    .withArgs(this.contracts.yToken.address, this.accounts.brad)
-                    .returns(borrowAmount);
-                  await this.contracts.yToken.__godMode_mint(this.accounts.brad, borrowAmount);
-
-                  /* The yToken makes internal calls to these stubbed functions. */
-                  await stubLiquidateBorrowInternalCalls.call(
-                    this,
-                    this.contracts.yToken.address,
-                    newBorrowAmount,
-                    repayAmount,
-                    lockedCollateral,
-                    clutchableCollateralAmount,
-                  );
-
-                  /* Mint 100 yDAI to Grace so she can repay the debt. */
-                  await this.contracts.yToken.__godMode_mint(this.accounts.grace, repayAmount);
-                });
-
-                it("liquidates the user", async function () {
-                  const oldBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.grace);
-                  await this.contracts.yToken
-                    .connect(this.signers.grace)
-                    .liquidateBorrow(this.accounts.brad, repayAmount);
-                  const newBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.grace);
-                  expect(oldBalance).to.equal(newBalance.add(repayAmount));
-                });
-              });
-
-              describe("when the bond did not mature", function () {
-                it("reverts", async function () {
-                  await expect(
-                    this.contracts.yToken.connect(this.signers.grace).liquidateBorrow(this.accounts.brad, repayAmount),
-                  ).to.be.revertedWith(GenericErrors.AccountNotUnderwater);
-                });
+              it("reverts", async function () {
+                await expect(
+                  this.contracts.yToken.connect(this.signers.grace).liquidateBorrow(this.accounts.brad, repayAmount),
+                ).to.be.revertedWith(GenericErrors.AccountNotUnderwater);
               });
             });
           });
