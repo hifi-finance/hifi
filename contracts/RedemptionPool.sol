@@ -40,17 +40,17 @@ contract RedemptionPool is
         yToken = yToken_;
     }
 
-    struct RedeemUnderlyingLocalVars {
+    struct RedeemYTokensLocalVars {
         MathError mathErr;
         uint256 newUnderlyingTotalSupply;
         uint256 underlyingPrecisionScalar;
-        uint256 yTokenAmount;
+        uint256 underlyingAmount;
     }
 
     /**
      * @notice Pays the token holder the face value at maturation time.
      *
-     * @dev Emits a {RedeemUnderlying} event.
+     * @dev Emits a {RedeemYTokens} event.
      *
      * Requirements:
      *
@@ -59,48 +59,48 @@ contract RedemptionPool is
      * - The Fintroller must allow this action to be performed.
      * - There must be enough liquidity in the Redemption Pool.
      *
-     * @param underlyingAmount The amount of yTokens to redeem for the underlying asset.
+     * @param yTokenAmount The amount of yTokens to redeem for the underlying asset.
      * @return true = success, otherwise it reverts.
      */
-    function redeemUnderlying(uint256 underlyingAmount) external override nonReentrant returns (bool) {
-        RedeemUnderlyingLocalVars memory vars;
+    function redeemYTokens(uint256 yTokenAmount) external override nonReentrant returns (bool) {
+        RedeemYTokensLocalVars memory vars;
 
         /* Checks: maturation time. */
         require(block.timestamp >= yToken.expirationTime(), "ERR_BOND_NOT_MATURED");
 
         /* Checks: the zero edge case. */
-        require(underlyingAmount > 0, "ERR_REDEEM_UNDERLYING_ZERO");
+        require(yTokenAmount > 0, "ERR_REDEEM_YTOKENS_ZERO");
 
         /* Checks: the Fintroller allows this action to be performed. */
-        require(fintroller.getRedeemUnderlyingAllowed(yToken), "ERR_REDEEM_UNDERLYING_NOT_ALLOWED");
+        require(fintroller.getRedeemYTokensAllowed(yToken), "ERR_REDEEM_YTOKENS_NOT_ALLOWED");
 
         /* Checks: there is sufficient liquidity. */
-        require(underlyingAmount <= totalUnderlyingSupply, "ERR_REDEEM_UNDERLYING_INSUFFICIENT_UNDERLYING");
-
-        /* Effects: decrease the remaining supply of underlying. */
-        (vars.mathErr, vars.newUnderlyingTotalSupply) = subUInt(totalUnderlyingSupply, underlyingAmount);
-        assert(vars.mathErr == MathError.NO_ERROR);
-        totalUnderlyingSupply = vars.newUnderlyingTotalSupply;
+        require(yTokenAmount <= totalUnderlyingSupply, "ERR_REDEEM_YTOKENS_INSUFFICIENT_UNDERLYING");
 
         /**
-         * yTokens always have 18 decimals so the underlying amount needs to be upscaled.
+         * yTokens always have 18 decimals so the underlying amount needs to be downscaled.
          * If the precision scalar is 1, it means that the underlying also has 18 decimals.
          */
         vars.underlyingPrecisionScalar = yToken.underlyingPrecisionScalar();
         if (vars.underlyingPrecisionScalar != 1) {
-            (vars.mathErr, vars.yTokenAmount) = mulUInt(underlyingAmount, vars.underlyingPrecisionScalar);
-            require(vars.mathErr == MathError.NO_ERROR, "ERR_REDEEM_UNDERLYING_MATH_ERROR");
+            (vars.mathErr, vars.underlyingAmount) = divUInt(yTokenAmount, vars.underlyingPrecisionScalar);
+            require(vars.mathErr == MathError.NO_ERROR, "ERR_REDEEM_YTOKENS_MATH_ERROR");
         } else {
-            vars.yTokenAmount = underlyingAmount;
+            vars.underlyingAmount = yTokenAmount;
         }
 
+        /* Effects: decrease the remaining supply of underlying. */
+        (vars.mathErr, vars.newUnderlyingTotalSupply) = subUInt(totalUnderlyingSupply, vars.underlyingAmount);
+        assert(vars.mathErr == MathError.NO_ERROR);
+        totalUnderlyingSupply = vars.newUnderlyingTotalSupply;
+
         /* Interactions: burn the yTokens. */
-        require(yToken.burn(msg.sender, vars.yTokenAmount), "ERR_SUPPLY_UNDERLYING_CALL_BURN");
+        require(yToken.burn(msg.sender, yTokenAmount), "ERR_SUPPLY_UNDERLYING_CALL_BURN");
 
         /* Interactions: perform the Erc20 transfer. */
-        yToken.underlying().safeTransfer(msg.sender, underlyingAmount);
+        yToken.underlying().safeTransfer(msg.sender, vars.underlyingAmount);
 
-        emit RedeemUnderlying(msg.sender, underlyingAmount);
+        emit RedeemYTokens(msg.sender, yTokenAmount, vars.underlyingAmount);
 
         return true;
     }
@@ -145,7 +145,7 @@ contract RedemptionPool is
         totalUnderlyingSupply = vars.newUnderlyingTotalSupply;
 
         /**
-         * yTokens always have 18 decimals so the underlying amount needs to be upscaled
+         * yTokens always have 18 decimals so the underlying amount needs to be upscaled.
          * If the precision scalar is 1, it means that the underlying also has 18 decimals.
          */
         vars.underlyingPrecisionScalar = yToken.underlyingPrecisionScalar();
@@ -162,7 +162,7 @@ contract RedemptionPool is
         /* Interactions: perform the Erc20 transfer. */
         yToken.underlying().safeTransferFrom(msg.sender, address(this), underlyingAmount);
 
-        emit SupplyUnderlying(msg.sender, underlyingAmount);
+        emit SupplyUnderlying(msg.sender, underlyingAmount, vars.yTokenAmount);
 
         return true;
     }

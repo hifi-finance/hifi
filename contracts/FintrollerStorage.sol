@@ -12,7 +12,7 @@ abstract contract FintrollerStorage is Exponential {
         bool isDepositCollateralAllowed;
         bool isLiquidateBorrowAllowed;
         bool isListed;
-        bool isRedeemUnderlyingAllowed;
+        bool isRedeemYTokenAllowed;
         bool isRepayBorrowAllowed;
         bool isSupplyUnderlyingAllowed;
     }

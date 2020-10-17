@@ -15,7 +15,7 @@ export default function shouldBehaveLikeBorrow(): void {
     /* List the bond in the Fintroller. */
     await this.contracts.fintroller.connect(this.signers.admin).listBond(this.contracts.yToken.address);
 
-    /* Allow borrows on the bond. */
+    /* Allow borrow. */
     await this.contracts.fintroller.connect(this.signers.admin).setBorrowAllowed(this.contracts.yToken.address, true);
 
     /* Set the debt ceiling to 1,000 yDAI. */

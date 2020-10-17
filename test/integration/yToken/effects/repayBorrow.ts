@@ -16,7 +16,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
     /* List the bond in the Fintroller. */
     await this.contracts.fintroller.connect(this.signers.admin).listBond(this.contracts.yToken.address);
 
-    /* Allow repay borrows on the bond. */
+    /* Allow repay borrow. */
     await this.contracts.fintroller
       .connect(this.signers.admin)
       .setRepayBorrowAllowed(this.contracts.yToken.address, true);

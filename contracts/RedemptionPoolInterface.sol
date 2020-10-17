@@ -11,14 +11,14 @@ abstract contract RedemptionPoolInterface is RedemptionPoolStorage {
     /**
      * NON-CONSTANT FUNCTIONS
      */
-    function redeemUnderlying(uint256 underlyingAmount) external virtual returns (bool);
+    function redeemYTokens(uint256 underlyingAmount) external virtual returns (bool);
 
     function supplyUnderlying(uint256 underlyingAmount) external virtual returns (bool);
 
     /**
      * EVENTS
      */
-    event RedeemUnderlying(address indexed account, uint256 redeemAmount);
+    event RedeemYTokens(address indexed account, uint256 yTokenAmount, uint256 underlyingAmount);
 
-    event SupplyUnderlying(address indexed account, uint256 underlyingAmount);
+    event SupplyUnderlying(address indexed account, uint256 underlyingAmount, uint256 yTokenAmount);
 }

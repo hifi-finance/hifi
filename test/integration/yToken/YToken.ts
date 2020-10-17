@@ -1,5 +1,5 @@
 import { shouldBehaveLikeYToken } from "./YToken.behavior";
-import { integrationFixtureYToken } from "../fixtures";
+import { integrationFixture } from "../fixtures";
 
 export function integrationTestYToken(): void {
   describe("YToken", function () {
@@ -12,7 +12,7 @@ export function integrationTestYToken(): void {
         redemptionPool,
         underlying,
         yToken,
-      } = await this.loadFixture(integrationFixtureYToken);
+      } = await this.loadFixture(integrationFixture);
       this.contracts.balanceSheet = balanceSheet;
       this.contracts.collateral = collateral;
       this.contracts.fintroller = fintroller;

@@ -65,7 +65,7 @@ export function shouldBehaveLikeYToken(): void {
       shouldBehaveLikeBorrow();
     });
 
-    describe.only("burn", function () {
+    describe("burn", function () {
       shouldBehaveLikeBurn();
     });
 
@@ -73,7 +73,7 @@ export function shouldBehaveLikeYToken(): void {
       shouldBehaveLikeLiquidateBorrow();
     });
 
-    describe.only("mint", function () {
+    describe("mint", function () {
       shouldBehaveLikeMint();
     });
 

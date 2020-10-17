@@ -25,7 +25,7 @@ export default function shouldBehaveLikeGetBondCollateralizationRatio(): void {
       expect(bond.isDepositCollateralAllowed).to.equal(true);
       expect(bond.isLiquidateBorrowAllowed).to.equal(true);
       expect(bond.isListed).to.equal(true);
-      expect(bond.isRedeemUnderlyingAllowed).to.equal(true);
+      expect(bond.isRedeemYTokenAllowed).to.equal(true);
       expect(bond.isRepayBorrowAllowed).to.equal(true);
       expect(bond.isSupplyUnderlyingAllowed).to.equal(true);
     });
@@ -40,7 +40,7 @@ export default function shouldBehaveLikeGetBondCollateralizationRatio(): void {
       expect(bond.isDepositCollateralAllowed).to.equal(false);
       expect(bond.isLiquidateBorrowAllowed).to.equal(false);
       expect(bond.isListed).to.equal(false);
-      expect(bond.isRedeemUnderlyingAllowed).to.equal(false);
+      expect(bond.isRedeemYTokenAllowed).to.equal(false);
       expect(bond.isRepayBorrowAllowed).to.equal(false);
       expect(bond.isSupplyUnderlyingAllowed).to.equal(false);
     });

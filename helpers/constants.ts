@@ -96,7 +96,7 @@ export const FintrollerConstants = {
     IsDepositCollateralAllowed: true,
     IsLiquidateBorrowAllowed: true,
     IsListed: true,
-    IssRedeemUnderlyingAllowed: true,
+    IsRedeemYTokensAllowed: true,
     IsRepayBorrowAllowed: true,
     IsSupplyUnderlyingAllowed: true,
   },

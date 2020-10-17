@@ -39,7 +39,7 @@ contract Fintroller is
             bool isDepositCollateralAllowed,
             bool isLiquidateBorrowAllowed,
             bool isListed,
-            bool isRedeemUnderlyingAllowed,
+            bool isRedeemYTokenAllowed,
             bool isRepayBorrowAllowed,
             bool isSupplyUnderlyingAllowed
         )
@@ -50,7 +50,7 @@ contract Fintroller is
         isDepositCollateralAllowed = bonds[address(yToken)].isDepositCollateralAllowed;
         isLiquidateBorrowAllowed = bonds[address(yToken)].isLiquidateBorrowAllowed;
         isListed = bonds[address(yToken)].isListed;
-        isRedeemUnderlyingAllowed = bonds[address(yToken)].isRedeemUnderlyingAllowed;
+        isRedeemYTokenAllowed = bonds[address(yToken)].isRedeemYTokenAllowed;
         isRepayBorrowAllowed = bonds[address(yToken)].isRepayBorrowAllowed;
         isSupplyUnderlyingAllowed = bonds[address(yToken)].isSupplyUnderlyingAllowed;
     }
@@ -117,10 +117,10 @@ contract Fintroller is
      * @param yToken The bond to make the check against.
      * @return bool true=allowed, false=not allowed.
      */
-    function getRedeemUnderlyingAllowed(YTokenInterface yToken) external view override returns (bool) {
+    function getRedeemYTokensAllowed(YTokenInterface yToken) external view override returns (bool) {
         Bond memory bond = bonds[address(yToken)];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
-        return bond.isRedeemUnderlyingAllowed;
+        return bond.isRedeemYTokenAllowed;
     }
 
     /**
@@ -172,7 +172,7 @@ contract Fintroller is
             isDepositCollateralAllowed: true,
             isLiquidateBorrowAllowed: true,
             isListed: true,
-            isRedeemUnderlyingAllowed: true,
+            isRedeemYTokenAllowed: true,
             isRepayBorrowAllowed: true,
             isSupplyUnderlyingAllowed: true
         });
@@ -396,7 +396,7 @@ contract Fintroller is
     /**
      * @notice Updates the state of the permission accessed by the Redemption Pool before a redemption of underlying.
      *
-     * @dev Emits a {SetRedeemUnderlyingAllowed} event.
+     * @dev Emits a {SetRedeemYTokensAllowed} event.
      *
      * Requirements:
      *
@@ -407,10 +407,10 @@ contract Fintroller is
      * @param state The new state to put in storage.
      * @return bool true=success, otherwise it reverts.
      */
-    function setRedeemUnderlyingAllowed(YTokenInterface yToken, bool state) external override onlyAdmin returns (bool) {
+    function setRedeemYTokensAllowed(YTokenInterface yToken, bool state) external override onlyAdmin returns (bool) {
         require(bonds[address(yToken)].isListed, "ERR_BOND_NOT_LISTED");
-        bonds[address(yToken)].isRedeemUnderlyingAllowed = state;
-        emit SetRedeemUnderlyingAllowed(admin, yToken, state);
+        bonds[address(yToken)].isRedeemYTokenAllowed = state;
+        emit SetRedeemYTokensAllowed(admin, yToken, state);
         return true;
     }
 

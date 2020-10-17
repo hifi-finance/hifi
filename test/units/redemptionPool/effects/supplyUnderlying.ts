@@ -59,7 +59,7 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
                   this.contracts.redemptionPool.connect(this.signers.maker).supplyUnderlying(underlyingAmount),
                 )
                   .to.emit(this.contracts.redemptionPool, "SupplyUnderlying")
-                  .withArgs(this.accounts.maker, underlyingAmount);
+                  .withArgs(this.accounts.maker, underlyingAmount, yTokenAmount);
               });
             });
 

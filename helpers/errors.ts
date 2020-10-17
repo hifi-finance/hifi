@@ -58,9 +58,9 @@ export enum Erc20RecoverErrors {
 }
 
 export enum RedemptionPoolErrors {
-  RedeemUnderlyingInsufficientUnderlying = "ERR_REDEEM_UNDERLYING_INSUFFICIENT_UNDERLYING",
-  RedeemUnderlyingNotAllowed = "ERR_REDEEM_UNDERLYING_NOT_ALLOWED",
-  RedeemUnderlyingZero = "ERR_REDEEM_UNDERLYING_ZERO",
+  RedeemYTokensInsufficientUnderlying = "ERR_REDEEM_YTOKENS_INSUFFICIENT_UNDERLYING",
+  RedeemYTokensNotAllowed = "ERR_REDEEM_YTOKENS_NOT_ALLOWED",
+  RedeemYTokensZero = "ERR_REDEEM_YTOKENS_ZERO",
   SupplyUnderlyingNotAllowed = "ERR_SUPPLY_UNDERLYING_NOT_ALLOWED",
   SupplyUnderlyingZero = "ERR_SUPPLY_UNDERLYING_ZERO",
 }
@@ -70,6 +70,7 @@ export enum YTokenErrors {
   BorrowLockedCollateralZero = "ERR_BORROW_LOCKED_COLLATERAL_ZERO",
   BorrowNotAllowed = "ERR_BORROW_NOT_ALLOWED",
   BorrowZero = "ERR_BORROW_ZERO",
+  BurnNotAuthorized = "ERR_BURN_NOT_AUTHORIZED",
   ConstructorCollateralDecimalsOverflow = "ERR_YTOKEN_CONSTRUCTOR_COLLATERAL_DECIMALS_OVERFLOW",
   ConstructorCollateralDecimalsZero = "ERR_YTOKEN_CONSTRUCTOR_COLLATERAL_DECIMALS_ZERO",
   ConstructorUnderlyingDecimalsOverflow = "ERR_YTOKEN_CONSTRUCTOR_UNDERLYING_DECIMALS_OVERFLOW",
@@ -77,6 +78,7 @@ export enum YTokenErrors {
   LiquidateBorrowNotAllowed = "ERR_LIQUIDATE_BORROW_NOT_ALLOWED",
   LiquidateBorrowSelf = "ERR_LIQUIDATE_BORROW_SELF",
   LiquidateBorrowZero = "ERR_LIQUIDATE_BORROW_ZERO",
+  MintNotAuthorized = "ERR_MINT_NOT_AUTHORIZED",
   RepayBorrowInsufficientBalance = "ERR_REPAY_BORROW_INSUFFICIENT_BALANCE",
   RepayBorrowInsufficientDebt = "ERR_REPAY_BORROW_INSUFFICIENT_DEBT",
   RepayBorrowNotAllowed = "ERR_REPAY_BORROW_NOT_ALLOWED",

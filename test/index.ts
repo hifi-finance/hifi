@@ -3,6 +3,7 @@ import { Wallet } from "@ethersproject/wallet";
 import { ethers, waffle } from "@nomiclabs/buidler";
 
 import { Accounts, Contracts, Signers, Stubs } from "../@types/index";
+import { integrationTestRedemptionPool } from "./integration/redemptionPool/RedemptionPool";
 import { integrationTestYToken } from "./integration/yToken/YToken";
 import { unitTestBalanceSheet } from "./units/balanceSheet/BalanceSheet";
 import { unitTestFintroller } from "./units/fintroller/Fintroller";
@@ -19,9 +20,6 @@ describe("Tests", function () {
     this.stubs = {} as Stubs;
 
     const signers: Signer[] = await ethers.getSigners();
-    /* Get rid of this when https://github.com/nomiclabs/buidler/issues/849 gets fixed. */
-    this.loadFixture = createFixtureLoader(signers as Wallet[]);
-
     this.signers.admin = signers[0];
     this.signers.borrower = signers[1];
     this.signers.lender = signers[2];
@@ -35,6 +33,9 @@ describe("Tests", function () {
     this.accounts.liquidator = await signers[3].getAddress();
     this.accounts.maker = await signers[4].getAddress();
     this.accounts.raider = await signers[5].getAddress();
+
+    /* Get rid of this when https://github.com/nomiclabs/buidler/issues/849 gets fixed. */
+    this.loadFixture = createFixtureLoader(signers as Wallet[]);
   });
 
   describe("Unit Tests", function () {
@@ -45,6 +46,7 @@ describe("Tests", function () {
   });
 
   describe("Integration Tests", function () {
+    integrationTestRedemptionPool();
     integrationTestYToken();
   });
 });

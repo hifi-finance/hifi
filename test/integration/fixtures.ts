@@ -18,7 +18,7 @@ import {
   deployYToken,
 } from "../../helpers/deployers";
 
-type IntegrationFixtureYTokenReturnType = {
+type IntegrationFixtureReturnType = {
   balanceSheet: BalanceSheet;
   collateral: Erc20Mintable;
   fintroller: Fintroller;
@@ -28,7 +28,7 @@ type IntegrationFixtureYTokenReturnType = {
   yToken: YToken;
 };
 
-export async function integrationFixtureYToken(signers: Signer[]): Promise<IntegrationFixtureYTokenReturnType> {
+export async function integrationFixture(signers: Signer[]): Promise<IntegrationFixtureReturnType> {
   const deployer: Signer = signers[0];
 
   const oracle: SimpleUniswapAnchoredView = await deployOracle(deployer);
@@ -44,6 +44,7 @@ export async function integrationFixtureYToken(signers: Signer[]): Promise<Integ
   const redemptionPool: RedemptionPool = new ethers.Contract(
     redemptionPoolAddress,
     RedemptionPoolArtifact.abi,
+    ethers.provider,
   ) as RedemptionPool;
 
   return { balanceSheet, collateral, fintroller, oracle, redemptionPool, underlying, yToken };
