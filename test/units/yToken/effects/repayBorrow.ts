@@ -11,12 +11,48 @@ export default function shouldBehaveLikeRepayBorrow(): void {
   const borrowAmount: BigNumber = TokenAmounts.OneHundred;
   const repayAmount: BigNumber = TokenAmounts.Forty;
 
+  describe("when the vault is not open", function () {
+    beforeEach(async function () {
+      await this.stubs.balanceSheet.mock.isVaultOpen
+        .withArgs(this.contracts.yToken.address, this.accounts.borrower)
+        .returns(false);
+    });
+
+    it("reverts", async function () {
+      await expect(this.contracts.yToken.connect(this.signers.borrower).repayBorrow(repayAmount)).to.be.revertedWith(
+        GenericErrors.VaultNotOpen,
+      );
+    });
+  });
+
   describe("when the vault is open", function () {
     beforeEach(async function () {
       await stubIsVaultOpen.call(this, this.contracts.yToken.address, this.accounts.borrower);
     });
 
+    describe("when the amount to repay is zero", function () {
+      it("reverts", async function () {
+        await expect(this.contracts.yToken.connect(this.signers.borrower).repayBorrow(Zero)).to.be.revertedWith(
+          YTokenErrors.RepayBorrowZero,
+        );
+      });
+    });
+
     describe("when the amount to repay is not zero", function () {
+      describe("when the bond is not listed", function () {
+        beforeEach(async function () {
+          await this.stubs.fintroller.mock.getRepayBorrowAllowed
+            .withArgs(this.contracts.yToken.address)
+            .revertsWithReason(FintrollerErrors.BondNotListed);
+        });
+
+        it("reverts", async function () {
+          await expect(
+            this.contracts.yToken.connect(this.signers.borrower).repayBorrow(repayAmount),
+          ).to.be.revertedWith(FintrollerErrors.BondNotListed);
+        });
+      });
+
       describe("when the bond is listed", function () {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.getBondCollateralizationRatio
@@ -24,11 +60,41 @@ export default function shouldBehaveLikeRepayBorrow(): void {
             .returns(FintrollerConstants.DefaultBond.CollateralizationRatio);
         });
 
+        describe("when the fintroller does not allow repay borrow", function () {
+          beforeEach(async function () {
+            await this.stubs.fintroller.mock.getRepayBorrowAllowed
+              .withArgs(this.contracts.yToken.address)
+              .returns(false);
+          });
+
+          it("reverts", async function () {
+            await expect(
+              this.contracts.yToken.connect(this.signers.borrower).repayBorrow(repayAmount),
+            ).to.be.revertedWith(YTokenErrors.RepayBorrowNotAllowed);
+          });
+        });
+
         describe("when the fintroller allows repay borrow", function () {
           beforeEach(async function () {
             await this.stubs.fintroller.mock.getRepayBorrowAllowed
               .withArgs(this.contracts.yToken.address)
               .returns(true);
+          });
+
+          describe("when the caller does not have a debt", function () {
+            beforeEach(async function () {
+              await stubIsVaultOpen.call(this, this.contracts.yToken.address, this.accounts.lender);
+              await this.stubs.balanceSheet.mock.getVaultDebt
+                .withArgs(this.contracts.yToken.address, this.accounts.lender)
+                .returns(Zero);
+            });
+
+            it("reverts", async function () {
+              /* Lender tries to repay his debt but fails to do it because he doesn't have any. */
+              await expect(
+                this.contracts.yToken.connect(this.signers.lender).repayBorrow(repayAmount),
+              ).to.be.revertedWith(YTokenErrors.RepayBorrowInsufficientDebt);
+            });
           });
 
           describe("when the caller has a debt", function () {
@@ -43,6 +109,19 @@ export default function shouldBehaveLikeRepayBorrow(): void {
               await this.stubs.balanceSheet.mock.setVaultDebt
                 .withArgs(this.contracts.yToken.address, this.accounts.borrower, Zero)
                 .returns(true);
+            });
+
+            describe("when the caller does not have enough yTokens", function () {
+              beforeEach(async function () {
+                /* User burns all of his yTokens. */
+                await this.contracts.yToken.connect(this.signers.borrower).transfer(AddressOne, borrowAmount);
+              });
+
+              it("reverts", async function () {
+                await expect(
+                  this.contracts.yToken.connect(this.signers.borrower).repayBorrow(repayAmount),
+                ).to.be.revertedWith(YTokenErrors.RepayBorrowInsufficientBalance);
+              });
             });
 
             describe("when the caller has enough yTokens", function () {
@@ -71,88 +150,9 @@ export default function shouldBehaveLikeRepayBorrow(): void {
                   .withArgs(this.accounts.borrower, this.accounts.borrower, repayAmount, Zero);
               });
             });
-
-            describe("when the caller does not have enough yTokens", function () {
-              beforeEach(async function () {
-                /* User burns all of his yTokens. */
-                await this.contracts.yToken.connect(this.signers.borrower).transfer(AddressOne, borrowAmount);
-              });
-
-              it("reverts", async function () {
-                await expect(
-                  this.contracts.yToken.connect(this.signers.borrower).repayBorrow(repayAmount),
-                ).to.be.revertedWith(YTokenErrors.RepayBorrowInsufficientBalance);
-              });
-            });
-          });
-
-          describe("when the caller does not have a debt", function () {
-            beforeEach(async function () {
-              await stubIsVaultOpen.call(this, this.contracts.yToken.address, this.accounts.lender);
-              await this.stubs.balanceSheet.mock.getVaultDebt
-                .withArgs(this.contracts.yToken.address, this.accounts.lender)
-                .returns(Zero);
-            });
-
-            it("reverts", async function () {
-              /* Lender tries to repay his debt but fails to do it because he doesn't have any. */
-              await expect(
-                this.contracts.yToken.connect(this.signers.lender).repayBorrow(repayAmount),
-              ).to.be.revertedWith(YTokenErrors.RepayBorrowInsufficientDebt);
-            });
-          });
-        });
-
-        describe("when the fintroller does not allow repay borrow", function () {
-          beforeEach(async function () {
-            await this.stubs.fintroller.mock.getRepayBorrowAllowed
-              .withArgs(this.contracts.yToken.address)
-              .returns(false);
-          });
-
-          it("reverts", async function () {
-            await expect(
-              this.contracts.yToken.connect(this.signers.borrower).repayBorrow(repayAmount),
-            ).to.be.revertedWith(YTokenErrors.RepayBorrowNotAllowed);
           });
         });
       });
-
-      describe("when the bond is not listed", function () {
-        beforeEach(async function () {
-          await this.stubs.fintroller.mock.getRepayBorrowAllowed
-            .withArgs(this.contracts.yToken.address)
-            .revertsWithReason(FintrollerErrors.BondNotListed);
-        });
-
-        it("reverts", async function () {
-          await expect(
-            this.contracts.yToken.connect(this.signers.borrower).repayBorrow(repayAmount),
-          ).to.be.revertedWith(FintrollerErrors.BondNotListed);
-        });
-      });
-    });
-
-    describe("when the amount to repay is zero", function () {
-      it("reverts", async function () {
-        await expect(this.contracts.yToken.connect(this.signers.borrower).repayBorrow(Zero)).to.be.revertedWith(
-          YTokenErrors.RepayBorrowZero,
-        );
-      });
-    });
-  });
-
-  describe("when the vault is not open", function () {
-    beforeEach(async function () {
-      await this.stubs.balanceSheet.mock.isVaultOpen
-        .withArgs(this.contracts.yToken.address, this.accounts.borrower)
-        .returns(false);
-    });
-
-    it("reverts", async function () {
-      await expect(this.contracts.yToken.connect(this.signers.borrower).repayBorrow(repayAmount)).to.be.revertedWith(
-        GenericErrors.VaultNotOpen,
-      );
     });
   });
 }

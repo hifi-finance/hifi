@@ -36,18 +36,88 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
   const repayAmount: BigNumber = TokenAmounts.Forty;
   const newBorrowAmount: BigNumber = borrowAmount.sub(repayAmount);
 
+  describe("when the vault is not open", function () {
+    beforeEach(async function () {
+      await this.stubs.balanceSheet.mock.isVaultOpen
+        .withArgs(this.contracts.yToken.address, this.accounts.borrower)
+        .returns(false);
+    });
+
+    it("reverts", async function () {
+      await expect(
+        this.contracts.yToken.connect(this.signers.borrower).liquidateBorrow(this.accounts.borrower, repayAmount),
+      ).to.be.revertedWith(GenericErrors.VaultNotOpen);
+    });
+  });
+
   describe("when the vault is open", function () {
     beforeEach(async function () {
       await stubIsVaultOpen.call(this, this.contracts.yToken.address, this.accounts.borrower);
     });
 
+    describe("when the caller is the borrower", function () {
+      beforeEach(async function () {
+        await this.stubs.fintroller.mock.getBondCollateralizationRatio
+          .withArgs(this.contracts.yToken.address)
+          .returns(FintrollerConstants.DefaultBond.CollateralizationRatio);
+        await this.stubs.balanceSheet.mock.getVaultDebt
+          .withArgs(this.contracts.yToken.address, this.accounts.borrower)
+          .returns(borrowAmount);
+        await this.contracts.yToken.__godMode_mint(this.accounts.borrower, borrowAmount);
+      });
+
+      it("reverts", async function () {
+        await expect(
+          this.contracts.yToken.connect(this.signers.borrower).liquidateBorrow(this.accounts.borrower, repayAmount),
+        ).to.be.revertedWith(YTokenErrors.LiquidateBorrowSelf);
+      });
+    });
+
     describe("when the caller is not the borrower", function () {
+      describe("when the amount to repay is zero", function () {
+        it("reverts", async function () {
+          await expect(
+            this.contracts.yToken.connect(this.signers.liquidator).liquidateBorrow(this.accounts.borrower, Zero),
+          ).to.be.revertedWith(YTokenErrors.LiquidateBorrowZero);
+        });
+      });
+
       describe("when the amount to repay is not zero", function () {
+        describe("when the bond is not listed", function () {
+          beforeEach(async function () {
+            await this.stubs.fintroller.mock.getRepayBorrowAllowed
+              .withArgs(this.contracts.yToken.address)
+              .revertsWithReason(FintrollerErrors.BondNotListed);
+          });
+
+          it("reverts", async function () {
+            await expect(
+              this.contracts.yToken.connect(this.signers.borrower).repayBorrow(borrowAmount),
+            ).to.be.revertedWith(FintrollerErrors.BondNotListed);
+          });
+        });
+
         describe("when the bond is listed", function () {
           beforeEach(async function () {
             await this.stubs.fintroller.mock.getBondCollateralizationRatio
               .withArgs(this.contracts.yToken.address)
               .returns(FintrollerConstants.DefaultBond.CollateralizationRatio);
+          });
+
+          describe("when the fintroller does not allow liquidate borrow", function () {
+            beforeEach(async function () {
+              await this.stubs.fintroller.mock.getLiquidateBorrowAllowed
+                .withArgs(this.contracts.yToken.address)
+                .returns(false);
+            });
+
+            it("reverts", async function () {
+              await expect(
+                this.contracts.yToken
+                  .connect(this.signers.liquidator)
+                  .liquidateBorrow(this.accounts.borrower, repayAmount),
+              ).to.be.revertedWith(YTokenErrors.LiquidateBorrowNotAllowed);
+            });
           });
 
           describe("when the fintroller allows liquidate borrow", function () {
@@ -60,6 +130,26 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
               await this.stubs.fintroller.mock.getRepayBorrowAllowed
                 .withArgs(this.contracts.yToken.address)
                 .returns(true);
+            });
+
+            describe("when the borrower does not have a debt", function () {
+              beforeEach(async function () {
+                /* Borrowers with no debt are never underwater. */
+                await this.stubs.balanceSheet.mock.isAccountUnderwater
+                  .withArgs(this.contracts.yToken.address, this.accounts.borrower)
+                  .returns(false);
+                await this.stubs.balanceSheet.mock.getVaultDebt
+                  .withArgs(this.contracts.yToken.address, this.accounts.borrower)
+                  .returns(Zero);
+              });
+
+              it("reverts", async function () {
+                await expect(
+                  this.contracts.yToken
+                    .connect(this.signers.liquidator)
+                    .liquidateBorrow(this.accounts.borrower, repayAmount),
+                ).to.be.revertedWith(GenericErrors.AccountNotUnderwater);
+              });
             });
 
             describe("when the borrower has a debt", function () {
@@ -83,11 +173,57 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
                 );
               });
 
+              describe("when the account is not underwater", function () {
+                beforeEach(async function () {
+                  await this.stubs.balanceSheet.mock.isAccountUnderwater
+                    .withArgs(this.contracts.yToken.address, this.accounts.borrower)
+                    .returns(false);
+                });
+
+                describe("when the bond did not mature", function () {
+                  it("reverts", async function () {
+                    await expect(
+                      this.contracts.yToken
+                        .connect(this.signers.liquidator)
+                        .liquidateBorrow(this.accounts.borrower, repayAmount),
+                    ).to.be.revertedWith(GenericErrors.AccountNotUnderwater);
+                  });
+                });
+
+                contextForTimeDependentTests("when the bond matured", function () {
+                  beforeEach(async function () {
+                    await increaseTime(YTokenConstants.DefaultExpirationTime);
+
+                    /* Mint 100 yDAI to Liquidator so he can repay the debt. */
+                    await this.contracts.yToken.__godMode_mint(this.accounts.liquidator, repayAmount);
+                  });
+
+                  it("liquidates the borrower", async function () {
+                    const oldBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.liquidator);
+                    await this.contracts.yToken
+                      .connect(this.signers.liquidator)
+                      .liquidateBorrow(this.accounts.borrower, repayAmount);
+                    const newBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.liquidator);
+                    expect(oldBalance).to.equal(newBalance.add(repayAmount));
+                  });
+                });
+              });
+
               describe("when the account is underwater", function () {
                 beforeEach(async function () {
                   await this.stubs.balanceSheet.mock.isAccountUnderwater
                     .withArgs(this.contracts.yToken.address, this.accounts.borrower)
                     .returns(true);
+                });
+
+                describe("when the caller does not have enough yTokens", function () {
+                  it("reverts", async function () {
+                    await expect(
+                      this.contracts.yToken
+                        .connect(this.signers.liquidator)
+                        .liquidateBorrow(this.accounts.borrower, repayAmount),
+                    ).to.be.revertedWith(YTokenErrors.RepayBorrowInsufficientBalance);
+                  });
                 });
 
                 describe("when the caller has enough yTokens", function () {
@@ -150,147 +286,11 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
                       );
                   });
                 });
-
-                describe("when the caller does not have enough yTokens", function () {
-                  it("reverts", async function () {
-                    await expect(
-                      this.contracts.yToken
-                        .connect(this.signers.liquidator)
-                        .liquidateBorrow(this.accounts.borrower, repayAmount),
-                    ).to.be.revertedWith(YTokenErrors.RepayBorrowInsufficientBalance);
-                  });
-                });
               });
-
-              describe("when the account is not underwater", function () {
-                beforeEach(async function () {
-                  await this.stubs.balanceSheet.mock.isAccountUnderwater
-                    .withArgs(this.contracts.yToken.address, this.accounts.borrower)
-                    .returns(false);
-                });
-
-                contextForTimeDependentTests("when the bond matured", function () {
-                  beforeEach(async function () {
-                    await increaseTime(YTokenConstants.DefaultExpirationTime);
-
-                    /* Mint 100 yDAI to Liquidator so he can repay the debt. */
-                    await this.contracts.yToken.__godMode_mint(this.accounts.liquidator, repayAmount);
-                  });
-
-                  it("liquidates the borrower", async function () {
-                    const oldBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.liquidator);
-                    await this.contracts.yToken
-                      .connect(this.signers.liquidator)
-                      .liquidateBorrow(this.accounts.borrower, repayAmount);
-                    const newBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.liquidator);
-                    expect(oldBalance).to.equal(newBalance.add(repayAmount));
-                  });
-                });
-
-                describe("when the bond did not mature", function () {
-                  it("reverts", async function () {
-                    await expect(
-                      this.contracts.yToken
-                        .connect(this.signers.liquidator)
-                        .liquidateBorrow(this.accounts.borrower, repayAmount),
-                    ).to.be.revertedWith(GenericErrors.AccountNotUnderwater);
-                  });
-                });
-              });
-            });
-
-            describe("when the borrower does not have a debt", function () {
-              beforeEach(async function () {
-                /* Borrowers with no debt are never underwater. */
-                await this.stubs.balanceSheet.mock.isAccountUnderwater
-                  .withArgs(this.contracts.yToken.address, this.accounts.borrower)
-                  .returns(false);
-                await this.stubs.balanceSheet.mock.getVaultDebt
-                  .withArgs(this.contracts.yToken.address, this.accounts.borrower)
-                  .returns(Zero);
-              });
-
-              it("reverts", async function () {
-                await expect(
-                  this.contracts.yToken
-                    .connect(this.signers.liquidator)
-                    .liquidateBorrow(this.accounts.borrower, repayAmount),
-                ).to.be.revertedWith(GenericErrors.AccountNotUnderwater);
-              });
-            });
-          });
-
-          describe("when the fintroller does not allow liquidate borrow", function () {
-            beforeEach(async function () {
-              await this.stubs.fintroller.mock.getLiquidateBorrowAllowed
-                .withArgs(this.contracts.yToken.address)
-                .returns(false);
-            });
-
-            it("reverts", async function () {
-              await expect(
-                this.contracts.yToken
-                  .connect(this.signers.liquidator)
-                  .liquidateBorrow(this.accounts.borrower, repayAmount),
-              ).to.be.revertedWith(YTokenErrors.LiquidateBorrowNotAllowed);
             });
           });
         });
-
-        describe("when the bond is not listed", function () {
-          beforeEach(async function () {
-            await this.stubs.fintroller.mock.getRepayBorrowAllowed
-              .withArgs(this.contracts.yToken.address)
-              .revertsWithReason(FintrollerErrors.BondNotListed);
-          });
-
-          it("reverts", async function () {
-            await expect(
-              this.contracts.yToken.connect(this.signers.borrower).repayBorrow(borrowAmount),
-            ).to.be.revertedWith(FintrollerErrors.BondNotListed);
-          });
-        });
       });
-
-      describe("when the amount to repay is zero", function () {
-        it("reverts", async function () {
-          await expect(
-            this.contracts.yToken.connect(this.signers.liquidator).liquidateBorrow(this.accounts.borrower, Zero),
-          ).to.be.revertedWith(YTokenErrors.LiquidateBorrowZero);
-        });
-      });
-    });
-
-    describe("when the caller is the borrower", function () {
-      beforeEach(async function () {
-        await this.stubs.fintroller.mock.getBondCollateralizationRatio
-          .withArgs(this.contracts.yToken.address)
-          .returns(FintrollerConstants.DefaultBond.CollateralizationRatio);
-        await this.stubs.balanceSheet.mock.getVaultDebt
-          .withArgs(this.contracts.yToken.address, this.accounts.borrower)
-          .returns(borrowAmount);
-        await this.contracts.yToken.__godMode_mint(this.accounts.borrower, borrowAmount);
-      });
-
-      it("reverts", async function () {
-        await expect(
-          this.contracts.yToken.connect(this.signers.borrower).liquidateBorrow(this.accounts.borrower, repayAmount),
-        ).to.be.revertedWith(YTokenErrors.LiquidateBorrowSelf);
-      });
-    });
-  });
-
-  describe("when the vault is not open", function () {
-    beforeEach(async function () {
-      await this.stubs.balanceSheet.mock.isVaultOpen
-        .withArgs(this.contracts.yToken.address, this.accounts.borrower)
-        .returns(false);
-    });
-
-    it("reverts", async function () {
-      await expect(
-        this.contracts.yToken.connect(this.signers.borrower).liquidateBorrow(this.accounts.borrower, repayAmount),
-      ).to.be.revertedWith(GenericErrors.VaultNotOpen);
     });
   });
 }

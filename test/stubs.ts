@@ -14,7 +14,7 @@ import YTokenArtifact from "../artifacts/YToken.json";
 import {
   BalanceSheetConstants,
   CollateralConstants,
-  FintrollerConstants,
+  OpenPriceFeedPrecision,
   Prices,
   UnderlyingConstants,
 } from "../helpers/constants";
@@ -57,7 +57,7 @@ export async function deployStubErc20(
 export async function deployStubFintroller(deployer: Signer): Promise<MockContract> {
   const fintroller: MockContract = await deployStubContract(deployer, FintrollerArtifact.abi);
   await fintroller.mock.isFintroller.returns(true);
-  await fintroller.mock.oraclePricePrecisionScalar.returns(FintrollerConstants.OraclePrecisionScalar);
+  await fintroller.mock.oraclePricePrecisionScalar.returns(OpenPriceFeedPrecision);
   return fintroller;
 }
 

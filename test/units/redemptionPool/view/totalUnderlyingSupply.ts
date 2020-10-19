@@ -7,6 +7,14 @@ import { TokenAmounts } from "../../../../helpers/constants";
 export default function shouldBehaveLikeTotalUnderlyingSupplyGetter(): void {
   const underlyingAmount: BigNumber = TokenAmounts.Ten;
 
+  describe("when the underlying supply is zero", function () {
+    it("retrieves zero", async function () {
+      const zeroUnderlyingAmount: BigNumber = Zero;
+      const totalUnderlyingSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
+      expect(totalUnderlyingSupply).to.equal(zeroUnderlyingAmount);
+    });
+  });
+
   describe("when the total underlying supply is not zero", function () {
     beforeEach(async function () {
       await this.contracts.redemptionPool.__godMode_setTotalUnderlyingSupply(underlyingAmount);
@@ -15,14 +23,6 @@ export default function shouldBehaveLikeTotalUnderlyingSupplyGetter(): void {
     it("retrieves the correct amount", async function () {
       const totalUnderlyingSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
       expect(totalUnderlyingSupply).to.equal(underlyingAmount);
-    });
-  });
-
-  describe("when the underlying supply is zero", function () {
-    it("retrieves zero", async function () {
-      const zeroUnderlyingAmount: BigNumber = Zero;
-      const totalUnderlyingSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
-      expect(totalUnderlyingSupply).to.equal(zeroUnderlyingAmount);
     });
   });
 }

@@ -74,7 +74,7 @@ contract RedemptionPool is
         /* Checks: the Fintroller allows this action to be performed. */
         require(fintroller.getRedeemYTokensAllowed(yToken), "ERR_REDEEM_YTOKENS_NOT_ALLOWED");
 
-        /* Checks: there is sufficient liquidity. */
+        /* Checks: there is enough liquidity. */
         require(yTokenAmount <= totalUnderlyingSupply, "ERR_REDEEM_YTOKENS_INSUFFICIENT_UNDERLYING");
 
         /**

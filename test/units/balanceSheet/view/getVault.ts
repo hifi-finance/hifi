@@ -2,6 +2,16 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 export default function shouldBehaveLikeGetVault(): void {
+  describe("when the bond is not open", function () {
+    it("retrieves the default values", async function () {
+      const vault = await this.contracts.balanceSheet.getVault(this.stubs.yToken.address, this.accounts.borrower);
+      expect(vault.debt).to.equal(Zero);
+      expect(vault.freeCollateral).to.equal(Zero);
+      expect(vault.lockedCollateral).to.equal(Zero);
+      expect(vault.isOpen).to.equal(false);
+    });
+  });
+
   describe("when the vault is open", function () {
     beforeEach(async function () {
       await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.yToken.address);
@@ -13,16 +23,6 @@ export default function shouldBehaveLikeGetVault(): void {
       expect(vault.freeCollateral).to.equal(Zero);
       expect(vault.lockedCollateral).to.equal(Zero);
       expect(vault.isOpen).to.equal(true);
-    });
-  });
-
-  describe("when the bond is not open", function () {
-    it("retrieves the default values", async function () {
-      const vault = await this.contracts.balanceSheet.getVault(this.stubs.yToken.address, this.accounts.borrower);
-      expect(vault.debt).to.equal(Zero);
-      expect(vault.freeCollateral).to.equal(Zero);
-      expect(vault.lockedCollateral).to.equal(Zero);
-      expect(vault.isOpen).to.equal(false);
     });
   });
 }

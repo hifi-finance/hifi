@@ -11,9 +11,31 @@ export default function shouldBehaveLikeGetClutchableCollateral(): void {
   const clutchableCollateralAmount: BigNumber = TokenAmounts.PointFiftyFive;
   const repayAmount: BigNumber = TokenAmounts.Fifty;
 
+  describe("when the amount to repay is zero", function () {
+    it("reverts", async function () {
+      await expect(
+        this.contracts.balanceSheet.getClutchableCollateral(this.stubs.yToken.address, Zero),
+      ).to.be.revertedWith(BalanceSheetErrors.GetClutchableCollateralZero);
+    });
+  });
+
   describe("when the amount to repay is not zero", function () {
     beforeEach(async function () {
       await this.stubs.fintroller.mock.liquidationIncentiveMantissa.returns(Percentages.OneHundredAndTen);
+    });
+
+    describe("when the liquidation incentive is zero", function () {
+      beforeEach(async function () {
+        await this.stubs.fintroller.mock.liquidationIncentiveMantissa.returns(Zero);
+      });
+
+      it("retrieves zero", async function () {
+        const clutchableCollateralAmount: BigNumber = await this.contracts.balanceSheet.getClutchableCollateral(
+          this.stubs.yToken.address,
+          repayAmount,
+        );
+        expect(clutchableCollateralAmount).to.equal(Zero);
+      });
     });
 
     describe("when the liquidation incentive is not zero", function () {
@@ -40,28 +62,6 @@ export default function shouldBehaveLikeGetClutchableCollateral(): void {
           expect(contractClutchableCollateralAmount).to.equal(downscaledClutchableCollateralAmount);
         });
       });
-    });
-
-    describe("when the liquidation incentive is zero", function () {
-      beforeEach(async function () {
-        await this.stubs.fintroller.mock.liquidationIncentiveMantissa.returns(Zero);
-      });
-
-      it("retrieves zero", async function () {
-        const clutchableCollateralAmount: BigNumber = await this.contracts.balanceSheet.getClutchableCollateral(
-          this.stubs.yToken.address,
-          repayAmount,
-        );
-        expect(clutchableCollateralAmount).to.equal(Zero);
-      });
-    });
-  });
-
-  describe("when the amount to repay is zero", function () {
-    it("reverts", async function () {
-      await expect(
-        this.contracts.balanceSheet.getClutchableCollateral(this.stubs.yToken.address, Zero),
-      ).to.be.revertedWith(BalanceSheetErrors.GetClutchableCollateralZero);
     });
   });
 }

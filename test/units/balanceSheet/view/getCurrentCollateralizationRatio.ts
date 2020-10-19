@@ -4,8 +4,8 @@ import { expect } from "chai";
 import { Percentages, TokenAmounts } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeGetCurrentCollateralizationRatio(): void {
-  const lockedCollateral: BigNumber = TokenAmounts.Ten;
   const debt: BigNumber = TokenAmounts.OneHundred;
+  const lockedCollateral: BigNumber = TokenAmounts.Ten;
 
   beforeEach(async function () {
     await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.yToken.address);

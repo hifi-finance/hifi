@@ -6,13 +6,40 @@ import { AdminErrors, FintrollerErrors } from "../../../../helpers/errors";
 import { TokenAmounts } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeSetDebtCeiling(): void {
-  /* Equivalent to 175% */
   const newDebtCeiling: BigNumber = TokenAmounts.OneHundred;
 
+  describe("when the caller is not the admin", function () {
+    it("reverts", async function () {
+      await expect(
+        this.contracts.fintroller
+          .connect(this.signers.raider)
+          .setDebtCeiling(this.stubs.yToken.address, newDebtCeiling),
+      ).to.be.revertedWith(AdminErrors.NotAdmin);
+    });
+  });
+
   describe("when the caller is the admin", function () {
+    describe("when the bond is not listed", function () {
+      it("reverts", async function () {
+        await expect(
+          this.contracts.fintroller
+            .connect(this.signers.admin)
+            .setDebtCeiling(this.stubs.yToken.address, newDebtCeiling),
+        ).to.be.revertedWith(FintrollerErrors.BondNotListed);
+      });
+    });
+
     describe("when the bond is listed", function () {
       beforeEach(async function () {
         await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.yToken.address);
+      });
+
+      describe("when the debt ceiling is zero", function () {
+        it("reverts", async function () {
+          await expect(
+            this.contracts.fintroller.connect(this.signers.admin).setDebtCeiling(this.stubs.yToken.address, Zero),
+          ).to.be.revertedWith(FintrollerErrors.SetDebtCeilingZero);
+        });
       });
 
       describe("when the debt ceiling is not zero", function () {
@@ -36,34 +63,6 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
             .withArgs(this.accounts.admin, this.stubs.yToken.address, Zero, newDebtCeiling);
         });
       });
-
-      describe("when the debt ceiling is zero", function () {
-        it("reverts", async function () {
-          await expect(
-            this.contracts.fintroller.connect(this.signers.admin).setDebtCeiling(this.stubs.yToken.address, Zero),
-          ).to.be.revertedWith(FintrollerErrors.SetDebtCeilingZero);
-        });
-      });
-    });
-
-    describe("when the bond is not listed", function () {
-      it("reverts", async function () {
-        await expect(
-          this.contracts.fintroller
-            .connect(this.signers.admin)
-            .setDebtCeiling(this.stubs.yToken.address, newDebtCeiling),
-        ).to.be.revertedWith(FintrollerErrors.BondNotListed);
-      });
-    });
-  });
-
-  describe("when the caller is not the admin", function () {
-    it("reverts", async function () {
-      await expect(
-        this.contracts.fintroller
-          .connect(this.signers.raider)
-          .setDebtCeiling(this.stubs.yToken.address, newDebtCeiling),
-      ).to.be.revertedWith(AdminErrors.NotAdmin);
     });
   });
 }

@@ -5,8 +5,7 @@ import { expect } from "chai";
 import { Percentages } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeGetBondCollateralizationRatio(): void {
-  /* Equivalent to 175% */
-  const newCollateralizationRatioMantissa: BigNumber = Percentages.One.mul(175);
+  const newCollateralizationRatioMantissa: BigNumber = Percentages.OneHundredAndSeventyFive;
 
   describe("when the bond is listed", function () {
     beforeEach(async function () {

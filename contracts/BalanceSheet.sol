@@ -439,7 +439,7 @@ contract BalanceSheet is
         /* Checks: the zero edge case. */
         require(collateralAmount > 0, "ERR_FREE_COLLATERAL_ZERO");
 
-        /* Checks: sufficient locked collateral. */
+        /* Checks: enough locked collateral. */
         Vault memory vault = vaults[address(yToken)][msg.sender];
         require(vault.lockedCollateral >= collateralAmount, "ERR_FREE_COLLATERAL_INSUFFICIENT_LOCKED_COLLATERAL");
 
@@ -574,7 +574,7 @@ contract BalanceSheet is
      *
      * - The vault must be open.
      * - The amount to withdraw cannot be zero.
-     * - There must be sufficient free collateral in the vault.
+     * - There must be enough free collateral in the vault.
      *
      * @param yToken The address of the yToken contract.
      * @param collateralAmount The amount of collateral to withdraw.

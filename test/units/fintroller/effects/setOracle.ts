@@ -4,6 +4,14 @@ import { expect } from "chai";
 import { AdminErrors, FintrollerErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeSetOracle(): void {
+  describe("when the caller is not the admin", function () {
+    it("reverts", async function () {
+      await expect(this.contracts.fintroller.connect(this.signers.raider).setOracle(AddressZero)).to.be.revertedWith(
+        AdminErrors.NotAdmin,
+      );
+    });
+  });
+
   describe("when the caller is the admin", function () {
     describe("when oracle address is not the zero address", function () {
       it("sets the new oracle", async function () {
@@ -26,14 +34,6 @@ export default function shouldBehaveLikeSetOracle(): void {
           FintrollerErrors.SetOracleZeroAddress,
         );
       });
-    });
-  });
-
-  describe("when the caller is not the admin", function () {
-    it("reverts", async function () {
-      await expect(this.contracts.fintroller.connect(this.signers.raider).setOracle(AddressZero)).to.be.revertedWith(
-        AdminErrors.NotAdmin,
-      );
     });
   });
 }

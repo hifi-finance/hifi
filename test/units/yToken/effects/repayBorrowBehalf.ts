@@ -8,14 +8,37 @@ import { stubIsVaultOpen } from "../../../stubs";
 
 /**
  * This test suite assumes that the Lender pays the debt on behalf of the Borrower.
+ * Also, this is not as comprehensive as repayBorrow.ts, to avoid re-testing the same logic.
  */
 export default function shouldBehaveLikeRepayBorrowBehalf(): void {
   const borrowAmount: BigNumber = TokenAmounts.OneHundred;
   const repayAmount: BigNumber = TokenAmounts.Forty;
 
+  describe("when the vault is not open", function () {
+    beforeEach(async function () {
+      await this.stubs.balanceSheet.mock.isVaultOpen
+        .withArgs(this.contracts.yToken.address, this.accounts.borrower)
+        .returns(false);
+    });
+
+    it("reverts", async function () {
+      await expect(
+        this.contracts.yToken.connect(this.signers.lender).repayBorrowBehalf(this.accounts.borrower, repayAmount),
+      ).to.be.revertedWith(GenericErrors.VaultNotOpen);
+    });
+  });
+
   describe("when the vault is open", function () {
     beforeEach(async function () {
       await stubIsVaultOpen.call(this, this.contracts.yToken.address, this.accounts.borrower);
+    });
+
+    describe("when the amount to repay is zero", function () {
+      it("reverts", async function () {
+        await expect(
+          this.contracts.yToken.connect(this.signers.borrower).repayBorrowBehalf(this.accounts.borrower, Zero),
+        ).to.be.revertedWith(YTokenErrors.RepayBorrowZero);
+      });
     });
 
     describe("when the amount to repay is not zero", function () {
@@ -31,6 +54,24 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
             await this.stubs.fintroller.mock.getRepayBorrowAllowed
               .withArgs(this.contracts.yToken.address)
               .returns(true);
+          });
+
+          describe("when the user does not have a debt", function () {
+            beforeEach(async function () {
+              /* The yToken makes an internal call to this stubbed function. */
+              await this.stubs.balanceSheet.mock.getVaultDebt
+                .withArgs(this.contracts.yToken.address, this.accounts.borrower)
+                .returns(Zero);
+            });
+
+            it("reverts", async function () {
+              /* Lender tries to repays Borrower's debt but fails to do it because he doesn't have any. */
+              await expect(
+                this.contracts.yToken
+                  .connect(this.signers.lender)
+                  .repayBorrowBehalf(this.accounts.borrower, repayAmount),
+              ).to.be.revertedWith(YTokenErrors.RepayBorrowInsufficientDebt);
+            });
           });
 
           describe("when the user has a debt", function () {
@@ -85,64 +126,8 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
                 .withArgs(this.accounts.lender, this.accounts.borrower, repayAmount, Zero);
             });
           });
-
-          describe("when the user does not have a debt", function () {
-            beforeEach(async function () {
-              /* The yToken makes an internal call to this stubbed function. */
-              await this.stubs.balanceSheet.mock.getVaultDebt
-                .withArgs(this.contracts.yToken.address, this.accounts.borrower)
-                .returns(Zero);
-            });
-
-            it("reverts", async function () {
-              /* Lender tries to repays Borrower's debt but fails to do it because he doesn't have any. */
-              await expect(
-                this.contracts.yToken
-                  .connect(this.signers.lender)
-                  .repayBorrowBehalf(this.accounts.borrower, repayAmount),
-              ).to.be.revertedWith(YTokenErrors.RepayBorrowInsufficientDebt);
-            });
-          });
-        });
-
-        describe("when the fintroller does not allow repay borrow", function () {
-          beforeEach(async function () {
-            await this.stubs.fintroller.mock.getRepayBorrowAllowed
-              .withArgs(this.contracts.yToken.address)
-              .returns(false);
-          });
-
-          it("reverts", async function () {
-            await expect(
-              this.contracts.yToken
-                .connect(this.signers.borrower)
-                .repayBorrowBehalf(this.accounts.borrower, repayAmount),
-            ).to.be.revertedWith(YTokenErrors.RepayBorrowNotAllowed);
-          });
         });
       });
-    });
-
-    describe("when the amount to repay is zero", function () {
-      it("reverts", async function () {
-        await expect(
-          this.contracts.yToken.connect(this.signers.borrower).repayBorrowBehalf(this.accounts.borrower, Zero),
-        ).to.be.revertedWith(YTokenErrors.RepayBorrowZero);
-      });
-    });
-  });
-
-  describe("when the vault is not open", function () {
-    beforeEach(async function () {
-      await this.stubs.balanceSheet.mock.isVaultOpen
-        .withArgs(this.contracts.yToken.address, this.accounts.borrower)
-        .returns(false);
-    });
-
-    it("reverts", async function () {
-      await expect(
-        this.contracts.yToken.connect(this.signers.lender).repayBorrowBehalf(this.accounts.borrower, repayAmount),
-      ).to.be.revertedWith(GenericErrors.VaultNotOpen);
     });
   });
 }

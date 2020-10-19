@@ -8,12 +8,42 @@ import { TokenAmounts } from "../../../../helpers/constants";
 export default function shouldBehaveLikeWithdrawCollateral(): void {
   const collateralAmount: BigNumber = TokenAmounts.Ten;
 
+  describe("when the vault is not open", function () {
+    it("reverts", async function () {
+      await expect(
+        this.contracts.balanceSheet
+          .connect(this.signers.borrower)
+          .withdrawCollateral(this.stubs.yToken.address, collateralAmount),
+      ).to.be.revertedWith(GenericErrors.VaultNotOpen);
+    });
+  });
+
   describe("when the vault is open", function () {
     beforeEach(async function () {
       await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.yToken.address);
     });
 
+    describe("when the amount to withdraw is zero", function () {
+      it("reverts", async function () {
+        await expect(
+          this.contracts.balanceSheet
+            .connect(this.signers.borrower)
+            .withdrawCollateral(this.stubs.yToken.address, Zero),
+        ).to.be.revertedWith(BalanceSheetErrors.WithdrawCollateralZero);
+      });
+    });
+
     describe("when the amount to withdraw is not zero", function () {
+      describe("when the caller did not deposit any collateral", function () {
+        it("reverts", async function () {
+          await expect(
+            this.contracts.balanceSheet
+              .connect(this.signers.borrower)
+              .withdrawCollateral(this.stubs.yToken.address, collateralAmount),
+          ).to.be.revertedWith(BalanceSheetErrors.WithdrawCollateralInsufficientFreeCollateral);
+        });
+      });
+
       describe("when the caller deposited collateral", function () {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.getDepositCollateralAllowed
@@ -25,6 +55,22 @@ export default function shouldBehaveLikeWithdrawCollateral(): void {
           await this.contracts.balanceSheet
             .connect(this.signers.borrower)
             .depositCollateral(this.stubs.yToken.address, collateralAmount);
+        });
+
+        describe("when the caller locked the collateral", function () {
+          beforeEach(async function () {
+            await this.contracts.balanceSheet
+              .connect(this.signers.borrower)
+              .lockCollateral(this.stubs.yToken.address, collateralAmount);
+          });
+
+          it("reverts", async function () {
+            await expect(
+              this.contracts.balanceSheet
+                .connect(this.signers.borrower)
+                .withdrawCollateral(this.stubs.yToken.address, collateralAmount),
+            ).to.be.revertedWith(BalanceSheetErrors.WithdrawCollateralInsufficientFreeCollateral);
+          });
         });
 
         describe("when the caller did not lock the collateral", function () {
@@ -48,53 +94,7 @@ export default function shouldBehaveLikeWithdrawCollateral(): void {
               .withArgs(this.stubs.yToken.address, this.accounts.borrower, collateralAmount);
           });
         });
-
-        describe("when the caller locked the collateral", function () {
-          beforeEach(async function () {
-            await this.contracts.balanceSheet
-              .connect(this.signers.borrower)
-              .lockCollateral(this.stubs.yToken.address, collateralAmount);
-          });
-
-          it("reverts", async function () {
-            await expect(
-              this.contracts.balanceSheet
-                .connect(this.signers.borrower)
-                .withdrawCollateral(this.stubs.yToken.address, collateralAmount),
-            ).to.be.revertedWith(BalanceSheetErrors.WithdrawCollateralInsufficientFreeCollateral);
-          });
-        });
       });
-
-      describe("when the caller did not deposit any collateral", function () {
-        it("reverts", async function () {
-          await expect(
-            this.contracts.balanceSheet
-              .connect(this.signers.borrower)
-              .withdrawCollateral(this.stubs.yToken.address, collateralAmount),
-          ).to.be.revertedWith(BalanceSheetErrors.WithdrawCollateralInsufficientFreeCollateral);
-        });
-      });
-    });
-
-    describe("when the amount to withdraw is zero", function () {
-      it("reverts", async function () {
-        await expect(
-          this.contracts.balanceSheet
-            .connect(this.signers.borrower)
-            .withdrawCollateral(this.stubs.yToken.address, Zero),
-        ).to.be.revertedWith(BalanceSheetErrors.WithdrawCollateralZero);
-      });
-    });
-  });
-
-  describe("when the vault is not open", function () {
-    it("reverts", async function () {
-      await expect(
-        this.contracts.balanceSheet
-          .connect(this.signers.borrower)
-          .withdrawCollateral(this.stubs.yToken.address, collateralAmount),
-      ).to.be.revertedWith(GenericErrors.VaultNotOpen);
     });
   });
 }
