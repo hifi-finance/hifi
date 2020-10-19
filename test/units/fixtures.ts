@@ -5,6 +5,7 @@ import { waffle } from "@nomiclabs/buidler";
 
 import BalanceSheetArtifact from "../../artifacts/GodModeBalanceSheet.json";
 import FintrollerArtifact from "../../artifacts/Fintroller.json";
+import OraclePriceScalarArtifact from "../../artifacts/TestOraclePriceScalar.json";
 import RedemptionPoolArtifact from "../../artifacts/GodModeRedemptionPool.json";
 import YTokenArtifact from "../../artifacts/GodModeYToken.json";
 
@@ -12,6 +13,7 @@ import { Fintroller } from "../../typechain/Fintroller";
 import { GodModeBalanceSheet as BalanceSheet } from "../../typechain/GodModeBalanceSheet";
 import { GodModeRedemptionPool as RedemptionPool } from "../../typechain/GodModeRedemptionPool";
 import { GodModeYToken as YToken } from "../../typechain/GodModeYToken";
+import { TestOraclePriceScalar as OraclePriceScalar } from "../../typechain/TestOraclePriceScalar";
 import { YTokenConstants } from "../../helpers/constants";
 
 import {
@@ -64,6 +66,22 @@ export async function unitFixtureFintroller(signers: Signer[]): Promise<UnitFixt
   const yToken: MockContract = await deployStubYToken(deployer);
   const fintroller: Fintroller = ((await deployContract(deployer, FintrollerArtifact, [])) as unknown) as Fintroller;
   return { fintroller, oracle, yToken };
+}
+
+type UnitFixtureOraclePriceScalarReturnType = {
+  collateral: MockContract;
+  oracle: MockContract;
+  oraclePriceScalar: OraclePriceScalar;
+};
+
+export async function unitFixtureOraclePriceScalar(signers: Signer[]): Promise<UnitFixtureOraclePriceScalarReturnType> {
+  const deployer: Signer = signers[0];
+  const collateral: MockContract = await deployStubCollateral(deployer);
+  const oracle: MockContract = await deployStubOracle(deployer);
+  const oraclePriceScalar: OraclePriceScalar = ((await deployContract(deployer, OraclePriceScalarArtifact, [
+    oracle.address,
+  ])) as unknown) as OraclePriceScalar;
+  return { collateral, oracle, oraclePriceScalar };
 }
 
 type UnitFixtureRedemptionPoolReturnType = {

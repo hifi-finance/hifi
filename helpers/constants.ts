@@ -9,15 +9,14 @@ export const AddressOne: string = "0x0000000000000000000000000000000000000001";
 /**
  * AMOUNTS
  */
-
 export const Ten: BigNumber = BigNumber.from(10);
 export const DefaultBlockGasLimit: BigNumber = Ten.pow(8);
 export const DefaultNumberOfDecimals: BigNumber = BigNumber.from(18);
 export const OpenPriceFeedPrecision: BigNumber = BigNumber.from(6);
-export const OpenPriceFeedPrecisionScalar: BigNumber = Ten.pow(BigNumber.from(OpenPriceFeedPrecision));
+export const OpenPriceFeedPrecisionScalar: BigNumber = Ten.pow(DefaultNumberOfDecimals.sub(OpenPriceFeedPrecision));
 export const PrecisionScalarForTokenWithEightDecimals: BigNumber = Ten.pow(DefaultNumberOfDecimals.sub(8));
 
-/* Represented as mantissas, decimal scalars with 18 decimals. */
+/* Represented as mantissas (decimal scalars with 18 decimals). */
 export const Percentages: { [name: string]: BigNumber } = {
   One: Ten.pow(16),
   OneHundred: Ten.pow(18),
@@ -26,6 +25,13 @@ export const Percentages: { [name: string]: BigNumber } = {
   OneHundredAndFifty: Ten.pow(18).add(Ten.pow(17).mul(5)),
   OneThousand: Ten.pow(19),
   TenThousand: Ten.pow(20),
+};
+
+/* Prices with 6 decimals, as per the Open Price Feed format. */
+export const Prices: { [name: string]: BigNumber } = {
+  OneDollar: Ten.pow(6),
+  TwelveDollars: Ten.pow(6).mul(12),
+  OneHundredDollars: Ten.pow(8),
 };
 
 /* These amounts assume that the token has 18 decimals. */
@@ -102,7 +108,7 @@ export const FintrollerConstants = {
   },
   LiquidationIncentiveLowerBoundMantissa: Percentages.OneHundred,
   LiquidationIncentiveUpperBoundMantissa: Percentages.OneHundredAndFifty,
-  OraclePrecisionScalar: Ten.pow(12),
+  OraclePrecisionScalar: OpenPriceFeedPrecisionScalar,
 };
 
 export const UnderlyingConstants = {

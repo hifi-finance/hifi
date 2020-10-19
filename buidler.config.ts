@@ -120,7 +120,7 @@ const config: BuidlerConfig = {
   solc: {
     /* Disable the optimizer when debugging: https://buidler.dev/buidler-evm/#solidity-optimizer-support */
     optimizer: {
-      enabled: true,
+      enabled: false,
       runs: 200,
     },
     version: "0.7.1",

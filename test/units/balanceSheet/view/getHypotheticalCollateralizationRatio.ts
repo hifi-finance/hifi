@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { BalanceSheetErrors, GenericErrors } from "../../../../helpers/errors";
+import { BalanceSheetErrors, GenericErrors, OraclePriceScalarErrors } from "../../../../helpers/errors";
 import { Percentages, PrecisionScalarForTokenWithEightDecimals, TokenAmounts } from "../../../../helpers/constants";
 import { contextForStubbedCollateralWithEightDecimals } from "../../../../helpers/mochaContexts";
 
@@ -65,7 +65,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
                   lockedCollateral,
                   debt,
                 ),
-              ).to.be.revertedWith(GenericErrors.PriceZero);
+              ).to.be.revertedWith(OraclePriceScalarErrors.GetScaledPriceZero);
             });
           });
         });
@@ -85,7 +85,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
                 lockedCollateral,
                 debt,
               ),
-            ).to.be.revertedWith(GenericErrors.PriceZero);
+            ).to.be.revertedWith(OraclePriceScalarErrors.GetScaledPriceZero);
           });
         });
       });

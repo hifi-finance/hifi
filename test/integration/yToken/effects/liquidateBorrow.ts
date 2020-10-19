@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
-import { OpenPriceFeedPrecisionScalar, Percentages, TokenAmounts } from "../../../../helpers/constants";
+import { Percentages, Prices, TokenAmounts } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeLiquidateBorrow(): void {
   const borrowAmount: BigNumber = TokenAmounts.OneHundred;
@@ -55,8 +55,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
     await this.contracts.yToken.connect(this.signers.borrower).borrow(borrowAmount);
 
     /* Set the price of 1 WETH to $12 so that the new collateralization ratio becomes 120%. */
-    const twelveDollars: BigNumber = BigNumber.from(12).mul(OpenPriceFeedPrecisionScalar);
-    await this.contracts.oracle.setWethPrice(twelveDollars);
+    await this.contracts.oracle.setWethPrice(Prices.TwelveDollars);
 
     /* Mint 100 yDAI to Liquidator so he can repay the debt. */
     await this.contracts.yToken.__godMode_mint(this.accounts.liquidator, repayAmount);

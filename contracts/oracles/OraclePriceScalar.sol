@@ -1,6 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.7.1;
 
+import "@nomiclabs/buidler/console.sol";
 import "@paulrberg/contracts/math/CarefulMath.sol";
 import "./UniswapAnchoredViewInterface.sol";
 
@@ -24,7 +25,7 @@ library OraclePriceScalar {
         uint256 precisionScalar
     ) internal view returns (MathError, uint256) {
         uint256 price = oracle.price(symbol);
-        require(price > 0, "ERR_PRICE_ZERO");
+        require(price > 0, "ERR_GET_SCALED_PRICE_ZERO");
 
         /* Integers in Solidity can overflow. */
         uint256 scaledPrice = price * precisionScalar;

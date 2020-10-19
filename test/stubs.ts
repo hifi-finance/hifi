@@ -15,6 +15,7 @@ import {
   BalanceSheetConstants,
   CollateralConstants,
   FintrollerConstants,
+  Prices,
   UnderlyingConstants,
 } from "../helpers/constants";
 
@@ -62,8 +63,8 @@ export async function deployStubFintroller(deployer: Signer): Promise<MockContra
 
 export async function deployStubOracle(deployer: Signer): Promise<MockContract> {
   const oracle: MockContract = await deployStubContract(deployer, SimpleUniswapAnchoredViewArtifact.abi);
-  await oracle.mock.price.withArgs(CollateralConstants.Symbol).returns(BigNumber.from(100000000)); /* $100 */
-  await oracle.mock.price.withArgs(UnderlyingConstants.Symbol).returns(BigNumber.from(1000000)); /* $1 */
+  await oracle.mock.price.withArgs(CollateralConstants.Symbol).returns(Prices.OneHundredDollars);
+  await oracle.mock.price.withArgs(UnderlyingConstants.Symbol).returns(Prices.OneDollar);
   return oracle;
 }
 

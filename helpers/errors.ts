@@ -46,7 +46,6 @@ export enum GenericErrors {
   BondNotMatured = "ERR_BOND_NOT_MATURED",
   Initialized = "ERR_INITALIZED",
   NotInitialized = "ERR_NOT_INITALIZED",
-  PriceZero = "ERR_PRICE_ZERO",
   VaultOpen = "ERR_VAULT_OPEN",
   VaultNotOpen = "ERR_VAULT_NOT_OPEN",
 }
@@ -55,6 +54,11 @@ export enum Erc20RecoverErrors {
   RecoverZero = "ERR_RECOVER_ZERO",
   RecoverNonRecoverableToken = "ERR_RECOVER_NON_RECOVERABLE_TOKEN",
   SetNonRecoverableTokensEmptyArray = "ERR_SET_NON_RECOVERABLE_TOKENS_EMPTY_ARRAY",
+}
+
+export enum OraclePriceScalarErrors {
+  GetScaledPriceZero = "ERR_GET_SCALED_PRICE_ZERO",
+  MathError = "ERR_TEST_GET_SCALED_PRICE_MATH_ERROR",
 }
 
 export enum RedemptionPoolErrors {
