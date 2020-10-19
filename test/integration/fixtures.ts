@@ -1,7 +1,4 @@
 import { Signer } from "@ethersproject/abstract-signer";
-import { ethers } from "@nomiclabs/buidler";
-
-import RedemptionPoolArtifact from "../../artifacts/GodModeRedemptionPool.json";
 
 import { Erc20Mintable } from "../../typechain/Erc20Mintable";
 import { Fintroller } from "../../typechain/Fintroller";
@@ -15,6 +12,7 @@ import {
   deployFintroller,
   deployUnderlying,
   deployOracle,
+  deployRedemptionPool,
   deployYToken,
 } from "../../helpers/deployers";
 
@@ -39,13 +37,10 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
   const collateral: Erc20Mintable = await deployCollateral(deployer);
   const underlying: Erc20Mintable = await deployUnderlying(deployer);
 
+  /* Override the RedemptionPool.sol contract created by the yToken with GodModeRedemptionPool.sol */
   const yToken: YToken = await deployYToken(deployer, fintroller, balanceSheet, underlying, collateral);
-  const redemptionPoolAddress: string = await yToken.redemptionPool();
-  const redemptionPool: RedemptionPool = new ethers.Contract(
-    redemptionPoolAddress,
-    RedemptionPoolArtifact.abi,
-    ethers.provider,
-  ) as RedemptionPool;
+  const redemptionPool: RedemptionPool = await deployRedemptionPool(deployer, fintroller, yToken);
+  await yToken.__godMode__setRedemptionPool(redemptionPool.address);
 
   return { balanceSheet, collateral, fintroller, oracle, redemptionPool, underlying, yToken };
 }

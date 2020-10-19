@@ -5,6 +5,7 @@ import { waffle } from "@nomiclabs/buidler";
 import BalanceSheetArtifact from "../artifacts/GodModeBalanceSheet.json";
 import Erc20MintableArtifact from "../artifacts/Erc20Mintable.json";
 import FintrollerArtifact from "../artifacts/Fintroller.json";
+import RedemptionPoolArtifact from "../artifacts/GodModeRedemptionPool.json";
 import SimpleUniswapAnchoredViewArtifact from "../artifacts/SimpleUniswapAnchoredView.json";
 import YTokenArtifact from "../artifacts/GodModeYToken.json";
 
@@ -12,6 +13,7 @@ import { CollateralConstants, UnderlyingConstants, YTokenConstants } from "../he
 import { Erc20Mintable } from "../typechain/Erc20Mintable";
 import { Fintroller } from "../typechain/Fintroller";
 import { GodModeBalanceSheet as BalanceSheet } from "../typechain/GodModeBalanceSheet";
+import { GodModeRedemptionPool as RedemptionPool } from "../typechain/GodModeRedemptionPool";
 import { GodModeYToken as YToken } from "../typechain/GodModeYToken";
 import { SimpleUniswapAnchoredView } from "../typechain/SimpleUniswapAnchoredView";
 
@@ -45,6 +47,18 @@ export async function deployOracle(deployer: Signer): Promise<SimpleUniswapAncho
     [],
   )) as unknown) as SimpleUniswapAnchoredView;
   return oracle;
+}
+
+export async function deployRedemptionPool(
+  deployer: Signer,
+  fintroller: Fintroller,
+  yToken: YToken,
+): Promise<RedemptionPool> {
+  const redemptionPool: RedemptionPool = ((await deployContract(deployer, RedemptionPoolArtifact, [
+    fintroller.address,
+    yToken.address,
+  ])) as unknown) as RedemptionPool;
+  return redemptionPool;
 }
 
 export async function deployUnderlying(deployer: Signer): Promise<Erc20Mintable> {
