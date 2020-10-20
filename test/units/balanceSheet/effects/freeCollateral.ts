@@ -39,7 +39,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
             this.contracts.balanceSheet
               .connect(this.signers.borrower)
               .freeCollateral(this.stubs.yToken.address, depositCollateralAmount),
-          ).to.be.revertedWith(BalanceSheetErrors.FreeCollateralInsufficientLockedCollateral);
+          ).to.be.revertedWith(BalanceSheetErrors.InsufficientLockedCollateral);
         });
       });
 
@@ -68,7 +68,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
               this.contracts.balanceSheet
                 .connect(this.signers.borrower)
                 .freeCollateral(this.stubs.yToken.address, depositCollateralAmount),
-            ).to.be.revertedWith(BalanceSheetErrors.FreeCollateralInsufficientLockedCollateral);
+            ).to.be.revertedWith(BalanceSheetErrors.InsufficientLockedCollateral);
           });
         });
 
@@ -85,16 +85,22 @@ export default function shouldBehaveLikeLockCollateral(): void {
                 this.stubs.yToken.address,
                 this.accounts.borrower,
               );
+              const oldFreeCollateral: BigNumber = oldVault[1];
+              const oldLockedCollateral: BigNumber = oldVault[2];
+
               await this.contracts.balanceSheet
                 .connect(this.signers.borrower)
                 .freeCollateral(this.stubs.yToken.address, depositCollateralAmount);
+
               const newVault: Vault = await this.contracts.balanceSheet.getVault(
                 this.stubs.yToken.address,
                 this.accounts.borrower,
               );
+              const newFreeCollateral: BigNumber = newVault[1];
+              const newLockedCollateral: BigNumber = newVault[2];
 
-              expect(oldVault.freeCollateral).to.equal(newVault.freeCollateral.sub(depositCollateralAmount));
-              expect(oldVault.lockedCollateral).to.equal(newVault.lockedCollateral.add(depositCollateralAmount));
+              expect(oldFreeCollateral).to.equal(newFreeCollateral.sub(depositCollateralAmount));
+              expect(oldLockedCollateral).to.equal(newLockedCollateral.add(depositCollateralAmount));
             });
           });
 
@@ -142,17 +148,23 @@ export default function shouldBehaveLikeLockCollateral(): void {
                   this.stubs.yToken.address,
                   this.accounts.borrower,
                 );
+                const oldFreeCollateral: BigNumber = oldVault[1];
+                const oldLockedCollateral: BigNumber = oldVault[2];
+
                 const collateralAmount: BigNumber = TokenAmounts.One;
                 await this.contracts.balanceSheet
                   .connect(this.signers.borrower)
                   .freeCollateral(this.stubs.yToken.address, collateralAmount);
+
                 const newVault: Vault = await this.contracts.balanceSheet.getVault(
                   this.stubs.yToken.address,
                   this.accounts.borrower,
                 );
+                const newFreeCollateral: BigNumber = newVault[1];
+                const newLockedCollateral: BigNumber = newVault[2];
 
-                expect(oldVault.freeCollateral).to.equal(newVault.freeCollateral.sub(TokenAmounts.One));
-                expect(oldVault.lockedCollateral).to.equal(newVault.lockedCollateral.add(TokenAmounts.One));
+                expect(oldFreeCollateral).to.equal(newFreeCollateral.sub(TokenAmounts.One));
+                expect(oldLockedCollateral).to.equal(newLockedCollateral.add(TokenAmounts.One));
               });
 
               it("emits a FreeCollateral event", async function () {

@@ -252,6 +252,7 @@ contract BalanceSheet is
 
     /**
      * @notice Reads all the properties of a vault.
+     * @return (uint256 debt, uint256 freeCollateral, uint256 lockedCollateral, bool isOpen).
      */
     function getVault(YTokenInterface yToken, address account)
         external
@@ -343,11 +344,15 @@ contract BalanceSheet is
         /* Checks: the caller is the yToken. */
         require(msg.sender == address(yToken), "ERR_CLUTCH_COLLATERAL_NOT_AUTHORIZED");
 
+        /* Checks: there is enough clutchable collateral in the vault. */
+        uint256 lockedCollateral = vaults[address(yToken)][borrower].lockedCollateral;
+        require(lockedCollateral >= collateralAmount, "ERR_INSUFFICIENT_LOCKED_COLLATERAL");
+
         /* Calculate the new locked collateral amount. */
         MathError mathErr;
         uint256 newLockedCollateral;
-        (mathErr, newLockedCollateral) = subUInt(vaults[address(yToken)][borrower].lockedCollateral, collateralAmount);
-        require(mathErr == MathError.NO_ERROR, "ERR_CLUTCH_COLLATERAL_MATH_ERROR");
+        (mathErr, newLockedCollateral) = subUInt(lockedCollateral, collateralAmount);
+        assert(mathErr == MathError.NO_ERROR);
 
         /* Effects: update the vault. */
         vaults[address(yToken)][borrower].lockedCollateral = newLockedCollateral;
@@ -443,7 +448,7 @@ contract BalanceSheet is
 
         /* Checks: enough locked collateral. */
         Vault memory vault = vaults[address(yToken)][msg.sender];
-        require(vault.lockedCollateral >= collateralAmount, "ERR_FREE_COLLATERAL_INSUFFICIENT_LOCKED_COLLATERAL");
+        require(vault.lockedCollateral >= collateralAmount, "ERR_INSUFFICIENT_LOCKED_COLLATERAL");
 
         /* This operation can't fail because of the first `require` in this function. */
         (vars.mathErr, vars.newLockedCollateral) = subUInt(vault.lockedCollateral, collateralAmount);
@@ -499,7 +504,7 @@ contract BalanceSheet is
         require(collateralAmount > 0, "ERR_LOCK_COLLATERAL_ZERO");
 
         Vault memory vault = vaults[address(yToken)][msg.sender];
-        require(vault.freeCollateral >= collateralAmount, "ERR_LOCK_COLLATERAL_INSUFFICIENT_FREE_COLLATERAL");
+        require(vault.freeCollateral >= collateralAmount, "ERR_INSUFFICIENT_FREE_COLLATERAL");
 
         MathError mathErr;
         uint256 newLockedCollateral;
@@ -595,7 +600,7 @@ contract BalanceSheet is
         /* Checks: there is enough free collateral. */
         require(
             vaults[address(yToken)][msg.sender].freeCollateral >= collateralAmount,
-            "ERR_WITHDRAW_COLLATERAL_INSUFFICIENT_FREE_COLLATERAL"
+            "ERR_INSUFFICIENT_FREE_COLLATERAL"
         );
 
         /* Effects: update the storage properties. */

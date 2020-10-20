@@ -40,7 +40,7 @@ export default function shouldBehaveLikeWithdrawCollateral(): void {
             this.contracts.balanceSheet
               .connect(this.signers.borrower)
               .withdrawCollateral(this.stubs.yToken.address, collateralAmount),
-          ).to.be.revertedWith(BalanceSheetErrors.WithdrawCollateralInsufficientFreeCollateral);
+          ).to.be.revertedWith(BalanceSheetErrors.InsufficientFreeCollateral);
         });
       });
 
@@ -69,7 +69,7 @@ export default function shouldBehaveLikeWithdrawCollateral(): void {
               this.contracts.balanceSheet
                 .connect(this.signers.borrower)
                 .withdrawCollateral(this.stubs.yToken.address, collateralAmount),
-            ).to.be.revertedWith(BalanceSheetErrors.WithdrawCollateralInsufficientFreeCollateral);
+            ).to.be.revertedWith(BalanceSheetErrors.InsufficientFreeCollateral);
           });
         });
 

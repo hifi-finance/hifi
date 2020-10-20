@@ -33,16 +33,22 @@ export default function shouldBehaveLikeLockCollateral(): void {
             this.stubs.yToken.address,
             this.accounts.borrower,
           );
+          const oldFreeCollateral: BigNumber = oldVault[1];
+          const oldLockedCollateral: BigNumber = oldVault[2];
+
           await this.contracts.balanceSheet
             .connect(this.signers.borrower)
             .lockCollateral(this.stubs.yToken.address, depositCollateralAmount);
+
           const newVault: Vault = await this.contracts.balanceSheet.getVault(
             this.stubs.yToken.address,
             this.accounts.borrower,
           );
+          const newFreeCollateral: BigNumber = newVault[1];
+          const newLockedCollateral: BigNumber = newVault[2];
 
-          expect(oldVault.freeCollateral).to.equal(newVault.freeCollateral.add(depositCollateralAmount));
-          expect(oldVault.lockedCollateral).to.equal(newVault.lockedCollateral.sub(depositCollateralAmount));
+          expect(oldFreeCollateral).to.equal(newFreeCollateral.add(depositCollateralAmount));
+          expect(oldLockedCollateral).to.equal(newLockedCollateral.sub(depositCollateralAmount));
         });
 
         it("emits a LockCollateral event", async function () {
@@ -62,7 +68,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
             this.contracts.balanceSheet
               .connect(this.signers.borrower)
               .lockCollateral(this.stubs.yToken.address, depositCollateralAmount),
-          ).to.be.revertedWith(BalanceSheetErrors.LockCollateralInsufficientFreeCollateral);
+          ).to.be.revertedWith(BalanceSheetErrors.InsufficientFreeCollateral);
         });
       });
     });

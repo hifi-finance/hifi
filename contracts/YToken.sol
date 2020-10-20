@@ -251,12 +251,8 @@ contract YToken is
         /* Effects & Interactions: repay the borrower's debt. */
         repayBorrowInternal(msg.sender, borrower, repayAmount);
 
-        /* Checks: there is enough clutchable collateral in the vault. */
-        uint256 lockedCollateral = balanceSheet.getVaultLockedCollateral(this, borrower);
-        uint256 clutchableCollateralAmount = balanceSheet.getClutchableCollateral(this, repayAmount);
-        require(lockedCollateral >= clutchableCollateralAmount, "ERR_LIQUIDATE_BORROW_CLUTCH_COLLATERAL_OVERFLOW");
-
         /* Interactions: clutch the collateral. */
+        uint256 clutchableCollateralAmount = balanceSheet.getClutchableCollateral(this, repayAmount);
         require(
             balanceSheet.clutchCollateral(this, msg.sender, borrower, clutchableCollateralAmount),
             "ERR_LIQUIDATE_BORROW_CALL_CLUTCH_COLLATERAL"

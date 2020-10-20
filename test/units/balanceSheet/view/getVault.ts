@@ -5,10 +5,10 @@ export default function shouldBehaveLikeGetVault(): void {
   describe("when the bond is not open", function () {
     it("retrieves the default values", async function () {
       const vault = await this.contracts.balanceSheet.getVault(this.stubs.yToken.address, this.accounts.borrower);
-      expect(vault.debt).to.equal(Zero);
-      expect(vault.freeCollateral).to.equal(Zero);
-      expect(vault.lockedCollateral).to.equal(Zero);
-      expect(vault.isOpen).to.equal(false);
+      expect(vault[0]).to.equal(Zero); /* debt */
+      expect(vault[1]).to.equal(Zero); /* freeCollateral */
+      expect(vault[2]).to.equal(Zero); /* lockedCollateral */
+      expect(vault[3]).to.equal(false); /* isOpen */
     });
   });
 
@@ -19,10 +19,10 @@ export default function shouldBehaveLikeGetVault(): void {
 
     it("retrieves all the storage properties of the vault", async function () {
       const vault = await this.contracts.balanceSheet.getVault(this.stubs.yToken.address, this.accounts.borrower);
-      expect(vault.debt).to.equal(Zero);
-      expect(vault.freeCollateral).to.equal(Zero);
-      expect(vault.lockedCollateral).to.equal(Zero);
-      expect(vault.isOpen).to.equal(true);
+      expect(vault[0]).to.equal(Zero); /* debt */
+      expect(vault[1]).to.equal(Zero); /* freeCollateral */
+      expect(vault[2]).to.equal(Zero); /* lockedCollateral */
+      expect(vault[3]).to.equal(true); /* isOpen */
     });
   });
 }

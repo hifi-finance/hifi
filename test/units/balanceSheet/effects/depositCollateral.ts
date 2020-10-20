@@ -109,6 +109,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
                 this.stubs.yToken.address,
                 this.accounts.borrower,
               );
+              const oldFreeCollateral: BigNumber = oldVault[1];
               await this.contracts.balanceSheet
                 .connect(this.signers.borrower)
                 .depositCollateral(this.stubs.yToken.address, collateralAmount);
@@ -116,7 +117,8 @@ export default function shouldBehaveLikeDepositCollateral(): void {
                 this.stubs.yToken.address,
                 this.accounts.borrower,
               );
-              expect(oldVault.freeCollateral).to.equal(newVault.freeCollateral.sub(collateralAmount));
+              const newFreeCollateral: BigNumber = newVault[1];
+              expect(oldFreeCollateral).to.equal(newFreeCollateral.sub(collateralAmount));
             });
 
             it("emits a DepositCollateral event", async function () {

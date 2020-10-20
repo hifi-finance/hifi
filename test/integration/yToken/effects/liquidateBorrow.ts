@@ -2,6 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
 import { Percentages, Prices, TokenAmounts } from "../../../../helpers/constants";
+import { BalanceSheetErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeLiquidateBorrow(): void {
   const borrowAmount: BigNumber = TokenAmounts.OneHundred;
@@ -67,56 +68,75 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
     );
   });
 
-  it("liquidates the borrower", async function () {
-    const oldBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.liquidator);
-    await this.contracts.yToken.connect(this.signers.liquidator).liquidateBorrow(this.accounts.borrower, repayAmount);
-    const newBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.liquidator);
-    expect(oldBalance).to.equal(newBalance.add(repayAmount));
+  /**
+   * This happens when the price of the collateral fell so rapidly that there
+   * isn't enough (in dollar terms) to compensate the liquidator.
+   */
+  describe("when there is not enough locked collateral", function () {
+    beforeEach(async function () {
+      /* Set the price of 1 WETH to $1 so that the new collateralization ratio becomes 10%. */
+      await this.contracts.oracle.setWethPrice(Prices.OneDollar);
+    });
+
+    it("reverts", async function () {
+      await expect(
+        this.contracts.yToken.connect(this.signers.liquidator).liquidateBorrow(this.accounts.borrower, repayAmount),
+      ).to.be.revertedWith(BalanceSheetErrors.InsufficientLockedCollateral);
+    });
   });
 
-  it("reduces the debt of the borrower", async function () {
-    const oldDebt: BigNumber = await this.contracts.balanceSheet.getVaultDebt(
-      this.contracts.yToken.address,
-      this.accounts.borrower,
-    );
-    await this.contracts.yToken.connect(this.signers.liquidator).liquidateBorrow(this.accounts.borrower, repayAmount);
-    const newDebt: BigNumber = await this.contracts.balanceSheet.getVaultDebt(
-      this.contracts.yToken.address,
-      this.accounts.borrower,
-    );
-    expect(oldDebt).to.equal(newDebt.add(repayAmount));
-  });
+  describe("when there is enough locked collateral", function () {
+    it("liquidates the borrower", async function () {
+      const oldBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.liquidator);
+      await this.contracts.yToken.connect(this.signers.liquidator).liquidateBorrow(this.accounts.borrower, repayAmount);
+      const newBalance: BigNumber = await this.contracts.yToken.balanceOf(this.accounts.liquidator);
+      expect(oldBalance).to.equal(newBalance.add(repayAmount));
+    });
 
-  it("reduces the locked collateral of the borrower", async function () {
-    const oldLockedCollateral: BigNumber = await this.contracts.balanceSheet.getVaultLockedCollateral(
-      this.contracts.yToken.address,
-      this.accounts.borrower,
-    );
-    await this.contracts.yToken.connect(this.signers.liquidator).liquidateBorrow(this.accounts.borrower, repayAmount);
-    const newLockedCollateral: BigNumber = await this.contracts.balanceSheet.getVaultLockedCollateral(
-      this.contracts.yToken.address,
-      this.accounts.borrower,
-    );
-    expect(oldLockedCollateral).to.equal(newLockedCollateral.add(clutchableCollateralAmount));
-  });
-
-  it("transfers the clutched collateral to the liquidator", async function () {
-    const oldBalance: BigNumber = await this.contracts.collateral.balanceOf(this.accounts.liquidator);
-    await this.contracts.yToken.connect(this.signers.liquidator).liquidateBorrow(this.accounts.borrower, repayAmount);
-    const newBalance: BigNumber = await this.contracts.collateral.balanceOf(this.accounts.liquidator);
-    expect(oldBalance).to.equal(newBalance.sub(clutchableCollateralAmount));
-  });
-
-  it("emits a ClutchCollateral event", async function () {
-    await expect(
-      this.contracts.yToken.connect(this.signers.liquidator).liquidateBorrow(this.accounts.borrower, repayAmount),
-    )
-      .to.emit(this.contracts.balanceSheet, "ClutchCollateral")
-      .withArgs(
+    it("reduces the debt of the borrower", async function () {
+      const oldDebt: BigNumber = await this.contracts.balanceSheet.getVaultDebt(
         this.contracts.yToken.address,
-        this.accounts.liquidator,
         this.accounts.borrower,
-        clutchableCollateralAmount,
       );
+      await this.contracts.yToken.connect(this.signers.liquidator).liquidateBorrow(this.accounts.borrower, repayAmount);
+      const newDebt: BigNumber = await this.contracts.balanceSheet.getVaultDebt(
+        this.contracts.yToken.address,
+        this.accounts.borrower,
+      );
+      expect(oldDebt).to.equal(newDebt.add(repayAmount));
+    });
+
+    it("reduces the locked collateral of the borrower", async function () {
+      const oldLockedCollateral: BigNumber = await this.contracts.balanceSheet.getVaultLockedCollateral(
+        this.contracts.yToken.address,
+        this.accounts.borrower,
+      );
+      await this.contracts.yToken.connect(this.signers.liquidator).liquidateBorrow(this.accounts.borrower, repayAmount);
+      const newLockedCollateral: BigNumber = await this.contracts.balanceSheet.getVaultLockedCollateral(
+        this.contracts.yToken.address,
+        this.accounts.borrower,
+      );
+      expect(oldLockedCollateral).to.equal(newLockedCollateral.add(clutchableCollateralAmount));
+    });
+
+    it("transfers the clutched collateral to the liquidator", async function () {
+      const oldBalance: BigNumber = await this.contracts.collateral.balanceOf(this.accounts.liquidator);
+      await this.contracts.yToken.connect(this.signers.liquidator).liquidateBorrow(this.accounts.borrower, repayAmount);
+      const newBalance: BigNumber = await this.contracts.collateral.balanceOf(this.accounts.liquidator);
+      expect(oldBalance).to.equal(newBalance.sub(clutchableCollateralAmount));
+    });
+
+    it("emits a ClutchCollateral event", async function () {
+      await expect(
+        this.contracts.yToken.connect(this.signers.liquidator).liquidateBorrow(this.accounts.borrower, repayAmount),
+      )
+        .to.emit(this.contracts.balanceSheet, "ClutchCollateral")
+        .withArgs(
+          this.contracts.yToken.address,
+          this.accounts.liquidator,
+          this.accounts.borrower,
+          clutchableCollateralAmount,
+        );
+    });
   });
 }

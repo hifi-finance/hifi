@@ -13,7 +13,6 @@ async function stubLiquidateBorrowInternalCalls(
   yTokenAddress: string,
   newBorrowAmount: BigNumber,
   repayAmount: BigNumber,
-  lockedCollateral: BigNumber,
   clutchedCollateralAmount: BigNumber,
 ): Promise<void> {
   await this.stubs.balanceSheet.mock.setVaultDebt
@@ -22,9 +21,6 @@ async function stubLiquidateBorrowInternalCalls(
   await this.stubs.balanceSheet.mock.getClutchableCollateral
     .withArgs(yTokenAddress, repayAmount)
     .returns(clutchedCollateralAmount);
-  await this.stubs.balanceSheet.mock.getVaultLockedCollateral
-    .withArgs(this.contracts.yToken.address, this.accounts.borrower)
-    .returns(lockedCollateral);
   await this.stubs.balanceSheet.mock.clutchCollateral
     .withArgs(yTokenAddress, this.accounts.liquidator, this.accounts.borrower, clutchedCollateralAmount)
     .returns(true);
@@ -32,7 +28,6 @@ async function stubLiquidateBorrowInternalCalls(
 
 export default function shouldBehaveLikeLiquidateBorrow(): void {
   const borrowAmount: BigNumber = TokenAmounts.OneHundred;
-  const lockedCollateral: BigNumber = TokenAmounts.Ten;
   const repayAmount: BigNumber = TokenAmounts.Forty;
   const newBorrowAmount: BigNumber = borrowAmount.sub(repayAmount);
 
@@ -168,7 +163,6 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
                   this.contracts.yToken.address,
                   newBorrowAmount,
                   repayAmount,
-                  lockedCollateral,
                   clutchableCollateralAmount,
                 );
               });
