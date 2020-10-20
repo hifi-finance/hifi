@@ -118,10 +118,12 @@ export const UnderlyingConstants = {
   Symbol: "DAI",
 };
 
+const now: BigNumber = BigNumber.from(Math.round(new Date().getTime() / 1000));
+const ninetyDaysInSeconds: BigNumber = BigNumber.from(7776000);
+
 export const YTokenConstants = {
   Decimals: DefaultNumberOfDecimals,
+  ExpirationTime: now.add(ninetyDaysInSeconds) /* 3 months from now */,
   Name: "DAI/ETH (2021-01-01)",
   Symbol: "yDAI-JAN21",
-  /* TODO: make this relative to the time at which the tests are run. */
-  DefaultExpirationTime: BigNumber.from(1609459199) /* December 31, 2020 at 23:59:59 */,
 };

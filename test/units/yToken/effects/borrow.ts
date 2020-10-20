@@ -34,7 +34,7 @@ export default function shouldBehaveLikeBorrow(): void {
 
     contextForTimeDependentTests("when the bond matured", function () {
       beforeEach(async function () {
-        await increaseTime(YTokenConstants.DefaultExpirationTime);
+        await increaseTime(YTokenConstants.ExpirationTime);
       });
 
       it("reverts", async function () {

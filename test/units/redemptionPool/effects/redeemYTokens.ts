@@ -17,7 +17,7 @@ export default function shouldBehaveLikeRedeemYTokens(): void {
 
   describe("when the bond did not mature", function () {
     beforeEach(async function () {
-      await this.stubs.yToken.mock.expirationTime.returns(YTokenConstants.DefaultExpirationTime);
+      await this.stubs.yToken.mock.expirationTime.returns(YTokenConstants.ExpirationTime);
     });
 
     it("reverts", async function () {

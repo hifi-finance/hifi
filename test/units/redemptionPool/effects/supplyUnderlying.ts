@@ -31,7 +31,7 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
 
   describe("when the bond did not mature", function () {
     beforeEach(async function () {
-      await this.stubs.yToken.mock.expirationTime.returns(YTokenConstants.DefaultExpirationTime);
+      await this.stubs.yToken.mock.expirationTime.returns(YTokenConstants.ExpirationTime);
     });
 
     describe("when the amount of underlying to supply is zero", function () {

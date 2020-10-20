@@ -17,7 +17,7 @@ function createDeployYTokenPromise(this: Mocha.Context): Promise<Contract> {
   const deployYTokenPromise: Promise<Contract> = deployContract(deployer, YTokenArtifact, [
     YTokenConstants.Name,
     YTokenConstants.Symbol,
-    YTokenConstants.DefaultExpirationTime,
+    YTokenConstants.ExpirationTime,
     this.stubs.fintroller.address,
     this.stubs.balanceSheet.address,
     this.stubs.underlying.address,

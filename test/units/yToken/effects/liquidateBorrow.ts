@@ -186,7 +186,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
 
                 contextForTimeDependentTests("when the bond matured", function () {
                   beforeEach(async function () {
-                    await increaseTime(YTokenConstants.DefaultExpirationTime);
+                    await increaseTime(YTokenConstants.ExpirationTime);
 
                     /* Mint 100 yDAI to Liquidator so he can repay the debt. */
                     await this.contracts.yToken.__godMode_mint(this.accounts.liquidator, repayAmount);

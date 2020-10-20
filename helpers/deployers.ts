@@ -79,7 +79,7 @@ export async function deployYToken(
 ): Promise<YToken> {
   const name: string = YTokenConstants.Name;
   const symbol: string = YTokenConstants.Symbol;
-  const expirationTime: BigNumber = YTokenConstants.DefaultExpirationTime; /* December 31, 2020 at 23:59:59 */
+  const expirationTime: BigNumber = YTokenConstants.ExpirationTime; /* December 31, 2020 at 23:59:59 */
 
   const yToken: YToken = ((await deployContract(deployer, YTokenArtifact, [
     name,

@@ -31,7 +31,7 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
       await this.contracts.redemptionPool.connect(this.signers.maker).supplyUnderlying(underlyingAmount);
 
       /* Fast-forward to the future so that yTokens can be redeemed. */
-      await increaseTime(YTokenConstants.DefaultExpirationTime);
+      await increaseTime(YTokenConstants.ExpirationTime);
     });
 
     it("redeems the yTokens", async function () {

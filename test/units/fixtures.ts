@@ -123,7 +123,7 @@ export async function unitFixtureYToken(signers: Signer[]): Promise<UnitFixtureY
 
   const name: string = YTokenConstants.Name;
   const symbol: string = YTokenConstants.Symbol;
-  const expirationTime: BigNumber = YTokenConstants.DefaultExpirationTime; /* December 31, 2020 at 23:59:59 */
+  const expirationTime: BigNumber = YTokenConstants.ExpirationTime; /* December 31, 2020 at 23:59:59 */
 
   const oracle: MockContract = await deployStubOracle(deployer);
   const fintroller: MockContract = await deployStubFintroller(deployer);
