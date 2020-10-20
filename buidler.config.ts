@@ -10,6 +10,7 @@ import "./tasks/clean";
 import "./tasks/typechain";
 
 usePlugin("@nomiclabs/buidler-waffle");
+usePlugin("buidler-gas-reporter");
 usePlugin("solidity-coverage");
 
 /**
@@ -79,6 +80,12 @@ function createNetworkConfig(network?: string): { accounts: HDAccountsConfig; ur
 
 const config: BuidlerConfig = {
   defaultNetwork: "buidlerevm",
+  gasReporter: {
+    currency: "USD",
+    enabled: process.env.REPORT_GAS ? true : false,
+    excludeContracts: ["Erc20Mintable", "SimpleUniswapAnchoredView"],
+    src: "./contracts",
+  },
   networks: {
     buidlerevm: {
       accounts: createBuidlerEvmAccounts(),
@@ -120,7 +127,7 @@ const config: BuidlerConfig = {
   solc: {
     /* Disable the optimizer when debugging: https://buidler.dev/buidler-evm/#solidity-optimizer-support */
     optimizer: {
-      enabled: false,
+      enabled: true,
       runs: 200,
     },
     version: "0.7.4",
