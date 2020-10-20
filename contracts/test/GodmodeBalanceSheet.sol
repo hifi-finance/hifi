@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 /* solhint-disable func-name-mixedcase */
-pragma solidity ^0.7.1;
+pragma solidity ^0.7.0;
 
 import "../BalanceSheet.sol";
 import "../YTokenInterface.sol";

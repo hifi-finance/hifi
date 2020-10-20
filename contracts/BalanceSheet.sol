@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
-pragma solidity ^0.7.1;
+pragma solidity ^0.7.0;
 
 import "@paulrberg/contracts/access/Admin.sol";
 import "@paulrberg/contracts/math/CarefulMath.sol";
@@ -258,16 +258,18 @@ contract BalanceSheet is
         view
         override
         returns (
-            uint256 debt,
-            uint256 freeCollateral,
-            uint256 lockedCollateral,
-            bool isOpen
+            uint256,
+            uint256,
+            uint256,
+            bool
         )
     {
-        debt = vaults[address(yToken)][account].debt;
-        freeCollateral = vaults[address(yToken)][account].freeCollateral;
-        lockedCollateral = vaults[address(yToken)][account].lockedCollateral;
-        isOpen = vaults[address(yToken)][account].isOpen;
+        return (
+            vaults[address(yToken)][account].debt,
+            vaults[address(yToken)][account].freeCollateral,
+            vaults[address(yToken)][account].lockedCollateral,
+            vaults[address(yToken)][account].isOpen
+        );
     }
 
     /**
