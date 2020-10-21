@@ -120,7 +120,6 @@ const config: BuidlerConfig = {
     cache: "./cache",
     coverage: "./coverage",
     coverageJson: "./coverage.json",
-    root: "./",
     sources: "./contracts",
     tests: "./test",
   },
