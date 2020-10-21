@@ -6,10 +6,10 @@ import "@paulrberg/contracts/math/CarefulMath.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Recover.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
+import "@paulrberg/contracts/utils/ReentrancyGuard.sol";
 
 import "./FintrollerInterface.sol";
 import "./RedemptionPoolInterface.sol";
-import "./utils/ReentrancyGuard.sol";
 
 /**
  * @title RedemptionPool

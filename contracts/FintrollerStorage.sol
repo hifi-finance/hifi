@@ -35,7 +35,7 @@ abstract contract FintrollerStorage is Exponential {
     /**
      * @notice The ratio between mantissa precision (1e18) and the oracle price precision (1e6).
      */
-    uint256 public constant oraclePricePrecisionScalar = 1e12;
+    uint256 public constant oraclePricePrecisionScalar = 1.0e12;
 
     /**
      * @dev The threshold below which the collateralization ratio cannot be set, equivalent to 100%.

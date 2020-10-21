@@ -23,5 +23,5 @@ module.exports = {
     default_balance_ether: 100000000,
     mnemonic,
   },
-  skipFiles: ["test", "utils/ReentrancyGuard.sol"],
+  skipFiles: ["test"],
 };

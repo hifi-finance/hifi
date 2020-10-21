@@ -7,13 +7,13 @@ import "@paulrberg/contracts/token/erc20/Erc20.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Permit.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Recover.sol";
+import "@paulrberg/contracts/utils/ReentrancyGuard.sol";
 
 import "./BalanceSheetInterface.sol";
 import "./FintrollerInterface.sol";
 import "./RedemptionPool.sol";
 import "./YTokenInterface.sol";
 import "./oracles/UniswapAnchoredViewInterface.sol";
-import "./utils/ReentrancyGuard.sol";
 
 /**
  * @title YToken
