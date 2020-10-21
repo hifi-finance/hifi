@@ -1,0 +1,7 @@
+checkAsserts: true
+coverage: true
+cryticArgs: ["--compile-force-framework", "buidler"]
+# list of methods to filter
+filterFunctions: ["setLiquidationIncentive"]
+# by default, blacklist methods in filterFunctions
+filterBlacklist: false

@@ -8,7 +8,7 @@ import "../Fintroller.sol";
  * @author Mainframe
  */
 contract FintrollerInvariants is Fintroller {
-    uint256 private newLiquidationIncentiveMantissa = 1;
+    constructor() {}
 
     function echidna_liquidation_incentive() external view returns (bool) {
         return

@@ -1,3 +1,0 @@
-checkAsserts: true
-coverage: true
-cryticArgs: ["--compile-force-framework", "buidler"]
