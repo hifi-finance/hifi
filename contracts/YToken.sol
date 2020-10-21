@@ -69,6 +69,7 @@ contract YToken is
         collateral = collateral_;
 
         /* Set the unix expiration time. */
+        require(expirationTime_ > block.timestamp, "ERR_YTOKEN_CONSTRUCTOR_EXPIRATION_TIME_NOT_VALID");
         expirationTime = expirationTime_;
 
         /* Set the Fintroller contract and sanity check it. */

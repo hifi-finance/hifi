@@ -77,6 +77,7 @@ export enum YTokenErrors {
   BurnZero = "ERR_BURN_ZERO",
   ConstructorCollateralDecimalsOverflow = "ERR_YTOKEN_CONSTRUCTOR_COLLATERAL_DECIMALS_OVERFLOW",
   ConstructorCollateralDecimalsZero = "ERR_YTOKEN_CONSTRUCTOR_COLLATERAL_DECIMALS_ZERO",
+  ConstructorExpirationTimeNotValid = "ERR_YTOKEN_CONSTRUCTOR_EXPIRATION_TIME_NOT_VALID",
   ConstructorUnderlyingDecimalsOverflow = "ERR_YTOKEN_CONSTRUCTOR_UNDERLYING_DECIMALS_OVERFLOW",
   ConstructorUnderlyingDecimalsZero = "ERR_YTOKEN_CONSTRUCTOR_UNDERLYING_DECIMALS_ZERO",
   LiquidateBorrowNotAllowed = "ERR_LIQUIDATE_BORROW_NOT_ALLOWED",

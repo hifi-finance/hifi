@@ -12,12 +12,12 @@ import { YTokenErrors } from "../../../../helpers/errors";
 
 const { deployContract } = waffle;
 
-function createDeployYTokenPromise(this: Mocha.Context): Promise<Contract> {
+function createDeployYTokenPromise(this: Mocha.Context, expirationTime?: BigNumber): Promise<Contract> {
   const deployer: Signer = this.signers.admin;
   const deployYTokenPromise: Promise<Contract> = deployContract(deployer, YTokenArtifact, [
     YTokenConstants.Name,
     YTokenConstants.Symbol,
-    YTokenConstants.ExpirationTime,
+    expirationTime || YTokenConstants.ExpirationTime,
     this.stubs.fintroller.address,
     this.stubs.balanceSheet.address,
     this.stubs.underlying.address,
@@ -70,6 +70,15 @@ export default function shouldBehaveLikeConstructor(): void {
     it("reverts", async function () {
       const deployYTokenPromise: Promise<Contract> = createDeployYTokenPromise.call(this);
       await expect(deployYTokenPromise).to.be.revertedWith(YTokenErrors.ConstructorCollateralDecimalsOverflow);
+    });
+  });
+
+  describe("when the expiration time is in the past", function () {
+    it("reverts", async function () {
+      /* Set the expiration time to now minus one hour. */
+      const nowMinusOneHour: BigNumber = BigNumber.from(Math.round(new Date().getTime() / 1000) - 3600);
+      const deployYTokenPromise: Promise<Contract> = createDeployYTokenPromise.call(this, nowMinusOneHour);
+      await expect(deployYTokenPromise).to.be.revertedWith(YTokenErrors.ConstructorExpirationTimeNotValid);
     });
   });
 }
