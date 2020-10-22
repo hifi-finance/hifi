@@ -1,5 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { MockContract } from "ethereum-waffle";
+import { One } from "@ethersproject/constants";
 import { Signer } from "@ethersproject/abstract-signer";
 import { waffle } from "@nomiclabs/buidler";
 
@@ -48,9 +49,9 @@ export async function unitFixtureBalanceSheet(signers: Signer[]): Promise<UnitFi
 
   const yToken: MockContract = await deployStubYToken(deployer);
   await yToken.mock.collateral.returns(collateral.address);
-  await yToken.mock.collateralPrecisionScalar.returns(BigNumber.from(1));
+  await yToken.mock.collateralPrecisionScalar.returns(One);
   await yToken.mock.underlying.returns(underlying.address);
-  await yToken.mock.underlyingPrecisionScalar.returns(BigNumber.from(1));
+  await yToken.mock.underlyingPrecisionScalar.returns(One);
 
   const balanceSheet: BalanceSheet = ((await deployContract(deployer, BalanceSheetArtifact, [
     fintroller.address,
@@ -99,7 +100,7 @@ export async function unitFixtureRedemptionPool(signers: Signer[]): Promise<Unit
 
   const yToken: MockContract = await deployStubYToken(deployer);
   await yToken.mock.underlying.returns(underlying.address);
-  await yToken.mock.underlyingPrecisionScalar.returns(BigNumber.from(1));
+  await yToken.mock.underlyingPrecisionScalar.returns(One);
 
   const redemptionPool: RedemptionPool = ((await deployContract(deployer, RedemptionPoolArtifact, [
     fintroller.address,

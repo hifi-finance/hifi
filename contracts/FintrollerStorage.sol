@@ -2,6 +2,8 @@
 pragma solidity ^0.7.0;
 
 import "@paulrberg/contracts/math/Exponential.sol";
+
+import "./YTokenInterface.sol";
 import "./oracles/UniswapAnchoredViewInterface.sol";
 
 abstract contract FintrollerStorage is Exponential {
@@ -20,7 +22,7 @@ abstract contract FintrollerStorage is Exponential {
     /**
      * @dev Maps the yToken address to the Bond structs.
      */
-    mapping(address => Bond) internal bonds;
+    mapping(YTokenInterface => Bond) internal bonds;
 
     /**
      * @notice The contract that provides price data for the collateral and the underlying asset.
@@ -48,7 +50,7 @@ abstract contract FintrollerStorage is Exponential {
     uint256 internal constant collateralizationRatioUpperBoundMantissa = 1.0e20;
 
     /**
-     * @dev The dafault collateralization ratio set when a new bond is listed.
+     * @dev The dafault collateralization ratio set when a new bond is listed, equivalent to 150%.
      */
     uint256 internal constant defaultCollateralizationRatioMantissa = 1.5e18;
 

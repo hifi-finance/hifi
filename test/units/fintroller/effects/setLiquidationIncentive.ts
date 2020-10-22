@@ -1,12 +1,18 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { Zero } from "@ethersproject/constants";
+import { One, Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { AdminErrors, FintrollerErrors } from "../../../../helpers/errors";
-import { Percentages, FintrollerConstants } from "../../../../helpers/constants";
+import { FintrollerConstants, Percentages } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeSetCollateralizationRatio(): void {
   const newLiquidationIncentiveMantissa: BigNumber = Percentages.OneHundredAndTen;
+  const overflowLiquidationIncentiveMantissa: BigNumber = FintrollerConstants.LiquidationIncentiveUpperBoundMantissa.add(
+    One,
+  );
+  const underflowLiquidationIncentiveMantissa: BigNumber = FintrollerConstants.LiquidationIncentiveLowerBoundMantissa.sub(
+    One,
+  );
 
   describe("when the caller is not the admin", function () {
     it("reverts", async function () {
@@ -28,9 +34,6 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
 
       describe("when the liquidation incentive is higher than 150%", function () {
         it("reverts", async function () {
-          const overflowLiquidationIncentiveMantissa: BigNumber = FintrollerConstants.LiquidationIncentiveUpperBoundMantissa.add(
-            1,
-          );
           await expect(
             this.contracts.fintroller
               .connect(this.signers.admin)
@@ -41,9 +44,6 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
 
       describe("when the liquidation incentive is lower than 100%", function () {
         it("reverts", async function () {
-          const underflowLiquidationIncentiveMantissa: BigNumber = FintrollerConstants.LiquidationIncentiveLowerBoundMantissa.sub(
-            1,
-          );
           await expect(
             this.contracts.fintroller
               .connect(this.signers.admin)
@@ -63,13 +63,14 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
       });
 
       it("emits a SetLiquidationIncentive event", async function () {
+        const defaultLiquidationIncentiveMantissa: BigNumber = Percentages.OneHundredAndTen;
         await expect(
           this.contracts.fintroller
             .connect(this.signers.admin)
             .setLiquidationIncentive(newLiquidationIncentiveMantissa),
         )
           .to.emit(this.contracts.fintroller, "SetLiquidationIncentive")
-          .withArgs(this.accounts.admin, Zero, newLiquidationIncentiveMantissa);
+          .withArgs(this.accounts.admin, defaultLiquidationIncentiveMantissa, newLiquidationIncentiveMantissa);
       });
     });
   });

@@ -1,7 +1,14 @@
 checkAsserts: true
 coverage: true
-cryticArgs: ["--compile-force-framework", "buidler"]
-# list of methods to filter
-filterFunctions: ["setLiquidationIncentive"]
-# by default, blacklist methods in filterFunctions
+cryticArgs:
+  - "--compile-force-framework"
+  - "buidler"
+deployer: "0x10000"
 filterBlacklist: false
+filterFunctions:
+  - "listBond"
+  - "setCollateralizationRatio"
+seqLen: 50
+sender:
+  - "0x10000"
+testLimit: 50000

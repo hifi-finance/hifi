@@ -1,5 +1,5 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { Zero } from "@ethersproject/constants";
+import { One, Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { AdminErrors, FintrollerErrors } from "../../../../helpers/errors";
@@ -7,6 +7,12 @@ import { FintrollerConstants, Percentages } from "../../../../helpers/constants"
 
 export default function shouldBehaveLikeSetCollateralizationRatio(): void {
   const newCollateralizationRatioMantissa: BigNumber = Percentages.OneHundredAndSeventyFive;
+  const overflowCollateralizationRatioMantissa: BigNumber = FintrollerConstants.CollateralizationRatioUpperBoundMantissa.add(
+    One,
+  );
+  const underflowCollateralizationRatioMantissa: BigNumber = FintrollerConstants.CollateralizationRatioLowerBoundMantissa.sub(
+    One,
+  );
 
   describe("when the caller is not the admin", function () {
     it("reverts", async function () {
@@ -37,9 +43,6 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
       describe("when the collateralization ratio is not valid", function () {
         describe("when the collateralization ratio is higher than 10,000%", function () {
           it("reverts", async function () {
-            const overflowCollateralizationRatioMantissa: BigNumber = FintrollerConstants.CollateralizationRatioUpperBoundMantissa.add(
-              1,
-            );
             await expect(
               this.contracts.fintroller
                 .connect(this.signers.admin)
@@ -50,9 +53,6 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
 
         describe("when the collateralization ratio is lower than 100%", function () {
           it("reverts", async function () {
-            const underflowCollateralizationRatioMantissa: BigNumber = FintrollerConstants.CollateralizationRatioLowerBoundMantissa.sub(
-              1,
-            );
             await expect(
               this.contracts.fintroller
                 .connect(this.signers.admin)
