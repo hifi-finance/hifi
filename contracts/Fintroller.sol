@@ -167,22 +167,22 @@ contract Fintroller is
      * @param yToken The yToken contract to list.
      * @return bool true=success, otherwise it reverts.
      */
-function listBond(YTokenInterface yToken) external override onlyAdmin returns (bool) {
-    yToken.isYToken();
-    bonds[yToken] = Bond({
-        collateralizationRatio: Exp({ mantissa: defaultCollateralizationRatioMantissa }),
-        debtCeiling: 0,
-        isBorrowAllowed: true,
-        isDepositCollateralAllowed: true,
-        isLiquidateBorrowAllowed: true,
-        isListed: true,
-        isRedeemYTokenAllowed: true,
-        isRepayBorrowAllowed: true,
-        isSupplyUnderlyingAllowed: true
-    });
-    emit ListBond(admin, yToken);
-    return true;
-}
+    function listBond(YTokenInterface yToken) external override onlyAdmin returns (bool) {
+        yToken.isYToken();
+        bonds[yToken] = Bond({
+            collateralizationRatio: Exp({ mantissa: defaultCollateralizationRatioMantissa }),
+            debtCeiling: 0,
+            isBorrowAllowed: true,
+            isDepositCollateralAllowed: true,
+            isLiquidateBorrowAllowed: true,
+            isListed: true,
+            isRedeemYTokenAllowed: true,
+            isRepayBorrowAllowed: true,
+            isSupplyUnderlyingAllowed: true
+        });
+        emit ListBond(admin, yToken);
+        return true;
+    }
 
     /**
      * @notice Updates the state of the permission accessed by the yToken before a borrow.
