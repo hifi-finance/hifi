@@ -5,6 +5,7 @@ import { task } from "@nomiclabs/buidler/config";
 task(TASK_CLEAN, "Overrides the standard clean task", async function (_taskArgs, { config }, runSuper) {
   await fsExtra.remove(config.paths.coverage);
   await fsExtra.remove(config.paths.coverageJson);
+  await fsExtra.remove(config.paths.cryticExport);
   if (config.typechain?.outDir) {
     await fsExtra.remove(config.typechain.outDir);
   }

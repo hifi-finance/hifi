@@ -120,11 +120,12 @@ const config: BuidlerConfig = {
     cache: "./cache",
     coverage: "./coverage",
     coverageJson: "./coverage.json",
+    cryticExport: "./crytic-export",
     sources: "./contracts",
     tests: "./test",
   },
   solc: {
-    /* Disable the optimizer when debugging: https://buidler.dev/buidler-evm/#solidity-optimizer-support */
+    /* Disable the optimizer while debugging: https://buidler.dev/buidler-evm/#solidity-optimizer-support */
     optimizer: {
       enabled: true,
       runs: 200,

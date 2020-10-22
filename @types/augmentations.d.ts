@@ -14,6 +14,7 @@ declare module "@nomiclabs/buidler/types" {
   interface ProjectPaths {
     coverage: string;
     coverageJson: string;
+    cryticExport: string;
     typechain: string;
   }
 }
