@@ -6,7 +6,7 @@ import { waffle } from "@nomiclabs/buidler";
 
 import BalanceSheetArtifact from "../../artifacts/GodModeBalanceSheet.json";
 import FintrollerArtifact from "../../artifacts/Fintroller.json";
-import OraclePriceScalarArtifact from "../../artifacts/TestOraclePriceScalar.json";
+import OraclePriceUtilsArtifact from "../../artifacts/TestOraclePriceUtils.json";
 import RedemptionPoolArtifact from "../../artifacts/GodModeRedemptionPool.json";
 import YTokenArtifact from "../../artifacts/GodModeYToken.json";
 
@@ -14,7 +14,7 @@ import { Fintroller } from "../../typechain/Fintroller";
 import { GodModeBalanceSheet as BalanceSheet } from "../../typechain/GodModeBalanceSheet";
 import { GodModeRedemptionPool as RedemptionPool } from "../../typechain/GodModeRedemptionPool";
 import { GodModeYToken as YToken } from "../../typechain/GodModeYToken";
-import { TestOraclePriceScalar as OraclePriceScalar } from "../../typechain/TestOraclePriceScalar";
+import { TestOraclePriceUtils as OraclePriceUtils } from "../../typechain/TestOraclePriceUtils";
 import { YTokenConstants } from "../../helpers/constants";
 
 import {
@@ -69,20 +69,20 @@ export async function unitFixtureFintroller(signers: Signer[]): Promise<UnitFixt
   return { fintroller, oracle, yToken };
 }
 
-type UnitFixtureOraclePriceScalarReturnType = {
+type UnitFixtureOraclePriceUtilsReturnType = {
   collateral: MockContract;
   oracle: MockContract;
-  oraclePriceScalar: OraclePriceScalar;
+  oraclePriceUtils: OraclePriceUtils;
 };
 
-export async function unitFixtureOraclePriceScalar(signers: Signer[]): Promise<UnitFixtureOraclePriceScalarReturnType> {
+export async function unitFixtureOraclePriceUtils(signers: Signer[]): Promise<UnitFixtureOraclePriceUtilsReturnType> {
   const deployer: Signer = signers[0];
   const collateral: MockContract = await deployStubCollateral(deployer);
   const oracle: MockContract = await deployStubOracle(deployer);
-  const oraclePriceScalar: OraclePriceScalar = ((await deployContract(deployer, OraclePriceScalarArtifact, [
+  const oraclePriceUtils: OraclePriceUtils = ((await deployContract(deployer, OraclePriceUtilsArtifact, [
     oracle.address,
-  ])) as unknown) as OraclePriceScalar;
-  return { collateral, oracle, oraclePriceScalar };
+  ])) as unknown) as OraclePriceUtils;
+  return { collateral, oracle, oraclePriceUtils };
 }
 
 type UnitFixtureRedemptionPoolReturnType = {

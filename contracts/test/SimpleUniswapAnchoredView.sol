@@ -30,7 +30,7 @@ contract SimpleUniswapAnchoredView is UniswapAnchoredViewInterface {
      * @dev See https://compound.finance/docs/prices#price
      */
     function price(string memory symbol) external view override returns (uint256) {
-        if (areStringsEqual(symbol, "WETH")) {
+        if (areStringsEqual(symbol, "ETH")) {
             return wethPrice;
         } else if (areStringsEqual(symbol, "DAI")) {
             return daiPrice;
@@ -41,6 +41,6 @@ contract SimpleUniswapAnchoredView is UniswapAnchoredViewInterface {
     }
 
     function areStringsEqual(string memory a, string memory b) public pure returns (bool) {
-        return (keccak256(abi.encodePacked((a))) == keccak256(abi.encodePacked((b))));
+        return keccak256(abi.encodePacked(a)) == keccak256(abi.encodePacked(b));
     }
 }

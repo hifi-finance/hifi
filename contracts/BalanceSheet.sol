@@ -10,7 +10,7 @@ import "@paulrberg/contracts/utils/ReentrancyGuard.sol";
 import "./BalanceSheetInterface.sol";
 import "./FintrollerInterface.sol";
 import "./YTokenInterface.sol";
-import "./oracles/OraclePriceScalar.sol";
+import "./oracles/OraclePriceUtils.sol";
 import "./oracles/UniswapAnchoredViewInterface.sol";
 
 /**
@@ -22,7 +22,7 @@ contract BalanceSheet is
     Admin, /* two dependencies */
     BalanceSheetInterface /* four dependencies */
 {
-    using OraclePriceScalar for UniswapAnchoredViewInterface;
+    using OraclePriceUtils for UniswapAnchoredViewInterface;
     using SafeErc20 for Erc20Interface;
 
     modifier isVaultOpenForMsgSender(YTokenInterface yToken) {
@@ -89,14 +89,14 @@ contract BalanceSheet is
         /* Grab the upscaled USD price of the underlying. */
         UniswapAnchoredViewInterface oracle = fintroller.oracle();
         vars.oraclePricePrecisionScalar = fintroller.oraclePricePrecisionScalar();
-        (vars.mathErr, vars.underlyingPriceUpscaled) = oracle.getScaledPrice(
+        (vars.mathErr, vars.underlyingPriceUpscaled) = oracle.getAdjustedPrice(
             yToken.underlying().symbol(),
             vars.oraclePricePrecisionScalar
         );
         require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_CLUTCHABLE_COLLATERAL_MATH_ERROR");
 
         /* Grab the upscaled USD price of the collateral. */
-        (vars.mathErr, vars.collateralPriceUpscaled) = oracle.getScaledPrice(
+        (vars.mathErr, vars.collateralPriceUpscaled) = oracle.getAdjustedPrice(
             yToken.collateral().symbol(),
             vars.oraclePricePrecisionScalar
         );
@@ -201,14 +201,14 @@ contract BalanceSheet is
         /* Grab the upscaled USD price of the collateral. */
         UniswapAnchoredViewInterface oracle = fintroller.oracle();
         vars.oraclePricePrecisionScalar = fintroller.oraclePricePrecisionScalar();
-        (vars.mathErr, vars.collateralPriceUpscaled) = oracle.getScaledPrice(
+        (vars.mathErr, vars.collateralPriceUpscaled) = oracle.getAdjustedPrice(
             yToken.collateral().symbol(),
             vars.oraclePricePrecisionScalar
         );
         require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
 
         /* Grab the upscaled USD price of the underlying. */
-        (vars.mathErr, vars.underlyingPriceUpscaled) = oracle.getScaledPrice(
+        (vars.mathErr, vars.underlyingPriceUpscaled) = oracle.getAdjustedPrice(
             yToken.underlying().symbol(),
             vars.oraclePricePrecisionScalar
         );

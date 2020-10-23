@@ -2,8 +2,14 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { BalanceSheetErrors, GenericErrors, OraclePriceScalarErrors } from "../../../../helpers/errors";
-import { Percentages, PrecisionScalarForTokenWithEightDecimals, TokenAmounts } from "../../../../helpers/constants";
+import { BalanceSheetErrors, GenericErrors, OraclePriceUtilsErrors } from "../../../../helpers/errors";
+import {
+  CollateralConstants,
+  Percentages,
+  PrecisionScalarForTokenWithEightDecimals,
+  TokenAmounts,
+  UnderlyingConstants,
+} from "../../../../helpers/constants";
 import { contextForStubbedCollateralWithEightDecimals } from "../../../../helpers/mochaContexts";
 
 export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio(): void {
@@ -62,9 +68,8 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
       describe("when the debt is not zero", function () {
         describe("when the collateral price from the oracle is zero", function () {
           beforeEach(async function () {
-            const collateralSymbol = await this.stubs.collateral.symbol();
             const zeroCollateralPrice: BigNumber = Zero;
-            await this.stubs.oracle.mock.price.withArgs(collateralSymbol).returns(zeroCollateralPrice);
+            await this.stubs.oracle.mock.price.withArgs(CollateralConstants.EtherSymbol).returns(zeroCollateralPrice);
           });
 
           it("reverts", async function () {
@@ -75,16 +80,15 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
                 lockedCollateral,
                 debt,
               ),
-            ).to.be.revertedWith(OraclePriceScalarErrors.GetScaledPriceZero);
+            ).to.be.revertedWith(OraclePriceUtilsErrors.PriceZero);
           });
         });
 
         describe("when the collateral price from the oracle is not zero", function () {
           describe("when the underlying price from the oracle is zero", function () {
             beforeEach(async function () {
-              const underlyingSymbol = await this.stubs.underlying.symbol();
               const zeroUnderlyingPrice: BigNumber = Zero;
-              await this.stubs.oracle.mock.price.withArgs(underlyingSymbol).returns(zeroUnderlyingPrice);
+              await this.stubs.oracle.mock.price.withArgs(UnderlyingConstants.Symbol).returns(zeroUnderlyingPrice);
             });
 
             it("reverts", async function () {
@@ -95,7 +99,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
                   lockedCollateral,
                   debt,
                 ),
-              ).to.be.revertedWith(OraclePriceScalarErrors.GetScaledPriceZero);
+              ).to.be.revertedWith(OraclePriceUtilsErrors.PriceZero);
             });
           });
 

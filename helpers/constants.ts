@@ -89,6 +89,7 @@ export const BalanceSheetConstants = {
 
 export const CollateralConstants = {
   Decimals: DefaultNumberOfDecimals,
+  EtherSymbol: "ETH",
   Name: "Wrapped Ether",
   Symbol: "WETH",
 };

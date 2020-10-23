@@ -3,9 +3,10 @@ import { MaxUint256, Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { CollateralConstants, OpenPriceFeedPrecisionScalar, Prices } from "../../../../helpers/constants";
-import { OraclePriceScalarErrors } from "../../../../helpers/errors";
+import { OraclePriceUtilsErrors } from "../../../../helpers/errors";
 
-export default function shouldBehaveLikeGetScaledPrice(): void {
+export default function shouldBehaveLikeGetAdjustedPrice(): void {
+  /* We are not using "ETH" here because we're not mocking the oracle itself. */
   const collateralSymbol = CollateralConstants.Symbol;
 
   describe("when the oracle does not have price data for the symbol", function () {
@@ -17,8 +18,8 @@ export default function shouldBehaveLikeGetScaledPrice(): void {
 
     it("reverts", async function () {
       await expect(
-        this.contracts.oraclePriceScalar.testGetScaledPrice(unavailableSymbol, OpenPriceFeedPrecisionScalar),
-      ).to.be.revertedWith(OraclePriceScalarErrors.GetScaledPriceZero);
+        this.contracts.oraclePriceUtils.testGetAdjustedPrice(unavailableSymbol, OpenPriceFeedPrecisionScalar),
+      ).to.be.revertedWith(OraclePriceUtilsErrors.PriceZero);
     });
   });
 
@@ -26,18 +27,18 @@ export default function shouldBehaveLikeGetScaledPrice(): void {
     describe("when the precision scalar multiplication overflows", function () {
       it("reverts", async function () {
         await expect(
-          this.contracts.oraclePriceScalar.testGetScaledPrice(collateralSymbol, MaxUint256),
-        ).to.be.revertedWith(OraclePriceScalarErrors.MathError);
+          this.contracts.oraclePriceUtils.testGetAdjustedPrice(collateralSymbol, MaxUint256),
+        ).to.be.revertedWith(OraclePriceUtilsErrors.MathError);
       });
     });
 
     describe("when the precision scalar multiplication does not overflow", function () {
       it("retrieves the scaled price", async function () {
-        const scaledPrice: BigNumber = await this.contracts.oraclePriceScalar.testGetScaledPrice(
+        const adjustedPrice: BigNumber = await this.contracts.oraclePriceUtils.testGetAdjustedPrice(
           collateralSymbol,
           OpenPriceFeedPrecisionScalar,
         );
-        expect(scaledPrice).to.equal(Prices.OneHundredDollars.mul(OpenPriceFeedPrecisionScalar));
+        expect(adjustedPrice).to.equal(Prices.OneHundredDollars.mul(OpenPriceFeedPrecisionScalar));
       });
     });
   });

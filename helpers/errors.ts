@@ -55,9 +55,9 @@ export enum Erc20RecoverErrors {
   SetNonRecoverableTokensEmptyArray = "ERR_SET_NON_RECOVERABLE_TOKENS_EMPTY_ARRAY",
 }
 
-export enum OraclePriceScalarErrors {
-  GetScaledPriceZero = "ERR_GET_SCALED_PRICE_ZERO",
-  MathError = "ERR_TEST_GET_SCALED_PRICE_MATH_ERROR",
+export enum OraclePriceUtilsErrors {
+  MathError = "ERR_TEST_GET_ADJUSTED_PRICE_MATH_ERROR",
+  PriceZero = "ERR_PRICE_ZERO",
 }
 
 export enum RedemptionPoolErrors {

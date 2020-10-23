@@ -7,7 +7,7 @@ import { integrationTestRedemptionPool } from "./integration/redemptionPool/Rede
 import { integrationTestYToken } from "./integration/yToken/YToken";
 import { unitTestBalanceSheet } from "./units/balanceSheet/BalanceSheet";
 import { unitTestFintroller } from "./units/fintroller/Fintroller";
-import { unitTestOraclePriceScalar } from "./units/oraclePriceScalar/OraclePriceScalar";
+import { unitTestOraclePriceUtils } from "./units/oraclePriceUtils/OraclePriceUtils";
 import { unitTestRedemptionPool } from "./units/redemptionPool/RedemptionPool";
 import { unitTestYToken } from "./units/yToken/YToken";
 
@@ -42,7 +42,7 @@ describe("Tests", function () {
   describe("Unit Tests", function () {
     unitTestBalanceSheet();
     unitTestFintroller();
-    unitTestOraclePriceScalar();
+    unitTestOraclePriceUtils();
     unitTestRedemptionPool();
     unitTestYToken();
   });
