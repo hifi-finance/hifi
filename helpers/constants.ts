@@ -104,7 +104,7 @@ export const FintrollerConstants = {
     IsDepositCollateralAllowed: true,
     IsLiquidateBorrowAllowed: true,
     IsListed: true,
-    IsRedeemYTokensAllowed: true,
+    IsRedeemFyTokensAllowed: true,
     IsRepayBorrowAllowed: true,
     IsSupplyUnderlyingAllowed: true,
   },
@@ -113,18 +113,18 @@ export const FintrollerConstants = {
   OraclePrecisionScalar: OpenPriceFeedPrecisionScalar,
 };
 
-export const UnderlyingConstants = {
-  Decimals: DefaultNumberOfDecimals,
-  Name: "Dai Stablecoin",
-  Symbol: "DAI",
-};
-
 const now: BigNumber = BigNumber.from(Math.round(new Date().getTime() / 1000));
 const ninetyDaysInSeconds: BigNumber = BigNumber.from(7776000);
 
-export const YTokenConstants = {
+export const FyTokenConstants = {
   Decimals: DefaultNumberOfDecimals,
   ExpirationTime: now.add(ninetyDaysInSeconds) /* 3 months from now */,
   Name: "DAI/ETH (2021-01-01)",
   Symbol: "yDAI-JAN21",
+};
+
+export const UnderlyingConstants = {
+  Decimals: DefaultNumberOfDecimals,
+  Name: "Dai Stablecoin",
+  Symbol: "DAI",
 };

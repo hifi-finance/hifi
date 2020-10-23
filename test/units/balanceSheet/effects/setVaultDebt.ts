@@ -7,12 +7,12 @@ import { BalanceSheetErrors } from "../../../../helpers/errors";
 export default function shouldBehaveLikeSetVaultDebt(): void {
   const debt: BigNumber = Zero;
 
-  describe("when the caller is not the yToken contract", function () {
+  describe("when the caller is not the fyToken contract", function () {
     it("reverts", async function () {
       await expect(
         this.contracts.balanceSheet
           .connect(this.signers.raider)
-          .setVaultDebt(this.stubs.yToken.address, this.accounts.raider, debt),
+          .setVaultDebt(this.stubs.fyToken.address, this.accounts.raider, debt),
       ).to.be.revertedWith(BalanceSheetErrors.SetVaultDebtNotAuthorized);
     });
   });

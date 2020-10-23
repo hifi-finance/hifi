@@ -2,7 +2,7 @@
 pragma solidity ^0.7.0;
 
 import "../RedemptionPool.sol";
-import "../YTokenInterface.sol";
+import "../FyTokenInterface.sol";
 
 /**
  * @title GodModeRedemptionPool
@@ -11,14 +11,14 @@ import "../YTokenInterface.sol";
  */
 contract GodModeRedemptionPool is RedemptionPool {
     /* solhint-disable-next-line no-empty-blocks */
-    constructor(FintrollerInterface fintroller_, YTokenInterface yToken_) RedemptionPool(fintroller_, yToken_) {}
+    constructor(FintrollerInterface fintroller_, FyTokenInterface fyToken_) RedemptionPool(fintroller_, fyToken_) {}
 
-    function __godMode_burnYTokens(uint256 yTokenAmount) external {
-        yToken.burn(msg.sender, yTokenAmount);
+    function __godMode_burnYTokens(uint256 fyTokenAmount) external {
+        fyToken.burn(msg.sender, fyTokenAmount);
     }
 
-    function __godMode_mintYTokens(uint256 yTokenAmount) external {
-        yToken.mint(msg.sender, yTokenAmount);
+    function __godMode_mintYTokens(uint256 fyTokenAmount) external {
+        fyToken.mint(msg.sender, fyTokenAmount);
     }
 
     function __godMode_setTotalUnderlyingSupply(uint256 newTotalUnderlyingSupply) external {

@@ -2,14 +2,14 @@
 pragma solidity ^0.7.0;
 
 import "./FintrollerStorage.sol";
-import "./YTokenInterface.sol";
+import "./FyTokenInterface.sol";
 
 abstract contract FintrollerInterface is FintrollerStorage {
     /**
      * CONSTANT FUNCTIONS
      */
 
-    function getBond(YTokenInterface yToken)
+    function getBond(FyTokenInterface fyToken)
         external
         view
         virtual
@@ -20,80 +20,80 @@ abstract contract FintrollerInterface is FintrollerStorage {
             bool isDepositCollateralAllowed,
             bool isLiquidateBorrowAllowed,
             bool isListed,
-            bool isRedeemYTokenAllowed,
+            bool isRedeemFyTokenAllowed,
             bool isRepayBorrowAllowed,
             bool isSupplyUnderlyingAllowed
         );
 
-    function getBorrowAllowed(YTokenInterface yToken) external view virtual returns (bool);
+    function getBorrowAllowed(FyTokenInterface fyToken) external view virtual returns (bool);
 
-    function getBondDebtCeiling(YTokenInterface yToken) external view virtual returns (uint256);
+    function getBondDebtCeiling(FyTokenInterface fyToken) external view virtual returns (uint256);
 
-    function getBondCollateralizationRatio(YTokenInterface yToken) external view virtual returns (uint256);
+    function getBondCollateralizationRatio(FyTokenInterface fyToken) external view virtual returns (uint256);
 
-    function getDepositCollateralAllowed(YTokenInterface yToken) external view virtual returns (bool);
+    function getDepositCollateralAllowed(FyTokenInterface fyToken) external view virtual returns (bool);
 
-    function getLiquidateBorrowAllowed(YTokenInterface yToken) external view virtual returns (bool);
+    function getLiquidateBorrowAllowed(FyTokenInterface fyToken) external view virtual returns (bool);
 
-    function getRedeemYTokensAllowed(YTokenInterface yToken) external view virtual returns (bool);
+    function getRedeemFyTokensAllowed(FyTokenInterface fyToken) external view virtual returns (bool);
 
-    function getRepayBorrowAllowed(YTokenInterface yToken) external view virtual returns (bool);
+    function getRepayBorrowAllowed(FyTokenInterface fyToken) external view virtual returns (bool);
 
-    function getSupplyUnderlyingAllowed(YTokenInterface yToken) external view virtual returns (bool);
+    function getSupplyUnderlyingAllowed(FyTokenInterface fyToken) external view virtual returns (bool);
 
     /**
      * NON-CONSTANT FUNCTIONS
      */
 
-    function listBond(YTokenInterface yToken) external virtual returns (bool);
+    function listBond(FyTokenInterface fyToken) external virtual returns (bool);
 
-    function setBorrowAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
+    function setBorrowAllowed(FyTokenInterface fyToken, bool state) external virtual returns (bool);
 
-    function setCollateralizationRatio(YTokenInterface yToken, uint256 newCollateralizationRatioMantissa)
+    function setCollateralizationRatio(FyTokenInterface fyToken, uint256 newCollateralizationRatioMantissa)
         external
         virtual
         returns (bool);
 
-    function setDebtCeiling(YTokenInterface yToken, uint256 newDebtCeiling) external virtual returns (bool);
+    function setDebtCeiling(FyTokenInterface fyToken, uint256 newDebtCeiling) external virtual returns (bool);
 
-    function setDepositCollateralAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
+    function setDepositCollateralAllowed(FyTokenInterface fyToken, bool state) external virtual returns (bool);
 
-    function setLiquidateBorrowAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
+    function setLiquidateBorrowAllowed(FyTokenInterface fyToken, bool state) external virtual returns (bool);
 
     function setLiquidationIncentive(uint256 newLiquidationIncentiveMantissa) external virtual returns (bool);
 
     function setOracle(UniswapAnchoredViewInterface oracle_) external virtual returns (bool);
 
-    function setRedeemYTokensAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
+    function setRedeemFyTokensAllowed(FyTokenInterface fyToken, bool state) external virtual returns (bool);
 
-    function setRepayBorrowAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
+    function setRepayBorrowAllowed(FyTokenInterface fyToken, bool state) external virtual returns (bool);
 
-    function setSupplyUnderlyingAllowed(YTokenInterface yToken, bool state) external virtual returns (bool);
+    function setSupplyUnderlyingAllowed(FyTokenInterface fyToken, bool state) external virtual returns (bool);
 
     /**
      * EVENTS
      */
-    event ListBond(address indexed admin, YTokenInterface indexed yToken);
+    event ListBond(address indexed admin, FyTokenInterface indexed fyToken);
 
-    event SetBorrowAllowed(address indexed admin, YTokenInterface indexed yToken, bool state);
+    event SetBorrowAllowed(address indexed admin, FyTokenInterface indexed fyToken, bool state);
 
     event SetCollateralizationRatio(
         address indexed admin,
-        YTokenInterface indexed yToken,
+        FyTokenInterface indexed fyToken,
         uint256 oldCollateralizationRatio,
         uint256 newCollateralizationRatio
     );
 
     event SetDebtCeiling(
         address indexed admin,
-        YTokenInterface indexed yToken,
+        FyTokenInterface indexed fyToken,
         uint256 oldDebtCeiling,
         uint256 newDebtCeiling
     );
 
-    event SetDepositCollateralAllowed(address indexed admin, YTokenInterface indexed yToken, bool state);
+    event SetDepositCollateralAllowed(address indexed admin, FyTokenInterface indexed fyToken, bool state);
 
-    event SetLiquidateBorrowAllowed(address indexed admin, YTokenInterface indexed yToken, bool state);
+    event SetLiquidateBorrowAllowed(address indexed admin, FyTokenInterface indexed fyToken, bool state);
 
     event SetLiquidationIncentive(
         address indexed admin,
@@ -101,11 +101,11 @@ abstract contract FintrollerInterface is FintrollerStorage {
         uint256 newLiquidationIncentive
     );
 
-    event SetRedeemYTokensAllowed(address indexed admin, YTokenInterface indexed yToken, bool state);
+    event SetRedeemFyTokensAllowed(address indexed admin, FyTokenInterface indexed fyToken, bool state);
 
-    event SetRepayBorrowAllowed(address indexed admin, YTokenInterface indexed yToken, bool state);
+    event SetRepayBorrowAllowed(address indexed admin, FyTokenInterface indexed fyToken, bool state);
 
     event SetOracle(address indexed admin, address oldOracle, address newOracle);
 
-    event SetSupplyUnderlyingAllowed(address indexed admin, YTokenInterface indexed yToken, bool state);
+    event SetSupplyUnderlyingAllowed(address indexed admin, FyTokenInterface indexed fyToken, bool state);
 }

@@ -4,22 +4,22 @@ import { expect } from "chai";
 
 import {
   FintrollerConstants,
+  FyTokenConstants,
   PrecisionScalarForTokenWithEightDecimals,
   TokenAmounts,
-  YTokenConstants,
 } from "../../../../helpers/constants";
 import { FintrollerErrors, GenericErrors, RedemptionPoolErrors } from "../../../../helpers/errors";
 import { contextForStubbedUnderlyingWithEightDecimals } from "../../../../helpers/mochaContexts";
 
 export default function shouldBehaveLikeSupplyUnderlying(): void {
   const underlyingAmount: BigNumber = TokenAmounts.OneHundred;
-  const yTokenAmount: BigNumber = TokenAmounts.OneHundred;
+  const fyTokenAmount: BigNumber = TokenAmounts.OneHundred;
 
   describe("when the bond matured", function () {
     beforeEach(async function () {
       /* Set the expiration time to now minus one hour. */
       const nowMinusOneHour: BigNumber = BigNumber.from(Math.round(new Date().getTime() / 1000) - 3600);
-      await this.stubs.yToken.mock.expirationTime.returns(nowMinusOneHour);
+      await this.stubs.fyToken.mock.expirationTime.returns(nowMinusOneHour);
     });
 
     it("reverts", async function () {
@@ -31,7 +31,7 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
 
   describe("when the bond did not mature", function () {
     beforeEach(async function () {
-      await this.stubs.yToken.mock.expirationTime.returns(YTokenConstants.ExpirationTime);
+      await this.stubs.fyToken.mock.expirationTime.returns(FyTokenConstants.ExpirationTime);
     });
 
     describe("when the amount of underlying to supply is zero", function () {
@@ -47,7 +47,7 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
       describe("when the bond is not listed", function () {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.getSupplyUnderlyingAllowed
-            .withArgs(this.stubs.yToken.address)
+            .withArgs(this.stubs.fyToken.address)
             .revertsWithReason(FintrollerErrors.BondNotListed);
         });
 
@@ -61,14 +61,14 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
       describe("when the bond is listed", function () {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.getBondCollateralizationRatio
-            .withArgs(this.stubs.yToken.address)
+            .withArgs(this.stubs.fyToken.address)
             .returns(FintrollerConstants.DefaultBond.CollateralizationRatio);
         });
 
         describe("when the fintroller does not allow supply underlying", function () {
           beforeEach(async function () {
             await this.stubs.fintroller.mock.getSupplyUnderlyingAllowed
-              .withArgs(this.stubs.yToken.address)
+              .withArgs(this.stubs.fyToken.address)
               .returns(false);
           });
 
@@ -82,13 +82,13 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
         describe("when the fintroller allows supply underlying", function () {
           beforeEach(async function () {
             await this.stubs.fintroller.mock.getSupplyUnderlyingAllowed
-              .withArgs(this.stubs.yToken.address)
+              .withArgs(this.stubs.fyToken.address)
               .returns(true);
           });
 
-          describe("when the call to mint the yTokens does not succeed", function () {
+          describe("when the call to mint the fyTokens does not succeed", function () {
             beforeEach(async function () {
-              await this.stubs.yToken.mock.mint.withArgs(this.accounts.maker, underlyingAmount).returns(false);
+              await this.stubs.fyToken.mock.mint.withArgs(this.accounts.maker, underlyingAmount).returns(false);
             });
 
             it("reverts", async function () {
@@ -97,9 +97,9 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
             });
           });
 
-          describe("when the call to mint the yTokens succeeds", function () {
+          describe("when the call to mint the fyTokens succeeds", function () {
             beforeEach(async function () {
-              await this.stubs.yToken.mock.mint.withArgs(this.accounts.maker, yTokenAmount).returns(true);
+              await this.stubs.fyToken.mock.mint.withArgs(this.accounts.maker, fyTokenAmount).returns(true);
             });
 
             contextForStubbedUnderlyingWithEightDecimals("when the underlying has 6 decimals", function () {
@@ -142,7 +142,7 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
                   this.contracts.redemptionPool.connect(this.signers.maker).supplyUnderlying(underlyingAmount),
                 )
                   .to.emit(this.contracts.redemptionPool, "SupplyUnderlying")
-                  .withArgs(this.accounts.maker, underlyingAmount, yTokenAmount);
+                  .withArgs(this.accounts.maker, underlyingAmount, fyTokenAmount);
               });
             });
           });

@@ -1,10 +1,10 @@
-import shouldBehaveLikeRedeemYTokens from "./effects/redeemYTokens";
+import shouldBehaveLikeRedeemFyTokens from "./effects/redeemFyTokens";
 import shouldBehaveLikeSupplyUnderlying from "./effects/supplyUnderlying";
 
 export function shouldBehaveLikeRedemptionPool(): void {
   describe("Effects Functions", function () {
-    describe("redeemYTokens", function () {
-      shouldBehaveLikeRedeemYTokens();
+    describe("redeemFyTokens", function () {
+      shouldBehaveLikeRedeemFyTokens();
     });
 
     describe("supplyUnderlying", function () {

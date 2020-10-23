@@ -3,13 +3,15 @@ import { Wallet } from "@ethersproject/wallet";
 import { ethers, waffle } from "@nomiclabs/buidler";
 
 import { Accounts, Contracts, Signers, Stubs } from "../@types/index";
+
+import { integrationTestFyToken } from "./integration/fyToken/FyToken";
 import { integrationTestRedemptionPool } from "./integration/redemptionPool/RedemptionPool";
-import { integrationTestYToken } from "./integration/yToken/YToken";
+
 import { unitTestBalanceSheet } from "./units/balanceSheet/BalanceSheet";
 import { unitTestFintroller } from "./units/fintroller/Fintroller";
+import { unitTestFyToken } from "./units/fyToken/FyToken";
 import { unitTestOraclePriceUtils } from "./units/oraclePriceUtils/OraclePriceUtils";
 import { unitTestRedemptionPool } from "./units/redemptionPool/RedemptionPool";
-import { unitTestYToken } from "./units/yToken/YToken";
 
 const { createFixtureLoader } = waffle;
 
@@ -42,13 +44,13 @@ describe("Tests", function () {
   describe("Unit Tests", function () {
     unitTestBalanceSheet();
     unitTestFintroller();
+    unitTestFyToken();
     unitTestOraclePriceUtils();
     unitTestRedemptionPool();
-    unitTestYToken();
   });
 
   describe("Integration Tests", function () {
+    integrationTestFyToken();
     integrationTestRedemptionPool();
-    integrationTestYToken();
   });
 });

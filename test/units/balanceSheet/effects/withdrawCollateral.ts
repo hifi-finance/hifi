@@ -13,14 +13,14 @@ export default function shouldBehaveLikeWithdrawCollateral(): void {
       await expect(
         this.contracts.balanceSheet
           .connect(this.signers.borrower)
-          .withdrawCollateral(this.stubs.yToken.address, collateralAmount),
+          .withdrawCollateral(this.stubs.fyToken.address, collateralAmount),
       ).to.be.revertedWith(GenericErrors.VaultNotOpen);
     });
   });
 
   describe("when the vault is open", function () {
     beforeEach(async function () {
-      await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.yToken.address);
+      await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.fyToken.address);
     });
 
     describe("when the amount to withdraw is zero", function () {
@@ -28,7 +28,7 @@ export default function shouldBehaveLikeWithdrawCollateral(): void {
         await expect(
           this.contracts.balanceSheet
             .connect(this.signers.borrower)
-            .withdrawCollateral(this.stubs.yToken.address, Zero),
+            .withdrawCollateral(this.stubs.fyToken.address, Zero),
         ).to.be.revertedWith(BalanceSheetErrors.WithdrawCollateralZero);
       });
     });
@@ -39,7 +39,7 @@ export default function shouldBehaveLikeWithdrawCollateral(): void {
           await expect(
             this.contracts.balanceSheet
               .connect(this.signers.borrower)
-              .withdrawCollateral(this.stubs.yToken.address, collateralAmount),
+              .withdrawCollateral(this.stubs.fyToken.address, collateralAmount),
           ).to.be.revertedWith(BalanceSheetErrors.InsufficientFreeCollateral);
         });
       });
@@ -47,28 +47,28 @@ export default function shouldBehaveLikeWithdrawCollateral(): void {
       describe("when the caller deposited collateral", function () {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.getDepositCollateralAllowed
-            .withArgs(this.stubs.yToken.address)
+            .withArgs(this.stubs.fyToken.address)
             .returns(true);
           await this.stubs.collateral.mock.transferFrom
             .withArgs(this.accounts.borrower, this.contracts.balanceSheet.address, collateralAmount)
             .returns(true);
           await this.contracts.balanceSheet
             .connect(this.signers.borrower)
-            .depositCollateral(this.stubs.yToken.address, collateralAmount);
+            .depositCollateral(this.stubs.fyToken.address, collateralAmount);
         });
 
         describe("when the caller locked the collateral", function () {
           beforeEach(async function () {
             await this.contracts.balanceSheet
               .connect(this.signers.borrower)
-              .lockCollateral(this.stubs.yToken.address, collateralAmount);
+              .lockCollateral(this.stubs.fyToken.address, collateralAmount);
           });
 
           it("reverts", async function () {
             await expect(
               this.contracts.balanceSheet
                 .connect(this.signers.borrower)
-                .withdrawCollateral(this.stubs.yToken.address, collateralAmount),
+                .withdrawCollateral(this.stubs.fyToken.address, collateralAmount),
             ).to.be.revertedWith(BalanceSheetErrors.InsufficientFreeCollateral);
           });
         });
@@ -81,17 +81,17 @@ export default function shouldBehaveLikeWithdrawCollateral(): void {
           it("makes the collateral withdrawal", async function () {
             await this.contracts.balanceSheet
               .connect(this.signers.borrower)
-              .withdrawCollateral(this.stubs.yToken.address, collateralAmount);
+              .withdrawCollateral(this.stubs.fyToken.address, collateralAmount);
           });
 
           it("emits a WithdrawCollateral event", async function () {
             await expect(
               this.contracts.balanceSheet
                 .connect(this.signers.borrower)
-                .withdrawCollateral(this.stubs.yToken.address, collateralAmount),
+                .withdrawCollateral(this.stubs.fyToken.address, collateralAmount),
             )
               .to.emit(this.contracts.balanceSheet, "WithdrawCollateral")
-              .withArgs(this.stubs.yToken.address, this.accounts.borrower, collateralAmount);
+              .withArgs(this.stubs.fyToken.address, this.accounts.borrower, collateralAmount);
           });
         });
       });

@@ -6,7 +6,7 @@ import "@paulrberg/contracts/math/Exponential.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Recover.sol";
 
 import "./FintrollerInterface.sol";
-import "./YTokenInterface.sol";
+import "./FyTokenInterface.sol";
 
 /**
  * @notice Fintroller
@@ -29,10 +29,10 @@ contract Fintroller is
 
     /**
      * @notice Reads all the storage properties of a bond struct.
-     * @dev It is not an error to provide an invalid yToken address. The returned values would all be zero.
-     * @param yToken The address of the bond contract.
+     * @dev It is not an error to provide an invalid fyToken address. The returned values would all be zero.
+     * @param fyToken The address of the bond contract.
      */
-    function getBond(YTokenInterface yToken)
+    function getBond(FyTokenInterface fyToken)
         external
         view
         override
@@ -43,50 +43,50 @@ contract Fintroller is
             bool isDepositCollateralAllowed,
             bool isLiquidateBorrowAllowed,
             bool isListed,
-            bool isRedeemYTokenAllowed,
+            bool isRedeemFyTokenAllowed,
             bool isRepayBorrowAllowed,
             bool isSupplyUnderlyingAllowed
         )
     {
-        collateralizationRatioMantissa = bonds[yToken].collateralizationRatio.mantissa;
-        debtCeiling = bonds[yToken].debtCeiling;
-        isBorrowAllowed = bonds[yToken].isBorrowAllowed;
-        isDepositCollateralAllowed = bonds[yToken].isDepositCollateralAllowed;
-        isLiquidateBorrowAllowed = bonds[yToken].isLiquidateBorrowAllowed;
-        isListed = bonds[yToken].isListed;
-        isRedeemYTokenAllowed = bonds[yToken].isRedeemYTokenAllowed;
-        isRepayBorrowAllowed = bonds[yToken].isRepayBorrowAllowed;
-        isSupplyUnderlyingAllowed = bonds[yToken].isSupplyUnderlyingAllowed;
+        collateralizationRatioMantissa = bonds[fyToken].collateralizationRatio.mantissa;
+        debtCeiling = bonds[fyToken].debtCeiling;
+        isBorrowAllowed = bonds[fyToken].isBorrowAllowed;
+        isDepositCollateralAllowed = bonds[fyToken].isDepositCollateralAllowed;
+        isLiquidateBorrowAllowed = bonds[fyToken].isLiquidateBorrowAllowed;
+        isListed = bonds[fyToken].isListed;
+        isRedeemFyTokenAllowed = bonds[fyToken].isRedeemFyTokenAllowed;
+        isRepayBorrowAllowed = bonds[fyToken].isRepayBorrowAllowed;
+        isSupplyUnderlyingAllowed = bonds[fyToken].isSupplyUnderlyingAllowed;
     }
 
     /**
      * @notice Reads the debt ceiling of the given bond.
-     * @dev It is not an error to provide an invalid yToken address.
-     * @param yToken The address of the bond contract.
+     * @dev It is not an error to provide an invalid fyToken address.
+     * @param fyToken The address of the bond contract.
      * @return The debt ceiling as a uint256, or zero if an invalid address was provided.
      */
-    function getBondDebtCeiling(YTokenInterface yToken) external view override returns (uint256) {
-        return bonds[yToken].debtCeiling;
+    function getBondDebtCeiling(FyTokenInterface fyToken) external view override returns (uint256) {
+        return bonds[fyToken].debtCeiling;
     }
 
     /**
      * @notice Reads the collateralization ratio of the given bond.
-     * @dev It is not an error to provide an invalid yToken address.
-     * @param yToken The address of the bond contract.
+     * @dev It is not an error to provide an invalid fyToken address.
+     * @param fyToken The address of the bond contract.
      * @return The collateralization ratio as a mantissa, or zero if an invalid address was provided.
      */
-    function getBondCollateralizationRatio(YTokenInterface yToken) external view override returns (uint256) {
-        return bonds[yToken].collateralizationRatio.mantissa;
+    function getBondCollateralizationRatio(FyTokenInterface fyToken) external view override returns (uint256) {
+        return bonds[fyToken].collateralizationRatio.mantissa;
     }
 
     /**
-     * @notice Check if the account should be allowed to borrow yTokens.
+     * @notice Check if the account should be allowed to borrow fyTokens.
      * @dev Reverts it the bond is not listed.
-     * @param yToken The bond to make the check against.
+     * @param fyToken The bond to make the check against.
      * @return bool true = allowed, false = not allowed.
      */
-    function getBorrowAllowed(YTokenInterface yToken) external view override returns (bool) {
-        Bond memory bond = bonds[yToken];
+    function getBorrowAllowed(FyTokenInterface fyToken) external view override returns (bool) {
+        Bond memory bond = bonds[fyToken];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
         return bond.isBorrowAllowed;
     }
@@ -94,23 +94,23 @@ contract Fintroller is
     /**
      * @notice Checks if the account should be allowed to deposit collateral.
      * @dev Reverts it the bond is not listed.
-     * @param yToken The bond to make the check against.
+     * @param fyToken The bond to make the check against.
      * @return bool true = allowed, false = not allowed.
      */
-    function getDepositCollateralAllowed(YTokenInterface yToken) external view override returns (bool) {
-        Bond memory bond = bonds[yToken];
+    function getDepositCollateralAllowed(FyTokenInterface fyToken) external view override returns (bool) {
+        Bond memory bond = bonds[fyToken];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
         return bond.isDepositCollateralAllowed;
     }
 
     /**
-     * @notice Check if the account should be allowed to liquidate yToken borrows.
+     * @notice Check if the account should be allowed to liquidate fyToken borrows.
      * @dev Reverts it the bond is not listed.
-     * @param yToken The bond to make the check against.
+     * @param fyToken The bond to make the check against.
      * @return bool true = allowed, false = not allowed.
      */
-    function getLiquidateBorrowAllowed(YTokenInterface yToken) external view override returns (bool) {
-        Bond memory bond = bonds[yToken];
+    function getLiquidateBorrowAllowed(FyTokenInterface fyToken) external view override returns (bool) {
+        Bond memory bond = bonds[fyToken];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
         return bond.isLiquidateBorrowAllowed;
     }
@@ -118,23 +118,23 @@ contract Fintroller is
     /**
      * @notice Checks if the account should be allowed to redeem the underlying asset from the Redemption Pool.
      * @dev Reverts it the bond is not listed.
-     * @param yToken The bond to make the check against.
+     * @param fyToken The bond to make the check against.
      * @return bool true = allowed, false = not allowed.
      */
-    function getRedeemYTokensAllowed(YTokenInterface yToken) external view override returns (bool) {
-        Bond memory bond = bonds[yToken];
+    function getRedeemFyTokensAllowed(FyTokenInterface fyToken) external view override returns (bool) {
+        Bond memory bond = bonds[fyToken];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
-        return bond.isRedeemYTokenAllowed;
+        return bond.isRedeemFyTokenAllowed;
     }
 
     /**
      * @notice Checks if the account should be allowed to repay borrows.
      * @dev Reverts it the bond is not listed.
-     * @param yToken The bond to make the check against.
+     * @param fyToken The bond to make the check against.
      * @return bool true = allowed, false = not allowed.
      */
-    function getRepayBorrowAllowed(YTokenInterface yToken) external view override returns (bool) {
-        Bond memory bond = bonds[yToken];
+    function getRepayBorrowAllowed(FyTokenInterface fyToken) external view override returns (bool) {
+        Bond memory bond = bonds[fyToken];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
         return bond.isRepayBorrowAllowed;
     }
@@ -142,11 +142,11 @@ contract Fintroller is
     /**
      * @notice Checks if the account should be allowed to the supply underlying asset to the Redemption Pool.
      * @dev Reverts it the bond is not listed.
-     * @param yToken The bond to make the check against.
+     * @param fyToken The bond to make the check against.
      * @return bool true = allowed, false = not allowed.
      */
-    function getSupplyUnderlyingAllowed(YTokenInterface yToken) external view override returns (bool) {
-        Bond memory bond = bonds[yToken];
+    function getSupplyUnderlyingAllowed(FyTokenInterface fyToken) external view override returns (bool) {
+        Bond memory bond = bonds[fyToken];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
         return bond.isSupplyUnderlyingAllowed;
     }
@@ -164,28 +164,28 @@ contract Fintroller is
      *
      * - The caller must be the administrator.
      *
-     * @param yToken The yToken contract to list.
+     * @param fyToken The fyToken contract to list.
      * @return bool true=success, otherwise it reverts.
      */
-    function listBond(YTokenInterface yToken) external override onlyAdmin returns (bool) {
-        yToken.isYToken();
-        bonds[yToken] = Bond({
+    function listBond(FyTokenInterface fyToken) external override onlyAdmin returns (bool) {
+        fyToken.isFyToken();
+        bonds[fyToken] = Bond({
             collateralizationRatio: Exp({ mantissa: defaultCollateralizationRatioMantissa }),
             debtCeiling: 0,
             isBorrowAllowed: true,
             isDepositCollateralAllowed: true,
             isLiquidateBorrowAllowed: true,
             isListed: true,
-            isRedeemYTokenAllowed: true,
+            isRedeemFyTokenAllowed: true,
             isRepayBorrowAllowed: true,
             isSupplyUnderlyingAllowed: true
         });
-        emit ListBond(admin, yToken);
+        emit ListBond(admin, fyToken);
         return true;
     }
 
     /**
-     * @notice Updates the state of the permission accessed by the yToken before a borrow.
+     * @notice Updates the state of the permission accessed by the fyToken before a borrow.
      *
      * @dev Emits a {SetBorrowAllowed} event.
      *
@@ -194,14 +194,14 @@ contract Fintroller is
      * - The caller must be the administrator.
      * - The bond must be listed.
      *
-     * @param yToken The yToken contract to update the permission for.
+     * @param fyToken The fyToken contract to update the permission for.
      * @param state The new state to put in storage.
      * @return bool true=success, otherwise it reverts.
      */
-    function setBorrowAllowed(YTokenInterface yToken, bool state) external override onlyAdmin returns (bool) {
-        require(bonds[yToken].isListed, "ERR_BOND_NOT_LISTED");
-        bonds[yToken].isBorrowAllowed = state;
-        emit SetBorrowAllowed(admin, yToken, state);
+    function setBorrowAllowed(FyTokenInterface fyToken, bool state) external override onlyAdmin returns (bool) {
+        require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
+        bonds[fyToken].isBorrowAllowed = state;
+        emit SetBorrowAllowed(admin, fyToken, state);
         return true;
     }
 
@@ -217,18 +217,18 @@ contract Fintroller is
      * - The new collateralization ratio cannot be higher than the maximum collateralization ratio.
      * - The new collateralization ratio cannot be lower than the minimum collateralization ratio.
      *
-     * @param yToken The bond for which to update the collateralization ratio.
+     * @param fyToken The bond for which to update the collateralization ratio.
      * @param newCollateralizationRatioMantissa The new collateralization ratio as a mantissa.
      * @return bool true=success, otherwise it reverts.
      */
-    function setCollateralizationRatio(YTokenInterface yToken, uint256 newCollateralizationRatioMantissa)
+    function setCollateralizationRatio(FyTokenInterface fyToken, uint256 newCollateralizationRatioMantissa)
         external
         override
         onlyAdmin
         returns (bool)
     {
         /* Checks: bond is listed. */
-        require(bonds[yToken].isListed, "ERR_BOND_NOT_LISTED");
+        require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
 
         /* Checks: new collateralization ratio is within the accepted bounds. */
         require(
@@ -241,12 +241,12 @@ contract Fintroller is
         );
 
         /* Effects: update storage. */
-        uint256 oldCollateralizationRatioMantissa = bonds[yToken].collateralizationRatio.mantissa;
-        bonds[yToken].collateralizationRatio = Exp({ mantissa: newCollateralizationRatioMantissa });
+        uint256 oldCollateralizationRatioMantissa = bonds[fyToken].collateralizationRatio.mantissa;
+        bonds[fyToken].collateralizationRatio = Exp({ mantissa: newCollateralizationRatioMantissa });
 
         emit SetCollateralizationRatio(
             admin,
-            yToken,
+            fyToken,
             oldCollateralizationRatioMantissa,
             newCollateralizationRatioMantissa
         );
@@ -265,28 +265,33 @@ contract Fintroller is
      * - The bond must be listed.
      * - The debt ceiling cannot be zero.
      *
-     * @param yToken The bond for which to update the debt ceiling.
+     * @param fyToken The bond for which to update the debt ceiling.
      * @param newDebtCeiling The uint256 value of the new debt ceiling, specified in the bond's decimal system.
      * @return bool true=success, otherwise it reverts.
      */
-    function setDebtCeiling(YTokenInterface yToken, uint256 newDebtCeiling) external override onlyAdmin returns (bool) {
+    function setDebtCeiling(FyTokenInterface fyToken, uint256 newDebtCeiling)
+        external
+        override
+        onlyAdmin
+        returns (bool)
+    {
         /* Checks: bond is listed. */
-        require(bonds[yToken].isListed, "ERR_BOND_NOT_LISTED");
+        require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
 
         /* Checks: the zero edge case. */
         require(newDebtCeiling > 0, "ERR_SET_DEBT_CEILING_ZERO");
 
         /* Effects: update storage. */
-        uint256 oldDebtCeiling = bonds[yToken].debtCeiling;
-        bonds[yToken].debtCeiling = newDebtCeiling;
+        uint256 oldDebtCeiling = bonds[fyToken].debtCeiling;
+        bonds[fyToken].debtCeiling = newDebtCeiling;
 
-        emit SetDebtCeiling(admin, yToken, oldDebtCeiling, newDebtCeiling);
+        emit SetDebtCeiling(admin, fyToken, oldDebtCeiling, newDebtCeiling);
 
         return true;
     }
 
     /**
-     * @notice Updates the state of the permission accessed by the yToken before a collateral deposit.
+     * @notice Updates the state of the permission accessed by the fyToken before a collateral deposit.
      *
      * @dev Emits a {SetDepositCollateralAllowed} event.
      *
@@ -295,24 +300,24 @@ contract Fintroller is
      * - The caller must be the administrator.
      * - The bond must be listed.
      *
-     * @param yToken The yToken contract to update the permission for.
+     * @param fyToken The fyToken contract to update the permission for.
      * @param state The new state to put in storage.
      * @return bool true=success, otherwise it reverts.
      */
-    function setDepositCollateralAllowed(YTokenInterface yToken, bool state)
+    function setDepositCollateralAllowed(FyTokenInterface fyToken, bool state)
         external
         override
         onlyAdmin
         returns (bool)
     {
-        require(bonds[yToken].isListed, "ERR_BOND_NOT_LISTED");
-        bonds[yToken].isDepositCollateralAllowed = state;
-        emit SetDepositCollateralAllowed(admin, yToken, state);
+        require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
+        bonds[fyToken].isDepositCollateralAllowed = state;
+        emit SetDepositCollateralAllowed(admin, fyToken, state);
         return true;
     }
 
     /**
-     * @notice Updates the state of the permission accessed by the yToken before a liquidate borrow.
+     * @notice Updates the state of the permission accessed by the fyToken before a liquidate borrow.
      *
      * @dev Emits a {SetLiquidateBorrowAllowed} event.
      *
@@ -321,14 +326,19 @@ contract Fintroller is
      * - The caller must be the administrator.
      * - The bond must be listed.
      *
-     * @param yToken The yToken contract to update the permission for.
+     * @param fyToken The fyToken contract to update the permission for.
      * @param state The new state to put in storage.
      * @return bool true=success, otherwise it reverts.
      */
-    function setLiquidateBorrowAllowed(YTokenInterface yToken, bool state) external override onlyAdmin returns (bool) {
-        require(bonds[yToken].isListed, "ERR_BOND_NOT_LISTED");
-        bonds[yToken].isLiquidateBorrowAllowed = state;
-        emit SetLiquidateBorrowAllowed(admin, yToken, state);
+    function setLiquidateBorrowAllowed(FyTokenInterface fyToken, bool state)
+        external
+        override
+        onlyAdmin
+        returns (bool)
+    {
+        require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
+        bonds[fyToken].isLiquidateBorrowAllowed = state;
+        emit SetLiquidateBorrowAllowed(admin, fyToken, state);
         return true;
     }
 
@@ -396,26 +406,26 @@ contract Fintroller is
     /**
      * @notice Updates the state of the permission accessed by the Redemption Pool before a redemption of underlying.
      *
-     * @dev Emits a {SetRedeemYTokensAllowed} event.
+     * @dev Emits a {SetRedeemFyTokensAllowed} event.
      *
      * Requirements:
      *
      * - The caller must be the administrator.
      * - The bond must be listed.
      *
-     * @param yToken The yToken contract to update the permission for.
+     * @param fyToken The fyToken contract to update the permission for.
      * @param state The new state to put in storage.
      * @return bool true=success, otherwise it reverts.
      */
-    function setRedeemYTokensAllowed(YTokenInterface yToken, bool state) external override onlyAdmin returns (bool) {
-        require(bonds[yToken].isListed, "ERR_BOND_NOT_LISTED");
-        bonds[yToken].isRedeemYTokenAllowed = state;
-        emit SetRedeemYTokensAllowed(admin, yToken, state);
+    function setRedeemFyTokensAllowed(FyTokenInterface fyToken, bool state) external override onlyAdmin returns (bool) {
+        require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
+        bonds[fyToken].isRedeemFyTokenAllowed = state;
+        emit SetRedeemFyTokensAllowed(admin, fyToken, state);
         return true;
     }
 
     /**
-     * @notice Updates the state of the permission accessed by the yToken before a repay borrow.
+     * @notice Updates the state of the permission accessed by the fyToken before a repay borrow.
      *
      * @dev Emits a {SetRepayBorrowAllowed} event.
      *
@@ -424,14 +434,14 @@ contract Fintroller is
      * - The caller must be the administrator.
      * - The bond must be listed.
      *
-     * @param yToken The yToken contract to update the permission for.
+     * @param fyToken The fyToken contract to update the permission for.
      * @param state The new state to put in storage.
      * @return bool true=success, otherwise it reverts.
      */
-    function setRepayBorrowAllowed(YTokenInterface yToken, bool state) external override onlyAdmin returns (bool) {
-        require(bonds[yToken].isListed, "ERR_BOND_NOT_LISTED");
-        bonds[yToken].isRepayBorrowAllowed = state;
-        emit SetRepayBorrowAllowed(admin, yToken, state);
+    function setRepayBorrowAllowed(FyTokenInterface fyToken, bool state) external override onlyAdmin returns (bool) {
+        require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
+        bonds[fyToken].isRepayBorrowAllowed = state;
+        emit SetRepayBorrowAllowed(admin, fyToken, state);
         return true;
     }
 
@@ -443,14 +453,19 @@ contract Fintroller is
      * Requirements:
      * - The caller must be the administrator
      *
-     * @param yToken The yToken contract to update the permission for.
+     * @param fyToken The fyToken contract to update the permission for.
      * @param state The new state to put in storage.
      * @return bool true=success, otherwise it reverts.
      */
-    function setSupplyUnderlyingAllowed(YTokenInterface yToken, bool state) external override onlyAdmin returns (bool) {
-        require(bonds[yToken].isListed, "ERR_BOND_NOT_LISTED");
-        bonds[yToken].isSupplyUnderlyingAllowed = state;
-        emit SetSupplyUnderlyingAllowed(admin, yToken, state);
+    function setSupplyUnderlyingAllowed(FyTokenInterface fyToken, bool state)
+        external
+        override
+        onlyAdmin
+        returns (bool)
+    {
+        require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
+        bonds[fyToken].isSupplyUnderlyingAllowed = state;
+        emit SetSupplyUnderlyingAllowed(admin, fyToken, state);
         return true;
     }
 }

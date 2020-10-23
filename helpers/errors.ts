@@ -55,31 +55,18 @@ export enum Erc20RecoverErrors {
   SetNonRecoverableTokensEmptyArray = "ERR_SET_NON_RECOVERABLE_TOKENS_EMPTY_ARRAY",
 }
 
-export enum OraclePriceUtilsErrors {
-  MathError = "ERR_TEST_GET_ADJUSTED_PRICE_MATH_ERROR",
-  PriceZero = "ERR_PRICE_ZERO",
-}
-
-export enum RedemptionPoolErrors {
-  RedeemYTokensInsufficientUnderlying = "ERR_REDEEM_YTOKENS_INSUFFICIENT_UNDERLYING",
-  RedeemYTokensNotAllowed = "ERR_REDEEM_YTOKENS_NOT_ALLOWED",
-  RedeemYTokensZero = "ERR_REDEEM_YTOKENS_ZERO",
-  SupplyUnderlyingNotAllowed = "ERR_SUPPLY_UNDERLYING_NOT_ALLOWED",
-  SupplyUnderlyingZero = "ERR_SUPPLY_UNDERLYING_ZERO",
-}
-
-export enum YTokenErrors {
+export enum FyTokenErrors {
   BorrowDebtCeilingOverflow = "ERR_BORROW_DEBT_CEILING_OVERFLOW",
   BorrowLockedCollateralZero = "ERR_BORROW_LOCKED_COLLATERAL_ZERO",
   BorrowNotAllowed = "ERR_BORROW_NOT_ALLOWED",
   BorrowZero = "ERR_BORROW_ZERO",
   BurnNotAuthorized = "ERR_BURN_NOT_AUTHORIZED",
   BurnZero = "ERR_BURN_ZERO",
-  ConstructorCollateralDecimalsOverflow = "ERR_YTOKEN_CONSTRUCTOR_COLLATERAL_DECIMALS_OVERFLOW",
-  ConstructorCollateralDecimalsZero = "ERR_YTOKEN_CONSTRUCTOR_COLLATERAL_DECIMALS_ZERO",
-  ConstructorExpirationTimeNotValid = "ERR_YTOKEN_CONSTRUCTOR_EXPIRATION_TIME_NOT_VALID",
-  ConstructorUnderlyingDecimalsOverflow = "ERR_YTOKEN_CONSTRUCTOR_UNDERLYING_DECIMALS_OVERFLOW",
-  ConstructorUnderlyingDecimalsZero = "ERR_YTOKEN_CONSTRUCTOR_UNDERLYING_DECIMALS_ZERO",
+  ConstructorCollateralDecimalsOverflow = "ERR_FYTOKEN_CONSTRUCTOR_COLLATERAL_DECIMALS_OVERFLOW",
+  ConstructorCollateralDecimalsZero = "ERR_FYTOKEN_CONSTRUCTOR_COLLATERAL_DECIMALS_ZERO",
+  ConstructorExpirationTimeNotValid = "ERR_FYTOKEN_CONSTRUCTOR_EXPIRATION_TIME_NOT_VALID",
+  ConstructorUnderlyingDecimalsOverflow = "ERR_FYTOKEN_CONSTRUCTOR_UNDERLYING_DECIMALS_OVERFLOW",
+  ConstructorUnderlyingDecimalsZero = "ERR_FYTOKEN_CONSTRUCTOR_UNDERLYING_DECIMALS_ZERO",
   LiquidateBorrowNotAllowed = "ERR_LIQUIDATE_BORROW_NOT_ALLOWED",
   LiquidateBorrowSelf = "ERR_LIQUIDATE_BORROW_SELF",
   LiquidateBorrowZero = "ERR_LIQUIDATE_BORROW_ZERO",
@@ -89,4 +76,17 @@ export enum YTokenErrors {
   RepayBorrowInsufficientDebt = "ERR_REPAY_BORROW_INSUFFICIENT_DEBT",
   RepayBorrowNotAllowed = "ERR_REPAY_BORROW_NOT_ALLOWED",
   RepayBorrowZero = "ERR_REPAY_BORROW_ZERO",
+}
+
+export enum OraclePriceUtilsErrors {
+  MathError = "ERR_TEST_GET_ADJUSTED_PRICE_MATH_ERROR",
+  PriceZero = "ERR_PRICE_ZERO",
+}
+
+export enum RedemptionPoolErrors {
+  RedeemFyTokensInsufficientUnderlying = "ERR_REDEEM_FYTOKENS_INSUFFICIENT_UNDERLYING",
+  RedeemFyTokensNotAllowed = "ERR_REDEEM_FYTOKENS_NOT_ALLOWED",
+  RedeemFyTokensZero = "ERR_REDEEM_FYTOKENS_ZERO",
+  SupplyUnderlyingNotAllowed = "ERR_SUPPLY_UNDERLYING_NOT_ALLOWED",
+  SupplyUnderlyingZero = "ERR_SUPPLY_UNDERLYING_ZERO",
 }

@@ -6,7 +6,7 @@ import { GodModeBalanceSheet as BalanceSheet } from "../typechain/GodModeBalance
 import { Erc20Mintable } from "../typechain/Erc20Mintable";
 import { Fintroller } from "../typechain/Fintroller";
 import { GodModeRedemptionPool as RedemptionPool } from "../typechain/GodModeRedemptionPool";
-import { GodModeYToken as YToken } from "../typechain/GodModeYToken";
+import { GodModeFyToken as FyToken } from "../typechain/GodModeFyToken";
 import { TestOraclePriceUtils as OraclePriceUtils } from "../typechain/TestOraclePriceUtils";
 import { SimpleUniswapAnchoredView } from "../typechain/SimpleUniswapAnchoredView";
 
@@ -24,11 +24,11 @@ export interface Contracts {
   balanceSheet: BalanceSheet;
   collateral: Erc20Mintable;
   fintroller: Fintroller;
+  fyToken: FyToken;
   oracle: SimpleUniswapAnchoredView;
   oraclePriceUtils: OraclePriceUtils;
   redemptionPool: RedemptionPool;
   underlying: Erc20Mintable;
-  yToken: YToken;
 }
 
 export interface Signers {
@@ -44,10 +44,10 @@ export interface Stubs {
   balanceSheet: MockContract;
   collateral: MockContract;
   fintroller: MockContract;
+  fyToken: MockContract;
   oracle: MockContract;
   redemptionPool: MockContract;
   underlying: MockContract;
-  yToken: MockContract;
 }
 
 export interface Vault {

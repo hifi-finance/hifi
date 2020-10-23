@@ -9,7 +9,7 @@ import Erc20Artifact from "../artifacts/Erc20.json";
 import FintrollerArtifact from "../artifacts/Fintroller.json";
 import RedemptionPoolArtifact from "../artifacts/GodModeRedemptionPool.json";
 import SimpleUniswapAnchoredViewArtifact from "../artifacts/SimpleUniswapAnchoredView.json";
-import YTokenArtifact from "../artifacts/YToken.json";
+import FyTokenArtifact from "../artifacts/FyToken.json";
 
 import {
   BalanceSheetConstants,
@@ -61,6 +61,12 @@ export async function deployStubFintroller(deployer: Signer): Promise<MockContra
   return fintroller;
 }
 
+export async function deployStubFyToken(deployer: Signer): Promise<MockContract> {
+  const fyToken: MockContract = await deployStubContract(deployer, FyTokenArtifact.abi);
+  await fyToken.mock.isFyToken.returns(true);
+  return fyToken;
+}
+
 export async function deployStubOracle(deployer: Signer): Promise<MockContract> {
   const oracle: MockContract = await deployStubContract(deployer, SimpleUniswapAnchoredViewArtifact.abi);
   await oracle.mock.price.withArgs(CollateralConstants.EtherSymbol).returns(Prices.OneHundredDollars);
@@ -84,18 +90,12 @@ export async function deployStubUnderlying(deployer: Signer): Promise<MockContra
   return underlying;
 }
 
-export async function deployStubYToken(deployer: Signer): Promise<MockContract> {
-  const yToken: MockContract = await deployStubContract(deployer, YTokenArtifact.abi);
-  await yToken.mock.isYToken.returns(true);
-  return yToken;
-}
-
 /**
  * FUNCTION STUBS
  */
 export async function stubGetVault(
   this: Mocha.Context,
-  yTokenAddress: string,
+  fyTokenAddress: string,
   account: string,
   debt: BigNumber,
   freeCollateral: BigNumber,
@@ -103,26 +103,26 @@ export async function stubGetVault(
   isOpen: boolean,
 ): Promise<void> {
   await this.stubs.balanceSheet.mock.getVault
-    .withArgs(yTokenAddress, account)
+    .withArgs(fyTokenAddress, account)
     .returns(debt, freeCollateral, lockedCollateral, isOpen);
 }
 
-export async function stubIsVaultOpen(this: Mocha.Context, yTokenAddress: string, account: string): Promise<void> {
+export async function stubIsVaultOpen(this: Mocha.Context, fyTokenAddress: string, account: string): Promise<void> {
   await this.stubs.balanceSheet.mock.getVault
-    .withArgs(yTokenAddress, account)
+    .withArgs(fyTokenAddress, account)
     .returns(...Object.values(BalanceSheetConstants.DefaultVault));
-  await this.stubs.balanceSheet.mock.isVaultOpen.withArgs(yTokenAddress, account).returns(true);
+  await this.stubs.balanceSheet.mock.isVaultOpen.withArgs(fyTokenAddress, account).returns(true);
 }
 
 export async function stubVaultFreeCollateral(
   this: Mocha.Context,
-  yTokenAddress: string,
+  fyTokenAddress: string,
   account: string,
   freeCollateral: BigNumber,
 ): Promise<void> {
   await stubGetVault.call(
     this,
-    yTokenAddress,
+    fyTokenAddress,
     account,
     BalanceSheetConstants.DefaultVault.Debt,
     freeCollateral,
@@ -133,13 +133,13 @@ export async function stubVaultFreeCollateral(
 
 export async function stubVaultLockedCollateral(
   this: Mocha.Context,
-  yTokenAddress: string,
+  fyTokenAddress: string,
   account: string,
   lockedCollateral: BigNumber,
 ): Promise<void> {
   await stubGetVault.call(
     this,
-    yTokenAddress,
+    fyTokenAddress,
     account,
     BalanceSheetConstants.DefaultVault.Debt,
     BalanceSheetConstants.DefaultVault.FreeCollateral,

@@ -14,7 +14,7 @@ export default function shouldBehaveLikeGetClutchableCollateral(): void {
   describe("when the amount to repay is zero", function () {
     it("reverts", async function () {
       await expect(
-        this.contracts.balanceSheet.getClutchableCollateral(this.stubs.yToken.address, Zero),
+        this.contracts.balanceSheet.getClutchableCollateral(this.stubs.fyToken.address, Zero),
       ).to.be.revertedWith(BalanceSheetErrors.GetClutchableCollateralZero);
     });
   });
@@ -31,7 +31,7 @@ export default function shouldBehaveLikeGetClutchableCollateral(): void {
 
       it("retrieves zero", async function () {
         const clutchableCollateralAmount: BigNumber = await this.contracts.balanceSheet.getClutchableCollateral(
-          this.stubs.yToken.address,
+          this.stubs.fyToken.address,
           repayAmount,
         );
         expect(clutchableCollateralAmount).to.equal(Zero);
@@ -42,7 +42,7 @@ export default function shouldBehaveLikeGetClutchableCollateral(): void {
       describe("when the collateral has 18 decimals", function () {
         it("retrieves the clutchable collateral amount", async function () {
           const contractClutchableCollateralAmount: BigNumber = await this.contracts.balanceSheet.getClutchableCollateral(
-            this.stubs.yToken.address,
+            this.stubs.fyToken.address,
             repayAmount,
           );
           expect(contractClutchableCollateralAmount).to.equal(clutchableCollateralAmount);
@@ -56,7 +56,7 @@ export default function shouldBehaveLikeGetClutchableCollateral(): void {
           );
 
           const contractClutchableCollateralAmount: BigNumber = await this.contracts.balanceSheet.getClutchableCollateral(
-            this.stubs.yToken.address,
+            this.stubs.fyToken.address,
             repayAmount,
           );
           expect(contractClutchableCollateralAmount).to.equal(downscaledClutchableCollateralAmount);

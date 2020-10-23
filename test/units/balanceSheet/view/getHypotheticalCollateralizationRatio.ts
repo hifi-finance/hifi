@@ -23,7 +23,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
         this.contracts.balanceSheet
           .connect(this.signers.borrower)
           .getHypotheticalCollateralizationRatio(
-            this.stubs.yToken.address,
+            this.stubs.fyToken.address,
             this.accounts.borrower,
             lockedCollateral,
             debt,
@@ -34,14 +34,14 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
 
   describe("when the vault is not open", function () {
     beforeEach(async function () {
-      await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.yToken.address);
+      await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.fyToken.address);
     });
 
     describe("when the locked collateral is zero", function () {
       it("reverts", async function () {
         const zeroCollateralAmount: BigNumber = Zero;
         const hypotheticalCollateralizationRatioMantissa = await this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
-          this.stubs.yToken.address,
+          this.stubs.fyToken.address,
           this.accounts.borrower,
           zeroCollateralAmount,
           debt,
@@ -56,7 +56,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
           const zeroDebt: BigNumber = Zero;
           await expect(
             this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
-              this.stubs.yToken.address,
+              this.stubs.fyToken.address,
               this.accounts.borrower,
               lockedCollateral,
               zeroDebt,
@@ -75,7 +75,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
           it("reverts", async function () {
             await expect(
               this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
-                this.stubs.yToken.address,
+                this.stubs.fyToken.address,
                 this.accounts.borrower,
                 lockedCollateral,
                 debt,
@@ -94,7 +94,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
             it("reverts", async function () {
               await expect(
                 this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
-                  this.stubs.yToken.address,
+                  this.stubs.fyToken.address,
                   this.accounts.borrower,
                   lockedCollateral,
                   debt,
@@ -108,7 +108,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
               it("retrieves the hypothetical collateralization ratio mantissa", async function () {
                 const downscaledLockedCollateral = lockedCollateral.div(PrecisionScalarForTokenWithEightDecimals);
                 const contractHypotheticalCollateralizationRatioMantissa: BigNumber = await this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
-                  this.stubs.yToken.address,
+                  this.stubs.fyToken.address,
                   this.accounts.borrower,
                   downscaledLockedCollateral,
                   debt,
@@ -122,7 +122,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
             describe("when the collateral has 18 decimals", function () {
               it("retrieves the hypothetical collateralization ratio mantissa", async function () {
                 const contractHypotheticalCollateralizationRatioMantissa: BigNumber = await this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
-                  this.stubs.yToken.address,
+                  this.stubs.fyToken.address,
                   this.accounts.borrower,
                   lockedCollateral,
                   debt,

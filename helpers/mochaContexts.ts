@@ -37,7 +37,7 @@ export function contextForStubbedCollateralWithEightDecimals(description: string
   describe(description, function () {
     beforeEach(async function () {
       await this.stubs.collateral.mock.decimals.returns(eightDecimals);
-      await this.stubs.yToken.mock.collateralPrecisionScalar.returns(newCollateralPrecisionScalar);
+      await this.stubs.fyToken.mock.collateralPrecisionScalar.returns(newCollateralPrecisionScalar);
     });
 
     hooks();
@@ -51,7 +51,7 @@ export function contextForStubbedUnderlyingWithEightDecimals(description: string
   describe(description, function () {
     beforeEach(async function () {
       await this.stubs.underlying.mock.decimals.returns(eightDecimals);
-      await this.stubs.yToken.mock.underlyingPrecisionScalar.returns(newCollateralPrecisionScalar);
+      await this.stubs.fyToken.mock.underlyingPrecisionScalar.returns(newCollateralPrecisionScalar);
     });
 
     hooks();

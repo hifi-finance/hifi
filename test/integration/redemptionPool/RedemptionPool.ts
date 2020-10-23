@@ -4,7 +4,7 @@ import { integrationFixture } from "../fixtures";
 export function integrationTestRedemptionPool(): void {
   describe("RedemptionPool", function () {
     beforeEach(async function () {
-      const { balanceSheet, fintroller, oracle, redemptionPool, underlying, yToken } = await this.loadFixture(
+      const { balanceSheet, fintroller, oracle, redemptionPool, underlying, fyToken } = await this.loadFixture(
         integrationFixture,
       );
       this.contracts.balanceSheet = balanceSheet;
@@ -12,7 +12,7 @@ export function integrationTestRedemptionPool(): void {
       this.contracts.oracle = oracle;
       this.contracts.redemptionPool = redemptionPool;
       this.contracts.underlying = underlying;
-      this.contracts.yToken = yToken;
+      this.contracts.fyToken = fyToken;
     });
 
     shouldBehaveLikeRedemptionPool();

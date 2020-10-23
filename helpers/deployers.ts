@@ -7,14 +7,14 @@ import Erc20MintableArtifact from "../artifacts/Erc20Mintable.json";
 import FintrollerArtifact from "../artifacts/Fintroller.json";
 import RedemptionPoolArtifact from "../artifacts/GodModeRedemptionPool.json";
 import SimpleUniswapAnchoredViewArtifact from "../artifacts/SimpleUniswapAnchoredView.json";
-import YTokenArtifact from "../artifacts/GodModeYToken.json";
+import FyTokenArtifact from "../artifacts/GodModeFyToken.json";
 
-import { CollateralConstants, UnderlyingConstants, YTokenConstants } from "../helpers/constants";
+import { CollateralConstants, UnderlyingConstants, FyTokenConstants } from "../helpers/constants";
 import { Erc20Mintable } from "../typechain/Erc20Mintable";
 import { Fintroller } from "../typechain/Fintroller";
 import { GodModeBalanceSheet as BalanceSheet } from "../typechain/GodModeBalanceSheet";
 import { GodModeRedemptionPool as RedemptionPool } from "../typechain/GodModeRedemptionPool";
-import { GodModeYToken as YToken } from "../typechain/GodModeYToken";
+import { GodModeFyToken as FyToken } from "../typechain/GodModeFyToken";
 import { SimpleUniswapAnchoredView } from "../typechain/SimpleUniswapAnchoredView";
 
 const { deployContract } = waffle;
@@ -40,6 +40,30 @@ export async function deployFintroller(deployer: Signer): Promise<Fintroller> {
   return fintroller;
 }
 
+export async function deployFyToken(
+  deployer: Signer,
+  fintroller: Fintroller,
+  balanceSheet: BalanceSheet,
+  underlying: Erc20Mintable,
+  collateral: Erc20Mintable,
+): Promise<FyToken> {
+  const name: string = FyTokenConstants.Name;
+  const symbol: string = FyTokenConstants.Symbol;
+  const expirationTime: BigNumber = FyTokenConstants.ExpirationTime;
+
+  const fyToken: FyToken = ((await deployContract(deployer, FyTokenArtifact, [
+    name,
+    symbol,
+    expirationTime,
+    fintroller.address,
+    balanceSheet.address,
+    underlying.address,
+    collateral.address,
+  ])) as unknown) as FyToken;
+
+  return fyToken;
+}
+
 export async function deployOracle(deployer: Signer): Promise<SimpleUniswapAnchoredView> {
   const oracle: SimpleUniswapAnchoredView = ((await deployContract(
     deployer,
@@ -52,11 +76,11 @@ export async function deployOracle(deployer: Signer): Promise<SimpleUniswapAncho
 export async function deployRedemptionPool(
   deployer: Signer,
   fintroller: Fintroller,
-  yToken: YToken,
+  fyToken: FyToken,
 ): Promise<RedemptionPool> {
   const redemptionPool: RedemptionPool = ((await deployContract(deployer, RedemptionPoolArtifact, [
     fintroller.address,
-    yToken.address,
+    fyToken.address,
   ])) as unknown) as RedemptionPool;
   return redemptionPool;
 }
@@ -68,28 +92,4 @@ export async function deployUnderlying(deployer: Signer): Promise<Erc20Mintable>
     UnderlyingConstants.Decimals,
   ])) as unknown) as Erc20Mintable;
   return underlying;
-}
-
-export async function deployYToken(
-  deployer: Signer,
-  fintroller: Fintroller,
-  balanceSheet: BalanceSheet,
-  underlying: Erc20Mintable,
-  collateral: Erc20Mintable,
-): Promise<YToken> {
-  const name: string = YTokenConstants.Name;
-  const symbol: string = YTokenConstants.Symbol;
-  const expirationTime: BigNumber = YTokenConstants.ExpirationTime; /* December 31, 2020 at 23:59:59 */
-
-  const yToken: YToken = ((await deployContract(deployer, YTokenArtifact, [
-    name,
-    symbol,
-    expirationTime,
-    fintroller.address,
-    balanceSheet.address,
-    underlying.address,
-    collateral.address,
-  ])) as unknown) as YToken;
-
-  return yToken;
 }

@@ -2,7 +2,7 @@
 pragma solidity ^0.7.0;
 
 import "./FintrollerInterface.sol";
-import "./YTokenInterface.sol";
+import "./FyTokenInterface.sol";
 
 /**
  * @title RedemptionPoolStorage
@@ -20,9 +20,9 @@ abstract contract RedemptionPoolStorage {
     uint256 public totalUnderlyingSupply;
 
     /**
-     * The unique yToken associated with this Redemption Pool.
+     * The unique fyToken associated with this Redemption Pool.
      */
-    YTokenInterface public yToken;
+    FyTokenInterface public fyToken;
 
     /**
      * @notice Indicator that this is a Redemption Pool contract, for inspection.

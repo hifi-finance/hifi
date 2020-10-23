@@ -4,7 +4,7 @@ import shouldBehaveLikeGetBondDebtCeiling from "./view/getBondDebtCeiling";
 import shouldBehaveLikeGetBorrowAllowed from "./view/getBorrowAllowed";
 import shouldBehaveLikeGetDepositCollateralAllowed from "./view/getDepositCollateralAllowed";
 import shouldBehaveLikeGetLiquidateBorrowAllowed from "./view/getLiquidateBorrowAllowed";
-import shouldBehaveLikeGetRedeemYTokensAllowed from "./view/getRedeemYTokensAllowed";
+import shouldBehaveLikeGetRedeemFyTokensAllowed from "./view/getRedeemFyTokensAllowed";
 import shouldBehaveLikeGetRepayBorrowAllowed from "./view/getRepayBorrowAllowed";
 import shouldBehaveLikeGetSupplyUnderlyingAllowed from "./view/getSupplyUnderlyingAllowed";
 import shouldBehaveLikeIsFintrollerGetter from "./view/isFintroller";
@@ -20,7 +20,7 @@ import shouldBehaveLikeSetDepositCollateralAllowed from "./effects/setDepositCol
 import shouldBehaveLikeSetLiquidateBorrowAllowed from "./effects/setLiquidateBorrowAllowed";
 import shouldBehaveLikeSetLiquidationIncentive from "./effects/setLiquidationIncentive";
 import shouldBehaveLikeSetOracle from "./effects/setOracle";
-import shouldBehaveLikeSetRedeemYTokensAllowed from "./effects/setRedeemYTokensAllowed";
+import shouldBehaveLikeSetRedeemFyTokensAllowed from "./effects/setRedeemFyTokensAllowed";
 import shouldBehaveLikeSetRepayBorrowAllowed from "./effects/setRepayBorrowAllowed";
 import shouldBehaveLikeSetSupplyUnderlyingAllowed from "./effects/setSupplyUnderlyingAllowed";
 
@@ -50,8 +50,8 @@ export function shouldBehaveLikeFintroller(): void {
       shouldBehaveLikeGetLiquidateBorrowAllowed();
     });
 
-    describe("getRedeemYTokensAllowed", function () {
-      shouldBehaveLikeGetRedeemYTokensAllowed();
+    describe("getRedeemFyTokensAllowed", function () {
+      shouldBehaveLikeGetRedeemFyTokensAllowed();
     });
 
     describe("getRepayBorrowAllowed", function () {
@@ -112,8 +112,8 @@ export function shouldBehaveLikeFintroller(): void {
       shouldBehaveLikeSetOracle();
     });
 
-    describe("setRedeemYTokensAllowed", function () {
-      shouldBehaveLikeSetRedeemYTokensAllowed();
+    describe("setRedeemFyTokensAllowed", function () {
+      shouldBehaveLikeSetRedeemFyTokensAllowed();
     });
 
     describe("setRepayBorrowAllowed", function () {

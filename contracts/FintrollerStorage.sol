@@ -3,7 +3,7 @@ pragma solidity ^0.7.0;
 
 import "@paulrberg/contracts/math/Exponential.sol";
 
-import "./YTokenInterface.sol";
+import "./FyTokenInterface.sol";
 import "./oracles/UniswapAnchoredViewInterface.sol";
 
 abstract contract FintrollerStorage is Exponential {
@@ -14,15 +14,15 @@ abstract contract FintrollerStorage is Exponential {
         bool isDepositCollateralAllowed;
         bool isLiquidateBorrowAllowed;
         bool isListed;
-        bool isRedeemYTokenAllowed;
+        bool isRedeemFyTokenAllowed;
         bool isRepayBorrowAllowed;
         bool isSupplyUnderlyingAllowed;
     }
 
     /**
-     * @dev Maps the yToken address to the Bond structs.
+     * @dev Maps the fyToken address to the Bond structs.
      */
-    mapping(YTokenInterface => Bond) internal bonds;
+    mapping(FyTokenInterface => Bond) internal bonds;
 
     /**
      * @notice The contract that provides price data for the collateral and the underlying asset.

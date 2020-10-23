@@ -2,7 +2,7 @@
 pragma solidity ^0.7.0;
 
 import "../BalanceSheet.sol";
-import "../YTokenInterface.sol";
+import "../FyTokenInterface.sol";
 
 /**
  * @title GodModeBalanceSheet
@@ -14,34 +14,34 @@ contract GodModeBalanceSheet is BalanceSheet {
     constructor(FintrollerInterface fintroller_) BalanceSheet(fintroller_) {}
 
     function __godMode_setVaultDebt(
-        YTokenInterface yToken,
+        FyTokenInterface fyToken,
         address account,
         uint256 newVaultDebt
     ) external {
-        vaults[address(yToken)][account].debt = newVaultDebt;
+        vaults[address(fyToken)][account].debt = newVaultDebt;
     }
 
     function __godMode_setVaultFreeCollateral(
-        YTokenInterface yToken,
+        FyTokenInterface fyToken,
         address account,
         uint256 newFreeCollateral
     ) external {
-        vaults[address(yToken)][account].freeCollateral = newFreeCollateral;
+        vaults[address(fyToken)][account].freeCollateral = newFreeCollateral;
     }
 
     function __godMode_setVaultLockedCollateral(
-        YTokenInterface yToken,
+        FyTokenInterface fyToken,
         address account,
         uint256 newLockedCollateral
     ) external {
-        vaults[address(yToken)][account].lockedCollateral = newLockedCollateral;
+        vaults[address(fyToken)][account].lockedCollateral = newLockedCollateral;
     }
 
     function __godMode_setVaultIsOpen(
-        YTokenInterface yToken,
+        FyTokenInterface fyToken,
         address account,
         bool newIsOpen
     ) external {
-        vaults[address(yToken)][account].isOpen = newIsOpen;
+        vaults[address(fyToken)][account].isOpen = newIsOpen;
     }
 }

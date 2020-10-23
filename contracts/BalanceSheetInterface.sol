@@ -15,26 +15,26 @@ abstract contract BalanceSheetInterface is
     /**
      * CONSTANT FUNCTIONS
      */
-    function getClutchableCollateral(YTokenInterface yToken, uint256 repayAmount)
+    function getClutchableCollateral(FyTokenInterface fyToken, uint256 repayAmount)
         external
         view
         virtual
         returns (uint256);
 
-    function getCurrentCollateralizationRatio(YTokenInterface yToken, address account)
+    function getCurrentCollateralizationRatio(FyTokenInterface fyToken, address account)
         public
         view
         virtual
         returns (uint256);
 
     function getHypotheticalCollateralizationRatio(
-        YTokenInterface yToken,
+        FyTokenInterface fyToken,
         address account,
         uint256 lockedCollateral,
         uint256 debt
     ) public view virtual returns (uint256);
 
-    function getVault(YTokenInterface yToken, address account)
+    function getVault(FyTokenInterface fyToken, address account)
         external
         view
         virtual
@@ -45,61 +45,65 @@ abstract contract BalanceSheetInterface is
             bool
         );
 
-    function getVaultDebt(YTokenInterface yToken, address account) external view virtual returns (uint256);
+    function getVaultDebt(FyTokenInterface fyToken, address account) external view virtual returns (uint256);
 
-    function getVaultLockedCollateral(YTokenInterface yToken, address account) external view virtual returns (uint256);
+    function getVaultLockedCollateral(FyTokenInterface fyToken, address account)
+        external
+        view
+        virtual
+        returns (uint256);
 
-    function isAccountUnderwater(YTokenInterface yToken, address account) external view virtual returns (bool);
+    function isAccountUnderwater(FyTokenInterface fyToken, address account) external view virtual returns (bool);
 
-    function isVaultOpen(YTokenInterface yToken, address account) external view virtual returns (bool);
+    function isVaultOpen(FyTokenInterface fyToken, address account) external view virtual returns (bool);
 
     /**
      * NON-CONSTANT FUNCTIONS
      */
 
     function clutchCollateral(
-        YTokenInterface yToken,
+        FyTokenInterface fyToken,
         address liquidator,
         address borrower,
         uint256 clutchedCollateralAmount
     ) external virtual returns (bool);
 
-    function depositCollateral(YTokenInterface yToken, uint256 collateralAmount) external virtual returns (bool);
+    function depositCollateral(FyTokenInterface fyToken, uint256 collateralAmount) external virtual returns (bool);
 
-    function freeCollateral(YTokenInterface yToken, uint256 collateralAmount) external virtual returns (bool);
+    function freeCollateral(FyTokenInterface fyToken, uint256 collateralAmount) external virtual returns (bool);
 
-    function lockCollateral(YTokenInterface yToken, uint256 collateralAmount) external virtual returns (bool);
+    function lockCollateral(FyTokenInterface fyToken, uint256 collateralAmount) external virtual returns (bool);
 
-    function openVault(YTokenInterface yToken) external virtual returns (bool);
+    function openVault(FyTokenInterface fyToken) external virtual returns (bool);
 
     function setVaultDebt(
-        YTokenInterface yToken,
+        FyTokenInterface fyToken,
         address account,
         uint256 newVaultDebt
     ) external virtual returns (bool);
 
-    function withdrawCollateral(YTokenInterface yToken, uint256 collateralAmount) external virtual returns (bool);
+    function withdrawCollateral(FyTokenInterface fyToken, uint256 collateralAmount) external virtual returns (bool);
 
     /**
      * EVENTS
      */
 
     event ClutchCollateral(
-        YTokenInterface indexed yToken,
+        FyTokenInterface indexed fyToken,
         address indexed liquidator,
         address indexed borrower,
         uint256 clutchedCollateralAmount
     );
 
-    event DepositCollateral(YTokenInterface indexed yToken, address indexed account, uint256 collateralAmount);
+    event DepositCollateral(FyTokenInterface indexed fyToken, address indexed account, uint256 collateralAmount);
 
-    event FreeCollateral(YTokenInterface indexed yToken, address indexed account, uint256 collateralAmount);
+    event FreeCollateral(FyTokenInterface indexed fyToken, address indexed account, uint256 collateralAmount);
 
-    event LockCollateral(YTokenInterface indexed yToken, address indexed account, uint256 collateralAmount);
+    event LockCollateral(FyTokenInterface indexed fyToken, address indexed account, uint256 collateralAmount);
 
-    event OpenVault(YTokenInterface indexed yToken, address indexed account);
+    event OpenVault(FyTokenInterface indexed fyToken, address indexed account);
 
-    event SetVaultDebt(YTokenInterface indexed yToken, address indexed account, uint256 oldDebt, uint256 newDebt);
+    event SetVaultDebt(FyTokenInterface indexed fyToken, address indexed account, uint256 oldDebt, uint256 newDebt);
 
-    event WithdrawCollateral(YTokenInterface indexed yToken, address indexed account, uint256 collateralAmount);
+    event WithdrawCollateral(FyTokenInterface indexed fyToken, address indexed account, uint256 collateralAmount);
 }

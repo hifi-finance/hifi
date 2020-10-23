@@ -11,26 +11,26 @@ export default function shouldBehaveLikeLockCollateral(): void {
 
   describe("when the vault is open", function () {
     beforeEach(async function () {
-      await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.yToken.address);
+      await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.fyToken.address);
     });
 
     describe("when the collateral amount to lock is not zero", function () {
       describe("when the caller deposited collateral", function () {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.getDepositCollateralAllowed
-            .withArgs(this.stubs.yToken.address)
+            .withArgs(this.stubs.fyToken.address)
             .returns(true);
           await this.stubs.collateral.mock.transferFrom
             .withArgs(this.accounts.borrower, this.contracts.balanceSheet.address, depositCollateralAmount)
             .returns(true);
           await this.contracts.balanceSheet
             .connect(this.signers.borrower)
-            .depositCollateral(this.stubs.yToken.address, depositCollateralAmount);
+            .depositCollateral(this.stubs.fyToken.address, depositCollateralAmount);
         });
 
         it("it locks the collateral", async function () {
           const oldVault: Vault = await this.contracts.balanceSheet.getVault(
-            this.stubs.yToken.address,
+            this.stubs.fyToken.address,
             this.accounts.borrower,
           );
           const oldFreeCollateral: BigNumber = oldVault[1];
@@ -38,10 +38,10 @@ export default function shouldBehaveLikeLockCollateral(): void {
 
           await this.contracts.balanceSheet
             .connect(this.signers.borrower)
-            .lockCollateral(this.stubs.yToken.address, depositCollateralAmount);
+            .lockCollateral(this.stubs.fyToken.address, depositCollateralAmount);
 
           const newVault: Vault = await this.contracts.balanceSheet.getVault(
-            this.stubs.yToken.address,
+            this.stubs.fyToken.address,
             this.accounts.borrower,
           );
           const newFreeCollateral: BigNumber = newVault[1];
@@ -55,10 +55,10 @@ export default function shouldBehaveLikeLockCollateral(): void {
           await expect(
             this.contracts.balanceSheet
               .connect(this.signers.borrower)
-              .lockCollateral(this.stubs.yToken.address, depositCollateralAmount),
+              .lockCollateral(this.stubs.fyToken.address, depositCollateralAmount),
           )
             .to.emit(this.contracts.balanceSheet, "LockCollateral")
-            .withArgs(this.stubs.yToken.address, this.accounts.borrower, depositCollateralAmount);
+            .withArgs(this.stubs.fyToken.address, this.accounts.borrower, depositCollateralAmount);
         });
       });
 
@@ -67,7 +67,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
           await expect(
             this.contracts.balanceSheet
               .connect(this.signers.borrower)
-              .lockCollateral(this.stubs.yToken.address, depositCollateralAmount),
+              .lockCollateral(this.stubs.fyToken.address, depositCollateralAmount),
           ).to.be.revertedWith(BalanceSheetErrors.InsufficientFreeCollateral);
         });
       });
@@ -76,7 +76,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
     describe("when the collateral amount to lock is zero", function () {
       it("reverts", async function () {
         await expect(
-          this.contracts.balanceSheet.connect(this.signers.borrower).lockCollateral(this.stubs.yToken.address, Zero),
+          this.contracts.balanceSheet.connect(this.signers.borrower).lockCollateral(this.stubs.fyToken.address, Zero),
         ).to.be.revertedWith(BalanceSheetErrors.LockCollateralZero);
       });
     });
@@ -87,7 +87,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
       await expect(
         this.contracts.balanceSheet
           .connect(this.signers.borrower)
-          .lockCollateral(this.stubs.yToken.address, depositCollateralAmount),
+          .lockCollateral(this.stubs.fyToken.address, depositCollateralAmount),
       ).to.be.revertedWith(GenericErrors.VaultNotOpen);
     });
   });

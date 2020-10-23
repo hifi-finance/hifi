@@ -3,8 +3,8 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { Erc20Mintable } from "../../typechain/Erc20Mintable";
 import { Fintroller } from "../../typechain/Fintroller";
 import { GodModeBalanceSheet as BalanceSheet } from "../../typechain/GodModeBalanceSheet";
+import { GodModeFyToken as FyToken } from "../../typechain/GodModeFyToken";
 import { GodModeRedemptionPool as RedemptionPool } from "../../typechain/GodModeRedemptionPool";
-import { GodModeYToken as YToken } from "../../typechain/GodModeYToken";
 import { SimpleUniswapAnchoredView } from "../../typechain/SimpleUniswapAnchoredView";
 import {
   deployBalanceSheet,
@@ -13,17 +13,17 @@ import {
   deployUnderlying,
   deployOracle,
   deployRedemptionPool,
-  deployYToken,
+  deployFyToken,
 } from "../../helpers/deployers";
 
 type IntegrationFixtureReturnType = {
   balanceSheet: BalanceSheet;
   collateral: Erc20Mintable;
   fintroller: Fintroller;
+  fyToken: FyToken;
   oracle: SimpleUniswapAnchoredView;
   redemptionPool: RedemptionPool;
   underlying: Erc20Mintable;
-  yToken: YToken;
 };
 
 export async function integrationFixture(signers: Signer[]): Promise<IntegrationFixtureReturnType> {
@@ -37,10 +37,10 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
   const collateral: Erc20Mintable = await deployCollateral(deployer);
   const underlying: Erc20Mintable = await deployUnderlying(deployer);
 
-  /* Override the RedemptionPool.sol contract created by the yToken with GodModeRedemptionPool.sol */
-  const yToken: YToken = await deployYToken(deployer, fintroller, balanceSheet, underlying, collateral);
-  const redemptionPool: RedemptionPool = await deployRedemptionPool(deployer, fintroller, yToken);
-  await yToken.__godMode__setRedemptionPool(redemptionPool.address);
+  /* Override the RedemptionPool.sol contract created by the fyToken with GodModeRedemptionPool.sol */
+  const fyToken: FyToken = await deployFyToken(deployer, fintroller, balanceSheet, underlying, collateral);
+  const redemptionPool: RedemptionPool = await deployRedemptionPool(deployer, fintroller, fyToken);
+  await fyToken.__godMode__setRedemptionPool(redemptionPool.address);
 
-  return { balanceSheet, collateral, fintroller, oracle, redemptionPool, underlying, yToken };
+  return { balanceSheet, collateral, fintroller, fyToken, oracle, redemptionPool, underlying };
 }

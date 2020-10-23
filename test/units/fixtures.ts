@@ -6,16 +6,16 @@ import { waffle } from "@nomiclabs/buidler";
 
 import BalanceSheetArtifact from "../../artifacts/GodModeBalanceSheet.json";
 import FintrollerArtifact from "../../artifacts/Fintroller.json";
+import FyTokenArtifact from "../../artifacts/GodModeFyToken.json";
 import OraclePriceUtilsArtifact from "../../artifacts/TestOraclePriceUtils.json";
 import RedemptionPoolArtifact from "../../artifacts/GodModeRedemptionPool.json";
-import YTokenArtifact from "../../artifacts/GodModeYToken.json";
 
 import { Fintroller } from "../../typechain/Fintroller";
+import { FyTokenConstants } from "../../helpers/constants";
 import { GodModeBalanceSheet as BalanceSheet } from "../../typechain/GodModeBalanceSheet";
+import { GodModeFyToken as FyToken } from "../../typechain/GodModeFyToken";
 import { GodModeRedemptionPool as RedemptionPool } from "../../typechain/GodModeRedemptionPool";
-import { GodModeYToken as YToken } from "../../typechain/GodModeYToken";
 import { TestOraclePriceUtils as OraclePriceUtils } from "../../typechain/TestOraclePriceUtils";
-import { YTokenConstants } from "../../helpers/constants";
 
 import {
   deployStubBalanceSheet,
@@ -23,7 +23,7 @@ import {
   deployStubFintroller,
   deployStubOracle,
   deployStubRedemptionPool,
-  deployStubYToken,
+  deployStubFyToken,
   deployStubUnderlying,
 } from "../stubs";
 
@@ -35,7 +35,7 @@ type UnitFixtureBalanceSheetReturnType = {
   fintroller: MockContract;
   oracle: MockContract;
   underlying: MockContract;
-  yToken: MockContract;
+  fyToken: MockContract;
 };
 
 export async function unitFixtureBalanceSheet(signers: Signer[]): Promise<UnitFixtureBalanceSheetReturnType> {
@@ -47,26 +47,72 @@ export async function unitFixtureBalanceSheet(signers: Signer[]): Promise<UnitFi
   const fintroller: MockContract = await deployStubFintroller(deployer);
   await fintroller.mock.oracle.returns(oracle.address);
 
-  const yToken: MockContract = await deployStubYToken(deployer);
-  await yToken.mock.collateral.returns(collateral.address);
-  await yToken.mock.collateralPrecisionScalar.returns(One);
-  await yToken.mock.underlying.returns(underlying.address);
-  await yToken.mock.underlyingPrecisionScalar.returns(One);
+  const fyToken: MockContract = await deployStubFyToken(deployer);
+  await fyToken.mock.collateral.returns(collateral.address);
+  await fyToken.mock.collateralPrecisionScalar.returns(One);
+  await fyToken.mock.underlying.returns(underlying.address);
+  await fyToken.mock.underlyingPrecisionScalar.returns(One);
 
   const balanceSheet: BalanceSheet = ((await deployContract(deployer, BalanceSheetArtifact, [
     fintroller.address,
   ])) as unknown) as BalanceSheet;
-  return { balanceSheet, collateral, fintroller, oracle, underlying, yToken };
+  return { balanceSheet, collateral, fintroller, oracle, underlying, fyToken };
 }
 
-type UnitFixtureFintrollerReturnType = { fintroller: Fintroller; oracle: MockContract; yToken: MockContract };
+type UnitFixtureFintrollerReturnType = { fintroller: Fintroller; oracle: MockContract; fyToken: MockContract };
 
 export async function unitFixtureFintroller(signers: Signer[]): Promise<UnitFixtureFintrollerReturnType> {
   const deployer: Signer = signers[0];
   const oracle: MockContract = await deployStubOracle(deployer);
-  const yToken: MockContract = await deployStubYToken(deployer);
+  const fyToken: MockContract = await deployStubFyToken(deployer);
   const fintroller: Fintroller = ((await deployContract(deployer, FintrollerArtifact, [])) as unknown) as Fintroller;
-  return { fintroller, oracle, yToken };
+  return { fintroller, oracle, fyToken };
+}
+
+type UnitFixtureFyTokenReturnType = {
+  balanceSheet: MockContract;
+  collateral: MockContract;
+  fintroller: MockContract;
+  oracle: MockContract;
+  redemptionPool: MockContract;
+  underlying: MockContract;
+  fyToken: FyToken;
+};
+
+export async function unitFixtureFyToken(signers: Signer[]): Promise<UnitFixtureFyTokenReturnType> {
+  const deployer: Signer = signers[0];
+
+  const name: string = FyTokenConstants.Name;
+  const symbol: string = FyTokenConstants.Symbol;
+  const expirationTime: BigNumber = FyTokenConstants.ExpirationTime;
+
+  const oracle: MockContract = await deployStubOracle(deployer);
+  const fintroller: MockContract = await deployStubFintroller(deployer);
+  await fintroller.mock.oracle.returns(oracle.address);
+
+  const balanceSheet: MockContract = await deployStubBalanceSheet(deployer);
+  const underlying: MockContract = await deployStubUnderlying(deployer);
+  const collateral: MockContract = await deployStubCollateral(deployer);
+
+  const fyToken: FyToken = ((await deployContract(deployer, FyTokenArtifact, [
+    name,
+    symbol,
+    expirationTime,
+    fintroller.address,
+    balanceSheet.address,
+    underlying.address,
+    collateral.address,
+  ])) as unknown) as FyToken;
+
+  /**
+   * The fyToken initializes the Redemption Pool in its constructor, but we don't want
+   * it for our unit tests. With help from the god-mode, we override the Redemption Pool
+   * with a mock contract.
+   */
+  const redemptionPool: MockContract = await deployStubRedemptionPool(deployer);
+  await fyToken.__godMode__setRedemptionPool(redemptionPool.address);
+
+  return { balanceSheet, collateral, fintroller, oracle, redemptionPool, underlying, fyToken };
 }
 
 type UnitFixtureOraclePriceUtilsReturnType = {
@@ -89,7 +135,7 @@ type UnitFixtureRedemptionPoolReturnType = {
   fintroller: MockContract;
   redemptionPool: RedemptionPool;
   underlying: MockContract;
-  yToken: MockContract;
+  fyToken: MockContract;
 };
 
 export async function unitFixtureRedemptionPool(signers: Signer[]): Promise<UnitFixtureRedemptionPoolReturnType> {
@@ -98,59 +144,13 @@ export async function unitFixtureRedemptionPool(signers: Signer[]): Promise<Unit
   const fintroller: MockContract = await deployStubFintroller(deployer);
   const underlying: MockContract = await deployStubUnderlying(deployer);
 
-  const yToken: MockContract = await deployStubYToken(deployer);
-  await yToken.mock.underlying.returns(underlying.address);
-  await yToken.mock.underlyingPrecisionScalar.returns(One);
+  const fyToken: MockContract = await deployStubFyToken(deployer);
+  await fyToken.mock.underlying.returns(underlying.address);
+  await fyToken.mock.underlyingPrecisionScalar.returns(One);
 
   const redemptionPool: RedemptionPool = ((await deployContract(deployer, RedemptionPoolArtifact, [
     fintroller.address,
-    yToken.address,
+    fyToken.address,
   ])) as unknown) as RedemptionPool;
-  return { fintroller, redemptionPool, underlying, yToken };
-}
-
-type UnitFixtureYTokenReturnType = {
-  balanceSheet: MockContract;
-  collateral: MockContract;
-  fintroller: MockContract;
-  oracle: MockContract;
-  redemptionPool: MockContract;
-  underlying: MockContract;
-  yToken: YToken;
-};
-
-export async function unitFixtureYToken(signers: Signer[]): Promise<UnitFixtureYTokenReturnType> {
-  const deployer: Signer = signers[0];
-
-  const name: string = YTokenConstants.Name;
-  const symbol: string = YTokenConstants.Symbol;
-  const expirationTime: BigNumber = YTokenConstants.ExpirationTime; /* December 31, 2020 at 23:59:59 */
-
-  const oracle: MockContract = await deployStubOracle(deployer);
-  const fintroller: MockContract = await deployStubFintroller(deployer);
-  await fintroller.mock.oracle.returns(oracle.address);
-
-  const balanceSheet: MockContract = await deployStubBalanceSheet(deployer);
-  const underlying: MockContract = await deployStubUnderlying(deployer);
-  const collateral: MockContract = await deployStubCollateral(deployer);
-
-  const yToken: YToken = ((await deployContract(deployer, YTokenArtifact, [
-    name,
-    symbol,
-    expirationTime,
-    fintroller.address,
-    balanceSheet.address,
-    underlying.address,
-    collateral.address,
-  ])) as unknown) as YToken;
-
-  /**
-   * The yToken initializes the Redemption Pool in its constructor, but we don't want
-   * it for our unit tests. With help from the god-mode, we override the Redemption Pool
-   * with a mock contract.
-   */
-  const redemptionPool: MockContract = await deployStubRedemptionPool(deployer);
-  await yToken.__godMode__setRedemptionPool(redemptionPool.address);
-
-  return { balanceSheet, collateral, fintroller, oracle, redemptionPool, underlying, yToken };
+  return { fintroller, redemptionPool, underlying, fyToken };
 }

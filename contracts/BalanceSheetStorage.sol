@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.7.0;
 
-import "./YTokenInterface.sol";
+import "./FyTokenInterface.sol";
 
 /**
  * @title BalanceSheetStorage
@@ -21,7 +21,7 @@ abstract contract BalanceSheetStorage {
     FintrollerInterface public fintroller;
 
     /**
-     * @dev One vault for each yToken for each account.
+     * @dev One vault for each fyToken for each account.
      */
     mapping(address => mapping(address => Vault)) internal vaults;
 

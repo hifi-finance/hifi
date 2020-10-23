@@ -7,13 +7,13 @@ import { TokenAmounts } from "../../../../helpers/constants";
 export default function shouldBehaveLikeClutchCollateral(): void {
   const collateralAmount: BigNumber = TokenAmounts.Fifty;
 
-  describe("when the caller is not the yToken contract", function () {
+  describe("when the caller is not the fyToken contract", function () {
     it("reverts", async function () {
       await expect(
         this.contracts.balanceSheet
           .connect(this.signers.admin)
           .clutchCollateral(
-            this.stubs.yToken.address,
+            this.stubs.fyToken.address,
             this.accounts.liquidator,
             this.accounts.borrower,
             collateralAmount,
