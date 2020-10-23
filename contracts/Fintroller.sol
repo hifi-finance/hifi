@@ -83,7 +83,7 @@ contract Fintroller is
      * @notice Check if the account should be allowed to borrow yTokens.
      * @dev Reverts it the bond is not listed.
      * @param yToken The bond to make the check against.
-     * @return bool true=allowed, false=not allowed.
+     * @return bool true = allowed, false = not allowed.
      */
     function getBorrowAllowed(YTokenInterface yToken) external view override returns (bool) {
         Bond memory bond = bonds[yToken];
@@ -95,7 +95,7 @@ contract Fintroller is
      * @notice Checks if the account should be allowed to deposit collateral.
      * @dev Reverts it the bond is not listed.
      * @param yToken The bond to make the check against.
-     * @return bool true=allowed, false=not allowed.
+     * @return bool true = allowed, false = not allowed.
      */
     function getDepositCollateralAllowed(YTokenInterface yToken) external view override returns (bool) {
         Bond memory bond = bonds[yToken];
@@ -107,7 +107,7 @@ contract Fintroller is
      * @notice Check if the account should be allowed to liquidate yToken borrows.
      * @dev Reverts it the bond is not listed.
      * @param yToken The bond to make the check against.
-     * @return bool true=allowed, false=not allowed.
+     * @return bool true = allowed, false = not allowed.
      */
     function getLiquidateBorrowAllowed(YTokenInterface yToken) external view override returns (bool) {
         Bond memory bond = bonds[yToken];
@@ -119,7 +119,7 @@ contract Fintroller is
      * @notice Checks if the account should be allowed to redeem the underlying asset from the Redemption Pool.
      * @dev Reverts it the bond is not listed.
      * @param yToken The bond to make the check against.
-     * @return bool true=allowed, false=not allowed.
+     * @return bool true = allowed, false = not allowed.
      */
     function getRedeemYTokensAllowed(YTokenInterface yToken) external view override returns (bool) {
         Bond memory bond = bonds[yToken];
@@ -131,7 +131,7 @@ contract Fintroller is
      * @notice Checks if the account should be allowed to repay borrows.
      * @dev Reverts it the bond is not listed.
      * @param yToken The bond to make the check against.
-     * @return bool true=allowed, false=not allowed.
+     * @return bool true = allowed, false = not allowed.
      */
     function getRepayBorrowAllowed(YTokenInterface yToken) external view override returns (bool) {
         Bond memory bond = bonds[yToken];
@@ -143,7 +143,7 @@ contract Fintroller is
      * @notice Checks if the account should be allowed to the supply underlying asset to the Redemption Pool.
      * @dev Reverts it the bond is not listed.
      * @param yToken The bond to make the check against.
-     * @return bool true=allowed, false=not allowed.
+     * @return bool true = allowed, false = not allowed.
      */
     function getSupplyUnderlyingAllowed(YTokenInterface yToken) external view override returns (bool) {
         Bond memory bond = bonds[yToken];
