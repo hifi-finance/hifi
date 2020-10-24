@@ -102,6 +102,7 @@ export const fintrollerConstants = {
   oraclePrecisionScalar: openPriceFeedPrecisionScalar,
 };
 
+/* TODO: make the name and symbol match the expiration time */
 export const fyTokenConstants = {
   decimals: defaultNumberOfDecimals,
   expirationTime: getNow().add(getDaysInSeconds(90)),
