@@ -39,7 +39,7 @@ export function baseContext(description: string, hooks: () => void): void {
       this.accounts.maker = await signers[4].getAddress();
       this.accounts.raider = await signers[5].getAddress();
 
-      /* Get rid of this when https://github.com/nomiclabs/buidler/issues/849 gets fixed. */
+      /* Get rid of this when https://github.com/nomiclabs/hardhat/issues/849 gets fixed. */
       this.loadFixture = createFixtureLoader(signers as Wallet[]);
     });
 

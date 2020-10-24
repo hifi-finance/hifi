@@ -16,11 +16,6 @@ export const openPriceFeedPrecision: BigNumber = BigNumber.from(6);
 export const openPriceFeedPrecisionScalar: BigNumber = ten.pow(defaultNumberOfDecimals.sub(openPriceFeedPrecision));
 export const precisionScalarForTokenWithEightDecimals: BigNumber = ten.pow(defaultNumberOfDecimals.sub(8));
 
-/* Gas limits. High values are needed otherwise deployments fail on coverage. */
-export const blockGasLimit: BigNumber = fiftyMillion;
-export const callGasLimit: BigNumber = fiftyMillion;
-export const deployContractGasLimit: BigNumber = fiftyMillion;
-
 /* Represented as mantissas (decimal scalars with 18 decimals). */
 export const percentages: { [name: string]: BigNumber } = {
   oneHundred: ten.pow(18),
@@ -62,6 +57,20 @@ export const chainIds = {
   mainnet: 1,
   rinkeby: 4,
   ropsten: 3,
+};
+
+/* High gas limits are needed otherwise deployments fail on coverage. */
+export const gasLimits = {
+  buidlerEvm: {
+    blockGasLimit: tenMillion,
+    callGasLimit: tenMillion,
+    deployContractGasLimit: tenMillion,
+  },
+  coverage: {
+    blockGasLimit: fiftyMillion,
+    callGasLimit: fiftyMillion,
+    deployContractGasLimit: fiftyMillion,
+  },
 };
 
 /* PRIVATE KEYS. */

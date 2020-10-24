@@ -1,8 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-// import { Contract } from "@ethersproject/contracts";
 import { Fixture } from "ethereum-waffle";
-// import { Signer } from "@ethersproject/abstract-signer";
-// import { TransactionRequest } from "@ethersproject/providers";
 
 import { Accounts, Contracts, Signers, Stubs } from "./";
 
@@ -23,16 +20,11 @@ declare module "@nomiclabs/buidler/types" {
     typechain: string;
   }
 }
+
 declare module "mocha" {
-  export interface Context {
+  interface Context {
     accounts: Accounts;
     contracts: Contracts;
-    // deployContract: (
-    //   signer: Signer,
-    //   contractJSON: any,
-    //   args: any[],
-    //   overrideOptions?: TransactionRequest,
-    // ) => Promise<Contract>;
     loadFixture: <T>(fixture: Fixture<T>) => Promise<T>;
     signers: Signers;
     stubs: Stubs;

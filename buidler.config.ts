@@ -5,7 +5,7 @@ dotenvConfig({ path: resolve(__dirname, "./.env") });
 import { usePlugin } from "@nomiclabs/buidler/config";
 
 import buidlerEvmAccounts from "./helpers/accounts";
-import { blockGasLimit, callGasLimit, chainIds } from "./helpers/constants";
+import { chainIds, gasLimits } from "./helpers/constants";
 import { ExtendedBuidlerConfig, ExtendedNetworkConfig } from "./@types";
 
 import "./tasks/accounts";
@@ -58,17 +58,13 @@ const config: ExtendedBuidlerConfig = {
     buidlerevm: {
       accounts: buidlerEvmAccounts,
       allowUnlimitedContractSize: true,
-      blockGasLimit: blockGasLimit.toNumber(),
+      blockGasLimit: gasLimits.buidlerEvm.blockGasLimit.toNumber(),
       chainId: chainIds.buidlerEvm,
-      gas: callGasLimit.toNumber() /* https://github.com/nomiclabs/hardhat/issues/660#issuecomment-715897156 */,
+      gas: gasLimits.buidlerEvm.callGasLimit.toNumber() /* https://github.com/nomiclabs/hardhat/issues/660#issuecomment-715897156 */,
     },
     coverage: {
       chainId: chainIds.ganache,
       url: "http://127.0.0.1:8555",
-    },
-    ganache: {
-      chainId: chainIds.ganache,
-      url: "http://127.0.0.1:8545",
     },
     goerli: createTestnetConfig("goerli"),
     rinkeby: createTestnetConfig("rinkeby"),

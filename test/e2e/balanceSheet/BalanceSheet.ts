@@ -1,5 +1,5 @@
-import { shouldBehaveLikeBalanceSheet } from "./BalanceSheet.behavior";
 import { e2eFixture } from "../fixtures";
+import { shouldBehaveLikeBalanceSheet } from "./BalanceSheet.behavior";
 
 export function e2eTestBalanceSheet(): void {
   describe("BalanceSheet", function () {

@@ -1,6 +1,6 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { TransactionRequest } from "@ethersproject/providers";
-import { waffle } from "@nomiclabs/buidler";
+import { deployContract } from "ethereum-waffle";
 
 import BalanceSheetArtifact from "../artifacts/BalanceSheet.json";
 import Erc20MintableArtifact from "../artifacts/Erc20Mintable.json";
@@ -22,10 +22,14 @@ import { GodModeRedemptionPool } from "../typechain/GodModeRedemptionPool";
 import { GodModeFyToken } from "../typechain/GodModeFyToken";
 import { SimpleUniswapAnchoredView } from "../typechain/SimpleUniswapAnchoredView";
 import { TestOraclePriceUtils as OraclePriceUtils } from "../typechain/TestOraclePriceUtils";
-import { deployContractGasLimit, fyTokenConstants } from "../helpers/constants";
+import { fyTokenConstants, gasLimits } from "../helpers/constants";
 
-const { deployContract } = waffle;
-const overrideOptions: TransactionRequest = { gasLimit: deployContractGasLimit };
+// const { deployContract } = waffle;
+const overrideOptions: TransactionRequest = {
+  gasLimit: process.env.CODE_COVERAGE
+    ? gasLimits.coverage.deployContractGasLimit
+    : gasLimits.buidlerEvm.deployContractGasLimit,
+};
 
 /**
  * Meant to be deployed to either Ethereum Mainnet or BuidlerEVM.

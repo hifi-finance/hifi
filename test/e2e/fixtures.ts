@@ -28,7 +28,7 @@ type E2eFixtureReturnType = {
 
 /**
  * WARNING: this is supposed to be run against a Mainnet fork. Do not run it
- * against BuidlerEVM, or there be dragons.
+ * against BuidlerEVM, or there may be dragons.
  */
 export async function e2eFixture(signers: Signer[]): Promise<E2eFixtureReturnType> {
   const deployer: Signer = signers[0];
