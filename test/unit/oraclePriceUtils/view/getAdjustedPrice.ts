@@ -9,7 +9,7 @@ import { openPriceFeedPrecisionScalar } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeGetAdjustedPrice(): void {
   /* We are not using "ETH" here because we're not mocking the oracle itself. */
-  const collateralSymbol = scenarios.buidlerEvm.collateral.symbol;
+  const collateralSymbol = scenarios.local.collateral.symbol;
 
   describe("when the oracle does not have price data for the symbol", function () {
     const unavailableSymbol: string = "HEX";
@@ -36,7 +36,7 @@ export default function shouldBehaveLikeGetAdjustedPrice(): void {
 
     describe("when the precision scalar multiplication does not overflow", function () {
       it("retrieves the adjusted price", async function () {
-        const collateralPrice: BigNumber = scenarios.buidlerEvm.oracle.prices.collateral;
+        const collateralPrice: BigNumber = scenarios.local.oracle.prices.collateral;
         const adjustedPrice: BigNumber = await this.contracts.oraclePriceUtils.testGetAdjustedPrice(
           collateralSymbol,
           openPriceFeedPrecisionScalar,

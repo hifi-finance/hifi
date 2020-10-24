@@ -88,11 +88,7 @@ export async function deployCollateral(deployer: Signer): Promise<Erc20Mintable>
   const collateral: Erc20Mintable = (await deployContract(
     deployer,
     Erc20MintableArtifact,
-    [
-      scenarios.buidlerEvm.collateral.name,
-      scenarios.buidlerEvm.collateral.symbol,
-      scenarios.buidlerEvm.collateral.decimals,
-    ],
+    [scenarios.local.collateral.name, scenarios.local.collateral.symbol, scenarios.local.collateral.decimals],
     overrideOptions,
   )) as Erc20Mintable;
   return collateral;
@@ -173,11 +169,7 @@ export async function deployUnderlying(deployer: Signer): Promise<Erc20Mintable>
   const underlying: Erc20Mintable = (await deployContract(
     deployer,
     Erc20MintableArtifact,
-    [
-      scenarios.buidlerEvm.underlying.name,
-      scenarios.buidlerEvm.underlying.symbol,
-      scenarios.buidlerEvm.underlying.decimals,
-    ],
+    [scenarios.local.underlying.name, scenarios.local.underlying.symbol, scenarios.local.underlying.decimals],
     overrideOptions,
   )) as Erc20Mintable;
   return underlying;

@@ -15,7 +15,7 @@ const underlyingCommon = {
 };
 
 const scenarios = {
-  buidlerEvm: {
+  local: {
     collateral: collateralCommon,
     oracle: {
       prices: {

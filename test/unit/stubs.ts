@@ -28,9 +28,9 @@ export async function deployStubBalanceSheet(deployer: Signer): Promise<MockCont
 export async function deployStubCollateral(deployer: Signer): Promise<MockContract> {
   const collateral: MockContract = await deployStubErc20(
     deployer,
-    scenarios.buidlerEvm.collateral.name,
-    scenarios.buidlerEvm.collateral.symbol,
-    scenarios.buidlerEvm.collateral.decimals,
+    scenarios.local.collateral.name,
+    scenarios.local.collateral.symbol,
+    scenarios.local.collateral.decimals,
   );
   return collateral;
 }
@@ -64,10 +64,8 @@ export async function deployStubFyToken(deployer: Signer): Promise<MockContract>
 
 export async function deployStubOracle(deployer: Signer): Promise<MockContract> {
   const oracle: MockContract = await deployStubContract(deployer, SimpleUniswapAnchoredViewArtifact.abi);
-  await oracle.mock.price.withArgs(etherSymbol).returns(scenarios.buidlerEvm.oracle.prices.collateral);
-  await oracle.mock.price
-    .withArgs(scenarios.buidlerEvm.underlying.symbol)
-    .returns(scenarios.buidlerEvm.oracle.prices.underlying);
+  await oracle.mock.price.withArgs(etherSymbol).returns(scenarios.local.oracle.prices.collateral);
+  await oracle.mock.price.withArgs(scenarios.local.underlying.symbol).returns(scenarios.local.oracle.prices.underlying);
   return oracle;
 }
 
@@ -80,9 +78,9 @@ export async function deployStubRedemptionPool(deployer: Signer): Promise<MockCo
 export async function deployStubUnderlying(deployer: Signer): Promise<MockContract> {
   const underlying: MockContract = await deployStubErc20(
     deployer,
-    scenarios.buidlerEvm.underlying.name,
-    scenarios.buidlerEvm.underlying.symbol,
-    scenarios.buidlerEvm.underlying.decimals,
+    scenarios.local.underlying.name,
+    scenarios.local.underlying.symbol,
+    scenarios.local.underlying.decimals,
   );
   return underlying;
 }

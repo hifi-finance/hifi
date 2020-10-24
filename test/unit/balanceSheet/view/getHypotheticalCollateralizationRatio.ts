@@ -90,7 +90,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
             beforeEach(async function () {
               const zeroUnderlyingPrice: BigNumber = Zero;
               await this.stubs.oracle.mock.price
-                .withArgs(scenarios.buidlerEvm.underlying.symbol)
+                .withArgs(scenarios.local.underlying.symbol)
                 .returns(zeroUnderlyingPrice);
             });
 
