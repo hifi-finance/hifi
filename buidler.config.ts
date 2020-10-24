@@ -5,7 +5,6 @@ dotenvConfig({ path: resolve(__dirname, "./.env") });
 import { usePlugin } from "@nomiclabs/buidler/config";
 
 import buidlerEvmAccounts from "./helpers/accounts";
-import scenarios from "./test/scenarios";
 import { blockGasLimit, callGasLimit, chainIds } from "./helpers/constants";
 import { ExtendedBuidlerConfig, ExtendedNetworkConfig } from "./@types";
 
@@ -13,7 +12,6 @@ import "./tasks/accounts";
 import "./tasks/clean";
 import "./tasks/typechain";
 
-usePlugin("@nomiclabs/buidler-ganache");
 usePlugin("@nomiclabs/buidler-waffle");
 usePlugin("buidler-gas-reporter");
 usePlugin("solidity-coverage");
@@ -24,13 +22,6 @@ if (!process.env.MNEMONIC) {
   throw new Error("Please set your MNEMONIC in a .env file");
 } else {
   mnemonic = process.env.MNEMONIC;
-}
-
-let alchemyApiKey: string;
-if (!process.env.ALCHEMY_API_KEY) {
-  throw new Error("Please set your ALCHEMY_API_KEY in a .env file");
-} else {
-  alchemyApiKey = process.env.ALCHEMY_API_KEY;
 }
 
 let infuraApiKey: string;
@@ -74,15 +65,6 @@ const config: ExtendedBuidlerConfig = {
     coverage: {
       chainId: chainIds.ganache,
       url: "http://127.0.0.1:8555",
-    },
-    ganache: {
-      default_balance_ether: 1000000,
-      fork: "https://eth-mainnet.alchemyapi.io/v2/" + alchemyApiKey,
-      fork_block_number: scenarios.mainnet.oracle.deploymentBlockNumber.toNumber(),
-      gasLimit: blockGasLimit.toNumber(),
-      mnemonic,
-      network_id: chainIds.mainnet,
-      url: "http://127.0.0.1:8545",
     },
     goerli: createTestnetConfig("goerli"),
     rinkeby: createTestnetConfig("rinkeby"),

@@ -11,14 +11,15 @@ export const etherSymbol: string = "ETH";
 export const ten: BigNumber = BigNumber.from(10);
 export const tenMillion: BigNumber = ten.pow(7);
 export const fiftyMillion: BigNumber = tenMillion.mul(50);
-
-export const blockGasLimit: BigNumber = fiftyMillion;
-export const callGasLimit: BigNumber = fiftyMillion;
-export const deployContractGasLimit: BigNumber = tenMillion;
 export const defaultNumberOfDecimals: BigNumber = BigNumber.from(18);
 export const openPriceFeedPrecision: BigNumber = BigNumber.from(6);
 export const openPriceFeedPrecisionScalar: BigNumber = ten.pow(defaultNumberOfDecimals.sub(openPriceFeedPrecision));
 export const precisionScalarForTokenWithEightDecimals: BigNumber = ten.pow(defaultNumberOfDecimals.sub(8));
+
+/* Gas limits. High values are needed otherwise deployments fail on coverage. */
+export const blockGasLimit: BigNumber = fiftyMillion;
+export const callGasLimit: BigNumber = fiftyMillion;
+export const deployContractGasLimit: BigNumber = fiftyMillion;
 
 /* Represented as mantissas (decimal scalars with 18 decimals). */
 export const percentages: { [name: string]: BigNumber } = {

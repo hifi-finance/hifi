@@ -15,7 +15,7 @@ module.exports = {
     _chainId: 1337,
     /* one million ETH */
     default_balance_ether: 1000000,
-    mnemonic,
+    mnemonic: process.env.MNEMONIC,
   },
   skipFiles: ["invariants", "test"],
 };
