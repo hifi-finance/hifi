@@ -83,7 +83,7 @@
     "clean": "buidler clean",
     "commit": "git-cz",
     "compile": "buidler compile",
-    "coverage": "buidler coverage --solcoverjs ./.solcover.js --network coverage --temp artifacts --testfiles \"./test/{integration,unit}/*.ts",
+    "coverage": "buidler coverage --solcoverjs ./.solcover.js --network coverage --temp artifacts --testfiles \"./test/{integration,unit}/*.ts\"",
     "lint": "yarn run lint:sol && yarn run lint:ts && yarn run prettier:list-different",
     "lint:sol": "solhint --config ./.solhint.json --max-warnings 0 \"contracts/**/*.sol\"",
     "lint:ts": "eslint --config ./.eslintrc.yaml --ignore-path ./.eslintignore --ext .js,.ts .",

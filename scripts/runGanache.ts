@@ -18,7 +18,7 @@ if (!process.env.ALCHEMY_API_KEY) {
   alchemyApiKey = process.env.ALCHEMY_API_KEY;
 }
 
-async function main(): Promise<void> {
+export async function runGanache(): Promise<void> {
   Ganache.provider({
     default_balance_ether: 1000000,
     fork: "https://eth-mainnet.alchemyapi.io/v2/" + alchemyApiKey,
@@ -29,7 +29,7 @@ async function main(): Promise<void> {
   });
 }
 
-main()
+runGanache()
   .then(() => process.exit(0))
   .catch((error: Error) => {
     console.error(error);
