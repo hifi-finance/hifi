@@ -393,14 +393,14 @@ contract Fintroller is
      * - The caller must be the administrator.
      * - The new address cannot be the zero address.
      *
-     * @param oracle_ The new oracle contract.
+     * @param newOracle The new oracle contract.
      * @return bool true=success, otherwise it reverts.
      */
-    function setOracle(UniswapAnchoredViewInterface oracle_) external override onlyAdmin returns (bool) {
-        require(address(oracle_) != address(0x00), "ERR_SET_ORACLE_ZERO_ADDRESS");
+    function setOracle(UniswapAnchoredViewInterface newOracle) external override onlyAdmin returns (bool) {
+        require(address(newOracle) != address(0x00), "ERR_SET_ORACLE_ZERO_ADDRESS");
         address oldOracle = address(oracle);
-        oracle = oracle_;
-        emit SetOracle(admin, oldOracle, address(oracle));
+        oracle = newOracle;
+        emit SetOracle(admin, oldOracle, address(newOracle));
         return true;
     }
 
