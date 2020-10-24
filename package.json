@@ -20,10 +20,13 @@
     "@ethersproject/constants": "^5.0.4",
     "@ethersproject/contracts": "^5.0.4",
     "@ethersproject/keccak256": "^5.0.3",
+    "@ethersproject/providers": "^5.0.14",
     "@ethersproject/signing-key": "^5.0.5",
     "@ethersproject/strings": "^5.0.4",
+    "@ethersproject/units": "^5.0.6",
     "@nomiclabs/buidler": "1.4.8",
     "@nomiclabs/buidler-ethers": "^2.0.0",
+    "@nomiclabs/buidler-ganache": "^1.3.3",
     "@nomiclabs/buidler-waffle": "^2.1.0",
     "@paulrberg/contracts": "^1.1.0",
     "@typechain/ethers-v5": "^1.0.0",
@@ -87,7 +90,10 @@
     "lint:ts": "eslint --config ./.eslintrc.yaml --ignore-path ./.eslintignore --ext .js,.ts .",
     "prettier": "prettier --config ./.prettierrc --write \"**/*.{js,json,md,sol,ts}\"",
     "prettier:list-different": "prettier --config ./.prettierrc --list-different \"**/*.{js,json,md,sol,ts}\"",
-    "test": "buidler test",
+    "test": "yarn run test:unit && yarn run test:integration",
+    "test:e2e": "buidler test ./test/e2e --network ganache",
+    "test:integration": "buidler test ./test/integration --network buidlerevm",
+    "test:unit": "buidler test ./test/unit --network buidlerevm",
     "typechain": "buidler typechain"
   }
 }

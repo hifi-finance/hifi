@@ -1,13 +1,13 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
-import { Percentages, Prices, TokenAmounts } from "../../../../helpers/constants";
+import { percentages, prices, tokenAmounts } from "../../../../helpers/constants";
 import { BalanceSheetErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeLiquidateBorrow(): void {
-  const borrowAmount: BigNumber = TokenAmounts.OneHundred;
-  const collateralAmount: BigNumber = TokenAmounts.Ten;
-  const repayAmount: BigNumber = TokenAmounts.Fifty;
+  const borrowAmount: BigNumber = tokenAmounts.oneHundred;
+  const collateralAmount: BigNumber = tokenAmounts.ten;
+  const repayAmount: BigNumber = tokenAmounts.fifty;
 
   let clutchableCollateralAmount: BigNumber;
 
@@ -28,13 +28,13 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
       .connect(this.signers.admin)
       .setRepayBorrowAllowed(this.contracts.fyToken.address, true);
 
-    /* Set the debt ceiling to 1,000 yDAI. */
+    /* Set the debt ceiling to 1,000 fyDAI. */
     await this.contracts.fintroller
       .connect(this.signers.admin)
-      .setDebtCeiling(this.contracts.fyToken.address, TokenAmounts.OneHundredThousand);
+      .setDebtCeiling(this.contracts.fyToken.address, tokenAmounts.oneHundredThousand);
 
     /* Set the liquidation incentive to 110%. */
-    await this.contracts.fintroller.connect(this.signers.admin).setLiquidationIncentive(Percentages.OneHundredAndTen);
+    await this.contracts.fintroller.connect(this.signers.admin).setLiquidationIncentive(percentages.oneHundredAndTen);
 
     /* Mint 10 WETH and approve the Balance Sheet to spend it all. */
     await this.contracts.collateral.mint(this.accounts.borrower, collateralAmount);
@@ -56,9 +56,9 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
     await this.contracts.fyToken.connect(this.signers.borrower).borrow(borrowAmount);
 
     /* Set the price of 1 WETH to $12 so that the new collateralization ratio becomes 120%. */
-    await this.contracts.oracle.setWethPrice(Prices.TwelveDollars);
+    await this.contracts.oracle.setWethPrice(prices.twelveDollars);
 
-    /* Mint 100 yDAI to Liquidator so he can repay the debt. */
+    /* Mint 100 fyDAI to the liquidator so he can repay the debt. */
     await this.contracts.fyToken.__godMode_mint(this.accounts.liquidator, repayAmount);
 
     /* Calculate the amount of clutchable collateral. */
@@ -75,7 +75,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
   describe("when there is not enough locked collateral", function () {
     beforeEach(async function () {
       /* Set the price of 1 WETH to $1 so that the new collateralization ratio becomes 10%. */
-      await this.contracts.oracle.setWethPrice(Prices.OneDollar);
+      await this.contracts.oracle.setWethPrice(prices.oneDollar);
     });
 
     it("reverts", async function () {

@@ -1,11 +1,5 @@
 const shell = require("shelljs");
 
-/* The environment variables are loaded in buidler.config.ts */
-const mnemonic = process.env.MNEMONIC;
-if (!mnemonic) {
-  throw new Error("Please set your MNEMONIC in a .env file");
-}
-
 module.exports = {
   istanbulReporter: ["html", "lcov"],
   onCompileComplete: async function (_config) {
@@ -19,8 +13,8 @@ module.exports = {
   providerOptions: {
     /* https://github.com/trufflesuite/ganache-core/issues/515 */
     _chainId: 1337,
-    /* 100 hundred million ETH */
-    default_balance_ether: 100000000,
+    /* one million ETH */
+    default_balance_ether: 1000000,
     mnemonic,
   },
   skipFiles: ["invariants", "test"],

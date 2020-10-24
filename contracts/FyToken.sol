@@ -40,8 +40,8 @@ contract FyToken is
      * @param expirationTime_ Unix timestamp in seconds for when this token expires.
      * @param fintroller_ The address of the Fintroller contract.
      * @param balanceSheet_ The address of the BalanceSheet contract.
-     * @param collateral_ The contract address of the collateral asset.
      * @param underlying_ The contract address of the underlying asset.
+     * @param collateral_ The contract address of the collateral asset.
      */
     constructor(
         string memory name_,
@@ -82,7 +82,7 @@ contract FyToken is
 
         /* Create the Redemption Pool contract and transfer the owner from the fyToken itself to the current caller. */
         redemptionPool = new RedemptionPool(fintroller_, this);
-        Admin(address(redemptionPool)).transferAdmin(msg.sender);
+        AdminInterface(address(redemptionPool)).transferAdmin(msg.sender);
     }
 
     /**

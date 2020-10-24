@@ -2,118 +2,91 @@ import { config as dotenvConfig } from "dotenv";
 import { resolve } from "path";
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
-import { BuidlerConfig, usePlugin } from "@nomiclabs/buidler/config";
-import { ChainIds, DefaultBlockGasLimit, DefaultPrivateKeys } from "./helpers/constants";
-import { BuidlerNetworkAccount, HDAccountsConfig } from "@nomiclabs/buidler/types";
+import { usePlugin } from "@nomiclabs/buidler/config";
+
+import buidlerEvmAccounts from "./helpers/accounts";
+import scenarios from "./test/scenarios";
+import { blockGasLimit, callGasLimit, chainIds } from "./helpers/constants";
+import { ExtendedBuidlerConfig, ExtendedNetworkConfig } from "./@types";
+
 import "./tasks/accounts";
 import "./tasks/clean";
 import "./tasks/typechain";
 
+usePlugin("@nomiclabs/buidler-ganache");
 usePlugin("@nomiclabs/buidler-waffle");
 usePlugin("buidler-gas-reporter");
 usePlugin("solidity-coverage");
 
-/**
- * Six accounts with 10,000 ETH each. We need to use these instead of the default
- * Buidler accounts because some tests depend on hardcoded private keys.
- *
- * 0x5a2E001C52Ba44e501c35B769822859cF83A23D7
- * 0xf3B2b6f3fB19e5D6541ecF86bBFfe0126880Bb0c
- * 0x7523b47C56f673EA1CaFd4672cA9245Ad1bcE03D
- * 0x59204B9dA861F9C1EC3D728af305D5EEf4Db64E8
- * 0x9e705a94E91736B48f594C603d3Fe0805B0Ca4A0
- * 0xeB7Ba84d23C8484A5dec9E136e4ccFEaf35378DB
- */
-function createBuidlerEvmAccounts(): BuidlerNetworkAccount[] {
-  const tenThousandEther: string = "10000000000000000000000";
-  return [
-    {
-      balance: tenThousandEther,
-      privateKey: DefaultPrivateKeys.Admin,
-    },
-    {
-      balance: tenThousandEther,
-      privateKey: DefaultPrivateKeys.Borrower,
-    },
-    {
-      balance: tenThousandEther,
-      privateKey: DefaultPrivateKeys.Lender,
-    },
-    {
-      balance: tenThousandEther,
-      privateKey: DefaultPrivateKeys.Liquidator,
-    },
-    {
-      balance: tenThousandEther,
-      privateKey: DefaultPrivateKeys.Maker,
-    },
-    {
-      balance: tenThousandEther,
-      privateKey: DefaultPrivateKeys.Raider,
-    },
-  ];
+/* Ensure that we have all the environment variables we need. */
+let mnemonic: string;
+if (!process.env.MNEMONIC) {
+  throw new Error("Please set your MNEMONIC in a .env file");
+} else {
+  mnemonic = process.env.MNEMONIC;
 }
 
-/**
- * @dev You must have a `.env` file. Follow the example in `.env.example`.
- * @param {string} network The name of the testnet
- */
-function createNetworkConfig(network?: string): { accounts: HDAccountsConfig; url: string | undefined } {
-  if (!process.env.MNEMONIC) {
-    throw new Error("Please set your MNEMONIC in a .env file");
-  }
+let alchemyApiKey: string;
+if (!process.env.ALCHEMY_API_KEY) {
+  throw new Error("Please set your ALCHEMY_API_KEY in a .env file");
+} else {
+  alchemyApiKey = process.env.ALCHEMY_API_KEY;
+}
 
-  if (!process.env.INFURA_API_KEY) {
-    throw new Error("Please set your INFURA_API_KEY");
-  }
+let infuraApiKey: string;
+if (!process.env.INFURA_API_KEY) {
+  throw new Error("Please set your INFURA_API_KEY in a .env file");
+} else {
+  infuraApiKey = process.env.INFURA_API_KEY;
+}
 
+/* Used when deploying contracts to the testnet. */
+function createTestnetConfig(network: keyof typeof chainIds): ExtendedNetworkConfig {
+  const url: string = "https://" + network + ".infura.io/v3/" + infuraApiKey;
   return {
     accounts: {
       count: 6,
       initialIndex: 0,
-      mnemonic: process.env.MNEMONIC,
+      mnemonic,
       path: "m/44'/60'/0'/0",
     },
-    url: network ? `https://${network}.infura.io/v3/${process.env.INFURA_API_KEY}` : undefined,
+    chainId: chainIds[network],
+    url,
   };
 }
 
-const config: BuidlerConfig = {
+const config: ExtendedBuidlerConfig = {
   defaultNetwork: "buidlerevm",
   gasReporter: {
     currency: "USD",
     enabled: process.env.REPORT_GAS ? true : false,
-    excludeContracts: ["Erc20Mintable", "SimpleUniswapAnchoredView"],
+    excludeContracts: ["Erc20Mintable", "SimpleUniswapAnchoredView", "TestOraclePriceUtils"],
     src: "./contracts",
   },
   networks: {
     buidlerevm: {
-      accounts: createBuidlerEvmAccounts(),
+      accounts: buidlerEvmAccounts,
       allowUnlimitedContractSize: true,
-      blockGasLimit: DefaultBlockGasLimit.toNumber(),
-      chainId: ChainIds.BuidlerEvm,
-      gas: DefaultBlockGasLimit.toNumber(),
+      blockGasLimit: blockGasLimit.toNumber(),
+      chainId: chainIds.buidlerEvm,
+      gas: callGasLimit.toNumber() /* https://github.com/nomiclabs/hardhat/issues/660#issuecomment-715897156 */,
     },
     coverage: {
-      chainId: ChainIds.Ganache,
+      chainId: chainIds.ganache,
       url: "http://127.0.0.1:8555",
     },
-    goerli: {
-      ...createNetworkConfig("goerli"),
-      chainId: ChainIds.Goerli,
+    ganache: {
+      default_balance_ether: 1000000,
+      fork: "https://eth-mainnet.alchemyapi.io/v2/" + alchemyApiKey,
+      fork_block_number: scenarios.mainnet.oracle.deploymentBlockNumber.toNumber(),
+      gasLimit: blockGasLimit.toNumber(),
+      mnemonic,
+      network_id: chainIds.mainnet,
+      url: "http://127.0.0.1:8545",
     },
-    kovan: {
-      ...createNetworkConfig("kovan"),
-      chainId: ChainIds.Kovan,
-    },
-    rinkeby: {
-      ...createNetworkConfig("rinkeby"),
-      chainId: ChainIds.Rinkeby,
-    },
-    ropsten: {
-      ...createNetworkConfig("ropsten"),
-      chainId: ChainIds.Ropsten,
-    },
+    goerli: createTestnetConfig("goerli"),
+    rinkeby: createTestnetConfig("rinkeby"),
+    ropsten: createTestnetConfig("ropsten"),
   },
   paths: {
     artifacts: "./artifacts",
@@ -125,7 +98,6 @@ const config: BuidlerConfig = {
     tests: "./test",
   },
   solc: {
-    /* Disable the optimizer while debugging: https://buidler.dev/buidler-evm/#solidity-optimizer-support */
     optimizer: {
       enabled: true,
       runs: 200,

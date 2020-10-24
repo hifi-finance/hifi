@@ -1,11 +1,11 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { TokenAmounts } from "../../../../helpers/constants";
+import { tokenAmounts } from "../../../../helpers/constants";
 
 import { expect } from "chai";
 
 export default function shouldBehaveLikeSupplyUnderlying(): void {
-  const underlyingAmount: BigNumber = TokenAmounts.OneHundred;
-  const fyTokenAmount: BigNumber = TokenAmounts.OneHundred;
+  const underlyingAmount: BigNumber = tokenAmounts.oneHundred;
+  const fyTokenAmount: BigNumber = tokenAmounts.oneHundred;
 
   beforeEach(async function () {
     /* List the bond in the Fintroller. */

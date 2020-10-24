@@ -1,15 +1,15 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { TokenAmounts } from "../../../../helpers/constants";
+import { tokenAmounts } from "../../../../helpers/constants";
 
 import { expect } from "chai";
 
-import { FyTokenConstants } from "../../../../helpers/constants";
-import { contextForTimeDependentTests } from "../../../../helpers/mochaContexts";
-import { increaseTime } from "../../../../helpers/jsonRpcHelpers";
+import { fyTokenConstants } from "../../../../helpers/constants";
+import { contextForTimeDependentTests } from "../../../contexts";
+import { increaseTime } from "../../../jsonRpc";
 
 export default function shouldBehaveLikeSupplyUnderlying(): void {
-  const underlyingAmount: BigNumber = TokenAmounts.OneHundred;
-  const fyTokenAmount: BigNumber = TokenAmounts.OneHundred;
+  const underlyingAmount: BigNumber = tokenAmounts.oneHundred;
+  const fyTokenAmount: BigNumber = tokenAmounts.oneHundred;
 
   contextForTimeDependentTests("when the bond matured", function () {
     beforeEach(async function () {
@@ -31,7 +31,7 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
       await this.contracts.redemptionPool.connect(this.signers.maker).supplyUnderlying(underlyingAmount);
 
       /* Fast-forward to the future so that fyTokens can be redeemed. */
-      await increaseTime(FyTokenConstants.ExpirationTime);
+      await increaseTime(fyTokenConstants.expirationTime);
     });
 
     it("redeems the fyTokens", async function () {

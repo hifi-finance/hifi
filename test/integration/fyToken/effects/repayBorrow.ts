@@ -1,12 +1,12 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
-import { TokenAmounts } from "../../../../helpers/constants";
+import { tokenAmounts } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeLiquidateBorrow(): void {
-  const borrowAmount: BigNumber = TokenAmounts.OneHundred;
-  const collateralAmount: BigNumber = TokenAmounts.Ten;
-  const repayAmount: BigNumber = TokenAmounts.Forty;
+  const borrowAmount: BigNumber = tokenAmounts.oneHundred;
+  const collateralAmount: BigNumber = tokenAmounts.ten;
+  const repayAmount: BigNumber = tokenAmounts.forty;
   const newBorrowAmount = borrowAmount.sub(repayAmount);
 
   beforeEach(async function () {
@@ -24,7 +24,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
     /* Set the debt ceiling to 1,000 yDAI. */
     await this.contracts.fintroller
       .connect(this.signers.admin)
-      .setDebtCeiling(this.contracts.fyToken.address, TokenAmounts.OneHundredThousand);
+      .setDebtCeiling(this.contracts.fyToken.address, tokenAmounts.oneHundredThousand);
 
     /* Mint 10 WETH and approve the Balance Sheet to spend it all. */
     await this.contracts.collateral.mint(this.accounts.borrower, collateralAmount);

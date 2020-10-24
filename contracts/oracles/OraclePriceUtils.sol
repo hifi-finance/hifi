@@ -53,8 +53,8 @@ library OraclePriceUtils {
     }
 
     /**
-     * @notice Handles the special collateral assets by converting them to their
-     * associated symbol expected by the oracle.
+     * @notice Handles the special collateral assets by converting them to the symbol
+     * the oracle expects.
      * @param symbol The Erc20 symbol of the collateral.
      * @return The symbol as a string in memory.
      */

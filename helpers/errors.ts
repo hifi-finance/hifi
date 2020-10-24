@@ -16,10 +16,6 @@ export enum BalanceSheetErrors {
   WithdrawCollateralZero = "ERR_WITHDRAW_COLLATERAL_ZERO",
 }
 
-export enum CarefulMathErrors {
-  NoError = 0,
-}
-
 export enum Erc20PermitErrors {
   Expired = "ERR_ERC20_PERMIT_EXPIRED",
   InvalidSignature = "ERR_ERC20_PERMIT_INVALID_SIGNATURE",

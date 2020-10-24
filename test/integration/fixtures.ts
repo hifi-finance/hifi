@@ -2,45 +2,63 @@ import { Signer } from "@ethersproject/abstract-signer";
 
 import { Erc20Mintable } from "../../typechain/Erc20Mintable";
 import { Fintroller } from "../../typechain/Fintroller";
-import { GodModeBalanceSheet as BalanceSheet } from "../../typechain/GodModeBalanceSheet";
-import { GodModeFyToken as FyToken } from "../../typechain/GodModeFyToken";
-import { GodModeRedemptionPool as RedemptionPool } from "../../typechain/GodModeRedemptionPool";
+import { GodModeBalanceSheet } from "../../typechain/GodModeBalanceSheet";
+import { GodModeFyToken } from "../../typechain/GodModeFyToken";
+import { GodModeRedemptionPool } from "../../typechain/GodModeRedemptionPool";
 import { SimpleUniswapAnchoredView } from "../../typechain/SimpleUniswapAnchoredView";
 import {
-  deployBalanceSheet,
   deployCollateral,
   deployFintroller,
+  deployGodModeBalanceSheet,
+  deployGodModeFyToken,
+  deployGodModeRedemptionPool,
+  deploySimpleUniswapAnchoredView,
   deployUnderlying,
-  deployOracle,
-  deployRedemptionPool,
-  deployFyToken,
-} from "../../helpers/deployers";
+} from "../deployers";
 
 type IntegrationFixtureReturnType = {
-  balanceSheet: BalanceSheet;
+  balanceSheet: GodModeBalanceSheet;
   collateral: Erc20Mintable;
   fintroller: Fintroller;
-  fyToken: FyToken;
+  fyToken: GodModeFyToken;
   oracle: SimpleUniswapAnchoredView;
-  redemptionPool: RedemptionPool;
+  redemptionPool: GodModeRedemptionPool;
   underlying: Erc20Mintable;
 };
 
 export async function integrationFixture(signers: Signer[]): Promise<IntegrationFixtureReturnType> {
   const deployer: Signer = signers[0];
 
-  const oracle: SimpleUniswapAnchoredView = await deployOracle(deployer);
+  const oracle: SimpleUniswapAnchoredView = await deploySimpleUniswapAnchoredView(deployer);
   const fintroller: Fintroller = await deployFintroller(deployer);
   await fintroller.connect(deployer).setOracle(oracle.address);
 
-  const balanceSheet: BalanceSheet = await deployBalanceSheet(deployer, fintroller);
+  const balanceSheet: GodModeBalanceSheet = await deployGodModeBalanceSheet(deployer, fintroller.address);
   const collateral: Erc20Mintable = await deployCollateral(deployer);
   const underlying: Erc20Mintable = await deployUnderlying(deployer);
 
   /* Override the RedemptionPool.sol contract created by the fyToken with GodModeRedemptionPool.sol */
-  const fyToken: FyToken = await deployFyToken(deployer, fintroller, balanceSheet, underlying, collateral);
-  const redemptionPool: RedemptionPool = await deployRedemptionPool(deployer, fintroller, fyToken);
+  const fyToken: GodModeFyToken = await deployGodModeFyToken(
+    deployer,
+    fintroller.address,
+    balanceSheet.address,
+    underlying.address,
+    collateral.address,
+  );
+  const redemptionPool: GodModeRedemptionPool = await deployGodModeRedemptionPool(
+    deployer,
+    fintroller.address,
+    fyToken.address,
+  );
   await fyToken.__godMode__setRedemptionPool(redemptionPool.address);
 
-  return { balanceSheet, collateral, fintroller, fyToken, oracle, redemptionPool, underlying };
+  return {
+    balanceSheet,
+    collateral,
+    fintroller,
+    fyToken,
+    oracle,
+    redemptionPool,
+    underlying,
+  };
 }

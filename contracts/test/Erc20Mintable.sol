@@ -11,10 +11,10 @@ import "@paulrberg/contracts/token/erc20/Erc20.sol";
  */
 contract Erc20Mintable is Erc20 {
     constructor(
-        string memory name,
-        string memory symbol,
-        uint8 decimals
-    ) Erc20(name, symbol, decimals) {} /* solhint-disable-line no-empty-blocks */
+        string memory name_,
+        string memory symbol_,
+        uint8 decimals_
+    ) Erc20(name_, symbol_, decimals_) {} /* solhint-disable-line no-empty-blocks */
 
     /**
      * @notice Prints new tokens into existence.

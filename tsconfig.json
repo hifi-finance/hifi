@@ -21,6 +21,7 @@
     "scripts/**/*",
     "tasks/**/*",
     "test/**/*",
+    "test/**/*.json",
     "typechain/**/*",
     "buidler.config.ts"
   ]
