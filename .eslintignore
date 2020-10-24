@@ -2,7 +2,6 @@
 .coverage_artifacts/
 .coverage_cache/
 .coverage_contracts/
-@types/contracts/
 artifacts/
 bin/
 build/
