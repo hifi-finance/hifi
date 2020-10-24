@@ -7,6 +7,7 @@ import "@paulrberg/contracts/token/erc20/Erc20Recover.sol";
 
 import "./FintrollerInterface.sol";
 import "./FyTokenInterface.sol";
+import "./oracles/UniswapAnchoredViewInterface.sol";
 
 /**
  * @notice Fintroller

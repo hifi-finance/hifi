@@ -1,17 +1,13 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.7.0;
 
-import "@paulrberg/contracts/math/Exponential.sol";
 import "./BalanceSheetStorage.sol";
 
 /**
  * @title BalanceSheetInterface
  * @author Mainframe
  */
-abstract contract BalanceSheetInterface is
-    BalanceSheetStorage, /* no dependency */
-    Exponential /* two dependencies */
-{
+abstract contract BalanceSheetInterface is BalanceSheetStorage {
     /**
      * CONSTANT FUNCTIONS
      */

@@ -2,7 +2,7 @@
 pragma solidity ^0.7.0;
 
 import "@paulrberg/contracts/access/Admin.sol";
-import "@paulrberg/contracts/math/CarefulMath.sol";
+import "@paulrberg/contracts/math/Exponential.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 import "@paulrberg/contracts/utils/ReentrancyGuard.sol";
@@ -19,8 +19,9 @@ import "./oracles/UniswapAnchoredViewInterface.sol";
  */
 contract BalanceSheet is
     ReentrancyGuard, /* no depedency */
+    BalanceSheetInterface, /* one dependency */
     Admin, /* two dependencies */
-    BalanceSheetInterface /* four dependencies */
+    Exponential /* two dependencies */
 {
     using OraclePriceUtils for UniswapAnchoredViewInterface;
     using SafeErc20 for Erc20Interface;
