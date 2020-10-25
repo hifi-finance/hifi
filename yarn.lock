@@ -1007,10 +1007,10 @@
     safe-buffer "^5.1.1"
     util.promisify "^1.0.0"
 
-"@paulrberg/contracts@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.npmjs.org/@paulrberg/contracts/-/contracts-1.1.0.tgz#b24fbab0784f95b38c0c121f03880f41a4eb6cbc"
-  integrity sha512-s/BUB+xuoY109DhNFgSLI9xZC8FubGEREG1Du+XK7joetmTst98ooQtcUcI4GSGoUdMVLpp0kQ9CZp19iWyFSw==
+"@paulrberg/contracts@1.2.0":
+  version "1.2.0"
+  resolved "https://registry.npmjs.org/@paulrberg/contracts/-/contracts-1.2.0.tgz#612ebecc2e6028f04e5cf0b8687d1060a1c68531"
+  integrity sha512-RVs62GQY/4XQLO1D1x14oeYtwGiK+LHWM80jX5Mx2Rj61tnrFRdakHnI7hdet8wMy+lLwiKwH/63JLlnaaxttg==
 
 "@resolver-engine/core@^0.3.3":
   version "0.3.3"

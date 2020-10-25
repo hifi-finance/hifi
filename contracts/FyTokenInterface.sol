@@ -23,7 +23,6 @@ abstract contract FyTokenInterface is FyTokenStorage {
 
     function repayBorrowBehalf(address borrower, uint256 repayAmount) external virtual returns (bool);
 
-
     /**
      * EVENTS
      */

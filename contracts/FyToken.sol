@@ -82,7 +82,7 @@ contract FyToken is
 
         /* Create the Redemption Pool contract and transfer the owner from the fyToken itself to the current caller. */
         redemptionPool = new RedemptionPool(fintroller_, this);
-        AdminInterface(address(redemptionPool)).transferAdmin(msg.sender);
+        AdminInterface(address(redemptionPool))._transferAdmin(msg.sender);
     }
 
     /**
