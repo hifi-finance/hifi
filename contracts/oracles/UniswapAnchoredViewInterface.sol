@@ -4,7 +4,7 @@ pragma solidity ^0.7.0;
 /**
  * @title UniswapAnchoredViewInterface
  * @author Mainframe
- * @dev Used to interact with the Compound Open Price Feed.
+ * @notice Interface for accessing the Compound Open Price Feed.
  * https://compound.finance/docs/prices
  */
 interface UniswapAnchoredViewInterface {

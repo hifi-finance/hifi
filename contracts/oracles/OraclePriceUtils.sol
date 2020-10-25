@@ -7,6 +7,8 @@ import "./UniswapAnchoredViewInterface.sol";
 /**
  * @title OraclePriceUtils
  * @author Mainframe
+ * @notice Parses the price data returned by the Compound Open Price Feed
+ * to the format expected by Mainframe.
  */
 library OraclePriceUtils {
     /**

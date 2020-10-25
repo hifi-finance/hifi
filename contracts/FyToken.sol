@@ -18,6 +18,7 @@ import "./oracles/UniswapAnchoredViewInterface.sol";
 /**
  * @title FyToken
  * @author Mainframe
+ * @notice Zero-coupon bond that tracks an Erc20 underlying asset.
  */
 contract FyToken is
     ReentrancyGuard, /* no depedency */
@@ -35,6 +36,7 @@ contract FyToken is
 
     /**
      * @notice The fyToken always has 18 decimals.
+     * @dev Instantiates the Redemption Pool.
      * @param name_ Erc20 name of this token.
      * @param symbol_ Erc20 symbol of this token.
      * @param expirationTime_ Unix timestamp in seconds for when this token expires.

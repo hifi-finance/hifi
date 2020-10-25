@@ -6,6 +6,10 @@ import "@paulrberg/contracts/math/Exponential.sol";
 import "./FyTokenInterface.sol";
 import "./oracles/UniswapAnchoredViewInterface.sol";
 
+/**
+ * @title FintrollerStorage
+ * @author Mainframe
+ */
 abstract contract FintrollerStorage is Exponential {
     struct Bond {
         Exp collateralizationRatio;

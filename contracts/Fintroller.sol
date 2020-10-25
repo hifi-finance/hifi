@@ -11,6 +11,7 @@ import "./oracles/UniswapAnchoredViewInterface.sol";
 /**
  * @notice Fintroller
  * @author Mainframe
+ * @notice Controls the financial permissions and risk parameters for all fyTokens.
  */
 contract Fintroller is
     FintrollerInterface, /* one dependency */

@@ -14,6 +14,9 @@ import "./RedemptionPoolInterface.sol";
 /**
  * @title RedemptionPool
  * @author Mainframe
+ * @notice Mints 1 fyToken in exhchange for 1 underlying before maturation and
+ * burns 1 fyToken in exchange for 1 underlying after maturation.
+ * @dev Instantiated by the fyToken in its constructor.
  */
 contract RedemptionPool is
     CarefulMath, /* no dependency */
@@ -54,7 +57,7 @@ contract RedemptionPool is
      *
      * Requirements:
      *
-     * - Must be called post maturation.
+     * - Must be called after maturation.
      * - The amount to redeem cannot be zero.
      * - The Fintroller must allow this action to be performed.
      * - There must be enough liquidity in the Redemption Pool.
