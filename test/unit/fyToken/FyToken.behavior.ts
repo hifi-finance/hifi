@@ -16,6 +16,7 @@ import shouldBehaveLikeLiquidateBorrow from "./effects/liquidateBorrow";
 import shouldBehaveLikeMint from "./effects/mint";
 import shouldBehaveLikeRepayBorrow from "./effects/repayBorrow";
 import shouldBehaveLikeRepayBorrowBehalf from "./effects/repayBorrowBehalf";
+import shouldBehaveLikeSetFintroller from "./effects/setFintroller";
 
 export function shouldBehaveLikeFyToken(): void {
   describe("Constructor", function () {
@@ -83,6 +84,10 @@ export function shouldBehaveLikeFyToken(): void {
 
     describe("repayBorrowBehalf", function () {
       shouldBehaveLikeRepayBorrowBehalf();
+    });
+
+    describe("setFintroller", function () {
+      shouldBehaveLikeSetFintroller();
     });
   });
 }

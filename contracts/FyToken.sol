@@ -335,6 +335,30 @@ contract FyToken is
     }
 
     /**
+     * @notice Updates the Fintroller contract's address saved in storage.
+     *
+     * @dev Throws a {SetFintroller} event.
+     *
+     * Requirements:
+     *
+     * - The caller must be the administrator.
+     *
+     * @return bool true = success, otherwise it reverts.
+     */
+    function _setFintroller(FintrollerInterface newFintroller) external override onlyAdmin returns (bool) {
+        /* Checks: sanity check the new contract. */
+        newFintroller.isFintroller();
+
+        /* Effects: update storage. */
+        FintrollerInterface oldFintroller = fintroller;
+        fintroller = newFintroller;
+
+        emit SetFintroller(admin, oldFintroller, newFintroller);
+
+        return true;
+    }
+
+    /**
      * INTERNAL FUNCTIONS
      */
 

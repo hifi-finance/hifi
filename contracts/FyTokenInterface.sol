@@ -23,6 +23,8 @@ abstract contract FyTokenInterface is FyTokenStorage {
 
     function repayBorrowBehalf(address borrower, uint256 repayAmount) external virtual returns (bool);
 
+    function _setFintroller(FintrollerInterface newFintroller) external virtual returns (bool);
+
     /**
      * EVENTS
      */
@@ -36,4 +38,6 @@ abstract contract FyTokenInterface is FyTokenStorage {
     );
 
     event RepayBorrow(address indexed payer, address indexed borrower, uint256 repayAmount, uint256 newDebt);
+
+    event SetFintroller(address indexed admin, FintrollerInterface oldFintroller, FintrollerInterface newFintroller);
 }
