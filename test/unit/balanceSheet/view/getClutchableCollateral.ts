@@ -3,8 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { BalanceSheetErrors } from "../../../../helpers/errors";
-import { percentages, precisionScalarForTokenWithEightDecimals, tokenAmounts } from "../../../../helpers/constants";
-import { contextForStubbedCollateralWithEightDecimals } from "../../../contexts";
+import { percentages, precisionScalars, tokenAmounts } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeGetClutchableCollateral(): void {
   /* 0.5 = 50 (repay amount) * 1.1 (liquidation incentive) * 1.0 (underlying price) / 100 (collateral price) */
@@ -49,10 +48,15 @@ export default function shouldBehaveLikeGetClutchableCollateral(): void {
         });
       });
 
-      contextForStubbedCollateralWithEightDecimals("when the collateral has 6 decimals", function () {
+      describe("when the collateral has 8 decimals", function () {
+        beforeEach(async function () {
+          await this.stubs.collateral.mock.decimals.returns(BigNumber.from(8));
+          await this.stubs.fyToken.mock.collateralPrecisionScalar.returns(precisionScalars.tokenWithEightDecimals);
+        });
+
         it("retrieves the downscaled clutchable collateral amount", async function () {
           const downscaledClutchableCollateralAmount = clutchableCollateralAmount.div(
-            precisionScalarForTokenWithEightDecimals,
+            precisionScalars.tokenWithEightDecimals,
           );
 
           const contractClutchableCollateralAmount: BigNumber = await this.contracts.balanceSheet.getClutchableCollateral(

@@ -1,17 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { BigNumber } from "@ethersproject/bignumber";
 import { Signer } from "@ethersproject/abstract-signer";
 import { Wallet } from "@ethersproject/wallet";
 import { ethers, waffle } from "@nomiclabs/buidler";
 
 import { Accounts, Contracts, Signers, Stubs } from "../@types/index";
-import { defaultNumberOfDecimals, ten } from "../helpers/constants";
 
 const { createFixtureLoader } = waffle;
-
-const eightDecimals: BigNumber = BigNumber.from(8);
-const deltaBetweenDecimals: BigNumber = defaultNumberOfDecimals.sub(eightDecimals);
-const newCollateralPrecisionScalar: BigNumber = ten.pow(deltaBetweenDecimals);
 
 /**
  * This is run at the beginning of each suite of tests: 2e2, integration and unit.
@@ -68,33 +62,5 @@ export function contextForTimeDependentTests(description: string, hooks: () => v
     afterEach(async function () {
       await waffle.provider.send("evm_revert", [snapshot]);
     });
-  });
-}
-
-/**
- * Lowers the stubbed collateral token's decimals from 18 to 6.
- */
-export function contextForStubbedCollateralWithEightDecimals(description: string, hooks: () => void): void {
-  describe(description, function () {
-    beforeEach(async function () {
-      await this.stubs.collateral.mock.decimals.returns(eightDecimals);
-      await this.stubs.fyToken.mock.collateralPrecisionScalar.returns(newCollateralPrecisionScalar);
-    });
-
-    hooks();
-  });
-}
-
-/**
- * Lowers the stubbed underlying token's decimals from 18 to 6.
- */
-export function contextForStubbedUnderlyingWithEightDecimals(description: string, hooks: () => void): void {
-  describe(description, function () {
-    beforeEach(async function () {
-      await this.stubs.underlying.mock.decimals.returns(eightDecimals);
-      await this.stubs.fyToken.mock.underlyingPrecisionScalar.returns(newCollateralPrecisionScalar);
-    });
-
-    hooks();
   });
 }

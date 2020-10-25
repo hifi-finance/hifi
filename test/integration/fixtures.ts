@@ -15,6 +15,7 @@ import {
   deploySimpleUniswapAnchoredView,
   deployUnderlying,
 } from "../deployers";
+import { fyTokenConstants } from "../../helpers/constants";
 
 type IntegrationFixtureReturnType = {
   balanceSheet: GodModeBalanceSheet;
@@ -40,6 +41,7 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
   /* Override the RedemptionPool.sol contract created by the fyToken with GodModeRedemptionPool.sol */
   const fyToken: GodModeFyToken = await deployGodModeFyToken(
     deployer,
+    fyTokenConstants.expirationTime,
     fintroller.address,
     balanceSheet.address,
     underlying.address,

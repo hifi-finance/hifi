@@ -5,13 +5,7 @@ import { expect } from "chai";
 import scenarios from "../../../scenarios";
 
 import { BalanceSheetErrors, GenericErrors, OraclePriceUtilsErrors } from "../../../../helpers/errors";
-import {
-  etherSymbol,
-  percentages,
-  precisionScalarForTokenWithEightDecimals,
-  tokenAmounts,
-} from "../../../../helpers/constants";
-import { contextForStubbedCollateralWithEightDecimals } from "../../../contexts";
+import { etherSymbol, percentages, precisionScalars, tokenAmounts } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio(): void {
   const hypotheticalCollateralizationRatioMantissa: BigNumber = percentages.oneThousand;
@@ -107,9 +101,16 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
           });
 
           describe("when the collateral price from the oracle is not zero", function () {
-            contextForStubbedCollateralWithEightDecimals("when the collateral has 6 decimals", function () {
+            describe("when the collateral has 8 decimals", function () {
+              beforeEach(async function () {
+                await this.stubs.collateral.mock.decimals.returns(BigNumber.from(8));
+                await this.stubs.fyToken.mock.collateralPrecisionScalar.returns(
+                  precisionScalars.tokenWithEightDecimals,
+                );
+              });
+
               it("retrieves the hypothetical collateralization ratio mantissa", async function () {
-                const downscaledLockedCollateral = lockedCollateral.div(precisionScalarForTokenWithEightDecimals);
+                const downscaledLockedCollateral = lockedCollateral.div(precisionScalars.tokenWithEightDecimals);
                 const contractHypotheticalCollateralizationRatioMantissa: BigNumber = await this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
                   this.stubs.fyToken.address,
                   this.accounts.borrower,

@@ -1,31 +1,12 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { Contract } from "@ethersproject/contracts";
-import { Signer } from "@ethersproject/abstract-signer";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
-import { waffle } from "@nomiclabs/buidler";
 
-import FyTokenArtifact from "../../../../artifacts/FyToken.json";
-
-import { fyTokenConstants } from "../../../../helpers/constants";
 import { FyTokenErrors } from "../../../../helpers/errors";
+import { FyToken } from "../../../../typechain/FyToken";
+import { deployFyToken } from "../../../deployers";
 import { getNow } from "../../../../helpers/time";
-
-const { deployContract } = waffle;
-
-function createDeployYTokenPromise(this: Mocha.Context, expirationTime?: BigNumber): Promise<Contract> {
-  const deployer: Signer = this.signers.admin;
-  const deployYTokenPromise: Promise<Contract> = deployContract(deployer, FyTokenArtifact, [
-    fyTokenConstants.name,
-    fyTokenConstants.symbol,
-    expirationTime || fyTokenConstants.expirationTime,
-    this.stubs.fintroller.address,
-    this.stubs.balanceSheet.address,
-    this.stubs.underlying.address,
-    this.stubs.collateral.address,
-  ]);
-  return deployYTokenPromise;
-}
+import { fyTokenConstants } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeConstructor(): void {
   const thirtySixDecimals: BigNumber = BigNumber.from(36);
@@ -36,8 +17,15 @@ export default function shouldBehaveLikeConstructor(): void {
     });
 
     it("reverts", async function () {
-      const deployYTokenPromise: Promise<Contract> = createDeployYTokenPromise.call(this);
-      await expect(deployYTokenPromise).to.be.revertedWith(FyTokenErrors.ConstructorUnderlyingDecimalsZero);
+      const deployFyTokenPromise: Promise<FyToken> = deployFyToken(
+        this.signers.admin,
+        fyTokenConstants.expirationTime,
+        this.stubs.fintroller.address,
+        this.stubs.balanceSheet.address,
+        this.stubs.underlying.address,
+        this.stubs.collateral.address,
+      );
+      await expect(deployFyTokenPromise).to.be.revertedWith(FyTokenErrors.ConstructorUnderlyingDecimalsZero);
     });
   });
 
@@ -47,8 +35,15 @@ export default function shouldBehaveLikeConstructor(): void {
     });
 
     it("reverts", async function () {
-      const deployYTokenPromise: Promise<Contract> = createDeployYTokenPromise.call(this);
-      await expect(deployYTokenPromise).to.be.revertedWith(FyTokenErrors.ConstructorUnderlyingDecimalsOverflow);
+      const deployFyTokenPromise: Promise<FyToken> = deployFyToken(
+        this.signers.admin,
+        fyTokenConstants.expirationTime,
+        this.stubs.fintroller.address,
+        this.stubs.balanceSheet.address,
+        this.stubs.underlying.address,
+        this.stubs.collateral.address,
+      );
+      await expect(deployFyTokenPromise).to.be.revertedWith(FyTokenErrors.ConstructorUnderlyingDecimalsOverflow);
     });
   });
 
@@ -58,8 +53,15 @@ export default function shouldBehaveLikeConstructor(): void {
     });
 
     it("reverts", async function () {
-      const deployYTokenPromise: Promise<Contract> = createDeployYTokenPromise.call(this);
-      await expect(deployYTokenPromise).to.be.revertedWith(FyTokenErrors.ConstructorCollateralDecimalsZero);
+      const deployFyTokenPromise: Promise<FyToken> = deployFyToken(
+        this.signers.admin,
+        fyTokenConstants.expirationTime,
+        this.stubs.fintroller.address,
+        this.stubs.balanceSheet.address,
+        this.stubs.underlying.address,
+        this.stubs.collateral.address,
+      );
+      await expect(deployFyTokenPromise).to.be.revertedWith(FyTokenErrors.ConstructorCollateralDecimalsZero);
     });
   });
 
@@ -69,16 +71,30 @@ export default function shouldBehaveLikeConstructor(): void {
     });
 
     it("reverts", async function () {
-      const deployYTokenPromise: Promise<Contract> = createDeployYTokenPromise.call(this);
-      await expect(deployYTokenPromise).to.be.revertedWith(FyTokenErrors.ConstructorCollateralDecimalsOverflow);
+      const deployFyTokenPromise: Promise<FyToken> = deployFyToken(
+        this.signers.admin,
+        fyTokenConstants.expirationTime,
+        this.stubs.fintroller.address,
+        this.stubs.balanceSheet.address,
+        this.stubs.underlying.address,
+        this.stubs.collateral.address,
+      );
+      await expect(deployFyTokenPromise).to.be.revertedWith(FyTokenErrors.ConstructorCollateralDecimalsOverflow);
     });
   });
 
   describe("when the expiration time is in the past", function () {
     it("reverts", async function () {
       const nowMinusOneHour: BigNumber = getNow().sub(3600);
-      const deployYTokenPromise: Promise<Contract> = createDeployYTokenPromise.call(this, nowMinusOneHour);
-      await expect(deployYTokenPromise).to.be.revertedWith(FyTokenErrors.ConstructorExpirationTimeNotValid);
+      const deployFyTokenPromise: Promise<FyToken> = deployFyToken(
+        this.signers.admin,
+        nowMinusOneHour,
+        this.stubs.fintroller.address,
+        this.stubs.balanceSheet.address,
+        this.stubs.underlying.address,
+        this.stubs.collateral.address,
+      );
+      await expect(deployFyTokenPromise).to.be.revertedWith(FyTokenErrors.ConstructorExpirationTimeNotValid);
     });
   });
 }

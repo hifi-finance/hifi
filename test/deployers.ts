@@ -1,6 +1,7 @@
+import { BigNumber } from "@ethersproject/bignumber";
 import { Signer } from "@ethersproject/abstract-signer";
 import { TransactionRequest } from "@ethersproject/providers";
-import { deployContract } from "ethereum-waffle";
+import { waffle } from "@nomiclabs/buidler";
 
 import BalanceSheetArtifact from "../artifacts/BalanceSheet.json";
 import Erc20MintableArtifact from "../artifacts/Erc20Mintable.json";
@@ -24,7 +25,7 @@ import { SimpleUniswapAnchoredView } from "../typechain/SimpleUniswapAnchoredVie
 import { TestOraclePriceUtils as OraclePriceUtils } from "../typechain/TestOraclePriceUtils";
 import { fyTokenConstants, gasLimits } from "../helpers/constants";
 
-// const { deployContract } = waffle;
+const { deployContract } = waffle;
 const overrideOptions: TransactionRequest = {
   gasLimit: process.env.CODE_COVERAGE
     ? gasLimits.coverage.deployContractGasLimit
@@ -59,6 +60,7 @@ export async function deployBalanceSheet(deployer: Signer, fintrollerAddress: st
 
 export async function deployFyToken(
   deployer: Signer,
+  expirationTime: BigNumber,
   fintrollerAddress: string,
   balanceSheetAddress: string,
   underlyingAddress: string,
@@ -70,7 +72,7 @@ export async function deployFyToken(
     [
       fyTokenConstants.name,
       fyTokenConstants.symbol,
-      fyTokenConstants.expirationTime,
+      expirationTime,
       fintrollerAddress,
       balanceSheetAddress,
       underlyingAddress,
@@ -109,6 +111,7 @@ export async function deployGodModeBalanceSheet(
 
 export async function deployGodModeFyToken(
   deployer: Signer,
+  expirationTime: BigNumber,
   fintrollerAddress: string,
   balanceSheetAddress: string,
   underlyingAddress: string,

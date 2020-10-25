@@ -58,14 +58,14 @@ contract FyToken is
         uint256 underlyingDecimals = underlying_.decimals();
         require(underlyingDecimals > 0, "ERR_FYTOKEN_CONSTRUCTOR_UNDERLYING_DECIMALS_ZERO");
         require(underlyingDecimals <= defaultNumberOfDecimals, "ERR_FYTOKEN_CONSTRUCTOR_UNDERLYING_DECIMALS_OVERFLOW");
-        underlyingPrecisionScalar = 1**(defaultNumberOfDecimals / underlyingDecimals);
+        underlyingPrecisionScalar = 10**(defaultNumberOfDecimals - underlyingDecimals);
         underlying = underlying_;
 
         /* Set the collateral contract and calculate the decimal scalar offsets. */
         uint256 collateralDecimals = collateral_.decimals();
         require(collateralDecimals > 0, "ERR_FYTOKEN_CONSTRUCTOR_COLLATERAL_DECIMALS_ZERO");
         require(defaultNumberOfDecimals >= collateralDecimals, "ERR_FYTOKEN_CONSTRUCTOR_COLLATERAL_DECIMALS_OVERFLOW");
-        collateralPrecisionScalar = 1**(defaultNumberOfDecimals / collateralDecimals);
+        collateralPrecisionScalar = 10**(defaultNumberOfDecimals - collateralDecimals);
         collateral = collateral_;
 
         /* Set the unix expiration time. */

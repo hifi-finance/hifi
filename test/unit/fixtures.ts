@@ -24,6 +24,7 @@ import {
   deployStubFyToken,
   deployStubUnderlying,
 } from "./stubs";
+import { fyTokenConstants } from "../../helpers/constants";
 
 type UnitFixtureBalanceSheetReturnType = {
   balanceSheet: GodModeBalanceSheet;
@@ -85,6 +86,7 @@ export async function unitFixtureFyToken(signers: Signer[]): Promise<UnitFixture
   const collateral: MockContract = await deployStubCollateral(deployer);
   const fyToken: GodModeFyToken = await deployGodModeFyToken(
     deployer,
+    fyTokenConstants.expirationTime,
     fintroller.address,
     balanceSheet.address,
     underlying.address,

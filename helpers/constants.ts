@@ -1,5 +1,5 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { Zero } from "@ethersproject/constants";
+import { One, Zero } from "@ethersproject/constants";
 
 import { getNow, getDaysInSeconds } from "./time";
 
@@ -14,7 +14,6 @@ export const fiftyMillion: BigNumber = tenMillion.mul(50);
 export const defaultNumberOfDecimals: BigNumber = BigNumber.from(18);
 export const openPriceFeedPrecision: BigNumber = BigNumber.from(6);
 export const openPriceFeedPrecisionScalar: BigNumber = ten.pow(defaultNumberOfDecimals.sub(openPriceFeedPrecision));
-export const precisionScalarForTokenWithEightDecimals: BigNumber = ten.pow(defaultNumberOfDecimals.sub(8));
 
 /* Represented as mantissas (decimal scalars with 18 decimals). */
 export const percentages: { [name: string]: BigNumber } = {
@@ -25,6 +24,12 @@ export const percentages: { [name: string]: BigNumber } = {
   oneHundredAndSeventyFive: ten.pow(16).mul(175),
   oneThousand: ten.pow(19),
   tenThousand: ten.pow(20),
+};
+
+/* Ten raised to the difference between 18 and the token's decimals. */
+export const precisionScalars = {
+  tokenWithEightDecimals: ten.pow(defaultNumberOfDecimals.sub(8)),
+  tokenWithEighteenDecimals: One,
 };
 
 /* Prices with 6 decimals, as per the Open Price Feed format. */
@@ -59,7 +64,8 @@ export const chainIds = {
   ropsten: 3,
 };
 
-/* High gas limits are needed otherwise deployments fail on coverage. */
+/* GAS LIMITS */
+/* Needed otherwise deployments fail on coverage. */
 export const gasLimits = {
   buidlerEvm: {
     blockGasLimit: tenMillion,

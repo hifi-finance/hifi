@@ -3,13 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { FintrollerErrors, GenericErrors, RedemptionPoolErrors } from "../../../../helpers/errors";
-import { contextForStubbedUnderlyingWithEightDecimals } from "../../../contexts";
-import {
-  fintrollerConstants,
-  fyTokenConstants,
-  precisionScalarForTokenWithEightDecimals,
-  tokenAmounts,
-} from "../../../../helpers/constants";
+import { fintrollerConstants, fyTokenConstants, precisionScalars, tokenAmounts } from "../../../../helpers/constants";
 import { getNow } from "../../../../helpers/time";
 
 export default function shouldBehaveLikeSupplyUnderlying(): void {
@@ -102,9 +96,16 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
               await this.stubs.fyToken.mock.mint.withArgs(this.accounts.maker, fyTokenAmount).returns(true);
             });
 
-            contextForStubbedUnderlyingWithEightDecimals("when the underlying has 6 decimals", function () {
+            describe("when the underlying has 8 decimals", function () {
+              beforeEach(async function () {
+                await this.stubs.underlying.mock.decimals.returns(BigNumber.from(8));
+                await this.stubs.fyToken.mock.underlyingPrecisionScalar.returns(
+                  precisionScalars.tokenWithEightDecimals,
+                );
+              });
+
               const downscaledUnderlyingAmount: BigNumber = underlyingAmount.div(
-                precisionScalarForTokenWithEightDecimals,
+                precisionScalars.tokenWithEightDecimals,
               );
 
               beforeEach(async function () {

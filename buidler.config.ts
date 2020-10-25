@@ -66,6 +66,10 @@ const config: ExtendedBuidlerConfig = {
       chainId: chainIds.ganache,
       url: "http://127.0.0.1:8555",
     },
+    ganache: {
+      chainId: chainIds.ganache,
+      url: "http://127.0.0.1:8545",
+    },
     goerli: createTestnetConfig("goerli"),
     rinkeby: createTestnetConfig("rinkeby"),
     ropsten: createTestnetConfig("ropsten"),
