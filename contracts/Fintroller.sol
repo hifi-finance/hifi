@@ -3,7 +3,6 @@ pragma solidity ^0.7.0;
 
 import "@paulrberg/contracts/access/Admin.sol";
 import "@paulrberg/contracts/math/Exponential.sol";
-import "@paulrberg/contracts/token/erc20/Erc20Recover.sol";
 
 import "./FintrollerInterface.sol";
 import "./FyTokenInterface.sol";
@@ -15,8 +14,7 @@ import "./oracles/UniswapAnchoredViewInterface.sol";
  */
 contract Fintroller is
     FintrollerInterface, /* one dependency */
-    Admin, /* two dependencies */
-    Erc20Recover /* five dependencies */
+    Admin /* two dependencies */
 {
     /* solhint-disable-next-line no-empty-blocks */
     constructor() Admin() {
