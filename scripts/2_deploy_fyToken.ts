@@ -1,8 +1,8 @@
 import { Contract, ContractFactory } from "@ethersproject/contracts";
 import { ethers } from "@nomiclabs/buidler";
 
-const name: string = "hfyDAI (2021-22-01)";
-const symbol: string = "hfyDAI-JAN21";
+const name: string = "hfyUSDC (2021-22-01)";
+const symbol: string = "hfyUSDC-JAN21";
 const expirationTime: number = 1611349200;
 
 let fintrollerAddress: string;
