@@ -116,7 +116,7 @@ contract FyToken is
      * - The caller must not fall below the threshold collateralization ratio.
      *
      * @param borrowAmount The amount of fyTokens to borrow and print into existence.
-     * @return bool true=success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function borrow(uint256 borrowAmount) public override isVaultOpen(msg.sender) nonReentrant returns (bool) {
         BorrowLocalVars memory vars;
@@ -181,7 +181,7 @@ contract FyToken is
      *
      * @param holder The account whose fyTokens to burn.
      * @param burnAmount The amount of fyTokens to burn.
-     * @return bool true=success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function burn(address holder, uint256 burnAmount) external override nonReentrant returns (bool) {
         /* Checks: the caller is the Redemption Pool. */
@@ -277,7 +277,7 @@ contract FyToken is
      *
      * @param beneficiary The account for which to mint the tokens.
      * @param mintAmount The amount of fyTokens to print into existence.
-     * @return bool true=success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function mint(address beneficiary, uint256 mintAmount) external override nonReentrant returns (bool) {
         /* Checks: the caller is the Redemption Pool. */

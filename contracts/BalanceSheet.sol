@@ -395,7 +395,7 @@ contract BalanceSheet is
         /* Checks: the Fintroller allows this action to be performed. */
         require(fintroller.getDepositCollateralAllowed(fyToken), "ERR_DEPOSIT_COLLATERAL_NOT_ALLOWED");
 
-        /* Effects: update the storage properties. */
+        /* Effects: update storage. */
         MathError mathErr;
         uint256 hypotheticalFreeCollateral;
         (mathErr, hypotheticalFreeCollateral) = addUInt(
@@ -434,7 +434,7 @@ contract BalanceSheet is
      *
      * @param fyToken The address of the fyToken contract.
      * @param collateralAmount The amount of free collateral to lock.
-     * @return bool true=success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function freeCollateral(FyTokenInterface fyToken, uint256 collateralAmount)
         external
@@ -470,7 +470,7 @@ contract BalanceSheet is
             );
         }
 
-        /* Effects: update the storage properties. */
+        /* Effects: update storage. */
         vaults[address(fyToken)][msg.sender].lockedCollateral = vars.newLockedCollateral;
         (vars.mathErr, vars.newFreeCollateral) = addUInt(vault.freeCollateral, collateralAmount);
         require(vars.mathErr == MathError.NO_ERROR, "ERR_FREE_COLLATERAL_MATH_ERROR");
@@ -493,7 +493,7 @@ contract BalanceSheet is
      *
      * @param fyToken The address of the fyToken contract.
      * @param collateralAmount The amount of free collateral to lock.
-     * @return bool true=success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function lockCollateral(FyTokenInterface fyToken, uint256 collateralAmount)
         external
@@ -564,7 +564,7 @@ contract BalanceSheet is
         /* Checks: the caller is the fyToken. */
         require(msg.sender == address(fyToken), "ERR_SET_VAULT_DEBT_NOT_AUTHORIZED");
 
-        /* Effects: update the storage property. */
+        /* Effects: update storage. */
         uint256 oldVaultDebt = vaults[address(fyToken)][account].debt;
         vaults[address(fyToken)][account].debt = newVaultDebt;
 
@@ -604,7 +604,7 @@ contract BalanceSheet is
             "ERR_INSUFFICIENT_FREE_COLLATERAL"
         );
 
-        /* Effects: update the storage properties. */
+        /* Effects: update storage. */
         MathError mathErr;
         uint256 newFreeCollateral;
         (mathErr, newFreeCollateral) = subUInt(vaults[address(fyToken)][msg.sender].freeCollateral, collateralAmount);

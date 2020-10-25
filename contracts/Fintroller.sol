@@ -164,7 +164,7 @@ contract Fintroller is
      * - The caller must be the administrator.
      *
      * @param fyToken The fyToken contract to list.
-     * @return bool true=success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function listBond(FyTokenInterface fyToken) external override onlyAdmin returns (bool) {
         fyToken.isFyToken();
@@ -195,7 +195,7 @@ contract Fintroller is
      *
      * @param fyToken The fyToken contract to update the permission for.
      * @param state The new state to put in storage.
-     * @return bool true=success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function setBorrowAllowed(FyTokenInterface fyToken, bool state) external override onlyAdmin returns (bool) {
         require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
@@ -218,7 +218,7 @@ contract Fintroller is
      *
      * @param fyToken The bond for which to update the collateralization ratio.
      * @param newCollateralizationRatioMantissa The new collateralization ratio as a mantissa.
-     * @return bool true=success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function setCollateralizationRatio(FyTokenInterface fyToken, uint256 newCollateralizationRatioMantissa)
         external
@@ -266,7 +266,7 @@ contract Fintroller is
      *
      * @param fyToken The bond for which to update the debt ceiling.
      * @param newDebtCeiling The uint256 value of the new debt ceiling, specified in the bond's decimal system.
-     * @return bool true=success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function setDebtCeiling(FyTokenInterface fyToken, uint256 newDebtCeiling)
         external
@@ -301,7 +301,7 @@ contract Fintroller is
      *
      * @param fyToken The fyToken contract to update the permission for.
      * @param state The new state to put in storage.
-     * @return bool true=success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function setDepositCollateralAllowed(FyTokenInterface fyToken, bool state)
         external
@@ -327,7 +327,7 @@ contract Fintroller is
      *
      * @param fyToken The fyToken contract to update the permission for.
      * @param state The new state to put in storage.
-     * @return bool true=success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function setLiquidateBorrowAllowed(FyTokenInterface fyToken, bool state)
         external
@@ -354,7 +354,7 @@ contract Fintroller is
      * - The new liquidation incentive cannot be lower than the minimum liquidation incentive.
 
      * @param newLiquidationIncentiveMantissa The new liquidation incentive as a mantissa.
-     * @return bool true=success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function setLiquidationIncentive(uint256 newLiquidationIncentiveMantissa)
         external
@@ -392,7 +392,7 @@ contract Fintroller is
      * - The new address cannot be the zero address.
      *
      * @param newOracle The new oracle contract.
-     * @return bool true=success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function setOracle(UniswapAnchoredViewInterface newOracle) external override onlyAdmin returns (bool) {
         require(address(newOracle) != address(0x00), "ERR_SET_ORACLE_ZERO_ADDRESS");
@@ -414,7 +414,7 @@ contract Fintroller is
      *
      * @param fyToken The fyToken contract to update the permission for.
      * @param state The new state to put in storage.
-     * @return bool true=success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function setRedeemFyTokensAllowed(FyTokenInterface fyToken, bool state) external override onlyAdmin returns (bool) {
         require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
@@ -435,7 +435,7 @@ contract Fintroller is
      *
      * @param fyToken The fyToken contract to update the permission for.
      * @param state The new state to put in storage.
-     * @return bool true=success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function setRepayBorrowAllowed(FyTokenInterface fyToken, bool state) external override onlyAdmin returns (bool) {
         require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
@@ -454,7 +454,7 @@ contract Fintroller is
      *
      * @param fyToken The fyToken contract to update the permission for.
      * @param state The new state to put in storage.
-     * @return bool true=success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function setSupplyUnderlyingAllowed(FyTokenInterface fyToken, bool state)
         external
