@@ -27,7 +27,7 @@
     "@nomiclabs/buidler": "1.4.8",
     "@nomiclabs/buidler-ethers": "^2.0.0",
     "@nomiclabs/buidler-waffle": "^2.1.0",
-    "@paulrberg/contracts": "1.2.0",
+    "@paulrberg/contracts": "1.2.1",
     "@typechain/ethers-v5": "^1.0.0",
     "@types/chai": "^4.2.12",
     "@types/fs-extra": "^9.0.1",
@@ -69,6 +69,7 @@
   "keywords": [
     "blockchain",
     "ethereum",
+    "lending",
     "smart-contracts",
     "solidity"
   ],
