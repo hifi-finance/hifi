@@ -11,6 +11,7 @@ import { ExtendedBuidlerConfig, ExtendedNetworkConfig } from "./@types";
 import "./tasks/accounts";
 import "./tasks/clean";
 import "./tasks/typechain";
+import { NetworkConfig } from "@nomiclabs/buidler/types";
 
 usePlugin("@nomiclabs/buidler-waffle");
 usePlugin("buidler-gas-reporter");
@@ -32,7 +33,21 @@ if (!process.env.INFURA_API_KEY) {
 }
 
 /* Used when deploying contracts to the testnet. */
-function createTestnetConfig(network: keyof typeof chainIds): ExtendedNetworkConfig {
+function createMainnetConfig(): ExtendedNetworkConfig {
+  const url: string = "https://mainnet.infura.io/v3/" + infuraApiKey;
+  return {
+    accounts: {
+      count: 6,
+      initialIndex: 0,
+      mnemonic,
+      path: "m/44'/60'/0'/0",
+    },
+    chainId: 1,
+    url,
+  };
+}
+
+function createTestnetConfig(network: keyof typeof chainIds): NetworkConfig {
   const url: string = "https://" + network + ".infura.io/v3/" + infuraApiKey;
   return {
     accounts: {
@@ -71,6 +86,7 @@ const config: ExtendedBuidlerConfig = {
       url: "http://127.0.0.1:8545",
     },
     goerli: createTestnetConfig("goerli"),
+    mainnet: createMainnetConfig(),
     rinkeby: createTestnetConfig("rinkeby"),
     ropsten: createTestnetConfig("ropsten"),
   },
