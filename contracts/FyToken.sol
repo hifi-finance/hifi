@@ -345,10 +345,11 @@ contract FyToken is
      *
      * - The caller must be the administrator.
      *
+     * @param newFintroller The address of the Fintroller contract.
      * @return bool true = success, otherwise it reverts.
      */
     function _setFintroller(FintrollerInterface newFintroller) external override onlyAdmin returns (bool) {
-        /* Checks: sanity check the new contract. */
+        /* Checks: sanity check the new Fintroller contract. */
         newFintroller.isFintroller();
 
         /* Effects: update storage. */
