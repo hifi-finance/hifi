@@ -1,7 +1,7 @@
 name: "Continuous Integration"
 
 env:
-  COVERAGE_GIT_BRANCH: "develop"
+  COVERAGE_GIT_BRANCH: "main"
   COVERAGE_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
   COVERAGE_SERVICE_NAME: "github-actions-ci"
   INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
@@ -10,10 +10,10 @@ env:
 on:
   pull_request:
     branches:
-      - "develop"
+      - "main"
   push:
     branches:
-      - "develop"
+      - "main"
 
 jobs:
   ci:

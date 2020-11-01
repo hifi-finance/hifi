@@ -1,4 +1,4 @@
-# Mainframe Lending Protocol [![Coverage Status](https://coveralls.io/repos/github/MainframeHQ/mainframe-lending-protocol/badge.svg?branch=develop)](https://coveralls.io/github/MainframeHQ/mainframe-lending-protocol?branch=develop) [![Commitizen Friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/) [![License: LGPL3.0](https://img.shields.io/badge/license-LGPL3.0-yellow.svg)](https://opensource.org/licenses/lgpl-3.0)
+# Mainframe Lending Protocol [![Coverage Status](https://coveralls.io/repos/github/MainframeHQ/mainframe-lending-protocol/badge.svg?branch=main)](https://coveralls.io/github/MainframeHQ/mainframe-lending-protocol?branch=main) [![Commitizen Friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/) [![License: LGPL3.0](https://img.shields.io/badge/license-LGPL3.0-yellow.svg)](https://opensource.org/licenses/lgpl-3.0)
 
 An implementation of zero-coupon bonds on the Ethereum blockchain.
 
