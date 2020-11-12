@@ -27,9 +27,9 @@ abstract contract FintrollerInterface is FintrollerStorage {
 
     function getBorrowAllowed(FyTokenInterface fyToken) external view virtual returns (bool);
 
-    function getBondDebtCeiling(FyTokenInterface fyToken) external view virtual returns (uint256);
-
     function getBondCollateralizationRatio(FyTokenInterface fyToken) external view virtual returns (uint256);
+
+    function getBondDebtCeiling(FyTokenInterface fyToken) external view virtual returns (uint256);
 
     function getDepositCollateralAllowed(FyTokenInterface fyToken) external view virtual returns (bool);
 

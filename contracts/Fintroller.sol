@@ -60,16 +60,6 @@ contract Fintroller is
     }
 
     /**
-     * @notice Reads the debt ceiling of the given bond.
-     * @dev It is not an error to provide an invalid fyToken address.
-     * @param fyToken The address of the bond contract.
-     * @return The debt ceiling as a uint256, or zero if an invalid address was provided.
-     */
-    function getBondDebtCeiling(FyTokenInterface fyToken) external view override returns (uint256) {
-        return bonds[fyToken].debtCeiling;
-    }
-
-    /**
      * @notice Reads the collateralization ratio of the given bond.
      * @dev It is not an error to provide an invalid fyToken address.
      * @param fyToken The address of the bond contract.
@@ -80,8 +70,18 @@ contract Fintroller is
     }
 
     /**
+     * @notice Reads the debt ceiling of the given bond.
+     * @dev It is not an error to provide an invalid fyToken address.
+     * @param fyToken The address of the bond contract.
+     * @return The debt ceiling as a uint256, or zero if an invalid address was provided.
+     */
+    function getBondDebtCeiling(FyTokenInterface fyToken) external view override returns (uint256) {
+        return bonds[fyToken].debtCeiling;
+    }
+
+    /**
      * @notice Check if the account should be allowed to borrow fyTokens.
-     * @dev Reverts it the bond is not listed.
+     * @dev The bond must be listed.
      * @param fyToken The bond to make the check against.
      * @return bool true = allowed, false = not allowed.
      */
@@ -93,7 +93,7 @@ contract Fintroller is
 
     /**
      * @notice Checks if the account should be allowed to deposit collateral.
-     * @dev Reverts it the bond is not listed.
+     * @dev The bond must be listed.
      * @param fyToken The bond to make the check against.
      * @return bool true = allowed, false = not allowed.
      */
@@ -105,7 +105,7 @@ contract Fintroller is
 
     /**
      * @notice Check if the account should be allowed to liquidate fyToken borrows.
-     * @dev Reverts it the bond is not listed.
+     * @dev The bond must be listed.
      * @param fyToken The bond to make the check against.
      * @return bool true = allowed, false = not allowed.
      */
@@ -117,7 +117,7 @@ contract Fintroller is
 
     /**
      * @notice Checks if the account should be allowed to redeem the underlying asset from the Redemption Pool.
-     * @dev Reverts it the bond is not listed.
+     * @dev The bond must be listed.
      * @param fyToken The bond to make the check against.
      * @return bool true = allowed, false = not allowed.
      */
@@ -129,7 +129,7 @@ contract Fintroller is
 
     /**
      * @notice Checks if the account should be allowed to repay borrows.
-     * @dev Reverts it the bond is not listed.
+     * @dev The bond must be listed.
      * @param fyToken The bond to make the check against.
      * @return bool true = allowed, false = not allowed.
      */
@@ -141,7 +141,7 @@ contract Fintroller is
 
     /**
      * @notice Checks if the account should be allowed to the supply underlying asset to the Redemption Pool.
-     * @dev Reverts it the bond is not listed.
+     * @dev The bond must be listed.
      * @param fyToken The bond to make the check against.
      * @return bool true = allowed, false = not allowed.
      */
