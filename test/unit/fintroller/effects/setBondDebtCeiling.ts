@@ -13,7 +13,7 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
       await expect(
         this.contracts.fintroller
           .connect(this.signers.raider)
-          .setDebtCeiling(this.stubs.fyToken.address, newDebtCeiling),
+          .setBondDebtCeiling(this.stubs.fyToken.address, newDebtCeiling),
       ).to.be.revertedWith(AdminErrors.NotAdmin);
     });
   });
@@ -24,7 +24,7 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
         await expect(
           this.contracts.fintroller
             .connect(this.signers.admin)
-            .setDebtCeiling(this.stubs.fyToken.address, newDebtCeiling),
+            .setBondDebtCeiling(this.stubs.fyToken.address, newDebtCeiling),
         ).to.be.revertedWith(FintrollerErrors.BondNotListed);
       });
     });
@@ -37,8 +37,8 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
       describe("when the debt ceiling is zero", function () {
         it("reverts", async function () {
           await expect(
-            this.contracts.fintroller.connect(this.signers.admin).setDebtCeiling(this.stubs.fyToken.address, Zero),
-          ).to.be.revertedWith(FintrollerErrors.SetDebtCeilingZero);
+            this.contracts.fintroller.connect(this.signers.admin).setBondDebtCeiling(this.stubs.fyToken.address, Zero),
+          ).to.be.revertedWith(FintrollerErrors.SetBondDebtCeilingZero);
         });
       });
 
@@ -46,20 +46,20 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
         it("sets the new debt ceiling", async function () {
           await this.contracts.fintroller
             .connect(this.signers.admin)
-            .setDebtCeiling(this.stubs.fyToken.address, newDebtCeiling);
+            .setBondDebtCeiling(this.stubs.fyToken.address, newDebtCeiling);
           const contractDebtCeiling: BigNumber = await this.contracts.fintroller.getBondDebtCeiling(
             this.stubs.fyToken.address,
           );
           expect(contractDebtCeiling).to.equal(newDebtCeiling);
         });
 
-        it("emits a SetDebtCeiling event", async function () {
+        it("emits a SetBondDebtCeiling event", async function () {
           await expect(
             this.contracts.fintroller
               .connect(this.signers.admin)
-              .setDebtCeiling(this.stubs.fyToken.address, newDebtCeiling),
+              .setBondDebtCeiling(this.stubs.fyToken.address, newDebtCeiling),
           )
-            .to.emit(this.contracts.fintroller, "SetDebtCeiling")
+            .to.emit(this.contracts.fintroller, "SetBondDebtCeiling")
             .withArgs(this.accounts.admin, this.stubs.fyToken.address, Zero, newDebtCeiling);
         });
       });

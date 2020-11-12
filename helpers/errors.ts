@@ -26,9 +26,9 @@ export enum Erc20PermitErrors {
 
 export enum FintrollerErrors {
   BondNotListed = "ERR_BOND_NOT_LISTED",
+  SetBondDebtCeilingZero = "ERR_SET_BOND_DEBT_CEILING_ZERO",
   SetCollateralizationRatioLowerBound = "ERR_SET_COLLATERALIZATION_RATIO_LOWER_BOUND",
   SetCollateralizationRatioUpperBound = "ERR_SET_COLLATERALIZATION_RATIO_UPPER_BOUND",
-  SetDebtCeilingZero = "ERR_SET_DEBT_CEILING_ZERO",
   SetLiquidationIncentiveLowerBound = "ERR_SET_LIQUIDATION_INCENTIVE_LOWER_BOUND",
   SetLiquidationIncentiveUpperBound = "ERR_SET_LIQUIDATION_INCENTIVE_UPPER_BOUND",
   SetOracleZeroAddress = "ERR_SET_ORACLE_ZERO_ADDRESS",

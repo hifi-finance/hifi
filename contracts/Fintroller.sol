@@ -185,6 +185,42 @@ contract Fintroller is
     }
 
     /**
+     * @notice Updates the debt ceiling, which limits how much debt can be created in the bond market.
+     *
+     * @dev Emits a {SetBondDebtCeiling} event.
+     *
+     * Requirements:
+     *
+     * - The caller must be the administrator.
+     * - The bond must be listed.
+     * - The debt ceiling cannot be zero.
+     *
+     * @param fyToken The bond for which to update the debt ceiling.
+     * @param newDebtCeiling The uint256 value of the new debt ceiling, specified in the bond's decimal system.
+     * @return bool true = success, otherwise it reverts.
+     */
+    function setBondDebtCeiling(FyTokenInterface fyToken, uint256 newDebtCeiling)
+        external
+        override
+        onlyAdmin
+        returns (bool)
+    {
+        /* Checks: bond is listed. */
+        require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
+
+        /* Checks: the zero edge case. */
+        require(newDebtCeiling > 0, "ERR_SET_BOND_DEBT_CEILING_ZERO");
+
+        /* Effects: update storage. */
+        uint256 oldDebtCeiling = bonds[fyToken].debtCeiling;
+        bonds[fyToken].debtCeiling = newDebtCeiling;
+
+        emit SetBondDebtCeiling(admin, fyToken, oldDebtCeiling, newDebtCeiling);
+
+        return true;
+    }
+
+    /**
      * @notice Updates the state of the permission accessed by the fyToken before a borrow.
      *
      * @dev Emits a {SetBorrowAllowed} event.
@@ -250,42 +286,6 @@ contract Fintroller is
             oldCollateralizationRatioMantissa,
             newCollateralizationRatioMantissa
         );
-
-        return true;
-    }
-
-    /**
-     * @notice Updates the debt ceiling, which limits how much debt can be created in the bond market.
-     *
-     * @dev Emits a {SetDebtCeiling} event.
-     *
-     * Requirements:
-     *
-     * - The caller must be the administrator.
-     * - The bond must be listed.
-     * - The debt ceiling cannot be zero.
-     *
-     * @param fyToken The bond for which to update the debt ceiling.
-     * @param newDebtCeiling The uint256 value of the new debt ceiling, specified in the bond's decimal system.
-     * @return bool true = success, otherwise it reverts.
-     */
-    function setDebtCeiling(FyTokenInterface fyToken, uint256 newDebtCeiling)
-        external
-        override
-        onlyAdmin
-        returns (bool)
-    {
-        /* Checks: bond is listed. */
-        require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
-
-        /* Checks: the zero edge case. */
-        require(newDebtCeiling > 0, "ERR_SET_DEBT_CEILING_ZERO");
-
-        /* Effects: update storage. */
-        uint256 oldDebtCeiling = bonds[fyToken].debtCeiling;
-        bonds[fyToken].debtCeiling = newDebtCeiling;
-
-        emit SetDebtCeiling(admin, fyToken, oldDebtCeiling, newDebtCeiling);
 
         return true;
     }
