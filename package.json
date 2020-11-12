@@ -10,6 +10,9 @@
   "bugs": {
     "url": "https://github.com/mainframehq/mainframe-lending-protocol/issues"
   },
+  "dependencies": {
+    "@paulrberg/contracts": "1.2.2"
+  },
   "devDependencies": {
     "@commitlint/cli": "^9.1.2",
     "@commitlint/config-conventional": "^9.1.2",
@@ -27,7 +30,6 @@
     "@nomiclabs/buidler": "1.4.8",
     "@nomiclabs/buidler-ethers": "^2.0.0",
     "@nomiclabs/buidler-waffle": "^2.1.0",
-    "@paulrberg/contracts": "1.2.1",
     "@typechain/ethers-v5": "^1.0.0",
     "@types/chai": "^4.2.12",
     "@types/fs-extra": "^9.0.1",
