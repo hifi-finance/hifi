@@ -160,12 +160,14 @@ contract FyToken is
         /* Effects: print the new fyTokens into existence. */
         mintInternal(msg.sender, borrowAmount);
 
+        /* Emit a Transfer and a Borrow event. */
+        emit Transfer(address(this), msg.sender, borrowAmount);
+
         /* Interactions: increase the debt of the borrower account. */
         require(balanceSheet.setVaultDebt(this, msg.sender, vars.newDebt), "ERR_BORROW_CALL_SET_VAULT_DEBT");
 
-        /* Emit a Borrow, Mint and Transfer event. */
+        /* Emit a Borrow event. */
         emit Borrow(msg.sender, borrowAmount);
-        emit Transfer(address(this), msg.sender, borrowAmount);
 
         return true;
     }
@@ -400,6 +402,9 @@ contract FyToken is
         /* Effects: burn the fyTokens. */
         burnInternal(payer, repayAmount);
 
+        /* Emit a Transfer event. */
+        emit Transfer(payer, address(this), repayAmount);
+
         /* Calculate the new debt of the borrower. */
         MathError mathErr;
         uint256 newDebt;
@@ -410,8 +415,7 @@ contract FyToken is
         /* Interactions: reduce the debt of the borrower . */
         require(balanceSheet.setVaultDebt(this, borrower, newDebt), "ERR_REPAY_BORROW_CALL_SET_VAULT_DEBT");
 
-        /* Emit both a Transfer and a RepayBorrow event. */
-        emit Transfer(payer, address(this), repayAmount);
+        /* Emit both a RepayBorrow event. */
         emit RepayBorrow(payer, borrower, repayAmount, newDebt);
     }
 }
