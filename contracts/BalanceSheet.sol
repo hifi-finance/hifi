@@ -532,12 +532,13 @@ contract BalanceSheet is
      * Requirements:
      *
      * - The vault cannot be already open.
+     * - The fyToken must pass the inspection.
      *
      * @param fyToken The address of the fyToken contract for which to open the vault.
      * @return true = success, otherwise it reverts.
      */
     function openVault(FyTokenInterface fyToken) external override returns (bool) {
-        fyToken.isFyToken();
+        require(fyToken.isFyToken(), "ERR_OPEN_VAULT_FYTOKEN_INSPECTION");
         require(vaults[address(fyToken)][msg.sender].isOpen == false, "ERR_VAULT_OPEN");
         vaults[address(fyToken)][msg.sender].isOpen = true;
         emit OpenVault(fyToken, msg.sender);

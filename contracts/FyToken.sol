@@ -350,13 +350,14 @@ contract FyToken is
      * Requirements:
      *
      * - The caller must be the administrator.
+     * - The new Fintroller must pass the inspection.
      *
-     * @param newFintroller The address of the Fintroller contract.
+     * @param newFintroller The address of the new Fintroller contract.
      * @return bool true = success, otherwise it reverts.
      */
     function _setFintroller(FintrollerInterface newFintroller) external override onlyAdmin returns (bool) {
         /* Checks: sanity check the new Fintroller contract. */
-        newFintroller.isFintroller();
+        require(newFintroller.isFintroller(), "ERR_SET_FINTROLLER_INSPECTION");
 
         /* Effects: update storage. */
         FintrollerInterface oldFintroller = fintroller;

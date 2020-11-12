@@ -163,12 +163,13 @@ contract Fintroller is
      * Requirements:
      *
      * - The caller must be the administrator.
+     * - The fyToken must pass the inspection.
      *
      * @param fyToken The fyToken contract to list.
      * @return bool true = success, otherwise it reverts.
      */
     function listBond(FyTokenInterface fyToken) external override onlyAdmin returns (bool) {
-        fyToken.isFyToken();
+        require(fyToken.isFyToken(), "ERR_LIST_BOND_FYTOKEN_INSPECTION");
         bonds[fyToken] = Bond({
             collateralizationRatio: Exp({ mantissa: defaultCollateralizationRatioMantissa }),
             debtCeiling: 0,
