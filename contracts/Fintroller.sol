@@ -60,16 +60,6 @@ contract Fintroller is
     }
 
     /**
-     * @notice Reads the debt ceiling of the given bond.
-     * @dev It is not an error to provide an invalid fyToken address.
-     * @param fyToken The address of the bond contract.
-     * @return The debt ceiling as a uint256, or zero if an invalid address was provided.
-     */
-    function getBondDebtCeiling(FyTokenInterface fyToken) external view override returns (uint256) {
-        return bonds[fyToken].debtCeiling;
-    }
-
-    /**
      * @notice Reads the collateralization ratio of the given bond.
      * @dev It is not an error to provide an invalid fyToken address.
      * @param fyToken The address of the bond contract.
@@ -80,8 +70,18 @@ contract Fintroller is
     }
 
     /**
+     * @notice Reads the debt ceiling of the given bond.
+     * @dev It is not an error to provide an invalid fyToken address.
+     * @param fyToken The address of the bond contract.
+     * @return The debt ceiling as a uint256, or zero if an invalid address was provided.
+     */
+    function getBondDebtCeiling(FyTokenInterface fyToken) external view override returns (uint256) {
+        return bonds[fyToken].debtCeiling;
+    }
+
+    /**
      * @notice Check if the account should be allowed to borrow fyTokens.
-     * @dev Reverts it the bond is not listed.
+     * @dev The bond must be listed.
      * @param fyToken The bond to make the check against.
      * @return bool true = allowed, false = not allowed.
      */
@@ -93,7 +93,7 @@ contract Fintroller is
 
     /**
      * @notice Checks if the account should be allowed to deposit collateral.
-     * @dev Reverts it the bond is not listed.
+     * @dev The bond must be listed.
      * @param fyToken The bond to make the check against.
      * @return bool true = allowed, false = not allowed.
      */
@@ -105,7 +105,7 @@ contract Fintroller is
 
     /**
      * @notice Check if the account should be allowed to liquidate fyToken borrows.
-     * @dev Reverts it the bond is not listed.
+     * @dev The bond must be listed.
      * @param fyToken The bond to make the check against.
      * @return bool true = allowed, false = not allowed.
      */
@@ -117,7 +117,7 @@ contract Fintroller is
 
     /**
      * @notice Checks if the account should be allowed to redeem the underlying asset from the Redemption Pool.
-     * @dev Reverts it the bond is not listed.
+     * @dev The bond must be listed.
      * @param fyToken The bond to make the check against.
      * @return bool true = allowed, false = not allowed.
      */
@@ -129,7 +129,7 @@ contract Fintroller is
 
     /**
      * @notice Checks if the account should be allowed to repay borrows.
-     * @dev Reverts it the bond is not listed.
+     * @dev The bond must be listed.
      * @param fyToken The bond to make the check against.
      * @return bool true = allowed, false = not allowed.
      */
@@ -141,7 +141,7 @@ contract Fintroller is
 
     /**
      * @notice Checks if the account should be allowed to the supply underlying asset to the Redemption Pool.
-     * @dev Reverts it the bond is not listed.
+     * @dev The bond must be listed.
      * @param fyToken The bond to make the check against.
      * @return bool true = allowed, false = not allowed.
      */
@@ -163,12 +163,13 @@ contract Fintroller is
      * Requirements:
      *
      * - The caller must be the administrator.
+     * - The fyToken must pass the inspection.
      *
      * @param fyToken The fyToken contract to list.
      * @return bool true = success, otherwise it reverts.
      */
     function listBond(FyTokenInterface fyToken) external override onlyAdmin returns (bool) {
-        fyToken.isFyToken();
+        require(fyToken.isFyToken(), "ERR_LIST_BOND_FYTOKEN_INSPECTION");
         bonds[fyToken] = Bond({
             collateralizationRatio: Exp({ mantissa: defaultCollateralizationRatioMantissa }),
             debtCeiling: 0,
@@ -181,6 +182,47 @@ contract Fintroller is
             isSupplyUnderlyingAllowed: true
         });
         emit ListBond(admin, fyToken);
+        return true;
+    }
+
+    /**
+     * @notice Updates the debt ceiling, which limits how much debt can be created in the bond market.
+     *
+     * @dev Emits a {SetBondDebtCeiling} event.
+     *
+     * Requirements:
+     *
+     * - The caller must be the administrator.
+     * - The bond must be listed.
+     * - The debt ceiling cannot be zero.
+     * - The debt ceiling cannot fall below the current total supply of fyTokens.
+     *
+     * @param fyToken The bond for which to update the debt ceiling.
+     * @param newDebtCeiling The uint256 value of the new debt ceiling, specified in the bond's decimal system.
+     * @return bool true = success, otherwise it reverts.
+     */
+    function setBondDebtCeiling(FyTokenInterface fyToken, uint256 newDebtCeiling)
+        external
+        override
+        onlyAdmin
+        returns (bool)
+    {
+        /* Checks: bond is listed. */
+        require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
+
+        /* Checks: the zero edge case. */
+        require(newDebtCeiling > 0, "ERR_SET_BOND_DEBT_CEILING_ZERO");
+
+        /* Checks: above total supply of fyTokens. */
+        uint256 totalSupply = Erc20Interface(address(fyToken)).totalSupply();
+        require(newDebtCeiling >= totalSupply, "ERR_SET_BOND_DEBT_CEILING_UNDERFLOW");
+
+        /* Effects: update storage. */
+        uint256 oldDebtCeiling = bonds[fyToken].debtCeiling;
+        bonds[fyToken].debtCeiling = newDebtCeiling;
+
+        emit SetBondDebtCeiling(admin, fyToken, oldDebtCeiling, newDebtCeiling);
+
         return true;
     }
 
@@ -255,42 +297,6 @@ contract Fintroller is
     }
 
     /**
-     * @notice Updates the debt ceiling, which limits how much debt can be created in the bond market.
-     *
-     * @dev Emits a {SetDebtCeiling} event.
-     *
-     * Requirements:
-     *
-     * - The caller must be the administrator.
-     * - The bond must be listed.
-     * - The debt ceiling cannot be zero.
-     *
-     * @param fyToken The bond for which to update the debt ceiling.
-     * @param newDebtCeiling The uint256 value of the new debt ceiling, specified in the bond's decimal system.
-     * @return bool true = success, otherwise it reverts.
-     */
-    function setDebtCeiling(FyTokenInterface fyToken, uint256 newDebtCeiling)
-        external
-        override
-        onlyAdmin
-        returns (bool)
-    {
-        /* Checks: bond is listed. */
-        require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
-
-        /* Checks: the zero edge case. */
-        require(newDebtCeiling > 0, "ERR_SET_DEBT_CEILING_ZERO");
-
-        /* Effects: update storage. */
-        uint256 oldDebtCeiling = bonds[fyToken].debtCeiling;
-        bonds[fyToken].debtCeiling = newDebtCeiling;
-
-        emit SetDebtCeiling(admin, fyToken, oldDebtCeiling, newDebtCeiling);
-
-        return true;
-    }
-
-    /**
      * @notice Updates the state of the permission accessed by the fyToken before a collateral deposit.
      *
      * @dev Emits a {SetDepositCollateralAllowed} event.
@@ -343,14 +349,14 @@ contract Fintroller is
     }
 
     /**
-     * @notice Lorem ipsum.
+     * @notice Sets a new value for the liquidation incentive, which is applicable
+     * to all listed bonds.
      *
      * @dev Emits a {SetLiquidationIncentive} event.
      *
      * Requirements:
      *
      * - The caller must be the administrator.
-     * - The bond must be listed.
      * - The new liquidation incentive cannot be higher than the maximum liquidation incentive.
      * - The new liquidation incentive cannot be lower than the minimum liquidation incentive.
 

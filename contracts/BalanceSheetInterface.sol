@@ -17,7 +17,7 @@ abstract contract BalanceSheetInterface is BalanceSheetStorage {
         virtual
         returns (uint256);
 
-    function getCurrentCollateralizationRatio(FyTokenInterface fyToken, address account)
+    function getCurrentCollateralizationRatio(FyTokenInterface fyToken, address borrower)
         public
         view
         virtual
@@ -25,12 +25,12 @@ abstract contract BalanceSheetInterface is BalanceSheetStorage {
 
     function getHypotheticalCollateralizationRatio(
         FyTokenInterface fyToken,
-        address account,
+        address borrower,
         uint256 lockedCollateral,
         uint256 debt
     ) public view virtual returns (uint256);
 
-    function getVault(FyTokenInterface fyToken, address account)
+    function getVault(FyTokenInterface fyToken, address borrower)
         external
         view
         virtual
@@ -41,17 +41,17 @@ abstract contract BalanceSheetInterface is BalanceSheetStorage {
             bool
         );
 
-    function getVaultDebt(FyTokenInterface fyToken, address account) external view virtual returns (uint256);
+    function getVaultDebt(FyTokenInterface fyToken, address borrower) external view virtual returns (uint256);
 
-    function getVaultLockedCollateral(FyTokenInterface fyToken, address account)
+    function getVaultLockedCollateral(FyTokenInterface fyToken, address borrower)
         external
         view
         virtual
         returns (uint256);
 
-    function isAccountUnderwater(FyTokenInterface fyToken, address account) external view virtual returns (bool);
+    function isAccountUnderwater(FyTokenInterface fyToken, address borrower) external view virtual returns (bool);
 
-    function isVaultOpen(FyTokenInterface fyToken, address account) external view virtual returns (bool);
+    function isVaultOpen(FyTokenInterface fyToken, address borrower) external view virtual returns (bool);
 
     /**
      * NON-CONSTANT FUNCTIONS
@@ -74,7 +74,7 @@ abstract contract BalanceSheetInterface is BalanceSheetStorage {
 
     function setVaultDebt(
         FyTokenInterface fyToken,
-        address account,
+        address borrower,
         uint256 newVaultDebt
     ) external virtual returns (bool);
 
@@ -91,15 +91,15 @@ abstract contract BalanceSheetInterface is BalanceSheetStorage {
         uint256 clutchedCollateralAmount
     );
 
-    event DepositCollateral(FyTokenInterface indexed fyToken, address indexed account, uint256 collateralAmount);
+    event DepositCollateral(FyTokenInterface indexed fyToken, address indexed borrower, uint256 collateralAmount);
 
-    event FreeCollateral(FyTokenInterface indexed fyToken, address indexed account, uint256 collateralAmount);
+    event FreeCollateral(FyTokenInterface indexed fyToken, address indexed borrower, uint256 collateralAmount);
 
-    event LockCollateral(FyTokenInterface indexed fyToken, address indexed account, uint256 collateralAmount);
+    event LockCollateral(FyTokenInterface indexed fyToken, address indexed borrower, uint256 collateralAmount);
 
-    event OpenVault(FyTokenInterface indexed fyToken, address indexed account);
+    event OpenVault(FyTokenInterface indexed fyToken, address indexed borrower);
 
-    event SetVaultDebt(FyTokenInterface indexed fyToken, address indexed account, uint256 oldDebt, uint256 newDebt);
+    event SetVaultDebt(FyTokenInterface indexed fyToken, address indexed borrower, uint256 oldDebt, uint256 newDebt);
 
-    event WithdrawCollateral(FyTokenInterface indexed fyToken, address indexed account, uint256 collateralAmount);
+    event WithdrawCollateral(FyTokenInterface indexed fyToken, address indexed borrower, uint256 collateralAmount);
 }

@@ -13,9 +13,9 @@ import shouldBehaveLikeOracleGetter from "./view/oracle";
 import shouldBehaveLikeOraclePricePrecisionScalarGetter from "./view/oraclePricePrecisionScalar";
 
 import shouldBehaveLikeListBond from "./effects/listBond";
+import shouldBehaveLikeSetBondDebtCeiling from "./effects/setBondDebtCeiling";
 import shouldBehaveLikeSetBorrowAllowed from "./effects/setBorrowAllowed";
 import shouldBehaveLikeSetCollateralizationRatio from "./effects/setCollateralizationRatio";
-import shouldBehaveLikeSetDebtCeiling from "./effects/setDebtCeiling";
 import shouldBehaveLikeSetDepositCollateralAllowed from "./effects/setDepositCollateralAllowed";
 import shouldBehaveLikeSetLiquidateBorrowAllowed from "./effects/setLiquidateBorrowAllowed";
 import shouldBehaveLikeSetLiquidationIncentive from "./effects/setLiquidationIncentive";
@@ -84,16 +84,16 @@ export function shouldBehaveLikeFintroller(): void {
       shouldBehaveLikeListBond();
     });
 
+    describe("setBondDebtCeiling", function () {
+      shouldBehaveLikeSetBondDebtCeiling();
+    });
+
     describe("setBorrowAllowed", function () {
       shouldBehaveLikeSetBorrowAllowed();
     });
 
     describe("setCollateralizationRatio", function () {
       shouldBehaveLikeSetCollateralizationRatio();
-    });
-
-    describe("setDebtCeiling", function () {
-      shouldBehaveLikeSetDebtCeiling();
     });
 
     describe("setDepositCollateralAllowed", function () {

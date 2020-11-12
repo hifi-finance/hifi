@@ -41,12 +41,12 @@ export async function deployStubErc20(
   symbol: string,
   decimals: BigNumber,
 ): Promise<MockContract> {
-  const collateral: MockContract = await deployStubContract(deployer, Erc20Artifact.abi);
-  await collateral.mock.name.returns(name);
-  await collateral.mock.symbol.returns(symbol);
-  await collateral.mock.decimals.returns(decimals);
-  await collateral.mock.totalSupply.returns(Zero);
-  return collateral;
+  const erc20: MockContract = await deployStubContract(deployer, Erc20Artifact.abi);
+  await erc20.mock.name.returns(name);
+  await erc20.mock.symbol.returns(symbol);
+  await erc20.mock.decimals.returns(decimals);
+  await erc20.mock.totalSupply.returns(Zero);
+  return erc20;
 }
 
 export async function deployStubFintroller(deployer: Signer): Promise<MockContract> {

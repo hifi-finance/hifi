@@ -1,7 +1,6 @@
-import { AddressZero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { GenericErrors } from "../../../../helpers/errors";
+import { BalanceSheetErrors, GenericErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeOpenVault(): void {
   describe("when the vault is open", function () {
@@ -18,8 +17,14 @@ export default function shouldBehaveLikeOpenVault(): void {
 
   describe("when the vault is not open", function () {
     describe("when the fyToken is not compliant", function () {
+      beforeEach(async function () {
+        await this.stubs.fyToken.mock.isFyToken.returns(false);
+      });
+
       it("reverts", async function () {
-        await expect(this.contracts.balanceSheet.connect(this.signers.borrower).openVault(AddressZero)).to.be.reverted;
+        await expect(
+          this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.fyToken.address),
+        ).to.be.revertedWith(BalanceSheetErrors.OpenVaultFyTokenInspection);
       });
     });
 

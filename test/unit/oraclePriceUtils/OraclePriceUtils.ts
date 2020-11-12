@@ -1,5 +1,5 @@
-import { unitFixtureOraclePriceUtils } from "../fixtures";
 import { shouldBehaveLikeOraclePriceUtils } from "./OraclePriceUtils.behavior";
+import { unitFixtureOraclePriceUtils } from "../fixtures";
 
 export function unitTestOraclePriceUtils(): void {
   describe("OraclePriceUtils", function () {

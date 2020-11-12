@@ -12,16 +12,6 @@ import "./RedemptionPoolInterface.sol";
  */
 abstract contract FyTokenStorage {
     /**
-     * STRUCTS
-     */
-    struct Vault {
-        uint256 debt;
-        uint256 freeCollateral;
-        uint256 lockedCollateral;
-        bool isOpen;
-    }
-
-    /**
      * STORAGE PROPERTIES
      */
 

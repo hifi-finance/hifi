@@ -54,7 +54,11 @@ export async function unitFixtureBalanceSheet(signers: Signer[]): Promise<UnitFi
   return { balanceSheet, collateral, fintroller, oracle, underlying, fyToken };
 }
 
-type UnitFixtureFintrollerReturnType = { fintroller: Fintroller; oracle: MockContract; fyToken: MockContract };
+type UnitFixtureFintrollerReturnType = {
+  fintroller: Fintroller;
+  oracle: MockContract;
+  fyToken: MockContract;
+};
 
 export async function unitFixtureFintroller(signers: Signer[]): Promise<UnitFixtureFintrollerReturnType> {
   const deployer: Signer = signers[0];

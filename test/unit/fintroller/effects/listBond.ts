@@ -1,7 +1,6 @@
-import { AddressZero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { AdminErrors } from "../../../../helpers/errors";
+import { AdminErrors, FintrollerErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeListBond(): void {
   describe("when the caller is not the admin", function () {
@@ -14,8 +13,14 @@ export default function shouldBehaveLikeListBond(): void {
 
   describe("when the caller is the admin", function () {
     describe("when the contract to be listed is non-compliant", function () {
+      beforeEach(async function () {
+        await this.stubs.fyToken.mock.isFyToken.returns(false);
+      });
+
       it("rejects", async function () {
-        await expect(this.contracts.fintroller.connect(this.signers.admin).listBond(AddressZero)).to.be.reverted;
+        await expect(
+          this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.fyToken.address),
+        ).to.be.revertedWith(FintrollerErrors.ListBondFyTokenInspection);
       });
     });
 

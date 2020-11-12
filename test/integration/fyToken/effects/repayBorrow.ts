@@ -24,7 +24,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
     /* Set the debt ceiling to 1,000 yDAI. */
     await this.contracts.fintroller
       .connect(this.signers.admin)
-      .setDebtCeiling(this.contracts.fyToken.address, tokenAmounts.oneHundredThousand);
+      .setBondDebtCeiling(this.contracts.fyToken.address, tokenAmounts.oneHundredThousand);
 
     /* Mint 10 WETH and approve the Balance Sheet to spend it all. */
     await this.contracts.collateral.mint(this.accounts.borrower, collateralAmount);

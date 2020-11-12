@@ -2,9 +2,9 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { fintrollerConstants, fyTokenConstants, tokenAmounts } from "../../../../helpers/constants";
 import { FintrollerErrors, FyTokenErrors, GenericErrors } from "../../../../helpers/errors";
 import { contextForTimeDependentTests } from "../../../contexts";
+import { fintrollerConstants, fyTokenConstants, tokenAmounts } from "../../../../helpers/constants";
 import { increaseTime } from "../../../jsonRpc";
 import { stubIsVaultOpen } from "../../stubs";
 

@@ -138,7 +138,7 @@ contract FyToken is
         vars.debtCeiling = fintroller.getBondDebtCeiling(this);
         require(vars.hypotheticalTotalSupply <= vars.debtCeiling, "ERR_BORROW_DEBT_CEILING_OVERFLOW");
 
-        /* Add the borrow amount to the account's current debt. */
+        /* Add the borrow amount to the borrower account's current debt. */
         (vars.debt, , vars.lockedCollateral, ) = balanceSheet.getVault(this, msg.sender);
         require(vars.lockedCollateral > 0, "ERR_BORROW_LOCKED_COLLATERAL_ZERO");
         (vars.mathErr, vars.newDebt) = addUInt(vars.debt, borrowAmount);
@@ -160,12 +160,14 @@ contract FyToken is
         /* Effects: print the new fyTokens into existence. */
         mintInternal(msg.sender, borrowAmount);
 
-        /* Interactions: increase the debt of the account. */
+        /* Emit a Transfer and a Borrow event. */
+        emit Transfer(address(this), msg.sender, borrowAmount);
+
+        /* Interactions: increase the debt of the borrower account. */
         require(balanceSheet.setVaultDebt(this, msg.sender, vars.newDebt), "ERR_BORROW_CALL_SET_VAULT_DEBT");
 
-        /* Emit a Borrow, Mint and Transfer event. */
+        /* Emit a Borrow event. */
         emit Borrow(msg.sender, borrowAmount);
-        emit Transfer(address(this), msg.sender, borrowAmount);
 
         return true;
     }
@@ -277,7 +279,7 @@ contract FyToken is
      * - Can only be called by the Redemption Pool.
      * - The amount to mint cannot be zero.
      *
-     * @param beneficiary The account for which to mint the tokens.
+     * @param beneficiary The borrower account for which to mint the tokens.
      * @param mintAmount The amount of fyTokens to print into existence.
      * @return bool true = success, otherwise it reverts.
      */
@@ -295,7 +297,9 @@ contract FyToken is
     }
 
     /**
-     * @notice Deletes the account's debt from the registry and take the fyTokens out of circulation.
+     * @notice Deletes the borrower account's debt from the registry and take the fyTokens
+     * out of circulation.
+     *
      * @dev Emits a {Burn}, {Transfer} and {RepayBorrow} event.
      *
      * Requirements:
@@ -306,7 +310,7 @@ contract FyToken is
      * - The caller must have at least `repayAmount` fyTokens.
      * - The caller must have at least `repayAmount` debt.
      *
-     * @param repayAmount Lorem ipsum.
+     * @param repayAmount The amount of fyTokens to repay.
      * @return true = success, otherwise it reverts.
      */
     function repayBorrow(uint256 repayAmount) external override isVaultOpen(msg.sender) nonReentrant returns (bool) {
@@ -315,13 +319,15 @@ contract FyToken is
     }
 
     /**
-     * @notice Clears the borrower's debt from the registry and take the fyTokens out of circulation.
+     * @notice Clears the borrower account's debt from the registry and take the fyTokens
+     * out of circulation.
+     *
      * @dev Emits a {Burn}, {Transfer} and {RepayBorrow} event.
      *
      * Requirements: same as the `repayBorrow` function, but here `borrower` is the account that must
      * have at least `repayAmount` fyTokens to repay the borrow.
      *
-     * @param borrower The account for which to repay the borrow.
+     * @param borrower The borrower account for which to repay the borrow.
      * @param repayAmount The amount of fyTokens to repay.
      * @return true = success, otherwise it reverts.
      */
@@ -344,13 +350,14 @@ contract FyToken is
      * Requirements:
      *
      * - The caller must be the administrator.
+     * - The new Fintroller must pass the inspection.
      *
-     * @param newFintroller The address of the Fintroller contract.
+     * @param newFintroller The address of the new Fintroller contract.
      * @return bool true = success, otherwise it reverts.
      */
     function _setFintroller(FintrollerInterface newFintroller) external override onlyAdmin returns (bool) {
         /* Checks: sanity check the new Fintroller contract. */
-        newFintroller.isFintroller();
+        require(newFintroller.isFintroller(), "ERR_SET_FINTROLLER_INSPECTION");
 
         /* Effects: update storage. */
         FintrollerInterface oldFintroller = fintroller;
@@ -396,6 +403,9 @@ contract FyToken is
         /* Effects: burn the fyTokens. */
         burnInternal(payer, repayAmount);
 
+        /* Emit a Transfer event. */
+        emit Transfer(payer, address(this), repayAmount);
+
         /* Calculate the new debt of the borrower. */
         MathError mathErr;
         uint256 newDebt;
@@ -406,8 +416,7 @@ contract FyToken is
         /* Interactions: reduce the debt of the borrower . */
         require(balanceSheet.setVaultDebt(this, borrower, newDebt), "ERR_REPAY_BORROW_CALL_SET_VAULT_DEBT");
 
-        /* Emit both a Transfer and a RepayBorrow event. */
-        emit Transfer(payer, address(this), repayAmount);
+        /* Emit both a RepayBorrow event. */
         emit RepayBorrow(payer, borrower, repayAmount, newDebt);
     }
 }

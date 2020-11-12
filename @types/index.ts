@@ -4,7 +4,6 @@ import { MockContract } from "ethereum-waffle";
 import { Signer } from "@ethersproject/abstract-signer";
 
 import { BalanceSheet } from "../typechain/BalanceSheet";
-import { Dai } from "./contracts/Dai";
 import { Erc20Mintable } from "../typechain/Erc20Mintable";
 import { Fintroller } from "../typechain/Fintroller";
 import { FyToken } from "../typechain/FyToken";
@@ -15,7 +14,6 @@ import { RedemptionPool } from "../typechain/RedemptionPool";
 import { TestOraclePriceUtils as OraclePriceUtils } from "../typechain/TestOraclePriceUtils";
 import { SimpleUniswapAnchoredView } from "../typechain/SimpleUniswapAnchoredView";
 import { UniswapAnchoredViewInterface } from "../typechain/UniswapAnchoredViewInterface";
-import { Weth9 } from "./contracts/Weth9";
 
 /* Fingers-crossed that ethers.js or waffle will provide an easier way to cache the address */
 export interface Accounts {
@@ -31,13 +29,13 @@ export interface Accounts {
 /* TODO: refactor this so that contract types differ for each test suite type. */
 export interface Contracts {
   balanceSheet: GodModeBalanceSheet | BalanceSheet;
-  collateral: Erc20Mintable | Weth9;
+  collateral: Erc20Mintable;
   fintroller: Fintroller;
   fyToken: GodModeFyToken | FyToken;
   oracle: SimpleUniswapAnchoredView | UniswapAnchoredViewInterface;
   oraclePriceUtils: OraclePriceUtils;
   redemptionPool: GodModeRedemptionPool | RedemptionPool;
-  underlying: Erc20Mintable | Dai;
+  underlying: Erc20Mintable;
 }
 
 /* The @nomiclabs/buidler-ganache is missing type extensions. */
