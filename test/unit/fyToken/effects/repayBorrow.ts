@@ -2,9 +2,9 @@ import { Zero } from "@ethersproject/constants";
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
-import { addressOne, fintrollerConstants, tokenAmounts } from "../../../../helpers/constants";
 import { FyTokenErrors, GenericErrors } from "../../../../helpers/errors";
 import { FintrollerErrors } from "../../../../helpers/errors";
+import { addressOne, fintrollerConstants, tokenAmounts } from "../../../../helpers/constants";
 import { stubIsVaultOpen } from "../../stubs";
 
 export default function shouldBehaveLikeRepayBorrow(): void {
