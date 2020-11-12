@@ -60,7 +60,7 @@ contract BalanceSheet is
     /**
      * @notice Determines the amount of collateral that can be clutched when liquidating a borrow.
      *
-     * @dev The formula applied is:
+     * @dev The formula applied:
      * clutchedCollateral = repayAmount * liquidationIncentive * underlyingPriceUsd / priceCollateralUsd
      *
      * Requirements:
@@ -135,19 +135,19 @@ contract BalanceSheet is
     }
 
     /**
-     * @notice Determines the current collateralization ratio for the given account;
+     * @notice Determines the current collateralization ratio for the given borrower account.
      * @param fyToken The fyToken to make the query against.
-     * @param account The account to make the query against.
+     * @param borrower The borrower account to make the query against.
      * @return A quotient if locked collateral is non-zero, otherwise zero.
      */
-    function getCurrentCollateralizationRatio(FyTokenInterface fyToken, address account)
+    function getCurrentCollateralizationRatio(FyTokenInterface fyToken, address borrower)
         public
         view
         override
         returns (uint256)
     {
-        Vault memory vault = vaults[address(fyToken)][account];
-        return getHypotheticalCollateralizationRatio(fyToken, account, vault.lockedCollateral, vault.debt);
+        Vault memory vault = vaults[address(fyToken)][borrower];
+        return getHypotheticalCollateralizationRatio(fyToken, borrower, vault.lockedCollateral, vault.debt);
     }
 
     struct GetHypotheticalAccountLiquidityLocalVars {
@@ -165,10 +165,10 @@ contract BalanceSheet is
     }
 
     /**
-     * @notice Determines the hypothetical account collateralization ratio for the given locked
+     * @notice Determines the hypothetical collateralization ratio for the given locked
      * collateral and debt, at the current prices provided by the oracle.
      *
-     * @dev The formula applied is: collateralizationRatio = lockedCollateralValueUsd / debtValueUsd
+     * @dev The formula applied: collateralizationRatio = lockedCollateralValueUsd / debtValueUsd
      *
      * Requirements:
      *
@@ -177,7 +177,7 @@ contract BalanceSheet is
      * - The oracle prices must be non-zero.
      *
      * @param fyToken The fyToken for which to make the query against.
-     * @param account The account for which to make the query against.
+     * @param borrower The borrower account for which to make the query against.
      * @param lockedCollateral The hypothetical locked collateral.
      * @param debt The hypothetical debt.
      * @return The hypothetical collateralization ratio as a percentage mantissa if locked
@@ -185,14 +185,14 @@ contract BalanceSheet is
      */
     function getHypotheticalCollateralizationRatio(
         FyTokenInterface fyToken,
-        address account,
+        address borrower,
         uint256 lockedCollateral,
         uint256 debt
     ) public view override returns (uint256) {
         GetHypotheticalAccountLiquidityLocalVars memory vars;
 
         /* If the vault is not open, a hypothetical collateralization ratio cannot be calculated. */
-        require(vaults[address(fyToken)][account].isOpen, "ERR_VAULT_NOT_OPEN");
+        require(vaults[address(fyToken)][borrower].isOpen, "ERR_VAULT_NOT_OPEN");
 
         /* Avoid the zero edge cases. */
         if (lockedCollateral == 0) {
@@ -256,7 +256,7 @@ contract BalanceSheet is
      * @notice Reads all the properties of a vault.
      * @return (uint256 debt, uint256 freeCollateral, uint256 lockedCollateral, bool isOpen).
      */
-    function getVault(FyTokenInterface fyToken, address account)
+    function getVault(FyTokenInterface fyToken, address borrower)
         external
         view
         override
@@ -268,53 +268,53 @@ contract BalanceSheet is
         )
     {
         return (
-            vaults[address(fyToken)][account].debt,
-            vaults[address(fyToken)][account].freeCollateral,
-            vaults[address(fyToken)][account].lockedCollateral,
-            vaults[address(fyToken)][account].isOpen
+            vaults[address(fyToken)][borrower].debt,
+            vaults[address(fyToken)][borrower].freeCollateral,
+            vaults[address(fyToken)][borrower].lockedCollateral,
+            vaults[address(fyToken)][borrower].isOpen
         );
     }
 
     /**
      * @notice Reads the debt held by the given account.
      */
-    function getVaultDebt(FyTokenInterface fyToken, address account) external view override returns (uint256) {
-        return vaults[address(fyToken)][account].debt;
+    function getVaultDebt(FyTokenInterface fyToken, address borrower) external view override returns (uint256) {
+        return vaults[address(fyToken)][borrower].debt;
     }
 
     /**
-     * @notice Reads the collateral that the given account locked in the vault.
+     * @notice Reads the amount of collateral that the given borrower account locked in the vault.
      */
-    function getVaultLockedCollateral(FyTokenInterface fyToken, address account)
+    function getVaultLockedCollateral(FyTokenInterface fyToken, address borrower)
         external
         view
         override
         returns (uint256)
     {
-        return vaults[address(fyToken)][account].lockedCollateral;
+        return vaults[address(fyToken)][borrower].lockedCollateral;
     }
 
     /**
-     * @notice Checks whether the account can be liquidated or not.
+     * @notice Checks whether the borrower account can be liquidated or not.
      * @param fyToken The fyToken for which to make the query against.
-     * @param account The account for which to make the query against.
+     * @param borrower The borrower account for which to make the query against.
      * @return true = is underwater, otherwise not.
      */
-    function isAccountUnderwater(FyTokenInterface fyToken, address account) external view override returns (bool) {
-        Vault memory vault = vaults[address(fyToken)][account];
+    function isAccountUnderwater(FyTokenInterface fyToken, address borrower) external view override returns (bool) {
+        Vault memory vault = vaults[address(fyToken)][borrower];
         if (!vault.isOpen || vault.debt == 0) {
             return false;
         }
-        uint256 currentCollateralizationRatioMantissa = getCurrentCollateralizationRatio(fyToken, account);
+        uint256 currentCollateralizationRatioMantissa = getCurrentCollateralizationRatio(fyToken, borrower);
         uint256 thresholdCollateralizationRatioMantissa = fintroller.getBondCollateralizationRatio(fyToken);
         return currentCollateralizationRatioMantissa < thresholdCollateralizationRatioMantissa;
     }
 
     /**
-     * @notice Checks whether the account has a vault opened for a particular fyToken.
+     * @notice Checks whether the borrower account has a vault opened for a particular fyToken.
      */
-    function isVaultOpen(FyTokenInterface fyToken, address account) external view override returns (bool) {
-        return vaults[address(fyToken)][account].isOpen;
+    function isVaultOpen(FyTokenInterface fyToken, address borrower) external view override returns (bool) {
+        return vaults[address(fyToken)][borrower].isOpen;
     }
 
     /**
@@ -332,7 +332,7 @@ contract BalanceSheet is
      * - There must be enough collateral in the borrower's vault.
      *
      * @param fyToken The address of the fyToken contract.
-     * @param liquidator The account who repaid the borrower's debt and the receiver of the collateral.
+     * @param liquidator The account who repays the borrower's debt and receives the collateral.
      * @param borrower The account who fell underwater and is liquidated.
      * @param collateralAmount The amount of collateral to clutch, specified in the collateral's decimal system.
      * @return true = success, otherwise it reverts.
@@ -431,7 +431,7 @@ contract BalanceSheet is
      * - The vault must be open.
      * - The amount to free cannot be zero.
      * - There must be enough locked collateral.
-     * - The account cannot fall below the collateralization ratio.
+     * - The borrower account cannot fall below the collateralization ratio.
      *
      * @param fyToken The address of the fyToken contract.
      * @param collateralAmount The amount of free collateral to lock.
@@ -545,7 +545,7 @@ contract BalanceSheet is
     }
 
     /**
-     * @notice Updates the debt accrued by a particular account.
+     * @notice Updates the debt accrued by a particular borrower account.
      *
      * @dev Emits a {SetVaultDebt} event.
      *
@@ -554,22 +554,23 @@ contract BalanceSheet is
      * - Can only be called by the fyToken.
      *
      * @param fyToken The address of the fyToken contract.
-     * @param account The account for which to update the debt.
+     * @param borrower The borrower account for which to update the debt.
+     * @param newVaultDebt The new debt to assign to the borrower account.
      * @return bool=true success, otherwise it reverts.
      */
     function setVaultDebt(
         FyTokenInterface fyToken,
-        address account,
+        address borrower,
         uint256 newVaultDebt
     ) external override returns (bool) {
         /* Checks: the caller is the fyToken. */
         require(msg.sender == address(fyToken), "ERR_SET_VAULT_DEBT_NOT_AUTHORIZED");
 
         /* Effects: update storage. */
-        uint256 oldVaultDebt = vaults[address(fyToken)][account].debt;
-        vaults[address(fyToken)][account].debt = newVaultDebt;
+        uint256 oldVaultDebt = vaults[address(fyToken)][borrower].debt;
+        vaults[address(fyToken)][borrower].debt = newVaultDebt;
 
-        emit SetVaultDebt(fyToken, account, oldVaultDebt, newVaultDebt);
+        emit SetVaultDebt(fyToken, borrower, oldVaultDebt, newVaultDebt);
 
         return true;
     }

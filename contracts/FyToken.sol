@@ -138,7 +138,7 @@ contract FyToken is
         vars.debtCeiling = fintroller.getBondDebtCeiling(this);
         require(vars.hypotheticalTotalSupply <= vars.debtCeiling, "ERR_BORROW_DEBT_CEILING_OVERFLOW");
 
-        /* Add the borrow amount to the account's current debt. */
+        /* Add the borrow amount to the borrower account's current debt. */
         (vars.debt, , vars.lockedCollateral, ) = balanceSheet.getVault(this, msg.sender);
         require(vars.lockedCollateral > 0, "ERR_BORROW_LOCKED_COLLATERAL_ZERO");
         (vars.mathErr, vars.newDebt) = addUInt(vars.debt, borrowAmount);
@@ -160,7 +160,7 @@ contract FyToken is
         /* Effects: print the new fyTokens into existence. */
         mintInternal(msg.sender, borrowAmount);
 
-        /* Interactions: increase the debt of the account. */
+        /* Interactions: increase the debt of the borrower account. */
         require(balanceSheet.setVaultDebt(this, msg.sender, vars.newDebt), "ERR_BORROW_CALL_SET_VAULT_DEBT");
 
         /* Emit a Borrow, Mint and Transfer event. */
@@ -277,7 +277,7 @@ contract FyToken is
      * - Can only be called by the Redemption Pool.
      * - The amount to mint cannot be zero.
      *
-     * @param beneficiary The account for which to mint the tokens.
+     * @param beneficiary The borrower account for which to mint the tokens.
      * @param mintAmount The amount of fyTokens to print into existence.
      * @return bool true = success, otherwise it reverts.
      */
@@ -295,7 +295,9 @@ contract FyToken is
     }
 
     /**
-     * @notice Deletes the account's debt from the registry and take the fyTokens out of circulation.
+     * @notice Deletes the borrower account's debt from the registry and take the fyTokens
+     * out of circulation.
+     *
      * @dev Emits a {Burn}, {Transfer} and {RepayBorrow} event.
      *
      * Requirements:
@@ -315,13 +317,15 @@ contract FyToken is
     }
 
     /**
-     * @notice Clears the borrower's debt from the registry and take the fyTokens out of circulation.
+     * @notice Clears the borrower account's debt from the registry and take the fyTokens
+     * out of circulation.
+     *
      * @dev Emits a {Burn}, {Transfer} and {RepayBorrow} event.
      *
      * Requirements: same as the `repayBorrow` function, but here `borrower` is the account that must
      * have at least `repayAmount` fyTokens to repay the borrow.
      *
-     * @param borrower The account for which to repay the borrow.
+     * @param borrower The borrower account for which to repay the borrow.
      * @param repayAmount The amount of fyTokens to repay.
      * @return true = success, otherwise it reverts.
      */

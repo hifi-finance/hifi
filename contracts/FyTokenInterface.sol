@@ -17,7 +17,7 @@ abstract contract FyTokenInterface is FyTokenStorage {
 
     function liquidateBorrow(address borrower, uint256 repayAmount) external virtual returns (bool);
 
-    function mint(address beneficiary, uint256 borrowAmount) external virtual returns (bool);
+    function mint(address beneficiary, uint256 mintAmount) external virtual returns (bool);
 
     function repayBorrow(uint256 repayAmount) external virtual returns (bool);
 
@@ -28,7 +28,7 @@ abstract contract FyTokenInterface is FyTokenStorage {
     /**
      * EVENTS
      */
-    event Borrow(address indexed account, uint256 repayAmount);
+    event Borrow(address indexed borrower, uint256 borrowAmount);
 
     event LiquidateBorrow(
         address indexed liquidator,
