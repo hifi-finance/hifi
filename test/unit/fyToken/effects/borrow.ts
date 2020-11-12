@@ -2,10 +2,10 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { fintrollerConstants, percentages, tokenAmounts } from "../../../../helpers/constants";
 import { FintrollerErrors, FyTokenErrors, GenericErrors } from "../../../../helpers/errors";
-import { fyTokenConstants } from "../../../../helpers/constants";
 import { contextForTimeDependentTests } from "../../../contexts";
+import { fintrollerConstants, percentages, tokenAmounts } from "../../../../helpers/constants";
+import { fyTokenConstants } from "../../../../helpers/constants";
 import { increaseTime } from "../../../jsonRpc";
 import { stubIsVaultOpen, stubVaultFreeCollateral, stubVaultLockedCollateral } from "../../stubs";
 
