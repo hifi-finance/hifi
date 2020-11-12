@@ -43,24 +43,44 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
       });
 
       describe("when the debt ceiling is not zero", function () {
-        it("sets the new debt ceiling", async function () {
-          await this.contracts.fintroller
-            .connect(this.signers.admin)
-            .setBondDebtCeiling(this.stubs.fyToken.address, newDebtCeiling);
-          const contractDebtCeiling: BigNumber = await this.contracts.fintroller.getBondDebtCeiling(
-            this.stubs.fyToken.address,
-          );
-          expect(contractDebtCeiling).to.equal(newDebtCeiling);
+        describe("when the debt ceiling is below the current debt", function () {
+          beforeEach(async function () {
+            await this.stubs.fyToken.mock.totalSupply.returns(tokenAmounts.oneMillion);
+          });
+
+          it("reverts", async function () {
+            await expect(
+              this.contracts.fintroller
+                .connect(this.signers.admin)
+                .setBondDebtCeiling(this.stubs.fyToken.address, newDebtCeiling),
+            ).to.be.revertedWith(FintrollerErrors.SetBondDebtCeilingUnderflow);
+          });
         });
 
-        it("emits a SetBondDebtCeiling event", async function () {
-          await expect(
-            this.contracts.fintroller
+        describe("when the debt ceiling is not below the current debt", function () {
+          beforeEach(async function () {
+            await this.stubs.fyToken.mock.totalSupply.returns(Zero);
+          });
+
+          it("sets the new debt ceiling", async function () {
+            await this.contracts.fintroller
               .connect(this.signers.admin)
-              .setBondDebtCeiling(this.stubs.fyToken.address, newDebtCeiling),
-          )
-            .to.emit(this.contracts.fintroller, "SetBondDebtCeiling")
-            .withArgs(this.accounts.admin, this.stubs.fyToken.address, Zero, newDebtCeiling);
+              .setBondDebtCeiling(this.stubs.fyToken.address, newDebtCeiling);
+            const contractDebtCeiling: BigNumber = await this.contracts.fintroller.getBondDebtCeiling(
+              this.stubs.fyToken.address,
+            );
+            expect(contractDebtCeiling).to.equal(newDebtCeiling);
+          });
+
+          it("emits a SetBondDebtCeiling event", async function () {
+            await expect(
+              this.contracts.fintroller
+                .connect(this.signers.admin)
+                .setBondDebtCeiling(this.stubs.fyToken.address, newDebtCeiling),
+            )
+              .to.emit(this.contracts.fintroller, "SetBondDebtCeiling")
+              .withArgs(this.accounts.admin, this.stubs.fyToken.address, Zero, newDebtCeiling);
+          });
         });
       });
     });

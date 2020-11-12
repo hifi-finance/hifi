@@ -195,6 +195,7 @@ contract Fintroller is
      * - The caller must be the administrator.
      * - The bond must be listed.
      * - The debt ceiling cannot be zero.
+     * - The debt ceiling cannot fall below the current total supply of fyTokens.
      *
      * @param fyToken The bond for which to update the debt ceiling.
      * @param newDebtCeiling The uint256 value of the new debt ceiling, specified in the bond's decimal system.
@@ -211,6 +212,10 @@ contract Fintroller is
 
         /* Checks: the zero edge case. */
         require(newDebtCeiling > 0, "ERR_SET_BOND_DEBT_CEILING_ZERO");
+
+        /* Checks: above total supply of fyTokens. */
+        uint256 totalSupply = Erc20Interface(address(fyToken)).totalSupply();
+        require(newDebtCeiling >= totalSupply, "ERR_SET_BOND_DEBT_CEILING_UNDERFLOW");
 
         /* Effects: update storage. */
         uint256 oldDebtCeiling = bonds[fyToken].debtCeiling;

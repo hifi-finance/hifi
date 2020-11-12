@@ -20,6 +20,7 @@ export enum BalanceSheetErrors {
 export enum FintrollerErrors {
   BondNotListed = "ERR_BOND_NOT_LISTED",
   ListBondFyTokenInspection = "ERR_LIST_BOND_FYTOKEN_INSPECTION",
+  SetBondDebtCeilingUnderflow = "ERR_SET_BOND_DEBT_CEILING_UNDERFLOW",
   SetBondDebtCeilingZero = "ERR_SET_BOND_DEBT_CEILING_ZERO",
   SetCollateralizationRatioLowerBound = "ERR_SET_COLLATERALIZATION_RATIO_LOWER_BOUND",
   SetCollateralizationRatioUpperBound = "ERR_SET_COLLATERALIZATION_RATIO_UPPER_BOUND",
