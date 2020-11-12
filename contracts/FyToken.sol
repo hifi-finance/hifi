@@ -310,7 +310,7 @@ contract FyToken is
      * - The caller must have at least `repayAmount` fyTokens.
      * - The caller must have at least `repayAmount` debt.
      *
-     * @param repayAmount Lorem ipsum.
+     * @param repayAmount The amount of fyTokens to repay.
      * @return true = success, otherwise it reverts.
      */
     function repayBorrow(uint256 repayAmount) external override isVaultOpen(msg.sender) nonReentrant returns (bool) {

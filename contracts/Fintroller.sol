@@ -344,14 +344,14 @@ contract Fintroller is
     }
 
     /**
-     * @notice Lorem ipsum.
+     * @notice Sets a new value for the liquidation incentive, which is applicable
+     * to all listed bonds.
      *
      * @dev Emits a {SetLiquidationIncentive} event.
      *
      * Requirements:
      *
      * - The caller must be the administrator.
-     * - The bond must be listed.
      * - The new liquidation incentive cannot be higher than the maximum liquidation incentive.
      * - The new liquidation incentive cannot be lower than the minimum liquidation incentive.
 
