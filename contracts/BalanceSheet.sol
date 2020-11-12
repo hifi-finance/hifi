@@ -45,7 +45,7 @@ contract BalanceSheet is
      * CONSTANT FUNCTIONS
      */
 
-    struct CalculateClutchableCollateralLocalVars {
+    struct GetClutchableCollateralLocalVars {
         MathError mathErr;
         Exp clutchableCollateralAmountUpscaled;
         uint256 clutchableCollateralAmount;
@@ -77,7 +77,7 @@ contract BalanceSheet is
         override
         returns (uint256)
     {
-        CalculateClutchableCollateralLocalVars memory vars;
+        GetClutchableCollateralLocalVars memory vars;
 
         /* Avoid the zero edge cases. */
         require(repayAmount > 0, "ERR_GET_CLUTCHABLE_COLLATERAL_ZERO");
