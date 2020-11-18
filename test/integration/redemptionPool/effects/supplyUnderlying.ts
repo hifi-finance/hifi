@@ -42,4 +42,10 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
       .to.emit(this.contracts.fyToken, "Mint")
       .withArgs(this.accounts.maker, fyTokenAmount);
   });
+
+  it("emits a Transfer event", async function () {
+    await expect(this.contracts.redemptionPool.connect(this.signers.maker).supplyUnderlying(underlyingAmount))
+      .to.emit(this.contracts.fyToken, "Transfer")
+      .withArgs(this.contracts.fyToken.address, this.accounts.maker, fyTokenAmount);
+  });
 }
