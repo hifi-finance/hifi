@@ -52,5 +52,11 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
         .to.emit(this.contracts.fyToken, "Burn")
         .withArgs(this.accounts.maker, fyTokenAmount);
     });
+
+    it("emits a Transfer event", async function () {
+      await expect(this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(fyTokenAmount))
+        .to.emit(this.contracts.fyToken, "Transfer")
+        .withArgs(this.accounts.maker, this.contracts.fyToken.address, fyTokenAmount);
+    });
   });
 }
