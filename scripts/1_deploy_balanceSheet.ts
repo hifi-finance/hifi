@@ -1,5 +1,5 @@
 import { Contract, ContractFactory } from "@ethersproject/contracts";
-import { ethers } from "@nomiclabs/buidler";
+import { ethers } from "hardhat";
 
 let fintrollerAddress: string;
 if (!process.env.FINTROLLER_ADDRESS) {

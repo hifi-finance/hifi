@@ -56,9 +56,9 @@ export const tokenAmounts: { [name: string]: BigNumber } = {
 
 /* CHAIN IDS */
 export const chainIds = {
-  buidlerEvm: 31337,
-  ganache: 1337,
+  hardhat: 31337,
   goerli: 5,
+  kovan: 42,
   mainnet: 1,
   rinkeby: 4,
   ropsten: 3,
@@ -67,7 +67,7 @@ export const chainIds = {
 /* GAS LIMITS */
 /* Needed otherwise deployments fail on coverage. */
 export const gasLimits = {
-  buidlerEvm: {
+  hardhat: {
     blockGasLimit: tenMillion,
     callGasLimit: tenMillion,
     deployContractGasLimit: tenMillion,

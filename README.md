@@ -15,7 +15,7 @@ warranties and will not be liable for any loss, direct or indirect through conti
 
 Our contracts were written in Solidity and our tests in TypeScript.
 
-If you want to contribute, familiarity with [Buidler](https://github.com/nomiclabs/buidler), [Ethers](https://github.com/ethers-io/ethers.js),
+If you want to contribute, familiarity with [Hardhat](https://github.com/nomiclabs/hardhat), [Ethers](https://github.com/ethers-io/ethers.js),
 [Waffle](https://github.com/EthWorks/Waffle) and [TypeChain](https://github.com/ethereum-ts/TypeChain) is needed.
 
 ### Pre Requisites

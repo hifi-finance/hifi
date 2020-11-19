@@ -4,7 +4,7 @@ import { expect } from "chai";
 
 import { BalanceSheetErrors, GenericErrors } from "../../../../helpers/errors";
 import { tokenAmounts } from "../../../../helpers/constants";
-import { Vault } from "../../../../@types";
+import { Vault } from "../../../../types";
 
 export default function shouldBehaveLikeLockCollateral(): void {
   const depositCollateralAmount: BigNumber = tokenAmounts.ten;

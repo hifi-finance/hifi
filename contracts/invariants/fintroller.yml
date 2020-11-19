@@ -2,7 +2,7 @@ checkAsserts: true
 coverage: true
 cryticArgs:
   - "--compile-force-framework"
-  - "buidler"
+  - "hardhat"
 deployer: "0x10000"
 filterBlacklist: false
 filterFunctions:

@@ -1,5 +1,5 @@
 import { Contract, ContractFactory } from "@ethersproject/contracts";
-import { ethers } from "@nomiclabs/buidler";
+import { ethers } from "hardhat";
 
 const name: string = "hfyUSDC (2021-26-02)";
 const symbol: string = "hfyUSDC-FEB21";

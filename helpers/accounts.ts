@@ -1,4 +1,4 @@
-import { BuidlerNetworkAccount } from "@nomiclabs/buidler/types";
+import { HardhatNetworkAccountsConfig } from "hardhat/types";
 
 import { defaultPrivateKeys } from "./constants";
 
@@ -14,7 +14,7 @@ import { defaultPrivateKeys } from "./constants";
  * 0xeB7Ba84d23C8484A5dec9E136e4ccFEaf35378DB
  */
 const tenThousandEther: string = "10000000000000000000000";
-const accounts: BuidlerNetworkAccount[] = [
+const accounts: HardhatNetworkAccountsConfig = [
   {
     balance: tenThousandEther,
     privateKey: defaultPrivateKeys.admin,

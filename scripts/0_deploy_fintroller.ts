@@ -1,5 +1,5 @@
 import { Contract, ContractFactory } from "@ethersproject/contracts";
-import { ethers } from "@nomiclabs/buidler";
+import { ethers } from "hardhat";
 
 async function main(): Promise<void> {
   const fintrollerFactory: ContractFactory = await ethers.getContractFactory("Fintroller");

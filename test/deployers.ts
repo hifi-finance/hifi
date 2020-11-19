@@ -1,17 +1,17 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Signer } from "@ethersproject/abstract-signer";
 import { TransactionRequest } from "@ethersproject/providers";
-import { waffle } from "@nomiclabs/buidler";
+import { waffle } from "hardhat";
 
-import BalanceSheetArtifact from "../artifacts/BalanceSheet.json";
-import Erc20MintableArtifact from "../artifacts/Erc20Mintable.json";
-import FintrollerArtifact from "../artifacts/Fintroller.json";
-import FyTokenArtifact from "../artifacts/FyToken.json";
-import GodModeBalanceSheetArtifact from "../artifacts/GodModeBalanceSheet.json";
-import GodModeFyTokenArtifact from "../artifacts/GodModeFyToken.json";
-import GodModeRedemptionPoolArtifact from "../artifacts/GodModeRedemptionPool.json";
-import OraclePriceUtilsArtifact from "../artifacts/TestOraclePriceUtils.json";
-import SimpleUniswapAnchoredViewArtifact from "../artifacts/SimpleUniswapAnchoredView.json";
+import BalanceSheetArtifact from "../artifacts/contracts/BalanceSheet.sol/BalanceSheet.json";
+import Erc20MintableArtifact from "../artifacts/contracts/test/Erc20Mintable.sol/Erc20Mintable.json";
+import FintrollerArtifact from "../artifacts/contracts/Fintroller.sol/Fintroller.json";
+import FyTokenArtifact from "../artifacts/contracts/FyToken.sol/FyToken.json";
+import GodModeBalanceSheetArtifact from "../artifacts/contracts/test/GodModeBalanceSheet.sol/GodModeBalanceSheet.json";
+import GodModeFyTokenArtifact from "../artifacts/contracts/test/GodModeFyToken.sol/GodModeFyToken.json";
+import GodModeRedemptionPoolArtifact from "../artifacts/contracts/test/GodModRedemptionPool.sol/GodModeRedemptionPool.json";
+import OraclePriceUtilsArtifact from "../artifacts/contracts/test/TestOraclePriceUtils.sol/TestOraclePriceUtils.json";
+import SimpleUniswapAnchoredViewArtifact from "../artifacts/contracts/test/SimpleUniswapAnchoredView.sol/SimpleUniswapAnchoredView.json";
 import scenarios from "./scenarios";
 
 import { BalanceSheet } from "../typechain/BalanceSheet";
@@ -29,11 +29,11 @@ const { deployContract } = waffle;
 const overrideOptions: TransactionRequest = {
   gasLimit: process.env.CODE_COVERAGE
     ? gasLimits.coverage.deployContractGasLimit
-    : gasLimits.buidlerEvm.deployContractGasLimit,
+    : gasLimits.hardhat.deployContractGasLimit,
 };
 
 /**
- * Meant to be deployed to either Ethereum Mainnet or BuidlerEVM.
+ * Meant to be deployed to either Ethereum Mainnet or Hardhat Network.
  */
 export async function deployFintroller(deployer: Signer): Promise<Fintroller> {
   const fintroller: Fintroller = (await deployContract(
@@ -84,7 +84,7 @@ export async function deployFyToken(
 }
 
 /**
- * Meant to be deployed only to BuidlerEVM.
+ * Meant to be deployed only to Hardhat Network.
  */
 export async function deployCollateral(deployer: Signer): Promise<Erc20Mintable> {
   const collateral: Erc20Mintable = (await deployContract(

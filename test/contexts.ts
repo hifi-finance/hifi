@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Signer } from "@ethersproject/abstract-signer";
 import { Wallet } from "@ethersproject/wallet";
-import { ethers, waffle } from "@nomiclabs/buidler";
+import { ethers, waffle } from "hardhat";
 
-import { Accounts, Contracts, Signers, Stubs } from "../@types/index";
+import { Accounts, Contracts, Signers, Stubs } from "../types/index";
 
 const { createFixtureLoader } = waffle;
 

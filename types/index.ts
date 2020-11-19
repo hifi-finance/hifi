@@ -1,5 +1,4 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { BuidlerConfig, Networks, NetworkConfig } from "@nomiclabs/buidler/types";
 import { MockContract } from "ethereum-waffle";
 import { Signer } from "@ethersproject/abstract-signer";
 
@@ -25,7 +24,7 @@ export interface Accounts {
   raider: string;
 }
 
-/* The first type is for BuidlerEVM, the second for Ethereum Mainnet. */
+/* The first type is for Hardhat Network tests, the second for Ethereum Mainnet. */
 /* TODO: refactor this so that contract types differ for each test suite type. */
 export interface Contracts {
   balanceSheet: GodModeBalanceSheet | BalanceSheet;
@@ -36,26 +35,6 @@ export interface Contracts {
   oraclePriceUtils: OraclePriceUtils;
   redemptionPool: GodModeRedemptionPool | RedemptionPool;
   underlying: Erc20Mintable;
-}
-
-/* The @nomiclabs/buidler-ganache is missing type extensions. */
-export type ExtendedNetworkConfig = NetworkConfig & {
-  _chainId?: number;
-  default_balance_ether?: number;
-  fork?: string;
-  fork_block_number?: number;
-  gasLimit?: number;
-  mnemonic?: string;
-  network_id?: number;
-  url?: string;
-};
-
-export interface ExtendedNetworks extends Networks {
-  [networkName: string]: ExtendedNetworkConfig;
-}
-
-export interface ExtendedBuidlerConfig extends BuidlerConfig {
-  networks?: ExtendedNetworks;
 }
 
 export interface Signers {

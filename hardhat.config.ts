@@ -2,20 +2,16 @@ import { config as dotenvConfig } from "dotenv";
 import { resolve } from "path";
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
-import { usePlugin } from "@nomiclabs/buidler/config";
+import { HardhatUserConfig, NetworkUserConfig } from "hardhat/types";
+import "@nomiclabs/hardhat-waffle";
+import "hardhat-gas-reporter";
+import "hardhat-typechain";
+import "solidity-coverage";
 
-import buidlerEvmAccounts from "./helpers/accounts";
+import hardhatNetworkAccounts from "./helpers/accounts";
 import { chainIds, gasLimits } from "./helpers/constants";
-import { ExtendedBuidlerConfig, ExtendedNetworkConfig } from "./@types";
-
 import "./tasks/accounts";
 import "./tasks/clean";
-import "./tasks/typechain";
-import { NetworkConfig } from "@nomiclabs/buidler/types";
-
-usePlugin("@nomiclabs/buidler-waffle");
-usePlugin("buidler-gas-reporter");
-usePlugin("solidity-coverage");
 
 /* Ensure that we have all the environment variables we need. */
 let mnemonic: string;
@@ -32,22 +28,7 @@ if (!process.env.INFURA_API_KEY) {
   infuraApiKey = process.env.INFURA_API_KEY;
 }
 
-/* Used when deploying contracts to the testnet. */
-function createMainnetConfig(): ExtendedNetworkConfig {
-  const url: string = "https://mainnet.infura.io/v3/" + infuraApiKey;
-  return {
-    accounts: {
-      count: 6,
-      initialIndex: 0,
-      mnemonic,
-      path: "m/44'/60'/0'/0",
-    },
-    chainId: 1,
-    url,
-  };
-}
-
-function createTestnetConfig(network: keyof typeof chainIds): NetworkConfig {
+function createTestnetConfig(network: keyof typeof chainIds): NetworkUserConfig {
   const url: string = "https://" + network + ".infura.io/v3/" + infuraApiKey;
   return {
     accounts: {
@@ -61,8 +42,8 @@ function createTestnetConfig(network: keyof typeof chainIds): NetworkConfig {
   };
 }
 
-const config: ExtendedBuidlerConfig = {
-  defaultNetwork: "buidlerevm",
+const config: HardhatUserConfig = {
+  defaultNetwork: "hardhat",
   gasReporter: {
     currency: "USD",
     enabled: process.env.REPORT_GAS ? true : false,
@@ -70,41 +51,32 @@ const config: ExtendedBuidlerConfig = {
     src: "./contracts",
   },
   networks: {
-    buidlerevm: {
-      accounts: buidlerEvmAccounts,
+    hardhat: {
+      accounts: hardhatNetworkAccounts,
       allowUnlimitedContractSize: true,
-      blockGasLimit: gasLimits.buidlerEvm.blockGasLimit.toNumber(),
-      chainId: chainIds.buidlerEvm,
-      gas: gasLimits.buidlerEvm.callGasLimit.toNumber() /* https://github.com/nomiclabs/hardhat/issues/660#issuecomment-715897156 */,
-    },
-    coverage: {
-      chainId: chainIds.ganache,
-      url: "http://127.0.0.1:8555",
-    },
-    ganache: {
-      chainId: chainIds.ganache,
-      url: "http://127.0.0.1:8545",
+      blockGasLimit: gasLimits.hardhat.blockGasLimit.toNumber(),
+      chainId: chainIds.hardhat,
+      gas: gasLimits.hardhat.callGasLimit.toNumber() /* https://github.com/nomiclabs/hardhat/issues/660#issuecomment-715897156 */,
     },
     goerli: createTestnetConfig("goerli"),
-    mainnet: createMainnetConfig(),
+    kovan: createTestnetConfig("kovan"),
     rinkeby: createTestnetConfig("rinkeby"),
     ropsten: createTestnetConfig("ropsten"),
   },
   paths: {
     artifacts: "./artifacts",
     cache: "./cache",
-    coverage: "./coverage",
-    coverageJson: "./coverage.json",
-    cryticExport: "./crytic-export",
     sources: "./contracts",
     tests: "./test",
   },
-  solc: {
-    optimizer: {
-      enabled: true,
-      runs: 200,
-    },
+  solidity: {
     version: "0.7.4",
+    settings: {
+      optimizer: {
+        enabled: true,
+        runs: 200,
+      },
+    },
   },
   typechain: {
     outDir: "typechain",

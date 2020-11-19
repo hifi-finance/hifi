@@ -2,14 +2,14 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { MockContract } from "ethereum-waffle";
 import { Signer } from "@ethersproject/abstract-signer";
 import { Zero } from "@ethersproject/constants";
-import { waffle } from "@nomiclabs/buidler";
+import { waffle } from "hardhat";
 
-import BalanceSheetArtifact from "../../artifacts/BalanceSheet.json";
-import Erc20Artifact from "../../artifacts/Erc20.json";
-import FintrollerArtifact from "../../artifacts/Fintroller.json";
-import FyTokenArtifact from "../../artifacts/FyToken.json";
-import RedemptionPoolArtifact from "../../artifacts/RedemptionPool.json";
-import SimpleUniswapAnchoredViewArtifact from "../../artifacts/SimpleUniswapAnchoredView.json";
+import BalanceSheetArtifact from "../../artifacts/contracts/BalanceSheet.sol/BalanceSheet.json";
+import Erc20Artifact from "../../artifacts/@paulrberg/contracts/token/erc20/Erc20.sol/Erc20.json";
+import FintrollerArtifact from "../../artifacts/contracts/Fintroller.sol/Fintroller.json";
+import FyTokenArtifact from "../../artifacts/contracts/FyToken.sol/FyToken.json";
+import RedemptionPoolArtifact from "../../artifacts/contracts/RedemptionPool.sol/RedemptionPool.json";
+import SimpleUniswapAnchoredViewArtifact from "../../artifacts/contracts/test/SimpleUniswapAnchoredView.sol/SimpleUniswapAnchoredView.json";
 import scenarios from "../scenarios";
 
 import { balanceSheetConstants, etherSymbol, openPriceFeedPrecision } from "../../helpers/constants";
