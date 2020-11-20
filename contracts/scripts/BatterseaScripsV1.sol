@@ -88,8 +88,8 @@ contract BatterseaScripsV1 is CarefulMath {
     }
 
     /**
-     * @notice Deposits and locks collateral into the BalanceSheet contract and draws
-     * debt via the FyToken contract.
+     * @notice Deposits and locks collateral into the vault in the BalanceSheet contract
+     * and draws debt via the FyToken contract.
      *
      * @dev Requirements:
      * - The caller must have allowed the DSProxy to spend `collateralAmount` tokens.
@@ -152,6 +152,24 @@ contract BatterseaScripsV1 is CarefulMath {
         uint256 collateralAmount
     ) external {
         balanceSheet.lockCollateral(fyToken, collateralAmount);
+    }
+
+    /**
+     * @notice Locks collateral into the vault in the BalanceSheet contract
+     * and draws debt via the FyToken contract.
+     * @param balanceSheet The address of the BalanceSheet contract.
+     * @param fyToken The address of the FyToken contract.
+     * @param collateralAmount The amount of collateral to deposit and lock.
+     * @param borrowAmount The amount of fyTokens to borrow.
+     */
+    function lockCollateralAndBorrow(
+        BalanceSheetInterface balanceSheet,
+        FyTokenInterface fyToken,
+        uint256 collateralAmount,
+        uint256 borrowAmount
+    ) external {
+        balanceSheet.lockCollateral(fyToken, collateralAmount);
+        borrow(fyToken, borrowAmount);
     }
 
     /**
