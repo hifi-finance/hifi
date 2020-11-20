@@ -10,12 +10,12 @@ import "../FyTokenInterface.sol";
 import "../RedemptionPoolInterface.sol";
 
 /**
- * @title BatterseaScripsV1
+ * @title BatterseaScriptsV1
  * @author Mainframe
  * @notice Target contract with scripts for the Battersea release of the protocol.
  * @dev Meant to be used via DSProxy.
  */
-contract BatterseaScripsV1 is CarefulMath {
+contract BatterseaScriptsV1 is CarefulMath {
     using SafeErc20 for Erc20Interface;
     using SafeErc20 for FyTokenInterface;
 
