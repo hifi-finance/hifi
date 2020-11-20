@@ -1,13 +1,17 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.7.0;
 
+import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
 import "./FyTokenStorage.sol";
 
 /**
  * @title FyTokenInterface
  * @author Mainframe
  */
-abstract contract FyTokenInterface is FyTokenStorage {
+abstract contract FyTokenInterface is
+    FyTokenStorage, /* no dependency */
+    Erc20Interface /* one dependency */
+{
     /**
      * NON-CONSTANT FUNCTIONS
      */
