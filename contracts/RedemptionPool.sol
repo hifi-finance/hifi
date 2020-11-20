@@ -110,9 +110,9 @@ contract RedemptionPool is
 
     struct SupplyUnderlyingLocalVars {
         MathError mathErr;
+        uint256 fyTokenAmount;
         uint256 newUnderlyingTotalSupply;
         uint256 underlyingPrecisionScalar;
-        uint256 fyTokenAmount;
     }
 
     /**

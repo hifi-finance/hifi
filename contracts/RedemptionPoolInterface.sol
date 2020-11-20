@@ -11,7 +11,7 @@ abstract contract RedemptionPoolInterface is RedemptionPoolStorage {
     /**
      * NON-CONSTANT FUNCTIONS
      */
-    function redeemFyTokens(uint256 underlyingAmount) external virtual returns (bool);
+    function redeemFyTokens(uint256 fyTokenAmount) external virtual returns (bool);
 
     function supplyUnderlying(uint256 underlyingAmount) external virtual returns (bool);
 
