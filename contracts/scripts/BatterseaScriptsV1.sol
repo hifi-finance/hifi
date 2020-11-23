@@ -5,6 +5,7 @@ import "@paulrberg/contracts/math/CarefulMath.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 
+import "./BatterseaScriptsV1Storage.sol";
 import "../BalanceSheetInterface.sol";
 import "../FyTokenInterface.sol";
 import "../RedemptionPoolInterface.sol";
@@ -15,9 +16,16 @@ import "../RedemptionPoolInterface.sol";
  * @notice Target contract with scripts for the Battersea release of the protocol.
  * @dev Meant to be used via DSProxy.
  */
-contract BatterseaScriptsV1 is CarefulMath {
+contract BatterseaScriptsV1 is
+    BatterseaScriptsV1Storage, /* no dependency */
+    CarefulMath /* no dependency */
+{
     using SafeErc20 for Erc20Interface;
     using SafeErc20 for FyTokenInterface;
+
+    constructor(address weth_) {
+        weth = WethInterface(weth_);
+    }
 
     /**
      * @notice Borrows fyTokens.
@@ -32,8 +40,7 @@ contract BatterseaScriptsV1 is CarefulMath {
     }
 
     /**
-     * @notice Deposits and locks collateral into the BalanceSheet contract and
-     * draws debt via the FyToken contract.
+     * @notice Deposits collateral into the BalanceSheet contract.
      *
      * @dev Requirements:
      * - The caller must have allowed the DSProxy to spend `collateralAmount` tokens.
@@ -47,25 +54,11 @@ contract BatterseaScriptsV1 is CarefulMath {
         FyTokenInterface fyToken,
         uint256 collateralAmount
     ) public {
-        Erc20Interface collateral = fyToken.collateral();
-
         /* Transfer the collateral to the DSProxy. */
-        collateral.safeTransferFrom(msg.sender, address(this), collateralAmount);
-
-        /* Allow the BalanceSheet contract to spend tokens if allowance not enough. */
-        uint256 allowance = collateral.allowance(address(this), address(balanceSheet));
-        if (allowance < collateralAmount) {
-            collateral.approve(address(balanceSheet), uint256(-1));
-        }
-
-        /* Open the vault if not already open. */
-        bool isVaultOpen = balanceSheet.isVaultOpen(fyToken, address(this));
-        if (isVaultOpen == false) {
-            balanceSheet.openVault(fyToken);
-        }
+        fyToken.collateral().safeTransferFrom(msg.sender, address(this), collateralAmount);
 
         /* Deposit the collateral into the BalanceSheet contract. */
-        balanceSheet.depositCollateral(fyToken, collateralAmount);
+        depositCollateralInternal(balanceSheet, fyToken, collateralAmount);
     }
 
     /**
@@ -82,7 +75,7 @@ contract BatterseaScriptsV1 is CarefulMath {
         BalanceSheetInterface balanceSheet,
         FyTokenInterface fyToken,
         uint256 collateralAmount
-    ) external {
+    ) public {
         depositCollateral(balanceSheet, fyToken, collateralAmount);
         balanceSheet.lockCollateral(fyToken, collateralAmount);
     }
@@ -105,8 +98,7 @@ contract BatterseaScriptsV1 is CarefulMath {
         uint256 collateralAmount,
         uint256 borrowAmount
     ) external {
-        depositCollateral(balanceSheet, fyToken, collateralAmount);
-        balanceSheet.lockCollateral(fyToken, collateralAmount);
+        depositAndLockCollateral(balanceSheet, fyToken, collateralAmount);
         borrow(fyToken, borrowAmount);
     }
 
@@ -308,8 +300,94 @@ contract BatterseaScriptsV1 is CarefulMath {
     }
 
     /**
+     * @notice Wraps ETH into WETH and deposits into the BalanceSheet contract.
+     *
+     * @dev This is a payable function so it can receive ETH transfers.
+     *
+     * @param balanceSheet The address of the BalanceSheet contract.
+     * @param fyToken The address of the FyToken contract.
+     * @param collateralAmount The amount of collateral to deposit.
+     */
+    function wrapEthAndDepositCollateral(
+        BalanceSheetInterface balanceSheet,
+        FyTokenInterface fyToken,
+        uint256 collateralAmount
+    ) public payable {
+        /* Convert the received ETH to WETH. */
+        weth.deposit{ value: msg.value }();
+
+        /* Deposit the collateral into the BalanceSheet contract. */
+        depositCollateralInternal(balanceSheet, fyToken, collateralAmount);
+    }
+
+    /**
+     * @notice Wraps ETH into WETH, deposits and locks collateral into the BalanceSheet
+     * contract and draws debt via the FyToken contract.
+     *
+     * @dev This is a payable function so it can receive ETH transfers.
+     *
+     * @param balanceSheet The address of the BalanceSheet contract.
+     * @param fyToken The address of the FyToken contract.
+     * @param collateralAmount The amount of collateral to deposit and lock.
+     */
+    function wrapEthAndDepositAndLockCollateral(
+        BalanceSheetInterface balanceSheet,
+        FyTokenInterface fyToken,
+        uint256 collateralAmount
+    ) public payable {
+        wrapEthAndDepositCollateral(balanceSheet, fyToken, collateralAmount);
+        balanceSheet.lockCollateral(fyToken, collateralAmount);
+    }
+
+    /**
+     * @notice Wraps ETH into WETH, deposits and locks collateral into the vault in the
+     * BalanceSheet contract and draws debt via the FyToken contract.
+     *
+     * @dev This is a payable function so it can receive ETH transfers.
+     *
+     * @param balanceSheet The address of the BalanceSheet contract.
+     * @param fyToken The address of the FyToken contract.
+     * @param collateralAmount The amount of collateral to deposit and lock.
+     * @param borrowAmount The amount of fyTokens to borrow.
+     */
+    function wrapEthAndDepositAndLockCollateralAndBorrow(
+        BalanceSheetInterface balanceSheet,
+        FyTokenInterface fyToken,
+        uint256 collateralAmount,
+        uint256 borrowAmount
+    ) external {
+        wrapEthAndDepositAndLockCollateral(balanceSheet, fyToken, collateralAmount);
+        borrow(fyToken, borrowAmount);
+    }
+
+    /**
      * INTERNAL FUNCTIONS
      */
+
+    /**
+     * @dev See the documentation for the public functions that call this internal function.
+     */
+    function depositCollateralInternal(
+        BalanceSheetInterface balanceSheet,
+        FyTokenInterface fyToken,
+        uint256 collateralAmount
+    ) internal {
+        /* Allow the BalanceSheet contract to spend tokens if allowance not enough. */
+        Erc20Interface collateral = fyToken.collateral();
+        uint256 allowance = collateral.allowance(address(this), address(balanceSheet));
+        if (allowance < collateralAmount) {
+            collateral.approve(address(balanceSheet), uint256(-1));
+        }
+
+        /* Open the vault if not already open. */
+        bool isVaultOpen = balanceSheet.isVaultOpen(fyToken, address(this));
+        if (isVaultOpen == false) {
+            balanceSheet.openVault(fyToken);
+        }
+
+        /* Deposit the collateral into the BalanceSheet contract. */
+        balanceSheet.depositCollateral(fyToken, collateralAmount);
+    }
 
     /**
      * @dev See the documentation for the public functions that call this internal function.
