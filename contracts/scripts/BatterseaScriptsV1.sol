@@ -9,6 +9,8 @@ import "./BatterseaScriptsV1Storage.sol";
 import "../BalanceSheetInterface.sol";
 import "../FyTokenInterface.sol";
 import "../RedemptionPoolInterface.sol";
+import "../external/balancer/ExchangeProxyInterface.sol";
+import "../external/weth/WethInterface.sol";
 
 /**
  * @title BatterseaScriptsV1
@@ -23,20 +25,58 @@ contract BatterseaScriptsV1 is
     using SafeErc20 for Erc20Interface;
     using SafeErc20 for FyTokenInterface;
 
-    constructor(address weth_) {
-        weth = WethInterface(weth_);
+    constructor(ExchangeProxyInterface exchangeProxy_, WethInterface weth_) {
+        exchangeProxy = exchangeProxy_;
+        weth = weth_;
     }
 
     /**
-     * @notice Borrows fyTokens.
+     * @notice Borrows fyTokens and sells them for underlying.
      * @param fyToken The address of the FyToken contract.
      * @param borrowAmount The amount of fyTokens to borrow.
+     * @param underlyingAmount The amount of underlying to sell fyTokens for.
      */
-    function borrow(FyTokenInterface fyToken, uint256 borrowAmount) public {
+    function borrowAndSellFyTokens(
+        FyTokenInterface fyToken,
+        uint256 borrowAmount,
+        uint256 underlyingAmount
+    ) public {
         fyToken.borrow(borrowAmount);
 
-        /* TODO: integrate Balancer, market sell fyTokens for underlying, and transfer the underlying instead. */
-        fyToken.safeTransfer(msg.sender, borrowAmount);
+        /* Allow the Balancer contract to spend fyTokens if allowance not enough. */
+        uint256 allowance = fyToken.allowance(address(this), address(exchangeProxy));
+        if (allowance < borrowAmount) {
+            fyToken.approve(address(exchangeProxy), uint256(-1));
+        }
+
+        /* Prepare the parameters for calling Balancer. */
+        Erc20Interface tokenIn = Erc20Interface(fyToken);
+        Erc20Interface tokenOut = fyToken.underlying();
+        uint256 totalAmountOut = underlyingAmount;
+        uint256 maxTotalAmountIn = borrowAmount;
+        uint256 nPools = 1;
+
+        /* Balancer reverts when the swap is not successful. */
+        uint256 totalAmountIn = exchangeProxy.smartSwapExactOut(
+            tokenIn,
+            tokenOut,
+            totalAmountOut,
+            maxTotalAmountIn,
+            nPools
+        );
+
+        /* When we get a better price than the worst that we assumed we will, not all fyTokens are sold. */
+        MathError mathErr;
+        uint256 fyTokenDelta;
+        (mathErr, fyTokenDelta) = subUInt(borrowAmount, totalAmountIn);
+        require(mathErr == MathError.NO_ERROR, "ERR_BORROW_AND_SELL_FYTOKENS_MATH_ERROR");
+
+        /* If the fyToken delta is non-zero, we use it to partially repay the borrow. */
+        /* We know that this is not gas-efficient. */
+        fyToken.repayBorrow(fyTokenDelta);
+
+        /* Finally, transfer the recently bought underlying to the end user. */
+        tokenOut.safeTransfer(msg.sender, underlyingAmount);
     }
 
     /**
@@ -91,15 +131,17 @@ contract BatterseaScriptsV1 is
      * @param fyToken The address of the FyToken contract.
      * @param collateralAmount The amount of collateral to deposit and lock.
      * @param borrowAmount The amount of fyTokens to borrow.
+     * @param underlyingAmount The amount of underlying to sell fyTokens for.
      */
     function depositAndLockCollateralAndBorrow(
         BalanceSheetInterface balanceSheet,
         FyTokenInterface fyToken,
         uint256 collateralAmount,
-        uint256 borrowAmount
+        uint256 borrowAmount,
+        uint256 underlyingAmount
     ) external {
         depositAndLockCollateral(balanceSheet, fyToken, collateralAmount);
-        borrow(fyToken, borrowAmount);
+        borrowAndSellFyTokens(fyToken, borrowAmount, underlyingAmount);
     }
 
     /**
@@ -153,15 +195,17 @@ contract BatterseaScriptsV1 is
      * @param fyToken The address of the FyToken contract.
      * @param collateralAmount The amount of collateral to deposit and lock.
      * @param borrowAmount The amount of fyTokens to borrow.
+     * @param underlyingAmount The amount of underlying to sell fyTokens for.
      */
     function lockCollateralAndBorrow(
         BalanceSheetInterface balanceSheet,
         FyTokenInterface fyToken,
         uint256 collateralAmount,
-        uint256 borrowAmount
+        uint256 borrowAmount,
+        uint256 underlyingAmount
     ) external {
         balanceSheet.lockCollateral(fyToken, collateralAmount);
-        borrow(fyToken, borrowAmount);
+        borrowAndSellFyTokens(fyToken, borrowAmount, underlyingAmount);
     }
 
     /**
@@ -349,15 +393,17 @@ contract BatterseaScriptsV1 is
      * @param fyToken The address of the FyToken contract.
      * @param collateralAmount The amount of collateral to deposit and lock.
      * @param borrowAmount The amount of fyTokens to borrow.
+     * @param underlyingAmount The amount of underlying to sell fyTokens for.
      */
     function wrapEthAndDepositAndLockCollateralAndBorrow(
         BalanceSheetInterface balanceSheet,
         FyTokenInterface fyToken,
         uint256 collateralAmount,
-        uint256 borrowAmount
+        uint256 borrowAmount,
+        uint256 underlyingAmount
     ) external {
         wrapEthAndDepositAndLockCollateral(balanceSheet, fyToken, collateralAmount);
-        borrow(fyToken, borrowAmount);
+        borrowAndSellFyTokens(fyToken, borrowAmount, underlyingAmount);
     }
 
     /**
