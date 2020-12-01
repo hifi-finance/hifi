@@ -401,7 +401,7 @@ contract BatterseaScriptsV1 is
         uint256 collateralAmount,
         uint256 borrowAmount,
         uint256 underlyingAmount
-    ) external {
+    ) external payable {
         wrapEthAndDepositAndLockCollateral(balanceSheet, fyToken, collateralAmount);
         borrowAndSellFyTokens(fyToken, borrowAmount, underlyingAmount);
     }
