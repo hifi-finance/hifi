@@ -16,7 +16,7 @@ import "../external/weth/WethInterface.sol";
  * @title BatterseaScriptsV1
  * @author Mainframe
  * @notice Target contract with scripts for the Battersea release of the protocol.
- * @dev Meant to be used via DSProxy.
+ * @dev Meant to be used with a DSProxy contract via delegatecall.
  */
 contract BatterseaScriptsV1 is
     BatterseaScriptsV1Storage, /* no dependency */
@@ -24,11 +24,6 @@ contract BatterseaScriptsV1 is
 {
     using SafeErc20 for Erc20Interface;
     using SafeErc20 for FyTokenInterface;
-
-    constructor(ExchangeProxyInterface exchangeProxy_, WethInterface weth_) {
-        exchangeProxy = exchangeProxy_;
-        weth = weth_;
-    }
 
     /**
      * @notice Borrows fyTokens and sells them for underlying.
@@ -44,9 +39,9 @@ contract BatterseaScriptsV1 is
         fyToken.borrow(borrowAmount);
 
         /* Allow the Balancer contract to spend fyTokens if allowance not enough. */
-        uint256 allowance = fyToken.allowance(address(this), address(exchangeProxy));
+        uint256 allowance = fyToken.allowance(address(this), EXCHANGE_PROXY_ADDRESS);
         if (allowance < borrowAmount) {
-            fyToken.approve(address(exchangeProxy), uint256(-1));
+            fyToken.approve(EXCHANGE_PROXY_ADDRESS, uint256(-1));
         }
 
         /* Prepare the parameters for calling Balancer. */
@@ -57,7 +52,7 @@ contract BatterseaScriptsV1 is
         uint256 nPools = 1;
 
         /* Balancer reverts when the swap is not successful. */
-        uint256 totalAmountIn = exchangeProxy.smartSwapExactOut(
+        uint256 totalAmountIn = ExchangeProxyInterface(EXCHANGE_PROXY_ADDRESS).smartSwapExactOut(
             tokenIn,
             tokenOut,
             totalAmountOut,
@@ -358,7 +353,7 @@ contract BatterseaScriptsV1 is
         uint256 collateralAmount
     ) public payable {
         /* Convert the received ETH to WETH. */
-        weth.deposit{ value: msg.value }();
+        WethInterface(WETH_ADDRESS).deposit{ value: msg.value }();
 
         /* Deposit the collateral into the BalanceSheet contract. */
         depositCollateralInternal(balanceSheet, fyToken, collateralAmount);
