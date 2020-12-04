@@ -10,6 +10,7 @@ import "../BalanceSheetInterface.sol";
 import "../FyTokenInterface.sol";
 import "../RedemptionPoolInterface.sol";
 import "../external/balancer/ExchangeProxyInterface.sol";
+import "../external/balancer/TokenInterface.sol";
 import "../external/weth/WethInterface.sol";
 
 /**
@@ -36,6 +37,9 @@ contract BatterseaScriptsV1 is
         uint256 borrowAmount,
         uint256 underlyingAmount
     ) public {
+        Erc20Interface underlying = fyToken.underlying();
+
+        /* Borrow he fyTokens. */
         fyToken.borrow(borrowAmount);
 
         /* Allow the Balancer contract to spend fyTokens if allowance not enough. */
@@ -45,8 +49,8 @@ contract BatterseaScriptsV1 is
         }
 
         /* Prepare the parameters for calling Balancer. */
-        Erc20Interface tokenIn = Erc20Interface(fyToken);
-        Erc20Interface tokenOut = fyToken.underlying();
+        TokenInterface tokenIn = TokenInterface(address(fyToken));
+        TokenInterface tokenOut = TokenInterface(address(underlying));
         uint256 totalAmountOut = underlyingAmount;
         uint256 maxTotalAmountIn = borrowAmount;
         uint256 nPools = 1;
@@ -71,7 +75,7 @@ contract BatterseaScriptsV1 is
         fyToken.repayBorrow(fyTokenDelta);
 
         /* Finally, transfer the recently bought underlying to the end user. */
-        tokenOut.safeTransfer(msg.sender, underlyingAmount);
+        underlying.safeTransfer(msg.sender, underlyingAmount);
     }
 
     /**
