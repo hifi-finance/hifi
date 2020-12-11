@@ -36,7 +36,7 @@ contract BatterseaScriptsV1 is
         FyTokenInterface fyToken,
         uint256 borrowAmount,
         uint256 underlyingAmount
-    ) public {
+    ) public payable {
         Erc20Interface underlying = fyToken.underlying();
 
         /* Borrow he fyTokens. */
@@ -138,7 +138,7 @@ contract BatterseaScriptsV1 is
         uint256 collateralAmount,
         uint256 borrowAmount,
         uint256 underlyingAmount
-    ) external {
+    ) external payable {
         depositAndLockCollateral(balanceSheet, fyToken, collateralAmount);
         borrowAndSellFyTokens(fyToken, borrowAmount, underlyingAmount);
     }
