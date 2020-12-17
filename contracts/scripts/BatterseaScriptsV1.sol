@@ -55,7 +55,7 @@ contract BatterseaScriptsV1 is
         uint256 maxTotalAmountIn = borrowAmount;
         uint256 nPools = 1;
 
-        /* Balancer reverts when the swap is not successful. */
+        /* Recall that Balancer reverts when the swap is not successful. */
         uint256 totalAmountIn = ExchangeProxyInterface(EXCHANGE_PROXY_ADDRESS).smartSwapExactOut(
             tokenIn,
             tokenOut,
@@ -64,15 +64,17 @@ contract BatterseaScriptsV1 is
             nPools
         );
 
-        /* When we get a better price than the worst that we assumed we will, not all fyTokens are sold. */
+        /* When we get a better price than the worst that we assumed we would, not all fyTokens are sold. */
         MathError mathErr;
         uint256 fyTokenDelta;
         (mathErr, fyTokenDelta) = subUInt(borrowAmount, totalAmountIn);
         require(mathErr == MathError.NO_ERROR, "ERR_BORROW_AND_SELL_FYTOKENS_MATH_ERROR");
 
         /* If the fyToken delta is non-zero, we use it to partially repay the borrow. */
-        /* We know that this is not gas-efficient. */
-        fyToken.repayBorrow(fyTokenDelta);
+        /* Note: this is not gas-efficient. */
+        if (fyTokenDelta > 0) {
+            fyToken.repayBorrow(fyTokenDelta);
+        }
 
         /* Finally, transfer the recently bought underlying to the end user. */
         underlying.safeTransfer(msg.sender, underlyingAmount);
@@ -265,18 +267,54 @@ contract BatterseaScriptsV1 is
     }
 
     /**
-     * @notice Market sell underlying and repay the borrows via the FyToken contract.
+     * @notice Market sells underlying and repays the borrows via the FyToken contract.
      *
      * @dev Requirements:
      * - The caller must have allowed the DSProxy to spend `underlyingAmount` tokens.
      *
      * @param fyToken The address of the FyToken contract.
-     * @param underlyingAmount The amount of collateral to deposit.
+     * @param underlyingAmount The amount of underlying to sell.
+     * @param repayAmount The amount of fyTokens to repay.
      */
-    function sellUnderlyingAndRepayBorrow(FyTokenInterface fyToken, uint256 underlyingAmount) external pure {
-        /* TODO: integrate Balancer to market sell underlying. */
-        fyToken;
-        underlyingAmount;
+    function sellUnderlyingAndRepayBorrow(
+        FyTokenInterface fyToken,
+        uint256 underlyingAmount,
+        uint256 repayAmount
+    ) external {
+        Erc20Interface underlying = fyToken.underlying();
+
+        /* Transfer the underlying to the DSProxy. */
+        underlying.safeTransferFrom(msg.sender, address(this), underlyingAmount);
+
+        /* Prepare the parameters for calling Balancer. */
+        TokenInterface tokenIn = TokenInterface(address(underlying));
+        TokenInterface tokenOut = TokenInterface(address(fyToken));
+        uint256 totalAmountOut = repayAmount;
+        uint256 maxTotalAmountIn = underlyingAmount;
+        uint256 nPools = 1;
+
+        /* Recall that Balancer reverts when the swap is not successful. */
+        uint256 totalAmountIn = ExchangeProxyInterface(EXCHANGE_PROXY_ADDRESS).smartSwapExactOut(
+            tokenIn,
+            tokenOut,
+            totalAmountOut,
+            maxTotalAmountIn,
+            nPools
+        );
+
+        /* Use the recently bought fyTokens to repay the borrow. */
+        fyToken.repayBorrow(totalAmountIn);
+
+        /* When we get a better price than the worst that we assumed we would, not all underlying is sold. */
+        MathError mathErr;
+        uint256 underlyingDelta;
+        (mathErr, underlyingDelta) = subUInt(underlyingAmount, underlyingDelta);
+        require(mathErr == MathError.NO_ERROR, "ERR_SELL_UNDERLYING_AND_REPAY_BORROW_MATH_ERROR");
+
+        /* If the underlying delta is non-zero, send it back to the user. */
+        if (underlyingDelta > 0) {
+            underlying.safeTransfer(msg.sender, underlyingDelta);
+        }
     }
 
     /**
