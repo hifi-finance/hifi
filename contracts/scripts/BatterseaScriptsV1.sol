@@ -308,7 +308,7 @@ contract BatterseaScriptsV1 is
         /* When we get a better price than the worst that we assumed we would, not all underlying is sold. */
         MathError mathErr;
         uint256 underlyingDelta;
-        (mathErr, underlyingDelta) = subUInt(underlyingAmount, underlyingDelta);
+        (mathErr, underlyingDelta) = subUInt(underlyingAmount, totalAmountIn);
         require(mathErr == MathError.NO_ERROR, "ERR_SELL_UNDERLYING_AND_REPAY_BORROW_MATH_ERROR");
 
         /* If the underlying delta is non-zero, send it back to the user. */
