@@ -5,7 +5,7 @@ import "@paulrberg/contracts/math/CarefulMath.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 
-import "./BatterseaScriptsV1Storage.sol";
+import "./BatterseaScriptsV1Interface.sol";
 import "../BalanceSheetInterface.sol";
 import "../FyTokenInterface.sol";
 import "../RedemptionPoolInterface.sol";
@@ -20,8 +20,8 @@ import "../external/weth/WethInterface.sol";
  * @dev Meant to be used with a DSProxy contract via delegatecall.
  */
 contract BatterseaScriptsV1 is
-    BatterseaScriptsV1Storage, /* no dependency */
-    CarefulMath /* no dependency */
+    CarefulMath, /* no dependency */
+    BatterseaScriptsV1Interface /* one dependency */
 {
     using SafeErc20 for Erc20Interface;
     using SafeErc20 for FyTokenInterface;
@@ -78,6 +78,8 @@ contract BatterseaScriptsV1 is
 
         /* Finally, transfer the recently bought underlying to the end user. */
         underlying.safeTransfer(msg.sender, underlyingAmount);
+
+        emit BorrowAndSellFyTokens(msg.sender, borrowAmount, fyTokenDelta, underlyingAmount);
     }
 
     /**
