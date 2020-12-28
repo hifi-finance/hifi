@@ -1,9 +1,26 @@
 import { Contract, ContractFactory } from "@ethersproject/contracts";
 import { ethers } from "hardhat";
 
-const name: string = "hfyUSDC (2021-26-02)";
-const symbol: string = "hfyUSDC-FEB21";
-const expirationTime: number = 1614373200;
+let name: string;
+if (!process.env.FYTOKEN_NAME) {
+  throw new Error("Please set FYTOKEN_NAME as an env variable");
+} else {
+  name = process.env.FYTOKEN_NAME;
+}
+
+let symbol: string;
+if (!process.env.FYTOKEN_SYMBOL) {
+  throw new Error("Please set FYTOKEN_SYMBOL as an env variable");
+} else {
+  symbol = process.env.FYTOKEN_SYMBOL;
+}
+
+let expirationTime: number;
+if (!process.env.FYTOKEN_EXPIRATION_TIME) {
+  throw new Error("Please set FYTOKEN_EXPIRATION_TIME as an env variable");
+} else {
+  expirationTime = parseInt(process.env.FYTOKEN_EXPIRATION_TIME, 10);
+}
 
 let fintrollerAddress: string;
 if (!process.env.FINTROLLER_ADDRESS) {
