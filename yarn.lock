@@ -1109,6 +1109,11 @@
   resolved "https://registry.npmjs.org/@solidity-parser/parser/-/parser-0.8.1.tgz#1b606578af86b9ad10755409804a6ba83f9ce8a4"
   integrity sha512-DF7H6T8I4lo2IZOE2NZwt3631T8j1gjpQLjmvY2xBNK50c4ltslR4XPKwT6RkeSd4+xCAK0GHC/k7sbRDBE4Yw==
 
+"@solidity-parser/parser@^0.8.2":
+  version "0.8.2"
+  resolved "https://registry.npmjs.org/@solidity-parser/parser/-/parser-0.8.2.tgz#a6a5e93ac8dca6884a99a532f133beba59b87b69"
+  integrity sha512-8LySx3qrNXPgB5JiULfG10O3V7QTxI/TLzSw5hFQhXWSkVxZBAv4rZQ0sYgLEbc8g3L2lmnujj1hKul38Eu5NQ==
+
 "@szmarczak/http-timer@^1.1.2":
   version "1.1.2"
   resolved "https://registry.npmjs.org/@szmarczak/http-timer/-/http-timer-1.1.2.tgz#b1665e2c461a2cd92f4c1bbf50d5454de0d4b421"
@@ -4128,13 +4133,13 @@ eth-gas-reporter@^0.2.18:
     sha1 "^1.1.1"
     sync-request "^6.0.0"
 
-eth-gas-reporter@^0.2.19:
-  version "0.2.19"
-  resolved "https://registry.npmjs.org/eth-gas-reporter/-/eth-gas-reporter-0.2.19.tgz#57ce74e0617d021d04fd1789a4232837d0f41918"
-  integrity sha512-yQmbAa6O9/Yl/syNml2A0R+ZLQnJ9m9jogFXHzjMWVBMUVnAcEskOVyxaMYddkclZdYIMxE99tQy830C2jLsAQ==
+eth-gas-reporter@^0.2.20:
+  version "0.2.20"
+  resolved "https://registry.npmjs.org/eth-gas-reporter/-/eth-gas-reporter-0.2.20.tgz#431c144f00cd01cc29ce211a10a4e5a539a84e25"
+  integrity sha512-gp/PhKrr3hYEEFg5emIQxbhQkVH2mg+iHcM6GvqhzFx5IkZGeQx+5oNzYDEfBXQefcA90rwWHId6eCty6jbdDA==
   dependencies:
     "@ethersproject/abi" "^5.0.0-beta.146"
-    "@solidity-parser/parser" "^0.8.0"
+    "@solidity-parser/parser" "^0.8.2"
     cli-table3 "^0.5.0"
     colors "^1.1.2"
     ethereumjs-util "6.2.0"
@@ -5536,22 +5541,23 @@ hard-rejection@^2.1.0:
   resolved "https://registry.npmjs.org/hard-rejection/-/hard-rejection-2.1.0.tgz#1c6eda5c1685c63942766d79bb40ae773cecd883"
   integrity sha512-VIZB+ibDhx7ObhAe7OVtoEbuP4h/MuOTHJ+J8h/eBXotJYl0fBgR72xDFCKgIh22OJZIOVNxBMWuhAr10r8HdA==
 
-hardhat-gas-reporter@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.npmjs.org/hardhat-gas-reporter/-/hardhat-gas-reporter-1.0.1.tgz#37f96da5f11e5ae34b28a68c5d972d3168165c95"
-  integrity sha512-YC+SCYIkBdRtISNbisU2BwDSelUdCrIKRsJXt3M9Jw1VF5CmtSZb8VuuOc2Zl4AMcEV2jEy6ZuAksYomPiApYQ==
+hardhat-gas-reporter@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.npmjs.org/hardhat-gas-reporter/-/hardhat-gas-reporter-1.0.4.tgz#59e3137e38e0dfeac2e4f90d5c74160b50ad4829"
+  integrity sha512-G376zKh81G3K9WtDA+SoTLWsoygikH++tD1E7llx+X7J+GbIqfwhDKKgvJjcnEesMrtR9UqQHK02lJuXY1RTxw==
   dependencies:
-    eth-gas-reporter "^0.2.19"
+    eth-gas-reporter "^0.2.20"
+    sha1 "^1.1.1"
 
 hardhat-typechain@^0.3.3:
   version "0.3.3"
   resolved "https://registry.npmjs.org/hardhat-typechain/-/hardhat-typechain-0.3.3.tgz#cef7996d2054aecd5e6b7677130b2f2b1fe9d352"
   integrity sha512-NrqP7Zng28prV3YT0lXoo1pXtZxoNCMfiZIWkf1HXjjID42JLLfSOTsvlb0okDMpz4tJaEEkgADJO69sKZxw+Q==
 
-hardhat@^2.0.3:
-  version "2.0.3"
-  resolved "https://registry.npmjs.org/hardhat/-/hardhat-2.0.3.tgz#35e07060d9854d4182f201aeaa1c05316bd7e4d3"
-  integrity sha512-mDygAl+1qd5KBdXQBfc3R5XmC/rVdYYbEuOTSQY3rlncVu9gfockZVDsHtAMPw/FiBIRMApLcOceK7D1XQmHRw==
+hardhat@^2.0.6:
+  version "2.0.6"
+  resolved "https://registry.npmjs.org/hardhat/-/hardhat-2.0.6.tgz#51f161e00b3c03f03fbf32027009d0ca50ad56db"
+  integrity sha512-wFTamcSUBMGwpgFxWu7ptg5o07FQyr8Ce8072rzE+QjpwM0uD3GRdhlqn+O1w+awQZ7AhK44njpAoRPUelOf/Q==
   dependencies:
     "@nomiclabs/ethereumjs-vm" "^4.1.1"
     "@sentry/node" "^5.18.1"
