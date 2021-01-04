@@ -294,6 +294,12 @@ contract BatterseaScriptsV1 is
         /* Transfer the underlying to the DSProxy. */
         underlying.safeTransferFrom(msg.sender, address(this), underlyingAmount);
 
+        /* Allow the Balancer contract to spend underlying if allowance not enough. */
+        uint256 allowance = underlying.allowance(address(this), EXCHANGE_PROXY_ADDRESS);
+        if (allowance < underlyingAmount) {
+            underlying.approve(EXCHANGE_PROXY_ADDRESS, uint256(-1));
+        }
+
         /* Prepare the parameters for calling Balancer. */
         TokenInterface tokenIn = TokenInterface(address(underlying));
         TokenInterface tokenOut = TokenInterface(address(fyToken));
