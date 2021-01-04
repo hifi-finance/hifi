@@ -28,6 +28,10 @@ contract BatterseaScriptsV1 is
 
     /**
      * @notice Borrows fyTokens and sells them for underlying.
+     * @dev Emits a {BorrowAndSellFyTokens} event.
+     *
+     * This is a payable function so it can receive ETH transfers.
+     *
      * @param fyToken The address of the FyToken contract.
      * @param borrowAmount The amount of fyTokens to borrow.
      * @param underlyingAmount The amount of underlying to sell fyTokens for.
@@ -127,7 +131,9 @@ contract BatterseaScriptsV1 is
      * @notice Deposits and locks collateral into the vault in the BalanceSheet contract
      * and draws debt via the FyToken contract.
      *
-     * @dev Requirements:
+     * @dev This is a payable function so it can receive ETH transfers.
+     *
+     * Requirements:
      * - The caller must have allowed the DSProxy to spend `collateralAmount` tokens.
      *
      * @param balanceSheet The address of the BalanceSheet contract.
@@ -181,7 +187,7 @@ contract BatterseaScriptsV1 is
      * @notice Locks collateral in the vault in the BalanceSheet contract.
      * @param balanceSheet The address of the BalanceSheet contract.
      * @param fyToken The address of the FyToken contract.
-     * @param collateralAmount The amount of collateral to free.
+     * @param collateralAmount The amount of collateral to lock.
      */
     function lockCollateral(
         BalanceSheetInterface balanceSheet,
@@ -196,7 +202,7 @@ contract BatterseaScriptsV1 is
      * and draws debt via the FyToken contract.
      * @param balanceSheet The address of the BalanceSheet contract.
      * @param fyToken The address of the FyToken contract.
-     * @param collateralAmount The amount of collateral to deposit and lock.
+     * @param collateralAmount The amount of collateral to lock.
      * @param borrowAmount The amount of fyTokens to borrow.
      * @param underlyingAmount The amount of underlying to sell fyTokens for.
      */
@@ -212,7 +218,7 @@ contract BatterseaScriptsV1 is
     }
 
     /**
-     * @notice Frees collateral from the vault in the BalanceSheet contract.
+     * @notice Open the vaults in the BalanceSheet contract for the given fyToken.
      * @param balanceSheet The address of the BalanceSheet contract.
      * @param fyToken The address of the FyToken contract.
      */
