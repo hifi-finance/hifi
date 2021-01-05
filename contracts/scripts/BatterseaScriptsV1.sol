@@ -32,8 +32,9 @@ contract BatterseaScriptsV1 is
      * @param fyToken The address of the FyToken contract.
      * @param borrowAmount The amount of fyTokens to borrow.
      */
-    function borrow(FyTokenInterface fyToken, uint256 borrowAmount) external {
+    function borrow(FyTokenInterface fyToken, uint256 borrowAmount) public {
         fyToken.borrow(borrowAmount);
+        fyToken.transfer(msg.sender, borrowAmount);
     }
 
     /**
@@ -139,8 +140,32 @@ contract BatterseaScriptsV1 is
     }
 
     /**
-     * @notice Deposits and locks collateral into the vault via the BalanceSheet contract, draws
-     * debt via the FyToken contract and sells it on Balancer in exchange for underlying.
+     * @notice Deposits and locks collateral into the vault via the BalanceSheet contract
+     * and borrows fyTokens.
+     *
+     * @dev This is a payable function so it can receive ETH transfers.
+     *
+     * Requirements:
+     * - The caller must have allowed the DSProxy to spend `collateralAmount` tokens.
+     *
+     * @param balanceSheet The address of the BalanceSheet contract.
+     * @param fyToken The address of the FyToken contract.
+     * @param collateralAmount The amount of collateral to deposit and lock.
+     * @param borrowAmount The amount of fyTokens to borrow.
+     */
+    function depositAndLockCollateralAndBorrow(
+        BalanceSheetInterface balanceSheet,
+        FyTokenInterface fyToken,
+        uint256 collateralAmount,
+        uint256 borrowAmount
+    ) public payable {
+        depositAndLockCollateral(balanceSheet, fyToken, collateralAmount);
+        borrow(fyToken, borrowAmount);
+    }
+
+    /**
+     * @notice Deposits and locks collateral into the vault via the BalanceSheet contract, borrows fyTokens
+     * and sells them on Balancer in exchange for underlying.
      *
      * @dev This is a payable function so it can receive ETH transfers.
      *
@@ -427,8 +452,8 @@ contract BatterseaScriptsV1 is
     }
 
     /**
-     * @notice Wraps ETH into WETH, deposits and locks collateral into the BalanceSheet
-     * contract and draws debt via the FyToken contract.
+     * @notice Wraps ETH into WETH, deposits and locks collateral into the BalanceSheet contract
+     * and borrows fyTokens.
      *
      * @dev This is a payable function so it can receive ETH transfers.
      *
@@ -446,8 +471,8 @@ contract BatterseaScriptsV1 is
     }
 
     /**
-     * @notice Wraps ETH into WETH, deposits and locks collateral into the vault in the
-     * BalanceSheet contract and draws debt via the FyToken contract.
+     * @notice Wraps ETH into WETH, deposits and locks collateral into the vault in the BalanceSheet
+     * contracts and borrows fyTokens.
      *
      * @dev This is a payable function so it can receive ETH transfers.
      *
