@@ -27,7 +27,18 @@ contract BatterseaScriptsV1 is
     using SafeErc20 for FyTokenInterface;
 
     /**
-     * @notice Borrows fyTokens and sells them for underlying.
+     * @notice Borrows fyTokens.
+     *
+     * @param fyToken The address of the FyToken contract.
+     * @param borrowAmount The amount of fyTokens to borrow.
+     */
+    function borrow(FyTokenInterface fyToken, uint256 borrowAmount) external {
+        fyToken.borrow(borrowAmount);
+    }
+
+    /**
+     * @notice Borrows fyTokens and sells them on Balancer in exchange for underlying.
+     *
      * @dev Emits a {BorrowAndSellFyTokens} event.
      *
      * This is a payable function so it can receive ETH transfers.
@@ -43,7 +54,7 @@ contract BatterseaScriptsV1 is
     ) public payable {
         Erc20Interface underlying = fyToken.underlying();
 
-        /* Borrow he fyTokens. */
+        /* Borrow the fyTokens. */
         fyToken.borrow(borrowAmount);
 
         /* Allow the Balancer contract to spend fyTokens if allowance not enough. */
@@ -128,8 +139,8 @@ contract BatterseaScriptsV1 is
     }
 
     /**
-     * @notice Deposits and locks collateral into the vault in the BalanceSheet contract
-     * and draws debt via the FyToken contract.
+     * @notice Deposits and locks collateral into the vault via the BalanceSheet contract, draws
+     * debt via the FyToken contract and sells it on Balancer in exchange for underlying.
      *
      * @dev This is a payable function so it can receive ETH transfers.
      *
@@ -142,7 +153,7 @@ contract BatterseaScriptsV1 is
      * @param borrowAmount The amount of fyTokens to borrow.
      * @param underlyingAmount The amount of underlying to sell fyTokens for.
      */
-    function depositAndLockCollateralAndBorrow(
+    function depositAndLockCollateralAndBorrowAndSellFyTokens(
         BalanceSheetInterface balanceSheet,
         FyTokenInterface fyToken,
         uint256 collateralAmount,
