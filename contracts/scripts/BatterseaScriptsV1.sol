@@ -34,7 +34,7 @@ contract BatterseaScriptsV1 is
      */
     function borrow(FyTokenInterface fyToken, uint256 borrowAmount) public {
         fyToken.borrow(borrowAmount);
-        fyToken.transfer(msg.sender, borrowAmount);
+        fyToken.safeTransfer(msg.sender, borrowAmount);
     }
 
     /**
@@ -437,15 +437,12 @@ contract BatterseaScriptsV1 is
      *
      * @param balanceSheet The address of the BalanceSheet contract.
      * @param fyToken The address of the FyToken contract.
-     * @param collateralAmount The amount of collateral to deposit.
      */
-    function wrapEthAndDepositCollateral(
-        BalanceSheetInterface balanceSheet,
-        FyTokenInterface fyToken,
-        uint256 collateralAmount
-    ) public payable {
+    function wrapEthAndDepositCollateral(BalanceSheetInterface balanceSheet, FyTokenInterface fyToken) public payable {
+        uint256 collateralAmount = msg.value;
+
         /* Convert the received ETH to WETH. */
-        WethInterface(WETH_ADDRESS).deposit{ value: msg.value }();
+        WethInterface(WETH_ADDRESS).deposit{ value: collateralAmount }();
 
         /* Deposit the collateral into the BalanceSheet contract. */
         depositCollateralInternal(balanceSheet, fyToken, collateralAmount);
@@ -459,14 +456,13 @@ contract BatterseaScriptsV1 is
      *
      * @param balanceSheet The address of the BalanceSheet contract.
      * @param fyToken The address of the FyToken contract.
-     * @param collateralAmount The amount of collateral to deposit and lock.
      */
-    function wrapEthAndDepositAndLockCollateral(
-        BalanceSheetInterface balanceSheet,
-        FyTokenInterface fyToken,
-        uint256 collateralAmount
-    ) public payable {
-        wrapEthAndDepositCollateral(balanceSheet, fyToken, collateralAmount);
+    function wrapEthAndDepositAndLockCollateral(BalanceSheetInterface balanceSheet, FyTokenInterface fyToken)
+        public
+        payable
+    {
+        uint256 collateralAmount = msg.value;
+        wrapEthAndDepositCollateral(balanceSheet, fyToken);
         balanceSheet.lockCollateral(fyToken, collateralAmount);
     }
 
@@ -478,18 +474,16 @@ contract BatterseaScriptsV1 is
      *
      * @param balanceSheet The address of the BalanceSheet contract.
      * @param fyToken The address of the FyToken contract.
-     * @param collateralAmount The amount of collateral to deposit and lock.
      * @param borrowAmount The amount of fyTokens to borrow.
      * @param underlyingAmount The amount of underlying to sell fyTokens for.
      */
     function wrapEthAndDepositAndLockCollateralAndBorrow(
         BalanceSheetInterface balanceSheet,
         FyTokenInterface fyToken,
-        uint256 collateralAmount,
         uint256 borrowAmount,
         uint256 underlyingAmount
     ) external payable {
-        wrapEthAndDepositAndLockCollateral(balanceSheet, fyToken, collateralAmount);
+        wrapEthAndDepositAndLockCollateral(balanceSheet, fyToken);
         borrowAndSellFyTokens(fyToken, borrowAmount, underlyingAmount);
     }
 
