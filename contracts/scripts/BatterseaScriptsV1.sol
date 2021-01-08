@@ -353,7 +353,7 @@ contract BatterseaScriptsV1 is
         );
 
         /* Use the recently bought fyTokens to repay the borrow. */
-        fyToken.repayBorrow(totalAmountIn);
+        fyToken.repayBorrow(repayAmount);
 
         /* When we get a better price than the worst that we assumed we would, not all underlying is sold. */
         MathError mathErr;
