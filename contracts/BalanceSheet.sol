@@ -61,7 +61,7 @@ contract BalanceSheet is
      * @notice Determines the amount of collateral that can be clutched when liquidating a borrow.
      *
      * @dev The formula applied:
-     * clutchedCollateral = repayAmount * liquidationIncentive * underlyingPriceUsd / priceCollateralUsd
+     * clutchedCollateral = repayAmount * liquidationIncentive * underlyingPriceUsd / collateralPriceUsd
      *
      * Requirements:
      *
@@ -277,6 +277,7 @@ contract BalanceSheet is
 
     /**
      * @notice Reads the debt held by the given account.
+     * @return The debt held by the borrower, as an uint256.
      */
     function getVaultDebt(FyTokenInterface fyToken, address borrower) external view override returns (uint256) {
         return vaults[address(fyToken)][borrower].debt;
@@ -284,6 +285,7 @@ contract BalanceSheet is
 
     /**
      * @notice Reads the amount of collateral that the given borrower account locked in the vault.
+     * @return The collateral locked in the vault by the borrower, as an uint256.
      */
     function getVaultLockedCollateral(FyTokenInterface fyToken, address borrower)
         external
@@ -434,7 +436,7 @@ contract BalanceSheet is
      * - The borrower account cannot fall below the collateralization ratio.
      *
      * @param fyToken The address of the fyToken contract.
-     * @param collateralAmount The amount of free collateral to lock.
+     * @param collateralAmount The amount of free collateral to free.
      * @return bool true = success, otherwise it reverts.
      */
     function freeCollateral(FyTokenInterface fyToken, uint256 collateralAmount)

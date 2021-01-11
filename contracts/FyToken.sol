@@ -211,8 +211,7 @@ contract FyToken is
     }
 
     /**
-     * @notice Repays the debt of the borrower and rewards the liquidator with a surplus
-     * of collateral.
+     * @notice Repays the debt of the borrower and rewards the caler with a surplus of collateral.
      *
      * @dev Emits a {RepayBorrow}, {Transfer}, {ClutchCollateral} and {LiquidateBorrow} event.
      *
@@ -225,7 +224,7 @@ contract FyToken is
      * - The borrower must be underwater if the bond didn't mature.
      * - The caller must have at least `repayAmount` fyTokens.
      * - The borrower must have at least `repayAmount` debt.
-     * - The collateral clutch cannot be more than what the borrower has in the vault.
+     * - The amount of clutched collateral cannot be more than what the borrower has in the vault.
      *
      * @param borrower The account to liquidate.
      * @param repayAmount The amount of fyTokens to repay.
@@ -251,7 +250,7 @@ contract FyToken is
 
         /* After maturation, any vault can be liquidated, irrespective of collateralization ratio. */
         if (isMatured() == false) {
-            /* Checks: the borrower fell below the threshold collateraliation ratio. */
+            /* Checks: the borrower fell below the threshold collateralization ratio. */
             vars.isAccountUnderwater = balanceSheet.isAccountUnderwater(this, borrower);
             require(vars.isAccountUnderwater, "ERR_ACCOUNT_NOT_UNDERWATER");
         }

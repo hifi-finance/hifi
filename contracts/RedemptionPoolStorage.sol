@@ -15,7 +15,7 @@ abstract contract RedemptionPoolStorage {
     FintrollerInterface public fintroller;
 
     /**
-     * @notice The amount of the underyling asset available to be redeemed after maturation.
+     * @notice The amount of the underlying asset available to be redeemed after maturation.
      */
     uint256 public totalUnderlyingSupply;
 

@@ -14,8 +14,8 @@ import "./RedemptionPoolInterface.sol";
 /**
  * @title RedemptionPool
  * @author Mainframe
- * @notice Mints 1 fyToken in exhchange for 1 underlying before maturation and
- * burns 1 fyToken in exchange for 1 underlying after maturation.
+ * @notice Mints 1 fyToken in exhchange for 1 underlying before maturation and burns 1 fyToken
+ * in exchange for 1 underlying after maturation.
  * @dev Instantiated by the fyToken in its constructor.
  */
 contract RedemptionPool is

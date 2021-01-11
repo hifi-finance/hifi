@@ -21,7 +21,7 @@ abstract contract FyTokenStorage {
     BalanceSheetInterface public balanceSheet;
 
     /**
-     * @notice The Erc20 asset that backs the borows of this fyToken.
+     * @notice The Erc20 asset that backs the borrows of this fyToken.
      */
     Erc20Interface public collateral;
 
