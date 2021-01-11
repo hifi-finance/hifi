@@ -11,9 +11,11 @@ on:
   pull_request:
     branches:
       - "main"
+      - "hifi"
   push:
     branches:
       - "main"
+      - "hifi"
 
 jobs:
   ci:
