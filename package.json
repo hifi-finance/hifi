@@ -66,6 +66,7 @@
     "typescript": "^3.9.7"
   },
   "files": [
+    "/artifacts",
     "/contracts"
   ],
   "homepage": "https://github.com/hifi-finance/hifi-protocol#readme",
