@@ -1,19 +1,12 @@
 # Hifi Protocol [![Coverage Status](https://coveralls.io/repos/github/hifi-finance/hifi-protocol/badge.svg?branch=main)](https://coveralls.io/github/hifi-finance/hifi-protocol?branch=main) [![Commitizen Friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/) [![License: LGPL3.0](https://img.shields.io/badge/license-LGPL3.0-yellow.svg)](https://opensource.org/licenses/lgpl-3.0)
 
-An implementation of zero-coupon bonds on the Ethereum blockchain.
+An implementation of zero-coupon bonds on the Ethereum blockchain. In-depth documentation on Hifi is available at [docs.hifi.finance](https://docs.hifi.finance).
 
-The protocol can issue synthetic assets called fyTokens that track an arbitrary underlying. Imagine for instance fyUSDC,
-which would track the [USDC stablecoin](https://www.circle.com/en/usdc). Users would mint fyUSDC by depositing collateral and
-holders of fyDAI would redeem it in exchange for USDC after the expiry date.
-
-## Warning
-
-This is experimental, beta software and is provided on an "as is" and "as available" basis. We do not give any
-warranties and will not be liable for any loss, direct or indirect through continued use of this code.
+The built contract artifacts can be browsed via [unpkg.com](https://unpkg.com/browse/@hifi/v1@latest/).
 
 ## Developers
 
-Our contracts were written in Solidity and our tests in TypeScript.
+Our contracts are written in Solidity and our tests in TypeScript.
 
 If you want to contribute, familiarity with [Hardhat](https://github.com/nomiclabs/hardhat), [Ethers](https://github.com/ethers-io/ethers.js),
 [Waffle](https://github.com/EthWorks/Waffle) and [TypeChain](https://github.com/ethereum-ts/TypeChain) is needed.

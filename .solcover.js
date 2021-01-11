@@ -17,5 +17,5 @@ module.exports = {
     default_balance_ether: 1000000,
     mnemonic: process.env.MNEMONIC,
   },
-  skipFiles: ["invariants", "test"],
+  skipFiles: ["external", "invariants", "scripts", "test"],
 };
