@@ -186,6 +186,55 @@ contract Fintroller is
     }
 
     /**
+     * @notice Updates the bond's collateralization ratio.
+     *
+     * @dev Emits a {SetBondCollateralizationRatio} event.
+     *
+     * Requirements:
+     *
+     * - The caller must be the administrator.
+     * - The bond must be listed.
+     * - The new collateralization ratio cannot be higher than the maximum collateralization ratio.
+     * - The new collateralization ratio cannot be lower than the minimum collateralization ratio.
+     *
+     * @param fyToken The bond for which to update the collateralization ratio.
+     * @param newCollateralizationRatioMantissa The new collateralization ratio as a mantissa.
+     * @return bool true = success, otherwise it reverts.
+     */
+    function setBondCollateralizationRatio(FyTokenInterface fyToken, uint256 newCollateralizationRatioMantissa)
+        external
+        override
+        onlyAdmin
+        returns (bool)
+    {
+        /* Checks: bond is listed. */
+        require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
+
+        /* Checks: new collateralization ratio is within the accepted bounds. */
+        require(
+            newCollateralizationRatioMantissa <= collateralizationRatioUpperBoundMantissa,
+            "ERR_SET_BOND_COLLATERALIZATION_RATIO_UPPER_BOUND"
+        );
+        require(
+            newCollateralizationRatioMantissa >= collateralizationRatioLowerBoundMantissa,
+            "ERR_SET_BOND_COLLATERALIZATION_RATIO_LOWER_BOUND"
+        );
+
+        /* Effects: update storage. */
+        uint256 oldCollateralizationRatioMantissa = bonds[fyToken].collateralizationRatio.mantissa;
+        bonds[fyToken].collateralizationRatio = Exp({ mantissa: newCollateralizationRatioMantissa });
+
+        emit SetBondCollateralizationRatio(
+            admin,
+            fyToken,
+            oldCollateralizationRatioMantissa,
+            newCollateralizationRatioMantissa
+        );
+
+        return true;
+    }
+
+    /**
      * @notice Updates the debt ceiling, which limits how much debt can be created in the bond market.
      *
      * @dev Emits a {SetBondDebtCeiling} event.
@@ -214,7 +263,7 @@ contract Fintroller is
         require(newDebtCeiling > 0, "ERR_SET_BOND_DEBT_CEILING_ZERO");
 
         /* Checks: above total supply of fyTokens. */
-        uint256 totalSupply = Erc20Interface(address(fyToken)).totalSupply();
+        uint256 totalSupply = fyToken.totalSupply();
         require(newDebtCeiling >= totalSupply, "ERR_SET_BOND_DEBT_CEILING_UNDERFLOW");
 
         /* Effects: update storage. */
@@ -244,55 +293,6 @@ contract Fintroller is
         require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
         bonds[fyToken].isBorrowAllowed = state;
         emit SetBorrowAllowed(admin, fyToken, state);
-        return true;
-    }
-
-    /**
-     * @notice Updates the collateralization ratio, which ensures that the bond market is sufficiently collateralized.
-     *
-     * @dev Emits a {SetCollateralizationRatio} event.
-     *
-     * Requirements:
-     *
-     * - The caller must be the administrator.
-     * - The bond must be listed.
-     * - The new collateralization ratio cannot be higher than the maximum collateralization ratio.
-     * - The new collateralization ratio cannot be lower than the minimum collateralization ratio.
-     *
-     * @param fyToken The bond for which to update the collateralization ratio.
-     * @param newCollateralizationRatioMantissa The new collateralization ratio as a mantissa.
-     * @return bool true = success, otherwise it reverts.
-     */
-    function setCollateralizationRatio(FyTokenInterface fyToken, uint256 newCollateralizationRatioMantissa)
-        external
-        override
-        onlyAdmin
-        returns (bool)
-    {
-        /* Checks: bond is listed. */
-        require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
-
-        /* Checks: new collateralization ratio is within the accepted bounds. */
-        require(
-            newCollateralizationRatioMantissa <= collateralizationRatioUpperBoundMantissa,
-            "ERR_SET_COLLATERALIZATION_RATIO_UPPER_BOUND"
-        );
-        require(
-            newCollateralizationRatioMantissa >= collateralizationRatioLowerBoundMantissa,
-            "ERR_SET_COLLATERALIZATION_RATIO_LOWER_BOUND"
-        );
-
-        /* Effects: update storage. */
-        uint256 oldCollateralizationRatioMantissa = bonds[fyToken].collateralizationRatio.mantissa;
-        bonds[fyToken].collateralizationRatio = Exp({ mantissa: newCollateralizationRatioMantissa });
-
-        emit SetCollateralizationRatio(
-            admin,
-            fyToken,
-            oldCollateralizationRatioMantissa,
-            newCollateralizationRatioMantissa
-        );
-
         return true;
     }
 

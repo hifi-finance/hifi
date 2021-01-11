@@ -13,6 +13,11 @@ abstract contract FyTokenInterface is
     Erc20Interface /* one dependency */
 {
     /**
+     * CONSTANT FUNCTIONS
+     */
+    function isMatured() public view virtual returns (bool);
+
+    /**
      * NON-CONSTANT FUNCTIONS
      */
     function borrow(uint256 borrowAmount) external virtual returns (bool);

@@ -88,6 +88,18 @@ contract FyToken is
     }
 
     /**
+     * CONSTANT FUNCTIONS
+     */
+
+    /**
+     * @notice Checks if the bond matured.
+     * @return true = bond matured, otherwise it didn't.
+     */
+    function isMatured() public view override returns (bool) {
+        return block.timestamp >= expirationTime;
+    }
+
+    /**
      * NON-CONSTANT FUNCTIONS
      */
 
@@ -376,13 +388,6 @@ contract FyToken is
     /**
      * INTERNAL FUNCTIONS
      */
-
-    /**
-     * @dev Checks if the bond matured.
-     */
-    function isMatured() internal view returns (bool) {
-        return block.timestamp >= expirationTime;
-    }
 
     /**
      * @dev See the documentation for the public functions that call this internal function.

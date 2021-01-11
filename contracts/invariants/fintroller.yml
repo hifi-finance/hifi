@@ -7,7 +7,7 @@ deployer: "0x10000"
 filterBlacklist: false
 filterFunctions:
   - "listBond"
-  - "setCollateralizationRatio"
+  - "setBondCollateralizationRatio"
 seqLen: 50
 sender:
   - "0x10000"
