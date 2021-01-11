@@ -5,7 +5,7 @@ import "./BatterseaScriptsV1Storage.sol";
 
 /**
  * @title BatterseaScriptsV1Interface
- * @author Mainframe
+ * @author Hifi
  * @notice Storage contract for BatterseaScriptsV1.
  */
 abstract contract BatterseaScriptsV1Interface is BatterseaScriptsV1Storage {

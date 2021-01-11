@@ -5,7 +5,7 @@ import "./RedemptionPoolStorage.sol";
 
 /**
  * @title RedemptionPoolInterface
- * @author Mainframe
+ * @author Hifi
  */
 abstract contract RedemptionPoolInterface is RedemptionPoolStorage {
     /**

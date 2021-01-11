@@ -6,7 +6,7 @@ import "./FyTokenInterface.sol";
 
 /**
  * @title RedemptionPoolStorage
- * @author Mainframe
+ * @author Hifi
  */
 abstract contract RedemptionPoolStorage {
     /**

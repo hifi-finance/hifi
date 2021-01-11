@@ -1,14 +1,14 @@
 {
-  "name": "@mainframe/lending-protocol",
-  "description": "The Mainframe fixed-rate lending protocol",
+  "name": "@hifi/v1",
+  "description": "The Hifi fixed-rate, fixed-term lending protocol",
   "version": "1.0.0",
   "author": {
-    "name": "Mainframe",
-    "email": "contact@mainframe.com",
-    "url": "https://mainframe.com"
+    "name": "Hifi",
+    "email": "contact@hifi.finance",
+    "url": "https://hifi.finance"
   },
   "bugs": {
-    "url": "https://github.com/mainframehq/mainframe-lending-protocol/issues"
+    "url": "https://github.com/hifi-finance/hifi-protocol/issues"
   },
   "dependencies": {
     "@paulrberg/contracts": "1.3.0"
@@ -68,7 +68,7 @@
   "files": [
     "/contracts"
   ],
-  "homepage": "https://github.com/mainframehq/mainframe-lending-protocol#readme",
+  "homepage": "https://github.com/hifi-finance/hifi-protocol#readme",
   "keywords": [
     "blockchain",
     "ethereum",
@@ -82,7 +82,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/mainframehq/mainframe-lending-protocol"
+    "url": "https://github.com/hifi-finance/hifi-protocol"
   },
   "scripts": {
     "clean": "hardhat clean",

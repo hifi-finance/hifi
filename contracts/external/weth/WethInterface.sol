@@ -5,7 +5,7 @@ import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
 
 /**
  * @title WethInterface
- * @author Mainframe
+ * @author Hifi
  */
 interface WethInterface {
     function deposit() external payable;

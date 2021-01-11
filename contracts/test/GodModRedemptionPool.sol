@@ -6,7 +6,7 @@ import "../FyTokenInterface.sol";
 
 /**
  * @title GodModeRedemptionPool
- * @author Mainframe
+ * @author Hifi
  * @dev Strictly for test purposes. Do not use in production.
  */
 contract GodModeRedemptionPool is RedemptionPool {

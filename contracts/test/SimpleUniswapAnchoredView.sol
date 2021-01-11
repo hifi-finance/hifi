@@ -5,7 +5,7 @@ import "../oracles/UniswapAnchoredViewInterface.sol";
 
 /**
  * @title SimpleUniswapAnchoredView
- * @author Mainframe
+ * @author Hifi
  * @dev Strictly for testing purposes. Do not use in production.
  */
 contract SimpleUniswapAnchoredView is UniswapAnchoredViewInterface {

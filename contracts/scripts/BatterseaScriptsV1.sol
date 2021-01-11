@@ -15,7 +15,7 @@ import "../external/weth/WethInterface.sol";
 
 /**
  * @title BatterseaScriptsV1
- * @author Mainframe
+ * @author Hifi
  * @notice Target contract with scripts for the Battersea release of the protocol.
  * @dev Meant to be used with a DSProxy contract via delegatecall.
  */

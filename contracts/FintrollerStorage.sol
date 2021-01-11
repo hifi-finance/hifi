@@ -8,7 +8,7 @@ import "./oracles/UniswapAnchoredViewInterface.sol";
 
 /**
  * @title FintrollerStorage
- * @author Mainframe
+ * @author Hifi
  */
 abstract contract FintrollerStorage is Exponential {
     struct Bond {

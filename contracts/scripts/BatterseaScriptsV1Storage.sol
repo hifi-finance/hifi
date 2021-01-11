@@ -3,7 +3,7 @@ pragma solidity ^0.7.0;
 
 /**
  * @title BatterseaScriptsV1Storage
- * @author Mainframe
+ * @author Hifi
  * @notice Storage contract for BatterseaScriptsV1.
  */
 abstract contract BatterseaScriptsV1Storage {

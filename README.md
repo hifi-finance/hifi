@@ -1,10 +1,10 @@
-# Mainframe Lending Protocol [![Coverage Status](https://coveralls.io/repos/github/MainframeHQ/mainframe-lending-protocol/badge.svg?branch=main)](https://coveralls.io/github/MainframeHQ/mainframe-lending-protocol?branch=main) [![Commitizen Friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/) [![License: LGPL3.0](https://img.shields.io/badge/license-LGPL3.0-yellow.svg)](https://opensource.org/licenses/lgpl-3.0)
+# Hifi Protocol [![Coverage Status](https://coveralls.io/repos/github/hifi-finance/hifi-protocol/badge.svg?branch=main)](https://coveralls.io/github/hifi-finance/hifi-protocol?branch=main) [![Commitizen Friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/) [![License: LGPL3.0](https://img.shields.io/badge/license-LGPL3.0-yellow.svg)](https://opensource.org/licenses/lgpl-3.0)
 
 An implementation of zero-coupon bonds on the Ethereum blockchain.
 
-The protocol can issue synthetic assets called fyTokens that track an arbitrary underlying. Imagine for instance fyDAI,
-which would track the [DAI stablecoin](https://makerdao.com/). Users would mint fyDAI by depositing collateral and
-holders of fyDAI would redeem it in exchange for DAI after the expiry date.
+The protocol can issue synthetic assets called fyTokens that track an arbitrary underlying. Imagine for instance fyUSDC,
+which would track the [USDC stablecoin](https://www.circle.com/en/usdc). Users would mint fyUSDC by depositing collateral and
+holders of fyDAI would redeem it in exchange for USDC after the expiry date.
 
 ## Warning
 
@@ -79,7 +79,7 @@ $ yarn test:unit
 Run the integration tests:
 
 ```sh
-$ yarn test:unit
+$ yarn test:integration
 ```
 
 ### Coverage

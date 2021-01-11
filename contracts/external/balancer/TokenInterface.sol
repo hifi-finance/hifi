@@ -3,7 +3,7 @@ pragma solidity ^0.7.0;
 
 /**
  * @title TokenInterface
- * @author Mainframe
+ * @author Hifi
  * @dev Forked from Balancer
  * https://github.com/balancer-labs/balancer-registry/blob/3d5fc37/contracts/ExchangeProxy.sol
  */

@@ -15,7 +15,7 @@ import "./oracles/UniswapAnchoredViewInterface.sol";
 
 /**
  * @title BalanceSheet
- * @author Mainframe
+ * @author Hifi
  * @notice Manages the debt vault for all fyToens.
  */
 contract BalanceSheet is

@@ -5,7 +5,7 @@ import "./BalanceSheetStorage.sol";
 
 /**
  * @title BalanceSheetInterface
- * @author Mainframe
+ * @author Hifi
  */
 abstract contract BalanceSheetInterface is BalanceSheetStorage {
     /**

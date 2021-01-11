@@ -7,7 +7,7 @@ import "../oracles/UniswapAnchoredViewInterface.sol";
 
 /**
  * @title TestOraclePriceUtils
- * @author Mainframe
+ * @author Hifi
  * @dev Strictly for test purposes. Do not use in production.
  */
 contract TestOraclePriceUtils {

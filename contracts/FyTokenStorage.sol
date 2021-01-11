@@ -8,7 +8,7 @@ import "./RedemptionPoolInterface.sol";
 
 /**
  * @title FyTokenStorage
- * @author Mainframe
+ * @author Hifi
  */
 abstract contract FyTokenStorage {
     /**

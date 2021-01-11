@@ -5,7 +5,7 @@ import "@paulrberg/contracts/token/erc20/Erc20.sol";
 
 /**
  * @title Erc20Mintable
- * @author Mainframe
+ * @author Hifi
  * @notice Token with the ability to mint as many tokens to anyone.
  * @dev Strictly for test purposes.
  */

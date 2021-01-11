@@ -5,7 +5,7 @@ import "./TokenInterface.sol";
 
 /**
  * @title ExchangeProxyInterface
- * @author Mainframe
+ * @author Hifi
  */
 interface ExchangeProxyInterface {
     function smartSwapExactIn(

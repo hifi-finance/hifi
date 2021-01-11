@@ -6,7 +6,7 @@ import "../FyTokenInterface.sol";
 
 /**
  * @title GodModeBalanceSheet
- * @author Mainframe
+ * @author Hifi
  * @dev Strictly for test purposes. Do not use in production.
  */
 contract GodModeBalanceSheet is BalanceSheet {

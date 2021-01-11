@@ -3,7 +3,7 @@ pragma solidity ^0.7.0;
 
 /**
  * @title UniswapAnchoredViewInterface
- * @author Mainframe
+ * @author Hifi
  * @notice Interface for accessing the Compound Open Price Feed.
  * https://compound.finance/docs/prices
  */

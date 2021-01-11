@@ -6,7 +6,7 @@ import "./FyTokenStorage.sol";
 
 /**
  * @title FyTokenInterface
- * @author Mainframe
+ * @author Hifi
  */
 abstract contract FyTokenInterface is
     FyTokenStorage, /* no dependency */

@@ -17,7 +17,7 @@ import "./oracles/UniswapAnchoredViewInterface.sol";
 
 /**
  * @title FyToken
- * @author Mainframe
+ * @author Hifi
  * @notice Zero-coupon bond that tracks an Erc20 underlying asset.
  */
 contract FyToken is

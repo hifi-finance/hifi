@@ -6,7 +6,7 @@ import "../FyToken.sol";
 
 /**
  * @title GodModeFyToken
- * @author Mainframe
+ * @author Hifi
  * @dev Strictly for test purposes. Do not use in production.
  */
 contract GodModeFyToken is FyToken {
