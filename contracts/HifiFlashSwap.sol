@@ -24,7 +24,6 @@ contract HifiFlashSwap is
         address balanceSheet_,
         address pair_
     ) Admin() {
-        // Save the contracts in storage.
         fintroller = FintrollerLike(fintroller_);
         balanceSheet = BalanceSheetLike(balanceSheet_);
         pair = UniswapV2PairLike(pair_);
@@ -41,6 +40,7 @@ contract HifiFlashSwap is
         uint256 profit
     );
 
+    /// @dev "amount0" is WBTC and "amount1" is USDC for the WBTC-USDC pool.
     function uniswapV2Call(
         address sender,
         uint256 amount0,
@@ -48,17 +48,17 @@ contract HifiFlashSwap is
         bytes calldata data
     ) external override {
         require(msg.sender == address(pair), "ERR_CALLER_NOT_UNISWAP_V2_PAIR");
-        require(amount1 == 0, "ERR_AMOUNT1_ZERO");
+        require(amount0 == 0, "ERR_TOKEN0_AMOUNT_ZERO");
 
         // Unpack the ABI encoded data passed by the Uniswap V2 Pair contract.
         (address fyTokenAddress, address borrower, uint256 minProfit) = abi.decode(data, (address, address, uint256));
         FyTokenLike fyToken = FyTokenLike(fyTokenAddress);
 
-        uint256 mintedFyTokenAmount = mintFyTokens(fyToken, amount0);
+        uint256 mintedFyTokenAmount = mintFyTokens(fyToken, amount1);
         uint256 clutchedCollateralAmount = liquidateBorrow(fyToken, borrower, mintedFyTokenAmount);
 
         // Paid in the corresponding token pair, i.e. the collateral asset for Hifi.
-        uint256 flashSwapRepaymentAmount = 0;
+        uint256 token0RepaymentAmount = 0;
         {
             // -> Calculate the amount of WBTC required
             //
@@ -66,40 +66,40 @@ contract HifiFlashSwap is
             // wbtc = -----------------------------------
             //          (usdcReserves - usdcAmount) * 997
             (uint112 usdcReserves, uint112 wbtcReserves, ) = pair.getReserves();
-            uint256 numerator = wbtcReserves * amount0 * 1000;
-            uint256 denominator = (usdcReserves - amount0) * 997;
-            flashSwapRepaymentAmount = numerator / denominator + 1;
+            uint256 numerator = wbtcReserves * amount1 * 1000;
+            uint256 denominator = (usdcReserves - amount1) * 997;
+            token0RepaymentAmount = numerator / denominator + 1;
         }
-        require(clutchedCollateralAmount > flashSwapRepaymentAmount + minProfit, "ERR_INSUFFICIENT_PROFIT");
+        require(clutchedCollateralAmount > token0RepaymentAmount + minProfit, "ERR_INSUFFICIENT_PROFIT");
 
         // Pay back the loan.
-        require(token1.transfer(address(pair), flashSwapRepaymentAmount), "ERR_CALL_TOKEN1_TRANSFER");
+        require(token1.transfer(address(pair), token0RepaymentAmount), "ERR_CALL_TOKEN1_TRANSFER");
 
         // Reap the profit.
-        uint256 profit = clutchedCollateralAmount - flashSwapRepaymentAmount;
+        uint256 profit = clutchedCollateralAmount - token0RepaymentAmount;
         token1.transfer(sender, profit);
 
         emit FlashLiquidate(sender, borrower, fyTokenAddress, mintedFyTokenAmount, clutchedCollateralAmount, profit);
     }
 
-    /// Supply the underlying to the RedemptionPool and mint fyTokens.
-    function mintFyTokens(FyTokenLike fyToken, uint256 amount0) internal returns (uint256) {
+    /// @dev Supply the underlying to the RedemptionPool and mint fyTokens.
+    function mintFyTokens(FyTokenLike fyToken, uint256 amount1) internal returns (uint256) {
         address redemptionPoolAddress = fyToken.redemptionPool();
 
         // Allow the RedemptionPool to spend token0 if allowance not enough.
         uint256 allowance = token0.allowance(address(this), redemptionPoolAddress);
-        if (allowance < amount0) {
+        if (allowance < amount1) {
             token0.approve(redemptionPoolAddress, type(uint256).max);
         }
 
         uint256 preFyTokenBalance = fyToken.balanceOf(address(this));
-        RedemptionPoolLike(redemptionPoolAddress).supplyUnderlying(amount0);
+        RedemptionPoolLike(redemptionPoolAddress).supplyUnderlying(amount1);
         uint256 postFyTokenBalance = fyToken.balanceOf(address(this));
         uint256 mintedFyTokenAmount = postFyTokenBalance - preFyTokenBalance;
         return mintedFyTokenAmount;
     }
 
-    /// Transfer the received token0 to the BalanceSheet and receive collateral at a discount.
+    /// @dev Transfer the received token0 to the BalanceSheet and receive collateral at a discount.
     function liquidateBorrow(
         FyTokenLike fyToken,
         address borrower,

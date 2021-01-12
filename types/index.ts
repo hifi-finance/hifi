@@ -1,20 +1,29 @@
-import { Signer } from "@ethersproject/abstract-signer";
+import { BalanceSheet } from "@hifi/protocol/typechain/BalanceSheet";
+import { Fintroller } from "@hifi/protocol/typechain/Fintroller";
+import { FyToken } from "@hifi/protocol/typechain/FyToken";
+import { RedemptionPool } from "@hifi/protocol/typechain/RedemptionPool";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 
-import { FiatTokenV2 as USDC } from "./contracts/FiatTokenV2";
+import { Erc20Mintable } from "../typechain/Erc20Mintable";
 import { HifiFlashSwap } from "../typechain/HifiFlashSwap";
+import { SimpleOracle } from "../typechain/SimpleOracle";
 import { UniswapV2Pair } from "./contracts/UniswapV2Pair";
-import { WBTC } from "./contracts/WBTC";
 
 export interface Contracts {
-  collateral: WBTC;
+  balanceSheet: BalanceSheet;
+  fintroller: Fintroller;
+  fyToken: FyToken;
   hifiFlashSwap: HifiFlashSwap;
-  underlying: USDC;
+  oracle: SimpleOracle;
+  redemptionPool: RedemptionPool;
+  usdc: Erc20Mintable;
   uniswapV2Pair: UniswapV2Pair;
+  wbtc: Erc20Mintable;
 }
 
 export interface Signers {
-  admin: Signer;
-  borrower: Signer;
-  liquidator: Signer;
-  raider: Signer;
+  admin: SignerWithAddress;
+  borrower: SignerWithAddress;
+  liquidator: SignerWithAddress;
+  raider: SignerWithAddress;
 }
