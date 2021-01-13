@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.7.0;
 
-import "../interfaces/UniswapAnchoredViewInterface.sol";
+import "@hifi/protocol/contracts/oracles/UniswapAnchoredViewInterface.sol";
 
 contract SimpleOracle is UniswapAnchoredViewInterface {
     uint256 public ethPrice;

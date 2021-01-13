@@ -12,11 +12,11 @@ import { RedemptionPool } from "@hifi/protocol/typechain/RedemptionPool";
 import { Signer } from "@ethersproject/abstract-signer";
 import { ethers, waffle } from "hardhat";
 
-import Erc20MintableArtifact from "../../artifacts/contracts/test/Erc20Mintable.sol/Erc20Mintable.json";
+import GodModeArtifact from "../../artifacts/contracts/test/GodModeErc20.sol/GodModeErc20.json";
 import HifiFlashSwapArtifact from "../../artifacts/contracts/HifiFlashSwap.sol/HifiFlashSwap.json";
 import SimpleOracleArtifact from "../../artifacts/contracts/test/SimpleOracle.sol/SimpleOracle.json";
 
-import { Erc20Mintable } from "../../typechain/Erc20Mintable";
+import { GodModeErc20 } from "../../typechain/GodModeErc20";
 import { HifiFlashSwap } from "../../typechain/HifiFlashSwap";
 import { SimpleOracle } from "../../typechain/SimpleOracle";
 import { UniswapV2Pair } from "../../types/contracts/UniswapV2Pair";
@@ -31,9 +31,9 @@ type IntegrationFixtureReturnType = {
   hifiFlashSwap: HifiFlashSwap;
   oracle: SimpleOracle;
   redemptionPool: RedemptionPool;
-  usdc: Erc20Mintable;
+  usdc: GodModeErc20;
   uniswapV2Pair: UniswapV2Pair;
-  wbtc: Erc20Mintable;
+  wbtc: GodModeErc20;
 };
 
 export async function integrationFixture(signers: Signer[]): Promise<IntegrationFixtureReturnType> {
@@ -48,20 +48,12 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
     await deployContract(deployer, BalanceSheetArtifact, [fintroller.address])
   );
 
-  const usdc: Erc20Mintable = <Erc20Mintable>(
-    await deployContract(deployer, Erc20MintableArtifact, [
-      usdcConstants.name,
-      usdcConstants.symbol,
-      usdcConstants.decimals,
-    ])
+  const usdc: GodModeErc20 = <GodModeErc20>(
+    await deployContract(deployer, GodModeArtifact, [usdcConstants.name, usdcConstants.symbol, usdcConstants.decimals])
   );
 
-  const wbtc: Erc20Mintable = <Erc20Mintable>(
-    await deployContract(deployer, Erc20MintableArtifact, [
-      wbtcConstants.name,
-      wbtcConstants.symbol,
-      wbtcConstants.decimals,
-    ])
+  const wbtc: GodModeErc20 = <GodModeErc20>(
+    await deployContract(deployer, GodModeArtifact, [wbtcConstants.name, wbtcConstants.symbol, wbtcConstants.decimals])
   );
 
   const name: string = "hfyUSDC (2021-04-30)";

@@ -326,6 +326,21 @@
     "@ethersproject/properties" "^5.0.3"
     "@ethersproject/strings" "^5.0.4"
 
+"@ethersproject/abi@^5.0.10":
+  version "5.0.10"
+  resolved "http://localhost:4873/@ethersproject%2fabi/-/abi-5.0.10.tgz#c32baa919ad0e5cddabb2f3a8aed0eaeeed7fa4a"
+  integrity sha512-cfC3lGgotfxX3SMri4+CisOPwignoj/QGHW9J29spC4R4Qqcnk/SYuVkPFBMdLbvBp3f/pGiVqPNwont0TSXhg==
+  dependencies:
+    "@ethersproject/address" "^5.0.9"
+    "@ethersproject/bignumber" "^5.0.13"
+    "@ethersproject/bytes" "^5.0.9"
+    "@ethersproject/constants" "^5.0.8"
+    "@ethersproject/hash" "^5.0.10"
+    "@ethersproject/keccak256" "^5.0.7"
+    "@ethersproject/logger" "^5.0.8"
+    "@ethersproject/properties" "^5.0.7"
+    "@ethersproject/strings" "^5.0.8"
+
 "@ethersproject/abstract-provider@5.0.5", "@ethersproject/abstract-provider@^5.0.4":
   version "5.0.5"
   resolved "https://registry.yarnpkg.com/@ethersproject/abstract-provider/-/abstract-provider-5.0.5.tgz#797a32a8707830af1ad8f833e9c228994d5572b9"
@@ -591,6 +606,20 @@
     "@ethersproject/logger" "^5.0.5"
     "@ethersproject/properties" "^5.0.4"
     "@ethersproject/strings" "^5.0.4"
+
+"@ethersproject/hash@^5.0.10":
+  version "5.0.10"
+  resolved "http://localhost:4873/@ethersproject%2fhash/-/hash-5.0.10.tgz#41bf37428e8ddbc229ffd81c47af667174cb491a"
+  integrity sha512-Tf0bvs6YFhw28LuHnhlDWyr0xfcDxSXdwM4TcskeBbmXVSKLv3bJQEEEBFUcRX0fJuslR3gCVySEaSh7vuMx5w==
+  dependencies:
+    "@ethersproject/abstract-signer" "^5.0.10"
+    "@ethersproject/address" "^5.0.9"
+    "@ethersproject/bignumber" "^5.0.13"
+    "@ethersproject/bytes" "^5.0.9"
+    "@ethersproject/keccak256" "^5.0.7"
+    "@ethersproject/logger" "^5.0.8"
+    "@ethersproject/properties" "^5.0.7"
+    "@ethersproject/strings" "^5.0.8"
 
 "@ethersproject/hdnode@5.0.5", "@ethersproject/hdnode@^5.0.4":
   version "5.0.5"
@@ -1105,7 +1134,7 @@
     "@ethersproject/properties" "^5.0.3"
     "@ethersproject/strings" "^5.0.4"
 
-"@hifi/protocol@^1.0.0":
+"@hifi/protocol@1.0.0":
   version "1.0.0"
   resolved "http://localhost:4873/@hifi%2fprotocol/-/protocol-1.0.0.tgz#cc3888b5e788c7e5734ea98c4814ac8a43f7ca8c"
   integrity sha512-Cf3QQYT/I3trCDwNz0BhOBLvMmO9jUCD9EgMpMDB5xfZybn8gCEGiotE9RI6hb5Dm6EVr20CdLW3X2Xz+17D/g==
@@ -1549,7 +1578,7 @@
   dependencies:
     eslint-visitor-keys "^1.1.0"
 
-"@uniswap/v2-core@^1.0.1":
+"@uniswap/v2-core@1.0.1":
   version "1.0.1"
   resolved "http://localhost:4873/@uniswap%2fv2-core/-/v2-core-1.0.1.tgz#af8f508bf183204779938969e2e54043e147d425"
   integrity sha512-MtybtkUPSyysqLY2U210NBDeCHX+ltHt3oADGdjqoThZaFRDKwM6k1Nb3F0A3hk5hwuQvytFWhrWHOEq6nVJ8Q==

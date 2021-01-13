@@ -1,22 +1,21 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.7.0;
 
+import "@hifi/protocol/contracts/BalanceSheetInterface.sol";
+import "@hifi/protocol/contracts/FintrollerInterface.sol";
+import "@hifi/protocol/contracts/FyTokenInterface.sol";
+import "@hifi/protocol/contracts/RedemptionPoolInterface.sol";
 import "@paulrberg/contracts/access/Admin.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
+import "hardhat/console.sol";
 
-import "./HifiFlashSwapStorage.sol";
-import "./interfaces/BalanceSheetLike.sol";
-import "./interfaces/FintrollerLike.sol";
-import "./interfaces/FyTokenLike.sol";
-import "./interfaces/RedemptionPoolLike.sol";
-import "./interfaces/UniswapV2CaleeLike.sol";
+import "./HifiFlashSwapInterface.sol";
 import "./interfaces/UniswapV2PairLike.sol";
 
 /// @title HifiFlashSwap
 /// @author Hifi
 contract HifiFlashSwap is
-    HifiFlashSwapStorage, // no dependency
-    UniswapV2CaleeLike, // no dependency
+    HifiFlashSwapInterface, // one dependency
     Admin // two depdendencies
 {
     constructor(
@@ -24,91 +23,102 @@ contract HifiFlashSwap is
         address balanceSheet_,
         address pair_
     ) Admin() {
-        fintroller = FintrollerLike(fintroller_);
-        balanceSheet = BalanceSheetLike(balanceSheet_);
+        fintroller = FintrollerInterface(fintroller_);
+        balanceSheet = BalanceSheetInterface(balanceSheet_);
         pair = UniswapV2PairLike(pair_);
-        token0 = Erc20Interface(pair.token0());
-        token1 = Erc20Interface(pair.token1());
+        wbtc = Erc20Interface(pair.token0());
+        usdc = Erc20Interface(pair.token1());
     }
 
-    event FlashLiquidate(
-        address indexed liquidator,
-        address indexed borrower,
-        address indexed fyToken,
-        uint256 mintedFyTokenAmount,
-        uint256 clutchedCollateralAmount,
-        uint256 profit
-    );
+    /// @dev Calculate the amount of WBTC that has to be repaid to Uniswap. The formula applied is:
+    ///
+    ///              (wbtcReserves * usdcAmount) * 1000
+    /// repayment = ------------------------------------
+    ///              (usdcReserves - usdcAmount) * 997
+    ///
+    /// See "getAmountIn" and "getAmountOut" in UniswapV2Library.sol. Flash swaps that are repaid via
+    /// the corresponding pair token is akin to a normal swap, so the 0.3% LP fee applies.
+    function getRepayWbtcAmount(uint256 usdcAmount) public view returns (uint256) {
+        (uint112 wbtcReserves, uint112 usdcReserves, ) = pair.getReserves();
 
-    /// @dev "amount0" is WBTC and "amount1" is USDC for the WBTC-USDC pool.
+        // Note that we don't need CarefulMath because the UniswapV2Pair.sol contract performs sanity
+        // checks on "wbtcAmount" and "usdcAmount" before calling the current contract.
+        uint256 numerator = wbtcReserves * usdcAmount * 1000;
+        uint256 denominator = (usdcReserves - usdcAmount) * 997;
+        uint256 wbtcRepaymentAmount = numerator / denominator + 1;
+
+        return wbtcRepaymentAmount;
+    }
+
+    /// @dev Called by the Uniswap V2 Pair contract.
     function uniswapV2Call(
         address sender,
-        uint256 amount0,
-        uint256 amount1,
+        uint256 wbtcAmount,
+        uint256 usdcAmount,
         bytes calldata data
     ) external override {
-        require(msg.sender == address(pair), "ERR_CALLER_NOT_UNISWAP_V2_PAIR");
-        require(amount0 == 0, "ERR_TOKEN0_AMOUNT_ZERO");
+        require(msg.sender == address(pair), "ERR_UNISWAP_V2_CALL_NOT_AUTHORIZED");
+        require(wbtcAmount == 0, "ERR_WBTC_AMOUNT_ZERO");
 
         // Unpack the ABI encoded data passed by the Uniswap V2 Pair contract.
         (address fyTokenAddress, address borrower, uint256 minProfit) = abi.decode(data, (address, address, uint256));
-        FyTokenLike fyToken = FyTokenLike(fyTokenAddress);
+        FyTokenInterface fyToken = FyTokenInterface(fyTokenAddress);
+        fyToken.isFyToken();
 
-        uint256 mintedFyTokenAmount = mintFyTokens(fyToken, amount1);
-        uint256 clutchedCollateralAmount = liquidateBorrow(fyToken, borrower, mintedFyTokenAmount);
+        // Mint fyUSDC and liquidate the borrower.
+        uint256 mintedFyUsdcAmount = mintFyUsdc(fyToken, usdcAmount);
+        uint256 clutchedWbtcAmount = liquidateBorrow(fyToken, borrower, mintedFyUsdcAmount);
 
-        // Paid in the corresponding token pair, i.e. the collateral asset for Hifi.
-        uint256 token0RepaymentAmount = 0;
-        {
-            // -> Calculate the amount of WBTC required
-            //
-            //          wbtcReserves * usdcAmount * 1000
-            // wbtc = -----------------------------------
-            //          (usdcReserves - usdcAmount) * 997
-            (uint112 usdcReserves, uint112 wbtcReserves, ) = pair.getReserves();
-            uint256 numerator = wbtcReserves * amount1 * 1000;
-            uint256 denominator = (usdcReserves - amount1) * 997;
-            token0RepaymentAmount = numerator / denominator + 1;
-        }
-        require(clutchedCollateralAmount > token0RepaymentAmount + minProfit, "ERR_INSUFFICIENT_PROFIT");
+        // Calculate the amount of WBTC required.
+        uint256 repayWbtcAmount = getRepayWbtcAmount(usdcAmount);
+        require(clutchedWbtcAmount > repayWbtcAmount + minProfit, "ERR_INSUFFICIENT_PROFIT");
 
         // Pay back the loan.
-        require(token1.transfer(address(pair), token0RepaymentAmount), "ERR_CALL_TOKEN1_TRANSFER");
+        require(wbtc.transfer(address(pair), repayWbtcAmount), "ERR_WBTC_TRANSFER");
 
         // Reap the profit.
-        uint256 profit = clutchedCollateralAmount - token0RepaymentAmount;
-        token1.transfer(sender, profit);
+        uint256 profit = clutchedWbtcAmount - repayWbtcAmount;
+        wbtc.transfer(sender, profit);
 
-        emit FlashLiquidate(sender, borrower, fyTokenAddress, mintedFyTokenAmount, clutchedCollateralAmount, profit);
+        emit FlashLiquidate(
+            sender,
+            borrower,
+            fyTokenAddress,
+            usdcAmount,
+            mintedFyUsdcAmount,
+            clutchedWbtcAmount,
+            profit
+        );
     }
 
-    /// @dev Supply the underlying to the RedemptionPool and mint fyTokens.
-    function mintFyTokens(FyTokenLike fyToken, uint256 amount1) internal returns (uint256) {
-        address redemptionPoolAddress = fyToken.redemptionPool();
+    /// @dev Supply the USDC to the RedemptionPool and mint fyUSDC.
+    function mintFyUsdc(FyTokenInterface fyToken, uint256 usdcAmount) internal returns (uint256) {
+        RedemptionPoolInterface redemptionPool = fyToken.redemptionPool();
 
-        // Allow the RedemptionPool to spend token0 if allowance not enough.
-        uint256 allowance = token0.allowance(address(this), redemptionPoolAddress);
-        if (allowance < amount1) {
-            token0.approve(redemptionPoolAddress, type(uint256).max);
+        // Allow the RedemptionPool to spend USDC if allowance not enough.
+        uint256 allowance = usdc.allowance(address(this), address(redemptionPool));
+        if (allowance < usdcAmount) {
+            usdc.approve(address(redemptionPool), type(uint256).max);
         }
 
-        uint256 preFyTokenBalance = fyToken.balanceOf(address(this));
-        RedemptionPoolLike(redemptionPoolAddress).supplyUnderlying(amount1);
-        uint256 postFyTokenBalance = fyToken.balanceOf(address(this));
-        uint256 mintedFyTokenAmount = postFyTokenBalance - preFyTokenBalance;
-        return mintedFyTokenAmount;
+        uint256 oldFyTokenBalance = fyToken.balanceOf(address(this));
+        redemptionPool.supplyUnderlying(usdcAmount);
+        uint256 newFyTokenBalance = fyToken.balanceOf(address(this));
+        uint256 mintedFyUsdcAmount = newFyTokenBalance - oldFyTokenBalance;
+        return mintedFyUsdcAmount;
     }
 
-    /// @dev Transfer the received token0 to the BalanceSheet and receive collateral at a discount.
+    /// @dev Liquidate the borrower by transferring the USDC to the BalanceSheet. In doing this,
+    /// the liquidator receives WBTC at a discount.
     function liquidateBorrow(
-        FyTokenLike fyToken,
+        FyTokenInterface fyToken,
         address borrower,
-        uint256 mintedFyTokenAmount
+        uint256 mintedFyUsdcAmount
     ) internal returns (uint256) {
-        uint256 preToken1Balance = token1.balanceOf(address(this));
-        fyToken.liquidateBorrow(borrower, mintedFyTokenAmount);
-        uint256 postToken1Balance = token1.balanceOf(address(this));
-        uint256 clutchedCollateralAmount = postToken1Balance - preToken1Balance;
-        return clutchedCollateralAmount;
+        uint256 oldWbtcBalance = wbtc.balanceOf(address(this));
+        fyToken.liquidateBorrow(borrower, mintedFyUsdcAmount);
+        uint256 newWbtcBalance = wbtc.balanceOf(address(this));
+        uint256 clutchedWbtcAmount = newWbtcBalance - oldWbtcBalance;
+        return clutchedWbtcAmount;
     }
 }
