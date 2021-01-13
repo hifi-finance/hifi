@@ -15,11 +15,11 @@ if (!process.env.BALANCE_SHEET_ADDRESS) {
   balanceSheetAddress = process.env.BALANCE_SHEET_ADDRESS;
 }
 
-let uniswapV2PairAddress: string;
-if (!process.env.UNISWAP_V2_PAIR_ADDRESS) {
-  throw new Error("Please set UNISWAP_V2_PAIR_ADDRESS as an env variable");
+let uniV2WbtcUsdcAddress: string;
+if (!process.env.UNI_V2_WBTC_USDC_ADDRESS) {
+  throw new Error("Please set UNI_V2_WBTC_USDC_ADDRESS as an env variable");
 } else {
-  uniswapV2PairAddress = process.env.UNISWAP_V2_PAIR_ADDRESS;
+  uniV2WbtcUsdcAddress = process.env.UNI_V2_WBTC_USDC_ADDRESS;
 }
 
 async function main(): Promise<void> {
@@ -27,7 +27,7 @@ async function main(): Promise<void> {
   const hifiFlashSwap: Contract = await hifiFlashSwapFactory.deploy(
     fintrollerAddress,
     balanceSheetAddress,
-    uniswapV2PairAddress,
+    uniV2WbtcUsdcAddress,
   );
   await hifiFlashSwap.deployed();
 

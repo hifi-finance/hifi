@@ -36,13 +36,6 @@ if (!process.env.INFURA_API_KEY) {
   infuraApiKey = process.env.INFURA_API_KEY;
 }
 
-// let alchemyApiKey: string;
-// if (!process.env.ALCHEMY_API_KEY) {
-//   throw new Error("Please set your ALCHEMY_API_KEY in a .env file");
-// } else {
-//   alchemyApiKey = process.env.ALCHEMY_API_KEY;
-// }
-
 function createTestnetConfig(network: keyof typeof chainIds): NetworkUserConfig {
   const url: string = "https://" + network + ".infura.io/v3/" + infuraApiKey;
   return {
