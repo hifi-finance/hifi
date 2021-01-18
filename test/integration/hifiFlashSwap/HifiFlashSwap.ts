@@ -16,7 +16,6 @@ export function integrationTestHifiFlashSwap(): void {
         wbtc,
       } = await this.loadFixture(integrationFixture);
       this.contracts.balanceSheet = balanceSheet;
-
       this.contracts.fintroller = fintroller;
       this.contracts.fyToken = fyToken;
       this.contracts.hifiFlashSwap = hifiFlashSwap;

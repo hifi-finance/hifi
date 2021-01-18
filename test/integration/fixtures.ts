@@ -80,11 +80,7 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
   await uniswapV2Pair.initialize(wbtc.address, usdc.address);
 
   const hifiFlashSwap: HifiFlashSwap = <HifiFlashSwap>(
-    await deployContract(deployer, HifiFlashSwapArtifact, [
-      fintroller.address,
-      balanceSheet.address,
-      uniswapV2Pair.address,
-    ])
+    await deployContract(deployer, HifiFlashSwapArtifact, [balanceSheet.address, uniswapV2Pair.address])
   );
 
   return {

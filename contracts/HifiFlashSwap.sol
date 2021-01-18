@@ -2,7 +2,6 @@
 pragma solidity ^0.7.0;
 
 import "@hifi/protocol/contracts/BalanceSheetInterface.sol";
-import "@hifi/protocol/contracts/FintrollerInterface.sol";
 import "@hifi/protocol/contracts/FyTokenInterface.sol";
 import "@hifi/protocol/contracts/RedemptionPoolInterface.sol";
 import "@paulrberg/contracts/access/Admin.sol";
@@ -18,12 +17,7 @@ contract HifiFlashSwap is
     HifiFlashSwapInterface, // one dependency
     Admin // two depdendencies
 {
-    constructor(
-        address fintroller_,
-        address balanceSheet_,
-        address pair_
-    ) Admin() {
-        fintroller = FintrollerInterface(fintroller_);
+    constructor(address balanceSheet_, address pair_) Admin() {
         balanceSheet = BalanceSheetInterface(balanceSheet_);
         pair = UniswapV2PairLike(pair_);
         wbtc = Erc20Interface(pair.token0());
@@ -50,7 +44,7 @@ contract HifiFlashSwap is
         return wbtcRepaymentAmount;
     }
 
-    /// @dev Called by the Uniswap V2 Pair contract.
+    /// @dev Called by the UniswapV2Pair contract.
     function uniswapV2Call(
         address sender,
         uint256 wbtcAmount,
@@ -60,7 +54,7 @@ contract HifiFlashSwap is
         require(msg.sender == address(pair), "ERR_UNISWAP_V2_CALL_NOT_AUTHORIZED");
         require(wbtcAmount == 0, "ERR_WBTC_AMOUNT_ZERO");
 
-        // Unpack the ABI encoded data passed by the Uniswap V2 Pair contract.
+        // Unpack the ABI encoded data passed by the UniswapV2Pair contract.
         (address fyTokenAddress, address borrower, uint256 minProfit) = abi.decode(data, (address, address, uint256));
         FyTokenInterface fyToken = FyTokenInterface(fyTokenAddress);
         fyToken.isFyToken();

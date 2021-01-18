@@ -38,7 +38,7 @@ async function bumpPoolReserves(
     await this.contracts.usdc.mint(this.contracts.uniswapV2Pair.address, usdcAmount);
   }
 
-  // Sync the token reserves in the Uniswap V2 pair contract.
+  // Sync the token reserves in the UniswapV2Pair contract.
   await this.contracts.uniswapV2Pair.sync();
 }
 
@@ -67,13 +67,13 @@ async function reducePoolReserves(
     await this.contracts.usdc.burn(this.contracts.uniswapV2Pair.address, usdcAmount);
   }
 
-  // Sync the token reserves in the Uniswap V2 pair contract.
+  // Sync the token reserves in the UniswapV2Pair contract.
 
   await this.contracts.uniswapV2Pair.sync();
 }
 
 export default function shouldBehaveLikeUniswapV2Call(): void {
-  describe("when the caller is not the Uniswap V2 pair contract", function () {
+  describe("when the caller is not the UniswapV2Pair contract", function () {
     it("reverts", async function () {
       const sender: string = this.signers.raider.address;
       const wbtcAmount: BigNumber = Zero;
@@ -85,7 +85,7 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
     });
   });
 
-  describe("when the caller is the Uniswap V2 pair contract", function () {
+  describe("when the caller is the UniswapV2Pair contract", function () {
     beforeEach(async function () {
       // Set the oracle price to 1 WBTC = $20k.
       await this.contracts.oracle.setWbtcPrice(p20k);
