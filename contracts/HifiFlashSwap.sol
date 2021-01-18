@@ -6,7 +6,6 @@ import "@hifi/protocol/contracts/FyTokenInterface.sol";
 import "@hifi/protocol/contracts/RedemptionPoolInterface.sol";
 import "@paulrberg/contracts/access/Admin.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
-import "hardhat/console.sol";
 
 import "./HifiFlashSwapInterface.sol";
 import "./interfaces/UniswapV2PairLike.sol";
