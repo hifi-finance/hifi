@@ -16,7 +16,7 @@ import { ten } from "../../../../helpers/constants";
 const fyUsdc10k: BigNumber = getWholeFyUsdcAmount(10000);
 const fyUsdc1m: BigNumber = getWholeFyUsdcAmount(1000000);
 const p1: BigNumber = getWholeOraclePrice(1);
-const p20k: BigNumber = getWholeWbtcAmount(20000);
+const p20k: BigNumber = getWholeOraclePrice(20000);
 const wbtc0dot001: BigNumber = getPartialWbtcAmount(1000);
 const wbtc1: BigNumber = getWholeWbtcAmount(1);
 
