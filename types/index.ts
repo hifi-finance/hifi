@@ -4,9 +4,9 @@ import { FyToken } from "@hifi/protocol/typechain/FyToken";
 import { RedemptionPool } from "@hifi/protocol/typechain/RedemptionPool";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 
+import { DummyOracle } from "../typechain/DummyOracle";
 import { GodModeErc20 } from "../typechain/GodModeErc20";
 import { HifiFlashSwap } from "../typechain/HifiFlashSwap";
-import { SimpleOracle } from "../typechain/SimpleOracle";
 import { UniswapV2Pair } from "./contracts/UniswapV2Pair";
 
 export interface Contracts {
@@ -14,7 +14,7 @@ export interface Contracts {
   fintroller: Fintroller;
   fyToken: FyToken;
   hifiFlashSwap: HifiFlashSwap;
-  oracle: SimpleOracle;
+  oracle: DummyOracle;
   redemptionPool: RedemptionPool;
   usdc: GodModeErc20;
   uniswapV2Pair: UniswapV2Pair;

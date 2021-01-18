@@ -3,7 +3,7 @@ pragma solidity ^0.7.0;
 
 import "@hifi/protocol/contracts/oracles/UniswapAnchoredViewInterface.sol";
 
-contract SimpleOracle is UniswapAnchoredViewInterface {
+contract DummyOracle is UniswapAnchoredViewInterface {
     uint256 public ethPrice;
     uint256 public usdcPrice;
     uint256 public wbtcPrice;

@@ -16,6 +16,8 @@ import { ten } from "../../../../helpers/constants";
 const fyUsdc10k: BigNumber = getWholeFyUsdcAmount(10000);
 const fyUsdc1m: BigNumber = getWholeFyUsdcAmount(1000000);
 const p1: BigNumber = getWholeOraclePrice(1);
+const p10k: BigNumber = getWholeOraclePrice(10000);
+const p12dot5k: BigNumber = getWholeOraclePrice(12500);
 const p20k: BigNumber = getWholeOraclePrice(20000);
 const wbtc0dot001: BigNumber = getPartialWbtcAmount(1000);
 const wbtc1: BigNumber = getWholeWbtcAmount(1);
@@ -167,7 +169,6 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
         describe("when the collateralization ratio is lower than 110%", function () {
           beforeEach(async function () {
             // Set the WBTC price to $10k to make borrower's collateralization ratio 100%.
-            const p10k: BigNumber = getWholeOraclePrice(10000);
             await this.contracts.oracle.setWbtcPrice(p10k);
           });
 
@@ -185,7 +186,6 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
         describe("when the collateralization ratio is lower than 150% but higher than 110%", function () {
           beforeEach(async function () {
             // Set the WBTC price to $12.5k to make borrower's collateralization ratio 125%.
-            const p12dot5k: BigNumber = getWholeOraclePrice(12500);
             await this.contracts.oracle.setWbtcPrice(p12dot5k);
           });
 

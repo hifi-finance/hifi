@@ -12,13 +12,13 @@ import { RedemptionPool } from "@hifi/protocol/typechain/RedemptionPool";
 import { Signer } from "@ethersproject/abstract-signer";
 import { ethers, waffle } from "hardhat";
 
+import DummyOracleArtifact from "../../artifacts/contracts/test/DummyOracle.sol/DummyOracle.json";
 import GodModeArtifact from "../../artifacts/contracts/test/GodModeErc20.sol/GodModeErc20.json";
 import HifiFlashSwapArtifact from "../../artifacts/contracts/HifiFlashSwap.sol/HifiFlashSwap.json";
-import SimpleOracleArtifact from "../../artifacts/contracts/test/SimpleOracle.sol/SimpleOracle.json";
 
+import { DummyOracle } from "../../typechain/DummyOracle";
 import { GodModeErc20 } from "../../typechain/GodModeErc20";
 import { HifiFlashSwap } from "../../typechain/HifiFlashSwap";
-import { SimpleOracle } from "../../typechain/SimpleOracle";
 import { UniswapV2Pair } from "../../types/contracts/UniswapV2Pair";
 import { usdcConstants, wbtcConstants } from "../../helpers/constants";
 
@@ -29,7 +29,7 @@ type IntegrationFixtureReturnType = {
   fintroller: Fintroller;
   fyToken: FyToken;
   hifiFlashSwap: HifiFlashSwap;
-  oracle: SimpleOracle;
+  oracle: DummyOracle;
   redemptionPool: RedemptionPool;
   usdc: GodModeErc20;
   uniswapV2Pair: UniswapV2Pair;
@@ -39,7 +39,7 @@ type IntegrationFixtureReturnType = {
 export async function integrationFixture(signers: Signer[]): Promise<IntegrationFixtureReturnType> {
   const deployer: Signer = signers[0];
 
-  const oracle: SimpleOracle = <SimpleOracle>await deployContract(deployer, SimpleOracleArtifact, []);
+  const oracle: DummyOracle = <DummyOracle>await deployContract(deployer, DummyOracleArtifact, []);
 
   const fintroller: Fintroller = <Fintroller>await deployContract(deployer, FintrollerArtifact, []);
   await fintroller.connect(deployer).setOracle(oracle.address);
