@@ -1,5 +1,5 @@
 {
-  "name": "@hifi/protocol",
+  "name": "hifi-protocol",
   "description": "The Hifi fixed-rate, fixed-term lending protocol",
   "version": "1.0.0",
   "author": {
