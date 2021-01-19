@@ -2,9 +2,9 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { MockContract } from "ethereum-waffle";
 import { Signer } from "@ethersproject/abstract-signer";
 
-import { AggregatorV3Interface } from "../typechain/AggregatorV3Interface";
 import { BalanceSheet } from "../typechain/BalanceSheet";
 import { ChainlinkOperator } from "../typechain/ChainlinkOperator";
+import { DummyPriceFeed } from "../typechain/DummyPriceFeed";
 import { Erc20Mintable } from "../typechain/Erc20Mintable";
 import { Fintroller } from "../typechain/Fintroller";
 import { FyToken } from "../typechain/FyToken";
@@ -28,13 +28,13 @@ export interface Accounts {
 export interface Contracts {
   balanceSheet: GodModeBalanceSheet | BalanceSheet;
   collateral: Erc20Mintable;
-  collateralPriceFeed: AggregatorV3Interface;
+  collateralPriceFeed: DummyPriceFeed;
   fintroller: Fintroller;
   fyToken: GodModeFyToken | FyToken;
   oracle: ChainlinkOperator;
   redemptionPool: GodModeRedemptionPool | RedemptionPool;
   underlying: Erc20Mintable;
-  underlyingPriceFeed: AggregatorV3Interface;
+  underlyingPriceFeed: DummyPriceFeed;
 }
 
 export interface Signers {
