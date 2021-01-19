@@ -1,5 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
+export const chainlinkPricePrecision: BigNumber = BigNumber.from(8);
+
 export const fyTokenConstants = {
   decimals: 18,
 };
@@ -10,8 +12,6 @@ export const mainnetAddresses: { [name: string]: string } = {
   WBTC: "0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599",
   UniswapV2Router02: "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D",
 };
-
-export const oraclePrecision: BigNumber = BigNumber.from(6);
 
 export const ten: BigNumber = BigNumber.from(10);
 

@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.7.0;
 
-import "@hifi/protocol/contracts/BalanceSheetInterface.sol";
-import "@hifi/protocol/contracts/FyTokenInterface.sol";
-import "@hifi/protocol/contracts/RedemptionPoolInterface.sol";
 import "@paulrberg/contracts/access/Admin.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
+import "hifi-protocol/contracts/BalanceSheetInterface.sol";
+import "hifi-protocol/contracts/FyTokenInterface.sol";
+import "hifi-protocol/contracts/RedemptionPoolInterface.sol";
 
 import "./HifiFlashSwapInterface.sol";
 import "./interfaces/UniswapV2PairLike.sol";
@@ -14,7 +14,7 @@ import "./interfaces/UniswapV2PairLike.sol";
 /// @author Hifi
 contract HifiFlashSwap is
     HifiFlashSwapInterface, // one dependency
-    Admin // two depdendencies
+    Admin // two dependencies
 {
     constructor(address balanceSheet_, address pair_) Admin() {
         balanceSheet = BalanceSheetInterface(balanceSheet_);

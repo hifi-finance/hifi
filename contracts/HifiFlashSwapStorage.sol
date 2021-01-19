@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.7.0;
 
-import "@hifi/protocol/contracts/BalanceSheetInterface.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
+import "hifi-protocol/contracts/BalanceSheetInterface.sol";
 
 import "./interfaces/UniswapV2PairLike.sol";
 

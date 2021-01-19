@@ -90,10 +90,10 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
   describe("when the caller is the UniswapV2Pair contract", function () {
     beforeEach(async function () {
       // Set the oracle price to 1 WBTC = $20k.
-      await this.contracts.oracle.setWbtcPrice(p20k);
+      await this.contracts.wbtcPriceFeed.setPrice(p20k);
 
       // Set the oracle price to 1 USDC = $1.
-      await this.contracts.oracle.setUsdcPrice(p1);
+      await this.contracts.usdcPriceFeed.setPrice(p1);
 
       // Mint 100 WBTC and 2m USDC to the pool, which makes the price 1 WBTC ~ 20k USDC.
       await bumpPoolReserves.call(this, 100, 2000000);
@@ -169,7 +169,7 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
         describe("when the collateralization ratio is lower than 110%", function () {
           beforeEach(async function () {
             // Set the WBTC price to $10k to make borrower's collateralization ratio 100%.
-            await this.contracts.oracle.setWbtcPrice(p10k);
+            await this.contracts.wbtcPriceFeed.setPrice(p10k);
           });
 
           it("reverts", async function () {
@@ -186,7 +186,7 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
         describe("when the collateralization ratio is lower than 150% but higher than 110%", function () {
           beforeEach(async function () {
             // Set the WBTC price to $12.5k to make borrower's collateralization ratio 125%.
-            await this.contracts.oracle.setWbtcPrice(p12dot5k);
+            await this.contracts.wbtcPriceFeed.setPrice(p12dot5k);
           });
 
           describe("when the pool price is better than the oracle price", function () {

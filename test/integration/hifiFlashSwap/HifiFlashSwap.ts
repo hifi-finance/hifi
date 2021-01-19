@@ -12,8 +12,10 @@ export function integrationTestHifiFlashSwap(): void {
         oracle,
         redemptionPool,
         usdc,
+        usdcPriceFeed,
         uniswapV2Pair,
         wbtc,
+        wbtcPriceFeed,
       } = await this.loadFixture(integrationFixture);
       this.contracts.balanceSheet = balanceSheet;
       this.contracts.fintroller = fintroller;
@@ -22,8 +24,10 @@ export function integrationTestHifiFlashSwap(): void {
       this.contracts.oracle = oracle;
       this.contracts.redemptionPool = redemptionPool;
       this.contracts.usdc = usdc;
+      this.contracts.usdcPriceFeed = usdcPriceFeed;
       this.contracts.uniswapV2Pair = uniswapV2Pair;
       this.contracts.wbtc = wbtc;
+      this.contracts.wbtcPriceFeed = wbtcPriceFeed;
     });
 
     shouldBehaveLikeHifiFlashSwap();

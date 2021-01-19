@@ -1,17 +1,17 @@
-import BalanceSheetArtifact from "@hifi/protocol/artifacts/BalanceSheet.json";
-import FyTokenArtifact from "@hifi/protocol/artifacts/FyToken.json";
+import BalanceSheetArtifact from "hifi-protocol/artifacts/BalanceSheet.json";
+import FyTokenArtifact from "hifi-protocol/artifacts/FyToken.json";
 import UniswapV2PairArtifact from "@uniswap/v2-core/build/UniswapV2Pair.json";
 
-import { BalanceSheet } from "@hifi/protocol/typechain/BalanceSheet";
+import { BalanceSheet } from "hifi-protocol/typechain/BalanceSheet";
 import { BigNumber } from "@ethersproject/bignumber";
-import { FyToken } from "@hifi/protocol/typechain/FyToken";
+import { FyToken } from "hifi-protocol/typechain/FyToken";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 import { ethers } from "hardhat";
 
-import DummyOracleArtifact from "../artifacts/contracts/test/DummyOracle.sol/DummyOracle.json";
+import DummyPriceFeedArtifact from "../artifacts/contracts/test/DummyPriceFeed.sol/DummyPriceFeed.json";
 import GodModeErc20Artifact from "../artifacts/contracts/test/GodModeErc20.sol/GodModeErc20.json";
 
-import { DummyOracle } from "../typechain/DummyOracle";
+import { DummyPriceFeed } from "../typechain/DummyPriceFeed";
 import { GodModeErc20 } from "../typechain/GodModeErc20";
 import { UniswapV2Pair } from "../types/contracts/UniswapV2Pair";
 import {
@@ -49,9 +49,6 @@ async function main(): Promise<void> {
     new ethers.Contract(getEnvVar("BALANCE_SHEET_ADDRESS"), BalanceSheetArtifact.abi, signers[0])
   );
   const fyToken: FyToken = <FyToken>new ethers.Contract(getEnvVar("FY_TOKEN_ADDRESS"), FyTokenArtifact.abi, signers[0]);
-  const oracle: DummyOracle = <DummyOracle>(
-    new ethers.Contract(getEnvVar("ORACLE_ADDRESS"), DummyOracleArtifact.abi, signers[0])
-  );
   const uniV2WbtcUsdc: UniswapV2Pair = <UniswapV2Pair>(
     new ethers.Contract(getEnvVar("UNI_V2_WBTC_USDC_ADDRESS"), UniswapV2PairArtifact.abi, signers[0])
   );
@@ -60,6 +57,9 @@ async function main(): Promise<void> {
   );
   const wbtc: GodModeErc20 = <GodModeErc20>(
     new ethers.Contract(getEnvVar("WBTC_ADDRESS"), GodModeErc20Artifact.abi, signers[0])
+  );
+  const wbtcPriceFeed: DummyPriceFeed = <DummyPriceFeed>(
+    new ethers.Contract(getEnvVar("WBTC_PRICE_FEED_ADDRESS"), DummyPriceFeedArtifact.abi, signers[0])
   );
 
   // Mint 100 WBTC to the UniswapV2Pair contract.
@@ -81,8 +81,8 @@ async function main(): Promise<void> {
   console.log();
 
   // Set the oracle price to 1 WBTC = $20k.
-  console.log("Setting the oracle price ...");
-  await oracle.setWbtcPrice(p20k);
+  console.log("Setting the WBTC price ...");
+  await wbtcPriceFeed.setPrice(p20k);
   console.log("✨ Just set the oracle price to 1 WBTC = $20k");
   console.log();
 
@@ -105,8 +105,8 @@ async function main(): Promise<void> {
   console.log();
 
   // Set the oracle price to 1 WBTC = $12.5k.
-  console.log("Setting the oracle price ...");
-  await oracle.setWbtcPrice(p12dot5k);
+  console.log("Setting the WBTC price ...");
+  await wbtcPriceFeed.setPrice(p12dot5k);
   console.log("✨ Just set the oracle price to 1 WBTC = $12.5k");
   console.log();
 }

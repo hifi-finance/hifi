@@ -1,13 +1,13 @@
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
 
-import { fyTokenConstants, oraclePrecision, ten, usdcConstants, wbtcConstants } from "./constants";
+import { chainlinkPricePrecision, fyTokenConstants, ten, usdcConstants, wbtcConstants } from "./constants";
 
 export function getWholeFyUsdcAmount(amount: BigNumberish): BigNumber {
   return BigNumber.from(amount).mul(ten.pow(fyTokenConstants.decimals));
 }
 
 export function getWholeOraclePrice(amount: BigNumberish): BigNumber {
-  return BigNumber.from(amount).mul(ten.pow(oraclePrecision));
+  return BigNumber.from(amount).mul(ten.pow(chainlinkPricePrecision));
 }
 
 export function getWholeUsdcAmount(amount: BigNumberish): BigNumber {
