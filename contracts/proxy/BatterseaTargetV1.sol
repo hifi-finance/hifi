@@ -72,13 +72,14 @@ contract BatterseaTargetV1 is
         uint256 nPools = 1;
 
         /* Recall that Balancer reverts when the swap is not successful. */
-        uint256 totalAmountIn = ExchangeProxyInterface(EXCHANGE_PROXY_ADDRESS).smartSwapExactOut(
-            tokenIn,
-            tokenOut,
-            totalAmountOut,
-            maxTotalAmountIn,
-            nPools
-        );
+        uint256 totalAmountIn =
+            ExchangeProxyInterface(EXCHANGE_PROXY_ADDRESS).smartSwapExactOut(
+                tokenIn,
+                tokenOut,
+                totalAmountOut,
+                maxTotalAmountIn,
+                nPools
+            );
 
         /* When we get a better price than the worst that we assumed we would, not all fyTokens are sold. */
         MathError mathErr;
@@ -344,13 +345,14 @@ contract BatterseaTargetV1 is
         uint256 nPools = 1;
 
         /* Recall that Balancer reverts when the swap is not successful. */
-        uint256 totalAmountIn = ExchangeProxyInterface(EXCHANGE_PROXY_ADDRESS).smartSwapExactOut(
-            tokenIn,
-            tokenOut,
-            totalAmountOut,
-            maxTotalAmountIn,
-            nPools
-        );
+        uint256 totalAmountIn =
+            ExchangeProxyInterface(EXCHANGE_PROXY_ADDRESS).smartSwapExactOut(
+                tokenIn,
+                tokenOut,
+                totalAmountOut,
+                maxTotalAmountIn,
+                nPools
+            );
 
         /* Use the recently bought fyTokens to repay the borrow. */
         fyToken.repayBorrow(repayAmount);
