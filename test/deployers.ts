@@ -45,7 +45,7 @@ export async function deployCollateral(deployer: Signer): Promise<Erc20Mintable>
 
 export async function deployCollateralPriceFeed(deployer: Signer): Promise<DummyPriceFeed> {
   const collateralPriceFeed: DummyPriceFeed = <DummyPriceFeed>(
-    await deployContract(deployer, DummyPriceFeedArtifact, [], overrideOptions)
+    await deployContract(deployer, DummyPriceFeedArtifact, ["WETH/USD"], overrideOptions)
   );
   await collateralPriceFeed.setPrice(prices.oneHundredDollars);
   return collateralPriceFeed;
@@ -145,7 +145,7 @@ export async function deployUnderlying(deployer: Signer): Promise<Erc20Mintable>
 
 export async function deployUnderlyingPriceFeed(deployer: Signer): Promise<DummyPriceFeed> {
   const underlyingPriceFeed: DummyPriceFeed = <DummyPriceFeed>(
-    await deployContract(deployer, DummyPriceFeedArtifact, [], overrideOptions)
+    await deployContract(deployer, DummyPriceFeedArtifact, ["DAI/USD"], overrideOptions)
   );
   await underlyingPriceFeed.setPrice(prices.oneDollar);
   return underlyingPriceFeed;
