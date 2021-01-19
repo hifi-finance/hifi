@@ -1,14 +1,14 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.7.0;
 
-import "./BatterseaScriptsV1Storage.sol";
+import "./BatterseaTargetV1Storage.sol";
 
 /**
- * @title BatterseaScriptsV1Interface
+ * @title BatterseaTargetV1Interface
  * @author Hifi
- * @notice Storage contract for BatterseaScriptsV1.
+ * @notice Storage contract for BatterseaTargetV1.
  */
-abstract contract BatterseaScriptsV1Interface is BatterseaScriptsV1Storage {
+abstract contract BatterseaTargetV1Interface is BatterseaTargetV1Storage {
     event BorrowAndSellFyTokens(
         address indexed borrower,
         uint256 borrowAmount,

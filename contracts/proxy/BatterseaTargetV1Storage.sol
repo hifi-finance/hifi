@@ -2,11 +2,11 @@
 pragma solidity ^0.7.0;
 
 /**
- * @title BatterseaScriptsV1Storage
+ * @title BatterseaTargetV1Storage
  * @author Hifi
- * @notice Storage contract for BatterseaScriptsV1.
+ * @notice Storage contract for BatterseaTargetV1.
  */
-abstract contract BatterseaScriptsV1Storage {
+abstract contract BatterseaTargetV1Storage {
     /**
      * @notice The contract that enables trading on the Balancer Exchange.
      * @dev This is the mainnet version of the Exchange Proxy. Change it with the testnet version when needed.

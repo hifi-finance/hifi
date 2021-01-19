@@ -5,7 +5,7 @@ import "@paulrberg/contracts/math/CarefulMath.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 
-import "./BatterseaScriptsV1Interface.sol";
+import "./BatterseaTargetV1Interface.sol";
 import "../BalanceSheetInterface.sol";
 import "../FyTokenInterface.sol";
 import "../RedemptionPoolInterface.sol";
@@ -14,14 +14,14 @@ import "../external/balancer/TokenInterface.sol";
 import "../external/weth/WethInterface.sol";
 
 /**
- * @title BatterseaScriptsV1
+ * @title BatterseaTargetV1
  * @author Hifi
  * @notice Target contract with scripts for the Battersea release of the protocol.
  * @dev Meant to be used with a DSProxy contract via delegatecall.
  */
-contract BatterseaScriptsV1 is
+contract BatterseaTargetV1 is
     CarefulMath, /* no dependency */
-    BatterseaScriptsV1Interface /* one dependency */
+    BatterseaTargetV1Interface /* one dependency */
 {
     using SafeErc20 for Erc20Interface;
     using SafeErc20 for FyTokenInterface;

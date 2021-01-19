@@ -2,11 +2,11 @@ import { Contract, ContractFactory } from "@ethersproject/contracts";
 import { ethers } from "hardhat";
 
 async function main(): Promise<void> {
-  const batterseaScriptsV1Factory: ContractFactory = await ethers.getContractFactory("BatterseaScriptsV1");
-  const batterseaScriptsV1: Contract = await batterseaScriptsV1Factory.deploy();
-  await batterseaScriptsV1.deployed();
+  const batterseaTargetV1Factory: ContractFactory = await ethers.getContractFactory("BatterseaTargetV1");
+  const batterseaTargetV1: Contract = await batterseaTargetV1Factory.deploy();
+  await batterseaTargetV1.deployed();
 
-  console.log("BatterseaScriptsV1 deployed to: ", batterseaScriptsV1.address);
+  console.log("BatterseaTargetV1 deployed to: ", batterseaTargetV1.address);
 }
 
 main()
