@@ -27,7 +27,7 @@ export default function shouldBehaveLikeDeleteFeed(): void {
       beforeEach(async function () {
         await this.contracts.oracle
           .connect(this.signers.admin)
-          .setFeed(this.stubs.collateral.address, this.stubs.collateralUsdFeed.address);
+          .setFeed(this.stubs.collateral.address, this.stubs.collateralPriceFeed.address);
       });
 
       it("deletes the feed", async function () {
@@ -41,7 +41,7 @@ export default function shouldBehaveLikeDeleteFeed(): void {
       it("emits a DeleteFeed event", async function () {
         await expect(this.contracts.oracle.connect(this.signers.admin).deleteFeed(symbol))
           .to.emit(this.contracts.oracle, "DeleteFeed")
-          .withArgs(this.stubs.collateral.address, this.stubs.collateralUsdFeed.address);
+          .withArgs(this.stubs.collateral.address, this.stubs.collateralPriceFeed.address);
       });
     });
   });

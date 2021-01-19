@@ -43,12 +43,12 @@ export async function deployCollateral(deployer: Signer): Promise<Erc20Mintable>
   return collateral;
 }
 
-export async function deployCollateralUsdFeed(deployer: Signer): Promise<DummyPriceFeed> {
-  const collateralUsdFeed: DummyPriceFeed = <DummyPriceFeed>(
+export async function deployCollateralPriceFeed(deployer: Signer): Promise<DummyPriceFeed> {
+  const collateralPriceFeed: DummyPriceFeed = <DummyPriceFeed>(
     await deployContract(deployer, DummyPriceFeedArtifact, [], overrideOptions)
   );
-  await collateralUsdFeed.setPrice(prices.oneHundredDollars);
-  return collateralUsdFeed;
+  await collateralPriceFeed.setPrice(prices.oneHundredDollars);
+  return collateralPriceFeed;
 }
 
 export async function deployFintroller(deployer: Signer): Promise<Fintroller> {
@@ -143,10 +143,10 @@ export async function deployUnderlying(deployer: Signer): Promise<Erc20Mintable>
   return underlying;
 }
 
-export async function deployUnderlyingUsdFeed(deployer: Signer): Promise<DummyPriceFeed> {
-  const underlyingUsdFeed: DummyPriceFeed = <DummyPriceFeed>(
+export async function deployUnderlyingPriceFeed(deployer: Signer): Promise<DummyPriceFeed> {
+  const underlyingPriceFeed: DummyPriceFeed = <DummyPriceFeed>(
     await deployContract(deployer, DummyPriceFeedArtifact, [], overrideOptions)
   );
-  await underlyingUsdFeed.setPrice(prices.oneDollar);
-  return underlyingUsdFeed;
+  await underlyingPriceFeed.setPrice(prices.oneDollar);
+  return underlyingPriceFeed;
 }

@@ -19,7 +19,7 @@ import {
   deployStubBalanceSheet,
   deployStubChainlinkOperator,
   deployStubCollateral,
-  deployStubCollateralUsdFeed,
+  deployStubCollateralPriceFeed,
   deployStubFintroller,
   deployStubRedemptionPool,
   deployStubFyToken,
@@ -58,16 +58,16 @@ export async function unitFixtureBalanceSheet(signers: Signer[]): Promise<UnitFi
 
 type UnitFixtureChainlinkOperatorReturnType = {
   collateral: MockContract;
-  collateralUsdFeed: MockContract;
+  collateralPriceFeed: MockContract;
   oracle: ChainlinkOperator;
 };
 
 export async function unitFixtureChainlinkOperator(signers: Signer[]): Promise<UnitFixtureChainlinkOperatorReturnType> {
   const deployer: Signer = signers[0];
   const collateral: MockContract = await deployStubCollateral(deployer);
-  const collateralUsdFeed: MockContract = await deployStubCollateralUsdFeed(deployer);
+  const collateralPriceFeed: MockContract = await deployStubCollateralPriceFeed(deployer);
   const oracle: ChainlinkOperator = await deployChainlinkOperator(deployer);
-  return { collateral, collateralUsdFeed, oracle };
+  return { collateral, collateralPriceFeed, oracle };
 }
 
 type UnitFixtureFintrollerReturnType = {

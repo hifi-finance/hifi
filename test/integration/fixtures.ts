@@ -10,26 +10,26 @@ import { GodModeRedemptionPool } from "../../typechain/GodModeRedemptionPool";
 import {
   deployChainlinkOperator,
   deployCollateral,
-  deployCollateralUsdFeed,
+  deployCollateralPriceFeed,
   deployFintroller,
   deployGodModeBalanceSheet,
   deployGodModeFyToken,
   deployGodModeRedemptionPool,
   deployUnderlying,
-  deployUnderlyingUsdFeed,
+  deployUnderlyingPriceFeed,
 } from "../deployers";
 import { fyTokenConstants } from "../../helpers/constants";
 
 type IntegrationFixtureReturnType = {
   balanceSheet: GodModeBalanceSheet;
   collateral: Erc20Mintable;
-  collateralUsdFeed: DummyPriceFeed;
+  collateralPriceFeed: DummyPriceFeed;
   fintroller: Fintroller;
   fyToken: GodModeFyToken;
   oracle: ChainlinkOperator;
   redemptionPool: GodModeRedemptionPool;
   underlying: Erc20Mintable;
-  underlyingUsdFeed: DummyPriceFeed;
+  underlyingPriceFeed: DummyPriceFeed;
 };
 
 export async function integrationFixture(signers: Signer[]): Promise<IntegrationFixtureReturnType> {
@@ -38,11 +38,11 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
   const collateral: Erc20Mintable = await deployCollateral(deployer);
   const underlying: Erc20Mintable = await deployUnderlying(deployer);
 
-  const collateralUsdFeed: DummyPriceFeed = await deployCollateralUsdFeed(deployer);
-  const underlyingUsdFeed: DummyPriceFeed = await deployUnderlyingUsdFeed(deployer);
+  const collateralPriceFeed: DummyPriceFeed = await deployCollateralPriceFeed(deployer);
+  const underlyingPriceFeed: DummyPriceFeed = await deployUnderlyingPriceFeed(deployer);
   const oracle: ChainlinkOperator = await deployChainlinkOperator(deployer);
-  await oracle.setFeed(collateral.address, collateralUsdFeed.address);
-  await oracle.setFeed(underlying.address, underlyingUsdFeed.address);
+  await oracle.setFeed(collateral.address, collateralPriceFeed.address);
+  await oracle.setFeed(underlying.address, underlyingPriceFeed.address);
 
   const fintroller: Fintroller = await deployFintroller(deployer);
   await fintroller.connect(deployer).setOracle(oracle.address);
@@ -69,12 +69,12 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
   return {
     balanceSheet,
     collateral,
-    collateralUsdFeed,
+    collateralPriceFeed,
     fintroller,
     fyToken,
     oracle,
     redemptionPool,
     underlying,
-    underlyingUsdFeed,
+    underlyingPriceFeed,
   };
 }

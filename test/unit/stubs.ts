@@ -37,11 +37,11 @@ export async function deployStubCollateral(deployer: Signer): Promise<MockContra
   return collateral;
 }
 
-export async function deployStubCollateralUsdFeed(deployer: Signer): Promise<MockContract> {
-  const collateralUsdFeed: MockContract = await deployStubContract(deployer, DummyPriceFeedArtifact.abi);
-  await collateralUsdFeed.mock.decimals.returns(chainlinkPricePrecision);
-  await collateralUsdFeed.mock.latestRoundData.returns(Zero, prices.oneHundredDollars, Zero, Zero, Zero);
-  return collateralUsdFeed;
+export async function deployStubCollateralPriceFeed(deployer: Signer): Promise<MockContract> {
+  const collateralPriceFeed: MockContract = await deployStubContract(deployer, DummyPriceFeedArtifact.abi);
+  await collateralPriceFeed.mock.decimals.returns(chainlinkPricePrecision);
+  await collateralPriceFeed.mock.latestRoundData.returns(Zero, prices.oneHundredDollars, Zero, Zero, Zero);
+  return collateralPriceFeed;
 }
 
 export async function deployStubErc20(

@@ -16,12 +16,12 @@ export default function shouldBehaveLikeGetPrice(): void {
     beforeEach(async function () {
       await this.contracts.oracle
         .connect(this.signers.admin)
-        .setFeed(this.stubs.collateral.address, this.stubs.collateralUsdFeed.address);
+        .setFeed(this.stubs.collateral.address, this.stubs.collateralPriceFeed.address);
     });
 
     describe("when the price is zero", function () {
       beforeEach(async function () {
-        await this.stubs.collateralUsdFeed.mock.latestRoundData.returns(Zero, Zero, Zero, Zero, Zero);
+        await this.stubs.collateralPriceFeed.mock.latestRoundData.returns(Zero, Zero, Zero, Zero, Zero);
       });
 
       it("reverts", async function () {
@@ -31,7 +31,7 @@ export default function shouldBehaveLikeGetPrice(): void {
 
     describe("when the price is not zero", function () {
       beforeEach(async function () {
-        await this.stubs.collateralUsdFeed.mock.latestRoundData.returns(
+        await this.stubs.collateralPriceFeed.mock.latestRoundData.returns(
           Zero,
           prices.oneHundredDollars,
           Zero,

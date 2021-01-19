@@ -9,7 +9,7 @@ export default function shouldBehaveLikeSetFeed(): void {
       await expect(
         this.contracts.oracle
           .connect(this.signers.raider)
-          .setFeed(this.stubs.collateral.address, this.stubs.collateralUsdFeed.address),
+          .setFeed(this.stubs.collateral.address, this.stubs.collateralPriceFeed.address),
       ).to.be.revertedWith(AdminErrors.NotAdmin);
     });
   });
@@ -17,14 +17,14 @@ export default function shouldBehaveLikeSetFeed(): void {
   describe("when the caller is the admin", function () {
     describe("when the feed does not have 8 decimals", function () {
       beforeEach(async function () {
-        await this.stubs.collateralUsdFeed.mock.decimals.returns(BigNumber.from(6));
+        await this.stubs.collateralPriceFeed.mock.decimals.returns(BigNumber.from(6));
       });
 
       it("reverts", async function () {
         await expect(
           this.contracts.oracle
             .connect(this.signers.admin)
-            .setFeed(this.stubs.collateral.address, this.stubs.collateralUsdFeed.address),
+            .setFeed(this.stubs.collateral.address, this.stubs.collateralPriceFeed.address),
         ).to.be.revertedWith(ChainlinkOperatorErrors.FeedIncorrectDecimals);
       });
     });
@@ -33,10 +33,10 @@ export default function shouldBehaveLikeSetFeed(): void {
       it("sets the feed", async function () {
         await this.contracts.oracle
           .connect(this.signers.admin)
-          .setFeed(this.stubs.collateral.address, this.stubs.collateralUsdFeed.address);
+          .setFeed(this.stubs.collateral.address, this.stubs.collateralPriceFeed.address);
         const feed = await this.contracts.oracle.getFeed("WETH");
         expect(feed[0]).to.equal(this.stubs.collateral.address); /* asset */
-        expect(feed[1]).to.equal(this.stubs.collateralUsdFeed.address); /* id */
+        expect(feed[1]).to.equal(this.stubs.collateralPriceFeed.address); /* id */
         expect(feed[2]).to.equal(true); /* isSet */
       });
 
@@ -44,10 +44,10 @@ export default function shouldBehaveLikeSetFeed(): void {
         await expect(
           this.contracts.oracle
             .connect(this.signers.admin)
-            .setFeed(this.stubs.collateral.address, this.stubs.collateralUsdFeed.address),
+            .setFeed(this.stubs.collateral.address, this.stubs.collateralPriceFeed.address),
         )
           .to.emit(this.contracts.oracle, "SetFeed")
-          .withArgs(this.stubs.collateral.address, this.stubs.collateralUsdFeed.address);
+          .withArgs(this.stubs.collateral.address, this.stubs.collateralPriceFeed.address);
       });
     });
   });

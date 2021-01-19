@@ -28,13 +28,13 @@ export interface Accounts {
 export interface Contracts {
   balanceSheet: GodModeBalanceSheet | BalanceSheet;
   collateral: Erc20Mintable;
-  collateralUsdFeed: AggregatorV3Interface;
+  collateralPriceFeed: AggregatorV3Interface;
   fintroller: Fintroller;
   fyToken: GodModeFyToken | FyToken;
   oracle: ChainlinkOperator;
   redemptionPool: GodModeRedemptionPool | RedemptionPool;
   underlying: Erc20Mintable;
-  underlyingUsdFeed: AggregatorV3Interface;
+  underlyingPriceFeed: AggregatorV3Interface;
 }
 
 export interface Signers {
@@ -49,13 +49,13 @@ export interface Signers {
 export interface Stubs {
   balanceSheet: MockContract;
   collateral: MockContract;
-  collateralUsdFeed: MockContract;
+  collateralPriceFeed: MockContract;
   fintroller: MockContract;
   fyToken: MockContract;
   oracle: MockContract;
   redemptionPool: MockContract;
   underlying: MockContract;
-  underlyingUsdFeed: MockContract;
+  underlyingPriceFeed: MockContract;
 }
 
 export interface Vault {
