@@ -233,7 +233,7 @@ contract BalanceSheet is
     }
 
     /**
-     * @notice Reads all the properties of a vault.
+     * @notice Reads the storage properties of a vault.
      * @return (uint256 debt, uint256 freeCollateral, uint256 lockedCollateral, bool isOpen).
      */
     function getVault(FyTokenInterface fyToken, address borrower)

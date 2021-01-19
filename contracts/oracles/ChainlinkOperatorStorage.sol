@@ -1,24 +1,28 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
 pragma solidity ^0.7.0;
 
+import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
+
+import "../external/chainlink/AggregatorV3Interface.sol";
+
 /**
  * @title ChainlinkOperatorStorage
  * @author Hifi
  */
 abstract contract ChainlinkOperatorStorage {
     struct Feed {
-        address asset;
-        address id;
-        bool isAdded;
+        Erc20Interface asset;
+        AggregatorV3Interface id;
+        bool isSet;
     }
 
     /**
-     * @dev Mapping from Erc20 symbols to Chainlink price feed aggregator contracts.
+     * @dev Mapping between Erc20 symbols and Feed structs.
      */
     mapping(string => Feed) internal feeds;
 
     /**
-     * @notice Chainlink price precision.
+     * @notice Chainlink price precision for USD-quoted data.
      */
     uint256 public constant pricePrecision = 8;
 

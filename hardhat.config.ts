@@ -13,7 +13,7 @@ import { chainIds, gasLimits } from "./helpers/constants";
 import "./tasks/accounts";
 import "./tasks/clean";
 
-/* Ensure that we have all the environment variables we need. */
+/* Ensure that we have the environment variables we need. */
 let mnemonic: string;
 if (!process.env.MNEMONIC) {
   throw new Error("Please set your MNEMONIC in a .env file");

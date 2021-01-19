@@ -29,18 +29,10 @@ const overrideOptions: TransactionRequest = {
     : gasLimits.hardhat.deployContractGasLimit,
 };
 
-export async function deployChainlinkOperator(
-  deployer: Signer,
-  weth: Erc20Mintable,
-  wethUsdFeed: DummyPriceFeed,
-  dai: Erc20Mintable,
-  daiUsdFeed: DummyPriceFeed,
-): Promise<ChainlinkOperator> {
+export async function deployChainlinkOperator(deployer: Signer): Promise<ChainlinkOperator> {
   const chainlinkOperator: ChainlinkOperator = <ChainlinkOperator>(
     await deployContract(deployer, ChainlinkOperatorArtifact, [], overrideOptions)
   );
-  await chainlinkOperator.addFeed(wethUsdFeed.address, weth.address);
-  await chainlinkOperator.addFeed(daiUsdFeed.address, dai.address);
   return chainlinkOperator;
 }
 

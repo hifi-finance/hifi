@@ -40,13 +40,9 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
 
   const collateralUsdFeed: DummyPriceFeed = await deployCollateralUsdFeed(deployer);
   const underlyingUsdFeed: DummyPriceFeed = await deployUnderlyingUsdFeed(deployer);
-  const oracle: ChainlinkOperator = await deployChainlinkOperator(
-    deployer,
-    collateral,
-    collateralUsdFeed,
-    underlying,
-    underlyingUsdFeed,
-  );
+  const oracle: ChainlinkOperator = await deployChainlinkOperator(deployer);
+  await oracle.setFeed(collateral.address, collateralUsdFeed.address);
+  await oracle.setFeed(underlying.address, underlyingUsdFeed.address);
 
   const fintroller: Fintroller = await deployFintroller(deployer);
   await fintroller.connect(deployer).setOracle(oracle.address);

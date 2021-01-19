@@ -15,23 +15,31 @@ abstract contract ChainlinkOperatorInterface is ChainlinkOperatorStorage {
     /**
      * EVENTS
      */
-    event AddFeed(address indexed feedId, address indexed asset);
+    event DeleteFeed(Erc20Interface indexed asset, AggregatorV3Interface indexed feed);
 
-    event RemoveFeed(address indexed feedId, address indexed asset);
+    event SetFeed(Erc20Interface indexed asset, AggregatorV3Interface indexed feed);
 
     /**
      * CONSTANT FUNCTIONS.
      */
-    function getFeed(string memory symbol) external view virtual returns (address, address);
-
     function getAdjustedPrice(string memory symbol) external view virtual returns (uint256);
+
+    function getFeed(string memory symbol)
+        external
+        view
+        virtual
+        returns (
+            Erc20Interface,
+            AggregatorV3Interface,
+            bool
+        );
 
     function getPrice(string memory symbol) public view virtual returns (uint256);
 
     /**
      * NON-CONSTANT FUNCTIONS.
      */
-    function addFeed(AggregatorV3Interface feed, Erc20Interface asset) external virtual returns (bool);
+    function deleteFeed(string memory symbol) external virtual returns (bool);
 
-    function removeFeed(string memory symbol) external virtual returns (bool);
+    function setFeed(Erc20Interface asset, AggregatorV3Interface feed) external virtual returns (bool);
 }

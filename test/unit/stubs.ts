@@ -6,12 +6,13 @@ import { waffle } from "hardhat";
 
 import BalanceSheetArtifact from "../../artifacts/contracts/BalanceSheet.sol/BalanceSheet.json";
 import ChainlinkOperatorArtifact from "../../artifacts/contracts/oracles/ChainlinkOperator.sol/ChainlinkOperator.json";
+import DummyPriceFeedArtifact from "../../artifacts/contracts/test/DummyPriceFeed.sol/DummyPriceFeed.json";
 import Erc20Artifact from "../../artifacts/@paulrberg/contracts/token/erc20/Erc20.sol/Erc20.json";
 import FintrollerArtifact from "../../artifacts/contracts/Fintroller.sol/Fintroller.json";
 import FyTokenArtifact from "../../artifacts/contracts/FyToken.sol/FyToken.json";
 import RedemptionPoolArtifact from "../../artifacts/contracts/RedemptionPool.sol/RedemptionPool.json";
 
-import { balanceSheetConstants, prices } from "../../helpers/constants";
+import { balanceSheetConstants, chainlinkPricePrecision, prices } from "../../helpers/constants";
 
 const { deployMockContract: deployStubContract } = waffle;
 
@@ -34,6 +35,13 @@ export async function deployStubChainlinkOperator(deployer: Signer): Promise<Moc
 export async function deployStubCollateral(deployer: Signer): Promise<MockContract> {
   const collateral: MockContract = await deployStubErc20(deployer, "Wrapped ETH", "WETH", BigNumber.from(18));
   return collateral;
+}
+
+export async function deployStubCollateralUsdFeed(deployer: Signer): Promise<MockContract> {
+  const collateralUsdFeed: MockContract = await deployStubContract(deployer, DummyPriceFeedArtifact.abi);
+  await collateralUsdFeed.mock.decimals.returns(chainlinkPricePrecision);
+  await collateralUsdFeed.mock.latestRoundData.returns(Zero, prices.oneHundredDollars, Zero, Zero, Zero);
+  return collateralUsdFeed;
 }
 
 export async function deployStubErc20(

@@ -365,7 +365,7 @@ contract FyToken is
      *
      * Requirements:
      *
-     * - The caller must be the administrator.
+     * - The caller must be the admin.
      * - The new Fintroller must pass the inspection.
      *
      * @param newFintroller The address of the new Fintroller contract.

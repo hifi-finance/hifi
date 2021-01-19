@@ -28,7 +28,7 @@ contract Fintroller is
      */
 
     /**
-     * @notice Reads all the storage properties of a bond struct.
+     * @notice Reads the storage properties of the bond.
      * @dev It is not an error to provide an invalid fyToken address. The returned values would all be zero.
      * @param fyToken The address of the bond contract.
      */
@@ -162,7 +162,7 @@ contract Fintroller is
      *
      * Requirements:
      *
-     * - The caller must be the administrator.
+     * - The caller must be the admin.
      * - The fyToken must pass the inspection.
      *
      * @param fyToken The fyToken contract to list.
@@ -192,7 +192,7 @@ contract Fintroller is
      *
      * Requirements:
      *
-     * - The caller must be the administrator.
+     * - The caller must be the admin.
      * - The bond must be listed.
      * - The new collateralization ratio cannot be higher than the maximum collateralization ratio.
      * - The new collateralization ratio cannot be lower than the minimum collateralization ratio.
@@ -241,7 +241,7 @@ contract Fintroller is
      *
      * Requirements:
      *
-     * - The caller must be the administrator.
+     * - The caller must be the admin.
      * - The bond must be listed.
      * - The debt ceiling cannot be zero.
      * - The debt ceiling cannot fall below the current total supply of fyTokens.
@@ -282,7 +282,7 @@ contract Fintroller is
      *
      * Requirements:
      *
-     * - The caller must be the administrator.
+     * - The caller must be the admin.
      * - The bond must be listed.
      *
      * @param fyToken The fyToken contract to update the permission for.
@@ -303,7 +303,7 @@ contract Fintroller is
      *
      * Requirements:
      *
-     * - The caller must be the administrator.
+     * - The caller must be the admin.
      * - The bond must be listed.
      *
      * @param fyToken The fyToken contract to update the permission for.
@@ -329,7 +329,7 @@ contract Fintroller is
      *
      * Requirements:
      *
-     * - The caller must be the administrator.
+     * - The caller must be the admin.
      * - The bond must be listed.
      *
      * @param fyToken The fyToken contract to update the permission for.
@@ -356,7 +356,7 @@ contract Fintroller is
      *
      * Requirements:
      *
-     * - The caller must be the administrator.
+     * - The caller must be the admin.
      * - The new liquidation incentive cannot be higher than the maximum liquidation incentive.
      * - The new liquidation incentive cannot be lower than the minimum liquidation incentive.
 
@@ -395,7 +395,7 @@ contract Fintroller is
      *
      * Requirements:
      *
-     * - The caller must be the administrator.
+     * - The caller must be the admin.
      * - The new address cannot be the zero address.
      *
      * @param newOracle The new oracle contract.
@@ -416,7 +416,7 @@ contract Fintroller is
      *
      * Requirements:
      *
-     * - The caller must be the administrator.
+     * - The caller must be the admin.
      * - The bond must be listed.
      *
      * @param fyToken The fyToken contract to update the permission for.
@@ -437,7 +437,7 @@ contract Fintroller is
      *
      * Requirements:
      *
-     * - The caller must be the administrator.
+     * - The caller must be the admin.
      * - The bond must be listed.
      *
      * @param fyToken The fyToken contract to update the permission for.
@@ -457,7 +457,7 @@ contract Fintroller is
      * @dev Emits a {SetSupplyUnderlyingAllowed} event.
      *
      * Requirements:
-     * - The caller must be the administrator
+     * - The caller must be the admin
      *
      * @param fyToken The fyToken contract to update the permission for.
      * @param state The new state to put in storage.

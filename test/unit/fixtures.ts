@@ -2,12 +2,14 @@ import { MockContract } from "ethereum-waffle";
 import { One } from "@ethersproject/constants";
 import { Signer } from "@ethersproject/abstract-signer";
 
+import { ChainlinkOperator } from "../../typechain/ChainlinkOperator";
 import { Fintroller } from "../../typechain/Fintroller";
 import { GodModeBalanceSheet } from "../../typechain/GodModeBalanceSheet";
 import { GodModeFyToken } from "../../typechain/GodModeFyToken";
 import { GodModeRedemptionPool } from "../../typechain/GodModeRedemptionPool";
 
 import {
+  deployChainlinkOperator,
   deployFintroller,
   deployGodModeBalanceSheet,
   deployGodModeFyToken,
@@ -17,6 +19,7 @@ import {
   deployStubBalanceSheet,
   deployStubChainlinkOperator,
   deployStubCollateral,
+  deployStubCollateralUsdFeed,
   deployStubFintroller,
   deployStubRedemptionPool,
   deployStubFyToken,
@@ -35,6 +38,7 @@ type UnitFixtureBalanceSheetReturnType = {
 
 export async function unitFixtureBalanceSheet(signers: Signer[]): Promise<UnitFixtureBalanceSheetReturnType> {
   const deployer: Signer = signers[0];
+
   const collateral: MockContract = await deployStubCollateral(deployer);
   const underlying: MockContract = await deployStubUnderlying(deployer);
 
@@ -52,6 +56,20 @@ export async function unitFixtureBalanceSheet(signers: Signer[]): Promise<UnitFi
   return { balanceSheet, collateral, fintroller, oracle, underlying, fyToken };
 }
 
+type UnitFixtureChainlinkOperatorReturnType = {
+  collateral: MockContract;
+  collateralUsdFeed: MockContract;
+  oracle: ChainlinkOperator;
+};
+
+export async function unitFixtureChainlinkOperator(signers: Signer[]): Promise<UnitFixtureChainlinkOperatorReturnType> {
+  const deployer: Signer = signers[0];
+  const collateral: MockContract = await deployStubCollateral(deployer);
+  const collateralUsdFeed: MockContract = await deployStubCollateralUsdFeed(deployer);
+  const oracle: ChainlinkOperator = await deployChainlinkOperator(deployer);
+  return { collateral, collateralUsdFeed, oracle };
+}
+
 type UnitFixtureFintrollerReturnType = {
   fintroller: Fintroller;
   fyToken: MockContract;
@@ -62,7 +80,7 @@ export async function unitFixtureFintroller(signers: Signer[]): Promise<UnitFixt
   const deployer: Signer = signers[0];
   const oracle: MockContract = await deployStubChainlinkOperator(deployer);
   const fyToken: MockContract = await deployStubFyToken(deployer);
-  const fintroller = await deployFintroller(deployer);
+  const fintroller: Fintroller = await deployFintroller(deployer);
   return { fintroller, fyToken, oracle };
 }
 

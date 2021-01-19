@@ -49,11 +49,13 @@ export interface Signers {
 export interface Stubs {
   balanceSheet: MockContract;
   collateral: MockContract;
+  collateralUsdFeed: MockContract;
   fintroller: MockContract;
   fyToken: MockContract;
   oracle: MockContract;
   redemptionPool: MockContract;
   underlying: MockContract;
+  underlyingUsdFeed: MockContract;
 }
 
 export interface Vault {

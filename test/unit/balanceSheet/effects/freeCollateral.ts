@@ -112,7 +112,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
 
             describe("when the caller is dangerously collateralized", function () {
               beforeEach(async function () {
-                /* This is a 150% collateralization ratio. We deposited 10 ETH and the oracle assumes 1 ETH = $100. */
+                /* This is a 150% collateralization ratio. We deposited 10 WETH and the oracle assumes 1 WETH = $100. */
                 const debt: BigNumber = tokenAmounts.one.mul(666);
 
                 /* Cannot call the usual `setVaultDebt` since the fyToken is stubbed. */

@@ -18,6 +18,9 @@ export enum BalanceSheetErrors {
 }
 
 export enum ChainlinkOperatorErrors {
+  FeedIncorrectDecimals = "ERR_FEED_INCORRECT_DECIMALS",
+  FeedNotSet = "ERR_FEED_NOT_SET",
+  FeedSet = "ERR_FEED_SET",
   PriceZero = "ERR_PRICE_ZERO",
 }
 

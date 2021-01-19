@@ -26,21 +26,13 @@ contract ChainlinkOperator is
      */
 
     /**
-     * @notice Get the official feed for a symbol.
-     * @param symbol The symbol to return the price feed data for.
-     * @return (address asset, address id).
-     */
-    function getFeed(string memory symbol) external view override returns (address, address) {
-        return (feeds[symbol].asset, feeds[symbol].id);
-    }
-
-    /**
-     * @notice Gets the official price for a symbol and adjusts it have 18 decimals instead of 8.
+     * @notice Gets the official price for a symbol and adjusts it have 18 decimals instead of the
+     * format used by Chainlink, which has 8 decimals.
      *
      * @dev Requirements:
      *
      * - The price returned by the oracle cannot be zero.
-     * - The scaled price cannot overflow.
+     * - The upscaled price cannot overflow.
      *
      * @param symbol The Erc20 symbol of the token for which to query the price.
      * @return The upscaled price as a mantissa.
@@ -58,17 +50,36 @@ contract ChainlinkOperator is
     }
 
     /**
+     * @notice Get the official feed for a symbol.
+     * @param symbol The symbol to return the price feed data for.
+     * @return (address asset, address id, bool isSet).
+     */
+    function getFeed(string memory symbol)
+        external
+        view
+        override
+        returns (
+            Erc20Interface,
+            AggregatorV3Interface,
+            bool
+        )
+    {
+        return (feeds[symbol].asset, feeds[symbol].id, feeds[symbol].isSet);
+    }
+
+    /**
      * @notice Gets the official price for a symbol in the default format used by Chainlink, which
      * has 8 decimals.
      *
      * @dev Requirements:
-     * - The price feed must have been added.
+     *
+     * - The price feed must have been set.
      *
      * @param symbol The symbol to fetch the price for.
      * @return Price denominated in USD, with 8 decimals.
      */
     function getPrice(string memory symbol) public view override returns (uint256) {
-        require(feeds[symbol].isAdded, "ERR_FEED_NOT_ADDED");
+        require(feeds[symbol].isSet, "ERR_FEED_NOT_SET");
         (, int256 price, , , ) = AggregatorV3Interface(feeds[symbol].id).latestRoundData();
         return uint256(price);
     }
@@ -78,58 +89,56 @@ contract ChainlinkOperator is
      */
 
     /**
-     * @notice Add a new Chainlink price feed.
+     * @notice Deletes a previously set Chainlink price feed.
      *
-     * @dev Emits an {AddFeed} event.
+     * @dev Emits a {DeleteFeed} event.
      *
      * Requirements:
-     * - The caller must be the administrator.
-     * - The vault must not have been added already.
-
-     * @param feed The address of the Chainlink price feed contract.
-     * @param asset The address of the Erc20 contract to add the price feed for.
+     *
+     * - The caller must be the admin.
+     * - The feed must have been previously set.
+     *
+     * @param symbol The Erc20 symbol of the asset to delete the feed for.
      * @return true = success, otherwise it reverts.
      */
-    function addFeed(AggregatorV3Interface feed, Erc20Interface asset) external override onlyAdmin returns (bool) {
-        string memory symbol = asset.symbol();
-
+    function deleteFeed(string memory symbol) external override onlyAdmin returns (bool) {
         /* Checks */
-        require(feeds[symbol].isAdded == false, "ERR_FEED_ADDED");
+        require(feeds[symbol].isSet, "ERR_FEED_NOT_SET");
 
-        /* Checks: price feed decimals. */
-        uint8 decimals = feed.decimals();
-        require(decimals == pricePrecision, "ERR_ADD_FEED_NOT_8_DECIMALS");
+        /* Effects: delete the feed from storage. */
+        AggregatorV3Interface feed = feeds[symbol].id;
+        Erc20Interface asset = feeds[symbol].asset;
+        delete feeds[symbol];
 
-        /* Effects: put the feed into storage. */
-        feeds[symbol] = Feed({ asset: address(asset), id: address(feed), isAdded: true });
-
-        emit AddFeed(address(feed), address(asset));
+        emit DeleteFeed(asset, feed);
         return true;
     }
 
     /**
-     * @notice Remove a previously added Chainlink price feed.
+     * @notice Sets a Chainlink price feed. It is not an error to set a feed twice.
      *
-     * @dev Emits a {RemoveFeed} event.
+     * @dev Emits a {SetFeed} event.
      *
      * Requirements:
      *
-     * - The caller must be the administrator.
-     * - The vault must have been previously added.
+     * - The caller must be the admin.
+     * - The number of decimals of the feed must be 8.
      *
-     * @param symbol The symbol of asset to enable price feed of.
+     * @param asset The address of the Erc20 contract for which to get the price.
+     * @param feed The address of the Chainlink price feed contract.
      * @return true = success, otherwise it reverts.
      */
-    function removeFeed(string memory symbol) external override onlyAdmin returns (bool) {
-        /* Checks */
-        require(feeds[symbol].isAdded, "ERR_REMOVE_FEED_NOT_ADDED");
+    function setFeed(Erc20Interface asset, AggregatorV3Interface feed) external override onlyAdmin returns (bool) {
+        string memory symbol = asset.symbol();
 
-        /* Effects: remove the feed from storage. */
-        address feedId = feeds[symbol].id;
-        address asset = feeds[symbol].asset;
-        delete feeds[symbol];
+        /* Checks: price feed decimals. */
+        uint8 decimals = feed.decimals();
+        require(decimals == pricePrecision, "ERR_FEED_INCORRECT_DECIMALS");
 
-        emit RemoveFeed(feedId, asset);
+        /* Effects: put the feed into storage. */
+        feeds[symbol] = Feed({ asset: asset, id: feed, isSet: true });
+
+        emit SetFeed(asset, feed);
         return true;
     }
 }

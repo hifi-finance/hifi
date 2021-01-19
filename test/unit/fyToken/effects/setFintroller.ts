@@ -6,7 +6,7 @@ import { AdminErrors, FyTokenErrors } from "../../../../helpers/errors";
 import { deployStubFintroller } from "../../stubs";
 
 export default function shouldBehaveLikeSetFintroller(): void {
-  describe("when the caller is not the administrator", function () {
+  describe("when the caller is not the admin", function () {
     it("reverts", async function () {
       await expect(this.contracts.fyToken.connect(this.signers.raider)._setFintroller(AddressZero)).to.be.revertedWith(
         AdminErrors.NotAdmin,
@@ -14,7 +14,7 @@ export default function shouldBehaveLikeSetFintroller(): void {
     });
   });
 
-  describe("when the caller is the administrator", function () {
+  describe("when the caller is the admin", function () {
     let newFintroller: MockContract;
 
     beforeEach(async function () {
