@@ -39,6 +39,11 @@ export default function shouldBehaveLikeGetClutchableCollateral(): void {
 
     describe("when the liquidation incentive is not zero", function () {
       describe("when the collateral has 18 decimals", function () {
+        beforeEach(async function () {
+          await this.stubs.collateral.mock.decimals.returns(BigNumber.from(18));
+          await this.stubs.fyToken.mock.collateralPrecisionScalar.returns(precisionScalars.tokenWith18Decimals);
+        });
+
         it("retrieves the clutchable collateral amount", async function () {
           const contractClutchableCollateralAmount: BigNumber = await this.contracts.balanceSheet.getClutchableCollateral(
             this.stubs.fyToken.address,
@@ -51,12 +56,12 @@ export default function shouldBehaveLikeGetClutchableCollateral(): void {
       describe("when the collateral has 8 decimals", function () {
         beforeEach(async function () {
           await this.stubs.collateral.mock.decimals.returns(BigNumber.from(8));
-          await this.stubs.fyToken.mock.collateralPrecisionScalar.returns(precisionScalars.tokenWithEightDecimals);
+          await this.stubs.fyToken.mock.collateralPrecisionScalar.returns(precisionScalars.tokenWith8Decimals);
         });
 
         it("retrieves the downscaled clutchable collateral amount", async function () {
           const downscaledClutchableCollateralAmount = clutchableCollateralAmount.div(
-            precisionScalars.tokenWithEightDecimals,
+            precisionScalars.tokenWith8Decimals,
           );
 
           const contractClutchableCollateralAmount: BigNumber = await this.contracts.balanceSheet.getClutchableCollateral(

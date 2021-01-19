@@ -4,7 +4,7 @@ pragma solidity ^0.7.0;
 import "@paulrberg/contracts/math/Exponential.sol";
 
 import "./FyTokenInterface.sol";
-import "./oracles/UniswapAnchoredViewInterface.sol";
+import "./oracles/ChainlinkOperatorInterface.sol";
 
 /**
  * @title FintrollerStorage
@@ -31,17 +31,12 @@ abstract contract FintrollerStorage is Exponential {
     /**
      * @notice The contract that provides price data for the collateral and the underlying asset.
      */
-    UniswapAnchoredViewInterface public oracle;
+    ChainlinkOperatorInterface public oracle;
 
     /**
      * @notice Multiplier representing the discount on collateral that a liquidator receives.
      */
     uint256 public liquidationIncentiveMantissa;
-
-    /**
-     * @notice The ratio between mantissa precision (1e18) and the oracle price precision (1e6).
-     */
-    uint256 public constant oraclePricePrecisionScalar = 1.0e12;
 
     /**
      * @dev The threshold below which the collateralization ratio cannot be set, equivalent to 100%.

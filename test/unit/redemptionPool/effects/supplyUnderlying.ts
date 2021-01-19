@@ -99,14 +99,10 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
             describe("when the underlying has 8 decimals", function () {
               beforeEach(async function () {
                 await this.stubs.underlying.mock.decimals.returns(BigNumber.from(8));
-                await this.stubs.fyToken.mock.underlyingPrecisionScalar.returns(
-                  precisionScalars.tokenWithEightDecimals,
-                );
+                await this.stubs.fyToken.mock.underlyingPrecisionScalar.returns(precisionScalars.tokenWith8Decimals);
               });
 
-              const downscaledUnderlyingAmount: BigNumber = underlyingAmount.div(
-                precisionScalars.tokenWithEightDecimals,
-              );
+              const downscaledUnderlyingAmount: BigNumber = underlyingAmount.div(precisionScalars.tokenWith8Decimals);
 
               beforeEach(async function () {
                 await this.stubs.underlying.mock.transferFrom
@@ -125,6 +121,11 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
             });
 
             describe("when the underlying has 18 decimals", function () {
+              beforeEach(async function () {
+                await this.stubs.underlying.mock.decimals.returns(BigNumber.from(18));
+                await this.stubs.fyToken.mock.underlyingPrecisionScalar.returns(precisionScalars.tokenWith18Decimals);
+              });
+
               beforeEach(async function () {
                 await this.stubs.underlying.mock.transferFrom
                   .withArgs(this.accounts.maker, this.contracts.redemptionPool.address, underlyingAmount)

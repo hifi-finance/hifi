@@ -56,7 +56,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
     await this.contracts.fyToken.connect(this.signers.borrower).borrow(borrowAmount);
 
     /* Set the price of 1 WETH to $12 so that the new collateralization ratio becomes 120%. */
-    await this.contracts.oracle.setWethPrice(prices.twelveDollars);
+    await this.contracts.collateralUsdFeed.setPrice(prices.twelveDollars);
 
     /* Mint 100 fyDAI to the liquidator so he can repay the debt. */
     await this.contracts.fyToken.__godMode_mint(this.accounts.liquidator, repayAmount);
@@ -74,8 +74,8 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
    */
   describe("when there is not enough locked collateral", function () {
     beforeEach(async function () {
-      /* Set the price of 1 WETH to $1 so that the new collateralization ratio becomes 10%. */
-      await this.contracts.oracle.setWethPrice(prices.oneDollar);
+      /* Set the price of 1 WETH = $1 so that the new collateralization ratio becomes 10%. */
+      await this.contracts.collateralUsdFeed.setPrice(prices.oneDollar);
     });
 
     it("reverts", async function () {

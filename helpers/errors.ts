@@ -17,6 +17,10 @@ export enum BalanceSheetErrors {
   WithdrawCollateralZero = "ERR_WITHDRAW_COLLATERAL_ZERO",
 }
 
+export enum ChainlinkOperatorErrors {
+  PriceZero = "ERR_PRICE_ZERO",
+}
+
 export enum FintrollerErrors {
   BondNotListed = "ERR_BOND_NOT_LISTED",
   ListBondFyTokenInspection = "ERR_LIST_BOND_FYTOKEN_INSPECTION",
@@ -61,11 +65,6 @@ export enum GenericErrors {
   NotInitialized = "ERR_NOT_INITALIZED",
   VaultOpen = "ERR_VAULT_OPEN",
   VaultNotOpen = "ERR_VAULT_NOT_OPEN",
-}
-
-export enum OraclePriceUtilsErrors {
-  MathError = "ERR_TEST_GET_ADJUSTED_PRICE_MATH_ERROR",
-  PriceZero = "ERR_PRICE_ZERO",
 }
 
 export enum RedemptionPoolErrors {

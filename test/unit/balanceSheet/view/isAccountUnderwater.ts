@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
-import { etherSymbol, fintrollerConstants, prices, tokenAmounts } from "../../../../helpers/constants";
+import { fintrollerConstants, prices, tokenAmounts } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeIsAccountUnderwater(): void {
   describe("when the vault is not open", function () {
@@ -62,7 +62,7 @@ export default function shouldBehaveLikeIsAccountUnderwater(): void {
 
       describe("when the user is dangerously collateralized", function () {
         beforeEach(async function () {
-          await this.stubs.oracle.mock.price.withArgs(etherSymbol).returns(prices.twelveDollars);
+          await this.stubs.oracle.mock.getAdjustedPrice.withArgs("WETH").returns(prices.twelveDollars);
         });
 
         /* The price of 1 WETH is $12 so the new collateralization ratio becomes 120%. */

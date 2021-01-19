@@ -6,7 +6,7 @@ import "@paulrberg/contracts/math/Exponential.sol";
 
 import "./FintrollerInterface.sol";
 import "./FyTokenInterface.sol";
-import "./oracles/UniswapAnchoredViewInterface.sol";
+import "./oracles/ChainlinkOperatorInterface.sol";
 
 /**
  * @notice Fintroller
@@ -401,7 +401,7 @@ contract Fintroller is
      * @param newOracle The new oracle contract.
      * @return bool true = success, otherwise it reverts.
      */
-    function setOracle(UniswapAnchoredViewInterface newOracle) external override onlyAdmin returns (bool) {
+    function setOracle(ChainlinkOperatorInterface newOracle) external override onlyAdmin returns (bool) {
         require(address(newOracle) != address(0x00), "ERR_SET_ORACLE_ZERO_ADDRESS");
         address oldOracle = address(oracle);
         oracle = newOracle;

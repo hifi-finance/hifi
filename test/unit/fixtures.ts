@@ -6,20 +6,18 @@ import { Fintroller } from "../../typechain/Fintroller";
 import { GodModeBalanceSheet } from "../../typechain/GodModeBalanceSheet";
 import { GodModeFyToken } from "../../typechain/GodModeFyToken";
 import { GodModeRedemptionPool } from "../../typechain/GodModeRedemptionPool";
-import { TestOraclePriceUtils as OraclePriceUtils } from "../../typechain/TestOraclePriceUtils";
 
 import {
   deployFintroller,
   deployGodModeBalanceSheet,
   deployGodModeFyToken,
   deployGodModeRedemptionPool,
-  deployOraclePriceUtils,
 } from "../deployers";
 import {
   deployStubBalanceSheet,
+  deployStubChainlinkOperator,
   deployStubCollateral,
   deployStubFintroller,
-  deployStubOracle,
   deployStubRedemptionPool,
   deployStubFyToken,
   deployStubUnderlying,
@@ -40,7 +38,7 @@ export async function unitFixtureBalanceSheet(signers: Signer[]): Promise<UnitFi
   const collateral: MockContract = await deployStubCollateral(deployer);
   const underlying: MockContract = await deployStubUnderlying(deployer);
 
-  const oracle: MockContract = await deployStubOracle(deployer);
+  const oracle: MockContract = await deployStubChainlinkOperator(deployer);
   const fintroller: MockContract = await deployStubFintroller(deployer);
   await fintroller.mock.oracle.returns(oracle.address);
 
@@ -56,16 +54,16 @@ export async function unitFixtureBalanceSheet(signers: Signer[]): Promise<UnitFi
 
 type UnitFixtureFintrollerReturnType = {
   fintroller: Fintroller;
-  oracle: MockContract;
   fyToken: MockContract;
+  oracle: MockContract;
 };
 
 export async function unitFixtureFintroller(signers: Signer[]): Promise<UnitFixtureFintrollerReturnType> {
   const deployer: Signer = signers[0];
-  const oracle: MockContract = await deployStubOracle(deployer);
+  const oracle: MockContract = await deployStubChainlinkOperator(deployer);
   const fyToken: MockContract = await deployStubFyToken(deployer);
   const fintroller = await deployFintroller(deployer);
-  return { fintroller, oracle, fyToken };
+  return { fintroller, fyToken, oracle };
 }
 
 type UnitFixtureFyTokenReturnType = {
@@ -81,7 +79,7 @@ type UnitFixtureFyTokenReturnType = {
 export async function unitFixtureFyToken(signers: Signer[]): Promise<UnitFixtureFyTokenReturnType> {
   const deployer: Signer = signers[0];
 
-  const oracle: MockContract = await deployStubOracle(deployer);
+  const oracle: MockContract = await deployStubChainlinkOperator(deployer);
   const fintroller: MockContract = await deployStubFintroller(deployer);
   await fintroller.mock.oracle.returns(oracle.address);
 
@@ -106,20 +104,6 @@ export async function unitFixtureFyToken(signers: Signer[]): Promise<UnitFixture
   await fyToken.__godMode__setRedemptionPool(redemptionPool.address);
 
   return { balanceSheet, collateral, fintroller, oracle, redemptionPool, underlying, fyToken };
-}
-
-type UnitFixtureOraclePriceUtilsReturnType = {
-  collateral: MockContract;
-  oracle: MockContract;
-  oraclePriceUtils: OraclePriceUtils;
-};
-
-export async function unitFixtureOraclePriceUtils(signers: Signer[]): Promise<UnitFixtureOraclePriceUtilsReturnType> {
-  const deployer: Signer = signers[0];
-  const collateral: MockContract = await deployStubCollateral(deployer);
-  const oracle: MockContract = await deployStubOracle(deployer);
-  const oraclePriceUtils: OraclePriceUtils = await deployOraclePriceUtils(deployer, oracle.address);
-  return { collateral, oracle, oraclePriceUtils };
 }
 
 type UnitFixtureRedemptionPoolReturnType = {

@@ -10,7 +10,6 @@ import shouldBehaveLikeGetSupplyUnderlyingAllowed from "./view/getSupplyUnderlyi
 import shouldBehaveLikeIsFintrollerGetter from "./view/isFintroller";
 import shouldBehaveLikeLiquidationIncentiveMantissaGetter from "./view/liquidationIncentiveMantissa";
 import shouldBehaveLikeOracleGetter from "./view/oracle";
-import shouldBehaveLikeOraclePricePrecisionScalarGetter from "./view/oraclePricePrecisionScalar";
 
 import shouldBehaveLikeListBond from "./effects/listBond";
 import shouldBehaveLikeSetBondCollateralizationRatio from "./effects/setBondCollateralizationRatio";
@@ -72,10 +71,6 @@ export function shouldBehaveLikeFintroller(): void {
 
     describe("oracle", function () {
       shouldBehaveLikeOracleGetter();
-    });
-
-    describe("oraclePricePrecisionScalar", function () {
-      shouldBehaveLikeOraclePricePrecisionScalarGetter();
     });
   });
 

@@ -5,14 +5,13 @@ import { Zero } from "@ethersproject/constants";
 import { waffle } from "hardhat";
 
 import BalanceSheetArtifact from "../../artifacts/contracts/BalanceSheet.sol/BalanceSheet.json";
+import ChainlinkOperatorArtifact from "../../artifacts/contracts/oracles/ChainlinkOperator.sol/ChainlinkOperator.json";
 import Erc20Artifact from "../../artifacts/@paulrberg/contracts/token/erc20/Erc20.sol/Erc20.json";
 import FintrollerArtifact from "../../artifacts/contracts/Fintroller.sol/Fintroller.json";
 import FyTokenArtifact from "../../artifacts/contracts/FyToken.sol/FyToken.json";
 import RedemptionPoolArtifact from "../../artifacts/contracts/RedemptionPool.sol/RedemptionPool.json";
-import SimpleUniswapAnchoredViewArtifact from "../../artifacts/contracts/test/SimpleUniswapAnchoredView.sol/SimpleUniswapAnchoredView.json";
-import scenarios from "../scenarios";
 
-import { balanceSheetConstants, etherSymbol, openPriceFeedPrecision } from "../../helpers/constants";
+import { balanceSheetConstants, prices } from "../../helpers/constants";
 
 const { deployMockContract: deployStubContract } = waffle;
 
@@ -25,13 +24,15 @@ export async function deployStubBalanceSheet(deployer: Signer): Promise<MockCont
   return balanceSheet;
 }
 
+export async function deployStubChainlinkOperator(deployer: Signer): Promise<MockContract> {
+  const chainlinkOperator: MockContract = await deployStubContract(deployer, ChainlinkOperatorArtifact.abi);
+  await chainlinkOperator.mock.getAdjustedPrice.withArgs("WETH").returns(prices.oneHundredDollars);
+  await chainlinkOperator.mock.getAdjustedPrice.withArgs("DAI").returns(prices.oneDollar);
+  return chainlinkOperator;
+}
+
 export async function deployStubCollateral(deployer: Signer): Promise<MockContract> {
-  const collateral: MockContract = await deployStubErc20(
-    deployer,
-    scenarios.local.collateral.name,
-    scenarios.local.collateral.symbol,
-    scenarios.local.collateral.decimals,
-  );
+  const collateral: MockContract = await deployStubErc20(deployer, "Wrapped ETH", "WETH", BigNumber.from(18));
   return collateral;
 }
 
@@ -52,7 +53,6 @@ export async function deployStubErc20(
 export async function deployStubFintroller(deployer: Signer): Promise<MockContract> {
   const fintroller: MockContract = await deployStubContract(deployer, FintrollerArtifact.abi);
   await fintroller.mock.isFintroller.returns(true);
-  await fintroller.mock.oraclePricePrecisionScalar.returns(openPriceFeedPrecision);
   return fintroller;
 }
 
@@ -62,13 +62,6 @@ export async function deployStubFyToken(deployer: Signer): Promise<MockContract>
   return fyToken;
 }
 
-export async function deployStubOracle(deployer: Signer): Promise<MockContract> {
-  const oracle: MockContract = await deployStubContract(deployer, SimpleUniswapAnchoredViewArtifact.abi);
-  await oracle.mock.price.withArgs(etherSymbol).returns(scenarios.local.oracle.prices.collateral);
-  await oracle.mock.price.withArgs(scenarios.local.underlying.symbol).returns(scenarios.local.oracle.prices.underlying);
-  return oracle;
-}
-
 export async function deployStubRedemptionPool(deployer: Signer): Promise<MockContract> {
   const redemptionPool: MockContract = await deployStubContract(deployer, RedemptionPoolArtifact.abi);
   await redemptionPool.mock.isRedemptionPool.returns(true);
@@ -76,12 +69,7 @@ export async function deployStubRedemptionPool(deployer: Signer): Promise<MockCo
 }
 
 export async function deployStubUnderlying(deployer: Signer): Promise<MockContract> {
-  const underlying: MockContract = await deployStubErc20(
-    deployer,
-    scenarios.local.underlying.name,
-    scenarios.local.underlying.symbol,
-    scenarios.local.underlying.decimals,
-  );
+  const underlying: MockContract = await deployStubErc20(deployer, "Dai Stablecoin", "DAI", BigNumber.from(18));
   return underlying;
 }
 

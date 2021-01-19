@@ -2,7 +2,9 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { MockContract } from "ethereum-waffle";
 import { Signer } from "@ethersproject/abstract-signer";
 
+import { AggregatorV3Interface } from "../typechain/AggregatorV3Interface";
 import { BalanceSheet } from "../typechain/BalanceSheet";
+import { ChainlinkOperator } from "../typechain/ChainlinkOperator";
 import { Erc20Mintable } from "../typechain/Erc20Mintable";
 import { Fintroller } from "../typechain/Fintroller";
 import { FyToken } from "../typechain/FyToken";
@@ -10,9 +12,6 @@ import { GodModeBalanceSheet } from "../typechain/GodModeBalanceSheet";
 import { GodModeRedemptionPool } from "../typechain/GodModeRedemptionPool";
 import { GodModeFyToken } from "../typechain/GodModeFyToken";
 import { RedemptionPool } from "../typechain/RedemptionPool";
-import { TestOraclePriceUtils as OraclePriceUtils } from "../typechain/TestOraclePriceUtils";
-import { SimpleUniswapAnchoredView } from "../typechain/SimpleUniswapAnchoredView";
-import { UniswapAnchoredViewInterface } from "../typechain/UniswapAnchoredViewInterface";
 
 /* Fingers-crossed that ethers.js or waffle will provide an easier way to cache the address */
 export interface Accounts {
@@ -29,12 +28,13 @@ export interface Accounts {
 export interface Contracts {
   balanceSheet: GodModeBalanceSheet | BalanceSheet;
   collateral: Erc20Mintable;
+  collateralUsdFeed: AggregatorV3Interface;
   fintroller: Fintroller;
   fyToken: GodModeFyToken | FyToken;
-  oracle: SimpleUniswapAnchoredView | UniswapAnchoredViewInterface;
-  oraclePriceUtils: OraclePriceUtils;
+  oracle: ChainlinkOperator;
   redemptionPool: GodModeRedemptionPool | RedemptionPool;
   underlying: Erc20Mintable;
+  underlyingUsdFeed: AggregatorV3Interface;
 }
 
 export interface Signers {

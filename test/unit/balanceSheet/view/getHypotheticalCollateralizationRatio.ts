@@ -2,10 +2,8 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import scenarios from "../../../scenarios";
-
-import { BalanceSheetErrors, GenericErrors, OraclePriceUtilsErrors } from "../../../../helpers/errors";
-import { etherSymbol, percentages, precisionScalars, tokenAmounts } from "../../../../helpers/constants";
+import { BalanceSheetErrors, ChainlinkOperatorErrors, GenericErrors } from "../../../../helpers/errors";
+import { percentages, precisionScalars, tokenAmounts } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio(): void {
   const hypotheticalCollateralizationRatioMantissa: BigNumber = percentages.oneThousand;
@@ -63,8 +61,9 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
       describe("when the debt is not zero", function () {
         describe("when the collateral price from the oracle is zero", function () {
           beforeEach(async function () {
-            const zeroCollateralPrice: BigNumber = Zero;
-            await this.stubs.oracle.mock.price.withArgs(etherSymbol).returns(zeroCollateralPrice);
+            await this.stubs.oracle.mock.getAdjustedPrice
+              .withArgs("WETH")
+              .revertsWithReason(ChainlinkOperatorErrors.PriceZero);
           });
 
           it("reverts", async function () {
@@ -75,17 +74,16 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
                 lockedCollateral,
                 debt,
               ),
-            ).to.be.revertedWith(OraclePriceUtilsErrors.PriceZero);
+            ).to.be.revertedWith(ChainlinkOperatorErrors.PriceZero);
           });
         });
 
         describe("when the collateral price from the oracle is not zero", function () {
           describe("when the underlying price from the oracle is zero", function () {
             beforeEach(async function () {
-              const zeroUnderlyingPrice: BigNumber = Zero;
-              await this.stubs.oracle.mock.price
-                .withArgs(scenarios.local.underlying.symbol)
-                .returns(zeroUnderlyingPrice);
+              await this.stubs.oracle.mock.getAdjustedPrice
+                .withArgs("DAI")
+                .revertsWithReason(ChainlinkOperatorErrors.PriceZero);
             });
 
             it("reverts", async function () {
@@ -96,21 +94,19 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
                   lockedCollateral,
                   debt,
                 ),
-              ).to.be.revertedWith(OraclePriceUtilsErrors.PriceZero);
+              ).to.be.revertedWith(ChainlinkOperatorErrors.PriceZero);
             });
           });
 
-          describe("when the collateral price from the oracle is not zero", function () {
+          describe("when the underlying price from the oracle is not zero", function () {
             describe("when the collateral has 8 decimals", function () {
               beforeEach(async function () {
                 await this.stubs.collateral.mock.decimals.returns(BigNumber.from(8));
-                await this.stubs.fyToken.mock.collateralPrecisionScalar.returns(
-                  precisionScalars.tokenWithEightDecimals,
-                );
+                await this.stubs.fyToken.mock.collateralPrecisionScalar.returns(precisionScalars.tokenWith8Decimals);
               });
 
               it("retrieves the hypothetical collateralization ratio mantissa", async function () {
-                const downscaledLockedCollateral = lockedCollateral.div(precisionScalars.tokenWithEightDecimals);
+                const downscaledLockedCollateral = lockedCollateral.div(precisionScalars.tokenWith8Decimals);
                 const contractHypotheticalCollateralizationRatioMantissa: BigNumber = await this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
                   this.stubs.fyToken.address,
                   this.accounts.borrower,
@@ -124,6 +120,11 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
             });
 
             describe("when the collateral has 18 decimals", function () {
+              beforeEach(async function () {
+                await this.stubs.collateral.mock.decimals.returns(BigNumber.from(18));
+                await this.stubs.fyToken.mock.collateralPrecisionScalar.returns(precisionScalars.tokenWith18Decimals);
+              });
+
               it("retrieves the hypothetical collateralization ratio mantissa", async function () {
                 const contractHypotheticalCollateralizationRatioMantissa: BigNumber = await this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
                   this.stubs.fyToken.address,

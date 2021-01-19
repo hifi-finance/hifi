@@ -7,9 +7,13 @@ import { fyTokenConstants, precisionScalars } from "../../../../helpers/constant
 
 export default function shouldBehaveLikeCollateralPrecisionScalarGetter(): void {
   describe("when the collateral has 18 decimals", function () {
+    beforeEach(async function () {
+      await this.stubs.collateral.mock.decimals.returns(BigNumber.from(18));
+    });
+
     it("retrieves 1", async function () {
       const collateralPrecisionScalar: BigNumber = await this.contracts.fyToken.collateralPrecisionScalar();
-      expect(collateralPrecisionScalar).to.equal(precisionScalars.tokenWithEighteenDecimals);
+      expect(collateralPrecisionScalar).to.equal(precisionScalars.tokenWith18Decimals);
     });
   });
 
@@ -28,7 +32,7 @@ export default function shouldBehaveLikeCollateralPrecisionScalarGetter(): void 
         this.stubs.collateral.address,
       );
       const collateralPrecisionScalar: BigNumber = await fyToken.collateralPrecisionScalar();
-      expect(collateralPrecisionScalar).to.equal(precisionScalars.tokenWithEightDecimals);
+      expect(collateralPrecisionScalar).to.equal(precisionScalars.tokenWith8Decimals);
     });
   });
 }

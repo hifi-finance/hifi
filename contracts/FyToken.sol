@@ -13,7 +13,6 @@ import "./BalanceSheetInterface.sol";
 import "./FintrollerInterface.sol";
 import "./FyTokenInterface.sol";
 import "./RedemptionPool.sol";
-import "./oracles/UniswapAnchoredViewInterface.sol";
 
 /**
  * @title FyToken

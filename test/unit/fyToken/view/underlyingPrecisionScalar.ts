@@ -7,9 +7,13 @@ import { fyTokenConstants, precisionScalars } from "../../../../helpers/constant
 
 export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void {
   describe("when the underlying has 18 decimals", function () {
+    beforeEach(async function () {
+      await this.stubs.underlying.mock.decimals.returns(BigNumber.from(18));
+    });
+
     it("retrieves 1", async function () {
       const underlyingPrecisionScalar: BigNumber = await this.contracts.fyToken.underlyingPrecisionScalar();
-      expect(underlyingPrecisionScalar).to.equal(precisionScalars.tokenWithEighteenDecimals);
+      expect(underlyingPrecisionScalar).to.equal(precisionScalars.tokenWith18Decimals);
     });
   });
 
@@ -28,7 +32,7 @@ export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void 
         this.stubs.collateral.address,
       );
       const underlyingPrecisionScalar: BigNumber = await fyToken.underlyingPrecisionScalar();
-      expect(underlyingPrecisionScalar).to.equal(precisionScalars.tokenWithEightDecimals);
+      expect(underlyingPrecisionScalar).to.equal(precisionScalars.tokenWith8Decimals);
     });
   });
 }

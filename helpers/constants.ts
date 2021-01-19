@@ -5,15 +5,16 @@ import { getNow, getDaysInSeconds } from "./time";
 
 /* MISCELLANEOUS */
 export const addressOne: string = "0x0000000000000000000000000000000000000001";
-export const etherSymbol: string = "ETH";
 
 /* AMOUNTS */
 export const ten: BigNumber = BigNumber.from(10);
 export const tenMillion: BigNumber = ten.pow(7);
 export const fiftyMillion: BigNumber = tenMillion.mul(50);
 export const defaultNumberOfDecimals: BigNumber = BigNumber.from(18);
-export const openPriceFeedPrecision: BigNumber = BigNumber.from(6);
-export const openPriceFeedPrecisionScalar: BigNumber = ten.pow(defaultNumberOfDecimals.sub(openPriceFeedPrecision));
+export const chainlinkPriceFeedPrecision: BigNumber = BigNumber.from(8);
+export const chainlinkPriceFeedPrecisionScalar: BigNumber = ten.pow(
+  defaultNumberOfDecimals.sub(chainlinkPriceFeedPrecision),
+);
 
 /* Represented as mantissas (decimal scalars with 18 decimals). */
 export const percentages: { [name: string]: BigNumber } = {
@@ -28,15 +29,15 @@ export const percentages: { [name: string]: BigNumber } = {
 
 /* Ten raised to the difference between 18 and the token's decimals. */
 export const precisionScalars = {
-  tokenWithEightDecimals: ten.pow(defaultNumberOfDecimals.sub(8)),
-  tokenWithEighteenDecimals: One,
+  tokenWith8Decimals: ten.pow(defaultNumberOfDecimals.sub(8)),
+  tokenWith18Decimals: One,
 };
 
-/* Prices with 6 decimals, as per the Open Price Feed format. */
+/* Prices with 8 decimals, as per Chainlink format. */
 export const prices: { [name: string]: BigNumber } = {
-  oneDollar: ten.pow(6),
-  twelveDollars: ten.pow(6).mul(12),
-  oneHundredDollars: ten.pow(8),
+  oneDollar: ten.pow(chainlinkPriceFeedPrecision),
+  twelveDollars: ten.pow(chainlinkPriceFeedPrecision).mul(12),
+  oneHundredDollars: ten.pow(chainlinkPriceFeedPrecision).mul(100),
 };
 
 /* These amounts assume that the token has 18 decimals. */
@@ -105,13 +106,13 @@ export const fintrollerConstants = {
   defaultCollateralizationRatio: percentages.oneHundredAndFifty,
   liquidationIncentiveLowerBoundMantissa: percentages.oneHundred,
   liquidationIncentiveUpperBoundMantissa: percentages.oneHundredAndFifty,
-  oraclePrecisionScalar: openPriceFeedPrecisionScalar,
+  oraclePrecisionScalar: chainlinkPriceFeedPrecisionScalar,
 };
 
 /* TODO: make the name and symbol match the expiration time */
 export const fyTokenConstants = {
   decimals: defaultNumberOfDecimals,
   expirationTime: getNow().add(getDaysInSeconds(90)),
-  name: "hfyDAI (2022-01-01)",
-  symbol: "hfyDAI-JAN22",
+  name: "hfyUSDC (2022-01-01)",
+  symbol: "hfyUSDC-JAN22",
 };

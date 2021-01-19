@@ -3,6 +3,7 @@ pragma solidity ^0.7.0;
 
 import "./FintrollerStorage.sol";
 import "./FyTokenInterface.sol";
+import "./oracles/ChainlinkOperatorInterface.sol";
 
 abstract contract FintrollerInterface is FintrollerStorage {
     /**
@@ -62,7 +63,7 @@ abstract contract FintrollerInterface is FintrollerStorage {
 
     function setLiquidationIncentive(uint256 newLiquidationIncentiveMantissa) external virtual returns (bool);
 
-    function setOracle(UniswapAnchoredViewInterface newOracle) external virtual returns (bool);
+    function setOracle(ChainlinkOperatorInterface newOracle) external virtual returns (bool);
 
     function setRedeemFyTokensAllowed(FyTokenInterface fyToken, bool state) external virtual returns (bool);
 

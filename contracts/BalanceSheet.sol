@@ -10,8 +10,7 @@ import "@paulrberg/contracts/utils/ReentrancyGuard.sol";
 import "./BalanceSheetInterface.sol";
 import "./FintrollerInterface.sol";
 import "./FyTokenInterface.sol";
-import "./oracles/OraclePriceUtils.sol";
-import "./oracles/UniswapAnchoredViewInterface.sol";
+import "./oracles/ChainlinkOperatorInterface.sol";
 
 /**
  * @title BalanceSheet
@@ -24,7 +23,6 @@ contract BalanceSheet is
     Admin, /* two dependencies */
     Exponential /* two dependencies */
 {
-    using OraclePriceUtils for UniswapAnchoredViewInterface;
     using SafeErc20 for Erc20Interface;
 
     modifier isVaultOpenForMsgSender(FyTokenInterface fyToken) {
@@ -89,20 +87,11 @@ contract BalanceSheet is
         }
 
         /* Grab the upscaled USD price of the underlying. */
-        UniswapAnchoredViewInterface oracle = fintroller.oracle();
-        vars.oraclePricePrecisionScalar = fintroller.oraclePricePrecisionScalar();
-        (vars.mathErr, vars.underlyingPriceUpscaled) = oracle.getAdjustedPrice(
-            fyToken.underlying().symbol(),
-            vars.oraclePricePrecisionScalar
-        );
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_CLUTCHABLE_COLLATERAL_MATH_ERROR");
+        ChainlinkOperatorInterface oracle = fintroller.oracle();
+        vars.underlyingPriceUpscaled = oracle.getAdjustedPrice(fyToken.underlying().symbol());
 
         /* Grab the upscaled USD price of the collateral. */
-        (vars.mathErr, vars.collateralPriceUpscaled) = oracle.getAdjustedPrice(
-            fyToken.collateral().symbol(),
-            vars.oraclePricePrecisionScalar
-        );
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_CLUTCHABLE_COLLATERAL_MATH_ERROR");
+        vars.collateralPriceUpscaled = oracle.getAdjustedPrice(fyToken.collateral().symbol());
 
         /* Calculate the top part of the equation. */
         (vars.mathErr, vars.numerator) = mulExp3(
@@ -201,20 +190,11 @@ contract BalanceSheet is
         require(debt > 0, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_DEBT_ZERO");
 
         /* Grab the upscaled USD price of the collateral. */
-        UniswapAnchoredViewInterface oracle = fintroller.oracle();
-        vars.oraclePricePrecisionScalar = fintroller.oraclePricePrecisionScalar();
-        (vars.mathErr, vars.collateralPriceUpscaled) = oracle.getAdjustedPrice(
-            fyToken.collateral().symbol(),
-            vars.oraclePricePrecisionScalar
-        );
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
+        ChainlinkOperatorInterface oracle = fintroller.oracle();
+        vars.collateralPriceUpscaled = oracle.getAdjustedPrice(fyToken.collateral().symbol());
 
         /* Grab the upscaled USD price of the underlying. */
-        (vars.mathErr, vars.underlyingPriceUpscaled) = oracle.getAdjustedPrice(
-            fyToken.underlying().symbol(),
-            vars.oraclePricePrecisionScalar
-        );
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
+        vars.underlyingPriceUpscaled = oracle.getAdjustedPrice(fyToken.underlying().symbol());
 
         /* Upscale the collateral, which can have any precision, to mantissa precision. */
         vars.collateralPrecisionScalar = fyToken.collateralPrecisionScalar();

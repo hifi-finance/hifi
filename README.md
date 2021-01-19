@@ -95,8 +95,8 @@ $ yarn clean
 
 - Dan Robinson and Allan Niemerg, for their work on [The Yield Protocol: On-Chain Lending With Interest Rate
   Discovery](https://research.paradigm.xyz/Yield.pdf), which shaped many of our protocol design choices.
-- The Compound Finance team, for the [Open Price
-  Feed](https://compound.finance/docs/prices) and their math libraries.
+- Chainlink, for the [Price Feeds](https://docs.chain.link/docs/using-chainlink-reference-contracts).
+- Compound Finance, for their [Solidity math library](https://compound.finance/docs#protocol-math).
 - OpenZeppelin, for their [outstanding smart contract library](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/contracts).
 
 ## Discussion

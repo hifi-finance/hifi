@@ -21,7 +21,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
       .connect(this.signers.admin)
       .setRepayBorrowAllowed(this.contracts.fyToken.address, true);
 
-    /* Set the debt ceiling to 1,000 yDAI. */
+    /* Set the debt ceiling to 1,000 fyDAI. */
     await this.contracts.fintroller
       .connect(this.signers.admin)
       .setBondDebtCeiling(this.contracts.fyToken.address, tokenAmounts.oneHundredThousand);

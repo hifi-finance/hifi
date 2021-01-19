@@ -9,8 +9,8 @@ export function integrationTestRedemptionPool(): void {
       );
       this.contracts.balanceSheet = balanceSheet;
       this.contracts.fintroller = fintroller;
-      this.contracts.oracle = oracle;
       this.contracts.redemptionPool = redemptionPool;
+      this.contracts.oracle = oracle;
       this.contracts.underlying = underlying;
       this.contracts.fyToken = fyToken;
     });
