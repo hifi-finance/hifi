@@ -3,13 +3,18 @@ import { One, Zero } from "@ethersproject/constants";
 
 import { getNow, getDaysInSeconds } from "./time";
 
-/* MISCELLANEOUS */
+/* Ethereum constants */
 export const addressOne: string = "0x0000000000000000000000000000000000000001";
+export const maxInt256: BigNumber = BigNumber.from(
+  "57896044618658097711785492504343953926634992332820282019728792003956564819967",
+);
 
-/* AMOUNTS */
+/* Generic amounts */
 export const ten: BigNumber = BigNumber.from(10);
 export const tenMillion: BigNumber = ten.pow(7);
 export const fiftyMillion: BigNumber = tenMillion.mul(50);
+
+/* Decimals */
 export const defaultNumberOfDecimals: BigNumber = BigNumber.from(18);
 export const chainlinkPricePrecision: BigNumber = BigNumber.from(8);
 export const chainlinkPricePrecisionScalar: BigNumber = ten.pow(defaultNumberOfDecimals.sub(chainlinkPricePrecision));

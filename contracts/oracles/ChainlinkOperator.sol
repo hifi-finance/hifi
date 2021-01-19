@@ -31,27 +31,21 @@ contract ChainlinkOperator is
      *
      * @dev Requirements:
      *
-     * - The price returned by the oracle cannot be zero.
      * - The upscaled price cannot overflow.
      *
      * @param symbol The Erc20 symbol of the token for which to query the price.
      * @return The upscaled price as a mantissa.
      */
     function getAdjustedPrice(string memory symbol) external view override returns (uint256) {
-        /* Get the price from the Chainlink price feed aggregator. */
         uint256 price = getPrice(symbol);
-        require(price > 0, "ERR_PRICE_ZERO");
-
-        /* Scale up the price. */
         (MathError mathErr, uint256 adjustedPrice) = mulUInt(price, pricePrecisionScalar);
         require(mathErr == MathError.NO_ERROR, "ERR_GET_ADJUSTED_PRICE_MATH_ERROR");
-
         return adjustedPrice;
     }
 
     /**
-     * @notice Get the official feed for a symbol.
-     * @param symbol The symbol to return the price feed data for.
+     * @notice Gets the official feed for a symbol.
+     * @param symbol The symbol to return the feed for.
      * @return (address asset, address id, bool isSet).
      */
     function getFeed(string memory symbol)
@@ -73,15 +67,18 @@ contract ChainlinkOperator is
      *
      * @dev Requirements:
      *
-     * - The price feed must have been set.
+     * - The feed must have been previously set.
+     * - The price returned by the oracle cannot be zero.
      *
      * @param symbol The symbol to fetch the price for.
      * @return Price denominated in USD, with 8 decimals.
      */
     function getPrice(string memory symbol) public view override returns (uint256) {
         require(feeds[symbol].isSet, "ERR_FEED_NOT_SET");
-        (, int256 price, , , ) = AggregatorV3Interface(feeds[symbol].id).latestRoundData();
-        return uint256(price);
+        (, int256 intPrice, , , ) = AggregatorV3Interface(feeds[symbol].id).latestRoundData();
+        uint256 price = uint256(intPrice);
+        require(price > 0, "ERR_PRICE_ZERO");
+        return price;
     }
 
     /**
@@ -131,7 +128,7 @@ contract ChainlinkOperator is
     function setFeed(Erc20Interface asset, AggregatorV3Interface feed) external override onlyAdmin returns (bool) {
         string memory symbol = asset.symbol();
 
-        /* Checks: price feed decimals. */
+        /* Checks: price precision. */
         uint8 decimals = feed.decimals();
         require(decimals == pricePrecision, "ERR_FEED_INCORRECT_DECIMALS");
 

@@ -1,4 +1,5 @@
 import { BigNumber } from "@ethersproject/bignumber";
+import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { ChainlinkOperatorErrors } from "../../../../helpers/errors";
@@ -18,9 +19,31 @@ export default function shouldBehaveLikeGetPrice(): void {
         .setFeed(this.stubs.collateral.address, this.stubs.collateralUsdFeed.address);
     });
 
-    it("retrieves the price", async function () {
-      const price: BigNumber = await this.contracts.oracle.getPrice("WETH");
-      expect(price).to.equal(prices.oneHundredDollars);
+    describe("when the price is zero", function () {
+      beforeEach(async function () {
+        await this.stubs.collateralUsdFeed.mock.latestRoundData.returns(Zero, Zero, Zero, Zero, Zero);
+      });
+
+      it("reverts", async function () {
+        await expect(this.contracts.oracle.getPrice("WETH")).to.be.revertedWith(ChainlinkOperatorErrors.PriceZero);
+      });
+    });
+
+    describe("when the price is not zero", function () {
+      beforeEach(async function () {
+        await this.stubs.collateralUsdFeed.mock.latestRoundData.returns(
+          Zero,
+          prices.oneHundredDollars,
+          Zero,
+          Zero,
+          Zero,
+        );
+      });
+
+      it("retrieves the price", async function () {
+        const price: BigNumber = await this.contracts.oracle.getPrice("WETH");
+        expect(price).to.equal(prices.oneHundredDollars);
+      });
     });
   });
 }
