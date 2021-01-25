@@ -4,13 +4,12 @@ pragma solidity ^0.7.0;
 import "../external/chainlink/AggregatorV3Interface.sol";
 
 /**
- * @title DummyPriceFeed
+ * @title SimplePriceFeed
  * @author Hifi
- * @dev Strictly for testing purposes. Do not use in production.
  */
-contract DummyPriceFeed is AggregatorV3Interface {
+contract SimplePriceFeed is AggregatorV3Interface {
     string internal internalDescription;
-    int256 public price;
+    int256 internal price;
 
     constructor(string memory description_) {
         internalDescription = description_;

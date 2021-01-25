@@ -4,22 +4,22 @@ import { TransactionRequest } from "@ethersproject/providers";
 import { waffle } from "hardhat";
 
 import ChainlinkOperatorArtifact from "../artifacts/contracts/oracles/ChainlinkOperator.sol/ChainlinkOperator.json";
-import DummyPriceFeedArtifact from "../artifacts/contracts/test/DummyPriceFeed.sol/DummyPriceFeed.json";
 import Erc20MintableArtifact from "../artifacts/contracts/test/Erc20Mintable.sol/Erc20Mintable.json";
 import FintrollerArtifact from "../artifacts/contracts/Fintroller.sol/Fintroller.json";
 import FyTokenArtifact from "../artifacts/contracts/FyToken.sol/FyToken.json";
 import GodModeBalanceSheetArtifact from "../artifacts/contracts/test/GodModeBalanceSheet.sol/GodModeBalanceSheet.json";
 import GodModeFyTokenArtifact from "../artifacts/contracts/test/GodModeFyToken.sol/GodModeFyToken.json";
 import GodModeRedemptionPoolArtifact from "../artifacts/contracts/test/GodModRedemptionPool.sol/GodModeRedemptionPool.json";
+import SimplePriceFeedArtifact from "../artifacts/contracts/test/SimplePriceFeed.sol/SimplePriceFeed.json";
 
 import { ChainlinkOperator } from "../typechain/ChainlinkOperator";
-import { DummyPriceFeed } from "../typechain/DummyPriceFeed";
 import { Erc20Mintable } from "../typechain/Erc20Mintable";
 import { Fintroller } from "../typechain/Fintroller";
 import { FyToken } from "../typechain/FyToken";
 import { GodModeBalanceSheet } from "../typechain/GodModeBalanceSheet";
 import { GodModeRedemptionPool } from "../typechain/GodModeRedemptionPool";
 import { GodModeFyToken } from "../typechain/GodModeFyToken";
+import { SimplePriceFeed } from "../typechain/SimplePriceFeed";
 import { fyTokenConstants, gasLimits, prices } from "../helpers/constants";
 
 const { deployContract } = waffle;
@@ -43,9 +43,9 @@ export async function deployCollateral(deployer: Signer): Promise<Erc20Mintable>
   return collateral;
 }
 
-export async function deployCollateralPriceFeed(deployer: Signer): Promise<DummyPriceFeed> {
-  const collateralPriceFeed: DummyPriceFeed = <DummyPriceFeed>(
-    await deployContract(deployer, DummyPriceFeedArtifact, ["WETH/USD"], overrideOptions)
+export async function deployCollateralPriceFeed(deployer: Signer): Promise<SimplePriceFeed> {
+  const collateralPriceFeed: SimplePriceFeed = <SimplePriceFeed>(
+    await deployContract(deployer, SimplePriceFeedArtifact, ["WETH/USD"], overrideOptions)
   );
   await collateralPriceFeed.setPrice(prices.oneHundredDollars);
   return collateralPriceFeed;
@@ -143,9 +143,9 @@ export async function deployUnderlying(deployer: Signer): Promise<Erc20Mintable>
   return underlying;
 }
 
-export async function deployUnderlyingPriceFeed(deployer: Signer): Promise<DummyPriceFeed> {
-  const underlyingPriceFeed: DummyPriceFeed = <DummyPriceFeed>(
-    await deployContract(deployer, DummyPriceFeedArtifact, ["DAI/USD"], overrideOptions)
+export async function deployUnderlyingPriceFeed(deployer: Signer): Promise<SimplePriceFeed> {
+  const underlyingPriceFeed: SimplePriceFeed = <SimplePriceFeed>(
+    await deployContract(deployer, SimplePriceFeedArtifact, ["DAI/USD"], overrideOptions)
   );
   await underlyingPriceFeed.setPrice(prices.oneDollar);
   return underlyingPriceFeed;

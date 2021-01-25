@@ -1,12 +1,12 @@
 import { Signer } from "@ethersproject/abstract-signer";
 
 import { ChainlinkOperator } from "../../typechain/ChainlinkOperator";
-import { DummyPriceFeed } from "../../typechain";
 import { Erc20Mintable } from "../../typechain/Erc20Mintable";
 import { Fintroller } from "../../typechain/Fintroller";
 import { GodModeBalanceSheet } from "../../typechain/GodModeBalanceSheet";
 import { GodModeFyToken } from "../../typechain/GodModeFyToken";
 import { GodModeRedemptionPool } from "../../typechain/GodModeRedemptionPool";
+import { SimplePriceFeed } from "../../typechain/SimplePriceFeed";
 import {
   deployChainlinkOperator,
   deployCollateral,
@@ -23,13 +23,13 @@ import { fyTokenConstants } from "../../helpers/constants";
 type IntegrationFixtureReturnType = {
   balanceSheet: GodModeBalanceSheet;
   collateral: Erc20Mintable;
-  collateralPriceFeed: DummyPriceFeed;
+  collateralPriceFeed: SimplePriceFeed;
   fintroller: Fintroller;
   fyToken: GodModeFyToken;
   oracle: ChainlinkOperator;
   redemptionPool: GodModeRedemptionPool;
   underlying: Erc20Mintable;
-  underlyingPriceFeed: DummyPriceFeed;
+  underlyingPriceFeed: SimplePriceFeed;
 };
 
 export async function integrationFixture(signers: Signer[]): Promise<IntegrationFixtureReturnType> {
@@ -38,8 +38,8 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
   const collateral: Erc20Mintable = await deployCollateral(deployer);
   const underlying: Erc20Mintable = await deployUnderlying(deployer);
 
-  const collateralPriceFeed: DummyPriceFeed = await deployCollateralPriceFeed(deployer);
-  const underlyingPriceFeed: DummyPriceFeed = await deployUnderlyingPriceFeed(deployer);
+  const collateralPriceFeed: SimplePriceFeed = await deployCollateralPriceFeed(deployer);
+  const underlyingPriceFeed: SimplePriceFeed = await deployUnderlyingPriceFeed(deployer);
   const oracle: ChainlinkOperator = await deployChainlinkOperator(deployer);
   await oracle.setFeed(collateral.address, collateralPriceFeed.address);
   await oracle.setFeed(underlying.address, underlyingPriceFeed.address);

@@ -4,7 +4,6 @@ import { Signer } from "@ethersproject/abstract-signer";
 
 import { BalanceSheet } from "../typechain/BalanceSheet";
 import { ChainlinkOperator } from "../typechain/ChainlinkOperator";
-import { DummyPriceFeed } from "../typechain/DummyPriceFeed";
 import { Erc20Mintable } from "../typechain/Erc20Mintable";
 import { Fintroller } from "../typechain/Fintroller";
 import { FyToken } from "../typechain/FyToken";
@@ -12,6 +11,7 @@ import { GodModeBalanceSheet } from "../typechain/GodModeBalanceSheet";
 import { GodModeRedemptionPool } from "../typechain/GodModeRedemptionPool";
 import { GodModeFyToken } from "../typechain/GodModeFyToken";
 import { RedemptionPool } from "../typechain/RedemptionPool";
+import { SimplePriceFeed } from "../typechain/SimplePriceFeed";
 
 /* Fingers-crossed that ethers.js or waffle will provide an easier way to cache the address */
 export interface Accounts {
@@ -28,13 +28,13 @@ export interface Accounts {
 export interface Contracts {
   balanceSheet: GodModeBalanceSheet | BalanceSheet;
   collateral: Erc20Mintable;
-  collateralPriceFeed: DummyPriceFeed;
+  collateralPriceFeed: SimplePriceFeed;
   fintroller: Fintroller;
   fyToken: GodModeFyToken | FyToken;
   oracle: ChainlinkOperator;
   redemptionPool: GodModeRedemptionPool | RedemptionPool;
   underlying: Erc20Mintable;
-  underlyingPriceFeed: DummyPriceFeed;
+  underlyingPriceFeed: SimplePriceFeed;
 }
 
 export interface Signers {

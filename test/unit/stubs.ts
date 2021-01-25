@@ -6,11 +6,11 @@ import { waffle } from "hardhat";
 
 import BalanceSheetArtifact from "../../artifacts/contracts/BalanceSheet.sol/BalanceSheet.json";
 import ChainlinkOperatorArtifact from "../../artifacts/contracts/oracles/ChainlinkOperator.sol/ChainlinkOperator.json";
-import DummyPriceFeedArtifact from "../../artifacts/contracts/test/DummyPriceFeed.sol/DummyPriceFeed.json";
 import Erc20Artifact from "../../artifacts/@paulrberg/contracts/token/erc20/Erc20.sol/Erc20.json";
 import FintrollerArtifact from "../../artifacts/contracts/Fintroller.sol/Fintroller.json";
 import FyTokenArtifact from "../../artifacts/contracts/FyToken.sol/FyToken.json";
 import RedemptionPoolArtifact from "../../artifacts/contracts/RedemptionPool.sol/RedemptionPool.json";
+import SimplePriceFeedArtifact from "../../artifacts/contracts/test/SimplePriceFeed.sol/SimplePriceFeed.json";
 
 import { balanceSheetConstants, chainlinkPricePrecision, prices } from "../../helpers/constants";
 
@@ -38,7 +38,7 @@ export async function deployStubCollateral(deployer: Signer): Promise<MockContra
 }
 
 export async function deployStubCollateralPriceFeed(deployer: Signer): Promise<MockContract> {
-  const collateralPriceFeed: MockContract = await deployStubContract(deployer, DummyPriceFeedArtifact.abi);
+  const collateralPriceFeed: MockContract = await deployStubContract(deployer, SimplePriceFeedArtifact.abi);
   await collateralPriceFeed.mock.decimals.returns(chainlinkPricePrecision);
   await collateralPriceFeed.mock.latestRoundData.returns(Zero, prices.oneHundredDollars, Zero, Zero, Zero);
   return collateralPriceFeed;
