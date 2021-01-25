@@ -21,7 +21,7 @@ $ yarn install
 
 ### Compile
 
-Compile the smart contracts with Buidler:
+Compile the smart contracts with Hardhat:
 
 ```sh
 $ yarn compile
@@ -32,7 +32,7 @@ $ yarn compile
 Compile the smart contracts and generate TypeChain artifacts:
 
 ```sh
-$ yarn build
+$ yarn typechain
 ```
 
 ### Lint Solidity
@@ -85,7 +85,7 @@ $ yarn coverage
 
 ### Clean
 
-Delete the smart contract artifacts, the coverage reports and the Buidler cache:
+Delete the smart contract artifacts, the coverage reports and the Hardhat cache:
 
 ```sh
 $ yarn clean
@@ -95,7 +95,7 @@ $ yarn clean
 
 - Dan Robinson and Allan Niemerg, for their work on [The Yield Protocol: On-Chain Lending With Interest Rate
   Discovery](https://research.paradigm.xyz/Yield.pdf), which shaped many of our protocol design choices.
-- Chainlink, for the [Price Feeds](https://docs.chain.link/docs/using-chainlink-reference-contracts).
+- Chainlink, for their [Price Feeds](https://docs.chain.link/docs/using-chainlink-reference-contracts).
 - Compound Finance, for their [Solidity math library](https://compound.finance/docs#protocol-math).
 - OpenZeppelin, for their [outstanding smart contract library](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/contracts).
 
