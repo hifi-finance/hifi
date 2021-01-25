@@ -1,19 +1,19 @@
 import { Contract, ContractFactory } from "@ethersproject/contracts";
 import { ethers } from "hardhat";
 
-let dummyPriceFeedDescription: string;
-if (!process.env.DUMMY_PRICE_FEED_DESCRIPTION) {
-  throw new Error("Please set DUMMY_PRICE_FEED_DESCRIPTION as an env variable");
+let description: string;
+if (!process.env.SIMPLE_PRICE_FEED_DESCRIPTION) {
+  throw new Error("Please set SIMPLE_PRICE_FEED_DESCRIPTION as an env variable");
 } else {
-  dummyPriceFeedDescription = process.env.DUMMY_PRICE_FEED_DESCRIPTION;
+  description = process.env.SIMPLE_PRICE_FEED_DESCRIPTION;
 }
 
 async function main(): Promise<void> {
-  const dummyPriceFeedFactory: ContractFactory = await ethers.getContractFactory("DummyPriceFeed");
-  const dummyPriceFeed: Contract = await dummyPriceFeedFactory.deploy(dummyPriceFeedDescription);
-  await dummyPriceFeed.deployed();
+  const simplePriceFeedFactory: ContractFactory = await ethers.getContractFactory("SimplePriceFeed");
+  const simplePriceFeed: Contract = await simplePriceFeedFactory.deploy(description);
+  await simplePriceFeed.deployed();
 
-  console.log("DummyPriceFeed deployed to: ", dummyPriceFeed.address);
+  console.log("SimplePriceFeed deployed to: ", simplePriceFeed.address);
 }
 
 main()

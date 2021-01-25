@@ -14,13 +14,13 @@ import { RedemptionPool } from "hifi-protocol/typechain/RedemptionPool";
 import { Signer } from "@ethersproject/abstract-signer";
 import { ethers, waffle } from "hardhat";
 
-import DummyPriceFeedArtifact from "../../artifacts/contracts/test/DummyPriceFeed.sol/DummyPriceFeed.json";
 import GodModeArtifact from "../../artifacts/contracts/test/GodModeErc20.sol/GodModeErc20.json";
 import HifiFlashSwapArtifact from "../../artifacts/contracts/HifiFlashSwap.sol/HifiFlashSwap.json";
+import SimplePriceFeedArtifact from "../../artifacts/contracts/test/SimplePriceFeed.sol/SimplePriceFeed.json";
 
-import { DummyPriceFeed } from "../../typechain/DummyPriceFeed";
 import { GodModeErc20 } from "../../typechain/GodModeErc20";
 import { HifiFlashSwap } from "../../typechain/HifiFlashSwap";
+import { SimplePriceFeed } from "../../typechain/SimplePriceFeed";
 import { UniswapV2Pair } from "../../types/contracts/UniswapV2Pair";
 import { usdcConstants, wbtcConstants } from "../../helpers/constants";
 
@@ -33,10 +33,10 @@ type IntegrationFixtureReturnType = {
   hifiFlashSwap: HifiFlashSwap;
   redemptionPool: RedemptionPool;
   usdc: GodModeErc20;
-  usdcPriceFeed: DummyPriceFeed;
+  usdcPriceFeed: SimplePriceFeed;
   uniswapV2Pair: UniswapV2Pair;
   wbtc: GodModeErc20;
-  wbtcPriceFeed: DummyPriceFeed;
+  wbtcPriceFeed: SimplePriceFeed;
 };
 
 export async function integrationFixture(signers: Signer[]): Promise<IntegrationFixtureReturnType> {
@@ -45,12 +45,12 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
   const wbtc: GodModeErc20 = <GodModeErc20>(
     await deployContract(deployer, GodModeArtifact, [wbtcConstants.name, wbtcConstants.symbol, wbtcConstants.decimals])
   );
-  const wbtcPriceFeed: DummyPriceFeed = <DummyPriceFeed>await deployContract(deployer, DummyPriceFeedArtifact, []);
+  const wbtcPriceFeed: SimplePriceFeed = <SimplePriceFeed>await deployContract(deployer, SimplePriceFeedArtifact, []);
 
   const usdc: GodModeErc20 = <GodModeErc20>(
     await deployContract(deployer, GodModeArtifact, [usdcConstants.name, usdcConstants.symbol, usdcConstants.decimals])
   );
-  const usdcPriceFeed: DummyPriceFeed = <DummyPriceFeed>await deployContract(deployer, DummyPriceFeedArtifact, []);
+  const usdcPriceFeed: SimplePriceFeed = <SimplePriceFeed>await deployContract(deployer, SimplePriceFeedArtifact, []);
 
   const oracle: ChainlinkOperator = <ChainlinkOperator>await deployContract(deployer, ChainlinkOperatorArtifact, []);
   await oracle.setFeed(wbtc.address, wbtcPriceFeed.address);

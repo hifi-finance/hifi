@@ -5,9 +5,9 @@ import { FyToken } from "hifi-protocol/typechain/FyToken";
 import { RedemptionPool } from "hifi-protocol/typechain/RedemptionPool";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 
-import { DummyPriceFeed } from "../typechain/DummyPriceFeed";
 import { GodModeErc20 } from "../typechain/GodModeErc20";
 import { HifiFlashSwap } from "../typechain/HifiFlashSwap";
+import { SimplePriceFeed } from "../typechain/SimplePriceFeed";
 import { UniswapV2Pair } from "./contracts/UniswapV2Pair";
 
 export interface Contracts {
@@ -18,10 +18,10 @@ export interface Contracts {
   oracle: ChainlinkOperator;
   redemptionPool: RedemptionPool;
   usdc: GodModeErc20;
-  usdcPriceFeed: DummyPriceFeed;
+  usdcPriceFeed: SimplePriceFeed;
   uniswapV2Pair: UniswapV2Pair;
   wbtc: GodModeErc20;
-  wbtcPriceFeed: DummyPriceFeed;
+  wbtcPriceFeed: SimplePriceFeed;
 }
 
 export interface Signers {
