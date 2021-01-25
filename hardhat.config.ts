@@ -8,7 +8,6 @@ import "hardhat-gas-reporter";
 import "hardhat-typechain";
 import "solidity-coverage";
 
-import hardhatNetworkAccounts from "./helpers/accounts";
 import { chainIds, gasLimits } from "./helpers/constants";
 import "./tasks/accounts";
 import "./tasks/clean";
@@ -52,7 +51,9 @@ const config: HardhatUserConfig = {
   },
   networks: {
     hardhat: {
-      accounts: hardhatNetworkAccounts,
+      accounts: {
+        mnemonic,
+      },
       allowUnlimitedContractSize: true,
       blockGasLimit: gasLimits.hardhat.blockGasLimit.toNumber(),
       chainId: chainIds.hardhat,
