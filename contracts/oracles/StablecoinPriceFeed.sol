@@ -9,7 +9,7 @@ import "../external/chainlink/AggregatorV3Interface.sol";
  */
 contract StablecoinPriceFeed is AggregatorV3Interface {
     string internal internalDescription;
-    int256 internal price;
+    int256 internal immutable price;
 
     constructor(int256 price_, string memory description_) {
         price = price_;
