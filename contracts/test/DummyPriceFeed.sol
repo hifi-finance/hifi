@@ -8,7 +8,7 @@ import "hifi-protocol/contracts/external/chainlink/AggregatorV3Interface.sol";
 /// @dev Strictly for testing purposes. Do not use in production.
 contract DummyPriceFeed is AggregatorV3Interface {
     string internal internalDescription;
-    int256 public price;
+    int256 internal price;
 
     constructor(string memory description_) {
         internalDescription = description_;
