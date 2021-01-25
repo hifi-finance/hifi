@@ -61,14 +61,6 @@ const config: HardhatUserConfig = {
     },
     goerli: createTestnetConfig("goerli"),
     kovan: createTestnetConfig("kovan"),
-    mainnet: {
-      accounts: {
-        mnemonic,
-      },
-      chainId: 1,
-      gasPrice: 50010000000, // 50.01 gwei
-      url: "https://mainnet.infura.io/v3/" + infuraApiKey,
-    },
     rinkeby: createTestnetConfig("rinkeby"),
     ropsten: createTestnetConfig("ropsten"),
   },
