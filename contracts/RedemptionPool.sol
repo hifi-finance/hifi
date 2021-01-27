@@ -77,9 +77,6 @@ contract RedemptionPool is
         /* Checks: the Fintroller allows this action to be performed. */
         require(fintroller.getRedeemFyTokensAllowed(fyToken), "ERR_REDEEM_FYTOKENS_NOT_ALLOWED");
 
-        /* Checks: there is enough liquidity. */
-        require(fyTokenAmount <= totalUnderlyingSupply, "ERR_REDEEM_FYTOKENS_INSUFFICIENT_UNDERLYING");
-
         /**
          * fyTokens always have 18 decimals so the underlying amount needs to be downscaled.
          * If the precision scalar is 1, it means that the underlying also has 18 decimals.
@@ -91,6 +88,9 @@ contract RedemptionPool is
         } else {
             vars.underlyingAmount = fyTokenAmount;
         }
+
+        /* Checks: there is enough liquidity. */
+        require(vars.underlyingAmount <= totalUnderlyingSupply, "ERR_REDEEM_FYTOKENS_INSUFFICIENT_UNDERLYING");
 
         /* Effects: decrease the remaining supply of underlying. */
         (vars.mathErr, vars.newUnderlyingTotalSupply) = subUInt(totalUnderlyingSupply, vars.underlyingAmount);
