@@ -1,32 +1,27 @@
+import hre from "hardhat";
+import { Artifact } from "hardhat/types";
 import { BigNumber } from "@ethersproject/bignumber";
 import { MockContract } from "ethereum-waffle";
 import { Signer } from "@ethersproject/abstract-signer";
 import { Zero } from "@ethersproject/constants";
-import { waffle } from "hardhat";
-
-import BalanceSheetArtifact from "../../artifacts/contracts/BalanceSheet.sol/BalanceSheet.json";
-import ChainlinkOperatorArtifact from "../../artifacts/contracts/oracles/ChainlinkOperator.sol/ChainlinkOperator.json";
-import Erc20Artifact from "../../artifacts/@paulrberg/contracts/token/erc20/Erc20.sol/Erc20.json";
-import FintrollerArtifact from "../../artifacts/contracts/Fintroller.sol/Fintroller.json";
-import FyTokenArtifact from "../../artifacts/contracts/FyToken.sol/FyToken.json";
-import RedemptionPoolArtifact from "../../artifacts/contracts/RedemptionPool.sol/RedemptionPool.json";
-import SimplePriceFeedArtifact from "../../artifacts/contracts/test/SimplePriceFeed.sol/SimplePriceFeed.json";
 
 import { balanceSheetConstants, chainlinkPricePrecision, prices } from "../../helpers/constants";
 
-const { deployMockContract: deployStubContract } = waffle;
+const { deployMockContract: deployStubContract } = hre.waffle;
 
 /**
  * DEPLOYERS
  */
 export async function deployStubBalanceSheet(deployer: Signer): Promise<MockContract> {
-  const balanceSheet: MockContract = await deployStubContract(deployer, BalanceSheetArtifact.abi);
+  const balanceSheetArtifact: Artifact = await hre.artifacts.readArtifact("BalanceSheet");
+  const balanceSheet: MockContract = await deployStubContract(deployer, balanceSheetArtifact.abi);
   await balanceSheet.mock.isBalanceSheet.returns(true);
   return balanceSheet;
 }
 
 export async function deployStubChainlinkOperator(deployer: Signer): Promise<MockContract> {
-  const chainlinkOperator: MockContract = await deployStubContract(deployer, ChainlinkOperatorArtifact.abi);
+  const chainlinkOperatorArtifact: Artifact = await hre.artifacts.readArtifact("ChainlinkOperator");
+  const chainlinkOperator: MockContract = await deployStubContract(deployer, chainlinkOperatorArtifact.abi);
   await chainlinkOperator.mock.getAdjustedPrice.withArgs("WETH").returns(prices.oneHundredDollars);
   await chainlinkOperator.mock.getAdjustedPrice.withArgs("DAI").returns(prices.oneDollar);
   return chainlinkOperator;
@@ -38,7 +33,8 @@ export async function deployStubCollateral(deployer: Signer): Promise<MockContra
 }
 
 export async function deployStubCollateralPriceFeed(deployer: Signer): Promise<MockContract> {
-  const collateralPriceFeed: MockContract = await deployStubContract(deployer, SimplePriceFeedArtifact.abi);
+  const simplePriceFeedArtifact: Artifact = await hre.artifacts.readArtifact("SimplePriceFeed");
+  const collateralPriceFeed: MockContract = await deployStubContract(deployer, simplePriceFeedArtifact.abi);
   await collateralPriceFeed.mock.decimals.returns(chainlinkPricePrecision);
   await collateralPriceFeed.mock.latestRoundData.returns(Zero, prices.oneHundredDollars, Zero, Zero, Zero);
   return collateralPriceFeed;
@@ -50,7 +46,8 @@ export async function deployStubErc20(
   symbol: string,
   decimals: BigNumber,
 ): Promise<MockContract> {
-  const erc20: MockContract = await deployStubContract(deployer, Erc20Artifact.abi);
+  const erc20Artifact: Artifact = await hre.artifacts.readArtifact("Erc20");
+  const erc20: MockContract = await deployStubContract(deployer, erc20Artifact.abi);
   await erc20.mock.name.returns(name);
   await erc20.mock.symbol.returns(symbol);
   await erc20.mock.decimals.returns(decimals);
@@ -59,19 +56,22 @@ export async function deployStubErc20(
 }
 
 export async function deployStubFintroller(deployer: Signer): Promise<MockContract> {
-  const fintroller: MockContract = await deployStubContract(deployer, FintrollerArtifact.abi);
+  const fintrollerArtifact: Artifact = await hre.artifacts.readArtifact("Fintroller");
+  const fintroller: MockContract = await deployStubContract(deployer, fintrollerArtifact.abi);
   await fintroller.mock.isFintroller.returns(true);
   return fintroller;
 }
 
 export async function deployStubFyToken(deployer: Signer): Promise<MockContract> {
-  const fyToken: MockContract = await deployStubContract(deployer, FyTokenArtifact.abi);
+  const fyTokenArtifact: Artifact = await hre.artifacts.readArtifact("FyToken");
+  const fyToken: MockContract = await deployStubContract(deployer, fyTokenArtifact.abi);
   await fyToken.mock.isFyToken.returns(true);
   return fyToken;
 }
 
 export async function deployStubRedemptionPool(deployer: Signer): Promise<MockContract> {
-  const redemptionPool: MockContract = await deployStubContract(deployer, RedemptionPoolArtifact.abi);
+  const redemptionPoolArtifact: Artifact = await hre.artifacts.readArtifact("RedemptionPool");
+  const redemptionPool: MockContract = await deployStubContract(deployer, redemptionPoolArtifact.abi);
   await redemptionPool.mock.isRedemptionPool.returns(true);
   return redemptionPool;
 }
