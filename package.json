@@ -1,10 +1,13 @@
 {
-  "name": "hifi-flash-swap",
+  "name": "@hifi/flash-swap",
   "description": "Integration of Uniswap V2 flash swaps for liquidating underwater accounts in Hifi",
   "version": "1.0.0",
   "author": {
     "name": "Paul Razvan Berg",
     "url": "https://paulrberg.com"
+  },
+  "bugs": {
+    "url": "https://github.com/hifi-finance/hifi-flash-swap/issues"
   },
   "dependencies": {
     "@uniswap/v2-core": "1.0.1",
@@ -60,9 +63,14 @@
     "smart-contracts",
     "solidity"
   ],
+  "homepage": "https://github.com/hifi-finance/hifi-flash-swap#readme",
   "license": "LGPL-3.0-or-later",
   "publishConfig": {
     "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hifi-finance/hifi-flash-swap"
   },
   "scripts": {
     "clean": "hardhat clean",
