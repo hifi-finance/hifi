@@ -15,7 +15,7 @@ import "./oracles/ChainlinkOperatorInterface.sol";
 /**
  * @title BalanceSheet
  * @author Hifi
- * @notice Manages the debt vault for all fyToens.
+ * @notice Manages the debt vault for all fyTokens.
  */
 contract BalanceSheet is
     ReentrancyGuard, /* no depedency */
@@ -362,7 +362,7 @@ contract BalanceSheet is
      * - The caller must have allowed this contract to spend `collateralAmount` tokens.
      *
      * @param fyToken The address of the fyToken contract.
-     * @param collateralAmount The amount of collateral to withdraw.
+     * @param collateralAmount The amount of collateral to deposit.
      * @return true = success, otherwise it reverts.
      */
     function depositCollateral(FyTokenInterface fyToken, uint256 collateralAmount)
@@ -416,7 +416,7 @@ contract BalanceSheet is
      * - The borrower account cannot fall below the collateralization ratio.
      *
      * @param fyToken The address of the fyToken contract.
-     * @param collateralAmount The amount of free collateral to free.
+     * @param collateralAmount The amount of locked collateral to free.
      * @return bool true = success, otherwise it reverts.
      */
     function freeCollateral(FyTokenInterface fyToken, uint256 collateralAmount)
