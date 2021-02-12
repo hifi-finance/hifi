@@ -82,6 +82,8 @@ async function main(): Promise<void> {
 
   await prepareArtifacts();
   await prepareTypeChainBindings();
+
+  console.log("Contract artifacts and TypeChain bindings successfully prepared for npm");
 }
 
 main()
