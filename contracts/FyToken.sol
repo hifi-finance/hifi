@@ -92,7 +92,7 @@ contract FyToken is
 
     /**
      * @notice Checks if the bond matured.
-     * @return true = bond matured, otherwise it didn't.
+     * @return bool true = bond matured, otherwise it didn't.
      */
     function isMatured() public view override returns (bool) {
         return block.timestamp >= expirationTime;
@@ -239,7 +239,7 @@ contract FyToken is
      *
      * @param borrower The account to liquidate.
      * @param repayAmount The amount of fyTokens to repay.
-     * @return true = success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function liquidateBorrow(address borrower, uint256 repayAmount)
         external
@@ -327,7 +327,7 @@ contract FyToken is
      * - The caller must have at least `repayAmount` debt.
      *
      * @param repayAmount The amount of fyTokens to repay.
-     * @return true = success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function repayBorrow(uint256 repayAmount) external override isVaultOpen(msg.sender) nonReentrant returns (bool) {
         repayBorrowInternal(msg.sender, msg.sender, repayAmount);
@@ -345,7 +345,7 @@ contract FyToken is
      *
      * @param borrower The borrower account for which to repay the borrow.
      * @param repayAmount The amount of fyTokens to repay.
-     * @return true = success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function repayBorrowBehalf(address borrower, uint256 repayAmount)
         external

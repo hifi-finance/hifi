@@ -280,7 +280,7 @@ contract BalanceSheet is
      * @notice Checks whether the borrower account can be liquidated or not.
      * @param fyToken The fyToken for which to make the query against.
      * @param borrower The borrower account for which to make the query against.
-     * @return true = is underwater, otherwise not.
+     * @return bool true = is underwater, otherwise not.
      */
     function isAccountUnderwater(FyTokenInterface fyToken, address borrower) external view override returns (bool) {
         Vault memory vault = vaults[address(fyToken)][borrower];
@@ -317,7 +317,7 @@ contract BalanceSheet is
      * @param liquidator The account who repays the borrower's debt and receives the collateral.
      * @param borrower The account who fell underwater and is liquidated.
      * @param collateralAmount The amount of collateral to clutch, specified in the collateral's decimal system.
-     * @return true = success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function clutchCollateral(
         FyTokenInterface fyToken,
@@ -363,7 +363,7 @@ contract BalanceSheet is
      *
      * @param fyToken The address of the fyToken contract.
      * @param collateralAmount The amount of collateral to deposit.
-     * @return true = success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function depositCollateral(FyTokenInterface fyToken, uint256 collateralAmount)
         external
@@ -517,7 +517,7 @@ contract BalanceSheet is
      * - The fyToken must pass the inspection.
      *
      * @param fyToken The address of the fyToken contract for which to open the vault.
-     * @return true = success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function openVault(FyTokenInterface fyToken) external override returns (bool) {
         require(fyToken.isFyToken(), "ERR_OPEN_VAULT_FYTOKEN_INSPECTION");
@@ -571,7 +571,7 @@ contract BalanceSheet is
      *
      * @param fyToken The address of the fyToken contract.
      * @param collateralAmount The amount of collateral to withdraw.
-     * @return true = success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function withdrawCollateral(FyTokenInterface fyToken, uint256 collateralAmount)
         external

@@ -63,7 +63,7 @@ contract RedemptionPool is
      * - There must be enough liquidity in the Redemption Pool.
      *
      * @param fyTokenAmount The amount of fyTokens to redeem for the underlying asset.
-     * @return true = success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function redeemFyTokens(uint256 fyTokenAmount) external override nonReentrant returns (bool) {
         RedeemFyTokensLocalVars memory vars;
@@ -128,7 +128,7 @@ contract RedemptionPool is
      * - The caller must have allowed this contract to spend `underlyingAmount` tokens.
      *
      * @param underlyingAmount The amount of underlying to supply to the Redemption Pool.
-     * @return true = success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function supplyUnderlying(uint256 underlyingAmount) external override nonReentrant returns (bool) {
         SupplyUnderlyingLocalVars memory vars;

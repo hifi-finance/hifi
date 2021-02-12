@@ -96,7 +96,7 @@ contract ChainlinkOperator is
      * - The feed must have been previously set.
      *
      * @param symbol The Erc20 symbol of the asset to delete the feed for.
-     * @return true = success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function deleteFeed(string memory symbol) external override onlyAdmin returns (bool) {
         /* Checks */
@@ -123,7 +123,7 @@ contract ChainlinkOperator is
      *
      * @param asset The address of the Erc20 contract for which to get the price.
      * @param feed The address of the Chainlink price feed contract.
-     * @return true = success, otherwise it reverts.
+     * @return bool true = success, otherwise it reverts.
      */
     function setFeed(Erc20Interface asset, AggregatorV3Interface feed) external override onlyAdmin returns (bool) {
         string memory symbol = asset.symbol();
