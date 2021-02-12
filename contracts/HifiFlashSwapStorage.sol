@@ -2,7 +2,7 @@
 pragma solidity ^0.7.0;
 
 import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
-import "hifi-protocol/contracts/BalanceSheetInterface.sol";
+import "@hifi/protocol/contracts/BalanceSheetInterface.sol";
 
 import "./interfaces/UniswapV2PairLike.sol";
 

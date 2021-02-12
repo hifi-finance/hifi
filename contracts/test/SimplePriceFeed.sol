@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.7.0;
 
-import "hifi-protocol/contracts/external/chainlink/AggregatorV3Interface.sol";
+import "@hifi/protocol/contracts/external/chainlink/AggregatorV3Interface.sol";
 
 /// @title SimplePriceFeed
 /// @author Hifi

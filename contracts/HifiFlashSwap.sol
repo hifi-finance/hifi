@@ -3,9 +3,9 @@ pragma solidity ^0.7.0;
 
 import "@paulrberg/contracts/access/Admin.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
-import "hifi-protocol/contracts/BalanceSheetInterface.sol";
-import "hifi-protocol/contracts/FyTokenInterface.sol";
-import "hifi-protocol/contracts/RedemptionPoolInterface.sol";
+import "@hifi/protocol/contracts/BalanceSheetInterface.sol";
+import "@hifi/protocol/contracts/FyTokenInterface.sol";
+import "@hifi/protocol/contracts/RedemptionPoolInterface.sol";
 
 import "./HifiFlashSwapInterface.sol";
 import "./interfaces/UniswapV2PairLike.sol";

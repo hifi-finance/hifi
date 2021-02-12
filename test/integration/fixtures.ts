@@ -1,16 +1,16 @@
-import BalanceSheetArtifact from "hifi-protocol/artifacts/BalanceSheet.json";
-import ChainlinkOperatorArtifact from "hifi-protocol/artifacts/ChainlinkOperator.json";
-import FintrollerArtifact from "hifi-protocol/artifacts/Fintroller.json";
-import FyTokenArtifact from "hifi-protocol/artifacts/FyToken.json";
-import RedemptionPoolArtifact from "hifi-protocol/artifacts/RedemptionPool.json";
+import BalanceSheetArtifact from "@hifi/protocol/artifacts/BalanceSheet.json";
+import ChainlinkOperatorArtifact from "@hifi/protocol/artifacts/ChainlinkOperator.json";
+import FintrollerArtifact from "@hifi/protocol/artifacts/Fintroller.json";
+import FyTokenArtifact from "@hifi/protocol/artifacts/FyToken.json";
+import RedemptionPoolArtifact from "@hifi/protocol/artifacts/RedemptionPool.json";
 import UniswapV2PairArtifact from "@uniswap/v2-core/build/UniswapV2Pair.json";
 
-import { BalanceSheet } from "hifi-protocol/typechain/BalanceSheet";
+import { BalanceSheet } from "@hifi/protocol/typechain/BalanceSheet";
 import { BigNumber } from "@ethersproject/bignumber";
-import { ChainlinkOperator } from "hifi-protocol/typechain/ChainlinkOperator";
-import { Fintroller } from "hifi-protocol/typechain/Fintroller";
-import { FyToken } from "hifi-protocol/typechain/FyToken";
-import { RedemptionPool } from "hifi-protocol/typechain/RedemptionPool";
+import { ChainlinkOperator } from "@hifi/protocol/typechain/ChainlinkOperator";
+import { Fintroller } from "@hifi/protocol/typechain/Fintroller";
+import { FyToken } from "@hifi/protocol/typechain/FyToken";
+import { RedemptionPool } from "@hifi/protocol/typechain/RedemptionPool";
 import { Signer } from "@ethersproject/abstract-signer";
 import { ethers, waffle } from "hardhat";
 

@@ -1,8 +1,8 @@
-import { BalanceSheet } from "hifi-protocol/typechain/BalanceSheet";
-import { ChainlinkOperator } from "hifi-protocol/typechain/ChainlinkOperator";
-import { Fintroller } from "hifi-protocol/typechain/Fintroller";
-import { FyToken } from "hifi-protocol/typechain/FyToken";
-import { RedemptionPool } from "hifi-protocol/typechain/RedemptionPool";
+import { BalanceSheet } from "@hifi/protocol/typechain/BalanceSheet";
+import { ChainlinkOperator } from "@hifi/protocol/typechain/ChainlinkOperator";
+import { Fintroller } from "@hifi/protocol/typechain/Fintroller";
+import { FyToken } from "@hifi/protocol/typechain/FyToken";
+import { RedemptionPool } from "@hifi/protocol/typechain/RedemptionPool";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 
 import { GodModeErc20 } from "../typechain/GodModeErc20";

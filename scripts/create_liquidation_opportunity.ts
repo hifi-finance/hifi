@@ -1,10 +1,10 @@
-import BalanceSheetArtifact from "hifi-protocol/artifacts/BalanceSheet.json";
-import FyTokenArtifact from "hifi-protocol/artifacts/FyToken.json";
+import BalanceSheetArtifact from "@hifi/protocol/artifacts/BalanceSheet.json";
+import FyTokenArtifact from "@hifi/protocol/artifacts/FyToken.json";
 import UniswapV2PairArtifact from "@uniswap/v2-core/build/UniswapV2Pair.json";
 
-import { BalanceSheet } from "hifi-protocol/typechain/BalanceSheet";
+import { BalanceSheet } from "@hifi/protocol/typechain/BalanceSheet";
 import { BigNumber } from "@ethersproject/bignumber";
-import { FyToken } from "hifi-protocol/typechain/FyToken";
+import { FyToken } from "@hifi/protocol/typechain/FyToken";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 import { ethers } from "hardhat";
 

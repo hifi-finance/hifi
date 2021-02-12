@@ -632,6 +632,14 @@
     "@ethersproject/properties" "^5.0.7"
     "@ethersproject/strings" "^5.0.8"
 
+"@hifi/protocol@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/@hifi/protocol/-/protocol-1.0.0.tgz#c3fbcaa760a88cea36b4dd06794998388b5ee7b7"
+  integrity sha512-D4zB5If+cbX36SSCq1tPkA+DyEopPAPSaHS2aV/bRGLEkUo59WktBYPjqcKup55XulDAWEi//b4bn5F81TpHTA==
+  dependencies:
+    "@paulrberg/contracts" "1.3.0"
+    solc "0.7.6"
+
 "@nodelib/fs.scandir@2.1.4":
   version "2.1.4"
   resolved "https://registry.npmjs.org/@nodelib/fs.scandir/-/fs.scandir-2.1.4.tgz#d4b3549a5db5de2683e0c1071ab4f140904bbf69"
@@ -5150,14 +5158,6 @@ heap@0.2.6:
   version "0.2.6"
   resolved "https://registry.npmjs.org/heap/-/heap-0.2.6.tgz#087e1f10b046932fc8594dd9e6d378afc9d1e5ac"
   integrity sha1-CH4fELBGky/IWU3Z5tN4r8nR5aw=
-
-hifi-protocol@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.npmjs.org/hifi-protocol/-/hifi-protocol-1.0.1.tgz#018027c2be8a0e154b91ae2d99c3bb163a95ec1a"
-  integrity sha512-IxHYBc35rzGdutbhtkfO8KqztGPl5FABtYbbdsSTYWrrUFV/O887zPm6yTlNEN2DVDWTWe3LfNeltzkmkjM85A==
-  dependencies:
-    "@paulrberg/contracts" "1.3.0"
-    solc "0.7.6"
 
 hmac-drbg@^1.0.0:
   version "1.0.1"
