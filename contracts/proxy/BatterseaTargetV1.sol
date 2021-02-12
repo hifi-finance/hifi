@@ -61,7 +61,7 @@ contract BatterseaTargetV1 is
         /* Allow the Balancer contract to spend fyTokens if allowance not enough. */
         uint256 allowance = fyToken.allowance(address(this), EXCHANGE_PROXY_ADDRESS);
         if (allowance < borrowAmount) {
-            fyToken.approve(EXCHANGE_PROXY_ADDRESS, uint256(-1));
+            fyToken.approve(EXCHANGE_PROXY_ADDRESS, type(uint256).max);
         }
 
         /* Prepare the parameters for calling Balancer. */
@@ -334,7 +334,7 @@ contract BatterseaTargetV1 is
         /* Allow the Balancer contract to spend underlying if allowance not enough. */
         uint256 allowance = underlying.allowance(address(this), EXCHANGE_PROXY_ADDRESS);
         if (allowance < underlyingAmount) {
-            underlying.approve(EXCHANGE_PROXY_ADDRESS, uint256(-1));
+            underlying.approve(EXCHANGE_PROXY_ADDRESS, type(uint256).max);
         }
 
         /* Prepare the parameters for calling Balancer. */
@@ -505,7 +505,7 @@ contract BatterseaTargetV1 is
         Erc20Interface collateral = fyToken.collateral();
         uint256 allowance = collateral.allowance(address(this), address(balanceSheet));
         if (allowance < collateralAmount) {
-            collateral.approve(address(balanceSheet), uint256(-1));
+            collateral.approve(address(balanceSheet), type(uint256).max);
         }
 
         /* Open the vault if not already open. */
@@ -531,7 +531,7 @@ contract BatterseaTargetV1 is
         /* Allow the RedemptionPool contract to spend tokens if allowance not enough. */
         uint256 allowance = underlying.allowance(address(this), address(redemptionPool));
         if (allowance < underlyingAmount) {
-            underlying.approve(address(redemptionPool), uint256(-1));
+            underlying.approve(address(redemptionPool), type(uint256).max);
         }
 
         /* Supply the underlying and mint fyTokens. */
