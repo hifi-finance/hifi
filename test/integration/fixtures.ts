@@ -70,7 +70,7 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
     await deployContract(deployer, balanceSheetArtifact, [fintroller.address])
   );
 
-  // TODO: make the name and symbol match the expiration time.
+  // TODO: generate these parameters dynamically.
   const name: string = "hfyUSDC (2022-01-01)";
   const symbol: string = "hfyUSDC-JAN22";
   const expirationTime = BigNumber.from("1619816400");
