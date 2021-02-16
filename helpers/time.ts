@@ -1,4 +1,4 @@
-import { BigNumber } from "ethers";
+import { BigNumber } from "@ethersproject/bignumber";
 
 export function getNow(): BigNumber {
   return BigNumber.from(Math.round(new Date().getTime() / 1000));
