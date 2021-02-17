@@ -100,7 +100,7 @@
     "prepare:package": "hardhat run scripts/prepare-package.ts",
     "prettier": "prettier --config ./.prettierrc --write \"**/*.{js,json,md,sol,ts}\"",
     "prettier:list-different": "prettier --config ./.prettierrc --list-different \"**/*.{js,json,md,sol,ts}\"",
-    "test": "yarn run test:unit && yarn run test:integration",
+    "test": "hardhat test",
     "test:integration": "hardhat test ./test/integration --network hardhat",
     "test:unit": "hardhat test ./test/unit --network hardhat",
     "typechain": "hardhat typechain"

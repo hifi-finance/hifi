@@ -53,7 +53,7 @@ export const tokenAmounts: { [name: string]: BigNumber } = {
   fifty: ten.pow(19).mul(5),
   oneHundred: ten.pow(20),
   oneThousand: ten.pow(21),
-  tenThousand: ten.pow(23),
+  tenThousand: ten.pow(22),
   oneHundredThousand: ten.pow(23),
   oneMillion: ten.pow(24),
 };
