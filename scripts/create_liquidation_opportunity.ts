@@ -12,6 +12,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-wit
 import { GodModeErc20 } from "../typechain/GodModeErc20";
 import { SimplePriceFeed } from "../typechain/SimplePriceFeed";
 import { UniswapV2Pair } from "../types/contracts/UniswapV2Pair";
+import { getEnvVar } from "../helpers/env";
 import {
   getPartialWbtcAmount,
   getWholeFyUsdcAmount,
@@ -28,13 +29,6 @@ const wbtcdot88: BigNumber = getPartialWbtcAmount(100).mul(88);
 const wbtc100 = getWholeWbtcAmount(100);
 
 const { ethers } = hre;
-
-function getEnvVar(key: string): string {
-  if (!process.env[key]) {
-    throw new Error(`Please set ${key} as an env variable`);
-  }
-  return process.env[key] || "";
-}
 
 /// Meant to be used on a testnet.
 ///
