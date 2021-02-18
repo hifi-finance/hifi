@@ -5,7 +5,6 @@ async function main(): Promise<void> {
   const chainlinkOperatorFactory: ContractFactory = await ethers.getContractFactory("ChainlinkOperator");
   const chainlinkOperator: Contract = await chainlinkOperatorFactory.deploy();
   await chainlinkOperator.deployed();
-
   console.log("ChainlinkOperator deployed to: ", chainlinkOperator.address);
 }
 

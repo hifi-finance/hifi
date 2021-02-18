@@ -5,7 +5,6 @@ async function main(): Promise<void> {
   const fintrollerFactory: ContractFactory = await ethers.getContractFactory("Fintroller");
   const fintroller: Contract = await fintrollerFactory.deploy();
   await fintroller.deployed();
-
   console.log("Fintroller deployed to: ", fintroller.address);
 }
 
