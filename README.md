@@ -2,7 +2,7 @@
 
 An implementation of zero-coupon bonds on the Ethereum blockchain. In-depth documentation on Hifi is available at [docs.hifi.finance](https://docs.hifi.finance).
 
-The built contract artifacts can be browsed via [unpkg.com](https://unpkg.com/browse/@hifi/v1@latest/).
+The built contract artifacts can be browsed via [unpkg.com](https://unpkg.com/browse/@hifi/protocol@latest/).
 
 ## Developers
 
