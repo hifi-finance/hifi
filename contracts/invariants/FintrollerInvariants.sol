@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
-pragma solidity ^0.7.0;
+pragma solidity ^0.8.0;
 
 import "./BaseInvariants.sol";
 import "../Fintroller.sol";
@@ -11,7 +11,7 @@ contract FyTokenLike {
 
 contract FintrollerInvariants is
     BaseInvariants, /* no dependency */
-    Fintroller /* eleven dependencies */
+    Fintroller /* five dependencies */
 {
     FyTokenInterface private fyToken;
 

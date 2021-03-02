@@ -1,8 +1,8 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
-pragma solidity ^0.7.0;
+pragma solidity ^0.8.0;
 
 import "@paulrberg/contracts/access/Admin.sol";
-import "@paulrberg/contracts/math/CarefulMath.sol";
+import "@paulrberg/contracts/math/Exponential.sol";
 import "@paulrberg/contracts/token/erc20/Erc20.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Permit.sol";
@@ -23,8 +23,8 @@ contract FyToken is
     ReentrancyGuard, /* no depedency */
     FyTokenInterface, /* one dependency */
     Admin, /* two dependencies */
+    Erc20, /* two dependencies */
     Exponential, /* two dependencies */
-    Erc20, /* three dependencies */
     Erc20Permit, /* five dependencies */
     Erc20Recover /* five dependencies */
 {
@@ -103,7 +103,6 @@ contract FyToken is
      */
 
     struct BorrowLocalVars {
-        MathError mathErr;
         uint256 debt;
         uint256 debtCeiling;
         uint256 lockedCollateral;
@@ -144,16 +143,14 @@ contract FyToken is
         require(fintroller.getBorrowAllowed(this), "ERR_BORROW_NOT_ALLOWED");
 
         /* Checks: debt ceiling. */
-        (vars.mathErr, vars.hypotheticalTotalSupply) = addUInt(totalSupply, borrowAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
+        vars.hypotheticalTotalSupply = totalSupply + borrowAmount;
         vars.debtCeiling = fintroller.getBondDebtCeiling(this);
         require(vars.hypotheticalTotalSupply <= vars.debtCeiling, "ERR_BORROW_DEBT_CEILING_OVERFLOW");
 
         /* Add the borrow amount to the borrower account's current debt. */
         (vars.debt, , vars.lockedCollateral, ) = balanceSheet.getVault(this, msg.sender);
         require(vars.lockedCollateral > 0, "ERR_BORROW_LOCKED_COLLATERAL_ZERO");
-        (vars.mathErr, vars.newDebt) = addUInt(vars.debt, borrowAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_BORROW_MATH_ERROR");
+        vars.newDebt = vars.debt + borrowAmount;
 
         /* Checks: the hypothetical collateralization ratio is above the threshold. */
         vars.hypotheticalCollateralizationRatioMantissa = balanceSheet.getHypotheticalCollateralizationRatio(
@@ -215,7 +212,6 @@ contract FyToken is
     }
 
     struct LiquidateBorrowsLocalVars {
-        MathError mathErr;
         uint256 collateralizationRatioMantissa;
         uint256 lockedCollateral;
         bool isAccountUnderwater;
@@ -416,11 +412,7 @@ contract FyToken is
         emit Transfer(payer, address(this), repayAmount);
 
         /* Calculate the new debt of the borrower. */
-        MathError mathErr;
-        uint256 newDebt;
-        (mathErr, newDebt) = subUInt(debt, repayAmount);
-        /* This operation can't fail because of the previous `require`. */
-        assert(mathErr == MathError.NO_ERROR);
+        uint256 newDebt = debt - repayAmount;
 
         /* Interactions: reduce the debt of the borrower . */
         require(balanceSheet.setVaultDebt(this, borrower, newDebt), "ERR_REPAY_BORROW_CALL_SET_VAULT_DEBT");

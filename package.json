@@ -11,7 +11,7 @@
     "url": "https://github.com/hifi-finance/hifi-protocol/issues"
   },
   "dependencies": {
-    "@paulrberg/contracts": "https://github.com/paulrberg/contracts.git#v2.0.0",
+    "@paulrberg": "https://github.com/paulrberg/contracts.git#v2.0.0",
     "solc": "0.8.1"
   },
   "devDependencies": {

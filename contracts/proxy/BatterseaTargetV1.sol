@@ -1,7 +1,6 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
-pragma solidity ^0.7.0;
+pragma solidity ^0.8.0;
 
-import "@paulrberg/contracts/math/CarefulMath.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 
@@ -19,10 +18,7 @@ import "../external/weth/WethInterface.sol";
  * @notice Target contract with scripts for the Battersea release of the protocol.
  * @dev Meant to be used with a DSProxy contract via delegatecall.
  */
-contract BatterseaTargetV1 is
-    CarefulMath, /* no dependency */
-    BatterseaTargetV1Interface /* one dependency */
-{
+contract BatterseaTargetV1 is BatterseaTargetV1Interface {
     using SafeErc20 for Erc20Interface;
     using SafeErc20 for FyTokenInterface;
 
@@ -82,10 +78,7 @@ contract BatterseaTargetV1 is
             );
 
         /* When we get a better price than the worst that we assumed we would, not all fyTokens are sold. */
-        MathError mathErr;
-        uint256 fyTokenDelta;
-        (mathErr, fyTokenDelta) = subUInt(borrowAmount, totalAmountIn);
-        require(mathErr == MathError.NO_ERROR, "ERR_BORROW_AND_SELL_FYTOKENS_MATH_ERROR");
+        uint256 fyTokenDelta = borrowAmount - totalAmountIn;
 
         /* If the fyToken delta is non-zero, we use it to partially repay the borrow. */
         /* Note: this is not gas-efficient. */
@@ -285,10 +278,7 @@ contract BatterseaTargetV1 is
 
         /* Calculate how many underlying have been redeemed. */
         uint256 postUnderlyigBalance = underlying.balanceOf(address(this));
-        MathError mathErr;
-        uint256 underlyingAmount;
-        (mathErr, underlyingAmount) = subUInt(postUnderlyigBalance, preUnderlyingBalance);
-        require(mathErr == MathError.NO_ERROR, "ERR_REDEEM_FYTOKENS_MATH_ERROR");
+        uint256 underlyingAmount = postUnderlyigBalance - preUnderlyingBalance;
 
         /* The underlying is now in the DSProxy, so we relay it to the end user. */
         underlying.safeTransfer(msg.sender, underlyingAmount);
@@ -358,10 +348,7 @@ contract BatterseaTargetV1 is
         fyToken.repayBorrow(repayAmount);
 
         /* When we get a better price than the worst that we assumed we would, not all underlying is sold. */
-        MathError mathErr;
-        uint256 underlyingDelta;
-        (mathErr, underlyingDelta) = subUInt(underlyingAmount, totalAmountIn);
-        require(mathErr == MathError.NO_ERROR, "ERR_SELL_UNDERLYING_AND_REPAY_BORROW_MATH_ERROR");
+        uint256 underlyingDelta = underlyingAmount - totalAmountIn;
 
         /* If the underlying delta is non-zero, send it back to the user. */
         if (underlyingDelta > 0) {
@@ -380,10 +367,7 @@ contract BatterseaTargetV1 is
 
         /* Calculate how many fyTokens have been minted. */
         uint256 postFyTokenBalance = fyToken.balanceOf(address(this));
-        MathError mathErr;
-        uint256 fyTokenAmount;
-        (mathErr, fyTokenAmount) = subUInt(postFyTokenBalance, preFyTokenBalance);
-        require(mathErr == MathError.NO_ERROR, "ERR_SUPPLY_UNDERLYING_MATH_ERROR");
+        uint256 fyTokenAmount = postFyTokenBalance - preFyTokenBalance;
 
         /* The fyTokens are now in the DSProxy, so we relay them to the end user. */
         fyToken.safeTransfer(msg.sender, fyTokenAmount);
@@ -405,10 +389,7 @@ contract BatterseaTargetV1 is
 
         /* Calculate how many fyTokens have been minted. */
         uint256 postFyTokenBalance = fyToken.balanceOf(address(this));
-        MathError mathErr;
-        uint256 fyTokenAmount;
-        (mathErr, fyTokenAmount) = subUInt(postFyTokenBalance, preFyTokenBalance);
-        require(mathErr == MathError.NO_ERROR, "ERR_SUPPLY_UNDERLYING_AND_REPAY_BORROW_MATH_ERROR");
+        uint256 fyTokenAmount = postFyTokenBalance - preFyTokenBalance;
 
         /* Use the newly minted fyTokens to repay the debt. */
         fyToken.repayBorrow(fyTokenAmount);

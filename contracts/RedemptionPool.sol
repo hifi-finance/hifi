@@ -1,8 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
-pragma solidity ^0.7.0;
+pragma solidity ^0.8.0;
 
 import "@paulrberg/contracts/access/Admin.sol";
-import "@paulrberg/contracts/math/CarefulMath.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Recover.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
@@ -19,7 +18,6 @@ import "./RedemptionPoolInterface.sol";
  * @dev Instantiated by the fyToken in its constructor.
  */
 contract RedemptionPool is
-    CarefulMath, /* no dependency */
     ReentrancyGuard, /* no dependency */
     RedemptionPoolInterface, /* one dependency */
     Admin, /* two dependencies */
@@ -44,7 +42,6 @@ contract RedemptionPool is
     }
 
     struct RedeemFyTokensLocalVars {
-        MathError mathErr;
         uint256 newUnderlyingTotalSupply;
         uint256 underlyingPrecisionScalar;
         uint256 underlyingAmount;
@@ -83,8 +80,7 @@ contract RedemptionPool is
          */
         vars.underlyingPrecisionScalar = fyToken.underlyingPrecisionScalar();
         if (vars.underlyingPrecisionScalar != 1) {
-            (vars.mathErr, vars.underlyingAmount) = divUInt(fyTokenAmount, vars.underlyingPrecisionScalar);
-            require(vars.mathErr == MathError.NO_ERROR, "ERR_REDEEM_FYTOKENS_MATH_ERROR");
+            vars.underlyingAmount = fyTokenAmount / vars.underlyingPrecisionScalar;
         } else {
             vars.underlyingAmount = fyTokenAmount;
         }
@@ -93,8 +89,7 @@ contract RedemptionPool is
         require(vars.underlyingAmount <= totalUnderlyingSupply, "ERR_REDEEM_FYTOKENS_INSUFFICIENT_UNDERLYING");
 
         /* Effects: decrease the remaining supply of underlying. */
-        (vars.mathErr, vars.newUnderlyingTotalSupply) = subUInt(totalUnderlyingSupply, vars.underlyingAmount);
-        assert(vars.mathErr == MathError.NO_ERROR);
+        vars.newUnderlyingTotalSupply = totalUnderlyingSupply - vars.underlyingAmount;
         totalUnderlyingSupply = vars.newUnderlyingTotalSupply;
 
         /* Interactions: burn the fyTokens. */
@@ -109,7 +104,6 @@ contract RedemptionPool is
     }
 
     struct SupplyUnderlyingLocalVars {
-        MathError mathErr;
         uint256 fyTokenAmount;
         uint256 newUnderlyingTotalSupply;
         uint256 underlyingPrecisionScalar;
@@ -143,8 +137,7 @@ contract RedemptionPool is
         require(fintroller.getSupplyUnderlyingAllowed(fyToken), "ERR_SUPPLY_UNDERLYING_NOT_ALLOWED");
 
         /* Effects: update storage. */
-        (vars.mathErr, vars.newUnderlyingTotalSupply) = addUInt(totalUnderlyingSupply, underlyingAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_SUPPLY_UNDERLYING_MATH_ERROR");
+        vars.newUnderlyingTotalSupply = totalUnderlyingSupply + underlyingAmount;
         totalUnderlyingSupply = vars.newUnderlyingTotalSupply;
 
         /**
@@ -153,8 +146,7 @@ contract RedemptionPool is
          */
         vars.underlyingPrecisionScalar = fyToken.underlyingPrecisionScalar();
         if (vars.underlyingPrecisionScalar != 1) {
-            (vars.mathErr, vars.fyTokenAmount) = mulUInt(underlyingAmount, vars.underlyingPrecisionScalar);
-            require(vars.mathErr == MathError.NO_ERROR, "ERR_SUPPLY_UNDERLYING_MATH_ERROR");
+            vars.fyTokenAmount = underlyingAmount * vars.underlyingPrecisionScalar;
         } else {
             vars.fyTokenAmount = underlyingAmount;
         }

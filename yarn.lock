@@ -1058,7 +1058,7 @@
     "@types/sinon-chai" "^3.2.3"
     "@types/web3" "1.0.19"
 
-"@paulrberg/contracts@https://github.com/paulrberg/contracts.git#v2.0.0":
+"@paulrberg@https://github.com/paulrberg/contracts.git#v2.0.0":
   version "2.0.0"
   resolved "https://github.com/paulrberg/contracts.git#6d50e1a7aac58ddce00e0d80e995884d1fed5310"
 
