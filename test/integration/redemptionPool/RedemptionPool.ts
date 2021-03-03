@@ -1,5 +1,5 @@
-import { shouldBehaveLikeRedemptionPool } from "./RedemptionPool.behavior";
 import { integrationFixture } from "../fixtures";
+import { shouldBehaveLikeRedemptionPool } from "./RedemptionPool.behavior";
 
 export function integrationTestRedemptionPool(): void {
   describe("RedemptionPool", function () {

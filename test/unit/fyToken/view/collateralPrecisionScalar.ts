@@ -1,9 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
+import { fyTokenConstants, precisionScalars } from "../../../../helpers/constants";
 import { FyToken } from "../../../../typechain/FyToken";
 import { deployFyToken } from "../../../deployers";
-import { fyTokenConstants, precisionScalars } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeCollateralPrecisionScalarGetter(): void {
   describe("when the collateral has 18 decimals", function () {

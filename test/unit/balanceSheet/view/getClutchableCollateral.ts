@@ -2,8 +2,8 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { BalanceSheetErrors } from "../../../../helpers/errors";
 import { percentages, precisionScalars, tokenAmounts } from "../../../../helpers/constants";
+import { BalanceSheetErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeGetClutchableCollateral(): void {
   /* 0.5 = 50 (repay amount) * 1.1 (liquidation incentive) * 1.0 (underlying price) / 100 (collateral price) */

@@ -1,15 +1,4 @@
 import shouldBehaveLikeConstructor from "./constructor";
-
-import shouldBehaveLikeCollateralPrecisionScalarGetter from "./view/collateralPrecisionScalar";
-import shouldBehaveLikeBalanceSheetGetter from "./view/balanceSheet";
-import shouldBehaveLikeCollateralGetter from "./view/collateral";
-import shouldBehaveLikeExpirationTimeGetter from "./view/expirationTime";
-import shouldBehaveLikeFintrollerGetter from "./view/fintroller";
-import shouldBehaveLikeRedemptionPoolGetter from "./view/redemptionPool";
-import shouldBehaveLikeUnderlyingGetter from "./view/underlying";
-import shouldBehaveLikeIsFyTokenGetter from "./view/isFyToken";
-import shouldBehaveLikeUnderlyingPrecisionScalarGetter from "./view/underlyingPrecisionScalar";
-
 import shouldBehaveLikeBorrow from "./effects/borrow";
 import shouldBehaveLikeBurn from "./effects/burn";
 import shouldBehaveLikeLiquidateBorrow from "./effects/liquidateBorrow";
@@ -17,6 +6,15 @@ import shouldBehaveLikeMint from "./effects/mint";
 import shouldBehaveLikeRepayBorrow from "./effects/repayBorrow";
 import shouldBehaveLikeRepayBorrowBehalf from "./effects/repayBorrowBehalf";
 import shouldBehaveLikeSetFintroller from "./effects/setFintroller";
+import shouldBehaveLikeBalanceSheetGetter from "./view/balanceSheet";
+import shouldBehaveLikeCollateralGetter from "./view/collateral";
+import shouldBehaveLikeCollateralPrecisionScalarGetter from "./view/collateralPrecisionScalar";
+import shouldBehaveLikeExpirationTimeGetter from "./view/expirationTime";
+import shouldBehaveLikeFintrollerGetter from "./view/fintroller";
+import shouldBehaveLikeIsFyTokenGetter from "./view/isFyToken";
+import shouldBehaveLikeRedemptionPoolGetter from "./view/redemptionPool";
+import shouldBehaveLikeUnderlyingGetter from "./view/underlying";
+import shouldBehaveLikeUnderlyingPrecisionScalarGetter from "./view/underlyingPrecisionScalar";
 
 export function shouldBehaveLikeFyToken(): void {
   describe("Constructor", function () {

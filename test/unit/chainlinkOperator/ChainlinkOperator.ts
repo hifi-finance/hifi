@@ -1,5 +1,5 @@
-import { shouldBehaveLikeChainlinkOperator } from "./ChainlinkOperator.behavior";
 import { unitFixtureChainlinkOperator } from "../fixtures";
+import { shouldBehaveLikeChainlinkOperator } from "./ChainlinkOperator.behavior";
 
 export function unitTestChainlinkOperator(): void {
   describe("ChainlinkOperator", function () {

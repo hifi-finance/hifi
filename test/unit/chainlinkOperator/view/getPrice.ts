@@ -2,8 +2,8 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { ChainlinkOperatorErrors } from "../../../../helpers/errors";
 import { prices } from "../../../../helpers/constants";
+import { ChainlinkOperatorErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeGetPrice(): void {
   describe("when the feed is not set", function () {

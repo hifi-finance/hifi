@@ -2,11 +2,11 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
+import { fyTokenConstants } from "../../../../helpers/constants";
 import { FyTokenErrors } from "../../../../helpers/errors";
+import { getNow } from "../../../../helpers/time";
 import { FyToken } from "../../../../typechain/FyToken";
 import { deployFyToken } from "../../../deployers";
-import { getNow } from "../../../../helpers/time";
-import { fyTokenConstants } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeConstructor(): void {
   const thirtySixDecimals: BigNumber = BigNumber.from(36);

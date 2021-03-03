@@ -1,5 +1,5 @@
-import { shouldBehaveLikeFintroller } from "./Fintroller.behavior";
 import { unitFixtureFintroller } from "../fixtures";
+import { shouldBehaveLikeFintroller } from "./Fintroller.behavior";
 
 export function unitTestFintroller(): void {
   describe("Fintroller", function () {

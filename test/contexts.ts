@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { Signer } from "@ethersproject/abstract-signer";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 import { Wallet } from "@ethersproject/wallet";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 import { ethers, waffle } from "hardhat";
 
 import { Contracts, Signers, Stubs } from "../types/index";

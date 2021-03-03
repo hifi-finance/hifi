@@ -1,4 +1,12 @@
+import shouldBehaveLikeClutchCollateral from "./effects/clutchCollateral";
+import shouldBehaveLikeDepositCollateral from "./effects/depositCollateral";
+import shouldBehaveLikeFreeCollateral from "./effects/freeCollateral";
+import shouldBehaveLikeLockCollateral from "./effects/lockCollateral";
+import shouldBehaveLikeOpenVault from "./effects/openVault";
+import shouldBehaveLikeSetVaultDebt from "./effects/setVaultDebt";
+import shouldBehaveLikeWithdrawCollateral from "./effects/withdrawCollateral";
 import shouldBehaveLikeFintrollerGetter from "./view/fintroller";
+import shouldBehaveLikeGetClutchableCollateral from "./view/getClutchableCollateral";
 import shouldBehaveLikeGetCurrentCollateralizationRatio from "./view/getCurrentCollateralizationRatio";
 import shouldBehaveLikeGetHypotheticalCollateralizationRatio from "./view/getHypotheticalCollateralizationRatio";
 import shouldBehaveLikeGetVault from "./view/getVault";
@@ -7,15 +15,6 @@ import shouldBehaveLikeGetVaultLockedCollateral from "./view/getVaultLockedColla
 import shouldBehaveLikeIsAccountUnderwater from "./view/isAccountUnderwater";
 import shouldBehaveLikeIsBalanceSheetGetter from "./view/isBalanceSheet";
 import shouldBehaveLikeIsVaultOpenGetter from "./view/isVaultOpen";
-
-import shouldBehaveLikeClutchCollateral from "./effects/clutchCollateral";
-import shouldBehaveLikeDepositCollateral from "./effects/depositCollateral";
-import shouldBehaveLikeFreeCollateral from "./effects/freeCollateral";
-import shouldBehaveLikeGetClutchableCollateral from "./view/getClutchableCollateral";
-import shouldBehaveLikeLockCollateral from "./effects/lockCollateral";
-import shouldBehaveLikeOpenVault from "./effects/openVault";
-import shouldBehaveLikeSetVaultDebt from "./effects/setVaultDebt";
-import shouldBehaveLikeWithdrawCollateral from "./effects/withdrawCollateral";
 
 export function shouldBehaveLikeBalanceSheet(): void {
   describe("View Functions", function () {

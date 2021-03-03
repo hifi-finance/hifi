@@ -1,5 +1,5 @@
-import shouldBehaveLikeBurn from "./effects/burn";
 import shouldBehaveLikeBorrow from "./effects/borrow";
+import shouldBehaveLikeBurn from "./effects/burn";
 import shouldBehaveLikeLiquidateBorrow from "./effects/liquidateBorrow";
 import shouldBehaveLikeMint from "./effects/mint";
 import shouldBehaveLikeRepayBorrow from "./effects/repayBorrow";

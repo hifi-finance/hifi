@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { ten, tokenAmounts, underlyingConstants } from "../../../../helpers/constants";
-
 import { expect } from "chai";
+
+import { ten, tokenAmounts, underlyingConstants } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeSupplyUnderlying(): void {
   const underlyingAmount: BigNumber = ten.pow(underlyingConstants.decimals).mul(100);

@@ -1,5 +1,6 @@
 import { Signer } from "@ethersproject/abstract-signer";
 
+import { fyTokenConstants } from "../../helpers/constants";
 import { ChainlinkOperator } from "../../typechain/ChainlinkOperator";
 import { Erc20Mintable } from "../../typechain/Erc20Mintable";
 import { Fintroller } from "../../typechain/Fintroller";
@@ -18,7 +19,6 @@ import {
   deployUnderlying,
   deployUnderlyingPriceFeed,
 } from "../deployers";
-import { fyTokenConstants } from "../../helpers/constants";
 
 type IntegrationFixtureReturnType = {
   balanceSheet: GodModeBalanceSheet;

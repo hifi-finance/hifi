@@ -1,10 +1,10 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
-import { contextForTimeDependentTests } from "../../../contexts";
 import { fyTokenConstants } from "../../../../helpers/constants";
-import { increaseTime } from "../../../jsonRpc";
 import { ten, tokenAmounts, underlyingConstants } from "../../../../helpers/constants";
+import { contextForTimeDependentTests } from "../../../contexts";
+import { increaseTime } from "../../../jsonRpc";
 
 export default function shouldBehaveLikeSupplyUnderlying(): void {
   const underlyingAmount: BigNumber = ten.pow(underlyingConstants.decimals).mul(100);

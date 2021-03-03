@@ -2,8 +2,8 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { One, Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { AdminErrors, FintrollerErrors } from "../../../../helpers/errors";
 import { fintrollerConstants, percentages } from "../../../../helpers/constants";
+import { AdminErrors, FintrollerErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeSetLiquidationIncentive(): void {
   const newLiquidationIncentiveMantissa: BigNumber = percentages.oneHundredAndTen;

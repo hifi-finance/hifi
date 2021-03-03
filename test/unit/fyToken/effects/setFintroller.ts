@@ -1,6 +1,6 @@
 import { AddressZero } from "@ethersproject/constants";
-import { MockContract } from "ethereum-waffle";
 import { expect } from "chai";
+import { MockContract } from "ethereum-waffle";
 
 import { AdminErrors, FyTokenErrors } from "../../../../helpers/errors";
 import { deployStubFintroller } from "../../stubs";

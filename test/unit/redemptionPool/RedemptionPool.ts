@@ -1,5 +1,5 @@
-import { shouldBehaveLikeRedemptionPool } from "./RedemptionPool.behavior";
 import { unitFixtureRedemptionPool } from "../fixtures";
+import { shouldBehaveLikeRedemptionPool } from "./RedemptionPool.behavior";
 
 export function unitTestRedemptionPool(): void {
   describe("RedemptionPool", function () {

@@ -1,8 +1,8 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
-import { FyTokenErrors } from "../../../../helpers/errors";
 import { tokenAmounts } from "../../../../helpers/constants";
+import { FyTokenErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeSetVaultDebt(): void {
   const burnAmount: BigNumber = tokenAmounts.oneHundred;

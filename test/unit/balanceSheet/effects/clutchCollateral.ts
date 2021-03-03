@@ -1,8 +1,8 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
-import { BalanceSheetErrors } from "../../../../helpers/errors";
 import { tokenAmounts } from "../../../../helpers/constants";
+import { BalanceSheetErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeClutchCollateral(): void {
   const collateralAmount: BigNumber = tokenAmounts.fifty;

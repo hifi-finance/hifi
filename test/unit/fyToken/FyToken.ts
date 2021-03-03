@@ -1,5 +1,5 @@
-import { shouldBehaveLikeFyToken } from "./FyToken.behavior";
 import { unitFixtureFyToken } from "../fixtures";
+import { shouldBehaveLikeFyToken } from "./FyToken.behavior";
 
 export function unitTestFyToken(): void {
   describe("FyToken", function () {

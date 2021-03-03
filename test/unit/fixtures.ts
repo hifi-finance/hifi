@@ -1,13 +1,13 @@
-import { MockContract } from "ethereum-waffle";
-import { One } from "@ethersproject/constants";
 import { Signer } from "@ethersproject/abstract-signer";
+import { One } from "@ethersproject/constants";
+import { MockContract } from "ethereum-waffle";
 
+import { fyTokenConstants } from "../../helpers/constants";
 import { ChainlinkOperator } from "../../typechain/ChainlinkOperator";
 import { Fintroller } from "../../typechain/Fintroller";
 import { GodModeBalanceSheet } from "../../typechain/GodModeBalanceSheet";
 import { GodModeFyToken } from "../../typechain/GodModeFyToken";
 import { GodModeRedemptionPool } from "../../typechain/GodModeRedemptionPool";
-
 import {
   deployChainlinkOperator,
   deployFintroller,
@@ -21,11 +21,10 @@ import {
   deployStubCollateral,
   deployStubCollateralPriceFeed,
   deployStubFintroller,
-  deployStubRedemptionPool,
   deployStubFyToken,
+  deployStubRedemptionPool,
   deployStubUnderlying,
 } from "./stubs";
-import { fyTokenConstants } from "../../helpers/constants";
 
 type UnitFixtureBalanceSheetReturnType = {
   balanceSheet: GodModeBalanceSheet;

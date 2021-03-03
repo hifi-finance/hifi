@@ -2,8 +2,8 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { BalanceSheetErrors, FintrollerErrors, GenericErrors } from "../../../../helpers/errors";
 import { fintrollerConstants, tokenAmounts } from "../../../../helpers/constants";
+import { BalanceSheetErrors, FintrollerErrors, GenericErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeDepositCollateral(): void {
   const collateralAmount: BigNumber = tokenAmounts.ten;

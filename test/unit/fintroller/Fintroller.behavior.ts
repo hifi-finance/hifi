@@ -1,3 +1,14 @@
+import shouldBehaveLikeListBond from "./effects/listBond";
+import shouldBehaveLikeSetBondCollateralizationRatio from "./effects/setBondCollateralizationRatio";
+import shouldBehaveLikeSetBondDebtCeiling from "./effects/setBondDebtCeiling";
+import shouldBehaveLikeSetBorrowAllowed from "./effects/setBorrowAllowed";
+import shouldBehaveLikeSetDepositCollateralAllowed from "./effects/setDepositCollateralAllowed";
+import shouldBehaveLikeSetLiquidateBorrowAllowed from "./effects/setLiquidateBorrowAllowed";
+import shouldBehaveLikeSetLiquidationIncentive from "./effects/setLiquidationIncentive";
+import shouldBehaveLikeSetOracle from "./effects/setOracle";
+import shouldBehaveLikeSetRedeemFyTokensAllowed from "./effects/setRedeemFyTokensAllowed";
+import shouldBehaveLikeSetRepayBorrowAllowed from "./effects/setRepayBorrowAllowed";
+import shouldBehaveLikeSetSupplyUnderlyingAllowed from "./effects/setSupplyUnderlyingAllowed";
 import shouldBehaveLikeGetBond from "./view/getBond";
 import shouldBehaveLikeGetBondCollateralizationRatio from "./view/getBondCollateralizationRatio";
 import shouldBehaveLikeGetBondDebtCeiling from "./view/getBondDebtCeiling";
@@ -10,18 +21,6 @@ import shouldBehaveLikeGetSupplyUnderlyingAllowed from "./view/getSupplyUnderlyi
 import shouldBehaveLikeIsFintrollerGetter from "./view/isFintroller";
 import shouldBehaveLikeLiquidationIncentiveMantissaGetter from "./view/liquidationIncentiveMantissa";
 import shouldBehaveLikeOracleGetter from "./view/oracle";
-
-import shouldBehaveLikeListBond from "./effects/listBond";
-import shouldBehaveLikeSetBondCollateralizationRatio from "./effects/setBondCollateralizationRatio";
-import shouldBehaveLikeSetBondDebtCeiling from "./effects/setBondDebtCeiling";
-import shouldBehaveLikeSetBorrowAllowed from "./effects/setBorrowAllowed";
-import shouldBehaveLikeSetDepositCollateralAllowed from "./effects/setDepositCollateralAllowed";
-import shouldBehaveLikeSetLiquidateBorrowAllowed from "./effects/setLiquidateBorrowAllowed";
-import shouldBehaveLikeSetLiquidationIncentive from "./effects/setLiquidationIncentive";
-import shouldBehaveLikeSetOracle from "./effects/setOracle";
-import shouldBehaveLikeSetRedeemFyTokensAllowed from "./effects/setRedeemFyTokensAllowed";
-import shouldBehaveLikeSetRepayBorrowAllowed from "./effects/setRepayBorrowAllowed";
-import shouldBehaveLikeSetSupplyUnderlyingAllowed from "./effects/setSupplyUnderlyingAllowed";
 
 export function shouldBehaveLikeFintroller(): void {
   describe("View Functions", function () {

@@ -2,8 +2,8 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { BalanceSheetErrors, ChainlinkOperatorErrors, GenericErrors } from "../../../../helpers/errors";
 import { percentages, precisionScalars, tokenAmounts } from "../../../../helpers/constants";
+import { BalanceSheetErrors, ChainlinkOperatorErrors, GenericErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio(): void {
   const hypotheticalCollateralizationRatioMantissa: BigNumber = percentages.oneThousand;

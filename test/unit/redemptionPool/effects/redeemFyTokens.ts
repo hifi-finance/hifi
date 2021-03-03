@@ -2,10 +2,10 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { FintrollerErrors, GenericErrors, RedemptionPoolErrors } from "../../../../helpers/errors";
 import { fintrollerConstants, fyTokenConstants, precisionScalars, tokenAmounts } from "../../../../helpers/constants";
-import { getNow } from "../../../../helpers/time";
 import { ten, underlyingConstants } from "../../../../helpers/constants";
+import { FintrollerErrors, GenericErrors, RedemptionPoolErrors } from "../../../../helpers/errors";
+import { getNow } from "../../../../helpers/time";
 
 export default function shouldBehaveLikeRedeemFyTokens(): void {
   const underlyingAmount: BigNumber = ten.pow(underlyingConstants.decimals).mul(100);

@@ -1,9 +1,8 @@
+import shouldBehaveLikeDeleteFeed from "./effects/deleteFeed";
+import shouldBehaveLikeSetFeed from "./effects/setFeed";
 import shouldBehaveLikeGetAdjustedPrice from "./view/getAdjustedPrice";
 import shouldBehaveLikeGetFeed from "./view/getFeed";
 import shouldBehaveLikeGetPrice from "./view/getPrice";
-
-import shouldBehaveLikeDeleteFeed from "./effects/deleteFeed";
-import shouldBehaveLikeSetFeed from "./effects/setFeed";
 
 export function shouldBehaveLikeChainlinkOperator(): void {
   describe("View Functions", function () {

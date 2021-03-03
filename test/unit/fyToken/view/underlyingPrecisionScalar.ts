@@ -1,9 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
+import { fyTokenConstants, precisionScalars } from "../../../../helpers/constants";
 import { FyToken } from "../../../../typechain/FyToken";
 import { deployFyToken } from "../../../deployers";
-import { fyTokenConstants, precisionScalars } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void {
   describe("when the underlying has 18 decimals", function () {
