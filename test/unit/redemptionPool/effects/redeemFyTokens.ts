@@ -102,8 +102,8 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
               });
 
               it("reverts", async function () {
-                await expect(this.contracts.redemptionPool.connect(this.signers.maker).fyTokenAmount(underlyingAmount))
-                  .to.be.reverted;
+                await expect(this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(fyTokenAmount)).to
+                  .be.reverted;
               });
             });
 
