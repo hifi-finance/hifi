@@ -23,7 +23,7 @@ abstract contract BalanceSheetStorage {
     /**
      * @dev One vault for each fyToken for each account.
      */
-    mapping(address => mapping(address => Vault)) internal vaults;
+    mapping(FyTokenInterface => mapping(address => Vault)) internal vaults;
 
     /**
      * @notice Indicator that this is a BalanceSheet contract, for inspection.

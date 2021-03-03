@@ -26,7 +26,7 @@ contract BalanceSheet is
     using SafeErc20 for Erc20Interface;
 
     modifier isVaultOpenForMsgSender(FyTokenInterface fyToken) {
-        require(vaults[address(fyToken)][msg.sender].isOpen, "ERR_VAULT_NOT_OPEN");
+        require(vaults[fyToken][msg.sender].isOpen, "ERR_VAULT_NOT_OPEN");
         _;
     }
 
@@ -130,7 +130,7 @@ contract BalanceSheet is
         override
         returns (uint256)
     {
-        Vault memory vault = vaults[address(fyToken)][borrower];
+        Vault memory vault = vaults[fyToken][borrower];
         return getHypotheticalCollateralizationRatio(fyToken, borrower, vault.lockedCollateral, vault.debt);
     }
 
@@ -175,7 +175,7 @@ contract BalanceSheet is
         GetHypotheticalAccountLiquidityLocalVars memory vars;
 
         /* If the vault is not open, a hypothetical collateralization ratio cannot be calculated. */
-        require(vaults[address(fyToken)][borrower].isOpen, "ERR_VAULT_NOT_OPEN");
+        require(vaults[fyToken][borrower].isOpen, "ERR_VAULT_NOT_OPEN");
 
         /* Avoid the zero edge cases. */
         if (lockedCollateral == 0) {
@@ -232,10 +232,10 @@ contract BalanceSheet is
         )
     {
         return (
-            vaults[address(fyToken)][borrower].debt,
-            vaults[address(fyToken)][borrower].freeCollateral,
-            vaults[address(fyToken)][borrower].lockedCollateral,
-            vaults[address(fyToken)][borrower].isOpen
+            vaults[fyToken][borrower].debt,
+            vaults[fyToken][borrower].freeCollateral,
+            vaults[fyToken][borrower].lockedCollateral,
+            vaults[fyToken][borrower].isOpen
         );
     }
 
@@ -244,7 +244,7 @@ contract BalanceSheet is
      * @return The debt held by the borrower, as an uint256.
      */
     function getVaultDebt(FyTokenInterface fyToken, address borrower) external view override returns (uint256) {
-        return vaults[address(fyToken)][borrower].debt;
+        return vaults[fyToken][borrower].debt;
     }
 
     /**
@@ -257,7 +257,7 @@ contract BalanceSheet is
         override
         returns (uint256)
     {
-        return vaults[address(fyToken)][borrower].lockedCollateral;
+        return vaults[fyToken][borrower].lockedCollateral;
     }
 
     /**
@@ -267,7 +267,7 @@ contract BalanceSheet is
      * @return bool true = is underwater, otherwise not.
      */
     function isAccountUnderwater(FyTokenInterface fyToken, address borrower) external view override returns (bool) {
-        Vault memory vault = vaults[address(fyToken)][borrower];
+        Vault memory vault = vaults[fyToken][borrower];
         if (!vault.isOpen || vault.debt == 0) {
             return false;
         }
@@ -280,7 +280,7 @@ contract BalanceSheet is
      * @notice Checks whether the borrower account has a vault opened for a particular fyToken.
      */
     function isVaultOpen(FyTokenInterface fyToken, address borrower) external view override returns (bool) {
-        return vaults[address(fyToken)][borrower].isOpen;
+        return vaults[fyToken][borrower].isOpen;
     }
 
     /**
@@ -313,14 +313,14 @@ contract BalanceSheet is
         require(msg.sender == address(fyToken), "ERR_CLUTCH_COLLATERAL_NOT_AUTHORIZED");
 
         /* Checks: there is enough clutchable collateral in the vault. */
-        uint256 lockedCollateral = vaults[address(fyToken)][borrower].lockedCollateral;
+        uint256 lockedCollateral = vaults[fyToken][borrower].lockedCollateral;
         require(lockedCollateral >= collateralAmount, "ERR_INSUFFICIENT_LOCKED_COLLATERAL");
 
         /* Calculate the new locked collateral amount. */
         uint256 newLockedCollateral = lockedCollateral - collateralAmount;
 
         /* Effects: update the vault. */
-        vaults[address(fyToken)][borrower].lockedCollateral = newLockedCollateral;
+        vaults[fyToken][borrower].lockedCollateral = newLockedCollateral;
 
         /* Interactions: transfer the collateral. */
         fyToken.collateral().safeTransfer(liquidator, collateralAmount);
@@ -360,8 +360,8 @@ contract BalanceSheet is
         require(fintroller.getDepositCollateralAllowed(fyToken), "ERR_DEPOSIT_COLLATERAL_NOT_ALLOWED");
 
         /* Effects: update storage. */
-        uint256 hypotheticalFreeCollateral = vaults[address(fyToken)][msg.sender].freeCollateral + collateralAmount;
-        vaults[address(fyToken)][msg.sender].freeCollateral = hypotheticalFreeCollateral;
+        uint256 hypotheticalFreeCollateral = vaults[fyToken][msg.sender].freeCollateral + collateralAmount;
+        vaults[fyToken][msg.sender].freeCollateral = hypotheticalFreeCollateral;
 
         /* Interactions: perform the Erc20 transfer. */
         fyToken.collateral().safeTransferFrom(msg.sender, address(this), collateralAmount);
@@ -405,7 +405,7 @@ contract BalanceSheet is
         require(collateralAmount > 0, "ERR_FREE_COLLATERAL_ZERO");
 
         /* Checks: enough locked collateral. */
-        Vault memory vault = vaults[address(fyToken)][msg.sender];
+        Vault memory vault = vaults[fyToken][msg.sender];
         require(vault.lockedCollateral >= collateralAmount, "ERR_INSUFFICIENT_LOCKED_COLLATERAL");
         vars.newLockedCollateral = vault.lockedCollateral - collateralAmount;
 
@@ -425,9 +425,9 @@ contract BalanceSheet is
         }
 
         /* Effects: update storage. */
-        vaults[address(fyToken)][msg.sender].lockedCollateral = vars.newLockedCollateral;
+        vaults[fyToken][msg.sender].lockedCollateral = vars.newLockedCollateral;
         vars.newFreeCollateral = vault.freeCollateral + collateralAmount;
-        vaults[address(fyToken)][msg.sender].freeCollateral = vars.newFreeCollateral;
+        vaults[fyToken][msg.sender].freeCollateral = vars.newFreeCollateral;
 
         emit FreeCollateral(fyToken, msg.sender, collateralAmount);
 
@@ -457,14 +457,14 @@ contract BalanceSheet is
         /* Avoid the zero edge case. */
         require(collateralAmount > 0, "ERR_LOCK_COLLATERAL_ZERO");
 
-        Vault memory vault = vaults[address(fyToken)][msg.sender];
+        Vault memory vault = vaults[fyToken][msg.sender];
         require(vault.freeCollateral >= collateralAmount, "ERR_INSUFFICIENT_FREE_COLLATERAL");
 
         uint256 newLockedCollateral = vault.lockedCollateral + collateralAmount;
-        vaults[address(fyToken)][msg.sender].lockedCollateral = newLockedCollateral;
+        vaults[fyToken][msg.sender].lockedCollateral = newLockedCollateral;
 
         uint256 hypotheticalFreeCollateral = vault.freeCollateral - collateralAmount;
-        vaults[address(fyToken)][msg.sender].freeCollateral = hypotheticalFreeCollateral;
+        vaults[fyToken][msg.sender].freeCollateral = hypotheticalFreeCollateral;
 
         emit LockCollateral(fyToken, msg.sender, collateralAmount);
 
@@ -485,8 +485,8 @@ contract BalanceSheet is
      */
     function openVault(FyTokenInterface fyToken) external override returns (bool) {
         require(fyToken.isFyToken(), "ERR_OPEN_VAULT_FYTOKEN_INSPECTION");
-        require(vaults[address(fyToken)][msg.sender].isOpen == false, "ERR_VAULT_OPEN");
-        vaults[address(fyToken)][msg.sender].isOpen = true;
+        require(vaults[fyToken][msg.sender].isOpen == false, "ERR_VAULT_OPEN");
+        vaults[fyToken][msg.sender].isOpen = true;
         emit OpenVault(fyToken, msg.sender);
         return true;
     }
@@ -514,8 +514,8 @@ contract BalanceSheet is
         require(msg.sender == address(fyToken), "ERR_SET_VAULT_DEBT_NOT_AUTHORIZED");
 
         /* Effects: update storage. */
-        uint256 oldVaultDebt = vaults[address(fyToken)][borrower].debt;
-        vaults[address(fyToken)][borrower].debt = newVaultDebt;
+        uint256 oldVaultDebt = vaults[fyToken][borrower].debt;
+        vaults[fyToken][borrower].debt = newVaultDebt;
 
         emit SetVaultDebt(fyToken, borrower, oldVaultDebt, newVaultDebt);
 
@@ -548,14 +548,11 @@ contract BalanceSheet is
         require(collateralAmount > 0, "ERR_WITHDRAW_COLLATERAL_ZERO");
 
         /* Checks: there is enough free collateral. */
-        require(
-            vaults[address(fyToken)][msg.sender].freeCollateral >= collateralAmount,
-            "ERR_INSUFFICIENT_FREE_COLLATERAL"
-        );
+        require(vaults[fyToken][msg.sender].freeCollateral >= collateralAmount, "ERR_INSUFFICIENT_FREE_COLLATERAL");
 
         /* Effects: update storage. */
-        uint256 newFreeCollateral = vaults[address(fyToken)][msg.sender].freeCollateral - collateralAmount;
-        vaults[address(fyToken)][msg.sender].freeCollateral = newFreeCollateral;
+        uint256 newFreeCollateral = vaults[fyToken][msg.sender].freeCollateral - collateralAmount;
+        vaults[fyToken][msg.sender].freeCollateral = newFreeCollateral;
 
         /* Interactions: perform the Erc20 transfer. */
         fyToken.collateral().safeTransfer(msg.sender, collateralAmount);

@@ -18,7 +18,7 @@ contract GodModeBalanceSheet is BalanceSheet {
         address borrower,
         uint256 newVaultDebt
     ) external {
-        vaults[address(fyToken)][borrower].debt = newVaultDebt;
+        vaults[fyToken][borrower].debt = newVaultDebt;
     }
 
     function __godMode_setVaultFreeCollateral(
@@ -26,7 +26,7 @@ contract GodModeBalanceSheet is BalanceSheet {
         address borrower,
         uint256 newFreeCollateral
     ) external {
-        vaults[address(fyToken)][borrower].freeCollateral = newFreeCollateral;
+        vaults[fyToken][borrower].freeCollateral = newFreeCollateral;
     }
 
     function __godMode_setVaultLockedCollateral(
@@ -34,7 +34,7 @@ contract GodModeBalanceSheet is BalanceSheet {
         address borrower,
         uint256 newLockedCollateral
     ) external {
-        vaults[address(fyToken)][borrower].lockedCollateral = newLockedCollateral;
+        vaults[fyToken][borrower].lockedCollateral = newLockedCollateral;
     }
 
     function __godMode_setVaultIsOpen(
@@ -42,6 +42,6 @@ contract GodModeBalanceSheet is BalanceSheet {
         address borrower,
         bool newIsOpen
     ) external {
-        vaults[address(fyToken)][borrower].isOpen = newIsOpen;
+        vaults[fyToken][borrower].isOpen = newIsOpen;
     }
 }
