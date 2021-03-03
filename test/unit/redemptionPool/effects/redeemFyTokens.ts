@@ -5,9 +5,10 @@ import { expect } from "chai";
 import { FintrollerErrors, GenericErrors, RedemptionPoolErrors } from "../../../../helpers/errors";
 import { fintrollerConstants, fyTokenConstants, precisionScalars, tokenAmounts } from "../../../../helpers/constants";
 import { getNow } from "../../../../helpers/time";
+import { ten, underlyingConstants } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeRedeemFyTokens(): void {
-  const underlyingAmount: BigNumber = tokenAmounts.oneHundred;
+  const underlyingAmount: BigNumber = ten.pow(underlyingConstants.decimals).mul(100);
   const fyTokenAmount: BigNumber = tokenAmounts.oneHundred;
 
   describe("when the bond did not mature", function () {
@@ -17,7 +18,7 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
 
     it("reverts", async function () {
       await expect(
-        this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(underlyingAmount),
+        this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(fyTokenAmount),
       ).to.be.revertedWith(GenericErrors.BondNotMatured);
     });
   });
@@ -30,10 +31,9 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
 
     describe("when the amount to redeemFyTokens is zero", function () {
       it("reverts", async function () {
-        const zeroRedeemFyTokensAmount: BigNumber = Zero;
-        await expect(
-          this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(zeroRedeemFyTokensAmount),
-        ).to.be.revertedWith(RedemptionPoolErrors.RedeemFyTokensZero);
+        await expect(this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(Zero)).to.be.revertedWith(
+          RedemptionPoolErrors.RedeemFyTokensZero,
+        );
       });
     });
 
@@ -47,7 +47,7 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
 
         it("reverts", async function () {
           await expect(
-            this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(underlyingAmount),
+            this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(fyTokenAmount),
           ).to.be.revertedWith(FintrollerErrors.BondNotListed);
         });
       });
@@ -68,7 +68,7 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
 
           it("reverts", async function () {
             await expect(
-              this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(underlyingAmount),
+              this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(fyTokenAmount),
             ).to.be.revertedWith(RedemptionPoolErrors.RedeemFyTokensNotAllowed);
           });
         });
@@ -83,7 +83,7 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
           describe("when there is not enough liquidity", function () {
             it("reverts", async function () {
               await expect(
-                this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(underlyingAmount),
+                this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(fyTokenAmount),
               ).to.be.revertedWith(RedemptionPoolErrors.RedeemFyTokensInsufficientUnderlying);
             });
           });
@@ -102,7 +102,7 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
               });
 
               it("reverts", async function () {
-                await expect(this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(underlyingAmount))
+                await expect(this.contracts.redemptionPool.connect(this.signers.maker).fyTokenAmount(underlyingAmount))
                   .to.be.reverted;
               });
             });
@@ -147,15 +147,13 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
 
                 it("redeems the underlying", async function () {
                   const oldUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
-                  await this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(underlyingAmount);
+                  await this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(fyTokenAmount);
                   const newUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
                   expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.add(underlyingAmount));
                 });
 
                 it("emits a RedeemFyTokens event", async function () {
-                  await expect(
-                    this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(underlyingAmount),
-                  )
+                  await expect(this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(fyTokenAmount))
                     .to.emit(this.contracts.redemptionPool, "RedeemFyTokens")
                     .withArgs(this.signers.maker.address, fyTokenAmount, underlyingAmount);
                 });

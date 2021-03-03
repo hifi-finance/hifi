@@ -119,3 +119,9 @@ export const fyTokenConstants = {
   name: "hfyUSDC (2022-01-01)",
   symbol: "hfyUSDC-JAN22",
 };
+
+export const underlyingConstants = {
+  decimals: 6,
+  name: "USD Coin",
+  symbol: "USDC",
+};

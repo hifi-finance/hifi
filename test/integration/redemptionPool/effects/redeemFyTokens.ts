@@ -4,10 +4,10 @@ import { expect } from "chai";
 import { contextForTimeDependentTests } from "../../../contexts";
 import { fyTokenConstants } from "../../../../helpers/constants";
 import { increaseTime } from "../../../jsonRpc";
-import { tokenAmounts } from "../../../../helpers/constants";
+import { ten, tokenAmounts, underlyingConstants } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeSupplyUnderlying(): void {
-  const underlyingAmount: BigNumber = tokenAmounts.oneHundred;
+  const underlyingAmount: BigNumber = ten.pow(underlyingConstants.decimals).mul(100);
   const fyTokenAmount: BigNumber = tokenAmounts.oneHundred;
 
   contextForTimeDependentTests("when the bond matured", function () {
@@ -35,7 +35,7 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
 
     it("redeems the fyTokens", async function () {
       const oldUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
-      await this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(underlyingAmount);
+      await this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(fyTokenAmount);
       const newUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
       expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.add(underlyingAmount));
     });
