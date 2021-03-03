@@ -1,8 +1,7 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
-pragma solidity ^0.7.0;
+pragma solidity ^0.8.0;
 
 import "@paulrberg/contracts/access/Admin.sol";
-import "@paulrberg/contracts/math/CarefulMath.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
 
 import "./ChainlinkOperatorInterface.sol";
@@ -14,7 +13,6 @@ import "../external/chainlink/AggregatorV3Interface.sol";
  * @notice Manages USD-quoted Chainlink price feeds.
  */
 contract ChainlinkOperator is
-    CarefulMath, /* no dependency */
     ChainlinkOperatorInterface, /* no dependency */
     Admin /* two dependencies */
 {
@@ -38,8 +36,7 @@ contract ChainlinkOperator is
      */
     function getAdjustedPrice(string memory symbol) external view override returns (uint256) {
         uint256 price = getPrice(symbol);
-        (MathError mathErr, uint256 adjustedPrice) = mulUInt(price, pricePrecisionScalar);
-        require(mathErr == MathError.NO_ERROR, "ERR_GET_ADJUSTED_PRICE_MATH_ERROR");
+        uint256 adjustedPrice = price * pricePrecisionScalar;
         return adjustedPrice;
     }
 

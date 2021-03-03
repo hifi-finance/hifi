@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: LPGL-3.0-or-later */
-pragma solidity ^0.7.0;
+pragma solidity ^0.8.0;
 
 import "./FintrollerStorage.sol";
 import "./FyTokenInterface.sol";

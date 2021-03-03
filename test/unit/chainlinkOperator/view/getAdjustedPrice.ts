@@ -27,9 +27,7 @@ export default function shouldBehaveLikeGetAdjustedPrice(): void {
       });
 
       it("reverts", async function () {
-        await expect(this.contracts.oracle.getAdjustedPrice("WETH")).to.be.revertedWith(
-          ChainlinkOperatorErrors.GetAdjustedPriceMathError,
-        );
+        await expect(this.contracts.oracle.getAdjustedPrice("WETH")).to.be.reverted;
       });
     });
 

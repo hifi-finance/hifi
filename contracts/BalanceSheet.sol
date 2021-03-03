@@ -1,5 +1,5 @@
 /* SPDX-License-Identifier: LGPL-3.0-or-later */
-pragma solidity ^0.7.0;
+pragma solidity ^0.8.0;
 
 import "@paulrberg/contracts/access/Admin.sol";
 import "@paulrberg/contracts/math/Exponential.sol";
@@ -20,8 +20,8 @@ import "./oracles/ChainlinkOperatorInterface.sol";
 contract BalanceSheet is
     ReentrancyGuard, /* no depedency */
     BalanceSheetInterface, /* one dependency */
-    Admin, /* two dependencies */
-    Exponential /* two dependencies */
+    Exponential, /* one dependency */
+    Admin /* two dependencies */
 {
     using SafeErc20 for Erc20Interface;
 
@@ -44,7 +44,6 @@ contract BalanceSheet is
      */
 
     struct GetClutchableCollateralLocalVars {
-        MathError mathErr;
         Exp clutchableCollateralAmountUpscaled;
         uint256 clutchableCollateralAmount;
         uint256 collateralPrecisionScalar;
@@ -94,28 +93,24 @@ contract BalanceSheet is
         vars.collateralPriceUpscaled = oracle.getAdjustedPrice(fyToken.collateral().symbol());
 
         /* Calculate the top part of the equation. */
-        (vars.mathErr, vars.numerator) = mulExp3(
+        vars.numerator = mulExp3(
             Exp({ mantissa: repayAmount }),
             Exp({ mantissa: vars.liquidationIncentiveMantissa }),
             Exp({ mantissa: vars.underlyingPriceUpscaled })
         );
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_CLUTCHABLE_COLLATERAL_MATH_ERROR");
 
         /* Calculate the mantissa form of the clutched collateral amount. */
-        (vars.mathErr, vars.clutchableCollateralAmountUpscaled) = divExp(
+        vars.clutchableCollateralAmountUpscaled = divExp(
             vars.numerator,
             Exp({ mantissa: vars.collateralPriceUpscaled })
         );
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_CLUTCHABLE_COLLATERAL_MATH_ERROR");
 
         /* If the precision scalar is not 1, calculate the final form of the clutched collateral amount. */
         vars.collateralPrecisionScalar = fyToken.collateralPrecisionScalar();
         if (vars.collateralPrecisionScalar != 1) {
-            (vars.mathErr, vars.clutchableCollateralAmount) = divUInt(
-                vars.clutchableCollateralAmountUpscaled.mantissa,
-                vars.collateralPrecisionScalar
-            );
-            require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_CLUTCHABLE_COLLATERAL_MATH_ERROR");
+            vars.clutchableCollateralAmount =
+                vars.clutchableCollateralAmountUpscaled.mantissa /
+                vars.collateralPrecisionScalar;
         } else {
             vars.clutchableCollateralAmount = vars.clutchableCollateralAmountUpscaled.mantissa;
         }
@@ -140,7 +135,6 @@ contract BalanceSheet is
     }
 
     struct GetHypotheticalAccountLiquidityLocalVars {
-        MathError mathErr;
         uint256 collateralPriceUpscaled;
         uint256 collateralPrecisionScalar;
         uint256 collateralizationRatioMantissa;
@@ -199,35 +193,25 @@ contract BalanceSheet is
         /* Upscale the collateral, which can have any precision, to mantissa precision. */
         vars.collateralPrecisionScalar = fyToken.collateralPrecisionScalar();
         if (vars.collateralPrecisionScalar != 1) {
-            (vars.mathErr, vars.lockedCollateralUpscaled) = mulUInt(lockedCollateral, vars.collateralPrecisionScalar);
-            require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
+            vars.lockedCollateralUpscaled = lockedCollateral * vars.collateralPrecisionScalar;
         } else {
             vars.lockedCollateralUpscaled = lockedCollateral;
         }
 
         /* Calculate the USD value of the collateral. */
-        (vars.mathErr, vars.lockedCollateralValueUsd) = mulExp(
+        vars.lockedCollateralValueUsd = mulExp(
             Exp({ mantissa: vars.lockedCollateralUpscaled }),
             Exp({ mantissa: vars.collateralPriceUpscaled })
         );
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
 
         /* Calculate the USD value of the debt. */
-        (vars.mathErr, vars.debtValueUsd) = mulExp(
-            Exp({ mantissa: debt }),
-            Exp({ mantissa: vars.underlyingPriceUpscaled })
-        );
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
+        vars.debtValueUsd = mulExp(Exp({ mantissa: debt }), Exp({ mantissa: vars.underlyingPriceUpscaled }));
 
         /**
          * Calculate the collateralization ratio by dividing the USD value of the hypothetical locked collateral by
          * the USD value of the debt.
          */
-        (vars.mathErr, vars.hypotheticalCollateralizationRatio) = divExp(
-            vars.lockedCollateralValueUsd,
-            vars.debtValueUsd
-        );
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_MATH_ERROR");
+        vars.hypotheticalCollateralizationRatio = divExp(vars.lockedCollateralValueUsd, vars.debtValueUsd);
 
         return vars.hypotheticalCollateralizationRatio.mantissa;
     }
@@ -333,10 +317,7 @@ contract BalanceSheet is
         require(lockedCollateral >= collateralAmount, "ERR_INSUFFICIENT_LOCKED_COLLATERAL");
 
         /* Calculate the new locked collateral amount. */
-        MathError mathErr;
-        uint256 newLockedCollateral;
-        (mathErr, newLockedCollateral) = subUInt(lockedCollateral, collateralAmount);
-        assert(mathErr == MathError.NO_ERROR);
+        uint256 newLockedCollateral = lockedCollateral - collateralAmount;
 
         /* Effects: update the vault. */
         vaults[address(fyToken)][borrower].lockedCollateral = newLockedCollateral;
@@ -379,13 +360,7 @@ contract BalanceSheet is
         require(fintroller.getDepositCollateralAllowed(fyToken), "ERR_DEPOSIT_COLLATERAL_NOT_ALLOWED");
 
         /* Effects: update storage. */
-        MathError mathErr;
-        uint256 hypotheticalFreeCollateral;
-        (mathErr, hypotheticalFreeCollateral) = addUInt(
-            vaults[address(fyToken)][msg.sender].freeCollateral,
-            collateralAmount
-        );
-        require(mathErr == MathError.NO_ERROR, "ERR_DEPOSIT_COLLATERAL_MATH_ERROR");
+        uint256 hypotheticalFreeCollateral = vaults[address(fyToken)][msg.sender].freeCollateral + collateralAmount;
         vaults[address(fyToken)][msg.sender].freeCollateral = hypotheticalFreeCollateral;
 
         /* Interactions: perform the Erc20 transfer. */
@@ -397,7 +372,6 @@ contract BalanceSheet is
     }
 
     struct FreeCollateralLocalVars {
-        MathError mathErr;
         uint256 collateralizationRatioMantissa;
         uint256 hypotheticalCollateralizationRatioMantissa;
         uint256 newFreeCollateral;
@@ -433,10 +407,7 @@ contract BalanceSheet is
         /* Checks: enough locked collateral. */
         Vault memory vault = vaults[address(fyToken)][msg.sender];
         require(vault.lockedCollateral >= collateralAmount, "ERR_INSUFFICIENT_LOCKED_COLLATERAL");
-
-        /* This operation can't fail because of the first `require` in this function. */
-        (vars.mathErr, vars.newLockedCollateral) = subUInt(vault.lockedCollateral, collateralAmount);
-        assert(vars.mathErr == MathError.NO_ERROR);
+        vars.newLockedCollateral = vault.lockedCollateral - collateralAmount;
 
         /* Checks: the hypothetical collateralization ratio is above the threshold. */
         if (vault.debt > 0) {
@@ -455,8 +426,7 @@ contract BalanceSheet is
 
         /* Effects: update storage. */
         vaults[address(fyToken)][msg.sender].lockedCollateral = vars.newLockedCollateral;
-        (vars.mathErr, vars.newFreeCollateral) = addUInt(vault.freeCollateral, collateralAmount);
-        require(vars.mathErr == MathError.NO_ERROR, "ERR_FREE_COLLATERAL_MATH_ERROR");
+        vars.newFreeCollateral = vault.freeCollateral + collateralAmount;
         vaults[address(fyToken)][msg.sender].freeCollateral = vars.newFreeCollateral;
 
         emit FreeCollateral(fyToken, msg.sender, collateralAmount);
@@ -490,16 +460,10 @@ contract BalanceSheet is
         Vault memory vault = vaults[address(fyToken)][msg.sender];
         require(vault.freeCollateral >= collateralAmount, "ERR_INSUFFICIENT_FREE_COLLATERAL");
 
-        MathError mathErr;
-        uint256 newLockedCollateral;
-        (mathErr, newLockedCollateral) = addUInt(vault.lockedCollateral, collateralAmount);
-        require(mathErr == MathError.NO_ERROR, "ERR_LOCK_COLLATERAL_MATH_ERROR");
+        uint256 newLockedCollateral = vault.lockedCollateral + collateralAmount;
         vaults[address(fyToken)][msg.sender].lockedCollateral = newLockedCollateral;
 
-        /* This operation can't fail because of the first `require` in this function. */
-        uint256 hypotheticalFreeCollateral;
-        (mathErr, hypotheticalFreeCollateral) = subUInt(vault.freeCollateral, collateralAmount);
-        assert(mathErr == MathError.NO_ERROR);
+        uint256 hypotheticalFreeCollateral = vault.freeCollateral - collateralAmount;
         vaults[address(fyToken)][msg.sender].freeCollateral = hypotheticalFreeCollateral;
 
         emit LockCollateral(fyToken, msg.sender, collateralAmount);
@@ -590,11 +554,7 @@ contract BalanceSheet is
         );
 
         /* Effects: update storage. */
-        MathError mathErr;
-        uint256 newFreeCollateral;
-        (mathErr, newFreeCollateral) = subUInt(vaults[address(fyToken)][msg.sender].freeCollateral, collateralAmount);
-        /* This operation can't fail because of the first `require` in this function. */
-        assert(mathErr == MathError.NO_ERROR);
+        uint256 newFreeCollateral = vaults[address(fyToken)][msg.sender].freeCollateral - collateralAmount;
         vaults[address(fyToken)][msg.sender].freeCollateral = newFreeCollateral;
 
         /* Interactions: perform the Erc20 transfer. */
