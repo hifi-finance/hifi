@@ -137,7 +137,7 @@ export async function deployUnderlying(deployer: Signer): Promise<Erc20Mintable>
     await deployContract(
       deployer,
       erc20MintableArtifact,
-      ["Dai Stablecoin", "DAI", BigNumber.from(18)],
+      ["USD Coin", "USDC", BigNumber.from(6)],
       overrideOptions,
     )
   );
@@ -147,7 +147,7 @@ export async function deployUnderlying(deployer: Signer): Promise<Erc20Mintable>
 export async function deployUnderlyingPriceFeed(deployer: Signer): Promise<SimplePriceFeed> {
   const simplePriceFeedArtifact: Artifact = await hre.artifacts.readArtifact("SimplePriceFeed");
   const underlyingPriceFeed: SimplePriceFeed = <SimplePriceFeed>(
-    await deployContract(deployer, simplePriceFeedArtifact, ["DAI/USD"], overrideOptions)
+    await deployContract(deployer, simplePriceFeedArtifact, ["USDC/USD"], overrideOptions)
   );
   await underlyingPriceFeed.setPrice(prices.oneDollar);
   return underlyingPriceFeed;

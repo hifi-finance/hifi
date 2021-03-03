@@ -28,7 +28,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
       .connect(this.signers.admin)
       .setRepayBorrowAllowed(this.contracts.fyToken.address, true);
 
-    /* Set the debt ceiling to 1,000 fyDAI. */
+    /* Set the debt ceiling to 1,000 fyUSDC. */
     await this.contracts.fintroller
       .connect(this.signers.admin)
       .setBondDebtCeiling(this.contracts.fyToken.address, tokenAmounts.oneHundredThousand);
@@ -58,7 +58,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
     /* Set the price of 1 WETH to $12 so that the new collateralization ratio becomes 120%. */
     await this.contracts.collateralPriceFeed.setPrice(prices.twelveDollars);
 
-    /* Mint 100 fyDAI to the liquidator so he can repay the debt. */
+    /* Mint 100 fyUSDC to the liquidator so he can repay the debt. */
     await this.contracts.fyToken.__godMode_mint(this.accounts.liquidator, repayAmount);
 
     /* Calculate the amount of clutchable collateral. */

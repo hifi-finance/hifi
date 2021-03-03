@@ -12,7 +12,15 @@ export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void 
     });
 
     it("retrieves 1", async function () {
-      const underlyingPrecisionScalar: BigNumber = await this.contracts.fyToken.underlyingPrecisionScalar();
+      const fyToken: FyToken = await deployFyToken(
+        this.signers.admin,
+        fyTokenConstants.expirationTime,
+        this.stubs.fintroller.address,
+        this.stubs.balanceSheet.address,
+        this.stubs.underlying.address,
+        this.stubs.collateral.address,
+      );
+      const underlyingPrecisionScalar: BigNumber = await fyToken.underlyingPrecisionScalar();
       expect(underlyingPrecisionScalar).to.equal(precisionScalars.tokenWith18Decimals);
     });
   });

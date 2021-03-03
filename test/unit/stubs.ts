@@ -23,7 +23,7 @@ export async function deployStubChainlinkOperator(deployer: Signer): Promise<Moc
   const chainlinkOperatorArtifact: Artifact = await hre.artifacts.readArtifact("ChainlinkOperator");
   const chainlinkOperator: MockContract = await deployStubContract(deployer, chainlinkOperatorArtifact.abi);
   await chainlinkOperator.mock.getAdjustedPrice.withArgs("WETH").returns(prices.oneHundredDollars);
-  await chainlinkOperator.mock.getAdjustedPrice.withArgs("DAI").returns(prices.oneDollar);
+  await chainlinkOperator.mock.getAdjustedPrice.withArgs("USDC").returns(prices.oneDollar);
   return chainlinkOperator;
 }
 
@@ -77,7 +77,7 @@ export async function deployStubRedemptionPool(deployer: Signer): Promise<MockCo
 }
 
 export async function deployStubUnderlying(deployer: Signer): Promise<MockContract> {
-  const underlying: MockContract = await deployStubErc20(deployer, "Dai Stablecoin", "DAI", BigNumber.from(18));
+  const underlying: MockContract = await deployStubErc20(deployer, "USD Coin", "USDC", BigNumber.from(6));
   return underlying;
 }
 

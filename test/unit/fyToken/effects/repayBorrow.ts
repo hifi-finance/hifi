@@ -99,7 +99,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
 
           describe("when the caller has a debt", function () {
             beforeEach(async function () {
-              /* User borrows 100 fyDAI. */
+              /* User borrows 100 fyUSDC. */
               await this.contracts.fyToken.__godMode_mint(this.accounts.borrower, borrowAmount);
               await this.stubs.balanceSheet.mock.getVaultDebt
                 .withArgs(this.contracts.fyToken.address, this.accounts.borrower)

@@ -16,7 +16,7 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
       .connect(this.signers.admin)
       .setSupplyUnderlyingAllowed(this.contracts.fyToken.address, true);
 
-    /* Mint 100 DAI and approve the Redemption Pool to spend it all. */
+    /* Mint 100 USDC and approve the Redemption Pool to spend it all. */
     await this.contracts.underlying.mint(this.accounts.maker, underlyingAmount);
     await this.contracts.underlying
       .connect(this.signers.maker)

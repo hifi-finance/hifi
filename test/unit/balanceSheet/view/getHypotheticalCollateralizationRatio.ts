@@ -82,7 +82,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
           describe("when the underlying price from the oracle is zero", function () {
             beforeEach(async function () {
               await this.stubs.oracle.mock.getAdjustedPrice
-                .withArgs("DAI")
+                .withArgs("USDC")
                 .revertsWithReason(ChainlinkOperatorErrors.PriceZero);
             });
 

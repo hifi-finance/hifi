@@ -20,13 +20,13 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
         .connect(this.signers.admin)
         .setRedeemFyTokensAllowed(this.contracts.fyToken.address, true);
 
-      /* Mint 100 DAI and approve the Redemption Pool to spend it all. */
+      /* Mint 100 USDC and approve the Redemption Pool to spend it all. */
       await this.contracts.underlying.mint(this.accounts.maker, underlyingAmount);
       await this.contracts.underlying
         .connect(this.signers.maker)
         .approve(this.contracts.redemptionPool.address, underlyingAmount);
 
-      /* Supply 100 DAI to the Redemption Pool. */
+      /* Supply 100 USDC to the Redemption Pool. */
       await this.contracts.redemptionPool.connect(this.signers.maker).supplyUnderlying(underlyingAmount);
 
       /* Fast-forward to the future so that fyTokens can be redeemed. */

@@ -151,7 +151,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
               const clutchableCollateralAmount: BigNumber = tokenAmounts.pointFiftyFive;
 
               beforeEach(async function () {
-                /* User borrows 100 fyDAI. */
+                /* User borrows 100 fyUSDC. */
                 await this.stubs.balanceSheet.mock.getVaultDebt
                   .withArgs(this.contracts.fyToken.address, this.accounts.borrower)
                   .returns(borrowAmount);
@@ -188,7 +188,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
                   beforeEach(async function () {
                     await increaseTime(fyTokenConstants.expirationTime);
 
-                    /* Mint 100 fyDAI to the liquidator so he can repay the debt. */
+                    /* Mint 100 fyUSDC to the liquidator so he can repay the debt. */
                     await this.contracts.fyToken.__godMode_mint(this.accounts.liquidator, repayAmount);
                   });
 
@@ -222,7 +222,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
 
                 describe("when the caller has enough fyTokens", function () {
                   beforeEach(async function () {
-                    /* Mint 100 fyDAI to the liquidator so he can repay the debt. */
+                    /* Mint 100 fyUSDC to the liquidator so he can repay the debt. */
                     await this.contracts.fyToken.__godMode_mint(this.accounts.liquidator, repayAmount);
                   });
 
