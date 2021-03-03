@@ -2,12 +2,19 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { fintrollerConstants, fyTokenConstants, precisionScalars, tokenAmounts } from "../../../../helpers/constants";
+import {
+  fintrollerConstants,
+  fyTokenConstants,
+  precisionScalars,
+  ten,
+  tokenAmounts,
+  underlyingConstants,
+} from "../../../../helpers/constants";
 import { FintrollerErrors, GenericErrors, RedemptionPoolErrors } from "../../../../helpers/errors";
 import { getNow } from "../../../../helpers/time";
 
 export default function shouldBehaveLikeSupplyUnderlying(): void {
-  const underlyingAmount: BigNumber = tokenAmounts.oneHundred;
+  const underlyingAmount: BigNumber = ten.pow(underlyingConstants.decimals).mul(100);
   const fyTokenAmount: BigNumber = tokenAmounts.oneHundred;
 
   describe("when the bond matured", function () {
@@ -102,15 +109,11 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
                 await this.stubs.fyToken.mock.underlyingPrecisionScalar.returns(precisionScalars.tokenWith8Decimals);
               });
 
-              const downscaledUnderlyingAmount: BigNumber = underlyingAmount.div(precisionScalars.tokenWith8Decimals);
+              const upscaledUnderlyingAmount: BigNumber = ten.pow(8).mul(100);
 
               beforeEach(async function () {
                 await this.stubs.underlying.mock.transferFrom
-                  .withArgs(
-                    this.signers.maker.address,
-                    this.contracts.redemptionPool.address,
-                    downscaledUnderlyingAmount,
-                  )
+                  .withArgs(this.signers.maker.address, this.contracts.redemptionPool.address, upscaledUnderlyingAmount)
                   .returns(true);
               });
 
@@ -118,16 +121,16 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
                 const oldUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
                 await this.contracts.redemptionPool
                   .connect(this.signers.maker)
-                  .supplyUnderlying(downscaledUnderlyingAmount);
+                  .supplyUnderlying(upscaledUnderlyingAmount);
                 const newUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
-                expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.sub(downscaledUnderlyingAmount));
+                expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.sub(upscaledUnderlyingAmount));
               });
             });
 
-            describe("when the underlying has 18 decimals", function () {
+            describe("when the underlying has 6 decimals", function () {
               beforeEach(async function () {
-                await this.stubs.underlying.mock.decimals.returns(BigNumber.from(18));
-                await this.stubs.fyToken.mock.underlyingPrecisionScalar.returns(precisionScalars.tokenWith18Decimals);
+                await this.stubs.underlying.mock.decimals.returns(BigNumber.from(6));
+                await this.stubs.fyToken.mock.underlyingPrecisionScalar.returns(precisionScalars.tokenWith6Decimals);
               });
 
               beforeEach(async function () {

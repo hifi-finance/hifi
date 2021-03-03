@@ -117,11 +117,11 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
                   await this.stubs.underlying.mock.decimals.returns(BigNumber.from(8));
                   await this.stubs.fyToken.mock.underlyingPrecisionScalar.returns(precisionScalars.tokenWith8Decimals);
                 });
-                const downscaledUnderlyingAmount: BigNumber = underlyingAmount.div(precisionScalars.tokenWith8Decimals);
+                const upscaledUnderlyingAmount: BigNumber = ten.pow(8).mul(100);
 
                 beforeEach(async function () {
                   await this.stubs.underlying.mock.transfer
-                    .withArgs(this.signers.maker.address, downscaledUnderlyingAmount)
+                    .withArgs(this.signers.maker.address, upscaledUnderlyingAmount)
                     .returns(true);
                 });
 
@@ -129,14 +129,14 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
                   const oldUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
                   await this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(fyTokenAmount);
                   const newUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
-                  expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.add(downscaledUnderlyingAmount));
+                  expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.add(upscaledUnderlyingAmount));
                 });
               });
 
-              describe("when the underlying has 18 decimals", function () {
+              describe("when the underlying has 6 decimals", function () {
                 beforeEach(async function () {
-                  await this.stubs.underlying.mock.decimals.returns(BigNumber.from(18));
-                  await this.stubs.fyToken.mock.underlyingPrecisionScalar.returns(precisionScalars.tokenWith18Decimals);
+                  await this.stubs.underlying.mock.decimals.returns(BigNumber.from(6));
+                  await this.stubs.fyToken.mock.underlyingPrecisionScalar.returns(precisionScalars.tokenWith6Decimals);
                 });
 
                 beforeEach(async function () {

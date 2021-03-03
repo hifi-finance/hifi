@@ -2,10 +2,10 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { tokenAmounts } from "../../../../helpers/constants";
+import { ten, underlyingConstants } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeTotalUnderlyingSupplyGetter(): void {
-  const underlyingAmount: BigNumber = tokenAmounts.ten;
+  const underlyingAmount: BigNumber = ten.pow(underlyingConstants.decimals).mul(10);
 
   describe("when the underlying supply is zero", function () {
     it("retrieves zero", async function () {

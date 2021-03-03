@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { One, Zero } from "@ethersproject/constants";
 
-import { getNow, getDaysInSeconds } from "./time";
+import { getDaysInSeconds, getNow } from "./time";
 
 /* Ethereum constants */
 export const addressOne: string = "0x0000000000000000000000000000000000000001";
@@ -32,7 +32,8 @@ export const percentages: { [name: string]: BigNumber } = {
 
 /* Ten raised to the difference between 18 and the token's decimals. */
 export const precisionScalars = {
-  tokenWith8Decimals: ten.pow(defaultNumberOfDecimals.sub(8)),
+  tokenWith6Decimals: ten.pow(12),
+  tokenWith8Decimals: ten.pow(10),
   tokenWith18Decimals: One,
 };
 

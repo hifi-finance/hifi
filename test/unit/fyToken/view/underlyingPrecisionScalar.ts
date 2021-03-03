@@ -6,9 +6,9 @@ import { FyToken } from "../../../../typechain/FyToken";
 import { deployFyToken } from "../../../deployers";
 
 export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void {
-  describe("when the underlying has 18 decimals", function () {
+  describe("when the underlying has 6 decimals", function () {
     beforeEach(async function () {
-      await this.stubs.underlying.mock.decimals.returns(BigNumber.from(18));
+      await this.stubs.underlying.mock.decimals.returns(BigNumber.from(6));
     });
 
     it("retrieves 1", async function () {
@@ -21,7 +21,7 @@ export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void 
         this.stubs.collateral.address,
       );
       const underlyingPrecisionScalar: BigNumber = await fyToken.underlyingPrecisionScalar();
-      expect(underlyingPrecisionScalar).to.equal(precisionScalars.tokenWith18Decimals);
+      expect(underlyingPrecisionScalar).to.equal(precisionScalars.tokenWith6Decimals);
     });
   });
 
@@ -41,6 +41,25 @@ export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void 
       );
       const underlyingPrecisionScalar: BigNumber = await fyToken.underlyingPrecisionScalar();
       expect(underlyingPrecisionScalar).to.equal(precisionScalars.tokenWith8Decimals);
+    });
+  });
+
+  describe("when the underlying has 18 decimals", function () {
+    beforeEach(async function () {
+      await this.stubs.underlying.mock.decimals.returns(BigNumber.from(18));
+    });
+
+    it("retrieves 1", async function () {
+      const fyToken: FyToken = await deployFyToken(
+        this.signers.admin,
+        fyTokenConstants.expirationTime,
+        this.stubs.fintroller.address,
+        this.stubs.balanceSheet.address,
+        this.stubs.underlying.address,
+        this.stubs.collateral.address,
+      );
+      const underlyingPrecisionScalar: BigNumber = await fyToken.underlyingPrecisionScalar();
+      expect(underlyingPrecisionScalar).to.equal(precisionScalars.tokenWith18Decimals);
     });
   });
 }
