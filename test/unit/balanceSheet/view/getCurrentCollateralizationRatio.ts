@@ -11,16 +11,20 @@ export default function shouldBehaveLikeGetCurrentCollateralizationRatio(): void
     await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.fyToken.address);
     await this.contracts.balanceSheet.__godMode_setVaultLockedCollateral(
       this.stubs.fyToken.address,
-      this.accounts.borrower,
+      this.signers.borrower.address,
       lockedCollateral,
     );
-    await this.contracts.balanceSheet.__godMode_setVaultDebt(this.stubs.fyToken.address, this.accounts.borrower, debt);
+    await this.contracts.balanceSheet.__godMode_setVaultDebt(
+      this.stubs.fyToken.address,
+      this.signers.borrower.address,
+      debt,
+    );
   });
 
   it("returns the current collateralization ratio mantissa", async function () {
     const currentCollateralizationRatioMantissa: BigNumber = await this.contracts.balanceSheet.getCurrentCollateralizationRatio(
       this.stubs.fyToken.address,
-      this.accounts.borrower,
+      this.signers.borrower.address,
     );
     expect(currentCollateralizationRatioMantissa).to.equal(percentages.oneThousand);
   });

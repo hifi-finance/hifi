@@ -52,7 +52,7 @@ export default function shouldBehaveLikeSetRedeemFyTokensAllowed(): void {
             .setRedeemFyTokensAllowed(this.stubs.fyToken.address, true),
         )
           .to.emit(this.contracts.fintroller, "SetRedeemFyTokensAllowed")
-          .withArgs(this.accounts.admin, this.stubs.fyToken.address, true);
+          .withArgs(this.signers.admin.address, this.stubs.fyToken.address, true);
       });
     });
   });

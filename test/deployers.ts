@@ -134,12 +134,7 @@ export async function deployGodModeRedemptionPool(
 export async function deployUnderlying(deployer: Signer): Promise<Erc20Mintable> {
   const erc20MintableArtifact: Artifact = await hre.artifacts.readArtifact("Erc20Mintable");
   const underlying: Erc20Mintable = <Erc20Mintable>(
-    await deployContract(
-      deployer,
-      erc20MintableArtifact,
-      ["USD Coin", "USDC", BigNumber.from(6)],
-      overrideOptions,
-    )
+    await deployContract(deployer, erc20MintableArtifact, ["USD Coin", "USDC", BigNumber.from(6)], overrideOptions)
   );
   return underlying;
 }

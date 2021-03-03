@@ -56,7 +56,7 @@ export default function shouldBehaveLikeSetDepositCollateralAllowed(): void {
             .setDepositCollateralAllowed(this.stubs.fyToken.address, true),
         )
           .to.emit(this.contracts.fintroller, "SetDepositCollateralAllowed")
-          .withArgs(this.accounts.admin, this.stubs.fyToken.address, true);
+          .withArgs(this.signers.admin.address, this.stubs.fyToken.address, true);
       });
     });
   });

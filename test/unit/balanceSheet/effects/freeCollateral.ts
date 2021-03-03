@@ -53,7 +53,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
             .withArgs(this.stubs.fyToken.address)
             .returns(true);
           await this.stubs.collateral.mock.transferFrom
-            .withArgs(this.accounts.borrower, this.contracts.balanceSheet.address, depositCollateralAmount)
+            .withArgs(this.signers.borrower.address, this.contracts.balanceSheet.address, depositCollateralAmount)
             .returns(true);
 
           /* Deposit 10 WETH. */
@@ -83,7 +83,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
             it("it frees the collateral", async function () {
               const oldVault: Vault = await this.contracts.balanceSheet.getVault(
                 this.stubs.fyToken.address,
-                this.accounts.borrower,
+                this.signers.borrower.address,
               );
               const oldFreeCollateral: BigNumber = oldVault[1];
               const oldLockedCollateral: BigNumber = oldVault[2];
@@ -94,7 +94,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
 
               const newVault: Vault = await this.contracts.balanceSheet.getVault(
                 this.stubs.fyToken.address,
-                this.accounts.borrower,
+                this.signers.borrower.address,
               );
               const newFreeCollateral: BigNumber = newVault[1];
               const newLockedCollateral: BigNumber = newVault[2];
@@ -118,7 +118,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
                 /* Cannot call the usual `setVaultDebt` since the fyToken is stubbed. */
                 await this.contracts.balanceSheet.__godMode_setVaultDebt(
                   this.stubs.fyToken.address,
-                  this.accounts.borrower,
+                  this.signers.borrower.address,
                   debt,
                 );
               });
@@ -138,7 +138,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
                 const debt: BigNumber = tokenAmounts.oneHundred;
                 await this.contracts.balanceSheet.__godMode_setVaultDebt(
                   this.stubs.fyToken.address,
-                  this.accounts.borrower,
+                  this.signers.borrower.address,
                   debt,
                 );
               });
@@ -146,7 +146,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
               it("it frees the collateral", async function () {
                 const oldVault: Vault = await this.contracts.balanceSheet.getVault(
                   this.stubs.fyToken.address,
-                  this.accounts.borrower,
+                  this.signers.borrower.address,
                 );
                 const oldFreeCollateral: BigNumber = oldVault[1];
                 const oldLockedCollateral: BigNumber = oldVault[2];
@@ -158,7 +158,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
 
                 const newVault: Vault = await this.contracts.balanceSheet.getVault(
                   this.stubs.fyToken.address,
-                  this.accounts.borrower,
+                  this.signers.borrower.address,
                 );
                 const newFreeCollateral: BigNumber = newVault[1];
                 const newLockedCollateral: BigNumber = newVault[2];
@@ -175,7 +175,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
                     .freeCollateral(this.stubs.fyToken.address, collateralAmount),
                 )
                   .to.emit(this.contracts.balanceSheet, "FreeCollateral")
-                  .withArgs(this.stubs.fyToken.address, this.accounts.borrower, collateralAmount);
+                  .withArgs(this.stubs.fyToken.address, this.signers.borrower.address, collateralAmount);
               });
             });
           });

@@ -42,7 +42,7 @@ export default function shouldBehaveLikeSetBorrowAllowed(): void {
           this.contracts.fintroller.connect(this.signers.admin).setBorrowAllowed(this.stubs.fyToken.address, true),
         )
           .to.emit(this.contracts.fintroller, "SetBorrowAllowed")
-          .withArgs(this.accounts.admin, this.stubs.fyToken.address, true);
+          .withArgs(this.signers.admin.address, this.stubs.fyToken.address, true);
       });
     });
   });

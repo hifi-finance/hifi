@@ -52,7 +52,7 @@ export default function shouldBehaveLikeSetBorrowAllowed(): void {
             .setLiquidateBorrowAllowed(this.stubs.fyToken.address, true),
         )
           .to.emit(this.contracts.fintroller, "SetLiquidateBorrowAllowed")
-          .withArgs(this.accounts.admin, this.stubs.fyToken.address, true);
+          .withArgs(this.signers.admin.address, this.stubs.fyToken.address, true);
       });
     });
   });

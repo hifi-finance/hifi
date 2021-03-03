@@ -1,6 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { MockContract } from "ethereum-waffle";
-import { Signer } from "@ethersproject/abstract-signer";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 
 import { BalanceSheet } from "../typechain/BalanceSheet";
 import { ChainlinkOperator } from "../typechain/ChainlinkOperator";
@@ -12,16 +12,6 @@ import { GodModeRedemptionPool } from "../typechain/GodModeRedemptionPool";
 import { GodModeFyToken } from "../typechain/GodModeFyToken";
 import { RedemptionPool } from "../typechain/RedemptionPool";
 import { SimplePriceFeed } from "../typechain/SimplePriceFeed";
-
-/* Fingers-crossed that ethers.js or waffle will provide an easier way to cache the address */
-export interface Accounts {
-  admin: string;
-  borrower: string;
-  lender: string;
-  liquidator: string;
-  maker: string;
-  raider: string;
-}
 
 /* The first type is for Hardhat Network tests, the second for Ethereum Mainnet. */
 /* TODO: refactor this so that contract types differ for each test suite type. */
@@ -38,12 +28,12 @@ export interface Contracts {
 }
 
 export interface Signers {
-  admin: Signer;
-  borrower: Signer;
-  lender: Signer;
-  liquidator: Signer;
-  maker: Signer;
-  raider: Signer;
+  admin: SignerWithAddress;
+  borrower: SignerWithAddress;
+  lender: SignerWithAddress;
+  liquidator: SignerWithAddress;
+  maker: SignerWithAddress;
+  raider: SignerWithAddress;
 }
 
 export interface Stubs {

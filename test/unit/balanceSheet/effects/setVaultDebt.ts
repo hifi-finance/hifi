@@ -12,7 +12,7 @@ export default function shouldBehaveLikeSetVaultDebt(): void {
       await expect(
         this.contracts.balanceSheet
           .connect(this.signers.raider)
-          .setVaultDebt(this.stubs.fyToken.address, this.accounts.raider, debt),
+          .setVaultDebt(this.stubs.fyToken.address, this.signers.raider.address, debt),
       ).to.be.revertedWith(BalanceSheetErrors.SetVaultDebtNotAuthorized);
     });
   });

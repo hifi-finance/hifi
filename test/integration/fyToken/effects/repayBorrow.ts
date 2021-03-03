@@ -27,7 +27,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
       .setBondDebtCeiling(this.contracts.fyToken.address, tokenAmounts.oneHundredThousand);
 
     /* Mint 10 WETH and approve the Balance Sheet to spend it all. */
-    await this.contracts.collateral.mint(this.accounts.borrower, collateralAmount);
+    await this.contracts.collateral.mint(this.signers.borrower.address, collateralAmount);
     await this.contracts.collateral
       .connect(this.signers.borrower)
       .approve(this.contracts.balanceSheet.address, collateralAmount);
@@ -47,21 +47,21 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
   });
 
   it("repays the borrow", async function () {
-    const oldBalance: BigNumber = await this.contracts.fyToken.balanceOf(this.accounts.borrower);
+    const oldBalance: BigNumber = await this.contracts.fyToken.balanceOf(this.signers.borrower.address);
     await this.contracts.fyToken.connect(this.signers.borrower).repayBorrow(repayAmount);
-    const newBalance: BigNumber = await this.contracts.fyToken.balanceOf(this.accounts.borrower);
+    const newBalance: BigNumber = await this.contracts.fyToken.balanceOf(this.signers.borrower.address);
     expect(oldBalance).to.equal(newBalance.add(repayAmount));
   });
 
   it("reduces the debt of the caller", async function () {
     const oldDebt: BigNumber = await this.contracts.balanceSheet.getVaultDebt(
       this.contracts.fyToken.address,
-      this.accounts.borrower,
+      this.signers.borrower.address,
     );
     await this.contracts.fyToken.connect(this.signers.borrower).repayBorrow(repayAmount);
     const newDebt: BigNumber = await this.contracts.balanceSheet.getVaultDebt(
       this.contracts.fyToken.address,
-      this.accounts.borrower,
+      this.signers.borrower.address,
     );
     expect(oldDebt).to.equal(newDebt.add(repayAmount));
   });
@@ -70,6 +70,6 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
     const oldBorrowAmount: BigNumber = borrowAmount;
     await expect(this.contracts.fyToken.connect(this.signers.borrower).repayBorrow(repayAmount))
       .to.emit(this.contracts.balanceSheet, "SetVaultDebt")
-      .withArgs(this.contracts.fyToken.address, this.accounts.borrower, oldBorrowAmount, newBorrowAmount);
+      .withArgs(this.contracts.fyToken.address, this.signers.borrower.address, oldBorrowAmount, newBorrowAmount);
   });
 }

@@ -79,7 +79,7 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
                 .setBondDebtCeiling(this.stubs.fyToken.address, newDebtCeiling),
             )
               .to.emit(this.contracts.fintroller, "SetBondDebtCeiling")
-              .withArgs(this.accounts.admin, this.stubs.fyToken.address, Zero, newDebtCeiling);
+              .withArgs(this.signers.admin.address, this.stubs.fyToken.address, Zero, newDebtCeiling);
           });
         });
       });

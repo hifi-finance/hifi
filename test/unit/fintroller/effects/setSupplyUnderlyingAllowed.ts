@@ -56,7 +56,7 @@ export default function shouldBehaveLikeSetSupplyUnderlyingAllowed(): void {
             .setSupplyUnderlyingAllowed(this.stubs.fyToken.address, true),
         )
           .to.emit(this.contracts.fintroller, "SetSupplyUnderlyingAllowed")
-          .withArgs(this.accounts.admin, this.stubs.fyToken.address, true);
+          .withArgs(this.signers.admin.address, this.stubs.fyToken.address, true);
       });
     });
   });

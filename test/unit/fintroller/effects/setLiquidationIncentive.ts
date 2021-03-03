@@ -70,7 +70,7 @@ export default function shouldBehaveLikeSetLiquidationIncentive(): void {
             .setLiquidationIncentive(newLiquidationIncentiveMantissa),
         )
           .to.emit(this.contracts.fintroller, "SetLiquidationIncentive")
-          .withArgs(this.accounts.admin, defaultLiquidationIncentiveMantissa, newLiquidationIncentiveMantissa);
+          .withArgs(this.signers.admin.address, defaultLiquidationIncentiveMantissa, newLiquidationIncentiveMantissa);
       });
     });
   });

@@ -36,7 +36,7 @@ export default function shouldBehaveLikeOpenVault(): void {
       it("emits an OpenVault event", async function () {
         await expect(this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.fyToken.address))
           .to.emit(this.contracts.balanceSheet, "OpenVault")
-          .withArgs(this.stubs.fyToken.address, this.accounts.borrower);
+          .withArgs(this.stubs.fyToken.address, this.signers.borrower.address);
       });
     });
   });

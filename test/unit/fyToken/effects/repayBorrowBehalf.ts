@@ -17,26 +17,28 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
   describe("when the vault is not open", function () {
     beforeEach(async function () {
       await this.stubs.balanceSheet.mock.isVaultOpen
-        .withArgs(this.contracts.fyToken.address, this.accounts.borrower)
+        .withArgs(this.contracts.fyToken.address, this.signers.borrower.address)
         .returns(false);
     });
 
     it("reverts", async function () {
       await expect(
-        this.contracts.fyToken.connect(this.signers.lender).repayBorrowBehalf(this.accounts.borrower, repayAmount),
+        this.contracts.fyToken
+          .connect(this.signers.lender)
+          .repayBorrowBehalf(this.signers.borrower.address, repayAmount),
       ).to.be.revertedWith(GenericErrors.VaultNotOpen);
     });
   });
 
   describe("when the vault is open", function () {
     beforeEach(async function () {
-      await stubIsVaultOpen.call(this, this.contracts.fyToken.address, this.accounts.borrower);
+      await stubIsVaultOpen.call(this, this.contracts.fyToken.address, this.signers.borrower.address);
     });
 
     describe("when the amount to repay is zero", function () {
       it("reverts", async function () {
         await expect(
-          this.contracts.fyToken.connect(this.signers.borrower).repayBorrowBehalf(this.accounts.borrower, Zero),
+          this.contracts.fyToken.connect(this.signers.borrower).repayBorrowBehalf(this.signers.borrower.address, Zero),
         ).to.be.revertedWith(FyTokenErrors.RepayBorrowZero);
       });
     });
@@ -60,7 +62,7 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
             beforeEach(async function () {
               /* The fyToken makes an internal call to this stubbed function. */
               await this.stubs.balanceSheet.mock.getVaultDebt
-                .withArgs(this.contracts.fyToken.address, this.accounts.borrower)
+                .withArgs(this.contracts.fyToken.address, this.signers.borrower.address)
                 .returns(Zero);
             });
 
@@ -69,30 +71,30 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
               await expect(
                 this.contracts.fyToken
                   .connect(this.signers.lender)
-                  .repayBorrowBehalf(this.accounts.borrower, repayAmount),
+                  .repayBorrowBehalf(this.signers.borrower.address, repayAmount),
               ).to.be.revertedWith(FyTokenErrors.RepayBorrowInsufficientDebt);
             });
           });
 
           describe("when the user has a debt", function () {
             beforeEach(async function () {
-              await this.contracts.fyToken.__godMode_mint(this.accounts.lender, borrowAmount);
+              await this.contracts.fyToken.__godMode_mint(this.signers.lender.address, borrowAmount);
 
               /* The fyToken makes internal calls to these stubbed functions. */
               await this.stubs.balanceSheet.mock.getVaultDebt
-                .withArgs(this.contracts.fyToken.address, this.accounts.borrower)
+                .withArgs(this.contracts.fyToken.address, this.signers.borrower.address)
                 .returns(repayAmount);
               await this.stubs.balanceSheet.mock.setVaultDebt
-                .withArgs(this.contracts.fyToken.address, this.accounts.borrower, Zero)
+                .withArgs(this.contracts.fyToken.address, this.signers.borrower.address, Zero)
                 .returns(true);
             });
 
             it("repays the borrowed fyTokens", async function () {
-              const oldBalance: BigNumber = await this.contracts.fyToken.balanceOf(this.accounts.lender);
+              const oldBalance: BigNumber = await this.contracts.fyToken.balanceOf(this.signers.lender.address);
               await this.contracts.fyToken
                 .connect(this.signers.lender)
-                .repayBorrowBehalf(this.accounts.borrower, repayAmount);
-              const newBalance: BigNumber = await this.contracts.fyToken.balanceOf(this.accounts.lender);
+                .repayBorrowBehalf(this.signers.borrower.address, repayAmount);
+              const newBalance: BigNumber = await this.contracts.fyToken.balanceOf(this.signers.lender.address);
               expect(oldBalance).to.equal(newBalance.add(repayAmount));
             });
 
@@ -100,30 +102,30 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
               await expect(
                 this.contracts.fyToken
                   .connect(this.signers.lender)
-                  .repayBorrowBehalf(this.accounts.borrower, repayAmount),
+                  .repayBorrowBehalf(this.signers.borrower.address, repayAmount),
               )
                 .to.emit(this.contracts.fyToken, "Burn")
-                .withArgs(this.accounts.lender, repayAmount);
+                .withArgs(this.signers.lender.address, repayAmount);
             });
 
             it("emits a Transfer event", async function () {
               await expect(
                 this.contracts.fyToken
                   .connect(this.signers.lender)
-                  .repayBorrowBehalf(this.accounts.borrower, repayAmount),
+                  .repayBorrowBehalf(this.signers.borrower.address, repayAmount),
               )
                 .to.emit(this.contracts.fyToken, "Transfer")
-                .withArgs(this.accounts.lender, this.contracts.fyToken.address, repayAmount);
+                .withArgs(this.signers.lender.address, this.contracts.fyToken.address, repayAmount);
             });
 
             it("emits a RepayBorrow event", async function () {
               await expect(
                 this.contracts.fyToken
                   .connect(this.signers.lender)
-                  .repayBorrowBehalf(this.accounts.borrower, repayAmount),
+                  .repayBorrowBehalf(this.signers.borrower.address, repayAmount),
               )
                 .to.emit(this.contracts.fyToken, "RepayBorrow")
-                .withArgs(this.accounts.lender, this.accounts.borrower, repayAmount, Zero);
+                .withArgs(this.signers.lender.address, this.signers.borrower.address, repayAmount, Zero);
             });
           });
         });

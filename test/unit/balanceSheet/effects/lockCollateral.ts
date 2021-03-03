@@ -21,7 +21,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
             .withArgs(this.stubs.fyToken.address)
             .returns(true);
           await this.stubs.collateral.mock.transferFrom
-            .withArgs(this.accounts.borrower, this.contracts.balanceSheet.address, depositCollateralAmount)
+            .withArgs(this.signers.borrower.address, this.contracts.balanceSheet.address, depositCollateralAmount)
             .returns(true);
           await this.contracts.balanceSheet
             .connect(this.signers.borrower)
@@ -31,7 +31,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
         it("it locks the collateral", async function () {
           const oldVault: Vault = await this.contracts.balanceSheet.getVault(
             this.stubs.fyToken.address,
-            this.accounts.borrower,
+            this.signers.borrower.address,
           );
           const oldFreeCollateral: BigNumber = oldVault[1];
           const oldLockedCollateral: BigNumber = oldVault[2];
@@ -42,7 +42,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
 
           const newVault: Vault = await this.contracts.balanceSheet.getVault(
             this.stubs.fyToken.address,
-            this.accounts.borrower,
+            this.signers.borrower.address,
           );
           const newFreeCollateral: BigNumber = newVault[1];
           const newLockedCollateral: BigNumber = newVault[2];
@@ -58,7 +58,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
               .lockCollateral(this.stubs.fyToken.address, depositCollateralAmount),
           )
             .to.emit(this.contracts.balanceSheet, "LockCollateral")
-            .withArgs(this.stubs.fyToken.address, this.accounts.borrower, depositCollateralAmount);
+            .withArgs(this.stubs.fyToken.address, this.signers.borrower.address, depositCollateralAmount);
         });
       });
 

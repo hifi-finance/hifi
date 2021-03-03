@@ -24,7 +24,7 @@ export default function shouldBehaveLikeSetOracle(): void {
         /* The first argument is the zero address because initially there's no oracle */
         await expect(this.contracts.fintroller.connect(this.signers.admin).setOracle(this.stubs.oracle.address))
           .to.emit(this.contracts.fintroller, "SetOracle")
-          .withArgs(this.accounts.admin, AddressZero, this.stubs.oracle.address);
+          .withArgs(this.signers.admin.address, AddressZero, this.stubs.oracle.address);
       });
     });
 

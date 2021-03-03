@@ -24,7 +24,7 @@ export default function shouldBehaveLikeBorrow(): void {
       .setBondDebtCeiling(this.contracts.fyToken.address, tokenAmounts.oneHundredThousand);
 
     /* Mint 10 WETH and approve the Balance Sheet to spend it all. */
-    await this.contracts.collateral.mint(this.accounts.borrower, collateralAmount);
+    await this.contracts.collateral.mint(this.signers.borrower.address, collateralAmount);
     await this.contracts.collateral
       .connect(this.signers.borrower)
       .approve(this.contracts.balanceSheet.address, collateralAmount);
@@ -41,21 +41,21 @@ export default function shouldBehaveLikeBorrow(): void {
   });
 
   it("borrows fyTokens", async function () {
-    const oldBalance: BigNumber = await this.contracts.fyToken.balanceOf(this.accounts.borrower);
+    const oldBalance: BigNumber = await this.contracts.fyToken.balanceOf(this.signers.borrower.address);
     await this.contracts.fyToken.connect(this.signers.borrower).borrow(borrowAmount);
-    const newBalance: BigNumber = await this.contracts.fyToken.balanceOf(this.accounts.borrower);
+    const newBalance: BigNumber = await this.contracts.fyToken.balanceOf(this.signers.borrower.address);
     expect(oldBalance).to.equal(newBalance.sub(borrowAmount));
   });
 
   it("increases the debt of the caller", async function () {
     const oldDebt: BigNumber = await this.contracts.balanceSheet.getVaultDebt(
       this.contracts.fyToken.address,
-      this.accounts.borrower,
+      this.signers.borrower.address,
     );
     await this.contracts.fyToken.connect(this.signers.borrower).borrow(borrowAmount);
     const newDebt: BigNumber = await this.contracts.balanceSheet.getVaultDebt(
       this.contracts.fyToken.address,
-      this.accounts.borrower,
+      this.signers.borrower.address,
     );
     expect(oldDebt).to.equal(newDebt.sub(borrowAmount));
   });
@@ -63,6 +63,6 @@ export default function shouldBehaveLikeBorrow(): void {
   it("emits a SetVaultDebt event", async function () {
     await expect(this.contracts.fyToken.connect(this.signers.borrower).borrow(borrowAmount))
       .to.emit(this.contracts.balanceSheet, "SetVaultDebt")
-      .withArgs(this.contracts.fyToken.address, this.accounts.borrower, Zero, borrowAmount);
+      .withArgs(this.contracts.fyToken.address, this.signers.borrower.address, Zero, borrowAmount);
   });
 }

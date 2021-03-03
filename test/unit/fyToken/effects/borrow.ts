@@ -16,7 +16,7 @@ export default function shouldBehaveLikeBorrow(): void {
   describe("when the vault is not open", function () {
     beforeEach(async function () {
       await this.stubs.balanceSheet.mock.isVaultOpen
-        .withArgs(this.contracts.fyToken.address, this.accounts.borrower)
+        .withArgs(this.contracts.fyToken.address, this.signers.borrower.address)
         .returns(false);
     });
 
@@ -29,7 +29,7 @@ export default function shouldBehaveLikeBorrow(): void {
 
   describe("when the vault is open", function () {
     beforeEach(async function () {
-      await stubIsVaultOpen.call(this, this.contracts.fyToken.address, this.accounts.borrower);
+      await stubIsVaultOpen.call(this, this.contracts.fyToken.address, this.signers.borrower.address);
     });
 
     contextForTimeDependentTests("when the bond matured", function () {
@@ -117,7 +117,7 @@ export default function shouldBehaveLikeBorrow(): void {
                 beforeEach(async function () {
                   /* The fyToken makes an internal call to this stubbed function. */
                   await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
-                    .withArgs(this.contracts.fyToken.address, this.accounts.borrower, Zero, borrowAmount)
+                    .withArgs(this.contracts.fyToken.address, this.signers.borrower.address, Zero, borrowAmount)
                     .returns(Zero);
                 });
 
@@ -135,13 +135,13 @@ export default function shouldBehaveLikeBorrow(): void {
                     await stubVaultFreeCollateral.call(
                       this,
                       this.contracts.fyToken.address,
-                      this.accounts.borrower,
+                      this.signers.borrower.address,
                       collateralAmount,
                     );
 
                     /* The fyToken makes an internal call to this stubbed function. */
                     await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
-                      .withArgs(this.contracts.fyToken.address, this.accounts.borrower, Zero, borrowAmount)
+                      .withArgs(this.contracts.fyToken.address, this.signers.borrower.address, Zero, borrowAmount)
                       .returns(Zero);
                   });
 
@@ -157,7 +157,7 @@ export default function shouldBehaveLikeBorrow(): void {
                     await stubVaultLockedCollateral.call(
                       this,
                       this.contracts.fyToken.address,
-                      this.accounts.borrower,
+                      this.signers.borrower.address,
                       collateralAmount,
                     );
                   });
@@ -169,7 +169,7 @@ export default function shouldBehaveLikeBorrow(): void {
                       await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
                         .withArgs(
                           this.contracts.fyToken.address,
-                          this.accounts.borrower,
+                          this.signers.borrower.address,
                           collateralAmount,
                           borrowAmount,
                         )
@@ -190,7 +190,7 @@ export default function shouldBehaveLikeBorrow(): void {
                       await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
                         .withArgs(
                           this.contracts.fyToken.address,
-                          this.accounts.borrower,
+                          this.signers.borrower.address,
                           collateralAmount,
                           borrowAmount,
                         )
@@ -200,7 +200,7 @@ export default function shouldBehaveLikeBorrow(): void {
                     describe("when the call to set the new vault debt does not succeed", function () {
                       beforeEach(async function () {
                         await this.stubs.balanceSheet.mock.setVaultDebt
-                          .withArgs(this.contracts.fyToken.address, this.accounts.borrower, borrowAmount)
+                          .withArgs(this.contracts.fyToken.address, this.signers.borrower.address, borrowAmount)
                           .returns(false);
                       });
 
@@ -213,33 +213,37 @@ export default function shouldBehaveLikeBorrow(): void {
                     describe("when the call to set the new vault debt succeeds", function () {
                       beforeEach(async function () {
                         await this.stubs.balanceSheet.mock.setVaultDebt
-                          .withArgs(this.contracts.fyToken.address, this.accounts.borrower, borrowAmount)
+                          .withArgs(this.contracts.fyToken.address, this.signers.borrower.address, borrowAmount)
                           .returns(true);
                       });
 
                       it("borrows fyTokens", async function () {
-                        const oldBalance: BigNumber = await this.contracts.fyToken.balanceOf(this.accounts.borrower);
+                        const oldBalance: BigNumber = await this.contracts.fyToken.balanceOf(
+                          this.signers.borrower.address,
+                        );
                         await this.contracts.fyToken.connect(this.signers.borrower).borrow(borrowAmount);
-                        const newBalance: BigNumber = await this.contracts.fyToken.balanceOf(this.accounts.borrower);
+                        const newBalance: BigNumber = await this.contracts.fyToken.balanceOf(
+                          this.signers.borrower.address,
+                        );
                         expect(oldBalance).to.equal(newBalance.sub(borrowAmount));
                       });
 
                       it("emits a Borrow event", async function () {
                         await expect(this.contracts.fyToken.connect(this.signers.borrower).borrow(borrowAmount))
                           .to.emit(this.contracts.fyToken, "Borrow")
-                          .withArgs(this.accounts.borrower, borrowAmount);
+                          .withArgs(this.signers.borrower.address, borrowAmount);
                       });
 
                       it("emits a Mint event", async function () {
                         await expect(this.contracts.fyToken.connect(this.signers.borrower).borrow(borrowAmount))
                           .to.emit(this.contracts.fyToken, "Mint")
-                          .withArgs(this.accounts.borrower, borrowAmount);
+                          .withArgs(this.signers.borrower.address, borrowAmount);
                       });
 
                       it("emits a Transfer event", async function () {
                         await expect(this.contracts.fyToken.connect(this.signers.borrower).borrow(borrowAmount))
                           .to.emit(this.contracts.fyToken, "Transfer")
-                          .withArgs(this.contracts.fyToken.address, this.accounts.borrower, borrowAmount);
+                          .withArgs(this.contracts.fyToken.address, this.signers.borrower.address, borrowAmount);
                       });
                     });
                   });

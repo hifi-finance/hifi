@@ -46,7 +46,7 @@ export default function shouldBehaveLikeSetRepayBorrowAllowed(): void {
           this.contracts.fintroller.connect(this.signers.admin).setRepayBorrowAllowed(this.stubs.fyToken.address, true),
         )
           .to.emit(this.contracts.fintroller, "SetRepayBorrowAllowed")
-          .withArgs(this.accounts.admin, this.stubs.fyToken.address, true);
+          .withArgs(this.signers.admin.address, this.stubs.fyToken.address, true);
       });
     });
   });

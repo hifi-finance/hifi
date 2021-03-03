@@ -14,7 +14,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
   describe("when the vault is not open", function () {
     beforeEach(async function () {
       await this.stubs.balanceSheet.mock.isVaultOpen
-        .withArgs(this.contracts.fyToken.address, this.accounts.borrower)
+        .withArgs(this.contracts.fyToken.address, this.signers.borrower.address)
         .returns(false);
     });
 
@@ -27,7 +27,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
 
   describe("when the vault is open", function () {
     beforeEach(async function () {
-      await stubIsVaultOpen.call(this, this.contracts.fyToken.address, this.accounts.borrower);
+      await stubIsVaultOpen.call(this, this.contracts.fyToken.address, this.signers.borrower.address);
     });
 
     describe("when the amount to repay is zero", function () {
@@ -83,9 +83,9 @@ export default function shouldBehaveLikeRepayBorrow(): void {
 
           describe("when the caller does not have a debt", function () {
             beforeEach(async function () {
-              await stubIsVaultOpen.call(this, this.contracts.fyToken.address, this.accounts.lender);
+              await stubIsVaultOpen.call(this, this.contracts.fyToken.address, this.signers.lender.address);
               await this.stubs.balanceSheet.mock.getVaultDebt
-                .withArgs(this.contracts.fyToken.address, this.accounts.lender)
+                .withArgs(this.contracts.fyToken.address, this.signers.lender.address)
                 .returns(Zero);
             });
 
@@ -100,14 +100,14 @@ export default function shouldBehaveLikeRepayBorrow(): void {
           describe("when the caller has a debt", function () {
             beforeEach(async function () {
               /* User borrows 100 fyUSDC. */
-              await this.contracts.fyToken.__godMode_mint(this.accounts.borrower, borrowAmount);
+              await this.contracts.fyToken.__godMode_mint(this.signers.borrower.address, borrowAmount);
               await this.stubs.balanceSheet.mock.getVaultDebt
-                .withArgs(this.contracts.fyToken.address, this.accounts.borrower)
+                .withArgs(this.contracts.fyToken.address, this.signers.borrower.address)
                 .returns(repayAmount);
 
               /* The fyToken makes an internal call to this stubbed function. */
               await this.stubs.balanceSheet.mock.setVaultDebt
-                .withArgs(this.contracts.fyToken.address, this.accounts.borrower, Zero)
+                .withArgs(this.contracts.fyToken.address, this.signers.borrower.address, Zero)
                 .returns(true);
             });
 
@@ -126,28 +126,28 @@ export default function shouldBehaveLikeRepayBorrow(): void {
 
             describe("when the caller has enough fyTokens", function () {
               it("repays the borrowed fyTokens", async function () {
-                const oldBalance: BigNumber = await this.contracts.fyToken.balanceOf(this.accounts.borrower);
+                const oldBalance: BigNumber = await this.contracts.fyToken.balanceOf(this.signers.borrower.address);
                 await this.contracts.fyToken.connect(this.signers.borrower).repayBorrow(repayAmount);
-                const newBalance: BigNumber = await this.contracts.fyToken.balanceOf(this.accounts.borrower);
+                const newBalance: BigNumber = await this.contracts.fyToken.balanceOf(this.signers.borrower.address);
                 expect(oldBalance).to.equal(newBalance.add(repayAmount));
               });
 
               it("emits a Burn event", async function () {
                 await expect(this.contracts.fyToken.connect(this.signers.borrower).repayBorrow(repayAmount))
                   .to.emit(this.contracts.fyToken, "Burn")
-                  .withArgs(this.accounts.borrower, repayAmount);
+                  .withArgs(this.signers.borrower.address, repayAmount);
               });
 
               it("emits a Transfer event", async function () {
                 await expect(this.contracts.fyToken.connect(this.signers.borrower).repayBorrow(repayAmount))
                   .to.emit(this.contracts.fyToken, "Transfer")
-                  .withArgs(this.accounts.borrower, this.contracts.fyToken.address, repayAmount);
+                  .withArgs(this.signers.borrower.address, this.contracts.fyToken.address, repayAmount);
               });
 
               it("emits a RepayBorrow event", async function () {
                 await expect(this.contracts.fyToken.connect(this.signers.borrower).repayBorrow(repayAmount))
                   .to.emit(this.contracts.fyToken, "RepayBorrow")
-                  .withArgs(this.accounts.borrower, this.accounts.borrower, repayAmount, Zero);
+                  .withArgs(this.signers.borrower.address, this.signers.borrower.address, repayAmount, Zero);
               });
             });
           });

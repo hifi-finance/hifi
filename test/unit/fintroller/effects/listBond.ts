@@ -34,7 +34,7 @@ export default function shouldBehaveLikeListBond(): void {
       it("emits a ListBond event", async function () {
         await expect(this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.fyToken.address))
           .to.emit(this.contracts.fintroller, "ListBond")
-          .withArgs(this.accounts.admin, this.stubs.fyToken.address);
+          .withArgs(this.signers.admin.address, this.stubs.fyToken.address);
       });
     });
   });

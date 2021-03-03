@@ -5,7 +5,7 @@ export default function shouldBehaveLikeOpenVault(): void {
     it("retrieves false", async function () {
       const isVaultOpen: boolean = await this.contracts.balanceSheet.isVaultOpen(
         this.stubs.fyToken.address,
-        this.accounts.borrower,
+        this.signers.borrower.address,
       );
       expect(isVaultOpen).to.equal(false);
     });
@@ -19,7 +19,7 @@ export default function shouldBehaveLikeOpenVault(): void {
     it("retrieves true", async function () {
       const isVaultOpen: boolean = await this.contracts.balanceSheet.isVaultOpen(
         this.stubs.fyToken.address,
-        this.accounts.borrower,
+        this.signers.borrower.address,
       );
       expect(isVaultOpen).to.equal(true);
     });

@@ -84,7 +84,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
           describe("when the call to transfer the collateral does not succeed", function () {
             beforeEach(async function () {
               await this.stubs.collateral.mock.transferFrom
-                .withArgs(this.accounts.borrower, this.contracts.balanceSheet.address, collateralAmount)
+                .withArgs(this.signers.borrower.address, this.contracts.balanceSheet.address, collateralAmount)
                 .returns(false);
             });
 
@@ -100,14 +100,14 @@ export default function shouldBehaveLikeDepositCollateral(): void {
           describe("when the call to transfer the collateral succeeds", function () {
             beforeEach(async function () {
               await this.stubs.collateral.mock.transferFrom
-                .withArgs(this.accounts.borrower, this.contracts.balanceSheet.address, collateralAmount)
+                .withArgs(this.signers.borrower.address, this.contracts.balanceSheet.address, collateralAmount)
                 .returns(true);
             });
 
             it("makes the collateral deposit", async function () {
               const oldVault = await this.contracts.balanceSheet.getVault(
                 this.stubs.fyToken.address,
-                this.accounts.borrower,
+                this.signers.borrower.address,
               );
               const oldFreeCollateral: BigNumber = oldVault[1];
               await this.contracts.balanceSheet
@@ -115,7 +115,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
                 .depositCollateral(this.stubs.fyToken.address, collateralAmount);
               const newVault = await this.contracts.balanceSheet.getVault(
                 this.stubs.fyToken.address,
-                this.accounts.borrower,
+                this.signers.borrower.address,
               );
               const newFreeCollateral: BigNumber = newVault[1];
               expect(oldFreeCollateral).to.equal(newFreeCollateral.sub(collateralAmount));
@@ -128,7 +128,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
                   .depositCollateral(this.stubs.fyToken.address, collateralAmount),
               )
                 .to.emit(this.contracts.balanceSheet, "DepositCollateral")
-                .withArgs(this.stubs.fyToken.address, this.accounts.borrower, collateralAmount);
+                .withArgs(this.stubs.fyToken.address, this.signers.borrower.address, collateralAmount);
             });
           });
         });

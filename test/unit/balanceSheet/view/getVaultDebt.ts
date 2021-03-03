@@ -7,7 +7,7 @@ export default function shouldBehaveLikeGetVaultDebt(): void {
     it("retrieves the default value", async function () {
       const debt: BigNumber = await this.contracts.balanceSheet.getVaultDebt(
         this.stubs.fyToken.address,
-        this.accounts.borrower,
+        this.signers.borrower.address,
       );
       expect(debt).to.equal(Zero);
     });
@@ -21,7 +21,7 @@ export default function shouldBehaveLikeGetVaultDebt(): void {
     it("retrieves the default value", async function () {
       const debt: BigNumber = await this.contracts.balanceSheet.getVaultDebt(
         this.stubs.fyToken.address,
-        this.accounts.borrower,
+        this.signers.borrower.address,
       );
       expect(debt).to.equal(Zero);
     });

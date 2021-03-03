@@ -8,7 +8,7 @@ export default function shouldBehaveLikeIsAccountUnderwater(): void {
     it("retrieves false", async function () {
       const isAccountUnderwater: boolean = await this.contracts.balanceSheet.isAccountUnderwater(
         this.stubs.fyToken.address,
-        this.accounts.borrower,
+        this.signers.borrower.address,
       );
       expect(isAccountUnderwater).to.equal(false);
     });
@@ -23,7 +23,7 @@ export default function shouldBehaveLikeIsAccountUnderwater(): void {
       it("retrieves false", async function () {
         const isAccountUnderwater: boolean = await this.contracts.balanceSheet.isAccountUnderwater(
           this.stubs.fyToken.address,
-          this.accounts.borrower,
+          this.signers.borrower.address,
         );
         expect(isAccountUnderwater).to.equal(false);
       });
@@ -39,12 +39,12 @@ export default function shouldBehaveLikeIsAccountUnderwater(): void {
           .returns(fintrollerConstants.defaultCollateralizationRatio);
         await this.contracts.balanceSheet.__godMode_setVaultLockedCollateral(
           this.stubs.fyToken.address,
-          this.accounts.borrower,
+          this.signers.borrower.address,
           lockedCollateral,
         );
         await this.contracts.balanceSheet.__godMode_setVaultDebt(
           this.stubs.fyToken.address,
-          this.accounts.borrower,
+          this.signers.borrower.address,
           debt,
         );
       });
@@ -54,7 +54,7 @@ export default function shouldBehaveLikeIsAccountUnderwater(): void {
         it("retrieves false", async function () {
           const isAccountUnderwater: boolean = await this.contracts.balanceSheet.isAccountUnderwater(
             this.stubs.fyToken.address,
-            this.accounts.borrower,
+            this.signers.borrower.address,
           );
           expect(isAccountUnderwater).to.equal(false);
         });
@@ -69,7 +69,7 @@ export default function shouldBehaveLikeIsAccountUnderwater(): void {
         it("retrieves true", async function () {
           const isAccountUnderwater: boolean = await this.contracts.balanceSheet.isAccountUnderwater(
             this.stubs.fyToken.address,
-            this.accounts.borrower,
+            this.signers.borrower.address,
           );
           expect(isAccountUnderwater).to.equal(true);
         });

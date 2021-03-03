@@ -96,7 +96,9 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
 
             describe("when the call to burn the fyTokens does not succeed", function () {
               beforeEach(async function () {
-                await this.stubs.fyToken.mock.burn.withArgs(this.accounts.maker, underlyingAmount).returns(false);
+                await this.stubs.fyToken.mock.burn
+                  .withArgs(this.signers.maker.address, underlyingAmount)
+                  .returns(false);
               });
 
               it("reverts", async function () {
@@ -107,7 +109,7 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
 
             describe("when the call to burn the fyTokens succeeds", function () {
               beforeEach(async function () {
-                await this.stubs.fyToken.mock.burn.withArgs(this.accounts.maker, fyTokenAmount).returns(true);
+                await this.stubs.fyToken.mock.burn.withArgs(this.signers.maker.address, fyTokenAmount).returns(true);
               });
 
               describe("when the underlying has 8 decimals", function () {
@@ -119,7 +121,7 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
 
                 beforeEach(async function () {
                   await this.stubs.underlying.mock.transfer
-                    .withArgs(this.accounts.maker, downscaledUnderlyingAmount)
+                    .withArgs(this.signers.maker.address, downscaledUnderlyingAmount)
                     .returns(true);
                 });
 
@@ -139,7 +141,7 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
 
                 beforeEach(async function () {
                   await this.stubs.underlying.mock.transfer
-                    .withArgs(this.accounts.maker, underlyingAmount)
+                    .withArgs(this.signers.maker.address, underlyingAmount)
                     .returns(true);
                 });
 
@@ -155,7 +157,7 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
                     this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(underlyingAmount),
                   )
                     .to.emit(this.contracts.redemptionPool, "RedeemFyTokens")
-                    .withArgs(this.accounts.maker, fyTokenAmount, underlyingAmount);
+                    .withArgs(this.signers.maker.address, fyTokenAmount, underlyingAmount);
                 });
               });
             });

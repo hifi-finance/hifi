@@ -7,7 +7,7 @@ export default function shouldBehaveLikeGetVaultLockedCollateral(): void {
     it("retrieves the default value", async function () {
       const lockedCollateral: BigNumber = await this.contracts.balanceSheet.getVaultLockedCollateral(
         this.stubs.fyToken.address,
-        this.accounts.borrower,
+        this.signers.borrower.address,
       );
       expect(lockedCollateral).to.equal(Zero);
     });
@@ -21,7 +21,7 @@ export default function shouldBehaveLikeGetVaultLockedCollateral(): void {
     it("retrieves the default value", async function () {
       const lockedCollateral: BigNumber = await this.contracts.balanceSheet.getVaultLockedCollateral(
         this.stubs.fyToken.address,
-        this.accounts.borrower,
+        this.signers.borrower.address,
       );
       expect(lockedCollateral).to.equal(Zero);
     });

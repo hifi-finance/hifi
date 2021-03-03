@@ -14,8 +14,8 @@ export default function shouldBehaveLikeClutchCollateral(): void {
           .connect(this.signers.admin)
           .clutchCollateral(
             this.stubs.fyToken.address,
-            this.accounts.liquidator,
-            this.accounts.borrower,
+            this.signers.liquidator.address,
+            this.signers.borrower.address,
             collateralAmount,
           ),
       ).to.be.revertedWith(BalanceSheetErrors.ClutchCollateralNotAuthorized);
