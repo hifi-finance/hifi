@@ -8,15 +8,15 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
   const fyTokenAmount: BigNumber = tokenAmounts.oneHundred;
 
   beforeEach(async function () {
-    /* List the bond in the Fintroller. */
+    // List the bond in the Fintroller.
     await this.contracts.fintroller.connect(this.signers.admin).listBond(this.contracts.fyToken.address);
 
-    /* Allow supply underlying. */
+    // Allow supply underlying.
     await this.contracts.fintroller
       .connect(this.signers.admin)
       .setSupplyUnderlyingAllowed(this.contracts.fyToken.address, true);
 
-    /* Mint 100 USDC and approve the Redemption Pool to spend it all. */
+    // Mint 100 USDC and approve the RedemptionPool to spend it all.
     await this.contracts.underlying.mint(this.signers.maker.address, underlyingAmount);
     await this.contracts.underlying
       .connect(this.signers.maker)

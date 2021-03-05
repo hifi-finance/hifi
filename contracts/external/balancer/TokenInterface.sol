@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: LGPL-3.0-or-later */
+/// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
-/**
- * @title TokenInterface
- * @author Hifi
- * @dev Forked from Balancer
- * https://github.com/balancer-labs/balancer-registry/blob/3d5fc37/contracts/ExchangeProxy.sol
- */
+/// @title TokenInterface
+/// @author Hifi
+/// @dev Forked from Balancer
+/// https://github.com/balancer-labs/balancer-registry/blob/3d5fc37/contracts/ExchangeProxy.sol
 interface TokenInterface {
     function balanceOf(address) external view returns (uint256);
 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: LGPL-3.0-or-later */
+/// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
 import "@paulrberg/contracts/access/Admin.sol";
@@ -12,16 +12,14 @@ import "./FintrollerInterface.sol";
 import "./FyTokenInterface.sol";
 import "./oracles/ChainlinkOperatorInterface.sol";
 
-/**
- * @title BalanceSheet
- * @author Hifi
- * @notice Manages the debt vault for all fyTokens.
- */
+/// @title BalanceSheet
+/// @author Hifi
+/// @notice Manages the debt vault for all fyTokens.
 contract BalanceSheet is
-    ReentrancyGuard, /* no depedency */
-    BalanceSheetInterface, /* one dependency */
-    Exponential, /* one dependency */
-    Admin /* two dependencies */
+    ReentrancyGuard, /// no depedency
+    BalanceSheetInterface, /// one dependency
+    Exponential, /// one dependency
+    Admin /// two dependencies
 {
     using SafeErc20 for Erc20Interface;
 
@@ -30,18 +28,14 @@ contract BalanceSheet is
         _;
     }
 
-    /**
-     * @param fintroller_ The address of the Fintroller contract.
-     */
+    /// @param fintroller_ The address of the Fintroller contract.
     constructor(FintrollerInterface fintroller_) Admin() {
-        /* Set the fyToken contract and sanity check it. */
+        // Set the fyToken contract and sanity check it.
         fintroller = fintroller_;
         fintroller.isFintroller();
     }
 
-    /**
-     * CONSTANT FUNCTIONS
-     */
+    /// CONSTANT FUNCTIONS ///
 
     struct GetClutchableCollateralLocalVars {
         Exp clutchableCollateralAmountUpscaled;
@@ -54,20 +48,18 @@ contract BalanceSheet is
         uint256 underlyingPriceUpscaled;
     }
 
-    /**
-     * @notice Determines the amount of collateral that can be clutched when liquidating a borrow.
-     *
-     * @dev The formula applied:
-     * clutchedCollateral = repayAmount * liquidationIncentive * underlyingPriceUsd / collateralPriceUsd
-     *
-     * Requirements:
-     *
-     * - `repayAmount` must be non-zero.
-     *
-     * @param fyToken The fyToken to make the query against.
-     * @param repayAmount The amount of fyTokens to repay.
-     * @return The amount of clutchable collateral as uint256, specified in the collateral's decimal system.
-     */
+    /// @notice Determines the amount of collateral that can be clutched when liquidating a borrow.
+    ///
+    /// @dev The formula applied:
+    /// clutchedCollateral = repayAmount * liquidationIncentive * underlyingPriceUsd / collateralPriceUsd
+    ///
+    /// Requirements:
+    ///
+    /// - `repayAmount` must be non-zero.
+    ///
+    /// @param fyToken The fyToken to make the query against.
+    /// @param repayAmount The amount of fyTokens to repay.
+    /// @return The amount of clutchable collateral as uint256, specified in the collateral's decimal system.
     function getClutchableCollateral(FyTokenInterface fyToken, uint256 repayAmount)
         external
         view
@@ -76,36 +68,36 @@ contract BalanceSheet is
     {
         GetClutchableCollateralLocalVars memory vars;
 
-        /* Avoid the zero edge cases. */
+        // Avoid the zero edge cases.
         require(repayAmount > 0, "ERR_GET_CLUTCHABLE_COLLATERAL_ZERO");
 
-        /* When the liquidation incentive is zero, the end result would be zero anyways. */
+        // When the liquidation incentive is zero, the end result would be zero anyways.
         vars.liquidationIncentiveMantissa = fintroller.liquidationIncentiveMantissa();
         if (vars.liquidationIncentiveMantissa == 0) {
             return 0;
         }
 
-        /* Grab the upscaled USD price of the underlying. */
+        // Grab the upscaled USD price of the underlying.
         ChainlinkOperatorInterface oracle = fintroller.oracle();
         vars.underlyingPriceUpscaled = oracle.getAdjustedPrice(fyToken.underlying().symbol());
 
-        /* Grab the upscaled USD price of the collateral. */
+        // Grab the upscaled USD price of the collateral.
         vars.collateralPriceUpscaled = oracle.getAdjustedPrice(fyToken.collateral().symbol());
 
-        /* Calculate the top part of the equation. */
+        // Calculate the top part of the equation.
         vars.numerator = mulExp3(
             Exp({ mantissa: repayAmount }),
             Exp({ mantissa: vars.liquidationIncentiveMantissa }),
             Exp({ mantissa: vars.underlyingPriceUpscaled })
         );
 
-        /* Calculate the mantissa form of the clutched collateral amount. */
+        // Calculate the mantissa form of the clutched collateral amount.
         vars.clutchableCollateralAmountUpscaled = divExp(
             vars.numerator,
             Exp({ mantissa: vars.collateralPriceUpscaled })
         );
 
-        /* If the precision scalar is not 1, calculate the final form of the clutched collateral amount. */
+        // If the precision scalar is not 1, calculate the final form of the clutched collateral amount.
         vars.collateralPrecisionScalar = fyToken.collateralPrecisionScalar();
         if (vars.collateralPrecisionScalar != 1) {
             vars.clutchableCollateralAmount =
@@ -118,12 +110,10 @@ contract BalanceSheet is
         return vars.clutchableCollateralAmount;
     }
 
-    /**
-     * @notice Determines the current collateralization ratio for the given borrower account.
-     * @param fyToken The fyToken to make the query against.
-     * @param borrower The borrower account to make the query against.
-     * @return A quotient if locked collateral is non-zero, otherwise zero.
-     */
+    /// @notice Determines the current collateralization ratio for the given borrower account.
+    /// @param fyToken The fyToken to make the query against.
+    /// @param borrower The borrower account to make the query against.
+    /// @return A quotient if locked collateral is non-zero, otherwise zero.
     function getCurrentCollateralizationRatio(FyTokenInterface fyToken, address borrower)
         public
         view
@@ -147,25 +137,23 @@ contract BalanceSheet is
         uint256 underlyingPrecisionScalar;
     }
 
-    /**
-     * @notice Determines the hypothetical collateralization ratio for the given locked
-     * collateral and debt, at the current prices provided by the oracle.
-     *
-     * @dev The formula applied: collateralizationRatio = lockedCollateralValueUsd / debtValueUsd
-     *
-     * Requirements:
-     *
-     * - The vault must be open.
-     * - `debt` must be non-zero.
-     * - The oracle prices must be non-zero.
-     *
-     * @param fyToken The fyToken for which to make the query against.
-     * @param borrower The borrower account for which to make the query against.
-     * @param lockedCollateral The hypothetical locked collateral.
-     * @param debt The hypothetical debt.
-     * @return The hypothetical collateralization ratio as a percentage mantissa if locked
-     * collateral is non-zero, otherwise zero.
-     */
+    /// @notice Determines the hypothetical collateralization ratio for the given locked
+    /// collateral and debt, at the current prices provided by the oracle.
+    ///
+    /// @dev The formula applied: collateralizationRatio = lockedCollateralValueUsd / debtValueUsd
+    ///
+    /// Requirements:
+    ///
+    /// - The vault must be open.
+    /// - `debt` must be non-zero.
+    /// - The oracle prices must be non-zero.
+    ///
+    /// @param fyToken The fyToken for which to make the query against.
+    /// @param borrower The borrower account for which to make the query against.
+    /// @param lockedCollateral The hypothetical locked collateral.
+    /// @param debt The hypothetical debt.
+    /// @return The hypothetical collateralization ratio as a percentage mantissa if locked
+    /// collateral is non-zero, otherwise zero.
     function getHypotheticalCollateralizationRatio(
         FyTokenInterface fyToken,
         address borrower,
@@ -174,23 +162,23 @@ contract BalanceSheet is
     ) public view override returns (uint256) {
         GetHypotheticalAccountLiquidityLocalVars memory vars;
 
-        /* If the vault is not open, a hypothetical collateralization ratio cannot be calculated. */
+        // If the vault is not open, a hypothetical collateralization ratio cannot be calculated.
         require(vaults[fyToken][borrower].isOpen, "ERR_VAULT_NOT_OPEN");
 
-        /* Avoid the zero edge cases. */
+        // Avoid the zero edge cases.
         if (lockedCollateral == 0) {
             return 0;
         }
         require(debt > 0, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_DEBT_ZERO");
 
-        /* Grab the upscaled USD price of the collateral. */
+        // Grab the upscaled USD price of the collateral.
         ChainlinkOperatorInterface oracle = fintroller.oracle();
         vars.collateralPriceUpscaled = oracle.getAdjustedPrice(fyToken.collateral().symbol());
 
-        /* Grab the upscaled USD price of the underlying. */
+        // Grab the upscaled USD price of the underlying.
         vars.underlyingPriceUpscaled = oracle.getAdjustedPrice(fyToken.underlying().symbol());
 
-        /* Upscale the collateral, which can have any precision, to mantissa precision. */
+        // Upscale the collateral, which can have any precision, to mantissa precision.
         vars.collateralPrecisionScalar = fyToken.collateralPrecisionScalar();
         if (vars.collateralPrecisionScalar != 1) {
             vars.lockedCollateralUpscaled = lockedCollateral * vars.collateralPrecisionScalar;
@@ -198,28 +186,24 @@ contract BalanceSheet is
             vars.lockedCollateralUpscaled = lockedCollateral;
         }
 
-        /* Calculate the USD value of the collateral. */
+        // Calculate the USD value of the collateral.
         vars.lockedCollateralValueUsd = mulExp(
             Exp({ mantissa: vars.lockedCollateralUpscaled }),
             Exp({ mantissa: vars.collateralPriceUpscaled })
         );
 
-        /* Calculate the USD value of the debt. */
+        // Calculate the USD value of the debt.
         vars.debtValueUsd = mulExp(Exp({ mantissa: debt }), Exp({ mantissa: vars.underlyingPriceUpscaled }));
 
-        /**
-         * Calculate the collateralization ratio by dividing the USD value of the hypothetical locked collateral by
-         * the USD value of the debt.
-         */
+        // Calculate the collateralization ratio by dividing the USD value of the hypothetical locked collateral by
+        // the USD value of the debt.
         vars.hypotheticalCollateralizationRatio = divExp(vars.lockedCollateralValueUsd, vars.debtValueUsd);
 
         return vars.hypotheticalCollateralizationRatio.mantissa;
     }
 
-    /**
-     * @notice Reads the storage properties of a vault.
-     * @return (uint256 debt, uint256 freeCollateral, uint256 lockedCollateral, bool isOpen).
-     */
+    /// @notice Reads the storage properties of a vault.
+    /// @return (uint256 debt, uint256 freeCollateral, uint256 lockedCollateral, bool isOpen).
     function getVault(FyTokenInterface fyToken, address borrower)
         external
         view
@@ -239,18 +223,14 @@ contract BalanceSheet is
         );
     }
 
-    /**
-     * @notice Reads the debt held by the given account.
-     * @return The debt held by the borrower, as an uint256.
-     */
+    /// @notice Reads the debt held by the given account.
+    /// @return The debt held by the borrower, as an uint256.
     function getVaultDebt(FyTokenInterface fyToken, address borrower) external view override returns (uint256) {
         return vaults[fyToken][borrower].debt;
     }
 
-    /**
-     * @notice Reads the amount of collateral that the given borrower account locked in the vault.
-     * @return The collateral locked in the vault by the borrower, as an uint256.
-     */
+    /// @notice Reads the amount of collateral that the given borrower account locked in the vault.
+    /// @return The collateral locked in the vault by the borrower, as an uint256.
     function getVaultLockedCollateral(FyTokenInterface fyToken, address borrower)
         external
         view
@@ -260,12 +240,10 @@ contract BalanceSheet is
         return vaults[fyToken][borrower].lockedCollateral;
     }
 
-    /**
-     * @notice Checks whether the borrower account can be liquidated or not.
-     * @param fyToken The fyToken for which to make the query against.
-     * @param borrower The borrower account for which to make the query against.
-     * @return bool true = is underwater, otherwise not.
-     */
+    /// @notice Checks whether the borrower account can be liquidated or not.
+    /// @param fyToken The fyToken for which to make the query against.
+    /// @param borrower The borrower account for which to make the query against.
+    /// @return bool true = is underwater, otherwise not.
     function isAccountUnderwater(FyTokenInterface fyToken, address borrower) external view override returns (bool) {
         Vault memory vault = vaults[fyToken][borrower];
         if (!vault.isOpen || vault.debt == 0) {
@@ -276,53 +254,47 @@ contract BalanceSheet is
         return currentCollateralizationRatioMantissa < thresholdCollateralizationRatioMantissa;
     }
 
-    /**
-     * @notice Checks whether the borrower account has a vault opened for a particular fyToken.
-     */
+    /// @notice Checks whether the borrower account has a vault opened for a particular fyToken.
     function isVaultOpen(FyTokenInterface fyToken, address borrower) external view override returns (bool) {
         return vaults[fyToken][borrower].isOpen;
     }
 
-    /**
-     * NON-CONSTANT FUNCTIONS
-     */
+    /// NON-CONSTANT FUNCTIONS ///
 
-    /**
-     * @notice Transfers the collateral from the borrower's vault to the liquidator account.
-     *
-     * @dev Emits a {ClutchCollateral} event.
-     *
-     * Requirements:
-     *
-     * - Can only be called by the fyToken.
-     * - There must be enough collateral in the borrower's vault.
-     *
-     * @param fyToken The address of the fyToken contract.
-     * @param liquidator The account who repays the borrower's debt and receives the collateral.
-     * @param borrower The account who fell underwater and is liquidated.
-     * @param collateralAmount The amount of collateral to clutch, specified in the collateral's decimal system.
-     * @return bool true = success, otherwise it reverts.
-     */
+    /// @notice Transfers the collateral from the borrower's vault to the liquidator account.
+    ///
+    /// @dev Emits a {ClutchCollateral} event.
+    ///
+    /// Requirements:
+    ///
+    /// - Can only be called by the fyToken.
+    /// - There must be enough collateral in the borrower's vault.
+    ///
+    /// @param fyToken The address of the fyToken contract.
+    /// @param liquidator The account who repays the borrower's debt and receives the collateral.
+    /// @param borrower The account who fell underwater and is liquidated.
+    /// @param collateralAmount The amount of collateral to clutch, specified in the collateral's decimal system.
+    /// @return bool true = success, otherwise it reverts.
     function clutchCollateral(
         FyTokenInterface fyToken,
         address liquidator,
         address borrower,
         uint256 collateralAmount
     ) external override nonReentrant returns (bool) {
-        /* Checks: the caller is the fyToken. */
+        // Checks: the caller is the fyToken.
         require(msg.sender == address(fyToken), "ERR_CLUTCH_COLLATERAL_NOT_AUTHORIZED");
 
-        /* Checks: there is enough clutchable collateral in the vault. */
+        // Checks: there is enough clutchable collateral in the vault.
         uint256 lockedCollateral = vaults[fyToken][borrower].lockedCollateral;
         require(lockedCollateral >= collateralAmount, "ERR_INSUFFICIENT_LOCKED_COLLATERAL");
 
-        /* Calculate the new locked collateral amount. */
+        // Calculate the new locked collateral amount.
         uint256 newLockedCollateral = lockedCollateral - collateralAmount;
 
-        /* Effects: update the vault. */
+        // Effects: update the vault.
         vaults[fyToken][borrower].lockedCollateral = newLockedCollateral;
 
-        /* Interactions: transfer the collateral. */
+        // Interactions: transfer the collateral.
         fyToken.collateral().safeTransfer(liquidator, collateralAmount);
 
         emit ClutchCollateral(fyToken, liquidator, borrower, collateralAmount);
@@ -330,22 +302,20 @@ contract BalanceSheet is
         return true;
     }
 
-    /**
-     * @notice Deposits collateral into the account's vault.
-     *
-     * @dev Emits a {DepositCollateral} event.
-     *
-     * Requirements:
-     *
-     * - The vault must be open.
-     * - The amount to deposit cannot be zero.
-     * - The Fintroller must allow this action to be performed.
-     * - The caller must have allowed this contract to spend `collateralAmount` tokens.
-     *
-     * @param fyToken The address of the fyToken contract.
-     * @param collateralAmount The amount of collateral to deposit.
-     * @return bool true = success, otherwise it reverts.
-     */
+    /// @notice Deposits collateral into the account's vault.
+    ///
+    /// @dev Emits a {DepositCollateral} event.
+    ///
+    /// Requirements:
+    ///
+    /// - The vault must be open.
+    /// - The amount to deposit cannot be zero.
+    /// - The Fintroller must allow this action to be performed.
+    /// - The caller must have allowed this contract to spend `collateralAmount` tokens.
+    ///
+    /// @param fyToken The address of the fyToken contract.
+    /// @param collateralAmount The amount of collateral to deposit.
+    /// @return bool true = success, otherwise it reverts.
     function depositCollateral(FyTokenInterface fyToken, uint256 collateralAmount)
         external
         override
@@ -353,17 +323,17 @@ contract BalanceSheet is
         nonReentrant
         returns (bool)
     {
-        /* Checks: the zero edge case. */
+        // Checks: the zero edge case.
         require(collateralAmount > 0, "ERR_DEPOSIT_COLLATERAL_ZERO");
 
-        /* Checks: the Fintroller allows this action to be performed. */
+        // Checks: the Fintroller allows this action to be performed.
         require(fintroller.getDepositCollateralAllowed(fyToken), "ERR_DEPOSIT_COLLATERAL_NOT_ALLOWED");
 
-        /* Effects: update storage. */
+        // Effects: update storage.
         uint256 hypotheticalFreeCollateral = vaults[fyToken][msg.sender].freeCollateral + collateralAmount;
         vaults[fyToken][msg.sender].freeCollateral = hypotheticalFreeCollateral;
 
-        /* Interactions: perform the Erc20 transfer. */
+        // Interactions: perform the Erc20 transfer.
         fyToken.collateral().safeTransferFrom(msg.sender, address(this), collateralAmount);
 
         emit DepositCollateral(fyToken, msg.sender, collateralAmount);
@@ -378,21 +348,19 @@ contract BalanceSheet is
         uint256 newLockedCollateral;
     }
 
-    /**
-     * @notice Frees a portion or all of the locked collateral.
-     * @dev Emits a {FreeCollateral} event.
-     *
-     * Requirements:
-     *
-     * - The vault must be open.
-     * - The amount to free cannot be zero.
-     * - There must be enough locked collateral.
-     * - The borrower account cannot fall below the collateralization ratio.
-     *
-     * @param fyToken The address of the fyToken contract.
-     * @param collateralAmount The amount of locked collateral to free.
-     * @return bool true = success, otherwise it reverts.
-     */
+    /// @notice Frees a portion or all of the locked collateral.
+    /// @dev Emits a {FreeCollateral} event.
+    ///
+    /// Requirements:
+    ///
+    /// - The vault must be open.
+    /// - The amount to free cannot be zero.
+    /// - There must be enough locked collateral.
+    /// - The borrower account cannot fall below the collateralization ratio.
+    ///
+    /// @param fyToken The address of the fyToken contract.
+    /// @param collateralAmount The amount of locked collateral to free.
+    /// @return bool true = success, otherwise it reverts.
     function freeCollateral(FyTokenInterface fyToken, uint256 collateralAmount)
         external
         override
@@ -401,15 +369,15 @@ contract BalanceSheet is
     {
         FreeCollateralLocalVars memory vars;
 
-        /* Checks: the zero edge case. */
+        // Checks: the zero edge case.
         require(collateralAmount > 0, "ERR_FREE_COLLATERAL_ZERO");
 
-        /* Checks: enough locked collateral. */
+        // Checks: enough locked collateral.
         Vault memory vault = vaults[fyToken][msg.sender];
         require(vault.lockedCollateral >= collateralAmount, "ERR_INSUFFICIENT_LOCKED_COLLATERAL");
         vars.newLockedCollateral = vault.lockedCollateral - collateralAmount;
 
-        /* Checks: the hypothetical collateralization ratio is above the threshold. */
+        // Checks: the hypothetical collateralization ratio is above the threshold.
         if (vault.debt > 0) {
             vars.hypotheticalCollateralizationRatioMantissa = getHypotheticalCollateralizationRatio(
                 fyToken,
@@ -424,7 +392,7 @@ contract BalanceSheet is
             );
         }
 
-        /* Effects: update storage. */
+        // Effects: update storage.
         vaults[fyToken][msg.sender].lockedCollateral = vars.newLockedCollateral;
         vars.newFreeCollateral = vault.freeCollateral + collateralAmount;
         vaults[fyToken][msg.sender].freeCollateral = vars.newFreeCollateral;
@@ -434,27 +402,25 @@ contract BalanceSheet is
         return true;
     }
 
-    /**
-     * @notice Locks a portion or all of the free collateral to make it eligible for borrowing.
-     * @dev Emits a {LockCollateral} event.
-     *
-     * Requirements:
-     *
-     * - The vault must be open.
-     * - The amount to lock cannot be zero.
-     * - There must be enough free collateral.
-     *
-     * @param fyToken The address of the fyToken contract.
-     * @param collateralAmount The amount of free collateral to lock.
-     * @return bool true = success, otherwise it reverts.
-     */
+    /// @notice Locks a portion or all of the free collateral to make it eligible for borrowing.
+    /// @dev Emits a {LockCollateral} event.
+    ///
+    /// Requirements:
+    ///
+    /// - The vault must be open.
+    /// - The amount to lock cannot be zero.
+    /// - There must be enough free collateral.
+    ///
+    /// @param fyToken The address of the fyToken contract.
+    /// @param collateralAmount The amount of free collateral to lock.
+    /// @return bool true = success, otherwise it reverts.
     function lockCollateral(FyTokenInterface fyToken, uint256 collateralAmount)
         external
         override
         isVaultOpenForMsgSender(fyToken)
         returns (bool)
     {
-        /* Avoid the zero edge case. */
+        // Avoid the zero edge case.
         require(collateralAmount > 0, "ERR_LOCK_COLLATERAL_ZERO");
 
         Vault memory vault = vaults[fyToken][msg.sender];
@@ -471,18 +437,16 @@ contract BalanceSheet is
         return true;
     }
 
-    /**
-     * @notice Opens a Vault for the caller.
-     * @dev Emits an {OpenVault} event.
-     *
-     * Requirements:
-     *
-     * - The vault cannot be already open.
-     * - The fyToken must pass the inspection.
-     *
-     * @param fyToken The address of the fyToken contract for which to open the vault.
-     * @return bool true = success, otherwise it reverts.
-     */
+    /// @notice Opens a Vault for the caller.
+    /// @dev Emits an {OpenVault} event.
+    ///
+    /// Requirements:
+    ///
+    /// - The vault cannot be already open.
+    /// - The fyToken must pass the inspection.
+    ///
+    /// @param fyToken The address of the fyToken contract for which to open the vault.
+    /// @return bool true = success, otherwise it reverts.
     function openVault(FyTokenInterface fyToken) external override returns (bool) {
         require(fyToken.isFyToken(), "ERR_OPEN_VAULT_FYTOKEN_INSPECTION");
         require(vaults[fyToken][msg.sender].isOpen == false, "ERR_VAULT_OPEN");
@@ -491,29 +455,27 @@ contract BalanceSheet is
         return true;
     }
 
-    /**
-     * @notice Updates the debt accrued by a particular borrower account.
-     *
-     * @dev Emits a {SetVaultDebt} event.
-     *
-     * Requirements:
-     *
-     * - Can only be called by the fyToken.
-     *
-     * @param fyToken The address of the fyToken contract.
-     * @param borrower The borrower account for which to update the debt.
-     * @param newVaultDebt The new debt to assign to the borrower account.
-     * @return bool=true success, otherwise it reverts.
-     */
+    /// @notice Updates the debt accrued by a particular borrower account.
+    ///
+    /// @dev Emits a {SetVaultDebt} event.
+    ///
+    /// Requirements:
+    ///
+    /// - Can only be called by the fyToken.
+    ///
+    /// @param fyToken The address of the fyToken contract.
+    /// @param borrower The borrower account for which to update the debt.
+    /// @param newVaultDebt The new debt to assign to the borrower account.
+    /// @return bool=true success, otherwise it reverts.
     function setVaultDebt(
         FyTokenInterface fyToken,
         address borrower,
         uint256 newVaultDebt
     ) external override returns (bool) {
-        /* Checks: the caller is the fyToken. */
+        // Checks: the caller is the fyToken.
         require(msg.sender == address(fyToken), "ERR_SET_VAULT_DEBT_NOT_AUTHORIZED");
 
-        /* Effects: update storage. */
+        // Effects: update storage.
         uint256 oldVaultDebt = vaults[fyToken][borrower].debt;
         vaults[fyToken][borrower].debt = newVaultDebt;
 
@@ -522,21 +484,19 @@ contract BalanceSheet is
         return true;
     }
 
-    /**
-     * @notice Withdraws a portion or all of the free collateral.
-     *
-     * @dev Emits a {WithdrawCollateral} event.
-     *
-     * Requirements:
-     *
-     * - The vault must be open.
-     * - The amount to withdraw cannot be zero.
-     * - There must be enough free collateral in the vault.
-     *
-     * @param fyToken The address of the fyToken contract.
-     * @param collateralAmount The amount of collateral to withdraw.
-     * @return bool true = success, otherwise it reverts.
-     */
+    /// @notice Withdraws a portion or all of the free collateral.
+    ///
+    /// @dev Emits a {WithdrawCollateral} event.
+    ///
+    /// Requirements:
+    ///
+    /// - The vault must be open.
+    /// - The amount to withdraw cannot be zero.
+    /// - There must be enough free collateral in the vault.
+    ///
+    /// @param fyToken The address of the fyToken contract.
+    /// @param collateralAmount The amount of collateral to withdraw.
+    /// @return bool true = success, otherwise it reverts.
     function withdrawCollateral(FyTokenInterface fyToken, uint256 collateralAmount)
         external
         override
@@ -544,17 +504,17 @@ contract BalanceSheet is
         nonReentrant
         returns (bool)
     {
-        /* Checks: the zero edge case. */
+        // Checks: the zero edge case.
         require(collateralAmount > 0, "ERR_WITHDRAW_COLLATERAL_ZERO");
 
-        /* Checks: there is enough free collateral. */
+        // Checks: there is enough free collateral.
         require(vaults[fyToken][msg.sender].freeCollateral >= collateralAmount, "ERR_INSUFFICIENT_FREE_COLLATERAL");
 
-        /* Effects: update storage. */
+        // Effects: update storage.
         uint256 newFreeCollateral = vaults[fyToken][msg.sender].freeCollateral - collateralAmount;
         vaults[fyToken][msg.sender].freeCollateral = newFreeCollateral;
 
-        /* Interactions: perform the Erc20 transfer. */
+        // Interactions: perform the Erc20 transfer.
         fyToken.collateral().safeTransfer(msg.sender, collateralAmount);
 
         emit WithdrawCollateral(fyToken, msg.sender, collateralAmount);

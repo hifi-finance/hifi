@@ -115,7 +115,7 @@ export default function shouldBehaveLikeBorrow(): void {
 
               describe("when the caller did not deposit any collateral", function () {
                 beforeEach(async function () {
-                  /* The fyToken makes an internal call to this stubbed function. */
+                  // The fyToken makes an internal call to this stubbed function.
                   await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
                     .withArgs(this.contracts.fyToken.address, this.signers.borrower.address, Zero, borrowAmount)
                     .returns(Zero);
@@ -131,7 +131,7 @@ export default function shouldBehaveLikeBorrow(): void {
               describe("when the caller deposited collateral", function () {
                 describe("when the caller did not lock the collateral", function () {
                   beforeEach(async function () {
-                    /* Stub the value of the free collateral. */
+                    // Stub the value of the free collateral.
                     await stubVaultFreeCollateral.call(
                       this,
                       this.contracts.fyToken.address,
@@ -139,7 +139,7 @@ export default function shouldBehaveLikeBorrow(): void {
                       collateralAmount,
                     );
 
-                    /* The fyToken makes an internal call to this stubbed function. */
+                    // The fyToken makes an internal call to this stubbed function.
                     await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
                       .withArgs(this.contracts.fyToken.address, this.signers.borrower.address, Zero, borrowAmount)
                       .returns(Zero);

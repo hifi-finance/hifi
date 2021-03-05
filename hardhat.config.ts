@@ -1,18 +1,21 @@
-import { config as dotenvConfig } from "dotenv";
-import { resolve } from "path";
-dotenvConfig({ path: resolve(__dirname, "./.env") });
-
-import { HardhatUserConfig, NetworkUserConfig } from "hardhat/types";
 import "@nomiclabs/hardhat-waffle";
 import "hardhat-gas-reporter";
 import "hardhat-typechain";
 import "solidity-coverage";
 
-import { chainIds, gasLimits } from "./helpers/constants";
 import "./tasks/accounts";
 import "./tasks/clean";
 
-/* Ensure that we have the environment variables we need. */
+import { resolve } from "path";
+
+import { config as dotenvConfig } from "dotenv";
+import { HardhatUserConfig, NetworkUserConfig } from "hardhat/types";
+
+import { chainIds, gasLimits } from "./helpers/constants";
+
+dotenvConfig({ path: resolve(__dirname, "./.env") });
+
+// Ensure that we have the environment variables we need.
 let mnemonic: string;
 if (!process.env.MNEMONIC) {
   throw new Error("Please set your MNEMONIC in a .env file");
@@ -57,7 +60,7 @@ const config: HardhatUserConfig = {
       allowUnlimitedContractSize: true,
       blockGasLimit: gasLimits.hardhat.blockGasLimit.toNumber(),
       chainId: chainIds.hardhat,
-      gas: gasLimits.hardhat.callGasLimit.toNumber() /* https://github.com/nomiclabs/hardhat/issues/660#issuecomment-715897156 */,
+      gas: gasLimits.hardhat.callGasLimit.toNumber(), // https://github.com/nomiclabs/hardhat/issues/660#issuecomment-715897156
     },
     goerli: createTestnetConfig("goerli"),
     kovan: createTestnetConfig("kovan"),

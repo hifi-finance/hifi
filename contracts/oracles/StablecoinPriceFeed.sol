@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: LGPL-3.0-or-later */
+/// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
 import "../external/chainlink/AggregatorV3Interface.sol";
 
-/**
- * @title StablecoinPriceFeed
- * @author Hifi
- */
+/// @title StablecoinPriceFeed
+/// @author Hifi
 contract StablecoinPriceFeed is AggregatorV3Interface {
     string internal internalDescription;
     int256 internal immutable price;

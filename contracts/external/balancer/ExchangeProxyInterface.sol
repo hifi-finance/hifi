@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: LGPL-3.0-or-later */
+// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
 import "./TokenInterface.sol";
 
-/**
- * @title ExchangeProxyInterface
- * @author Hifi
- */
+/// @title ExchangeProxyInterface
+/// @author Hifi
 interface ExchangeProxyInterface {
     function smartSwapExactIn(
         TokenInterface tokenIn,

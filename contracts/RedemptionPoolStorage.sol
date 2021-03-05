@@ -1,31 +1,21 @@
-/* SPDX-License-Identifier: LGPL-3.0-or-later */
+/// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
 import "./FintrollerInterface.sol";
 import "./FyTokenInterface.sol";
 
-/**
- * @title RedemptionPoolStorage
- * @author Hifi
- */
+/// @title RedemptionPoolStorage
+/// @author Hifi
 abstract contract RedemptionPoolStorage {
-    /**
-     * @notice The unique Fintroller associated with this contract.
-     */
+    /// @notice The unique Fintroller associated with this contract.
     FintrollerInterface public fintroller;
 
-    /**
-     * @notice The amount of the underlying asset available to be redeemed after maturation.
-     */
+    /// @notice The amount of the underlying asset available to be redeemed after maturation.
     uint256 public totalUnderlyingSupply;
 
-    /**
-     * The unique fyToken associated with this Redemption Pool.
-     */
+    /// @notice The unique fyToken associated with this RedemptionPool.
     FyTokenInterface public fyToken;
 
-    /**
-     * @notice Indicator that this is a Redemption Pool contract, for inspection.
-     */
+    /// @notice Indicator that this is a RedemptionPool contract, for inspection.
     bool public constant isRedemptionPool = true;
 }

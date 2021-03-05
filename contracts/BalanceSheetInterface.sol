@@ -1,16 +1,13 @@
-/* SPDX-License-Identifier: LGPL-3.0-or-later */
+// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
 import "./BalanceSheetStorage.sol";
 
-/**
- * @title BalanceSheetInterface
- * @author Hifi
- */
+/// @title BalanceSheetInterface
+/// @author Hifi
 abstract contract BalanceSheetInterface is BalanceSheetStorage {
-    /**
-     * CONSTANT FUNCTIONS
-     */
+    /// CONSTANT FUNCTIONS ///
+
     function getClutchableCollateral(FyTokenInterface fyToken, uint256 repayAmount)
         external
         view
@@ -53,9 +50,7 @@ abstract contract BalanceSheetInterface is BalanceSheetStorage {
 
     function isVaultOpen(FyTokenInterface fyToken, address borrower) external view virtual returns (bool);
 
-    /**
-     * NON-CONSTANT FUNCTIONS
-     */
+    /// NON-CONSTANT FUNCTIONS ///
 
     function clutchCollateral(
         FyTokenInterface fyToken,
@@ -80,9 +75,7 @@ abstract contract BalanceSheetInterface is BalanceSheetStorage {
 
     function withdrawCollateral(FyTokenInterface fyToken, uint256 collateralAmount) external virtual returns (bool);
 
-    /**
-     * EVENTS
-     */
+    /// EVENTS ///
 
     event ClutchCollateral(
         FyTokenInterface indexed fyToken,

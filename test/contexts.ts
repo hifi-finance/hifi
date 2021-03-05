@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// eslint-disable @typescript-eslint/no-explicit-any
 import { Signer } from "@ethersproject/abstract-signer";
 import { Wallet } from "@ethersproject/wallet";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
@@ -8,9 +8,7 @@ import { Contracts, Signers, Stubs } from "../types/index";
 
 const { createFixtureLoader } = waffle;
 
-/**
- * This is run at the beginning of each suite of tests: 2e2, integration and unit.
- */
+/// This is run at the beginning of each suite of tests: 2e2, integration and unit.
 export function baseContext(description: string, hooks: () => void): void {
   describe(description, function () {
     before(async function () {
@@ -26,7 +24,7 @@ export function baseContext(description: string, hooks: () => void): void {
       this.signers.maker = signers[4];
       this.signers.raider = signers[5];
 
-      /* Get rid of this when https://github.com/nomiclabs/hardhat/issues/849 gets fixed. */
+      // Get rid of this when https://github.com/nomiclabs/hardhat/issues/849 gets fixed.
       this.loadFixture = createFixtureLoader((signers as Signer[]) as Wallet[]);
     });
 
@@ -34,16 +32,14 @@ export function baseContext(description: string, hooks: () => void): void {
   });
 }
 
-/**
- * Takes a snapshot of the EVM and reverts to it after the provided mocha
- * hooks are executed.
- *
- * WARNING: an excessive use of this function will slow down testing.
- * WARNING2: this is a child snapshot within a parent snapshot run by the Waffle fixture.
- */
+/// Takes a snapshot of the EVM and reverts to it after the provided mocha
+/// hooks are executed.
+///
+/// WARNING: an excessive use of this function will slow down testing.
+/// WARNING2: this is a child snapshot within a parent snapshot run by the Waffle fixture.
 export function contextForTimeDependentTests(description: string, hooks: () => void): void {
   describe(description, function () {
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     let snapshot: any;
 
     beforeEach(async function () {

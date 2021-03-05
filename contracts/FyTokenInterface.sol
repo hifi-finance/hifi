@@ -1,25 +1,21 @@
-/* SPDX-License-Identifier: LGPL-3.0-or-later */
+/// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
 import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
 import "./FyTokenStorage.sol";
 
-/**
- * @title FyTokenInterface
- * @author Hifi
- */
+/// @title FyTokenInterface
+/// @author Hifi
 abstract contract FyTokenInterface is
-    FyTokenStorage, /* no dependency */
-    Erc20Interface /* one dependency */
+    FyTokenStorage, /// no dependency
+    Erc20Interface /// one dependency
 {
-    /**
-     * CONSTANT FUNCTIONS
-     */
+    /// CONSTANT FUNCTIONS ///
+
     function isMatured() public view virtual returns (bool);
 
-    /**
-     * NON-CONSTANT FUNCTIONS
-     */
+    /// NON-CONSTANT FUNCTIONS ///
+
     function borrow(uint256 borrowAmount) external virtual returns (bool);
 
     function burn(address holder, uint256 burnAmount) external virtual returns (bool);
@@ -34,9 +30,8 @@ abstract contract FyTokenInterface is
 
     function _setFintroller(FintrollerInterface newFintroller) external virtual returns (bool);
 
-    /**
-     * EVENTS
-     */
+    /// EVENTS ///
+
     event Borrow(address indexed borrower, uint256 borrowAmount);
 
     event LiquidateBorrow(

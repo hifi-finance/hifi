@@ -60,14 +60,14 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
 
           describe("when the user does not have a debt", function () {
             beforeEach(async function () {
-              /* The fyToken makes an internal call to this stubbed function. */
+              // The fyToken makes an internal call to this stubbed function.
               await this.stubs.balanceSheet.mock.getVaultDebt
                 .withArgs(this.contracts.fyToken.address, this.signers.borrower.address)
                 .returns(Zero);
             });
 
             it("reverts", async function () {
-              /* Lender tries to repays borrower's debt but fails to do it because he doesn't have any. */
+              // Lender tries to repays borrower's debt but fails to do it because he doesn't have any.
               await expect(
                 this.contracts.fyToken
                   .connect(this.signers.lender)
@@ -80,7 +80,7 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
             beforeEach(async function () {
               await this.contracts.fyToken.__godMode_mint(this.signers.lender.address, borrowAmount);
 
-              /* The fyToken makes internal calls to these stubbed functions. */
+              // The fyToken makes internal calls to these stubbed functions.
               await this.stubs.balanceSheet.mock.getVaultDebt
                 .withArgs(this.contracts.fyToken.address, this.signers.borrower.address)
                 .returns(repayAmount);

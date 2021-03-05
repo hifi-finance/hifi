@@ -8,10 +8,10 @@ export default function shouldBehaveLikeGetVault(): void {
         this.stubs.fyToken.address,
         this.signers.borrower.address,
       );
-      expect(vault[0]).to.equal(Zero); /* debt */
-      expect(vault[1]).to.equal(Zero); /* freeCollateral */
-      expect(vault[2]).to.equal(Zero); /* lockedCollateral */
-      expect(vault[3]).to.equal(false); /* isOpen */
+      expect(vault[0]).to.equal(Zero); // debt
+      expect(vault[1]).to.equal(Zero); // freeCollateral
+      expect(vault[2]).to.equal(Zero); // lockedCollateral
+      expect(vault[3]).to.equal(false); // isOpen
     });
   });
 
@@ -25,10 +25,10 @@ export default function shouldBehaveLikeGetVault(): void {
         this.stubs.fyToken.address,
         this.signers.borrower.address,
       );
-      expect(vault[0]).to.equal(Zero); /* debt */
-      expect(vault[1]).to.equal(Zero); /* freeCollateral */
-      expect(vault[2]).to.equal(Zero); /* lockedCollateral */
-      expect(vault[3]).to.equal(true); /* isOpen */
+      expect(vault[0]).to.equal(Zero); // debt
+      expect(vault[1]).to.equal(Zero); // freeCollateral
+      expect(vault[2]).to.equal(Zero); // lockedCollateral
+      expect(vault[3]).to.equal(true); // isOpen
     });
   });
 }

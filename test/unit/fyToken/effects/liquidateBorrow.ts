@@ -127,7 +127,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
                 .withArgs(this.contracts.fyToken.address)
                 .returns(true);
 
-              /* The fyToken makes an internal call to this function. */
+              // The fyToken makes an internal call to this function.
               await this.stubs.fintroller.mock.getRepayBorrowAllowed
                 .withArgs(this.contracts.fyToken.address)
                 .returns(true);
@@ -135,7 +135,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
 
             describe("when the borrower does not have a debt", function () {
               beforeEach(async function () {
-                /* Borrowers with no debt are never underwater. */
+                // Borrowers with no debt are never underwater.
                 await this.stubs.balanceSheet.mock.isAccountUnderwater
                   .withArgs(this.contracts.fyToken.address, this.signers.borrower.address)
                   .returns(false);
@@ -157,13 +157,13 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
               const clutchableCollateralAmount: BigNumber = tokenAmounts.pointFiftyFive;
 
               beforeEach(async function () {
-                /* User borrows 100 fyUSDC. */
+                // User borrows 100 fyUSDC.
                 await this.stubs.balanceSheet.mock.getVaultDebt
                   .withArgs(this.contracts.fyToken.address, this.signers.borrower.address)
                   .returns(borrowAmount);
                 await this.contracts.fyToken.__godMode_mint(this.signers.borrower.address, borrowAmount);
 
-                /* The fyToken makes internal calls to these stubbed functions. */
+                // The fyToken makes internal calls to these stubbed functions.
                 await stubLiquidateBorrowInternalCalls.call(
                   this,
                   this.contracts.fyToken.address,
@@ -194,7 +194,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
                   beforeEach(async function () {
                     await increaseTime(fyTokenConstants.expirationTime);
 
-                    /* Mint 100 fyUSDC to the liquidator so he can repay the debt. */
+                    // Mint 100 fyUSDC to the liquidator so he can repay the debt.
                     await this.contracts.fyToken.__godMode_mint(this.signers.liquidator.address, repayAmount);
                   });
 
@@ -232,7 +232,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
 
                 describe("when the caller has enough fyTokens", function () {
                   beforeEach(async function () {
-                    /* Mint 100 fyUSDC to the liquidator so he can repay the debt. */
+                    // Mint 100 fyUSDC to the liquidator so he can repay the debt.
                     await this.contracts.fyToken.__godMode_mint(this.signers.liquidator.address, repayAmount);
                   });
 

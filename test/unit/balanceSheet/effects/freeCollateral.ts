@@ -45,7 +45,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
 
       describe("when the caller deposited collateral", function () {
         beforeEach(async function () {
-          /* Mock the required functions on the Fintroller and the collateral token stubs. */
+          // Mock the required functions on the Fintroller and the collateral token stubs.
           await this.stubs.fintroller.mock.getBondCollateralizationRatio
             .withArgs(this.stubs.fyToken.address)
             .returns(fintrollerConstants.defaultCollateralizationRatio);
@@ -56,7 +56,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
             .withArgs(this.signers.borrower.address, this.contracts.balanceSheet.address, depositCollateralAmount)
             .returns(true);
 
-          /* Deposit 10 WETH. */
+          // Deposit 10 WETH.
           await this.contracts.balanceSheet
             .connect(this.signers.borrower)
             .depositCollateral(this.stubs.fyToken.address, depositCollateralAmount);
@@ -107,15 +107,15 @@ export default function shouldBehaveLikeLockCollateral(): void {
           describe("when the caller has a debt", function () {
             beforeEach(async function () {
               await this.stubs.fintroller.mock.getBorrowAllowed.withArgs(this.stubs.fyToken.address).returns(true);
-              /* The balance sheet will ask the oracle what's the value of 9 WETH collateral. */
+              // The balance sheet will ask the oracle what's the value of 9 WETH collateral.
             });
 
             describe("when the caller is dangerously collateralized", function () {
               beforeEach(async function () {
-                /* This is a 150% collateralization ratio. We deposited 10 WETH and the oracle assumes 1 WETH = $100. */
+                // This is a 150% collateralization ratio. We deposited 10 WETH and the oracle assumes 1 WETH = $100.
                 const debt: BigNumber = tokenAmounts.one.mul(666);
 
-                /* Cannot call the usual `setVaultDebt` since the fyToken is stubbed. */
+                // Cannot call the usual `setVaultDebt` since the fyToken is stubbed.
                 await this.contracts.balanceSheet.__godMode_setVaultDebt(
                   this.stubs.fyToken.address,
                   this.signers.borrower.address,

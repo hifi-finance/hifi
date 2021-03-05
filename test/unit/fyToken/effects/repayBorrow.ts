@@ -90,7 +90,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
             });
 
             it("reverts", async function () {
-              /* Lender tries to repay his debt but fails to do it because he doesn't have any. */
+              // Lender tries to repay his debt but fails to do it because he doesn't have any.
               await expect(
                 this.contracts.fyToken.connect(this.signers.lender).repayBorrow(repayAmount),
               ).to.be.revertedWith(FyTokenErrors.RepayBorrowInsufficientDebt);
@@ -99,13 +99,13 @@ export default function shouldBehaveLikeRepayBorrow(): void {
 
           describe("when the caller has a debt", function () {
             beforeEach(async function () {
-              /* User borrows 100 fyUSDC. */
+              // User borrows 100 fyUSDC.
               await this.contracts.fyToken.__godMode_mint(this.signers.borrower.address, borrowAmount);
               await this.stubs.balanceSheet.mock.getVaultDebt
                 .withArgs(this.contracts.fyToken.address, this.signers.borrower.address)
                 .returns(repayAmount);
 
-              /* The fyToken makes an internal call to this stubbed function. */
+              // The fyToken makes an internal call to this stubbed function.
               await this.stubs.balanceSheet.mock.setVaultDebt
                 .withArgs(this.contracts.fyToken.address, this.signers.borrower.address, Zero)
                 .returns(true);
@@ -113,7 +113,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
 
             describe("when the caller does not have enough fyTokens", function () {
               beforeEach(async function () {
-                /* User burns all of his fyTokens. */
+                // User burns all of his fyTokens.
                 await this.contracts.fyToken.connect(this.signers.borrower).transfer(addressOne, borrowAmount);
               });
 

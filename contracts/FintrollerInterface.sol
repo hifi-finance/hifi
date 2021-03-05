@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: LPGL-3.0-or-later */
+/// SPDX-License-Identifier: LPGL-3.0-or-later
 pragma solidity ^0.8.0;
 
 import "./FintrollerStorage.sol";
@@ -6,9 +6,7 @@ import "./FyTokenInterface.sol";
 import "./oracles/ChainlinkOperatorInterface.sol";
 
 abstract contract FintrollerInterface is FintrollerStorage {
-    /**
-     * CONSTANT FUNCTIONS
-     */
+    /// CONSTANT FUNCTIONS ///
 
     function getBond(FyTokenInterface fyToken)
         external
@@ -42,9 +40,7 @@ abstract contract FintrollerInterface is FintrollerStorage {
 
     function getSupplyUnderlyingAllowed(FyTokenInterface fyToken) external view virtual returns (bool);
 
-    /**
-     * NON-CONSTANT FUNCTIONS
-     */
+    /// NON-CONSTANT FUNCTIONS ///
 
     function listBond(FyTokenInterface fyToken) external virtual returns (bool);
 
@@ -71,9 +67,8 @@ abstract contract FintrollerInterface is FintrollerStorage {
 
     function setSupplyUnderlyingAllowed(FyTokenInterface fyToken, bool state) external virtual returns (bool);
 
-    /**
-     * EVENTS
-     */
+    /// EVENTS ///
+
     event ListBond(address indexed admin, FyTokenInterface indexed fyToken);
 
     event SetBorrowAllowed(address indexed admin, FyTokenInterface indexed fyToken, bool state);

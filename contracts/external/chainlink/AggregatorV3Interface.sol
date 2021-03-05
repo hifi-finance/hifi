@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: LGPL-3.0-or-later */
+/// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
-/**
- * @title AggregatorV3Interface
- * @author Hifi
- * @dev Forked from Chainlink
- * https://github.com/smartcontractkit/chainlink/blob/v0.9.9/evm-contracts/src/v0.7/interfaces/AggregatorV3Interface.sol
- */
+/// @title AggregatorV3Interface
+/// @author Hifi
+/// @dev Forked from Chainlink
+/// github.com/smartcontractkit/chainlink/blob/v0.9.9/evm-contracts/src/v0.7/interfaces/AggregatorV3Interface.sol
 interface AggregatorV3Interface {
     function decimals() external view returns (uint8);
 
@@ -14,11 +12,9 @@ interface AggregatorV3Interface {
 
     function version() external view returns (uint256);
 
-    /*
-     * getRoundData and latestRoundData should both raise "No data present"
-     * if they do not have data to report, instead of returning unset values
-     * which could be misinterpreted as actual reported values.
-     */
+    /// getRoundData and latestRoundData should both raise "No data present" if they do not have
+    /// data to report, instead of returning unset values which could be misinterpreted as
+    /// actual reported values.
     function getRoundData(uint80 _roundId)
         external
         view

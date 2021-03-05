@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: LGPL-3.0-or-later */
+/// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
 import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
@@ -12,38 +12,31 @@ import "../external/balancer/ExchangeProxyInterface.sol";
 import "../external/balancer/TokenInterface.sol";
 import "../external/weth/WethInterface.sol";
 
-/**
- * @title BatterseaTargetV1
- * @author Hifi
- * @notice Target contract with scripts for the Battersea release of the protocol.
- * @dev Meant to be used with a DSProxy contract via delegatecall.
- */
+/// @title BatterseaTargetV1
+/// @author Hifi
+/// @notice Target contract with scripts for the Battersea release of the protocol.
+/// @dev Meant to be used with a DSProxy contract via delegatecall.
 contract BatterseaTargetV1 is BatterseaTargetV1Interface {
     using SafeErc20 for Erc20Interface;
     using SafeErc20 for FyTokenInterface;
 
-    /**
-     * @notice Borrows fyTokens.
-     *
-     * @param fyToken The address of the FyToken contract.
-     * @param borrowAmount The amount of fyTokens to borrow.
-     */
+    /// @notice Borrows fyTokens.
+    /// @param fyToken The address of the FyToken contract.
+    /// @param borrowAmount The amount of fyTokens to borrow.
     function borrow(FyTokenInterface fyToken, uint256 borrowAmount) public {
         fyToken.borrow(borrowAmount);
         fyToken.safeTransfer(msg.sender, borrowAmount);
     }
 
-    /**
-     * @notice Borrows fyTokens and sells them on Balancer in exchange for underlying.
-     *
-     * @dev Emits a {BorrowAndSellFyTokens} event.
-     *
-     * This is a payable function so it can receive ETH transfers.
-     *
-     * @param fyToken The address of the FyToken contract.
-     * @param borrowAmount The amount of fyTokens to borrow.
-     * @param underlyingAmount The amount of underlying to sell fyTokens for.
-     */
+    /// @notice Borrows fyTokens and sells them on Balancer in exchange for underlying.
+    ///
+    /// @dev Emits a {BorrowAndSellFyTokens} event.
+    ///
+    /// This is a payable function so it can receive ETH transfers.
+    ///
+    /// @param fyToken The address of the FyToken contract.
+    /// @param borrowAmount The amount of fyTokens to borrow.
+    /// @param underlyingAmount The amount of underlying to sell fyTokens for.
     function borrowAndSellFyTokens(
         FyTokenInterface fyToken,
         uint256 borrowAmount,
@@ -51,23 +44,23 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
     ) public payable {
         Erc20Interface underlying = fyToken.underlying();
 
-        /* Borrow the fyTokens. */
+        // Borrow the fyTokens.
         fyToken.borrow(borrowAmount);
 
-        /* Allow the Balancer contract to spend fyTokens if allowance not enough. */
+        // Allow the Balancer contract to spend fyTokens if allowance not enough.
         uint256 allowance = fyToken.allowance(address(this), EXCHANGE_PROXY_ADDRESS);
         if (allowance < borrowAmount) {
             fyToken.approve(EXCHANGE_PROXY_ADDRESS, type(uint256).max);
         }
 
-        /* Prepare the parameters for calling Balancer. */
+        // Prepare the parameters for calling Balancer.
         TokenInterface tokenIn = TokenInterface(address(fyToken));
         TokenInterface tokenOut = TokenInterface(address(underlying));
         uint256 totalAmountOut = underlyingAmount;
         uint256 maxTotalAmountIn = borrowAmount;
         uint256 nPools = 1;
 
-        /* Recall that Balancer reverts when the swap is not successful. */
+        // Recall that Balancer reverts when the swap is not successful.
         uint256 totalAmountIn =
             ExchangeProxyInterface(EXCHANGE_PROXY_ADDRESS).smartSwapExactOut(
                 tokenIn,
@@ -77,53 +70,49 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
                 nPools
             );
 
-        /* When we get a better price than the worst that we assumed we would, not all fyTokens are sold. */
+        // When we get a better price than the worst that we assumed we would, not all fyTokens are sold.
         uint256 fyTokenDelta = borrowAmount - totalAmountIn;
 
-        /* If the fyToken delta is non-zero, we use it to partially repay the borrow. */
-        /* Note: this is not gas-efficient. */
+        // If the fyToken delta is non-zero, we use it to partially repay the borrow.
+        // Note: this is not gas-efficient.
         if (fyTokenDelta > 0) {
             fyToken.repayBorrow(fyTokenDelta);
         }
 
-        /* Finally, transfer the recently bought underlying to the end user. */
+        // Finally, transfer the recently bought underlying to the end user.
         underlying.safeTransfer(msg.sender, underlyingAmount);
 
         emit BorrowAndSellFyTokens(msg.sender, borrowAmount, fyTokenDelta, underlyingAmount);
     }
 
-    /**
-     * @notice Deposits collateral into the BalanceSheet contract.
-     *
-     * @dev Requirements:
-     * - The caller must have allowed the DSProxy to spend `collateralAmount` tokens.
-     *
-     * @param balanceSheet The address of the BalanceSheet contract.
-     * @param fyToken The address of the FyToken contract.
-     * @param collateralAmount The amount of collateral to deposit.
-     */
+    /// @notice Deposits collateral into the BalanceSheet contract.
+    ///
+    /// @dev Requirements:
+    /// - The caller must have allowed the DSProxy to spend `collateralAmount` tokens.
+    ///
+    /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param fyToken The address of the FyToken contract.
+    /// @param collateralAmount The amount of collateral to deposit.
     function depositCollateral(
         BalanceSheetInterface balanceSheet,
         FyTokenInterface fyToken,
         uint256 collateralAmount
     ) public {
-        /* Transfer the collateral to the DSProxy. */
+        // Transfer the collateral to the DSProxy.
         fyToken.collateral().safeTransferFrom(msg.sender, address(this), collateralAmount);
 
-        /* Deposit the collateral into the BalanceSheet contract. */
+        // Deposit the collateral into the BalanceSheet contract.
         depositCollateralInternal(balanceSheet, fyToken, collateralAmount);
     }
 
-    /**
-     * @notice Deposits and locks collateral into the BalanceSheet contract.
-     *
-     * @dev Requirements:
-     * - The caller must have allowed the DSProxy to spend `collateralAmount` tokens.
-     *
-     * @param balanceSheet The address of the BalanceSheet contract.
-     * @param fyToken The address of the FyToken contract.
-     * @param collateralAmount The amount of collateral to deposit and lock.
-     */
+    /// @notice Deposits and locks collateral into the BalanceSheet contract.
+    ///
+    /// @dev Requirements:
+    /// - The caller must have allowed the DSProxy to spend `collateralAmount` tokens.
+    ///
+    /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param fyToken The address of the FyToken contract.
+    /// @param collateralAmount The amount of collateral to deposit and lock.
     function depositAndLockCollateral(
         BalanceSheetInterface balanceSheet,
         FyTokenInterface fyToken,
@@ -133,20 +122,18 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
         balanceSheet.lockCollateral(fyToken, collateralAmount);
     }
 
-    /**
-     * @notice Deposits and locks collateral into the vault via the BalanceSheet contract
-     * and borrows fyTokens.
-     *
-     * @dev This is a payable function so it can receive ETH transfers.
-     *
-     * Requirements:
-     * - The caller must have allowed the DSProxy to spend `collateralAmount` tokens.
-     *
-     * @param balanceSheet The address of the BalanceSheet contract.
-     * @param fyToken The address of the FyToken contract.
-     * @param collateralAmount The amount of collateral to deposit and lock.
-     * @param borrowAmount The amount of fyTokens to borrow.
-     */
+    /// @notice Deposits and locks collateral into the vault via the BalanceSheet contract
+    /// and borrows fyTokens.
+    ///
+    /// @dev This is a payable function so it can receive ETH transfers.
+    ///
+    /// Requirements:
+    /// - The caller must have allowed the DSProxy to spend `collateralAmount` tokens.
+    ///
+    /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param fyToken The address of the FyToken contract.
+    /// @param collateralAmount The amount of collateral to deposit and lock.
+    /// @param borrowAmount The amount of fyTokens to borrow.
     function depositAndLockCollateralAndBorrow(
         BalanceSheetInterface balanceSheet,
         FyTokenInterface fyToken,
@@ -157,21 +144,19 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
         borrow(fyToken, borrowAmount);
     }
 
-    /**
-     * @notice Deposits and locks collateral into the vault via the BalanceSheet contract, borrows fyTokens
-     * and sells them on Balancer in exchange for underlying.
-     *
-     * @dev This is a payable function so it can receive ETH transfers.
-     *
-     * Requirements:
-     * - The caller must have allowed the DSProxy to spend `collateralAmount` tokens.
-     *
-     * @param balanceSheet The address of the BalanceSheet contract.
-     * @param fyToken The address of the FyToken contract.
-     * @param collateralAmount The amount of collateral to deposit and lock.
-     * @param borrowAmount The amount of fyTokens to borrow.
-     * @param underlyingAmount The amount of underlying to sell fyTokens for.
-     */
+    /// @notice Deposits and locks collateral into the vault via the BalanceSheet contract, borrows fyTokens
+    /// and sells them on Balancer in exchange for underlying.
+    ///
+    /// @dev This is a payable function so it can receive ETH transfers.
+    ///
+    /// Requirements:
+    /// - The caller must have allowed the DSProxy to spend `collateralAmount` tokens.
+    ///
+    /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param fyToken The address of the FyToken contract.
+    /// @param collateralAmount The amount of collateral to deposit and lock.
+    /// @param borrowAmount The amount of fyTokens to borrow.
+    /// @param underlyingAmount The amount of underlying to sell fyTokens for.
     function depositAndLockCollateralAndBorrowAndSellFyTokens(
         BalanceSheetInterface balanceSheet,
         FyTokenInterface fyToken,
@@ -183,12 +168,10 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
         borrowAndSellFyTokens(fyToken, borrowAmount, underlyingAmount);
     }
 
-    /**
-     * @notice Frees collateral from the vault in the BalanceSheet contract.
-     * @param balanceSheet The address of the BalanceSheet contract.
-     * @param fyToken The address of the FyToken contract.
-     * @param collateralAmount The amount of collateral to free.
-     */
+    /// @notice Frees collateral from the vault in the BalanceSheet contract.
+    /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param fyToken The address of the FyToken contract.
+    /// @param collateralAmount The amount of collateral to free.
     function freeCollateral(
         BalanceSheetInterface balanceSheet,
         FyTokenInterface fyToken,
@@ -197,13 +180,11 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
         balanceSheet.freeCollateral(fyToken, collateralAmount);
     }
 
-    /**
-     * @notice Frees collateral from the vault and withdraws it from the
-     * BalanceSheet contract.
-     * @param balanceSheet The address of the BalanceSheet contract.
-     * @param fyToken The address of the FyToken contract.
-     * @param collateralAmount The amount of collateral to free and withdraw.
-     */
+    /// @notice Frees collateral from the vault and withdraws it from the
+    /// BalanceSheet contract.
+    /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param fyToken The address of the FyToken contract.
+    /// @param collateralAmount The amount of collateral to free and withdraw.
     function freeAndWithdrawCollateral(
         BalanceSheetInterface balanceSheet,
         FyTokenInterface fyToken,
@@ -213,12 +194,10 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
         withdrawCollateral(balanceSheet, fyToken, collateralAmount);
     }
 
-    /**
-     * @notice Locks collateral in the vault in the BalanceSheet contract.
-     * @param balanceSheet The address of the BalanceSheet contract.
-     * @param fyToken The address of the FyToken contract.
-     * @param collateralAmount The amount of collateral to lock.
-     */
+    /// @notice Locks collateral in the vault in the BalanceSheet contract.
+    /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param fyToken The address of the FyToken contract.
+    /// @param collateralAmount The amount of collateral to lock.
     function lockCollateral(
         BalanceSheetInterface balanceSheet,
         FyTokenInterface fyToken,
@@ -227,15 +206,13 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
         balanceSheet.lockCollateral(fyToken, collateralAmount);
     }
 
-    /**
-     * @notice Locks collateral into the vault in the BalanceSheet contract
-     * and draws debt via the FyToken contract.
-     * @param balanceSheet The address of the BalanceSheet contract.
-     * @param fyToken The address of the FyToken contract.
-     * @param collateralAmount The amount of collateral to lock.
-     * @param borrowAmount The amount of fyTokens to borrow.
-     * @param underlyingAmount The amount of underlying to sell fyTokens for.
-     */
+    /// @notice Locks collateral into the vault in the BalanceSheet contract
+    /// and draws debt via the FyToken contract.
+    /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param fyToken The address of the FyToken contract.
+    /// @param collateralAmount The amount of collateral to lock.
+    /// @param borrowAmount The amount of fyTokens to borrow.
+    /// @param underlyingAmount The amount of underlying to sell fyTokens for.
     function lockCollateralAndBorrow(
         BalanceSheetInterface balanceSheet,
         FyTokenInterface fyToken,
@@ -247,70 +224,62 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
         borrowAndSellFyTokens(fyToken, borrowAmount, underlyingAmount);
     }
 
-    /**
-     * @notice Open the vaults in the BalanceSheet contract for the given fyToken.
-     * @param balanceSheet The address of the BalanceSheet contract.
-     * @param fyToken The address of the FyToken contract.
-     */
+    /// @notice Open the vaults in the BalanceSheet contract for the given fyToken.
+    /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param fyToken The address of the FyToken contract.
     function openVault(BalanceSheetInterface balanceSheet, FyTokenInterface fyToken) external {
         balanceSheet.openVault(fyToken);
     }
 
-    /**
-     * @notice Redeems fyTokens in exchange for underlying tokens.
-     *
-     * @dev Requirements:
-     * - The caller must have allowed the DSProxy to spend `repayAmount` fyTokens.
-     *
-     * @param fyToken The address of the FyToken contract.
-     * @param fyTokenAmount The amount of fyTokens to redeem.
-     */
+    /// @notice Redeems fyTokens in exchange for underlying tokens.
+    ///
+    /// @dev Requirements:
+    /// - The caller must have allowed the DSProxy to spend `repayAmount` fyTokens.
+    ///
+    /// @param fyToken The address of the FyToken contract.
+    /// @param fyTokenAmount The amount of fyTokens to redeem.
     function redeemFyTokens(FyTokenInterface fyToken, uint256 fyTokenAmount) public {
         Erc20Interface underlying = fyToken.underlying();
         RedemptionPoolInterface redemptionPool = fyToken.redemptionPool();
 
-        /* Transfer the fyTokens to the DSProxy. */
+        // Transfer the fyTokens to the DSProxy.
         fyToken.safeTransferFrom(msg.sender, address(this), fyTokenAmount);
 
-        /* Redeem the fyTokens. */
+        // Redeem the fyTokens.
         uint256 preUnderlyingBalance = underlying.balanceOf(address(this));
         redemptionPool.redeemFyTokens(fyTokenAmount);
 
-        /* Calculate how many underlying have been redeemed. */
+        // Calculate how many underlying have been redeemed.
         uint256 postUnderlyigBalance = underlying.balanceOf(address(this));
         uint256 underlyingAmount = postUnderlyigBalance - preUnderlyingBalance;
 
-        /* The underlying is now in the DSProxy, so we relay it to the end user. */
+        // The underlying is now in the DSProxy, so we relay it to the end user.
         underlying.safeTransfer(msg.sender, underlyingAmount);
     }
 
-    /**
-     * @notice Repays the fyToken borrow.
-     *
-     * @dev Requirements:
-     * - The caller must have allowed the DSProxy to spend `repayAmount` fyTokens.
-     *
-     * @param fyToken The address of the FyToken contract.
-     * @param repayAmount The amount of fyTokens to repay.
-     */
+    /// @notice Repays the fyToken borrow.
+    ///
+    /// @dev Requirements:
+    /// - The caller must have allowed the DSProxy to spend `repayAmount` fyTokens.
+    ///
+    /// @param fyToken The address of the FyToken contract.
+    /// @param repayAmount The amount of fyTokens to repay.
     function repayBorrow(FyTokenInterface fyToken, uint256 repayAmount) public {
-        /* Transfer the fyTokens to the DSProxy. */
+        // Transfer the fyTokens to the DSProxy.
         fyToken.safeTransferFrom(msg.sender, address(this), repayAmount);
 
-        /* Repay the borrow. */
+        // Repay the borrow.
         fyToken.repayBorrow(repayAmount);
     }
 
-    /**
-     * @notice Market sells underlying and repays the borrows via the FyToken contract.
-     *
-     * @dev Requirements:
-     * - The caller must have allowed the DSProxy to spend `underlyingAmount` tokens.
-     *
-     * @param fyToken The address of the FyToken contract.
-     * @param underlyingAmount The amount of underlying to sell.
-     * @param repayAmount The amount of fyTokens to repay.
-     */
+    /// @notice Market sells underlying and repays the borrows via the FyToken contract.
+    ///
+    /// @dev Requirements:
+    /// - The caller must have allowed the DSProxy to spend `underlyingAmount` tokens.
+    ///
+    /// @param fyToken The address of the FyToken contract.
+    /// @param underlyingAmount The amount of underlying to sell.
+    /// @param repayAmount The amount of fyTokens to repay.
     function sellUnderlyingAndRepayBorrow(
         FyTokenInterface fyToken,
         uint256 underlyingAmount,
@@ -318,23 +287,23 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
     ) external {
         Erc20Interface underlying = fyToken.underlying();
 
-        /* Transfer the underlying to the DSProxy. */
+        // Transfer the underlying to the DSProxy.
         underlying.safeTransferFrom(msg.sender, address(this), underlyingAmount);
 
-        /* Allow the Balancer contract to spend underlying if allowance not enough. */
+        // Allow the Balancer contract to spend underlying if allowance not enough.
         uint256 allowance = underlying.allowance(address(this), EXCHANGE_PROXY_ADDRESS);
         if (allowance < underlyingAmount) {
             underlying.approve(EXCHANGE_PROXY_ADDRESS, type(uint256).max);
         }
 
-        /* Prepare the parameters for calling Balancer. */
+        // Prepare the parameters for calling Balancer.
         TokenInterface tokenIn = TokenInterface(address(underlying));
         TokenInterface tokenOut = TokenInterface(address(fyToken));
         uint256 totalAmountOut = repayAmount;
         uint256 maxTotalAmountIn = underlyingAmount;
         uint256 nPools = 1;
 
-        /* Recall that Balancer reverts when the swap is not successful. */
+        // Recall that Balancer reverts when the swap is not successful.
         uint256 totalAmountIn =
             ExchangeProxyInterface(EXCHANGE_PROXY_ADDRESS).smartSwapExactOut(
                 tokenIn,
@@ -344,63 +313,57 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
                 nPools
             );
 
-        /* Use the recently bought fyTokens to repay the borrow. */
+        // Use the recently bought fyTokens to repay the borrow.
         fyToken.repayBorrow(repayAmount);
 
-        /* When we get a better price than the worst that we assumed we would, not all underlying is sold. */
+        // When we get a better price than the worst that we assumed we would, not all underlying is sold.
         uint256 underlyingDelta = underlyingAmount - totalAmountIn;
 
-        /* If the underlying delta is non-zero, send it back to the user. */
+        // If the underlying delta is non-zero, send it back to the user.
         if (underlyingDelta > 0) {
             underlying.safeTransfer(msg.sender, underlyingDelta);
         }
     }
 
-    /**
-     * @notice Supplies the underlying to the RedemptionPool contract and mints fyTokens.
-     * @param fyToken The address of the FyToken contract.
-     * @param underlyingAmount The amount of underlying to supply.
-     */
+    /// @notice Supplies the underlying to the RedemptionPool contract and mints fyTokens.
+    /// @param fyToken The address of the FyToken contract.
+    /// @param underlyingAmount The amount of underlying to supply.
     function supplyUnderlying(FyTokenInterface fyToken, uint256 underlyingAmount) public {
         uint256 preFyTokenBalance = fyToken.balanceOf(address(this));
         supplyUnderlyingInternal(fyToken, underlyingAmount);
 
-        /* Calculate how many fyTokens have been minted. */
+        //Calculate how many fyTokens have been minted.
         uint256 postFyTokenBalance = fyToken.balanceOf(address(this));
         uint256 fyTokenAmount = postFyTokenBalance - preFyTokenBalance;
 
-        /* The fyTokens are now in the DSProxy, so we relay them to the end user. */
+        // The fyTokens are now in the DSProxy, so we relay them to the end user.
         fyToken.safeTransfer(msg.sender, fyTokenAmount);
     }
 
-    /**
-     * @notice Supplies the underlying to the RedemptionPool contract, mints fyTokens
-     * and repays the borrow.
-     *
-     * @dev Requirements:
-     * - The caller must have allowed the DSProxy to spend `underlyingAmount` tokens.
-     *
-     * @param fyToken The address of the FyToken contract.
-     * @param underlyingAmount The amount of underlying to supply.
-     */
+    /// @notice Supplies the underlying to the RedemptionPool contract, mints fyTokens
+    /// and repays the borrow.
+    ///
+    /// @dev Requirements:
+    /// - The caller must have allowed the DSProxy to spend `underlyingAmount` tokens.
+    ///
+    /// @param fyToken The address of the FyToken contract.
+    /// @param underlyingAmount The amount of underlying to supply.
     function supplyUnderlyingAndRepayBorrow(FyTokenInterface fyToken, uint256 underlyingAmount) external {
         uint256 preFyTokenBalance = fyToken.balanceOf(address(this));
         supplyUnderlyingInternal(fyToken, underlyingAmount);
 
-        /* Calculate how many fyTokens have been minted. */
+        // Calculate how many fyTokens have been minted.
         uint256 postFyTokenBalance = fyToken.balanceOf(address(this));
         uint256 fyTokenAmount = postFyTokenBalance - preFyTokenBalance;
 
-        /* Use the newly minted fyTokens to repay the debt. */
+        // Use the newly minted fyTokens to repay the debt.
         fyToken.repayBorrow(fyTokenAmount);
     }
 
-    /**
-     * @notice Withdraws collateral from the vault in the BalanceSheet contract.
-     * @param balanceSheet The address of the BalanceSheet contract.
-     * @param fyToken The address of the FyToken contract.
-     * @param collateralAmount The amount of collateral to withdraw.
-     */
+    /// @notice Withdraws collateral from the vault in the BalanceSheet contract.
+    /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param fyToken The address of the FyToken contract.
+    /// @param collateralAmount The amount of collateral to withdraw.
     function withdrawCollateral(
         BalanceSheetInterface balanceSheet,
         FyTokenInterface fyToken,
@@ -408,38 +371,34 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
     ) public {
         balanceSheet.withdrawCollateral(fyToken, collateralAmount);
 
-        /* The collateral is now in the DSProxy, so we relay it to the end user. */
+        // The collateral is now in the DSProxy, so we relay it to the end user.
         Erc20Interface collateral = fyToken.collateral();
         collateral.safeTransfer(msg.sender, collateralAmount);
     }
 
-    /**
-     * @notice Wraps ETH into WETH and deposits into the BalanceSheet contract.
-     *
-     * @dev This is a payable function so it can receive ETH transfers.
-     *
-     * @param balanceSheet The address of the BalanceSheet contract.
-     * @param fyToken The address of the FyToken contract.
-     */
+    /// @notice Wraps ETH into WETH and deposits into the BalanceSheet contract.
+    ///
+    /// @dev This is a payable function so it can receive ETH transfers.
+    ///
+    /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param fyToken The address of the FyToken contract.
     function wrapEthAndDepositCollateral(BalanceSheetInterface balanceSheet, FyTokenInterface fyToken) public payable {
         uint256 collateralAmount = msg.value;
 
-        /* Convert the received ETH to WETH. */
+        // Convert the received ETH to WETH.
         WethInterface(WETH_ADDRESS).deposit{ value: collateralAmount }();
 
-        /* Deposit the collateral into the BalanceSheet contract. */
+        // Deposit the collateral into the BalanceSheet contract.
         depositCollateralInternal(balanceSheet, fyToken, collateralAmount);
     }
 
-    /**
-     * @notice Wraps ETH into WETH, deposits and locks collateral into the BalanceSheet contract
-     * and borrows fyTokens.
-     *
-     * @dev This is a payable function so it can receive ETH transfers.
-     *
-     * @param balanceSheet The address of the BalanceSheet contract.
-     * @param fyToken The address of the FyToken contract.
-     */
+    /// @notice Wraps ETH into WETH, deposits and locks collateral into the BalanceSheet contract
+    /// and borrows fyTokens.
+    ///
+    /// @dev This is a payable function so it can receive ETH transfers.
+    ///
+    /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param fyToken The address of the FyToken contract.
     function wrapEthAndDepositAndLockCollateral(BalanceSheetInterface balanceSheet, FyTokenInterface fyToken)
         public
         payable
@@ -449,17 +408,15 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
         balanceSheet.lockCollateral(fyToken, collateralAmount);
     }
 
-    /**
-     * @notice Wraps ETH into WETH, deposits and locks collateral into the vault in the BalanceSheet
-     * contracts and borrows fyTokens.
-     *
-     * @dev This is a payable function so it can receive ETH transfers.
-     *
-     * @param balanceSheet The address of the BalanceSheet contract.
-     * @param fyToken The address of the FyToken contract.
-     * @param borrowAmount The amount of fyTokens to borrow.
-     * @param underlyingAmount The amount of underlying to sell fyTokens for.
-     */
+    /// @notice Wraps ETH into WETH, deposits and locks collateral into the vault in the BalanceSheet
+    /// contracts and borrows fyTokens.
+    ///
+    /// @dev This is a payable function so it can receive ETH transfers.
+    ///
+    /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param fyToken The address of the FyToken contract.
+    /// @param borrowAmount The amount of fyTokens to borrow.
+    /// @param underlyingAmount The amount of underlying to sell fyTokens for.
     function wrapEthAndDepositAndLockCollateralAndBorrow(
         BalanceSheetInterface balanceSheet,
         FyTokenInterface fyToken,
@@ -470,52 +427,46 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
         borrowAndSellFyTokens(fyToken, borrowAmount, underlyingAmount);
     }
 
-    /**
-     * INTERNAL FUNCTIONS
-     */
+    /// INTERNAL FUNCTIONS ///
 
-    /**
-     * @dev See the documentation for the public functions that call this internal function.
-     */
+    /// @dev See the documentation for the public functions that call this internal function.
     function depositCollateralInternal(
         BalanceSheetInterface balanceSheet,
         FyTokenInterface fyToken,
         uint256 collateralAmount
     ) internal {
-        /* Allow the BalanceSheet contract to spend tokens if allowance not enough. */
+        // Allow the BalanceSheet contract to spend tokens if allowance not enough.
         Erc20Interface collateral = fyToken.collateral();
         uint256 allowance = collateral.allowance(address(this), address(balanceSheet));
         if (allowance < collateralAmount) {
             collateral.approve(address(balanceSheet), type(uint256).max);
         }
 
-        /* Open the vault if not already open. */
+        // Open the vault if not already open.
         bool isVaultOpen = balanceSheet.isVaultOpen(fyToken, address(this));
         if (isVaultOpen == false) {
             balanceSheet.openVault(fyToken);
         }
 
-        /* Deposit the collateral into the BalanceSheet contract. */
+        // Deposit the collateral into the BalanceSheet contract.
         balanceSheet.depositCollateral(fyToken, collateralAmount);
     }
 
-    /**
-     * @dev See the documentation for the public functions that call this internal function.
-     */
+    /// @dev See the documentation for the public functions that call this internal function.
     function supplyUnderlyingInternal(FyTokenInterface fyToken, uint256 underlyingAmount) internal {
         RedemptionPoolInterface redemptionPool = fyToken.redemptionPool();
         Erc20Interface underlying = fyToken.underlying();
 
-        /* Transfer the underlying to the DSProxy. */
+        // Transfer the underlying to the DSProxy.
         underlying.safeTransferFrom(msg.sender, address(this), underlyingAmount);
 
-        /* Allow the RedemptionPool contract to spend tokens if allowance not enough. */
+        // Allow the RedemptionPool contract to spend tokens if allowance not enough.
         uint256 allowance = underlying.allowance(address(this), address(redemptionPool));
         if (allowance < underlyingAmount) {
             underlying.approve(address(redemptionPool), type(uint256).max);
         }
 
-        /* Supply the underlying and mint fyTokens. */
+        // Supply the underlying and mint fyTokens.
         redemptionPool.supplyUnderlying(underlyingAmount);
     }
 }

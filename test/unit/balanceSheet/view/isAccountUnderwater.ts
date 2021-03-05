@@ -50,7 +50,7 @@ export default function shouldBehaveLikeIsAccountUnderwater(): void {
       });
 
       describe("when the user is safely collateralized", function () {
-        /* Recall that the default oracle price for 1 WETH is $100. */
+        // Recall that the default oracle price for 1 WETH is $100.
         it("retrieves false", async function () {
           const isAccountUnderwater: boolean = await this.contracts.balanceSheet.isAccountUnderwater(
             this.stubs.fyToken.address,
@@ -65,7 +65,7 @@ export default function shouldBehaveLikeIsAccountUnderwater(): void {
           await this.stubs.oracle.mock.getAdjustedPrice.withArgs("WETH").returns(prices.twelveDollars);
         });
 
-        /* The price of 1 WETH is $12 so the new collateralization ratio becomes 120%. */
+        // The price of 1 WETH is $12 so the new collateralization ratio becomes 120%.
         it("retrieves true", async function () {
           const isAccountUnderwater: boolean = await this.contracts.balanceSheet.isAccountUnderwater(
             this.stubs.fyToken.address,

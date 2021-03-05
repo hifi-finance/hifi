@@ -113,8 +113,8 @@ export async function unitFixtureFyToken(signers: Signer[]): Promise<UnitFixture
   );
 
   /**
-   * The fyToken initializes the Redemption Pool in its constructor, but we don't want
-   * it for our unit tests. With help from the god-mode, we override the Redemption Pool
+   * The fyToken initializes the RedemptionPool in its constructor, but we don't want
+   * it for our unit tests. With help from the god-mode, we override the RedemptionPool
    * with a mock contract.
    */
   const redemptionPool: MockContract = await deployStubRedemptionPool(deployer);

@@ -33,9 +33,9 @@ export default function shouldBehaveLikeDeleteFeed(): void {
       it("deletes the feed", async function () {
         await this.contracts.oracle.connect(this.signers.admin).deleteFeed(symbol);
         const feed = await this.contracts.oracle.getFeed("WETH");
-        expect(feed[0]).to.equal(AddressZero); /* asset */
-        expect(feed[1]).to.equal(AddressZero); /* id */
-        expect(feed[2]).to.equal(false); /* isSet */
+        expect(feed[0]).to.equal(AddressZero); // asset
+        expect(feed[1]).to.equal(AddressZero); // id
+        expect(feed[2]).to.equal(false); // isSet
       });
 
       it("emits a DeleteFeed event", async function () {

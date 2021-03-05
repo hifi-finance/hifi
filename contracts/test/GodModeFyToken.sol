@@ -1,14 +1,12 @@
-/* SPDX-License-Identifier: LGPL-3.0-or-later */
-/* solhint-disable func-name-mixedcase, no-empty-blocks */
+/// SPDX-License-Identifier: LGPL-3.0-or-later
+// solhint-disable func-name-mixedcase, no-empty-blocks
 pragma solidity ^0.8.0;
 
 import "../FyToken.sol";
 
-/**
- * @title GodModeFyToken
- * @author Hifi
- * @dev Strictly for test purposes. Do not use in production.
- */
+/// @title GodModeFyToken
+/// @author Hifi
+/// @dev Strictly for test purposes. Do not use in production.
 contract GodModeFyToken is FyToken {
     constructor(
         string memory name_,

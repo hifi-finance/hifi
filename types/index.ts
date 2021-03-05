@@ -1,6 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { MockContract } from "ethereum-waffle";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
+import { MockContract } from "ethereum-waffle";
 
 import { BalanceSheet } from "../typechain/BalanceSheet";
 import { ChainlinkOperator } from "../typechain/ChainlinkOperator";
@@ -8,13 +8,13 @@ import { Erc20Mintable } from "../typechain/Erc20Mintable";
 import { Fintroller } from "../typechain/Fintroller";
 import { FyToken } from "../typechain/FyToken";
 import { GodModeBalanceSheet } from "../typechain/GodModeBalanceSheet";
-import { GodModeRedemptionPool } from "../typechain/GodModeRedemptionPool";
 import { GodModeFyToken } from "../typechain/GodModeFyToken";
+import { GodModeRedemptionPool } from "../typechain/GodModeRedemptionPool";
 import { RedemptionPool } from "../typechain/RedemptionPool";
 import { SimplePriceFeed } from "../typechain/SimplePriceFeed";
 
-/* The first type is for Hardhat Network tests, the second for Ethereum Mainnet. */
-/* TODO: refactor this so that contract types differ for each test suite type. */
+/// The first type is for Hardhat Network tests, the second for Ethereum Mainnet.
+/// TODO: refactor this so that contract types differ for each test suite type.
 export interface Contracts {
   balanceSheet: GodModeBalanceSheet | BalanceSheet;
   collateral: Erc20Mintable;
@@ -49,8 +49,8 @@ export interface Stubs {
 }
 
 export interface Vault {
-  0: BigNumber /* debt */;
-  1: BigNumber /* freeCollateral */;
-  2: BigNumber /* lockedCollateral */;
-  3: boolean /* isOpen */;
+  0: BigNumber; // debt
+  1: BigNumber; // freeCollateral
+  2: BigNumber; // lockedCollateral
+  3: boolean; // isOpen
 }

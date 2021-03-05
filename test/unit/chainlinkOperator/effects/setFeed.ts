@@ -35,9 +35,9 @@ export default function shouldBehaveLikeSetFeed(): void {
           .connect(this.signers.admin)
           .setFeed(this.stubs.collateral.address, this.stubs.collateralPriceFeed.address);
         const feed = await this.contracts.oracle.getFeed("WETH");
-        expect(feed[0]).to.equal(this.stubs.collateral.address); /* asset */
-        expect(feed[1]).to.equal(this.stubs.collateralPriceFeed.address); /* id */
-        expect(feed[2]).to.equal(true); /* isSet */
+        expect(feed[0]).to.equal(this.stubs.collateral.address); // asset
+        expect(feed[1]).to.equal(this.stubs.collateralPriceFeed.address); // id
+        expect(feed[2]).to.equal(true); // isSet
       });
 
       it("emits a SetFeed event", async function () {

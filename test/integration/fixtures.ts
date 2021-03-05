@@ -49,7 +49,7 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
 
   const balanceSheet: GodModeBalanceSheet = await deployGodModeBalanceSheet(deployer, fintroller.address);
 
-  /* Override the RedemptionPool.sol contract created by the fyToken with GodModeRedemptionPool.sol */
+  // Override the RedemptionPool.sol contract created by the fyToken with GodModeRedemptionPool.sol
   const fyToken: GodModeFyToken = await deployGodModeFyToken(
     deployer,
     fyTokenConstants.expirationTime,
