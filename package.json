@@ -80,7 +80,6 @@
     "solidity"
   ],
   "license": "LGPL-3.0-or-later",
-  "peerDependencies": {},
   "publishConfig": {
     "access": "public"
   },
