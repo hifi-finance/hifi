@@ -27,16 +27,7 @@ abstract contract BalanceSheetInterface is BalanceSheetStorage {
         uint256 debt
     ) public view virtual returns (uint256);
 
-    function getVault(FyTokenInterface fyToken, address borrower)
-        external
-        view
-        virtual
-        returns (
-            uint256,
-            uint256,
-            uint256,
-            bool
-        );
+    function getVault(FyTokenInterface fyToken, address borrower) external view virtual returns (Vault memory);
 
     function getVaultDebt(FyTokenInterface fyToken, address borrower) external view virtual returns (uint256);
 

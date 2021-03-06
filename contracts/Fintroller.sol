@@ -20,31 +20,9 @@ contract Fintroller is
     /// @notice Reads the storage properties of the bond.
     /// @dev It is not an error to provide an invalid fyToken address. The returned values would all be zero.
     /// @param fyToken The address of the bond contract.
-    function getBond(FyTokenInterface fyToken)
-        external
-        view
-        override
-        returns (
-            uint256 collateralizationRatioMantissa,
-            uint256 debtCeiling,
-            bool isBorrowAllowed,
-            bool isDepositCollateralAllowed,
-            bool isLiquidateBorrowAllowed,
-            bool isListed,
-            bool isRedeemFyTokenAllowed,
-            bool isRepayBorrowAllowed,
-            bool isSupplyUnderlyingAllowed
-        )
-    {
-        collateralizationRatioMantissa = bonds[fyToken].collateralizationRatio.mantissa;
-        debtCeiling = bonds[fyToken].debtCeiling;
-        isBorrowAllowed = bonds[fyToken].isBorrowAllowed;
-        isDepositCollateralAllowed = bonds[fyToken].isDepositCollateralAllowed;
-        isLiquidateBorrowAllowed = bonds[fyToken].isLiquidateBorrowAllowed;
-        isListed = bonds[fyToken].isListed;
-        isRedeemFyTokenAllowed = bonds[fyToken].isRedeemFyTokenAllowed;
-        isRepayBorrowAllowed = bonds[fyToken].isRepayBorrowAllowed;
-        isSupplyUnderlyingAllowed = bonds[fyToken].isSupplyUnderlyingAllowed;
+    /// @return The bond object.
+    function getBond(FyTokenInterface fyToken) external view override returns (Bond memory) {
+        return bonds[fyToken];
     }
 
     /// @notice Reads the collateralization ratio of the given bond.

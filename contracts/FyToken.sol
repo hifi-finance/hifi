@@ -92,9 +92,7 @@ contract FyToken is
     /// NON-CONSTANT FUNCTIONS ///
 
     struct BorrowLocalVars {
-        uint256 debt;
         uint256 debtCeiling;
-        uint256 lockedCollateral;
         uint256 hypotheticalCollateralizationRatioMantissa;
         uint256 hypotheticalTotalSupply;
         uint256 newDebt;
@@ -135,15 +133,15 @@ contract FyToken is
         require(vars.hypotheticalTotalSupply <= vars.debtCeiling, "ERR_BORROW_DEBT_CEILING_OVERFLOW");
 
         // Add the borrow amount to the borrower account's current debt.
-        (vars.debt, , vars.lockedCollateral, ) = balanceSheet.getVault(this, msg.sender);
-        require(vars.lockedCollateral > 0, "ERR_BORROW_LOCKED_COLLATERAL_ZERO");
-        vars.newDebt = vars.debt + borrowAmount;
+        BalanceSheetStorage.Vault memory vault = balanceSheet.getVault(this, msg.sender);
+        require(vault.lockedCollateral > 0, "ERR_BORROW_LOCKED_COLLATERAL_ZERO");
+        vars.newDebt = vault.debt + borrowAmount;
 
         // Checks: the hypothetical collateralization ratio is above the threshold.
         vars.hypotheticalCollateralizationRatioMantissa = balanceSheet.getHypotheticalCollateralizationRatio(
             this,
             msg.sender,
-            vars.lockedCollateral,
+            vault.lockedCollateral,
             vars.newDebt
         );
         vars.thresholdCollateralizationRatioMantissa = fintroller.getBondCollateralizationRatio(this);

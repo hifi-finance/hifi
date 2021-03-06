@@ -202,25 +202,10 @@ contract BalanceSheet is
         return vars.hypotheticalCollateralizationRatio.mantissa;
     }
 
-    /// @notice Reads the storage properties of a vault.
-    /// @return (uint256 debt, uint256 freeCollateral, uint256 lockedCollateral, bool isOpen).
-    function getVault(FyTokenInterface fyToken, address borrower)
-        external
-        view
-        override
-        returns (
-            uint256,
-            uint256,
-            uint256,
-            bool
-        )
-    {
-        return (
-            vaults[fyToken][borrower].debt,
-            vaults[fyToken][borrower].freeCollateral,
-            vaults[fyToken][borrower].lockedCollateral,
-            vaults[fyToken][borrower].isOpen
-        );
+    /// @notice Reads the storage properties of the vault.
+    /// @return The vault object;
+    function getVault(FyTokenInterface fyToken, address borrower) external view override returns (Vault memory) {
+        return vaults[fyToken][borrower];
     }
 
     /// @notice Reads the debt held by the given account.

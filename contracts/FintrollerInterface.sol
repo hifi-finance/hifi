@@ -8,21 +8,7 @@ import "./oracles/ChainlinkOperatorInterface.sol";
 abstract contract FintrollerInterface is FintrollerStorage {
     /// CONSTANT FUNCTIONS ///
 
-    function getBond(FyTokenInterface fyToken)
-        external
-        view
-        virtual
-        returns (
-            uint256 debtCeiling,
-            uint256 collateralizationRatioMantissa,
-            bool isBorrowAllowed,
-            bool isDepositCollateralAllowed,
-            bool isLiquidateBorrowAllowed,
-            bool isListed,
-            bool isRedeemFyTokenAllowed,
-            bool isRepayBorrowAllowed,
-            bool isSupplyUnderlyingAllowed
-        );
+    function getBond(FyTokenInterface fyToken) external view virtual returns (Bond memory);
 
     function getBorrowAllowed(FyTokenInterface fyToken) external view virtual returns (bool);
 
