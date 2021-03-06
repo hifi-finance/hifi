@@ -9,7 +9,7 @@ export default function shouldBehaveLikeGetBondCollateralizationRatio(): void {
 
   describe("when the bond is listed", function () {
     beforeEach(async function () {
-      await this.contracts.fintroller.listBond(this.stubs.fyToken.address);
+      await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.fyToken.address);
       await this.contracts.fintroller.setBondCollateralizationRatio(
         this.stubs.fyToken.address,
         newCollateralizationRatioMantissa,

@@ -15,12 +15,6 @@ contract Fintroller is
     FintrollerInterface, /// one dependency
     Admin /// two dependencies
 {
-    // solhint-disable-next-line no-empty-blocks
-    constructor() Admin() {
-        // Set a default value of 110% for the liquidation incentive.
-        liquidationIncentiveMantissa = 1.1e18;
-    }
-
     /// CONSTANT FUNCTIONS ///
 
     /// @notice Reads the storage properties of the bond.
@@ -67,6 +61,14 @@ contract Fintroller is
     /// @return The debt ceiling as a uint256, or zero if an invalid address was provided.
     function getBondDebtCeiling(FyTokenInterface fyToken) external view override returns (uint256) {
         return bonds[fyToken].debtCeiling;
+    }
+
+    /// @notice Reads the liquidation incentive of the given bond.
+    /// @dev It is not an error to provide an invalid fyToken address.
+    /// @param fyToken The address of the bond contract.
+    /// @return The liquidation incentive as a mantissa, or zero if an invalid address was provided.
+    function getBondLiquidationIncentive(FyTokenInterface fyToken) external view override returns (uint256) {
+        return bonds[fyToken].liquidationIncentive;
     }
 
     /// @notice Check if the account should be allowed to borrow fyTokens.
@@ -153,7 +155,8 @@ contract Fintroller is
             isListed: true,
             isRedeemFyTokenAllowed: true,
             isRepayBorrowAllowed: true,
-            isSupplyUnderlyingAllowed: true
+            isSupplyUnderlyingAllowed: true,
+            liquidationIncentive: defaultLiquidationIncentiveMantissa
         });
         emit ListBond(admin, fyToken);
         return true;
@@ -206,7 +209,7 @@ contract Fintroller is
         return true;
     }
 
-    /// @notice Updates the debt ceiling, which limits how much debt can be created in the bond market.
+    /// @notice Updates the debt ceiling, which limits how much debt can be issued for this specific bond.
     ///
     /// @dev Emits a {SetBondDebtCeiling} event.
     ///
@@ -241,6 +244,48 @@ contract Fintroller is
         bonds[fyToken].debtCeiling = newDebtCeiling;
 
         emit SetBondDebtCeiling(admin, fyToken, oldDebtCeiling, newDebtCeiling);
+
+        return true;
+    }
+
+    /// @notice Sets a new value for the liquidation incentive applicable to this specific bond.
+    ///
+    /// @dev Emits a {SetBondLiquidationIncentive} event.
+    ///
+    /// Requirements:
+    ///
+    /// - The caller must be the admin.
+    /// - The bond must be listed.
+    /// - The new liquidation incentive cannot be higher than the maximum liquidation incentive.
+    /// - The new liquidation incentive cannot be lower than the minimum liquidation incentive.
+    ///
+    /// @param fyToken The bond for which to update the liquidation incentive.
+    /// @param newLiquidationIncentive The new liquidation incentive as a mantissa.
+    /// @return bool true = success, otherwise it reverts.
+    function setBondLiquidationIncentive(FyTokenInterface fyToken, uint256 newLiquidationIncentive)
+        external
+        override
+        onlyAdmin
+        returns (bool)
+    {
+        // Checks: bond is listed.
+        require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
+
+        // Checks: new collateralization ratio is within the accepted bounds.
+        require(
+            newLiquidationIncentive <= liquidationIncentiveUpperBoundMantissa,
+            "ERR_SET_BOND_LIQUIDATION_INCENTIVE_UPPER_BOUND"
+        );
+        require(
+            newLiquidationIncentive >= liquidationIncentiveLowerBoundMantissa,
+            "ERR_SET_BOND_LIQUIDATION_INCENTIVE_LOWER_BOUND"
+        );
+
+        // Effects: update storage.
+        uint256 oldLiquidationIncentive = bonds[fyToken].liquidationIncentive;
+        bonds[fyToken].liquidationIncentive = newLiquidationIncentive;
+
+        emit SetBondLiquidationIncentive(admin, fyToken, oldLiquidationIncentive, newLiquidationIncentive);
 
         return true;
     }
@@ -309,44 +354,6 @@ contract Fintroller is
         require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
         bonds[fyToken].isLiquidateBorrowAllowed = state;
         emit SetLiquidateBorrowAllowed(admin, fyToken, state);
-        return true;
-    }
-
-    /// @notice Sets a new value for the liquidation incentive, which is applicable
-    /// to all listed bonds.
-    ///
-    /// @dev Emits a {SetLiquidationIncentive} event.
-    ///
-    /// Requirements:
-    ///
-    /// - The caller must be the admin.
-    /// - The new liquidation incentive cannot be higher than the maximum liquidation incentive.
-    /// - The new liquidation incentive cannot be lower than the minimum liquidation incentive.
-    ///
-    /// @param newLiquidationIncentiveMantissa The new liquidation incentive as a mantissa.
-    /// @return bool true = success, otherwise it reverts.
-    function setLiquidationIncentive(uint256 newLiquidationIncentiveMantissa)
-        external
-        override
-        onlyAdmin
-        returns (bool)
-    {
-        // Checks: new collateralization ratio is within the accepted bounds.
-        require(
-            newLiquidationIncentiveMantissa <= liquidationIncentiveUpperBoundMantissa,
-            "ERR_SET_LIQUIDATION_INCENTIVE_UPPER_BOUND"
-        );
-        require(
-            newLiquidationIncentiveMantissa >= liquidationIncentiveLowerBoundMantissa,
-            "ERR_SET_LIQUIDATION_INCENTIVE_LOWER_BOUND"
-        );
-
-        // Effects: update storage.
-        uint256 oldLiquidationIncentiveMantissa = liquidationIncentiveMantissa;
-        liquidationIncentiveMantissa = newLiquidationIncentiveMantissa;
-
-        emit SetLiquidationIncentive(admin, oldLiquidationIncentiveMantissa, newLiquidationIncentiveMantissa);
-
         return true;
     }
 

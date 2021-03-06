@@ -4,13 +4,13 @@ import { expect } from "chai";
 
 import { fintrollerConstants } from "../../../../helpers/constants";
 
-export default function shouldBehaveLikeGetBondCollateralizationRatio(): void {
+export default function shouldBehaveLikeGetBondDebtCeiling(): void {
   describe("when the bond is not listed", function () {
     it("retrieves zero", async function () {
-      const bondCollateralizationRatio: BigNumber = await this.contracts.fintroller.getBondCollateralizationRatio(
+      const bondLiquidationIncentive: BigNumber = await this.contracts.fintroller.getBondLiquidationIncentive(
         this.stubs.fyToken.address,
       );
-      expect(bondCollateralizationRatio).to.equal(Zero);
+      expect(bondLiquidationIncentive).to.equal(Zero);
     });
   });
 
@@ -19,11 +19,11 @@ export default function shouldBehaveLikeGetBondCollateralizationRatio(): void {
       await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.fyToken.address);
     });
 
-    it("retrieves the default collateralization ratio", async function () {
-      const collateralizationRatioMantissa: BigNumber = await this.contracts.fintroller.getBondCollateralizationRatio(
+    it("retrieves the default liquidation incentive", async function () {
+      const bondLiquidationIncentive: BigNumber = await this.contracts.fintroller.getBondLiquidationIncentive(
         this.stubs.fyToken.address,
       );
-      expect(collateralizationRatioMantissa).to.equal(fintrollerConstants.defaultCollateralizationRatio);
+      expect(bondLiquidationIncentive).to.equal(fintrollerConstants.defaultLiquidationIncentive);
     });
   });
 }

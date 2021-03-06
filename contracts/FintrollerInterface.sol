@@ -30,6 +30,8 @@ abstract contract FintrollerInterface is FintrollerStorage {
 
     function getBondDebtCeiling(FyTokenInterface fyToken) external view virtual returns (uint256);
 
+    function getBondLiquidationIncentive(FyTokenInterface fyToken) external view virtual returns (uint256);
+
     function getDepositCollateralAllowed(FyTokenInterface fyToken) external view virtual returns (bool);
 
     function getLiquidateBorrowAllowed(FyTokenInterface fyToken) external view virtual returns (bool);
@@ -51,13 +53,16 @@ abstract contract FintrollerInterface is FintrollerStorage {
 
     function setBondDebtCeiling(FyTokenInterface fyToken, uint256 newDebtCeiling) external virtual returns (bool);
 
+    function setBondLiquidationIncentive(FyTokenInterface fyToken, uint256 newLiquidationIncentive)
+        external
+        virtual
+        returns (bool);
+
     function setBorrowAllowed(FyTokenInterface fyToken, bool state) external virtual returns (bool);
 
     function setDepositCollateralAllowed(FyTokenInterface fyToken, bool state) external virtual returns (bool);
 
     function setLiquidateBorrowAllowed(FyTokenInterface fyToken, bool state) external virtual returns (bool);
-
-    function setLiquidationIncentive(uint256 newLiquidationIncentiveMantissa) external virtual returns (bool);
 
     function setOracle(ChainlinkOperatorInterface newOracle) external virtual returns (bool);
 
@@ -87,15 +92,16 @@ abstract contract FintrollerInterface is FintrollerStorage {
         uint256 newDebtCeiling
     );
 
-    event SetDepositCollateralAllowed(address indexed admin, FyTokenInterface indexed fyToken, bool state);
-
-    event SetLiquidateBorrowAllowed(address indexed admin, FyTokenInterface indexed fyToken, bool state);
-
-    event SetLiquidationIncentive(
+    event SetBondLiquidationIncentive(
         address indexed admin,
+        FyTokenInterface fyToken,
         uint256 oldLiquidationIncentive,
         uint256 newLiquidationIncentive
     );
+
+    event SetDepositCollateralAllowed(address indexed admin, FyTokenInterface indexed fyToken, bool state);
+
+    event SetLiquidateBorrowAllowed(address indexed admin, FyTokenInterface indexed fyToken, bool state);
 
     event SetRedeemFyTokensAllowed(address indexed admin, FyTokenInterface indexed fyToken, bool state);
 

@@ -34,12 +34,16 @@ abstract contract FyTokenInterface is
 
     event Borrow(address indexed borrower, uint256 borrowAmount);
 
+    event Burn(address indexed holder, uint256 burnAmount);
+
     event LiquidateBorrow(
         address indexed liquidator,
         address indexed borrower,
         uint256 repayAmount,
         uint256 clutchedCollateralAmount
     );
+
+    event Mint(address indexed beneficiary, uint256 mintAmount);
 
     event RepayBorrow(address indexed payer, address indexed borrower, uint256 repayAmount, uint256 newDebt);
 

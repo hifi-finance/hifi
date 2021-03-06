@@ -826,7 +826,7 @@ __metadata:
     "@ethersproject/units": ^5.0.10
     "@nomiclabs/hardhat-ethers": ^2.0.0
     "@nomiclabs/hardhat-waffle": ^2.0.0
-    "@paulrberg": "https://github.com/paulrberg/contracts.git#v2.0.0"
+    "@paulrberg": "https://github.com/paulrberg/contracts.git#main"
     "@typechain/ethers-v5": ^6.0.1
     "@types/chai": ^4.2.15
     "@types/fs-extra": ^9.0.8
@@ -940,10 +940,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@paulrberg@https://github.com/paulrberg/contracts.git#v2.0.0":
+"@paulrberg@https://github.com/paulrberg/contracts.git#main":
   version: 2.0.0
-  resolution: "@paulrberg@https://github.com/paulrberg/contracts.git#commit=8c2d46c9cebdb55e98f679fd3b5d188715318d63"
-  checksum: 409cd0c40eac87b2849cd211957effc6ad413195a8330126f979d3e5ea8c35ec84c76702dd2de56bf02c5932933c33d745542b4e69d47f6c32117b58a6b5be13
+  resolution: "@paulrberg@https://github.com/paulrberg/contracts.git#commit=4cb3ad1f1331847e7a0d5fc5c65f20ec4df59d87"
+  checksum: 48c70251840dc28b46bd512859e8b109858dc1beea6b8c86148b975c7b69408985b84673f7670bb86231c7642d7645da40dbb61d0cbbad047919e5a6a305fc37
   languageName: node
   linkType: hard
 

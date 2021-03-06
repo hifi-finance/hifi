@@ -12,6 +12,7 @@ abstract contract FintrollerStorage is Exponential {
     struct Bond {
         Exp collateralizationRatio;
         uint256 debtCeiling;
+        uint256 liquidationIncentive;
         bool isBorrowAllowed;
         bool isDepositCollateralAllowed;
         bool isLiquidateBorrowAllowed;
@@ -27,9 +28,6 @@ abstract contract FintrollerStorage is Exponential {
     /// @notice The contract that provides price data for the collateral and the underlying asset.
     ChainlinkOperatorInterface public oracle;
 
-    /// @notice Multiplier representing the discount on collateral that a liquidator receives.
-    uint256 public liquidationIncentiveMantissa;
-
     /// @dev The threshold below which the collateralization ratio cannot be set, equivalent to 100%.
     uint256 internal constant collateralizationRatioLowerBoundMantissa = 1.0e18;
 
@@ -38,6 +36,9 @@ abstract contract FintrollerStorage is Exponential {
 
     /// @dev The dafault collateralization ratio set when a new bond is listed, equivalent to 150%.
     uint256 internal constant defaultCollateralizationRatioMantissa = 1.5e18;
+
+    /// @dev The dafault liquidation incentive mantissa set when a new bond is listed, equivalent to 110%.
+    uint256 internal constant defaultLiquidationIncentiveMantissa = 1.1e18;
 
     /// @dev The threshold below which the liquidation incentive cannot be set, equivalent to 100%.
     uint256 internal constant liquidationIncentiveLowerBoundMantissa = 1.0e18;

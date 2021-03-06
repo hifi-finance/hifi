@@ -155,7 +155,8 @@ contract FyToken is
         // Effects: print the new fyTokens into existence.
         mintInternal(msg.sender, borrowAmount);
 
-        // Emit a Transfer event.
+        // Emit a Mint and a Transfer event.
+        emit Mint(msg.sender, borrowAmount);
         emit Transfer(address(this), msg.sender, borrowAmount);
 
         // Interactions: increase the debt of the borrower account.
@@ -190,7 +191,8 @@ contract FyToken is
         // Effects: burns the fyTokens.
         burnInternal(holder, burnAmount);
 
-        // Emit a Transfer event.
+        // Emit a Burn and a Transfer event.
+        emit Burn(holder, burnAmount);
         emit Transfer(holder, address(this), burnAmount);
 
         return true;
@@ -283,7 +285,8 @@ contract FyToken is
         // Effects: print the new fyTokens into existence.
         mintInternal(beneficiary, mintAmount);
 
-        // Emit a Transfer event.
+        // Emit a Mint and a Transfer event.
+        emit Mint(beneficiary, mintAmount);
         emit Transfer(address(this), beneficiary, mintAmount);
 
         return true;
@@ -379,7 +382,8 @@ contract FyToken is
         // Effects: burn the fyTokens.
         burnInternal(payer, repayAmount);
 
-        // Emit a Transfer event.
+        // Emit a Burn and a Transfer event.
+        emit Burn(payer, repayAmount);
         emit Transfer(payer, address(this), repayAmount);
 
         // Calculate the new debt of the borrower.

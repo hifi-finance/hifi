@@ -107,6 +107,7 @@ export const fintrollerConstants = {
   collateralizationRatioLowerBoundMantissa: percentages.oneHundred,
   collateralizationRatioUpperBoundMantissa: percentages.tenThousand,
   defaultCollateralizationRatio: percentages.oneHundredAndFifty,
+  defaultLiquidationIncentive: percentages.oneHundredAndTen,
   liquidationIncentiveLowerBoundMantissa: percentages.oneHundred,
   liquidationIncentiveUpperBoundMantissa: percentages.oneHundredAndFifty,
   oraclePrecisionScalar: chainlinkPricePrecisionScalar,

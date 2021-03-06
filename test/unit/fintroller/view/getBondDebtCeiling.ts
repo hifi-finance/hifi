@@ -12,7 +12,7 @@ export default function shouldBehaveLikeGetBondDebtCeiling(): void {
 
   describe("when the bond is listed", function () {
     beforeEach(async function () {
-      await this.contracts.fintroller.listBond(this.stubs.fyToken.address);
+      await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.fyToken.address);
     });
 
     it("retrieves the default debt ceiling", async function () {

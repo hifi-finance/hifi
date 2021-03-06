@@ -19,13 +19,9 @@ export default function shouldBehaveLikeGetClutchableCollateral(): void {
   });
 
   describe("when the amount to repay is not zero", function () {
-    beforeEach(async function () {
-      await this.stubs.fintroller.mock.liquidationIncentiveMantissa.returns(percentages.oneHundredAndTen);
-    });
-
     describe("when the liquidation incentive is zero", function () {
       beforeEach(async function () {
-        await this.stubs.fintroller.mock.liquidationIncentiveMantissa.returns(Zero);
+        await this.stubs.fintroller.mock.getBondLiquidationIncentive.withArgs(this.stubs.fyToken.address).returns(Zero);
       });
 
       it("retrieves zero", async function () {
@@ -38,6 +34,12 @@ export default function shouldBehaveLikeGetClutchableCollateral(): void {
     });
 
     describe("when the liquidation incentive is not zero", function () {
+      beforeEach(async function () {
+        await this.stubs.fintroller.mock.getBondLiquidationIncentive
+          .withArgs(this.stubs.fyToken.address)
+          .returns(percentages.oneHundredAndTen);
+      });
+
       describe("when the collateral has 18 decimals", function () {
         beforeEach(async function () {
           await this.stubs.collateral.mock.decimals.returns(BigNumber.from(18));

@@ -42,7 +42,7 @@ contract BalanceSheet is
         uint256 clutchableCollateralAmount;
         uint256 collateralPrecisionScalar;
         uint256 collateralPriceUpscaled;
-        uint256 liquidationIncentiveMantissa;
+        uint256 liquidationIncentive;
         Exp numerator;
         uint256 oraclePricePrecisionScalar;
         uint256 underlyingPriceUpscaled;
@@ -72,8 +72,8 @@ contract BalanceSheet is
         require(repayAmount > 0, "ERR_GET_CLUTCHABLE_COLLATERAL_ZERO");
 
         // When the liquidation incentive is zero, the end result would be zero anyways.
-        vars.liquidationIncentiveMantissa = fintroller.liquidationIncentiveMantissa();
-        if (vars.liquidationIncentiveMantissa == 0) {
+        vars.liquidationIncentive = fintroller.getBondLiquidationIncentive(fyToken);
+        if (vars.liquidationIncentive == 0) {
             return 0;
         }
 
@@ -87,7 +87,7 @@ contract BalanceSheet is
         // Calculate the top part of the equation.
         vars.numerator = mulExp3(
             Exp({ mantissa: repayAmount }),
-            Exp({ mantissa: vars.liquidationIncentiveMantissa }),
+            Exp({ mantissa: vars.liquidationIncentive }),
             Exp({ mantissa: vars.underlyingPriceUpscaled })
         );
 

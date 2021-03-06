@@ -31,8 +31,8 @@ export enum FintrollerErrors {
   SetBondDebtCeilingZero = "ERR_SET_BOND_DEBT_CEILING_ZERO",
   SetBondCollateralizationRatioLowerBound = "ERR_SET_BOND_COLLATERALIZATION_RATIO_LOWER_BOUND",
   SetBondCollateralizationRatioUpperBound = "ERR_SET_BOND_COLLATERALIZATION_RATIO_UPPER_BOUND",
-  SetLiquidationIncentiveLowerBound = "ERR_SET_LIQUIDATION_INCENTIVE_LOWER_BOUND",
-  SetLiquidationIncentiveUpperBound = "ERR_SET_LIQUIDATION_INCENTIVE_UPPER_BOUND",
+  SetBondLiquidationIncentiveLowerBound = "ERR_SET_BOND_LIQUIDATION_INCENTIVE_LOWER_BOUND",
+  SetBondLiquidationIncentiveUpperBound = "ERR_SET_BOND_LIQUIDATION_INCENTIVE_UPPER_BOUND",
   SetOracleZeroAddress = "ERR_SET_ORACLE_ZERO_ADDRESS",
 }
 

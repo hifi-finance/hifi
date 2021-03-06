@@ -32,7 +32,7 @@ contract FintrollerInvariants is
 
     function echidna_liquidation_incentive() external view returns (bool) {
         return
-            liquidationIncentiveMantissa >= liquidationIncentiveLowerBoundMantissa &&
-            liquidationIncentiveMantissa <= liquidationIncentiveUpperBoundMantissa;
+            bonds[fyToken].liquidationIncentive >= liquidationIncentiveLowerBoundMantissa &&
+            bonds[fyToken].liquidationIncentive <= liquidationIncentiveUpperBoundMantissa;
     }
 }
