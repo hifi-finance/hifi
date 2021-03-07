@@ -41,19 +41,7 @@ contract RedemptionPool is
         uint256 underlyingAmount;
     }
 
-    /// @notice Pays the token holder the face value at maturation time.
-    ///
-    /// @dev Emits a {RedeemFyTokens} event.
-    ///
-    /// Requirements:
-    ///
-    /// - Must be called after maturation.
-    /// - The amount to redeem cannot be zero.
-    /// - The Fintroller must allow this action to be performed.
-    /// - There must be enough liquidity in the RedemptionPool.
-    ///
-    /// @param fyTokenAmount The amount of fyTokens to redeem for the underlying asset.
-    /// @return bool true = success, otherwise it reverts.
+    /// @inheritdoc RedemptionPoolInterface
     function redeemFyTokens(uint256 fyTokenAmount) external override nonReentrant returns (bool) {
         RedeemFyTokensLocalVars memory vars;
 
@@ -99,19 +87,7 @@ contract RedemptionPool is
         uint256 underlyingPrecisionScalar;
     }
 
-    /// @notice An alternative to the usual minting method that does not involve taking on debt.
-    ///
-    /// @dev Emits a {SupplyUnderlying} event.
-    ///
-    /// Requirements:
-    ///
-    /// - Must be called prior to maturation.
-    /// - The amount to supply cannot be zero.
-    /// - The Fintroller must allow this action to be performed.
-    /// - The caller must have allowed this contract to spend `underlyingAmount` tokens.
-    ///
-    /// @param underlyingAmount The amount of underlying to supply to the RedemptionPool.
-    /// @return bool true = success, otherwise it reverts.
+    /// @inheritdoc RedemptionPoolInterface
     function supplyUnderlying(uint256 underlyingAmount) external override nonReentrant returns (bool) {
         SupplyUnderlyingLocalVars memory vars;
 

@@ -7,6 +7,8 @@ import "./BatterseaTargetV1Storage.sol";
 /// @author Hifi
 /// @notice Storage contract for BatterseaTargetV1.
 abstract contract BatterseaTargetV1Interface is BatterseaTargetV1Storage {
+    /// EVENTS
+
     event BorrowAndSellFyTokens(
         address indexed borrower,
         uint256 borrowAmount,
