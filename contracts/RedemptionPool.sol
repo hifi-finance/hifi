@@ -35,16 +35,8 @@ contract RedemptionPool is
         fyToken = fyToken_;
     }
 
-    struct RedeemFyTokensLocalVars {
-        uint256 newUnderlyingTotalSupply;
-        uint256 underlyingPrecisionScalar;
-        uint256 underlyingAmount;
-    }
-
     /// @inheritdoc RedemptionPoolInterface
     function redeemFyTokens(uint256 fyTokenAmount) external override nonReentrant returns (bool) {
-        RedeemFyTokensLocalVars memory vars;
-
         // Checks: maturation time.
         require(block.timestamp >= fyToken.expirationTime(), "ERR_BOND_NOT_MATURED");
 
@@ -56,41 +48,33 @@ contract RedemptionPool is
 
         // fyTokens always have 18 decimals so the underlying amount needs to be downscaled.
         // If the precision scalar is 1, it means that the underlying also has 18 decimals.
-        vars.underlyingPrecisionScalar = fyToken.underlyingPrecisionScalar();
-        if (vars.underlyingPrecisionScalar != 1) {
-            vars.underlyingAmount = fyTokenAmount / vars.underlyingPrecisionScalar;
+        uint256 underlyingPrecisionScalar = fyToken.underlyingPrecisionScalar();
+        uint256 underlyingAmount;
+        if (underlyingPrecisionScalar != 1) {
+            underlyingAmount = fyTokenAmount / underlyingPrecisionScalar;
         } else {
-            vars.underlyingAmount = fyTokenAmount;
+            underlyingAmount = fyTokenAmount;
         }
 
         // Checks: there is enough liquidity.
-        require(vars.underlyingAmount <= totalUnderlyingSupply, "ERR_REDEEM_FYTOKENS_INSUFFICIENT_UNDERLYING");
+        require(underlyingAmount <= totalUnderlyingSupply, "ERR_REDEEM_FYTOKENS_INSUFFICIENT_UNDERLYING");
 
         // Effects: decrease the remaining supply of underlying.
-        vars.newUnderlyingTotalSupply = totalUnderlyingSupply - vars.underlyingAmount;
-        totalUnderlyingSupply = vars.newUnderlyingTotalSupply;
+        totalUnderlyingSupply -= underlyingAmount;
 
         // Interactions: burn the fyTokens.
         require(fyToken.burn(msg.sender, fyTokenAmount), "ERR_SUPPLY_UNDERLYING_CALL_BURN");
 
         // Interactions: perform the Erc20 transfer.
-        fyToken.underlying().safeTransfer(msg.sender, vars.underlyingAmount);
+        fyToken.underlying().safeTransfer(msg.sender, underlyingAmount);
 
-        emit RedeemFyTokens(msg.sender, fyTokenAmount, vars.underlyingAmount);
+        emit RedeemFyTokens(msg.sender, fyTokenAmount, underlyingAmount);
 
         return true;
     }
 
-    struct SupplyUnderlyingLocalVars {
-        uint256 fyTokenAmount;
-        uint256 newUnderlyingTotalSupply;
-        uint256 underlyingPrecisionScalar;
-    }
-
     /// @inheritdoc RedemptionPoolInterface
     function supplyUnderlying(uint256 underlyingAmount) external override nonReentrant returns (bool) {
-        SupplyUnderlyingLocalVars memory vars;
-
         // Checks: maturation time.
         require(block.timestamp < fyToken.expirationTime(), "ERR_BOND_MATURED");
 
@@ -101,25 +85,25 @@ contract RedemptionPool is
         require(fintroller.getSupplyUnderlyingAllowed(fyToken), "ERR_SUPPLY_UNDERLYING_NOT_ALLOWED");
 
         // Effects: update storage.
-        vars.newUnderlyingTotalSupply = totalUnderlyingSupply + underlyingAmount;
-        totalUnderlyingSupply = vars.newUnderlyingTotalSupply;
+        totalUnderlyingSupply += underlyingAmount;
 
         // fyTokens always have 18 decimals so the underlying amount needs to be upscaled. If the
         // precision scalar is 1, it means that the underlying also has 18 decimals.
-        vars.underlyingPrecisionScalar = fyToken.underlyingPrecisionScalar();
-        if (vars.underlyingPrecisionScalar != 1) {
-            vars.fyTokenAmount = underlyingAmount * vars.underlyingPrecisionScalar;
+        uint256 underlyingPrecisionScalar = fyToken.underlyingPrecisionScalar();
+        uint256 fyTokenAmount;
+        if (underlyingPrecisionScalar != 1) {
+            fyTokenAmount = underlyingAmount * underlyingPrecisionScalar;
         } else {
-            vars.fyTokenAmount = underlyingAmount;
+            fyTokenAmount = underlyingAmount;
         }
 
         // Interactions: mint the fyTokens.
-        require(fyToken.mint(msg.sender, vars.fyTokenAmount), "ERR_SUPPLY_UNDERLYING_CALL_MINT");
+        require(fyToken.mint(msg.sender, fyTokenAmount), "ERR_SUPPLY_UNDERLYING_CALL_MINT");
 
         // Interactions: perform the Erc20 transfer.
         fyToken.underlying().safeTransferFrom(msg.sender, address(this), underlyingAmount);
 
-        emit SupplyUnderlying(msg.sender, underlyingAmount, vars.fyTokenAmount);
+        emit SupplyUnderlying(msg.sender, underlyingAmount, fyTokenAmount);
 
         return true;
     }

@@ -90,18 +90,8 @@ contract FyToken is
 
     /// NON-CONSTANT FUNCTIONS ///
 
-    struct BorrowLocalVars {
-        uint256 debtCeiling;
-        uint256 hypotheticalCollateralizationRatioMantissa;
-        uint256 hypotheticalTotalSupply;
-        uint256 newDebt;
-        uint256 thresholdCollateralizationRatioMantissa;
-    }
-
     /// @inheritdoc FyTokenInterface
     function borrow(uint256 borrowAmount) public override isVaultOpen(msg.sender) nonReentrant returns (bool) {
-        BorrowLocalVars memory vars;
-
         // Checks: bond not matured.
         require(isMatured() == false, "ERR_BOND_MATURED");
 
@@ -112,27 +102,20 @@ contract FyToken is
         require(fintroller.getBorrowAllowed(this), "ERR_BORROW_NOT_ALLOWED");
 
         // Checks: debt ceiling.
-        vars.hypotheticalTotalSupply = totalSupply + borrowAmount;
-        vars.debtCeiling = fintroller.getBondDebtCeiling(this);
-        require(vars.hypotheticalTotalSupply <= vars.debtCeiling, "ERR_BORROW_DEBT_CEILING_OVERFLOW");
+        uint256 hypotheticalTotalSupply = totalSupply + borrowAmount;
+        uint256 bondDebtCeiling = fintroller.getBondDebtCeiling(this);
+        require(hypotheticalTotalSupply <= bondDebtCeiling, "ERR_BORROW_DEBT_CEILING_OVERFLOW");
 
         // Add the borrow amount to the borrower account's current debt.
         BalanceSheetStorage.Vault memory vault = balanceSheet.getVault(this, msg.sender);
         require(vault.lockedCollateral > 0, "ERR_BORROW_LOCKED_COLLATERAL_ZERO");
-        vars.newDebt = vault.debt + borrowAmount;
+        uint256 newDebt = vault.debt + borrowAmount;
 
         // Checks: the hypothetical collateralization ratio is above the threshold.
-        vars.hypotheticalCollateralizationRatioMantissa = balanceSheet.getHypotheticalCollateralizationRatio(
-            this,
-            msg.sender,
-            vault.lockedCollateral,
-            vars.newDebt
-        );
-        vars.thresholdCollateralizationRatioMantissa = fintroller.getBondCollateralizationRatio(this);
-        require(
-            vars.hypotheticalCollateralizationRatioMantissa >= vars.thresholdCollateralizationRatioMantissa,
-            "ERR_BELOW_COLLATERALIZATION_RATIO"
-        );
+        uint256 hypotheticalCollateralizationRatio =
+            balanceSheet.getHypotheticalCollateralizationRatio(this, msg.sender, vault.lockedCollateral, newDebt);
+        uint256 bondCollateralizationRatio = fintroller.getBondCollateralizationRatio(this);
+        require(hypotheticalCollateralizationRatio >= bondCollateralizationRatio, "ERR_BELOW_COLLATERALIZATION_RATIO");
 
         // Effects: print the new fyTokens into existence.
         mintInternal(msg.sender, borrowAmount);
@@ -142,7 +125,7 @@ contract FyToken is
         emit Transfer(address(this), msg.sender, borrowAmount);
 
         // Interactions: increase the debt of the borrower account.
-        require(balanceSheet.setVaultDebt(this, msg.sender, vars.newDebt), "ERR_BORROW_CALL_SET_VAULT_DEBT");
+        require(balanceSheet.setVaultDebt(this, msg.sender, newDebt), "ERR_BORROW_CALL_SET_VAULT_DEBT");
 
         // Emit a Borrow event.
         emit Borrow(msg.sender, borrowAmount);
@@ -168,12 +151,6 @@ contract FyToken is
         return true;
     }
 
-    struct LiquidateBorrowsLocalVars {
-        uint256 collateralizationRatioMantissa;
-        uint256 lockedCollateral;
-        bool isAccountUnderwater;
-    }
-
     /// @inheritdoc FyTokenInterface
     function liquidateBorrow(address borrower, uint256 repayAmount)
         external
@@ -182,8 +159,6 @@ contract FyToken is
         nonReentrant
         returns (bool)
     {
-        LiquidateBorrowsLocalVars memory vars;
-
         // Checks: borrowers cannot self liquidate.
         require(msg.sender != borrower, "ERR_LIQUIDATE_BORROW_SELF");
 
@@ -196,8 +171,8 @@ contract FyToken is
         // After maturation, any vault can be liquidated, irrespective of collateralization ratio.
         if (isMatured() == false) {
             // Checks: the borrower fell below the threshold collateralization ratio.
-            vars.isAccountUnderwater = balanceSheet.isAccountUnderwater(this, borrower);
-            require(vars.isAccountUnderwater, "ERR_ACCOUNT_NOT_UNDERWATER");
+            bool isAccountUnderwater = balanceSheet.isAccountUnderwater(this, borrower);
+            require(isAccountUnderwater, "ERR_ACCOUNT_NOT_UNDERWATER");
         }
 
         // Effects & Interactions: repay the borrower's debt.

@@ -264,13 +264,6 @@ contract BalanceSheet is
         return true;
     }
 
-    struct FreeCollateralLocalVars {
-        uint256 collateralizationRatioMantissa;
-        uint256 hypotheticalCollateralizationRatioMantissa;
-        uint256 newFreeCollateral;
-        uint256 newLockedCollateral;
-    }
-
     /// @inheritdoc BalanceSheetInterface
     function freeCollateral(FyTokenInterface fyToken, uint256 collateralAmount)
         external
@@ -278,35 +271,29 @@ contract BalanceSheet is
         isVaultOpenForMsgSender(fyToken)
         returns (bool)
     {
-        FreeCollateralLocalVars memory vars;
-
         // Checks: the zero edge case.
         require(collateralAmount > 0, "ERR_FREE_COLLATERAL_ZERO");
 
         // Checks: enough locked collateral.
         Vault memory vault = vaults[fyToken][msg.sender];
         require(vault.lockedCollateral >= collateralAmount, "ERR_INSUFFICIENT_LOCKED_COLLATERAL");
-        vars.newLockedCollateral = vault.lockedCollateral - collateralAmount;
+        uint256 newLockedCollateral = vault.lockedCollateral - collateralAmount;
 
         // Checks: the hypothetical collateralization ratio is above the threshold.
         if (vault.debt > 0) {
-            vars.hypotheticalCollateralizationRatioMantissa = getHypotheticalCollateralizationRatio(
-                fyToken,
-                msg.sender,
-                vars.newLockedCollateral,
-                vault.debt
-            );
-            vars.collateralizationRatioMantissa = fintroller.getBondCollateralizationRatio(fyToken);
+            uint256 hypotheticalCollateralizationRatio =
+                getHypotheticalCollateralizationRatio(fyToken, msg.sender, newLockedCollateral, vault.debt);
+            uint256 bondCollateralizationRatio = fintroller.getBondCollateralizationRatio(fyToken);
             require(
-                vars.hypotheticalCollateralizationRatioMantissa >= vars.collateralizationRatioMantissa,
+                hypotheticalCollateralizationRatio >= bondCollateralizationRatio,
                 "ERR_BELOW_COLLATERALIZATION_RATIO"
             );
         }
 
         // Effects: update storage.
-        vaults[fyToken][msg.sender].lockedCollateral = vars.newLockedCollateral;
-        vars.newFreeCollateral = vault.freeCollateral + collateralAmount;
-        vaults[fyToken][msg.sender].freeCollateral = vars.newFreeCollateral;
+        vaults[fyToken][msg.sender].lockedCollateral = newLockedCollateral;
+        uint256 newFreeCollateral = vault.freeCollateral + collateralAmount;
+        vaults[fyToken][msg.sender].freeCollateral = newFreeCollateral;
 
         emit FreeCollateral(fyToken, msg.sender, collateralAmount);
 
