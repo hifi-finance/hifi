@@ -3,7 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { fintrollerConstants, fyTokenConstants, tokenAmounts } from "../../../../helpers/constants";
-import { FintrollerErrors, FyTokenErrors, GenericErrors } from "../../../../helpers/errors";
+import { FyTokenErrors, GenericErrors } from "../../../../helpers/errors";
 import { contextForTimeDependentTests } from "../../../contexts";
 import { increaseTime } from "../../../jsonRpc";
 import { stubIsVaultOpen } from "../../stubs";
@@ -88,13 +88,13 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
           beforeEach(async function () {
             await this.stubs.fintroller.mock.getRepayBorrowAllowed
               .withArgs(this.contracts.fyToken.address)
-              .revertsWithReason(FintrollerErrors.BondNotListed);
+              .revertsWithReason(GenericErrors.BondNotListed);
           });
 
           it("reverts", async function () {
             await expect(
               this.contracts.fyToken.connect(this.signers.borrower).repayBorrow(borrowAmount),
-            ).to.be.revertedWith(FintrollerErrors.BondNotListed);
+            ).to.be.revertedWith(GenericErrors.BondNotListed);
           });
         });
 

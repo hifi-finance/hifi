@@ -19,6 +19,7 @@ import shouldBehaveLikeGetLiquidateBorrowAllowed from "./view/getLiquidateBorrow
 import shouldBehaveLikeGetRedeemFyTokensAllowed from "./view/getRedeemFyTokensAllowed";
 import shouldBehaveLikeGetRepayBorrowAllowed from "./view/getRepayBorrowAllowed";
 import shouldBehaveLikeGetSupplyUnderlyingAllowed from "./view/getSupplyUnderlyingAllowed";
+import shouldBehaveLikeIsBondListed from "./view/isBondListed";
 import shouldBehaveLikeIsFintrollerGetter from "./view/isFintroller";
 import shouldBehaveLikeOracleGetter from "./view/oracle";
 
@@ -62,6 +63,10 @@ export function shouldBehaveLikeFintroller(): void {
 
     describe("getSupplyUnderlyingAllowed", function () {
       shouldBehaveLikeGetSupplyUnderlyingAllowed();
+    });
+
+    describe("isBondListed", function () {
+      shouldBehaveLikeIsBondListed();
     });
 
     describe("isFintroller", function () {

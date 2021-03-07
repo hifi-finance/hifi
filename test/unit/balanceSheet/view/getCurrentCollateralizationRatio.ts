@@ -8,6 +8,7 @@ export default function shouldBehaveLikeGetCurrentCollateralizationRatio(): void
   const lockedCollateral: BigNumber = tokenAmounts.ten;
 
   beforeEach(async function () {
+    await this.stubs.fintroller.mock.isBondListed.withArgs(this.stubs.fyToken.address).returns(true);
     await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.fyToken.address);
     await this.contracts.balanceSheet.__godMode_setVaultLockedCollateral(
       this.stubs.fyToken.address,

@@ -1,12 +1,12 @@
 import { expect } from "chai";
 
-import { FintrollerErrors } from "../../../../helpers/errors";
+import { GenericErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeGetSupplyUnderlyingAllowed(): void {
   describe("when the bond is not listed", function () {
     it("reverts", async function () {
       await expect(this.contracts.fintroller.getSupplyUnderlyingAllowed(this.stubs.fyToken.address)).to.be.revertedWith(
-        FintrollerErrors.BondNotListed,
+        GenericErrors.BondNotListed,
       );
     });
   });

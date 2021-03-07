@@ -3,7 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { fintrollerConstants, tokenAmounts } from "../../../../helpers/constants";
-import { BalanceSheetErrors, FintrollerErrors, GenericErrors } from "../../../../helpers/errors";
+import { BalanceSheetErrors, GenericErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeDepositCollateral(): void {
   const collateralAmount: BigNumber = tokenAmounts.ten;
@@ -21,6 +21,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
 
   describe("when the vault is open", function () {
     beforeEach(async function () {
+      await this.stubs.fintroller.mock.isBondListed.withArgs(this.stubs.fyToken.address).returns(true);
       await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.fyToken.address);
     });
 
@@ -39,7 +40,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.getDepositCollateralAllowed
             .withArgs(this.stubs.fyToken.address)
-            .revertsWithReason(FintrollerErrors.BondNotListed);
+            .revertsWithReason(GenericErrors.BondNotListed);
         });
 
         it("reverts", async function () {
@@ -47,7 +48,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
             this.contracts.balanceSheet
               .connect(this.signers.borrower)
               .depositCollateral(this.stubs.fyToken.address, collateralAmount),
-          ).to.be.revertedWith(FintrollerErrors.BondNotListed);
+          ).to.be.revertedWith(GenericErrors.BondNotListed);
         });
       });
 

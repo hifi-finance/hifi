@@ -3,7 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { tokenAmounts } from "../../../../helpers/constants";
-import { AdminErrors, FintrollerErrors } from "../../../../helpers/errors";
+import { AdminErrors, FintrollerErrors, GenericErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeSetDebtCeiling(): void {
   const newDebtCeiling: BigNumber = tokenAmounts.oneHundred;
@@ -25,7 +25,7 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
           this.contracts.fintroller
             .connect(this.signers.admin)
             .setBondDebtCeiling(this.stubs.fyToken.address, newDebtCeiling),
-        ).to.be.revertedWith(FintrollerErrors.BondNotListed);
+        ).to.be.revertedWith(GenericErrors.BondNotListed);
       });
     });
 

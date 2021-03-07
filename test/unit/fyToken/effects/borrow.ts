@@ -4,7 +4,7 @@ import { expect } from "chai";
 
 import { fintrollerConstants, percentages, tokenAmounts } from "../../../../helpers/constants";
 import { fyTokenConstants } from "../../../../helpers/constants";
-import { FintrollerErrors, FyTokenErrors, GenericErrors } from "../../../../helpers/errors";
+import { FyTokenErrors, GenericErrors } from "../../../../helpers/errors";
 import { contextForTimeDependentTests } from "../../../contexts";
 import { increaseTime } from "../../../jsonRpc";
 import { stubIsVaultOpen, stubVaultFreeCollateral, stubVaultLockedCollateral } from "../../stubs";
@@ -58,12 +58,12 @@ export default function shouldBehaveLikeBorrow(): void {
           beforeEach(async function () {
             await this.stubs.fintroller.mock.getBorrowAllowed
               .withArgs(this.contracts.fyToken.address)
-              .revertsWithReason(FintrollerErrors.BondNotListed);
+              .revertsWithReason(GenericErrors.BondNotListed);
           });
 
           it("reverts", async function () {
             await expect(this.contracts.fyToken.connect(this.signers.borrower).borrow(borrowAmount)).to.be.revertedWith(
-              FintrollerErrors.BondNotListed,
+              GenericErrors.BondNotListed,
             );
           });
         });

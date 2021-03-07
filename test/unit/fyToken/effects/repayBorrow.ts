@@ -4,7 +4,6 @@ import { expect } from "chai";
 
 import { addressOne, fintrollerConstants, tokenAmounts } from "../../../../helpers/constants";
 import { FyTokenErrors, GenericErrors } from "../../../../helpers/errors";
-import { FintrollerErrors } from "../../../../helpers/errors";
 import { stubIsVaultOpen } from "../../stubs";
 
 export default function shouldBehaveLikeRepayBorrow(): void {
@@ -43,13 +42,13 @@ export default function shouldBehaveLikeRepayBorrow(): void {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.getRepayBorrowAllowed
             .withArgs(this.contracts.fyToken.address)
-            .revertsWithReason(FintrollerErrors.BondNotListed);
+            .revertsWithReason(GenericErrors.BondNotListed);
         });
 
         it("reverts", async function () {
           await expect(
             this.contracts.fyToken.connect(this.signers.borrower).repayBorrow(repayAmount),
-          ).to.be.revertedWith(FintrollerErrors.BondNotListed);
+          ).to.be.revertedWith(GenericErrors.BondNotListed);
         });
       });
 

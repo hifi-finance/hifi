@@ -427,12 +427,14 @@ contract BalanceSheet is
     ///
     /// Requirements:
     ///
+    /// - The bond must be listed.
     /// - The vault cannot be already open.
     /// - The fyToken must pass the inspection.
     ///
     /// @param fyToken The address of the fyToken contract for which to open the vault.
     /// @return bool true = success, otherwise it reverts.
     function openVault(FyTokenInterface fyToken) external override returns (bool) {
+        require(fintroller.isBondListed(fyToken), "ERR_BOND_NOT_LISTED");
         require(fyToken.isFyToken(), "ERR_OPEN_VAULT_FYTOKEN_INSPECTION");
         require(vaults[fyToken][msg.sender].isOpen == false, "ERR_VAULT_OPEN");
         vaults[fyToken][msg.sender].isOpen = true;

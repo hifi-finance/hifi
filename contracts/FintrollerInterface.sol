@@ -28,6 +28,8 @@ abstract contract FintrollerInterface is FintrollerStorage {
 
     function getSupplyUnderlyingAllowed(FyTokenInterface fyToken) external view virtual returns (bool);
 
+    function isBondListed(FyTokenInterface fyToken) external view virtual returns (bool);
+
     /// NON-CONSTANT FUNCTIONS ///
 
     function listBond(FyTokenInterface fyToken) external virtual returns (bool);

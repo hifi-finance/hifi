@@ -25,7 +25,6 @@ export enum ChainlinkOperatorErrors {
 }
 
 export enum FintrollerErrors {
-  BondNotListed = "ERR_BOND_NOT_LISTED",
   ListBondFyTokenInspection = "ERR_LIST_BOND_FYTOKEN_INSPECTION",
   SetBondDebtCeilingUnderflow = "ERR_SET_BOND_DEBT_CEILING_UNDERFLOW",
   SetBondDebtCeilingZero = "ERR_SET_BOND_DEBT_CEILING_ZERO",
@@ -64,6 +63,7 @@ export enum GenericErrors {
   AccountNotUnderwater = "ERR_ACCOUNT_NOT_UNDERWATER",
   BelowCollateralizationRatio = "ERR_BELOW_COLLATERALIZATION_RATIO",
   BondMatured = "ERR_BOND_MATURED",
+  BondNotListed = "ERR_BOND_NOT_LISTED",
   BondNotMatured = "ERR_BOND_NOT_MATURED",
   NotInitialized = "ERR_NOT_INITALIZED",
   VaultOpen = "ERR_VAULT_OPEN",

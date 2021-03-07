@@ -3,7 +3,7 @@ import { One, Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { fintrollerConstants, percentages } from "../../../../helpers/constants";
-import { AdminErrors, FintrollerErrors } from "../../../../helpers/errors";
+import { AdminErrors, FintrollerErrors, GenericErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeSetBondLiquidationIncentive(): void {
   const newLiquidationIncentive: BigNumber = percentages.oneHundredAndTwenty;
@@ -27,7 +27,7 @@ export default function shouldBehaveLikeSetBondLiquidationIncentive(): void {
           this.contracts.fintroller
             .connect(this.signers.admin)
             .setBondLiquidationIncentive(this.stubs.fyToken.address, newLiquidationIncentive),
-        ).to.be.revertedWith(FintrollerErrors.BondNotListed);
+        ).to.be.revertedWith(GenericErrors.BondNotListed);
       });
     });
 

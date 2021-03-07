@@ -1,6 +1,6 @@
 import { expect } from "chai";
 
-import { AdminErrors, FintrollerErrors } from "../../../../helpers/errors";
+import { AdminErrors, GenericErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeSetRepayBorrowAllowed(): void {
   describe("when the caller is not the admin", function () {
@@ -16,7 +16,7 @@ export default function shouldBehaveLikeSetRepayBorrowAllowed(): void {
       it("rejects", async function () {
         await expect(
           this.contracts.fintroller.connect(this.signers.admin).setRepayBorrowAllowed(this.stubs.fyToken.address, true),
-        ).to.be.revertedWith(FintrollerErrors.BondNotListed);
+        ).to.be.revertedWith(GenericErrors.BondNotListed);
       });
     });
 

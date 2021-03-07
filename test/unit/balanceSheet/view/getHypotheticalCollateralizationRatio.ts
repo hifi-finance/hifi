@@ -25,8 +25,9 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
     });
   });
 
-  describe("when the vault is not open", function () {
+  describe("when the vault is open", function () {
     beforeEach(async function () {
+      await this.stubs.fintroller.mock.isBondListed.withArgs(this.stubs.fyToken.address).returns(true);
       await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.fyToken.address);
     });
 

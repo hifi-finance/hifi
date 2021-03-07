@@ -9,11 +9,11 @@ export default function shouldBehaveLikeBorrow(): void {
   const collateralAmount: BigNumber = tokenAmounts.ten;
 
   beforeEach(async function () {
-    // Open the vault.
-    await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.contracts.fyToken.address);
-
     // List the bond in the Fintroller.
     await this.contracts.fintroller.connect(this.signers.admin).listBond(this.contracts.fyToken.address);
+
+    // Open the vault.
+    await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.contracts.fyToken.address);
 
     // Allow borrow.
     await this.contracts.fintroller.connect(this.signers.admin).setBorrowAllowed(this.contracts.fyToken.address, true);

@@ -4,7 +4,7 @@ import { expect } from "chai";
 
 import { fintrollerConstants, fyTokenConstants, precisionScalars, tokenAmounts } from "../../../../helpers/constants";
 import { ten, underlyingConstants } from "../../../../helpers/constants";
-import { FintrollerErrors, GenericErrors, RedemptionPoolErrors } from "../../../../helpers/errors";
+import { GenericErrors, RedemptionPoolErrors } from "../../../../helpers/errors";
 import { getNow } from "../../../../helpers/time";
 
 export default function shouldBehaveLikeRedeemFyTokens(): void {
@@ -42,13 +42,13 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.getRedeemFyTokensAllowed
             .withArgs(this.stubs.fyToken.address)
-            .revertsWithReason(FintrollerErrors.BondNotListed);
+            .revertsWithReason(GenericErrors.BondNotListed);
         });
 
         it("reverts", async function () {
           await expect(
             this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(fyTokenAmount),
-          ).to.be.revertedWith(FintrollerErrors.BondNotListed);
+          ).to.be.revertedWith(GenericErrors.BondNotListed);
         });
       });
 

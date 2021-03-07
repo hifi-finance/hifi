@@ -20,6 +20,7 @@ export default function shouldBehaveLikeWithdrawCollateral(): void {
 
   describe("when the vault is open", function () {
     beforeEach(async function () {
+      await this.stubs.fintroller.mock.isBondListed.withArgs(this.stubs.fyToken.address).returns(true);
       await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.fyToken.address);
     });
 

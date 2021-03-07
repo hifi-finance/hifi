@@ -10,11 +10,11 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
   const newBorrowAmount = borrowAmount.sub(repayAmount);
 
   beforeEach(async function () {
-    // Open the vault.
-    await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.contracts.fyToken.address);
-
     // List the bond in the Fintroller.
     await this.contracts.fintroller.connect(this.signers.admin).listBond(this.contracts.fyToken.address);
+
+    // Open the vault.
+    await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.contracts.fyToken.address);
 
     // Allow repay borrow.
     await this.contracts.fintroller

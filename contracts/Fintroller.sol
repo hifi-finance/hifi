@@ -79,7 +79,7 @@ contract Fintroller is
         return bond.isLiquidateBorrowAllowed;
     }
 
-    /// @notice Checks if the account should be allowed to redeem the underlying asset from the RedemptionPool.
+    /// @notice Checks if the account should be allowed to redeem the underlying from the RedemptionPool.
     /// @dev The bond must be listed.
     /// @param fyToken The bond to make the check against.
     /// @return bool true = allowed, false = not allowed.
@@ -99,7 +99,7 @@ contract Fintroller is
         return bond.isRepayBorrowAllowed;
     }
 
-    /// @notice Checks if the account should be allowed to the supply underlying asset to the RedemptionPool.
+    /// @notice Checks if the account should be allowed to the supply underlying to the RedemptionPool.
     /// @dev The bond must be listed.
     /// @param fyToken The bond to make the check against.
     /// @return bool true = allowed, false = not allowed.
@@ -107,6 +107,13 @@ contract Fintroller is
         Bond memory bond = bonds[fyToken];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
         return bond.isSupplyUnderlyingAllowed;
+    }
+
+    /// @notice Checks if the bond is listed.
+    /// @param fyToken The bond to make the check against.
+    /// @return bool true = listed, false = not listed.
+    function isBondListed(FyTokenInterface fyToken) external view override returns (bool) {
+        return bonds[fyToken].isListed;
     }
 
     /// NON-CONSTANT FUNCTIONS ///

@@ -10,7 +10,7 @@ import {
   tokenAmounts,
   underlyingConstants,
 } from "../../../../helpers/constants";
-import { FintrollerErrors, GenericErrors, RedemptionPoolErrors } from "../../../../helpers/errors";
+import { GenericErrors, RedemptionPoolErrors } from "../../../../helpers/errors";
 import { getNow } from "../../../../helpers/time";
 
 export default function shouldBehaveLikeSupplyUnderlying(): void {
@@ -49,13 +49,13 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.getSupplyUnderlyingAllowed
             .withArgs(this.stubs.fyToken.address)
-            .revertsWithReason(FintrollerErrors.BondNotListed);
+            .revertsWithReason(GenericErrors.BondNotListed);
         });
 
         it("reverts", async function () {
           await expect(
             this.contracts.redemptionPool.connect(this.signers.maker).supplyUnderlying(underlyingAmount),
-          ).to.be.revertedWith(FintrollerErrors.BondNotListed);
+          ).to.be.revertedWith(GenericErrors.BondNotListed);
         });
       });
 
