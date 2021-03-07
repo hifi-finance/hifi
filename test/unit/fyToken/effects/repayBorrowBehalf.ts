@@ -84,8 +84,8 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
               await this.stubs.balanceSheet.mock.getVaultDebt
                 .withArgs(this.contracts.fyToken.address, this.signers.borrower.address)
                 .returns(repayAmount);
-              await this.stubs.balanceSheet.mock.setVaultDebt
-                .withArgs(this.contracts.fyToken.address, this.signers.borrower.address, Zero)
+              await this.stubs.balanceSheet.mock.decreaseVaultDebt
+                .withArgs(this.contracts.fyToken.address, this.signers.borrower.address, repayAmount)
                 .returns(true);
             });
 

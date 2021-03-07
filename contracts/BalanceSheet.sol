@@ -239,6 +239,24 @@ contract BalanceSheet is
     }
 
     /// @inheritdoc BalanceSheetInterface
+    function decreaseVaultDebt(
+        FyTokenInterface fyToken,
+        address borrower,
+        uint256 subtractedDebt
+    ) external override returns (bool) {
+        // Checks: the caller is the fyToken.
+        require(msg.sender == address(fyToken), "ERR_DECREASE_VAULT_DEBT_NOT_AUTHORIZED");
+
+        // Effects: update storage.
+        uint256 oldVaultDebt = vaults[fyToken][borrower].debt;
+        vaults[fyToken][borrower].debt -= subtractedDebt;
+
+        emit DecreaseVaultDebt(fyToken, borrower, oldVaultDebt, vaults[fyToken][borrower].debt);
+
+        return true;
+    }
+
+    /// @inheritdoc BalanceSheetInterface
     function depositCollateral(FyTokenInterface fyToken, uint256 collateralAmount)
         external
         override
@@ -301,6 +319,24 @@ contract BalanceSheet is
     }
 
     /// @inheritdoc BalanceSheetInterface
+    function increaseVaultDebt(
+        FyTokenInterface fyToken,
+        address borrower,
+        uint256 addedDebt
+    ) external override returns (bool) {
+        // Checks: the caller is the fyToken.
+        require(msg.sender == address(fyToken), "ERR_INCREASE_VAULT_DEBT_NOT_AUTHORIZED");
+
+        // Effects: update storage.
+        uint256 oldVaultDebt = vaults[fyToken][borrower].debt;
+        vaults[fyToken][borrower].debt += addedDebt;
+
+        emit IncreaseVaultDebt(fyToken, borrower, oldVaultDebt, vaults[fyToken][borrower].debt);
+
+        return true;
+    }
+
+    /// @inheritdoc BalanceSheetInterface
     function lockCollateral(FyTokenInterface fyToken, uint256 collateralAmount)
         external
         override
@@ -331,24 +367,6 @@ contract BalanceSheet is
         require(vaults[fyToken][msg.sender].isOpen == false, "ERR_VAULT_OPEN");
         vaults[fyToken][msg.sender].isOpen = true;
         emit OpenVault(fyToken, msg.sender);
-        return true;
-    }
-
-    /// @inheritdoc BalanceSheetInterface
-    function setVaultDebt(
-        FyTokenInterface fyToken,
-        address borrower,
-        uint256 newVaultDebt
-    ) external override returns (bool) {
-        // Checks: the caller is the fyToken.
-        require(msg.sender == address(fyToken), "ERR_SET_VAULT_DEBT_NOT_AUTHORIZED");
-
-        // Effects: update storage.
-        uint256 oldVaultDebt = vaults[fyToken][borrower].debt;
-        vaults[fyToken][borrower].debt = newVaultDebt;
-
-        emit SetVaultDebt(fyToken, borrower, oldVaultDebt, newVaultDebt);
-
         return true;
     }
 

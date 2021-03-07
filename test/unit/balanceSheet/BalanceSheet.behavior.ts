@@ -1,9 +1,10 @@
 import shouldBehaveLikeClutchCollateral from "./effects/clutchCollateral";
+import shouldBehaveLikeDecreaseVaultDebt from "./effects/decreaseVaultDebt";
 import shouldBehaveLikeDepositCollateral from "./effects/depositCollateral";
 import shouldBehaveLikeFreeCollateral from "./effects/freeCollateral";
+import shouldBehaveLikeIncreaseVaultDebt from "./effects/increaseVaultDebt";
 import shouldBehaveLikeLockCollateral from "./effects/lockCollateral";
 import shouldBehaveLikeOpenVault from "./effects/openVault";
-import shouldBehaveLikeSetVaultDebt from "./effects/setVaultDebt";
 import shouldBehaveLikeWithdrawCollateral from "./effects/withdrawCollateral";
 import shouldBehaveLikeFintrollerGetter from "./view/fintroller";
 import shouldBehaveLikeGetClutchableCollateral from "./view/getClutchableCollateral";
@@ -64,6 +65,10 @@ export function shouldBehaveLikeBalanceSheet(): void {
       shouldBehaveLikeClutchCollateral();
     });
 
+    describe("decreaseVaultDebt", function () {
+      shouldBehaveLikeDecreaseVaultDebt();
+    });
+
     describe("depositCollateral", function () {
       shouldBehaveLikeDepositCollateral();
     });
@@ -72,16 +77,16 @@ export function shouldBehaveLikeBalanceSheet(): void {
       shouldBehaveLikeFreeCollateral();
     });
 
+    describe("increaseVaultDebt", function () {
+      shouldBehaveLikeIncreaseVaultDebt();
+    });
+
     describe("lockCollateral", function () {
       shouldBehaveLikeLockCollateral();
     });
 
     describe("openVault", function () {
       shouldBehaveLikeOpenVault();
-    });
-
-    describe("setVaultDebt", function () {
-      shouldBehaveLikeSetVaultDebt();
     });
 
     describe("withdrawCollateral", function () {

@@ -66,10 +66,10 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
     expect(oldDebt).to.equal(newDebt.add(repayAmount));
   });
 
-  it("emits a SetVaultDebt event", async function () {
+  it("emits a DecreaseVaultDebt event", async function () {
     const oldBorrowAmount: BigNumber = borrowAmount;
     await expect(this.contracts.fyToken.connect(this.signers.borrower).repayBorrow(repayAmount))
-      .to.emit(this.contracts.balanceSheet, "SetVaultDebt")
+      .to.emit(this.contracts.balanceSheet, "DecreaseVaultDebt")
       .withArgs(this.contracts.fyToken.address, this.signers.borrower.address, oldBorrowAmount, newBorrowAmount);
   });
 }

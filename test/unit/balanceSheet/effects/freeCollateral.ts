@@ -116,7 +116,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
                 // This is a 150% collateralization ratio. We deposited 10 WETH and the oracle assumes 1 WETH = $100.
                 const debt: BigNumber = tokenAmounts.one.mul(666);
 
-                // Cannot call the usual `setVaultDebt` since the fyToken is stubbed.
+                // Cannot call the usual `increaseVaultDebt` since the fyToken is stubbed.
                 await this.contracts.balanceSheet.__godMode_setVaultDebt(
                   this.stubs.fyToken.address,
                   this.signers.borrower.address,

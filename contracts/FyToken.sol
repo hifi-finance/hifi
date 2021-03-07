@@ -125,7 +125,7 @@ contract FyToken is
         emit Transfer(address(this), msg.sender, borrowAmount);
 
         // Interactions: increase the debt of the borrower account.
-        require(balanceSheet.setVaultDebt(this, msg.sender, newDebt), "ERR_BORROW_CALL_SET_VAULT_DEBT");
+        require(balanceSheet.increaseVaultDebt(this, msg.sender, borrowAmount), "ERR_BORROW_CALL_INCREASE_VAULT_DEBT");
 
         // Emit a Borrow event.
         emit Borrow(msg.sender, borrowAmount);
@@ -268,13 +268,14 @@ contract FyToken is
         emit Burn(payer, repayAmount);
         emit Transfer(payer, address(this), repayAmount);
 
-        // Calculate the new debt of the borrower.
-        uint256 newDebt = debt - repayAmount;
-
-        // Interactions: reduce the debt of the borrower.
-        require(balanceSheet.setVaultDebt(this, borrower, newDebt), "ERR_REPAY_BORROW_CALL_SET_VAULT_DEBT");
+        // Interactions: decrease the debt of the borrower account.
+        require(
+            balanceSheet.decreaseVaultDebt(this, borrower, repayAmount),
+            "ERR_REPAY_BORROW_CALL_DECREASE_VAULT_DEBT"
+        );
 
         // Emit both a RepayBorrow event.
+        uint256 newDebt = debt - repayAmount;
         emit RepayBorrow(payer, borrower, repayAmount, newDebt);
     }
 }

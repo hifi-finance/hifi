@@ -60,9 +60,9 @@ export default function shouldBehaveLikeBorrow(): void {
     expect(oldDebt).to.equal(newDebt.sub(borrowAmount));
   });
 
-  it("emits a SetVaultDebt event", async function () {
+  it("emits an IncreaseVaultDebt event", async function () {
     await expect(this.contracts.fyToken.connect(this.signers.borrower).borrow(borrowAmount))
-      .to.emit(this.contracts.balanceSheet, "SetVaultDebt")
+      .to.emit(this.contracts.balanceSheet, "IncreaseVaultDebt")
       .withArgs(this.contracts.fyToken.address, this.signers.borrower.address, Zero, borrowAmount);
   });
 }

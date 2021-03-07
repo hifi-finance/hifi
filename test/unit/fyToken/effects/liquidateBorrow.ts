@@ -15,8 +15,8 @@ async function stubLiquidateBorrowInternalCalls(
   repayAmount: BigNumber,
   clutchedCollateralAmount: BigNumber,
 ): Promise<void> {
-  await this.stubs.balanceSheet.mock.setVaultDebt
-    .withArgs(fyTokenAddress, this.signers.borrower.address, newBorrowAmount)
+  await this.stubs.balanceSheet.mock.decreaseVaultDebt
+    .withArgs(fyTokenAddress, this.signers.borrower.address, repayAmount)
     .returns(true);
   await this.stubs.balanceSheet.mock.getClutchableCollateral
     .withArgs(fyTokenAddress, repayAmount)

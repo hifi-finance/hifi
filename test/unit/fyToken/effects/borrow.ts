@@ -197,9 +197,9 @@ export default function shouldBehaveLikeBorrow(): void {
                         .returns(safeCollateralizationRatio);
                     });
 
-                    describe("when the call to set the new vault debt does not succeed", function () {
+                    describe("when the call to increase the new vault debt does not succeed", function () {
                       beforeEach(async function () {
-                        await this.stubs.balanceSheet.mock.setVaultDebt
+                        await this.stubs.balanceSheet.mock.increaseVaultDebt
                           .withArgs(this.contracts.fyToken.address, this.signers.borrower.address, borrowAmount)
                           .returns(false);
                       });
@@ -212,7 +212,7 @@ export default function shouldBehaveLikeBorrow(): void {
 
                     describe("when the call to set the new vault debt succeeds", function () {
                       beforeEach(async function () {
-                        await this.stubs.balanceSheet.mock.setVaultDebt
+                        await this.stubs.balanceSheet.mock.increaseVaultDebt
                           .withArgs(this.contracts.fyToken.address, this.signers.borrower.address, borrowAmount)
                           .returns(true);
                       });

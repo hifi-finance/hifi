@@ -12,7 +12,14 @@ abstract contract BalanceSheetInterface is BalanceSheetStorage {
         FyTokenInterface indexed fyToken,
         address indexed liquidator,
         address indexed borrower,
-        uint256 clutchedCollateralAmount
+        uint256 collateralAmount
+    );
+
+    event DecreaseVaultDebt(
+        FyTokenInterface indexed fyToken,
+        address indexed borrower,
+        uint256 oldDebt,
+        uint256 newDebt
     );
 
     event DepositCollateral(FyTokenInterface indexed fyToken, address indexed borrower, uint256 collateralAmount);
@@ -23,7 +30,12 @@ abstract contract BalanceSheetInterface is BalanceSheetStorage {
 
     event OpenVault(FyTokenInterface indexed fyToken, address indexed borrower);
 
-    event SetVaultDebt(FyTokenInterface indexed fyToken, address indexed borrower, uint256 oldDebt, uint256 newDebt);
+    event IncreaseVaultDebt(
+        FyTokenInterface indexed fyToken,
+        address indexed borrower,
+        uint256 oldDebt,
+        uint256 newDebt
+    );
 
     event WithdrawCollateral(FyTokenInterface indexed fyToken, address indexed borrower, uint256 collateralAmount);
 
@@ -130,6 +142,24 @@ abstract contract BalanceSheetInterface is BalanceSheetStorage {
         uint256 collateralAmount
     ) external virtual returns (bool);
 
+    /// @notice Decreases the debt accrued by the borrower account.
+    ///
+    /// @dev Emits an {DecreaseVaultDebt} event.
+    ///
+    /// Requirements:
+    ///
+    /// - Can only be called by the fyToken.
+    ///
+    /// @param fyToken The address of the fyToken contract.
+    /// @param borrower The borrower account for which to decrease the debt.
+    /// @param subtractedDebt The amount by which to decrease the debt of the borrower account.
+    /// @return bool=true success, otherwise it reverts.
+    function decreaseVaultDebt(
+        FyTokenInterface fyToken,
+        address borrower,
+        uint256 subtractedDebt
+    ) external virtual returns (bool);
+
     /// @notice Deposits collateral into the account's vault.
     ///
     /// @dev Emits a {DepositCollateral} event.
@@ -161,6 +191,24 @@ abstract contract BalanceSheetInterface is BalanceSheetStorage {
     /// @return bool true = success, otherwise it reverts.
     function freeCollateral(FyTokenInterface fyToken, uint256 collateralAmount) external virtual returns (bool);
 
+    /// @notice Increases the debt accrued by the borrower account.
+    ///
+    /// @dev Emits an {IncreaseVaultDebt} event.
+    ///
+    /// Requirements:
+    ///
+    /// - Can only be called by the fyToken.
+    ///
+    /// @param fyToken The address of the fyToken contract.
+    /// @param borrower The borrower account for which to increase the debt.
+    /// @param addedDebt The amount by which to increase the debt of the borrower account.
+    /// @return bool=true success, otherwise it reverts.
+    function increaseVaultDebt(
+        FyTokenInterface fyToken,
+        address borrower,
+        uint256 addedDebt
+    ) external virtual returns (bool);
+
     /// @notice Locks a portion or all of the free collateral to make it eligible for borrowing.
     /// @dev Emits a {LockCollateral} event.
     ///
@@ -187,24 +235,6 @@ abstract contract BalanceSheetInterface is BalanceSheetStorage {
     /// @param fyToken The address of the fyToken contract for which to open the vault.
     /// @return bool true = success, otherwise it reverts.
     function openVault(FyTokenInterface fyToken) external virtual returns (bool);
-
-    /// @notice Updates the debt accrued by a particular borrower account.
-    ///
-    /// @dev Emits a {SetVaultDebt} event.
-    ///
-    /// Requirements:
-    ///
-    /// - Can only be called by the fyToken.
-    ///
-    /// @param fyToken The address of the fyToken contract.
-    /// @param borrower The borrower account for which to update the debt.
-    /// @param newVaultDebt The new debt to assign to the borrower account.
-    /// @return bool=true success, otherwise it reverts.
-    function setVaultDebt(
-        FyTokenInterface fyToken,
-        address borrower,
-        uint256 newVaultDebt
-    ) external virtual returns (bool);
 
     /// @notice Withdraws a portion or all of the free collateral.
     ///
