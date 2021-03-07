@@ -1,39 +1,13 @@
-import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { percentages } from "../../../../helpers/constants";
+import { fintrollerConstants } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeGetBondCollateralizationRatio(): void {
-  const newCollateralizationRatioMantissa: BigNumber = percentages.oneHundredAndSeventyFive;
-
-  describe("when the bond is listed", function () {
-    beforeEach(async function () {
-      await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.fyToken.address);
-      await this.contracts.fintroller.setBondCollateralizationRatio(
-        this.stubs.fyToken.address,
-        newCollateralizationRatioMantissa,
-      );
-    });
-
-    it("retrieves the default values after listing", async function () {
-      const bond = await this.contracts.fintroller.getBond(this.stubs.fyToken.address);
-      expect(bond.collateralizationRatio).to.equal(newCollateralizationRatioMantissa);
-      expect(bond.debtCeiling).to.equal(Zero);
-      expect(bond.isBorrowAllowed).to.equal(true);
-      expect(bond.isDepositCollateralAllowed).to.equal(true);
-      expect(bond.isLiquidateBorrowAllowed).to.equal(true);
-      expect(bond.isListed).to.equal(true);
-      expect(bond.isRedeemFyTokenAllowed).to.equal(true);
-      expect(bond.isRepayBorrowAllowed).to.equal(true);
-      expect(bond.isSupplyUnderlyingAllowed).to.equal(true);
-    });
-  });
-
   describe("when the bond is not listed", function () {
     it("retrieves the default values", async function () {
       const bond = await this.contracts.fintroller.getBond(this.stubs.fyToken.address);
-      expect(bond.collateralizationRatio).to.equal(Zero);
+      expect(bond.collateralizationRatio.mantissa).to.equal(Zero);
       expect(bond.debtCeiling).to.equal(Zero);
       expect(bond.isBorrowAllowed).to.equal(false);
       expect(bond.isDepositCollateralAllowed).to.equal(false);
@@ -42,6 +16,27 @@ export default function shouldBehaveLikeGetBondCollateralizationRatio(): void {
       expect(bond.isRedeemFyTokenAllowed).to.equal(false);
       expect(bond.isRepayBorrowAllowed).to.equal(false);
       expect(bond.isSupplyUnderlyingAllowed).to.equal(false);
+      expect(bond.liquidationIncentive).to.equal(Zero);
+    });
+  });
+
+  describe("when the bond is listed", function () {
+    beforeEach(async function () {
+      await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.fyToken.address);
+    });
+
+    it("retrieves the default values after listing", async function () {
+      const bond = await this.contracts.fintroller.getBond(this.stubs.fyToken.address);
+      expect(bond.collateralizationRatio.mantissa).to.equal(fintrollerConstants.defaultCollateralizationRatio);
+      expect(bond.debtCeiling).to.equal(Zero);
+      expect(bond.isBorrowAllowed).to.equal(true);
+      expect(bond.isDepositCollateralAllowed).to.equal(true);
+      expect(bond.isLiquidateBorrowAllowed).to.equal(true);
+      expect(bond.isListed).to.equal(true);
+      expect(bond.isRedeemFyTokenAllowed).to.equal(true);
+      expect(bond.isRepayBorrowAllowed).to.equal(true);
+      expect(bond.isSupplyUnderlyingAllowed).to.equal(true);
+      expect(bond.liquidationIncentive).to.equal(fintrollerConstants.defaultLiquidationIncentive);
     });
   });
 }

@@ -95,13 +95,13 @@ export async function stubGetVault(
 ): Promise<void> {
   await this.stubs.balanceSheet.mock.getVault
     .withArgs(fyTokenAddress, account)
-    .returns(debt, freeCollateral, lockedCollateral, isOpen);
+    .returns({ debt, freeCollateral, lockedCollateral, isOpen });
 }
 
 export async function stubIsVaultOpen(this: Mocha.Context, fyTokenAddress: string, account: string): Promise<void> {
   await this.stubs.balanceSheet.mock.getVault
     .withArgs(fyTokenAddress, account)
-    .returns(...Object.values(balanceSheetConstants.defaultVault));
+    .returns(balanceSheetConstants.defaultVault);
   await this.stubs.balanceSheet.mock.isVaultOpen.withArgs(fyTokenAddress, account).returns(true);
 }
 
