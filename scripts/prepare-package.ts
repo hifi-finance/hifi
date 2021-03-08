@@ -1,7 +1,7 @@
-import fsExtra from "fs-extra";
-import hre from "hardhat";
 import path from "path";
 
+import fsExtra from "fs-extra";
+import hre from "hardhat";
 import { Artifact } from "hardhat/types";
 
 const artifactsDir: string = path.join(__dirname, "..", "artifacts");
