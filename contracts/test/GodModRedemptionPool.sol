@@ -8,8 +8,9 @@ import "../FyTokenInterface.sol";
 /// @author Hifi
 /// @dev Strictly for test purposes. Do not use in production.
 contract GodModeRedemptionPool is RedemptionPool {
-    // solhint-disable-next-line no-empty-blocks
-    constructor(FintrollerInterface fintroller_, FyTokenInterface fyToken_) RedemptionPool(fintroller_, fyToken_) {}
+    constructor(FintrollerInterface fintroller_, FyTokenInterface fyToken_) RedemptionPool(fintroller_, fyToken_) {
+        // solhint-disable-previous-line no-empty-blocks
+    }
 
     function __godMode_burnYTokens(uint256 fyTokenAmount) external {
         fyToken.burn(msg.sender, fyTokenAmount);

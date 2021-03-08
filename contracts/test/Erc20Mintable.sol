@@ -12,7 +12,9 @@ contract Erc20Mintable is Erc20 {
         string memory name_,
         string memory symbol_,
         uint8 decimals_
-    ) Erc20(name_, symbol_, decimals_) {} // solhint-disable-line no-empty-blocks
+    ) Erc20(name_, symbol_, decimals_) {
+        // solhint-disable-previous-line no-empty-blocks
+    }
 
     /// @notice Prints new tokens into existence.
     /// @param beneficiary The account for which to mint the tokens.

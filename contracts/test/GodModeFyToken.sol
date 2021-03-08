@@ -1,5 +1,5 @@
 /// SPDX-License-Identifier: LGPL-3.0-or-later
-// solhint-disable func-name-mixedcase, no-empty-blocks
+// solhint-disable func-name-mixedcase
 pragma solidity ^0.8.0;
 
 import "../FyToken.sol";
@@ -16,7 +16,9 @@ contract GodModeFyToken is FyToken {
         BalanceSheetInterface balanceSheet_,
         Erc20Interface underlying_,
         Erc20Interface collateral_
-    ) FyToken(name_, symbol_, expirationTime_, fintroller_, balanceSheet_, underlying_, collateral_) {}
+    ) FyToken(name_, symbol_, expirationTime_, fintroller_, balanceSheet_, underlying_, collateral_) {
+        // solhint-disable-previous-line no-empty-blocks
+    }
 
     function __godMode_mint(address beneficiary, uint256 mintAmount) external {
         mintInternal(beneficiary, mintAmount);

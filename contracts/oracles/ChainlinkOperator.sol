@@ -14,8 +14,9 @@ contract ChainlinkOperator is
     ChainlinkOperatorInterface, /// no dependency
     Admin /// two dependencies
 {
-    // solhint-disable-next-line no-empty-blocks
-    constructor() Admin() {}
+    constructor() Admin() {
+        // solhint-disable-previous-line no-empty-blocks
+    }
 
     /// CONSTANT FUNCTIONS ///
 

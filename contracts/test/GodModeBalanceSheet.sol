@@ -8,8 +8,9 @@ import "../FyTokenInterface.sol";
 /// @author Hifi
 /// @dev Strictly for test purposes. Do not use in production.
 contract GodModeBalanceSheet is BalanceSheet {
-    // solhint-disable-next-line no-empty-blocks
-    constructor(FintrollerInterface fintroller_) BalanceSheet(fintroller_) {}
+    constructor(FintrollerInterface fintroller_) BalanceSheet(fintroller_) {
+        // solhint-disable-previous-line no-empty-blocks
+    }
 
     function __godMode_setVaultDebt(
         FyTokenInterface fyToken,
