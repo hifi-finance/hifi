@@ -1,17 +1,15 @@
 import "@nomiclabs/hardhat-waffle";
+import "@typechain/hardhat";
 import "hardhat-gas-reporter";
-import "hardhat-typechain";
 import "solidity-coverage";
-
 import "./tasks/accounts";
 import "./tasks/clean";
 
-import { resolve } from "path";
+import { HardhatUserConfig, NetworkUserConfig } from "hardhat/types";
+import { chainIds, gasLimits } from "./helpers/constants";
 
 import { config as dotenvConfig } from "dotenv";
-import { HardhatUserConfig, NetworkUserConfig } from "hardhat/types";
-
-import { chainIds, gasLimits } from "./helpers/constants";
+import { resolve } from "path";
 
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 

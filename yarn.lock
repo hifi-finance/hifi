@@ -828,6 +828,7 @@ __metadata:
     "@nomiclabs/hardhat-waffle": ^2.0.0
     "@paulrberg": "https://github.com/paulrberg/contracts.git#v2.0.0"
     "@typechain/ethers-v5": ^6.0.1
+    "@typechain/hardhat": ^1.0.1
     "@types/chai": ^4.2.15
     "@types/fs-extra": ^9.0.8
     "@types/mocha": ^7.0.2
@@ -846,7 +847,6 @@ __metadata:
     fs-extra: ^9.0.1
     hardhat: ^2.0.11
     hardhat-gas-reporter: ^1.0.4
-    hardhat-typechain: ^0.3.5
     husky: ^4.3.0
     import-sort-style-module: ^6.0.0
     mocha: ^8.3.0
@@ -1154,6 +1154,17 @@ __metadata:
     typechain: ^4.0.0
     typescript: ">=4.0.0"
   checksum: 2cd9e3898698c18428962529dab0476d610bbe8e312825f98e43cf4b5483874255399f35cde24563edffc3cd4debd9a261721345b3bf4e214b9669461bd402ae
+  languageName: node
+  linkType: hard
+
+"@typechain/hardhat@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@typechain/hardhat@npm:1.0.1"
+  peerDependencies:
+    hardhat: ^2.0.10
+    ts-generator: ^0.1.1
+    typechain: ^4.0.0
+  checksum: afee1e5ec6a24f1dcc71de4e0945bdd4b0fc23feb950b3afa39385d90d925da61629bd7d86d9c716376e18fe2f21569981ac7761d787073be246e4d826c3e431
   languageName: node
   linkType: hard
 
@@ -6799,17 +6810,6 @@ fsevents@~2.3.1:
   peerDependencies:
     hardhat: ^2.0.2
   checksum: 0273e454b260a9447b35d2f93910d916ca64b30ffc32d200d5830ea9b2c6afb52ac8844ba5ee598fd14abacd2ee5871eee04a579f95050e155dafa768d94886e
-  languageName: node
-  linkType: hard
-
-"hardhat-typechain@npm:^0.3.5":
-  version: 0.3.5
-  resolution: "hardhat-typechain@npm:0.3.5"
-  peerDependencies:
-    hardhat: ^2.0.10
-    ts-generator: ^0.1.1
-    typechain: ^4.0.1
-  checksum: b8ea72838324df0d4ba03db336518c784d4523d248b759aebbe78484a7d4cb33d2bea45bb8b400c87eb3d38cb1a93c4dcf3897c5ed486357e0ac1c2bbae23472
   languageName: node
   linkType: hard
 

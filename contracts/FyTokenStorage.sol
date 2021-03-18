@@ -20,13 +20,13 @@ abstract contract FyTokenStorage {
     /// @notice The ratio between mantissa precision (1e18) and the collateral precision.
     uint256 public collateralPrecisionScalar;
 
-    /// @notice Unix timestamp in seconds for when this token expires.
+    /// @notice Unix timestamp in seconds for when this fyToken expires.
     uint256 public expirationTime;
 
-    /// @notice The unique Fintroller associated with this contract.
+    /// @notice The unique Fintroller associated with this fyToken.
     FintrollerInterface public fintroller;
 
-    /// @notice The unique RedemptionPool associated with this contract.
+    /// @notice The unique RedemptionPool associated with this fyToken.
     RedemptionPoolInterface public redemptionPool;
 
     /// @notice The Erc20 underlying, or target, asset for this fyToken.
