@@ -21,7 +21,6 @@ abstract contract ChainlinkOperatorInterface is ChainlinkOperatorStorage {
     /// format used by Chainlink, which has 8 decimals.
     ///
     /// @dev Requirements:
-    ///
     /// - The upscaled price cannot overflow.
     ///
     /// @param symbol The Erc20 symbol of the token for which to query the price.

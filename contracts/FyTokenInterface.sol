@@ -127,8 +127,9 @@ abstract contract FyTokenInterface is
     ///
     /// @dev Emits a {Burn}, {Transfer} and {RepayBorrow} event.
     ///
-    /// Requirements: same as the `repayBorrow` function, but here `borrower` is the account that must
-    /// have at least `repayAmount` fyTokens to repay the borrow.
+    /// Requirements:
+    /// - Same as the `repayBorrow` function, but here `borrower` is the account that must have at
+    /// least `repayAmount` fyTokens to repay the borrow.
     ///
     /// @param borrower The borrower account for which to repay the borrow.
     /// @param repayAmount The amount of fyTokens to repay.

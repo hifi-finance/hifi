@@ -47,7 +47,6 @@ abstract contract BalanceSheetInterface is BalanceSheetStorage {
     /// clutchedCollateral = repayAmount * liquidationIncentive * underlyingPriceUsd / collateralPriceUsd
     ///
     /// Requirements:
-    ///
     /// - `repayAmount` must be non-zero.
     ///
     /// @param fyToken The fyToken to make the query against.
@@ -147,7 +146,6 @@ abstract contract BalanceSheetInterface is BalanceSheetStorage {
     /// @dev Emits an {DecreaseVaultDebt} event.
     ///
     /// Requirements:
-    ///
     /// - Can only be called by the fyToken.
     ///
     /// @param fyToken The address of the fyToken contract.
@@ -196,7 +194,6 @@ abstract contract BalanceSheetInterface is BalanceSheetStorage {
     /// @dev Emits an {IncreaseVaultDebt} event.
     ///
     /// Requirements:
-    ///
     /// - Can only be called by the fyToken.
     ///
     /// @param fyToken The address of the fyToken contract.

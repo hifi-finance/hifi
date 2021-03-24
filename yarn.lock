@@ -861,7 +861,7 @@ __metadata:
     ts-generator: ^0.1.1
     ts-node: ^8.10.2
     typechain: ^4.0.2
-    typescript: ~4.0.7
+    typescript: <4.1.0
   languageName: unknown
   linkType: soft
 
@@ -12831,23 +12831,23 @@ resolve@1.1.x:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@~4.0.7#builtin<compat/typescript>":
-  version: 4.0.7
-  resolution: "typescript@patch:typescript@npm%3A4.0.7#builtin<compat/typescript>::version=4.0.7&hash=a45b0e"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: f234923fbef722077d00ee008aa3492b02adbfe5a67b1c31687a0f7c6cb9946b759665ea643ffc1174298ffb1c59de0cc2abe1a91e57415d51951589eff12446
-  languageName: node
-  linkType: hard
-
-typescript@~4.0.7:
+typescript@<4.1.0:
   version: 4.0.7
   resolution: "typescript@npm:4.0.7"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 1b4c63a228efd6ceec80382b6001dad2c27c9bd46022f965dab907a13275c9ceb7b4b4de8be8902457bd644d2b0f9ddd8cf03b561e35d7cd2d793cf7554afd2d
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@<4.1.0#builtin<compat/typescript>":
+  version: 4.0.7
+  resolution: "typescript@patch:typescript@npm%3A4.0.7#builtin<compat/typescript>::version=4.0.7&hash=a45b0e"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: f234923fbef722077d00ee008aa3492b02adbfe5a67b1c31687a0f7c6cb9946b759665ea643ffc1174298ffb1c59de0cc2abe1a91e57415d51951589eff12446
   languageName: node
   linkType: hard
 
