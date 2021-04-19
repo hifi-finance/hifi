@@ -8,8 +8,7 @@ The built contract artifacts can be browsed via [unpkg.com](https://unpkg.com/br
 
 Our contracts are written in Solidity and our tests in TypeScript.
 
-If you want to contribute, familiarity with [Hardhat](https://github.com/nomiclabs/hardhat), [Ethers](https://github.com/ethers-io/ethers.js),
-[Waffle](https://github.com/EthWorks/Waffle) and [TypeChain](https://github.com/ethereum-ts/TypeChain) is needed.
+If you want to contribute, familiarity with Hardhat, Ethers, Waffle and TypeScript is requisite.
 
 ### Pre Requisites
 
