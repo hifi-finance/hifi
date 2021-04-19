@@ -88,7 +88,9 @@ async function main(): Promise<void> {
 
 main()
   .then(() => process.exit(0))
-  .catch((error: Error) => {
+  .catch(async function (error: Error) {
+    await fsExtra.remove(tempArtifactsDir);
+    await fsExtra.remove(tempTypeChainDir);
     console.error(error);
     process.exit(1);
   });
