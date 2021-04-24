@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@hifi/protocol": "https://github.com/hifi-finance/hifi-protocol.git#main",
-    "@paulrberg": "https://github.com/paulrberg/contracts.git#v2.0.0"
+    "@paulrberg/contracts": "^2.0.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^9.1.2",
