@@ -1,5 +1,5 @@
 /// SPDX-License-Identifier: LGPL-3.0-or-later
-pragma solidity ^0.8.0;
+pragma solidity >=0.8.0;
 
 import "./HifiPoolStorage.sol";
 
@@ -26,19 +26,19 @@ abstract contract HifiPoolInterface is HifiPoolStorage {
 
     /// CONSTANT FUNCTIONS ///
 
-    /// @dev Returns how much underlying would be required to buy `fyTokenOut` fyTokens.
-    /// @param fyTokenOut Amount of fyToken hypothetically desired.
-    /// @return Amount of underlying hypothetically required.
-    function getFyTokenQuote(uint256 fyTokenOut) public view virtual returns (uint256);
+    /// @notice Quotes how much fyToken would be obtained by selling `underlyingIn` underlying.
+    /// @param underlyingIn Hypothetical amount of underlying to sell.
+    /// @return fyTokenOut Hypothetical amount of fyToken that would be bought.
+    function getQuoteForSellingUnderlying(int256 underlyingIn) external view virtual returns (int256 fyTokenOut);
 
-    /// @dev Returns how much fyToken would be required to buy `underlyingOut` underlying.
-    /// @param underlyingOut Amount of underlying hypothetically desired.
-    /// @return Amount of fyToken hypothetically required.
-    function getUnderlyingQuote(uint256 underlyingOut) public view virtual returns (uint256);
+    /// @dev Quotes how much underlying would be obtained by selling `fyDaiIn` fyToken.
+    /// @param fyTokenIn Hypothetical amount of fyToken to sell.
+    /// @return underlyingOut Hypothetical amount of underlying that would be bought.
+    function getQuoteForSellingFyToken(int256 fyTokenIn) external view virtual returns (int256 underlyingOut);
 
     /// @notice Returns the "virtual" fyToken reserves.
     /// @dev The fyToken Erc20 balance gets added to the total supply of pool tokens.
-    function getVirtualFyTokenReserves() public view virtual returns (uint256);
+    function getVirtualFyTokenReserves() external view virtual returns (int256);
 
     /// NON-CONSTANT FUNCTIONS ///
 

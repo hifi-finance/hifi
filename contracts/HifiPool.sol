@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-pragma solidity ^0.8.0;
+pragma solidity >=0.8.0;
 
 import "@hifi/protocol/contracts/FyTokenInterface.sol";
 import "@paulrberg/contracts/token/erc20/Erc20.sol";
@@ -8,18 +8,18 @@ import "@paulrberg/contracts/token/erc20/Erc20Permit.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 
 import "./HifiPoolInterface.sol";
+import "./math/YieldSpace.sol";
 
 contract HifiPool is
-    Erc20, /// two dependencies
     HifiPoolInterface, /// one dependency
+    Erc20, /// two dependencies
     Erc20Permit /// five dependencies
 {
     using SafeErc20 for Erc20Interface;
-    using SafeErc20 for FyTokenInterface;
 
     /// @dev Trading can only occur prior to maturity.
     modifier isBeforeMaturity() {
-        require(block.timestamp < maturity, "ERR_BOND_MATURED");
+        require(block.timestamp < maturity, "HifiPool: bond matured");
         _;
     }
 
@@ -37,49 +37,48 @@ contract HifiPool is
     /// CONSTANT FUNCTIONS ///
 
     /// @inheritdoc HifiPoolInterface
-    function getFyTokenQuote(uint256 fyTokenOut) public view override isBeforeMaturity returns (uint256) {
-        uint256 underlyingReserves = underlying.balanceOf(address(this));
-        uint256 virtualFyTokenReserves = getVirtualFyTokenReserves();
-        uint256 timeToMaturity = maturity - block.timestamp;
+    function getQuoteForSellingUnderlying(int256 underlyingIn)
+        external
+        view
+        override
+        isBeforeMaturity
+        returns (int256 fyTokenOut)
+    {
+        int256 underlyingReserves = int256(underlying.balanceOf(address(this)));
+        int256 virtualFyTokenReserves = getVirtualFyTokenReserves();
+        int256 timeToMaturity = int256(maturity - block.timestamp);
 
-        return 0;
-
-        // uint256 underlyingIn =
-        //     YieldSpace.underlyingInForFyTokenOut(
-        //         underlyingReserves,
-        //         virtualFyTokenReserves,
-        //         fyTokenOut,
-        //         timeToMaturity,
-        //         g1
-        //     );
-        // require(
-        //     virtualFyTokenReserves - fyTokenOut >= underlyingReserves + underlyingIn,
-        //     "ERR_FY_TOKEN_RESERVES_TOO_LOW"
-        // );
-
-        // return underlyingIn;
+        fyTokenOut = YieldSpace.fyTokenOutForUnderlyingIn(
+            underlyingReserves,
+            virtualFyTokenReserves,
+            underlyingIn,
+            timeToMaturity
+        );
+        require(
+            virtualFyTokenReserves - fyTokenOut >= underlyingReserves + underlyingIn,
+            "HifiPool: too low fyToken reserves"
+        );
     }
 
     /// @inheritdoc HifiPoolInterface
-    function getUnderlyingQuote(uint256 underlyingOut) public view override isBeforeMaturity returns (uint256) {
-        uint256 underlyingReserves = underlying.balanceOf(address(this));
-        uint256 virtualFyTokenReserves = getVirtualFyTokenReserves();
-        uint256 timeToMaturity = maturity - block.timestamp;
+    function getQuoteForSellingFyToken(int256 fyTokenIn)
+        public
+        view
+        override
+        isBeforeMaturity
+        returns (int256 underlyingOut)
+    {
+        int256 underlyingReserves = int256(underlying.balanceOf(address(this)));
+        int256 virtualFyTokenReserves = getVirtualFyTokenReserves();
+        int256 timeToMaturity = int256(maturity - block.timestamp);
 
-        return 0;
-
-        // YieldSpace.fyTokenInForUnderlyingOut(
-        //     underlyingReserves,
-        //     virtualFyTokenReserves,
-        //     underlyingOut,
-        //     timeToMaturity,
-        //     g2
-        // );
+        return
+            YieldSpace.underlyingOutForFyTokenIn(underlyingReserves, virtualFyTokenReserves, fyTokenIn, timeToMaturity);
     }
 
     /// @inheritdoc HifiPoolInterface
-    function getVirtualFyTokenReserves() public view override returns (uint256) {
-        return fyToken.balanceOf(address(this)) + totalSupply;
+    function getVirtualFyTokenReserves() public view override returns (int256) {
+        return int256(fyToken.balanceOf(address(this)) + totalSupply);
     }
 
     /// NON-CONSTANT EXTERNAL FUNCTIONS ///
@@ -87,7 +86,7 @@ contract HifiPool is
     /// @inheritdoc HifiPoolInterface
     function burn(uint256 poolTokensBurned) external override returns (uint256, uint256) {
         // Checks: avoid the zero edge case.
-        require(poolTokensBurned > 0, "ERR_GET_CLUTCHABLE_COLLATERAL_ZERO");
+        require(poolTokensBurned > 0, "HifiPool: cannot burn zero tokens");
 
         uint256 supply = totalSupply;
         uint256 underlyingReserves = underlying.balanceOf(address(this));
@@ -106,7 +105,7 @@ contract HifiPool is
         burnInternal(msg.sender, poolTokensBurned);
 
         // Interactions
-        underlying.transfer(msg.sender, underlyingReturned);
+        underlying.safeTransfer(msg.sender, underlyingReturned);
         fyToken.transfer(msg.sender, fyTokenReturned);
 
         emit RemoveLiquidity(maturity, msg.sender, underlyingReturned, fyTokenReturned, poolTokensBurned);
@@ -116,6 +115,9 @@ contract HifiPool is
 
     /// @inheritdoc HifiPoolInterface
     function mint(uint256 underlyingOffered) external override returns (uint256) {
+        // Checks: avoid the zero edge case.
+        require(underlyingOffered > 0, "HifiPool: cannot offer zero underlying");
+
         uint256 supply = totalSupply;
         if (supply == 0) {
             return initialize(underlyingOffered);
@@ -132,7 +134,7 @@ contract HifiPool is
 
         // Interactions
         underlying.safeTransferFrom(msg.sender, address(this), underlyingOffered);
-        fyToken.safeTransferFrom(msg.sender, address(this), fyTokenRequired);
+        fyToken.transferFrom(msg.sender, address(this), fyTokenRequired);
 
         emit AddLiquidity(maturity, msg.sender, underlyingOffered, fyTokenRequired, poolTokensMinted);
 
@@ -153,7 +155,7 @@ contract HifiPool is
     /// @return The amount of liquidity tokens minted.
     function initialize(uint256 underlyingAmount) internal isBeforeMaturity returns (uint256) {
         // Checks
-        require(totalSupply == 0, "ERR_INITALIZED");
+        require(totalSupply == 0, "HifiPool: initialized");
 
         // Effects
         mintInternal(msg.sender, underlyingAmount);

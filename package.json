@@ -11,8 +11,9 @@
     "url": "https://github.com/hifi-finance/hifi-amm/issues"
   },
   "dependencies": {
-    "@hifi/protocol": "https://github.com/hifi-finance/hifi-protocol.git#main",
-    "@paulrberg/contracts": "^2.0.0"
+    "@hifi/protocol": "git://github.com/hifi-finance/hifi-protocol.git#0c81932ebbf8734e74712d28c73815683403dce6",
+    "@paulrberg/contracts": "^2.0.1",
+    "prb-math": "^1.0.5"
   },
   "devDependencies": {
     "@commitlint/cli": "^9.1.2",
