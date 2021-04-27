@@ -32,6 +32,11 @@ library YieldSpace {
         }
     }
 
+    /// @notice Converts a number from signed 59.18-decimal fixed-point to basic integer form, rounding down.
+    function toInt(int256 x) internal pure returns (int256) {
+        unchecked { return x / SCALE; }
+    }
+
     /// @notice Computes the "a" exponent 1 - g * t, as per the whitepaper.
     /// @param timeToMaturity The time to maturity in seconds, as a signed 59.18-decimal fixed-point number.
     /// @param g The fee coefficient as a signed 59.18-decimal fixed-point number.
@@ -107,12 +112,12 @@ library YieldSpace {
     /// @param x Number to raise to given power y/z, as a signed 59.18-decimal fixed-point number.
     /// @param y Numerator of the power to raise x to, as a signed 59.18-decimal fixed-point number.
     /// @param z Denominator of the power to raise x to, as a signed 59.18-decimal fixed-point number.
-    /// @return result x raised to power y/z, as a signed 59.18-decimal fixed-point number.
+    /// @return result x raised to power y/z.
     function pow(
         int256 x,
         int256 y,
         int256 z
     ) internal pure returns (int256 result) {
-        result = x.log2().mul(y.div(z)).exp2();
+        result = toInt(x.log2().mul(y.div(z)).exp2());
     }
 }
