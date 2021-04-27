@@ -28,16 +28,26 @@ abstract contract HifiPoolInterface is HifiPoolStorage {
 
     /// @notice Quotes how much fyToken would be obtained by selling `underlyingIn` underlying.
     /// @param underlyingIn Hypothetical amount of underlying to sell.
-    /// @return fyTokenOut Hypothetical amount of fyToken that would be bought.
+    /// @return fyTokenOut Hypothetical amount of fyToken that would be obtained.
     function getQuoteForSellingUnderlying(int256 underlyingIn) external view virtual returns (int256 fyTokenOut);
 
     /// @dev Quotes how much underlying would be obtained by selling `fyDaiIn` fyToken.
     /// @param fyTokenIn Hypothetical amount of fyToken to sell.
-    /// @return underlyingOut Hypothetical amount of underlying that would be bought.
+    /// @return underlyingOut Hypothetical amount of underlying that would be obtained.
     function getQuoteForSellingFyToken(int256 fyTokenIn) external view virtual returns (int256 underlyingOut);
 
-    /// @notice Returns the "virtual" fyToken reserves.
-    /// @dev The fyToken Erc20 balance gets added to the total supply of pool tokens.
+    /// @notice Quotes how much fyToken would be required to buy `underlyingOut` underlying.
+    /// @param underlyingOut Hypothetical amount of underlying desired.
+    /// @return fyTokenIn Hypothetical amount of fyToken required.
+    function getQuoteForBuyingUnderlying(int256 underlyingOut) external view virtual returns (int256 fyTokenIn);
+
+    /// @notice Quotes how much underlying would be required to buy `fyTokenOut` fyToken.
+    /// @param fyTokenOut Hypothetical amount of fyToken to sell.
+    /// @return underlyingIn Hypothetical amount of underlying required.
+    function getQuoteForBuyingFyToken(int256 fyTokenOut) external view virtual returns (int256 underlyingIn);
+
+    /// @notice Returns the "virtual" fyToken reserves, as explained in the whitepaper.
+    /// @dev Retrieves the fyToken balance added to the total supply of pool tokens.
     function getVirtualFyTokenReserves() external view virtual returns (int256);
 
     /// NON-CONSTANT FUNCTIONS ///

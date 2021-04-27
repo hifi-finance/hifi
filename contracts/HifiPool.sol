@@ -77,6 +77,50 @@ contract HifiPool is
     }
 
     /// @inheritdoc HifiPoolInterface
+    function getQuoteForBuyingUnderlying(int256 underlyingOut)
+        public
+        view
+        override
+        isBeforeMaturity
+        returns (int256 fyTokenIn)
+    {
+        int256 underlyingReserves = int256(underlying.balanceOf(address(this)));
+        int256 virtualFyTokenReserves = getVirtualFyTokenReserves();
+        int256 timeToMaturity = int256(maturity - block.timestamp);
+
+        fyTokenIn = YieldSpace.fyTokenInForUnderlyingOut(
+            underlyingReserves,
+            virtualFyTokenReserves,
+            underlyingOut,
+            timeToMaturity
+        );
+    }
+
+    /// @inheritdoc HifiPoolInterface
+    function getQuoteForBuyingFyToken(int256 fyTokenOut)
+        public
+        view
+        override
+        isBeforeMaturity
+        returns (int256 underlyingIn)
+    {
+        int256 underlyingReserves = int256(underlying.balanceOf(address(this)));
+        int256 virtualFyTokenReserves = getVirtualFyTokenReserves();
+        int256 timeToMaturity = int256(maturity - block.timestamp);
+
+        underlyingIn = YieldSpace.underlyingInForFyTokenOut(
+            underlyingReserves,
+            virtualFyTokenReserves,
+            fyTokenOut,
+            timeToMaturity
+        );
+        require(
+            virtualFyTokenReserves - fyTokenOut >= underlyingReserves + underlyingIn,
+            "HifiPool: too low fyToken reserves"
+        );
+    }
+
+    /// @inheritdoc HifiPoolInterface
     function getVirtualFyTokenReserves() public view override returns (int256) {
         return int256(fyToken.balanceOf(address(this)) + totalSupply);
     }

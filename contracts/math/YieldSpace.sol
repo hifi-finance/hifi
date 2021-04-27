@@ -38,7 +38,7 @@ library YieldSpace {
     }
 
     /// @notice Computes the "a" exponent 1 - g * t, as per the whitepaper.
-    /// @param timeToMaturity The time to maturity in seconds, as a signed 59.18-decimal fixed-point number.
+    /// @param timeToMaturity Time to maturity in seconds, as a signed 59.18-decimal fixed-point number.
     /// @param g The fee coefficient as a signed 59.18-decimal fixed-point number.
     /// @return a The exponent as per the whitepaper.
     function getA(int256 timeToMaturity, int256 g) public pure returns (int256 a) {
@@ -53,12 +53,12 @@ library YieldSpace {
         }
     }
 
-    /// @notice Calculates the amount of fyToken a user would get for given amount of underlying.
+    /// @notice Calculates the amount of fyToken a user would get for a given amount of underlying.
     /// @param underlyingReserves underlying reserves amount.
     /// @param fyTokenReserves fyToken reserves amount.
     /// @param underlyingAmount Amount of underlying to be traded.
-    /// @param timeToMaturity The time to maturity in seconds.
-    /// @return fyTokenAmount The amount of fyToken the user would get.
+    /// @param timeToMaturity Time to maturity in seconds.
+    /// @return fyTokenAmount Amount of fyToken the user would get.
     function fyTokenOutForUnderlyingIn(
         int256 underlyingReserves,
         int256 fyTokenReserves,
@@ -70,6 +70,7 @@ library YieldSpace {
             int256 newUnderlyingReserves = underlyingReserves + underlyingAmount;
             require(newUnderlyingReserves >= underlyingReserves, "YieldSpace: too much underlying in");
 
+            // TODO: can this overflow?
             int256 sum =
                 pow(underlyingReserves, a, SCALE) +
                     pow(fyTokenReserves, a, SCALE) -
@@ -85,8 +86,8 @@ library YieldSpace {
     /// @param underlyingReserves Amount of underlying reserves.
     /// @param fyTokenReserves Amount of fyToken reserves.
     /// @param fyTokenAmount Amount of fyToken to be traded.
-    /// @param timeToMaturity The time to maturity in seconds.
-    /// @return underlyingAmount The amount of underlying the user would get.
+    /// @param timeToMaturity Time to maturity in seconds.
+    /// @return underlyingAmount Amount of underlying the user would get.
     function underlyingOutForFyTokenIn(
         int256 underlyingReserves,
         int256 fyTokenReserves,
@@ -98,12 +99,73 @@ library YieldSpace {
             int256 newFyTokenReserves = fyTokenReserves + fyTokenAmount;
             require(newFyTokenReserves >= fyTokenReserves, "YieldSpace: too much fyToken in");
 
+            // TODO: can this overflow?
             int256 sum =
                 pow(underlyingReserves, a, SCALE) - pow(newFyTokenReserves, a, SCALE) + pow(fyTokenReserves, a, SCALE);
             underlyingAmount = underlyingReserves - pow(sum, SCALE, a);
 
             // TODO: wut the heck is this? The fee charged by the AMM?
             underlyingAmount = underlyingAmount > 1e12 ? underlyingAmount - 1e12 : int256(0);
+        }
+    }
+
+    /// @notice Calculates the amount of fyToken a user could sell for a given amount of underlying.
+    /// @param underlyingReserves Amount of underlying reserves.
+    /// @param fyTokenReserves Amount of fyToken reserves.
+    /// @param underlyingAmount Amount of underlying to be traded.
+    /// @param timeToMaturity Time to maturity in seconds.
+    /// @return fyTokenAmount Amount of fyToken a user could sell.
+    function fyTokenInForUnderlyingOut(
+        int256 underlyingReserves,
+        int256 fyTokenReserves,
+        int256 underlyingAmount,
+        int256 timeToMaturity
+    ) internal pure returns (int256 fyTokenAmount) {
+        int256 a = getA(fromInt(timeToMaturity), g2);
+        unchecked {
+            require(underlyingAmount <= underlyingReserves, "YieldSpace: too much underlying out");
+            int256 newUnderlyingReserves = underlyingReserves - underlyingAmount;
+
+            // TODO: can this overflow?
+            int256 sum =
+                pow(underlyingReserves, a, SCALE) +
+                    pow(fyTokenReserves, a, SCALE) -
+                    pow(newUnderlyingReserves, a, SCALE);
+            fyTokenAmount = pow(sum, 0x10000000000000000, a) - fyTokenReserves;
+
+            // TODO: wut the heck is this? The fee charged by the AMM?
+            fyTokenAmount = fyTokenAmount < PRBMathSD59x18.MAX_SD59x18 - 1e12
+                ? fyTokenAmount + 1e12
+                : PRBMathSD59x18.MAX_SD59x18;
+        }
+    }
+
+    /// @notice Calculates the amount of underlying a user could sell for a given amount of fyToken.
+    /// @param underlyingReserves Amount of underlying reserves.
+    /// @param fyTokenReserves Amount of fyToken reserves.
+    /// @param fyTokenAmount Amount of underlying to be traded.
+    /// @param timeToMaturity Time to maturity in seconds.
+    /// @return underlyingAmount Amount of fyToken a user could sell.
+    function underlyingInForFyTokenOut(
+        int256 underlyingReserves,
+        int256 fyTokenReserves,
+        int256 fyTokenAmount,
+        int256 timeToMaturity
+    ) internal pure returns (int256 underlyingAmount) {
+        int256 a = getA(fromInt(timeToMaturity), g1);
+        unchecked {
+            require(fyTokenAmount <= fyTokenReserves, "YieldSpace: too much fyToken out");
+            int256 newFyTokenReserves = fyTokenReserves - fyTokenAmount;
+
+            // TODO: can this overflow?
+            int256 sum =
+                pow(underlyingReserves, a, SCALE) + pow(fyTokenReserves, a, SCALE) - pow(newFyTokenReserves, a, SCALE);
+            underlyingAmount = pow(sum, SCALE, a) - underlyingReserves;
+
+            // TODO: wut the heck is this? The fee charged by the AMM?
+            underlyingAmount = underlyingAmount < PRBMathSD59x18.MAX_SD59x18 - 1e12
+                ? underlyingAmount + 1e12
+                : PRBMathSD59x18.MAX_SD59x18;
         }
     }
 
