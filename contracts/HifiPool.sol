@@ -38,21 +38,20 @@ contract HifiPool is
 
     /// @inheritdoc HifiPoolInterface
     function getQuoteForSellingUnderlying(int256 underlyingIn)
-        external
+        public
         view
         override
         isBeforeMaturity
         returns (int256 fyTokenOut)
     {
-        int256 underlyingReserves = int256(underlying.balanceOf(address(this)));
+        int256 underlyingReserves = getUnderlyingReserves();
         int256 virtualFyTokenReserves = getVirtualFyTokenReserves();
-        int256 timeToMaturity = int256(maturity - block.timestamp);
 
         fyTokenOut = YieldSpace.fyTokenOutForUnderlyingIn(
             underlyingReserves,
             virtualFyTokenReserves,
             underlyingIn,
-            timeToMaturity
+            int256(maturity - block.timestamp)
         );
         require(
             virtualFyTokenReserves - fyTokenOut >= underlyingReserves + underlyingIn,
@@ -68,12 +67,13 @@ contract HifiPool is
         isBeforeMaturity
         returns (int256 underlyingOut)
     {
-        int256 underlyingReserves = int256(underlying.balanceOf(address(this)));
-        int256 virtualFyTokenReserves = getVirtualFyTokenReserves();
-        int256 timeToMaturity = int256(maturity - block.timestamp);
-
         return
-            YieldSpace.underlyingOutForFyTokenIn(underlyingReserves, virtualFyTokenReserves, fyTokenIn, timeToMaturity);
+            YieldSpace.underlyingOutForFyTokenIn(
+                getUnderlyingReserves(),
+                getVirtualFyTokenReserves(),
+                fyTokenIn,
+                int256(maturity - block.timestamp)
+            );
     }
 
     /// @inheritdoc HifiPoolInterface
@@ -84,15 +84,11 @@ contract HifiPool is
         isBeforeMaturity
         returns (int256 fyTokenIn)
     {
-        int256 underlyingReserves = int256(underlying.balanceOf(address(this)));
-        int256 virtualFyTokenReserves = getVirtualFyTokenReserves();
-        int256 timeToMaturity = int256(maturity - block.timestamp);
-
         fyTokenIn = YieldSpace.fyTokenInForUnderlyingOut(
-            underlyingReserves,
-            virtualFyTokenReserves,
+            getUnderlyingReserves(),
+            getVirtualFyTokenReserves(),
             underlyingOut,
-            timeToMaturity
+            int256(maturity - block.timestamp)
         );
     }
 
@@ -104,15 +100,14 @@ contract HifiPool is
         isBeforeMaturity
         returns (int256 underlyingIn)
     {
-        int256 underlyingReserves = int256(underlying.balanceOf(address(this)));
+        int256 underlyingReserves = getUnderlyingReserves();
         int256 virtualFyTokenReserves = getVirtualFyTokenReserves();
-        int256 timeToMaturity = int256(maturity - block.timestamp);
 
         underlyingIn = YieldSpace.underlyingInForFyTokenOut(
             underlyingReserves,
             virtualFyTokenReserves,
             fyTokenOut,
-            timeToMaturity
+            int256(maturity - block.timestamp)
         );
         require(
             virtualFyTokenReserves - fyTokenOut >= underlyingReserves + underlyingIn,
@@ -121,14 +116,27 @@ contract HifiPool is
     }
 
     /// @inheritdoc HifiPoolInterface
-    function getVirtualFyTokenReserves() public view override returns (int256) {
-        return int256(fyToken.balanceOf(address(this)) + totalSupply);
+    function getUnderlyingReserves() public view override returns (int256 underlyingReserves) {
+        uint256 underlyingReservesUnsigned = underlying.balanceOf(address(this));
+        require(underlyingReservesUnsigned <= uint256(type(int256).max), "HifiPool: Cast overflow");
+        underlyingReserves = int256(underlyingReservesUnsigned);
+    }
+
+    /// @inheritdoc HifiPoolInterface
+    function getVirtualFyTokenReserves() public view override returns (int256 virtualFyTokenReserves) {
+        uint256 virtualFyTokenReservesUnsigned = fyToken.balanceOf(address(this)) + totalSupply;
+        require(virtualFyTokenReservesUnsigned <= uint256(type(int256).max), "HifiPool: Cast overflow");
+        virtualFyTokenReserves = int256(virtualFyTokenReservesUnsigned);
     }
 
     /// NON-CONSTANT EXTERNAL FUNCTIONS ///
 
     /// @inheritdoc HifiPoolInterface
-    function burn(uint256 poolTokensBurned) external override returns (uint256, uint256) {
+    function burn(uint256 poolTokensBurned)
+        external
+        override
+        returns (uint256 underlyingReturned, uint256 fyTokenReturned)
+    {
         // Checks: avoid the zero edge case.
         require(poolTokensBurned > 0, "HifiPool: cannot burn zero tokens");
 
@@ -136,8 +144,6 @@ contract HifiPool is
         uint256 underlyingReserves = underlying.balanceOf(address(this));
 
         // Use the actual reserves rather than the virtual reserves.
-        uint256 underlyingReturned;
-        uint256 fyTokenReturned;
         {
             // Avoiding stack too deep.
             uint256 fyTokenReserves = fyToken.balanceOf(address(this));
@@ -153,24 +159,53 @@ contract HifiPool is
         fyToken.transfer(msg.sender, fyTokenReturned);
 
         emit RemoveLiquidity(maturity, msg.sender, underlyingReturned, fyTokenReturned, poolTokensBurned);
-
-        return (underlyingReturned, fyTokenReturned);
     }
 
     /// @inheritdoc HifiPoolInterface
-    function mint(uint256 underlyingOffered) external override returns (uint256) {
+    function buyFyToken(address to, int256 fyTokenOut) external override returns (int256 underlyingIn) {
+        // Checks: avoid the zero edge case.
+        require(fyTokenOut > 0, "HifiPool: cannot buy with zero fyToken");
+
+        underlyingIn = getQuoteForBuyingFyToken(fyTokenOut);
+
+        // Interactions
+        underlying.safeTransferFrom(msg.sender, address(this), uint256(underlyingIn));
+        fyToken.transfer(to, uint256(fyTokenOut));
+
+        // TODO: check if `underlyingIn` is not min int256
+        emit Trade(maturity, msg.sender, to, -underlyingIn, fyTokenOut);
+    }
+
+    /// @inheritdoc HifiPoolInterface
+    function buyUnderlying(address to, int256 underlyingOut) external override returns (int256 fyTokenIn) {
+        // Checks: avoid the zero edge case.
+        require(underlyingOut > 0, "HifiPool: cannot buy with zero underlying");
+
+        fyTokenIn = getQuoteForBuyingUnderlying(underlyingOut);
+
+        // Interactions
+        fyToken.transferFrom(msg.sender, address(this), uint256(fyTokenIn));
+        underlying.safeTransfer(to, uint256(underlyingOut));
+
+        // TODO: check if `fyTokenIn` is not min int256
+        emit Trade(maturity, msg.sender, to, underlyingOut, -fyTokenIn);
+    }
+
+    /// @inheritdoc HifiPoolInterface
+    function mint(uint256 underlyingOffered) external override returns (uint256 poolTokensMinted) {
         // Checks: avoid the zero edge case.
         require(underlyingOffered > 0, "HifiPool: cannot offer zero underlying");
 
         uint256 supply = totalSupply;
         if (supply == 0) {
-            return initialize(underlyingOffered);
+            initialize(underlyingOffered);
+            return underlyingOffered;
         }
 
         uint256 underlyingReserves = underlying.balanceOf(address(this));
         // Use the actual reserves rather than the virtual reserves.
         uint256 fyTokenReserves = fyToken.balanceOf(address(this));
-        uint256 poolTokensMinted = (supply * underlyingOffered) / underlyingReserves;
+        poolTokensMinted = (supply * underlyingOffered) / underlyingReserves;
         uint256 fyTokenRequired = (fyTokenReserves * poolTokensMinted) / supply;
 
         // Effects
@@ -181,8 +216,41 @@ contract HifiPool is
         fyToken.transferFrom(msg.sender, address(this), fyTokenRequired);
 
         emit AddLiquidity(maturity, msg.sender, underlyingOffered, fyTokenRequired, poolTokensMinted);
+    }
 
-        return poolTokensMinted;
+    /// @inheritdoc HifiPoolInterface
+    function sellFyToken(address to, int256 fyTokenIn)
+        external
+        override
+        isBeforeMaturity
+        returns (int256 underlyingOut)
+    {
+        // Checks: avoid the zero edge case.
+        require(fyTokenIn > 0, "HifiPool: cannot sell zero fyToken");
+
+        underlyingOut = getQuoteForSellingFyToken(fyTokenIn);
+
+        // Interactions
+        fyToken.transferFrom(msg.sender, address(this), uint256(fyTokenIn));
+        underlying.safeTransfer(to, uint256(underlyingOut));
+
+        // TODO: check if `fyTokenIn` is not min int256
+        emit Trade(maturity, msg.sender, to, underlyingOut, -fyTokenIn);
+    }
+
+    /// @inheritdoc HifiPoolInterface
+    function sellUnderlying(address to, int256 underlyingIn) external override returns (int256 fyTokenOut) {
+        // Checks: avoid the zero edge case.
+        require(underlyingIn > 0, "HifiPool: cannot sell zero underlying");
+
+        fyTokenOut = getQuoteForSellingUnderlying(underlyingIn);
+
+        // Interactions
+        underlying.safeTransferFrom(msg.sender, address(this), uint256(underlyingIn));
+        fyToken.transfer(to, uint256(fyTokenOut));
+
+        // TODO: check if `underlyingIn` is not min int256
+        emit Trade(maturity, msg.sender, to, -underlyingIn, fyTokenOut);
     }
 
     /// NON-CONSTANT INTERNAL FUNCTIONS ///
@@ -196,8 +264,7 @@ contract HifiPool is
     /// - The caller must have allowed this contract to spend `underlyingAmount` underlying tokens.
     ///
     /// @param underlyingAmount The initial underlying liquidity to provide.
-    /// @return The amount of liquidity tokens minted.
-    function initialize(uint256 underlyingAmount) internal isBeforeMaturity returns (uint256) {
+    function initialize(uint256 underlyingAmount) internal isBeforeMaturity {
         // Checks
         require(totalSupply == 0, "HifiPool: initialized");
 
@@ -208,7 +275,5 @@ contract HifiPool is
         underlying.safeTransferFrom(msg.sender, address(this), underlyingAmount);
 
         emit AddLiquidity(maturity, msg.sender, underlyingAmount, 0, underlyingAmount);
-
-        return underlyingAmount;
     }
 }
