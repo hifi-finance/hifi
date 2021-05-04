@@ -11,15 +11,15 @@
     "url": "https://github.com/hifi-finance/hifi-amm/issues"
   },
   "dependencies": {
-    "@hifi/protocol": "git://github.com/hifi-finance/hifi-protocol.git#0c81932ebbf8734e74712d28c73815683403dce6",
+    "@hifi/protocol": "git://github.com/hifi-finance/hifi-protocol.git#f96bd7e5ffdc267c62cd6aaffe9006bb6c026750",
     "@paulrberg/contracts": "^2.0.1",
     "prb-math": "^1.0.5"
   },
   "devDependencies": {
     "@commitlint/cli": "^9.1.2",
     "@commitlint/config-conventional": "^9.1.2",
-    "@ethersproject/abstract-signer": "^5.0.6",
-    "@ethersproject/bignumber": "^5.0.8",
+    "@ethersproject/abstract-signer": "^5.1.0",
+    "@ethersproject/bignumber": "^5.1.1",
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
     "@typechain/ethers-v5": "^5.0.0",
@@ -37,7 +37,8 @@
     "eslint": "^7.11.0",
     "eslint-config-prettier": "^6.12.0",
     "ethereum-waffle": "^3.2.0",
-    "ethers": "^5.0.24",
+    "ethers": "^5.1.4",
+    "from-exponential": "^1.1.0",
     "fs-extra": "^9.0.1",
     "hardhat": "^2.2.0",
     "husky": "^4.3.0",
@@ -65,7 +66,7 @@
     "smart-contracts",
     "solidity"
   ],
-  "license": "WTFPL",
+  "license": "LGPL-3.0-or-later",
   "publishConfig": {
     "access": "public"
   },
