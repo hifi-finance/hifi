@@ -687,7 +687,7 @@
     "@ethersproject/constants" "^5.1.0"
     "@ethersproject/logger" "^5.1.0"
 
-"@ethersproject/wallet@5.1.0":
+"@ethersproject/wallet@5.1.0", "@ethersproject/wallet@^5.1.0":
   version "5.1.0"
   resolved "https://registry.npmjs.org/@ethersproject/wallet/-/wallet-5.1.0.tgz#134c5816eaeaa586beae9f9ff67891104a2c9a15"
   integrity sha512-ULmUtiYQLTUS+y3DgkLzRhFEK10zMwmjOthnjiZxee3Q/MVwr3rnmuAnXIUZrPjna6hvUPnyRIdW5XuF0Ld0YQ==
@@ -730,12 +730,6 @@
     "@ethersproject/properties" "^5.1.0"
     "@ethersproject/strings" "^5.1.0"
 
-"@hifi/protocol@git://github.com/hifi-finance/hifi-protocol.git#f96bd7e5ffdc267c62cd6aaffe9006bb6c026750":
-  version "1.0.0"
-  resolved "git://github.com/hifi-finance/hifi-protocol.git#f96bd7e5ffdc267c62cd6aaffe9006bb6c026750"
-  dependencies:
-    "@paulrberg" "git://github.com/paulrberg/contracts.git#2828887923329c35f2a10951d722e862d17f84b8"
-
 "@nodelib/fs.scandir@2.1.4":
   version "2.1.4"
   resolved "https://registry.npmjs.org/@nodelib/fs.scandir/-/fs.scandir-2.1.4.tgz#d4b3549a5db5de2683e0c1071ab4f140904bbf69"
@@ -770,16 +764,12 @@
     "@types/sinon-chai" "^3.2.3"
     "@types/web3" "1.0.19"
 
-"@paulrberg/contracts@^2.0.1":
-  version "2.0.1"
-  resolved "https://registry.npmjs.org/@paulrberg/contracts/-/contracts-2.0.1.tgz#c2a25fe5ee0bc20322412e48b062e8e0b9efafc6"
-  integrity sha512-39UCWr9A8LWT5mpIpJVU7NaaDKwdVDu9vVPtIKpobcjcyBzxnm+YUG3l2x6YH6dIuAzT6J029dAOKGHdgA7I+A==
+"@paulrberg/contracts@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.npmjs.org/@paulrberg/contracts/-/contracts-2.1.0.tgz#d0afb4a7037ef7e01e00dbbf21af214370931821"
+  integrity sha512-DjAcu8DWYI5Z4QkE4hIQ0yRS063M3Gv6N+cIvVTfKMBQ3KGYhDI2wMFqdVIs9bf386eGHy4GwFMoAk7umIAiDA==
   dependencies:
-    prb-math "^1.0.5"
-
-"@paulrberg@git://github.com/paulrberg/contracts.git#2828887923329c35f2a10951d722e862d17f84b8":
-  version "2.0.0"
-  resolved "git://github.com/paulrberg/contracts.git#2828887923329c35f2a10951d722e862d17f84b8"
+    prb-math "^1.1.0"
 
 "@resolver-engine/core@^0.3.3":
   version "0.3.3"
@@ -1040,6 +1030,18 @@
   integrity sha512-U5icWpv7YnZYGsN4/cmh3WD2onMY0aJIiTE6+51TwJCttdHvtCYmkBNOobHlXwrJRL0nkH9jH4kD+1FAdMN4Tg==
   dependencies:
     "@types/node" "*"
+
+"@types/mocha-each@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/@types/mocha-each/-/mocha-each-2.0.0.tgz#4a45f2e86c34fea7b3b86b64f264cf883e74dfa2"
+  integrity sha512-wZWPqB+pnH9SL7qzORZha1dBt5ypYgPYDSma9wwtQVGmu36QonRWnc8hbJwgMaCPYHTHzrAGMnwp+we/SGI2YQ==
+  dependencies:
+    "@types/mocha" "*"
+
+"@types/mocha@*":
+  version "8.2.2"
+  resolved "https://registry.npmjs.org/@types/mocha/-/mocha-8.2.2.tgz#91daa226eb8c2ff261e6a8cbf8c7304641e095e0"
+  integrity sha512-Lwh0lzzqT5Pqh6z61P3c3P5nm6fzQK/MMHl9UKeneAeInVflBSz1O2EkX6gM6xfJd7FBXBY5purtLx7fUiZ7Hw==
 
 "@types/mocha@^7.0.2":
   version "7.0.2"
@@ -6943,6 +6945,13 @@ mnemonist@^0.38.0:
   dependencies:
     obliterator "^1.6.1"
 
+mocha-each@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.npmjs.org/mocha-each/-/mocha-each-2.0.1.tgz#e36668e481ad3c4ec42a79bc94b8968ec0054c87"
+  integrity sha512-0ZgWY5ajbnROXkfyaDb+0RAYzDBH3QVow/1zJiyl7lYMRnj1Nid8RDP2+/2TTajB5n4vr21v35MjB72GjFFj2g==
+  dependencies:
+    sprintf-js "^1.0.3"
+
 mocha@^7.1.2:
   version "7.2.0"
   resolved "https://registry.npmjs.org/mocha/-/mocha-7.2.0.tgz#01cc227b00d875ab1eed03a75106689cfed5a604"
@@ -7748,10 +7757,10 @@ postinstall-postinstall@^2.1.0:
   resolved "https://registry.npmjs.org/postinstall-postinstall/-/postinstall-postinstall-2.1.0.tgz#4f7f77441ef539d1512c40bd04c71b06a4704ca3"
   integrity sha512-7hQX6ZlZXIoRiWNrbMQaLzUUfH+sSx39u8EJ9HYuDc1kLo9IXKWjM5RSquZN1ad5GnH8CGFM78fsAAQi3OKEEQ==
 
-prb-math@^1.0.5:
-  version "1.0.5"
-  resolved "https://registry.npmjs.org/prb-math/-/prb-math-1.0.5.tgz#c3ff0bab6b05124c447506c26b3af20c7eefad17"
-  integrity sha512-nYp+LxadiKcF0DGzoOOgRJCNBlZKDj0o+fCKIV2M0VCV0I/WhpEGeXa0V1KK3LJaXTB5iSf/HenuCFk8+k8SiA==
+prb-math@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.npmjs.org/prb-math/-/prb-math-1.1.0.tgz#e5dfa8b2437517ff0e2f26256f491660d14df795"
+  integrity sha512-V8h9uXHM++znzQImQHvqrMghe1qgq75orbaVY4biC7g7FHKLwfRVl8QC/a/ee8/ot9j8bgvH2EyIzq86dl9bCA==
 
 precond@0.2:
   version "0.2.3"
@@ -8969,6 +8978,11 @@ split2@^3.0.0:
   integrity sha512-9NThjpgZnifTkJpzTZ7Eue85S49QwpNhZTq6GRJwObb6jnLFNGB7Qm73V5HewTROPyxD0C29xqmaI68bQtV+hg==
   dependencies:
     readable-stream "^3.0.0"
+
+sprintf-js@^1.0.3:
+  version "1.1.2"
+  resolved "https://registry.npmjs.org/sprintf-js/-/sprintf-js-1.1.2.tgz#da1765262bf8c0f571749f2ad6c26300207ae673"
+  integrity sha512-VE0SOVEHCk7Qc8ulkWw3ntAzXuqf7S2lvwQaDLRnUeIEaKNQJzV6BwmLKhOqT61aGhfUMrXeaBk+oDGCzvhcug==
 
 sprintf-js@~1.0.2:
   version "1.0.3"

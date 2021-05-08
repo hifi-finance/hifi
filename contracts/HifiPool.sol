@@ -1,13 +1,13 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.0;
 
-import "@hifi/protocol/contracts/FyTokenInterface.sol";
 import "@paulrberg/contracts/token/erc20/Erc20.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Permit.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 
 import "./HifiPoolInterface.sol";
+import "./interfaces/FyTokenLike.sol";
 import "./math/YieldSpace.sol";
 
 contract HifiPool is
@@ -25,7 +25,7 @@ contract HifiPool is
 
     constructor(
         Erc20Interface underlying_,
-        FyTokenInterface fyToken_,
+        FyTokenLike fyToken_,
         string memory name_,
         string memory symbol_
     ) Erc20Permit(name_, symbol_, 18) {
@@ -37,25 +37,41 @@ contract HifiPool is
     /// CONSTANT FUNCTIONS ///
 
     /// @inheritdoc HifiPoolInterface
-    function getQuoteForSellingUnderlying(int256 underlyingIn)
+    function getQuoteForBuyingFyToken(int256 fyTokenOut)
         public
         view
         override
         isBeforeMaturity
-        returns (int256 fyTokenOut)
+        returns (int256 underlyingIn)
     {
         int256 underlyingReserves = getUnderlyingReserves();
         int256 virtualFyTokenReserves = getVirtualFyTokenReserves();
 
-        fyTokenOut = YieldSpace.fyTokenOutForUnderlyingIn(
+        underlyingIn = YieldSpace.underlyingInForFyTokenOut(
             underlyingReserves,
             virtualFyTokenReserves,
-            underlyingIn,
+            fyTokenOut,
             int256(maturity - block.timestamp)
         );
         require(
             virtualFyTokenReserves - fyTokenOut >= underlyingReserves + underlyingIn,
             "HifiPool: too low fyToken reserves"
+        );
+    }
+
+    /// @inheritdoc HifiPoolInterface
+    function getQuoteForBuyingUnderlying(int256 underlyingOut)
+        public
+        view
+        override
+        isBeforeMaturity
+        returns (int256 fyTokenIn)
+    {
+        fyTokenIn = YieldSpace.fyTokenInForUnderlyingOut(
+            getUnderlyingReserves(),
+            getVirtualFyTokenReserves(),
+            underlyingOut,
+            int256(maturity - block.timestamp)
         );
     }
 
@@ -77,36 +93,20 @@ contract HifiPool is
     }
 
     /// @inheritdoc HifiPoolInterface
-    function getQuoteForBuyingUnderlying(int256 underlyingOut)
+    function getQuoteForSellingUnderlying(int256 underlyingIn)
         public
         view
         override
         isBeforeMaturity
-        returns (int256 fyTokenIn)
-    {
-        fyTokenIn = YieldSpace.fyTokenInForUnderlyingOut(
-            getUnderlyingReserves(),
-            getVirtualFyTokenReserves(),
-            underlyingOut,
-            int256(maturity - block.timestamp)
-        );
-    }
-
-    /// @inheritdoc HifiPoolInterface
-    function getQuoteForBuyingFyToken(int256 fyTokenOut)
-        public
-        view
-        override
-        isBeforeMaturity
-        returns (int256 underlyingIn)
+        returns (int256 fyTokenOut)
     {
         int256 underlyingReserves = getUnderlyingReserves();
         int256 virtualFyTokenReserves = getVirtualFyTokenReserves();
 
-        underlyingIn = YieldSpace.underlyingInForFyTokenOut(
+        fyTokenOut = YieldSpace.fyTokenOutForUnderlyingIn(
             underlyingReserves,
             virtualFyTokenReserves,
-            fyTokenOut,
+            underlyingIn,
             int256(maturity - block.timestamp)
         );
         require(
