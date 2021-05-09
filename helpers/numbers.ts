@@ -15,16 +15,6 @@ export function fp(x: string): BigNumber {
   return parseFixed(x, precision);
 }
 
-export function fps(x: string): BigNumber {
-  // Check if the input is in scientific notation.
-  if (!/^(-?\d+)(\.\d+)?(e|e-)(\d+)$/.test(x)) {
-    throw new Error(`Unknown format for fixed-point number in scientific notation: ${x}`);
-  }
-
-  const precision: number = 18;
-  return parseFixed(fromExponential(x), precision);
-}
-
 export function fpPowOfTwo(exp: number | BigNumber): BigNumber {
   const scale: BigNumber = BigNumber.from(10).pow(18);
   return powOfTwo(exp).mul(scale);
@@ -40,4 +30,14 @@ export function minInt(exp: number): BigNumber {
 
 export function powOfTwo(exp: number | BigNumber): BigNumber {
   return BigNumber.from(2).pow(BigNumber.from(exp));
+}
+
+export function sfp(x: string): BigNumber {
+  // Check if the input is in scientific notation.
+  if (!/^(-?\d+)(\.\d+)?(e|e-)(\d+)$/.test(x)) {
+    throw new Error(`Unknown format for fixed-point number in scientific notation: ${x}`);
+  }
+
+  const precision: number = 18;
+  return parseFixed(fromExponential(x), precision);
 }

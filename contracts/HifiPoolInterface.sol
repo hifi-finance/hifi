@@ -37,29 +37,29 @@ abstract contract HifiPoolInterface is HifiPoolStorage {
     /// @dev Quotes how much underlying would be obtained by selling `fyTokenIn` fyToken.
     /// @param fyTokenIn Hypothetical amount of fyToken to sell.
     /// @return underlyingOut Hypothetical amount of underlying that would be obtained.
-    function getQuoteForSellingFyToken(int256 fyTokenIn) public view virtual returns (int256 underlyingOut);
+    function getQuoteForSellingFyToken(uint256 fyTokenIn) public view virtual returns (uint256 underlyingOut);
 
     /// @notice Quotes how much fyToken would be obtained by selling `underlyingIn` underlying.
     /// @param underlyingIn Hypothetical amount of underlying to sell.
     /// @return fyTokenOut Hypothetical amount of fyToken that would be obtained.
-    function getQuoteForSellingUnderlying(int256 underlyingIn) public view virtual returns (int256 fyTokenOut);
+    function getQuoteForSellingUnderlying(uint256 underlyingIn) public view virtual returns (uint256 fyTokenOut);
 
     /// @notice Quotes how much underlying would be required to buy `fyTokenOut` fyToken.
     /// @param fyTokenOut Hypothetical amount of fyToken to sell.
     /// @return underlyingIn Hypothetical amount of underlying required.
-    function getQuoteForBuyingFyToken(int256 fyTokenOut) public view virtual returns (int256 underlyingIn);
+    function getQuoteForBuyingFyToken(uint256 fyTokenOut) public view virtual returns (uint256 underlyingIn);
 
     /// @notice Quotes how much fyToken would be required to buy `underlyingOut` underlying.
     /// @param underlyingOut Hypothetical amount of underlying desired.
     /// @return fyTokenIn Hypothetical amount of fyToken required.
-    function getQuoteForBuyingUnderlying(int256 underlyingOut) public view virtual returns (int256 fyTokenIn);
+    function getQuoteForBuyingUnderlying(uint256 underlyingOut) public view virtual returns (uint256 fyTokenIn);
 
     /// @notice Retrieves the Erc20 underlying balance.
-    function getUnderlyingReserves() public view virtual returns (int256 underlyingReserves);
+    function getUnderlyingReserves() public view virtual returns (uint256 underlyingReserves);
 
     /// @notice Retrieves the "virtual" fyToken reserves, as explained in the whitepaper.
     /// @dev Adds the Erc20 fyToken balance to the total supply of pool tokens.
-    function getVirtualFyTokenReserves() public view virtual returns (int256 virtualFyTokenReserves);
+    function getVirtualFyTokenReserves() public view virtual returns (uint256 virtualFyTokenReserves);
 
     /// NON-CONSTANT FUNCTIONS ///
 
@@ -91,7 +91,7 @@ abstract contract HifiPoolInterface is HifiPoolStorage {
     /// @param to Account that receives the fyToken being bought.
     /// @param fyTokenOut Amount of fyToken being bought that will be transferred to the `to` account.
     /// @return underlyingIn Amount of underlying that will be taken from the caller's account.
-    function buyFyToken(address to, int256 fyTokenOut) external virtual returns (int256 underlyingIn);
+    function buyFyToken(address to, uint256 fyTokenOut) external virtual returns (uint256 underlyingIn);
 
     /// @notice Buys underlying with fyToken.
     ///
@@ -102,7 +102,7 @@ abstract contract HifiPoolInterface is HifiPoolStorage {
     /// @param to Account that receives the underlying being bought.
     /// @param underlyingOut Amount of underlying being bought that will be transferred to the `to` account.
     /// @return fyTokenIn Amount of fyToken that will be taken from the caller's account.
-    function buyUnderlying(address to, int256 underlyingOut) external virtual returns (int256 fyTokenIn);
+    function buyUnderlying(address to, uint256 underlyingOut) external virtual returns (uint256 fyTokenIn);
 
     /// @notice Mints liquidity tokens in exchange for adding underlying tokens and fyTokens. An appropriate amount of
     /// fyTokens gets calculated and taken from the caller to be investigated alongside underlying tokens.
@@ -127,7 +127,7 @@ abstract contract HifiPoolInterface is HifiPoolStorage {
     /// @param to Account that receives the underlying being bought.
     /// @param fyTokenIn Amount of underlying being sold that is taken from the caller's account.
     /// @return underlyingOut Amount of underlying that will be transferred to the `to` account.
-    function sellFyToken(address to, int256 fyTokenIn) external virtual returns (int256 underlyingOut);
+    function sellFyToken(address to, uint256 fyTokenIn) external virtual returns (uint256 underlyingOut);
 
     /// @notice Sells underlying for fyToken.
     ///
@@ -140,5 +140,5 @@ abstract contract HifiPoolInterface is HifiPoolStorage {
     /// @param to Account that receives the fyToken being bought.
     /// @param underlyingIn Amount of underlying being sold that is taken from the caller's account.
     /// @return fyTokenOut Amount of fyTokenOut that will be transferred to the `to` account.
-    function sellUnderlying(address to, int256 underlyingIn) external virtual returns (int256 fyTokenOut);
+    function sellUnderlying(address to, uint256 underlyingIn) external virtual returns (uint256 fyTokenOut);
 }
