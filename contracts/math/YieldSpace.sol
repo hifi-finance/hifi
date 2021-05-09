@@ -23,32 +23,6 @@ library YieldSpace {
     /// @dev Number of decimals used in the SD59x18 format.
     int256 internal constant SCALE = 1e18;
 
-    /// @notice Calculates the amount of fyToken a user would get for a given amount of underlying.
-    /// @param underlyingReserves underlying reserves amount.
-    /// @param fyTokenReserves fyToken reserves amount.
-    /// @param underlyingAmount Amount of underlying to be traded.
-    /// @param timeToMaturity Time to maturity in seconds.
-    /// @return fyTokenAmount Amount of fyToken the user would get.
-    function fyTokenOutForUnderlyingIn(
-        int256 underlyingReserves,
-        int256 fyTokenReserves,
-        int256 underlyingAmount,
-        int256 timeToMaturity
-    ) internal pure returns (int256 fyTokenAmount) {
-        int256 a = getA(timeToMaturity.fromInt(), g1);
-        unchecked {
-            int256 newUnderlyingReserves = underlyingReserves + underlyingAmount;
-            require(newUnderlyingReserves >= underlyingReserves, "YieldSpace: too much underlying in");
-
-            // TODO: can this overflow?
-            int256 sum = underlyingReserves.pow(a) + fyTokenReserves.pow(a) - newUnderlyingReserves.pow(a);
-            fyTokenAmount = fyTokenReserves - sum.pow(a.inv()).toInt();
-
-            // TODO: wut the heck is this? The fee charged by the AMM?
-            fyTokenAmount = fyTokenAmount > 1e12 ? fyTokenAmount - 1e12 : int256(0);
-        }
-    }
-
     /// @notice Calculates the amount of fyToken a user could sell for a given amount of underlying.
     /// @param underlyingReserves Amount of underlying reserves.
     /// @param fyTokenReserves Amount of fyToken reserves.
@@ -74,6 +48,32 @@ library YieldSpace {
             fyTokenAmount = fyTokenAmount < PRBMathSD59x18.MAX_SD59x18 - 1e12
                 ? fyTokenAmount + 1e12
                 : PRBMathSD59x18.MAX_SD59x18;
+        }
+    }
+
+    /// @notice Calculates the amount of fyToken a user would get for a given amount of underlying.
+    /// @param underlyingReserves underlying reserves amount.
+    /// @param fyTokenReserves fyToken reserves amount.
+    /// @param underlyingAmount Amount of underlying to be traded.
+    /// @param timeToMaturity Time to maturity in seconds.
+    /// @return fyTokenAmount Amount of fyToken the user would get.
+    function fyTokenOutForUnderlyingIn(
+        int256 underlyingReserves,
+        int256 fyTokenReserves,
+        int256 underlyingAmount,
+        int256 timeToMaturity
+    ) internal pure returns (int256 fyTokenAmount) {
+        int256 a = getA(timeToMaturity.fromInt(), g1);
+        unchecked {
+            int256 newUnderlyingReserves = underlyingReserves + underlyingAmount;
+            require(newUnderlyingReserves >= underlyingReserves, "YieldSpace: too much underlying in");
+
+            // TODO: can this overflow?
+            int256 sum = underlyingReserves.pow(a) + fyTokenReserves.pow(a) - newUnderlyingReserves.pow(a);
+            fyTokenAmount = fyTokenReserves - sum.pow(a.inv()).toInt();
+
+            // TODO: wut the heck is this? The fee charged by the AMM?
+            fyTokenAmount = fyTokenAmount > 1e12 ? fyTokenAmount - 1e12 : int256(0);
         }
     }
 
