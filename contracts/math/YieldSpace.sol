@@ -28,11 +28,11 @@ library YieldSpace {
     uint256 internal constant SCALE = 1e18;
 
     /// @notice Calculates the amount of fyToken a user could sell for a given amount of underlying.
-    /// @param normalizedUnderlyingReserves Normalized amount of underlying reserves, as a basic integer.
-    /// @param fyTokenReserves Amount of fyToken reserves, as a basic integer.
-    /// @param normalizedUnderlyingOut Amount of underlying to be traded, as a basic integer.
-    /// @param timeToMaturity Time to maturity in seconds, as a basic integer.
-    /// @return fyTokenIn Amount of fyToken a user could sell, as a basic integer.
+    /// @param normalizedUnderlyingReserves Normalized amount of underlying reserves.
+    /// @param fyTokenReserves Amount of fyToken reserves.
+    /// @param normalizedUnderlyingOut Amount of underlying to be traded.
+    /// @param timeToMaturity Time to maturity in seconds.
+    /// @return fyTokenIn Amount of fyToken a user could sell.
     function fyTokenInForUnderlyingOut(
         uint256 normalizedUnderlyingReserves,
         uint256 fyTokenReserves,
@@ -44,21 +44,21 @@ library YieldSpace {
             require(normalizedUnderlyingOut <= normalizedUnderlyingReserves, "YieldSpace: too much underlying out");
             uint256 newUnderlyingReserves = normalizedUnderlyingReserves - normalizedUnderlyingOut;
 
-            // TODO: can this overflow?
+            // We're treating the token amounts as already being in fixed-point representation.
             uint256 sum =
-                normalizedUnderlyingReserves.fromUint().pow(exponent) +
-                    fyTokenReserves.fromUint().pow(exponent) -
-                    newUnderlyingReserves.fromUint().pow(exponent);
-            fyTokenIn = sum.pow(exponent.inv()).toUint() - fyTokenReserves;
+                normalizedUnderlyingReserves.pow(exponent) +
+                    fyTokenReserves.pow(exponent) -
+                    newUnderlyingReserves.pow(exponent);
+            fyTokenIn = sum.pow(exponent.inv()) - fyTokenReserves;
         }
     }
 
     /// @notice Calculates the amount of fyToken a user would get for a given amount of underlying.
-    /// @param normalizedUnderlyingReserves underlying reserves amount, as a basic integer.
-    /// @param fyTokenReserves fyToken reserves amount, as a basic integer.
-    /// @param normalizedUnderlyingIn Amount of underlying to be traded, as a basic integer.
-    /// @param timeToMaturity Time to maturity in seconds, as a basic integer.
-    /// @return fyTokenOut Amount of fyToken the user would get, as a basic integer.
+    /// @param normalizedUnderlyingReserves underlying reserves amount.
+    /// @param fyTokenReserves fyToken reserves amount.
+    /// @param normalizedUnderlyingIn Amount of underlying to be traded.
+    /// @param timeToMaturity Time to maturity in seconds.
+    /// @return fyTokenOut Amount of fyToken the user would get.
     function fyTokenOutForUnderlyingIn(
         uint256 normalizedUnderlyingReserves,
         uint256 fyTokenReserves,
@@ -70,12 +70,12 @@ library YieldSpace {
             uint256 newUnderlyingReserves = normalizedUnderlyingReserves + normalizedUnderlyingIn;
             require(newUnderlyingReserves >= normalizedUnderlyingReserves, "YieldSpace: too much underlying in");
 
-            // TODO: can this overflow?
+            // We're treating the token amounts as already being in fixed-point representation.
             uint256 sum =
-                normalizedUnderlyingReserves.fromUint().pow(exponent) +
-                    fyTokenReserves.fromUint().pow(exponent) -
-                    newUnderlyingReserves.fromUint().pow(exponent);
-            fyTokenOut = fyTokenReserves - sum.pow(exponent.inv()).toUint();
+                normalizedUnderlyingReserves.pow(exponent) +
+                    fyTokenReserves.pow(exponent) -
+                    newUnderlyingReserves.pow(exponent);
+            fyTokenOut = fyTokenReserves - sum.pow(exponent.inv());
         }
     }
 
@@ -94,11 +94,11 @@ library YieldSpace {
     }
 
     /// @notice Calculates the amount of underlying a user could sell for a given amount of fyToken.
-    /// @param normalizedUnderlyingReserves Amount of underlying reserves, as a basic integer.
-    /// @param fyTokenReserves Amount of fyToken reserves, as a basic integer.
-    /// @param fyTokenOut Amount of underlying to be traded, as a basic integer.
-    /// @param timeToMaturity Time to maturity in seconds, as a basic integer.
-    /// @return normalizedUnderlyingIn Amount of fyToken a user could sell, as a basic integer.
+    /// @param normalizedUnderlyingReserves Amount of underlying reserves.
+    /// @param fyTokenReserves Amount of fyToken reserves.
+    /// @param fyTokenOut Amount of underlying to be traded.
+    /// @param timeToMaturity Time to maturity in seconds.
+    /// @return normalizedUnderlyingIn Amount of fyToken a user could sell.
     function underlyingInForFyTokenOut(
         uint256 normalizedUnderlyingReserves,
         uint256 fyTokenReserves,
@@ -110,21 +110,21 @@ library YieldSpace {
             require(fyTokenOut <= fyTokenReserves, "YieldSpace: too much fyToken out");
             uint256 newFyTokenReserves = fyTokenReserves - fyTokenOut;
 
-            // TODO: can this overflow?
+            // We're treating the token amounts as already being in fixed-point representation.
             uint256 sum =
-                normalizedUnderlyingReserves.fromUint().pow(exponent) +
-                    fyTokenReserves.fromUint().pow(exponent) -
-                    newFyTokenReserves.fromUint().pow(exponent);
-            normalizedUnderlyingIn = sum.pow(exponent.inv()).toUint() - normalizedUnderlyingReserves;
+                normalizedUnderlyingReserves.pow(exponent) +
+                    fyTokenReserves.pow(exponent) -
+                    newFyTokenReserves.pow(exponent);
+            normalizedUnderlyingIn = sum.pow(exponent.inv()) - normalizedUnderlyingReserves;
         }
     }
 
     /// @notice Calculates the amount of underyling a user would get for a given amount of fyToken.
-    /// @param normalizedUnderlyingReserves Amount of underlying reserves, as a basic integer.
-    /// @param fyTokenReserves Amount of fyToken reserves, as a basic integer.
-    /// @param fyTokenIn Amount of fyToken to be traded, as a basic integer.
-    /// @param timeToMaturity Time to maturity in seconds, as a basic integer.
-    /// @return normalizedUnderlyingOut Amount of underlying the user would get, as a basic integer.
+    /// @param normalizedUnderlyingReserves Amount of underlying reserves.
+    /// @param fyTokenReserves Amount of fyToken reserves.
+    /// @param fyTokenIn Amount of fyToken to be traded.
+    /// @param timeToMaturity Time to maturity in seconds.
+    /// @return normalizedUnderlyingOut Amount of underlying the user would get.
     function underlyingOutForFyTokenIn(
         uint256 normalizedUnderlyingReserves,
         uint256 fyTokenReserves,
@@ -136,12 +136,12 @@ library YieldSpace {
             uint256 newFyTokenReserves = fyTokenReserves + fyTokenIn;
             require(newFyTokenReserves >= fyTokenReserves, "YieldSpace: too much fyToken in");
 
-            // TODO: can this overflow?
+            // We're treating the token amounts as already being in fixed-point representation.
             uint256 sum =
-                normalizedUnderlyingReserves.fromUint().pow(exponent) +
-                    fyTokenReserves.fromUint().pow(exponent) -
-                    newFyTokenReserves.fromUint().pow(exponent);
-            normalizedUnderlyingOut = normalizedUnderlyingReserves - sum.pow(exponent.inv()).toUint();
+                normalizedUnderlyingReserves.pow(exponent) +
+                    fyTokenReserves.pow(exponent) -
+                    newFyTokenReserves.pow(exponent);
+            normalizedUnderlyingOut = normalizedUnderlyingReserves - sum.pow(exponent.inv());
         }
     }
 }

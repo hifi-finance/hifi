@@ -5,29 +5,29 @@ import "../math/YieldSpace.sol";
 
 contract YieldSpaceMock {
     function doFyTokenInForUnderlyingOut(
-        uint256 underlyingReserves,
+        uint256 normalizedUnderlyingReserves,
         uint256 fyTokenReserves,
-        uint256 underlyingAmount,
+        uint256 normalizedUnderlyingOut,
         uint256 timeToMaturity
-    ) external pure returns (uint256 fyTokenAmount) {
-        fyTokenAmount = YieldSpace.fyTokenInForUnderlyingOut(
-            underlyingReserves,
+    ) external pure returns (uint256 fyTokenIn) {
+        fyTokenIn = YieldSpace.fyTokenInForUnderlyingOut(
+            normalizedUnderlyingReserves,
             fyTokenReserves,
-            underlyingAmount,
+            normalizedUnderlyingOut,
             timeToMaturity
         );
     }
 
     function doFyTokenOutForUnderlyingIn(
-        uint256 underlyingReserves,
+        uint256 normalizedUnderlyingReserves,
         uint256 fyTokenReserves,
-        uint256 underlyingAmount,
+        uint256 normalizedUnderlyingIn,
         uint256 timeToMaturity
-    ) external pure returns (uint256 fyTokenAmount) {
-        fyTokenAmount = YieldSpace.fyTokenOutForUnderlyingIn(
-            underlyingReserves,
+    ) external pure returns (uint256 fyTokenOut) {
+        fyTokenOut = YieldSpace.fyTokenOutForUnderlyingIn(
+            normalizedUnderlyingReserves,
             fyTokenReserves,
-            underlyingAmount,
+            normalizedUnderlyingIn,
             timeToMaturity
         );
     }
@@ -37,29 +37,29 @@ contract YieldSpaceMock {
     }
 
     function doUnderlyingInForFyTokenOut(
-        uint256 underlyingReserves,
+        uint256 normalizedUnderlyingReserves,
         uint256 fyTokenReserves,
-        uint256 fyTokenAmount,
+        uint256 fyTokenOut,
         uint256 timeToMaturity
-    ) external pure returns (uint256 underlyingAmount) {
-        underlyingAmount = YieldSpace.underlyingInForFyTokenOut(
-            underlyingReserves,
+    ) external pure returns (uint256 normalizedUnderlyingIn) {
+        normalizedUnderlyingIn = YieldSpace.underlyingInForFyTokenOut(
+            normalizedUnderlyingReserves,
             fyTokenReserves,
-            fyTokenAmount,
+            fyTokenOut,
             timeToMaturity
         );
     }
 
     function doUnderlyingOutForFyTokenIn(
-        uint256 underlyingReserves,
+        uint256 normalizedUnderlyingReserves,
         uint256 fyTokenReserves,
-        uint256 fyTokenAmount,
+        uint256 fyTokenIn,
         uint256 timeToMaturity
-    ) external pure returns (uint256 underlyingAmount) {
-        underlyingAmount = YieldSpace.underlyingOutForFyTokenIn(
-            underlyingReserves,
+    ) external pure returns (uint256 normalizedUnderlyingOut) {
+        normalizedUnderlyingOut = YieldSpace.underlyingOutForFyTokenIn(
+            normalizedUnderlyingReserves,
             fyTokenReserves,
-            fyTokenAmount,
+            fyTokenIn,
             timeToMaturity
         );
     }
