@@ -50,7 +50,10 @@ library YieldSpace {
             uint256 newUnderlyingReserves = underlyingReserves - underlyingAmount;
 
             // TODO: can this overflow?
-            uint256 sum = underlyingReserves.pow(a) + fyTokenReserves.pow(a) - newUnderlyingReserves.pow(a);
+            uint256 sum =
+                underlyingReserves.fromUint().pow(a) +
+                    fyTokenReserves.fromUint().pow(a) -
+                    newUnderlyingReserves.fromUint().pow(a);
             fyTokenAmount = sum.pow(a.inv()).toUint() - fyTokenReserves;
 
             // TODO: wut the heck is this? The fee charged by the AMM?
@@ -78,7 +81,10 @@ library YieldSpace {
             require(newUnderlyingReserves >= underlyingReserves, "YieldSpace: too much underlying in");
 
             // TODO: can this overflow?
-            uint256 sum = underlyingReserves.pow(a) + fyTokenReserves.pow(a) - newUnderlyingReserves.pow(a);
+            uint256 sum =
+                underlyingReserves.fromUint().pow(a) +
+                    fyTokenReserves.fromUint().pow(a) -
+                    newUnderlyingReserves.fromUint().pow(a);
             fyTokenAmount = fyTokenReserves - sum.pow(a.inv()).toUint();
 
             // TODO: wut the heck is this? The fee charged by the AMM?
@@ -118,7 +124,10 @@ library YieldSpace {
             uint256 newFyTokenReserves = fyTokenReserves - fyTokenAmount;
 
             // TODO: can this overflow?
-            uint256 sum = underlyingReserves.pow(a) + fyTokenReserves.pow(a) - newFyTokenReserves.pow(a);
+            uint256 sum =
+                underlyingReserves.fromUint().pow(a) +
+                    fyTokenReserves.fromUint().pow(a) -
+                    newFyTokenReserves.fromUint().pow(a);
             underlyingAmount = sum.pow(a.inv()).toUint() - underlyingReserves;
 
             // TODO: wut the heck is this? The fee charged by the AMM?
@@ -146,7 +155,10 @@ library YieldSpace {
             require(newFyTokenReserves >= fyTokenReserves, "YieldSpace: too much fyToken in");
 
             // TODO: can this overflow?
-            uint256 sum = underlyingReserves.pow(a) + fyTokenReserves.pow(a) - newFyTokenReserves.pow(a);
+            uint256 sum =
+                underlyingReserves.fromUint().pow(a) +
+                    fyTokenReserves.fromUint().pow(a) -
+                    newFyTokenReserves.fromUint().pow(a);
             underlyingAmount = underlyingReserves - sum.pow(a.inv()).toUint();
 
             // TODO: wut the heck is this? The fee charged by the AMM?
