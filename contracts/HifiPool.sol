@@ -124,16 +124,12 @@ contract HifiPool is
 
     /// @inheritdoc HifiPoolInterface
     function getUnderlyingReserves() public view override returns (uint256 underlyingReserves) {
-        uint256 underlyingReservesUnsigned = underlying.balanceOf(address(this));
-        require(underlyingReservesUnsigned <= uint256(type(uint256).max), "HifiPool: Cast overflow");
-        underlyingReserves = uint256(underlyingReservesUnsigned);
+        underlyingReserves = underlying.balanceOf(address(this));
     }
 
     /// @inheritdoc HifiPoolInterface
     function getVirtualFyTokenReserves() public view override returns (uint256 virtualFyTokenReserves) {
-        uint256 virtualFyTokenReservesUnsigned = fyToken.balanceOf(address(this)) + totalSupply;
-        require(virtualFyTokenReservesUnsigned <= uint256(type(uint256).max), "HifiPool: Cast overflow");
-        virtualFyTokenReserves = uint256(virtualFyTokenReservesUnsigned);
+        virtualFyTokenReserves = fyToken.balanceOf(address(this)) + totalSupply;
     }
 
     /// NON-CONSTANT EXTERNAL FUNCTIONS ///
