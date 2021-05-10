@@ -13,6 +13,7 @@
     "target": "es5"
   },
   "exclude": ["node_modules"],
+  "files": ["./hardhat.config.ts"],
   "include": [
     "artifacts/**/*",
     "artifacts/**/*.json",
@@ -22,7 +23,6 @@
     "test/**/*",
     "test/**/*.json",
     "typechain/**/*",
-    "types/**/*",
-    "hardhat.config.ts"
+    "types/**/*"
   ]
 }
