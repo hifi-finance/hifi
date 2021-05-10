@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity >=0.8.0;
 
-import "hardhat/console.sol";
 import "@paulrberg/contracts/math/PRBMathUD60x18.sol";
 
 /// @title YieldSpace
@@ -29,54 +28,54 @@ library YieldSpace {
     uint256 internal constant SCALE = 1e18;
 
     /// @notice Calculates the amount of fyToken a user could sell for a given amount of underlying.
-    /// @param underlyingReserves Amount of underlying reserves, as a basic integer.
+    /// @param normalizedUnderlyingReserves Normalized amount of underlying reserves, as a basic integer.
     /// @param fyTokenReserves Amount of fyToken reserves, as a basic integer.
-    /// @param underlyingAmount Amount of underlying to be traded, as a basic integer.
+    /// @param normalizedUnderlyingOut Amount of underlying to be traded, as a basic integer.
     /// @param timeToMaturity Time to maturity in seconds, as a basic integer.
-    /// @return fyTokenAmount Amount of fyToken a user could sell, as a basic integer.
+    /// @return fyTokenIn Amount of fyToken a user could sell, as a basic integer.
     function fyTokenInForUnderlyingOut(
-        uint256 underlyingReserves,
+        uint256 normalizedUnderlyingReserves,
         uint256 fyTokenReserves,
-        uint256 underlyingAmount,
+        uint256 normalizedUnderlyingOut,
         uint256 timeToMaturity
-    ) internal pure returns (uint256 fyTokenAmount) {
+    ) internal pure returns (uint256 fyTokenIn) {
         uint256 exponent = getYieldExponent(timeToMaturity.fromUint(), G2);
         unchecked {
-            require(underlyingAmount <= underlyingReserves, "YieldSpace: too much underlying out");
-            uint256 newUnderlyingReserves = underlyingReserves - underlyingAmount;
+            require(normalizedUnderlyingOut <= normalizedUnderlyingReserves, "YieldSpace: too much underlying out");
+            uint256 newUnderlyingReserves = normalizedUnderlyingReserves - normalizedUnderlyingOut;
 
             // TODO: can this overflow?
             uint256 sum =
-                underlyingReserves.fromUint().pow(exponent) +
+                normalizedUnderlyingReserves.fromUint().pow(exponent) +
                     fyTokenReserves.fromUint().pow(exponent) -
                     newUnderlyingReserves.fromUint().pow(exponent);
-            fyTokenAmount = sum.pow(exponent.inv()).toUint() - fyTokenReserves;
+            fyTokenIn = sum.pow(exponent.inv()).toUint() - fyTokenReserves;
         }
     }
 
     /// @notice Calculates the amount of fyToken a user would get for a given amount of underlying.
-    /// @param underlyingReserves underlying reserves amount, as a basic integer.
+    /// @param normalizedUnderlyingReserves underlying reserves amount, as a basic integer.
     /// @param fyTokenReserves fyToken reserves amount, as a basic integer.
-    /// @param underlyingAmount Amount of underlying to be traded, as a basic integer.
+    /// @param normalizedUnderlyingIn Amount of underlying to be traded, as a basic integer.
     /// @param timeToMaturity Time to maturity in seconds, as a basic integer.
-    /// @return fyTokenAmount Amount of fyToken the user would get, as a basic integer.
+    /// @return fyTokenOut Amount of fyToken the user would get, as a basic integer.
     function fyTokenOutForUnderlyingIn(
-        uint256 underlyingReserves,
+        uint256 normalizedUnderlyingReserves,
         uint256 fyTokenReserves,
-        uint256 underlyingAmount,
+        uint256 normalizedUnderlyingIn,
         uint256 timeToMaturity
-    ) internal pure returns (uint256 fyTokenAmount) {
+    ) internal pure returns (uint256 fyTokenOut) {
         uint256 exponent = getYieldExponent(timeToMaturity.fromUint(), G1);
         unchecked {
-            uint256 newUnderlyingReserves = underlyingReserves + underlyingAmount;
-            require(newUnderlyingReserves >= underlyingReserves, "YieldSpace: too much underlying in");
+            uint256 newUnderlyingReserves = normalizedUnderlyingReserves + normalizedUnderlyingIn;
+            require(newUnderlyingReserves >= normalizedUnderlyingReserves, "YieldSpace: too much underlying in");
 
             // TODO: can this overflow?
             uint256 sum =
-                underlyingReserves.fromUint().pow(exponent) +
+                normalizedUnderlyingReserves.fromUint().pow(exponent) +
                     fyTokenReserves.fromUint().pow(exponent) -
                     newUnderlyingReserves.fromUint().pow(exponent);
-            fyTokenAmount = fyTokenReserves - sum.pow(exponent.inv()).toUint();
+            fyTokenOut = fyTokenReserves - sum.pow(exponent.inv()).toUint();
         }
     }
 
@@ -95,54 +94,54 @@ library YieldSpace {
     }
 
     /// @notice Calculates the amount of underlying a user could sell for a given amount of fyToken.
-    /// @param underlyingReserves Amount of underlying reserves, as a basic integer.
+    /// @param normalizedUnderlyingReserves Amount of underlying reserves, as a basic integer.
     /// @param fyTokenReserves Amount of fyToken reserves, as a basic integer.
-    /// @param fyTokenAmount Amount of underlying to be traded, as a basic integer.
+    /// @param fyTokenOut Amount of underlying to be traded, as a basic integer.
     /// @param timeToMaturity Time to maturity in seconds, as a basic integer.
-    /// @return underlyingAmount Amount of fyToken a user could sell, as a basic integer.
+    /// @return normalizedUnderlyingIn Amount of fyToken a user could sell, as a basic integer.
     function underlyingInForFyTokenOut(
-        uint256 underlyingReserves,
+        uint256 normalizedUnderlyingReserves,
         uint256 fyTokenReserves,
-        uint256 fyTokenAmount,
+        uint256 fyTokenOut,
         uint256 timeToMaturity
-    ) internal pure returns (uint256 underlyingAmount) {
+    ) internal pure returns (uint256 normalizedUnderlyingIn) {
         uint256 exponent = getYieldExponent(timeToMaturity.fromUint(), G1);
         unchecked {
-            require(fyTokenAmount <= fyTokenReserves, "YieldSpace: too much fyToken out");
-            uint256 newFyTokenReserves = fyTokenReserves - fyTokenAmount;
+            require(fyTokenOut <= fyTokenReserves, "YieldSpace: too much fyToken out");
+            uint256 newFyTokenReserves = fyTokenReserves - fyTokenOut;
 
             // TODO: can this overflow?
             uint256 sum =
-                underlyingReserves.fromUint().pow(exponent) +
+                normalizedUnderlyingReserves.fromUint().pow(exponent) +
                     fyTokenReserves.fromUint().pow(exponent) -
                     newFyTokenReserves.fromUint().pow(exponent);
-            underlyingAmount = sum.pow(exponent.inv()).toUint() - underlyingReserves;
+            normalizedUnderlyingIn = sum.pow(exponent.inv()).toUint() - normalizedUnderlyingReserves;
         }
     }
 
     /// @notice Calculates the amount of underyling a user would get for a given amount of fyToken.
-    /// @param underlyingReserves Amount of underlying reserves, as a basic integer.
+    /// @param normalizedUnderlyingReserves Amount of underlying reserves, as a basic integer.
     /// @param fyTokenReserves Amount of fyToken reserves, as a basic integer.
-    /// @param fyTokenAmount Amount of fyToken to be traded, as a basic integer.
+    /// @param fyTokenIn Amount of fyToken to be traded, as a basic integer.
     /// @param timeToMaturity Time to maturity in seconds, as a basic integer.
-    /// @return underlyingAmount Amount of underlying the user would get, as a basic integer.
+    /// @return normalizedUnderlyingOut Amount of underlying the user would get, as a basic integer.
     function underlyingOutForFyTokenIn(
-        uint256 underlyingReserves,
+        uint256 normalizedUnderlyingReserves,
         uint256 fyTokenReserves,
-        uint256 fyTokenAmount,
+        uint256 fyTokenIn,
         uint256 timeToMaturity
-    ) internal pure returns (uint256 underlyingAmount) {
+    ) internal pure returns (uint256 normalizedUnderlyingOut) {
         uint256 exponent = getYieldExponent(timeToMaturity.fromUint(), G2);
         unchecked {
-            uint256 newFyTokenReserves = fyTokenReserves + fyTokenAmount;
+            uint256 newFyTokenReserves = fyTokenReserves + fyTokenIn;
             require(newFyTokenReserves >= fyTokenReserves, "YieldSpace: too much fyToken in");
 
             // TODO: can this overflow?
             uint256 sum =
-                underlyingReserves.fromUint().pow(exponent) +
+                normalizedUnderlyingReserves.fromUint().pow(exponent) +
                     fyTokenReserves.fromUint().pow(exponent) -
                     newFyTokenReserves.fromUint().pow(exponent);
-            underlyingAmount = underlyingReserves - sum.pow(exponent.inv()).toUint();
+            normalizedUnderlyingOut = normalizedUnderlyingReserves - sum.pow(exponent.inv()).toUint();
         }
     }
 }

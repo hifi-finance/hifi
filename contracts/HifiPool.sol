@@ -35,9 +35,18 @@ contract HifiPool is
         Erc20Interface underlying_,
         FyTokenLike fyToken_
     ) Erc20Permit(name_, symbol_, 18) {
+        // Calculate the precision scalar and save the underlying contract address in storage.
+        uint256 underlyingDecimals = underlying_.decimals();
+        require(underlyingDecimals > 0, "HifiPool: zero decimals underlying");
+        require(underlyingDecimals <= 18, "HifiPool: >18 decimals underlying");
+        underlyingPrecisionScalar = 10**(18 - underlyingDecimals);
         underlying = underlying_;
+
+        // Save the fyToken contract address in storage and sanity check it.
         fyToken = fyToken_;
         fyToken.isFyToken();
+
+        // Save the fyToken maturity time in storage.
         maturity = fyToken_.expirationTime();
     }
 
@@ -51,19 +60,20 @@ contract HifiPool is
         isBeforeMaturity
         returns (uint256 underlyingIn)
     {
-        uint256 underlyingReserves = getUnderlyingReserves();
+        uint256 normalizedUnderlyingReserves = getNormalizedUnderlyingReserves();
         uint256 virtualFyTokenReserves = getVirtualFyTokenReserves();
-
-        underlyingIn = YieldSpace.underlyingInForFyTokenOut(
-            underlyingReserves,
-            virtualFyTokenReserves,
-            fyTokenOut,
-            uint256(maturity - block.timestamp)
-        );
+        uint256 normalizedUnderlyingIn =
+            YieldSpace.underlyingInForFyTokenOut(
+                normalizedUnderlyingReserves,
+                virtualFyTokenReserves,
+                fyTokenOut,
+                uint256(maturity - block.timestamp)
+            );
         require(
-            virtualFyTokenReserves - fyTokenOut >= underlyingReserves + underlyingIn,
+            virtualFyTokenReserves - fyTokenOut >= normalizedUnderlyingReserves + normalizedUnderlyingIn,
             "HifiPool: too low fyToken reserves"
         );
+        underlyingIn = denormalize(normalizedUnderlyingIn);
     }
 
     /// @inheritdoc HifiPoolInterface
@@ -75,9 +85,9 @@ contract HifiPool is
         returns (uint256 fyTokenIn)
     {
         fyTokenIn = YieldSpace.fyTokenInForUnderlyingOut(
-            getUnderlyingReserves(),
+            getNormalizedUnderlyingReserves(),
             getVirtualFyTokenReserves(),
-            underlyingOut,
+            normalize(underlyingOut),
             uint256(maturity - block.timestamp)
         );
     }
@@ -90,13 +100,14 @@ contract HifiPool is
         isBeforeMaturity
         returns (uint256 underlyingOut)
     {
-        return
+        uint256 normalizedUnderlyingOut =
             YieldSpace.underlyingOutForFyTokenIn(
-                getUnderlyingReserves(),
+                getNormalizedUnderlyingReserves(),
                 getVirtualFyTokenReserves(),
                 fyTokenIn,
                 uint256(maturity - block.timestamp)
             );
+        underlyingOut = denormalize(normalizedUnderlyingOut);
     }
 
     /// @inheritdoc HifiPoolInterface
@@ -107,24 +118,24 @@ contract HifiPool is
         isBeforeMaturity
         returns (uint256 fyTokenOut)
     {
-        uint256 underlyingReserves = getUnderlyingReserves();
+        uint256 normalizedUnderlyingIn = normalize(underlyingIn);
+        uint256 normalizedUnderlyingReserves = getNormalizedUnderlyingReserves();
         uint256 virtualFyTokenReserves = getVirtualFyTokenReserves();
-
         fyTokenOut = YieldSpace.fyTokenOutForUnderlyingIn(
-            underlyingReserves,
+            normalizedUnderlyingReserves,
             virtualFyTokenReserves,
-            underlyingIn,
+            normalizedUnderlyingIn,
             uint256(maturity - block.timestamp)
         );
         require(
-            virtualFyTokenReserves - fyTokenOut >= underlyingReserves + underlyingIn,
+            virtualFyTokenReserves - fyTokenOut >= normalizedUnderlyingReserves + normalizedUnderlyingIn,
             "HifiPool: too low fyToken reserves"
         );
     }
 
     /// @inheritdoc HifiPoolInterface
-    function getUnderlyingReserves() public view override returns (uint256 underlyingReserves) {
-        underlyingReserves = underlying.balanceOf(address(this));
+    function getNormalizedUnderlyingReserves() public view override returns (uint256 normalizedUnderlyingReserves) {
+        normalizedUnderlyingReserves = normalize(underlying.balanceOf(address(this)));
     }
 
     /// @inheritdoc HifiPoolInterface
@@ -144,13 +155,14 @@ contract HifiPool is
         require(poolTokensBurned > 0, "HifiPool: cannot burn zero tokens");
 
         uint256 supply = totalSupply;
-        uint256 underlyingReserves = underlying.balanceOf(address(this));
+        uint256 normalizedUnderlyingReserves = getNormalizedUnderlyingReserves();
 
         // Use the actual reserves rather than the virtual reserves.
         {
             // Avoiding stack too deep.
             uint256 fyTokenReserves = fyToken.balanceOf(address(this));
-            underlyingReturned = (poolTokensBurned * underlyingReserves) / supply;
+            uint256 normalizedUnderlyingReturned = (poolTokensBurned * normalizedUnderlyingReserves) / supply;
+            underlyingReturned = denormalize(normalizedUnderlyingReturned);
             fyTokenReturned = (poolTokensBurned * fyTokenReserves) / supply;
         }
 
@@ -187,8 +199,8 @@ contract HifiPool is
         fyTokenIn = getQuoteForBuyingUnderlying(underlyingOut);
 
         // Interactions
-        fyToken.transferFrom(msg.sender, address(this), uint256(fyTokenIn));
         underlying.safeTransfer(to, uint256(underlyingOut));
+        fyToken.transferFrom(msg.sender, address(this), uint256(fyTokenIn));
 
         // TODO: implement safe cast
         emit Trade(maturity, msg.sender, to, int256(underlyingOut), -int256(fyTokenIn));
@@ -199,16 +211,25 @@ contract HifiPool is
         // Checks: avoid the zero edge case.
         require(underlyingOffered > 0, "HifiPool: cannot offer zero underlying");
 
+        // Our native precision is 18 decimals so the underlying amount needs to be normalized.
+        uint256 normalizedUnderlyingOffered = normalize(underlyingOffered);
+
+        // When there are no LP tokens in existence, only underlying needs to be provided.
         uint256 supply = totalSupply;
         if (supply == 0) {
-            initialize(underlyingOffered);
-            return underlyingOffered;
+            // Effects
+            mintInternal(msg.sender, normalizedUnderlyingOffered);
+
+            // Interactions
+            underlying.safeTransferFrom(msg.sender, address(this), normalizedUnderlyingOffered);
+
+            emit AddLiquidity(maturity, msg.sender, underlyingOffered, 0, underlyingOffered);
+            return normalizedUnderlyingOffered;
         }
 
-        uint256 underlyingReserves = underlying.balanceOf(address(this));
-        // Use the actual reserves rather than the virtual reserves.
+        // We need to use the actual reserves rather than the virtual reserves here.
         uint256 fyTokenReserves = fyToken.balanceOf(address(this));
-        poolTokensMinted = (supply * underlyingOffered) / underlyingReserves;
+        poolTokensMinted = (supply * normalizedUnderlyingOffered) / getNormalizedUnderlyingReserves();
         uint256 fyTokenRequired = (fyTokenReserves * poolTokensMinted) / supply;
 
         // Effects
@@ -234,8 +255,8 @@ contract HifiPool is
         underlyingOut = getQuoteForSellingFyToken(fyTokenIn);
 
         // Interactions
-        fyToken.transferFrom(msg.sender, address(this), uint256(fyTokenIn));
         underlying.safeTransfer(to, uint256(underlyingOut));
+        fyToken.transferFrom(msg.sender, address(this), uint256(fyTokenIn));
 
         // TODO: check if `fyTokenIn` is not min uint256
         emit Trade(maturity, msg.sender, to, int256(underlyingOut), -int256(fyTokenIn));
@@ -256,27 +277,25 @@ contract HifiPool is
         emit Trade(maturity, msg.sender, to, -int256(underlyingIn), int256(fyTokenOut));
     }
 
-    /// NON-CONSTANT INTERNAL FUNCTIONS ///
+    /// CONSTANT INTERNAL FUNCTIONS ///
 
-    /// @notice Mints initial liquidity tokens. There is no need to transfer fyTokens initially because the
-    /// first fyToken deposit is virtual.
-    ///
-    /// @dev Emits an {AddLiquidity} event.
-    ///
-    /// Requirements:
-    /// - The caller must have allowed this contract to spend `underlyingAmount` underlying tokens.
-    ///
-    /// @param underlyingAmount The initial underlying liquidity to provide.
-    function initialize(uint256 underlyingAmount) internal isBeforeMaturity {
-        // Checks
-        require(totalSupply == 0, "HifiPool: initialized");
+    /// @notice Downscales the normalized underlying amount to have its actual decimals of precision.
+    /// @param normalizedUnderlyingAmount The underlying amount with 18 decimals of precision.
+    /// @param underlyingAmount The underlying amount with its actual decimals of precision.
+    function denormalize(uint256 normalizedUnderlyingAmount) internal view returns (uint256 underlyingAmount) {
+        unchecked {
+            underlyingAmount = underlyingPrecisionScalar != 1
+                ? normalizedUnderlyingAmount / underlyingPrecisionScalar
+                : normalizedUnderlyingAmount;
+        }
+    }
 
-        // Effects
-        mintInternal(msg.sender, underlyingAmount);
-
-        // Interactions
-        underlying.safeTransferFrom(msg.sender, address(this), underlyingAmount);
-
-        emit AddLiquidity(maturity, msg.sender, underlyingAmount, 0, underlyingAmount);
+    /// @notice Upscales the underlying amount to normalized form, i.e. 18 decimals of precision.
+    /// @param underlyingAmount The underlying amount with its actual decimals of precision.
+    /// @param normalizedUnderlyingAmount The underlying amount with 18 decimals of precision.
+    function normalize(uint256 underlyingAmount) internal view returns (uint256 normalizedUnderlyingAmount) {
+        normalizedUnderlyingAmount = underlyingPrecisionScalar != 1
+            ? underlyingAmount * underlyingPrecisionScalar
+            : underlyingAmount;
     }
 }

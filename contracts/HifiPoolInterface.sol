@@ -54,8 +54,8 @@ abstract contract HifiPoolInterface is HifiPoolStorage {
     /// @return fyTokenIn Hypothetical amount of fyToken required.
     function getQuoteForBuyingUnderlying(uint256 underlyingOut) public view virtual returns (uint256 fyTokenIn);
 
-    /// @notice Retrieves the Erc20 underlying balance.
-    function getUnderlyingReserves() public view virtual returns (uint256 underlyingReserves);
+    /// @notice Retrieves the normalized underlying reserves, i.e. the Erc20 balance scaled to have 18 decimals.
+    function getNormalizedUnderlyingReserves() public view virtual returns (uint256 normalizedUnderlyingReserves);
 
     /// @notice Retrieves the "virtual" fyToken reserves, as explained in the whitepaper.
     /// @dev Adds the Erc20 fyToken balance to the total supply of pool tokens.

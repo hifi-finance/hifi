@@ -3,7 +3,7 @@ import { expect } from "chai";
 import forEach from "mocha-each";
 
 import { ZERO } from "../../../../helpers/constants";
-import { fp } from "../../../../helpers/numbers";
+import { bn, fp, sfp } from "../../../../helpers/numbers";
 import { secondsInYears } from "../../../../helpers/time";
 
 export default function shouldBehaveLikeFyTokenInForUnderlyingOut(): void {
@@ -34,7 +34,16 @@ export default function shouldBehaveLikeFyTokenInForUnderlyingOut(): void {
   });
 
   context("when not too much underlying out", function () {
-    const testSets = [[ZERO, ZERO, ZERO, ZERO, ZERO]];
+    const testSets = [
+      [ZERO, ZERO, ZERO, ZERO, ZERO],
+      [
+        fp("18.364758544493064720"),
+        fp("1.311768467463790320"),
+        sfp("2.0015998343868e-5"),
+        bn("1"),
+        sfp("2.0015997903004e-5"),
+      ],
+    ];
 
     forEach(testSets).it(
       "takes (%e, %e, %e, %e) and returns %e",
@@ -45,13 +54,13 @@ export default function shouldBehaveLikeFyTokenInForUnderlyingOut(): void {
         timeToMaturity: BigNumber,
         expected: BigNumber,
       ) {
-        const result: BigNumber = await this.contracts.yieldSpace.doFyTokenInForUnderlyingOut(
+        const fyTokenAmount: BigNumber = await this.contracts.yieldSpace.doFyTokenInForUnderlyingOut(
           underlyingReserves,
           fyTokenReserves,
           underlyingAmount,
           timeToMaturity,
         );
-        expect(expected).to.equal(result);
+        expect(expected).to.equal(fyTokenAmount);
       },
     );
   });

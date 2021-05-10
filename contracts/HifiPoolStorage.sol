@@ -15,4 +15,7 @@ abstract contract HifiPoolStorage {
 
     /// @notice The underlying token traded in this pool.
     Erc20Interface public underlying;
+
+    /// @notice The ratio between our native precision (1e18) and the underlying precision.
+    uint256 public underlyingPrecisionScalar;
 }
