@@ -23,14 +23,21 @@ contract HifiPool is
         _;
     }
 
+    /// @notice Instantiates the HifiPool.
+    /// @dev The HifiPool LP token always has 18 decimals.
+    /// @param name_ Erc20 name of this token.
+    /// @param symbol_ Erc20 symbol of this token.
+    /// @param underlying_ The contract address of the underlying.
+    /// @param fyToken_ The contract address of the fyToken.
     constructor(
-        Erc20Interface underlying_,
-        FyTokenLike fyToken_,
         string memory name_,
-        string memory symbol_
+        string memory symbol_,
+        Erc20Interface underlying_,
+        FyTokenLike fyToken_
     ) Erc20Permit(name_, symbol_, 18) {
         underlying = underlying_;
         fyToken = fyToken_;
+        fyToken.isFyToken();
         maturity = fyToken_.expirationTime();
     }
 

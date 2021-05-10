@@ -8,6 +8,8 @@ interface FyTokenLike {
 
     function expirationTime() external view returns (uint256);
 
+    function isFyToken() external view returns (bool);
+
     function transfer(address recipient, uint256 amount) external returns (bool);
 
     function transferFrom(

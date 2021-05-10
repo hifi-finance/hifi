@@ -1,9 +1,14 @@
-import shouldBehaveLikeGetA from "./pure/getA";
+import shouldBehaveLikeFyTokenInForUnderlyingOut from "./pure/fyTokenInForUnderlyingOut";
+import shouldBehaveLikeGetYieldExponent from "./pure/getYieldExponent";
 
 export function shouldBehaveLikeYieldSpace(): void {
   describe("YieldSpaceMock", function () {
-    describe("getA", function () {
-      shouldBehaveLikeGetA();
+    describe("fyTokenInForUnderlyingOut", function () {
+      shouldBehaveLikeFyTokenInForUnderlyingOut();
+    });
+
+    describe("getYieldExponent", function () {
+      shouldBehaveLikeGetYieldExponent();
     });
   });
 }

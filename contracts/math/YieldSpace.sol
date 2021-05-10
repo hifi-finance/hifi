@@ -11,7 +11,7 @@ library YieldSpace {
 
     /// @notice The greatest time to maturity for which the g*t < 1 invariant holds, as an unsigned 60.18-decimal
     /// fixed-point number.
-    uint256 internal constant CUTOFF_TIME_TO_MATURITY = 119836799 * SCALE;
+    uint256 internal constant CUTOFF_TTM = 119836799 * SCALE;
 
     /// @notice 1 divided by the number of seconds in four years, as an unsigned 60.18-decimal fixed-point number.
     /// Computed with 1e18 / 126144000.
@@ -24,10 +24,6 @@ library YieldSpace {
     /// @notice Fee coefficient used when selling fyToken to the pool, as an unsigned 60.18-decimal fixed-point number.
     /// Computed with (1000 * 1e18) / 950.
     uint256 internal constant G2 = 1052631578947368421;
-
-    /// @notice Number of seconds in four years, assuming calendar common years, as an unsigned 60.18-decimal
-    /// fixed-point number.
-    uint256 internal constant SECONDS_FOUR_YEARS = 126144000 * SCALE;
 
     /// @notice Number of decimals used in the SD59x18 format.
     uint256 internal constant SCALE = 1e18;
@@ -44,22 +40,17 @@ library YieldSpace {
         uint256 underlyingAmount,
         uint256 timeToMaturity
     ) internal pure returns (uint256 fyTokenAmount) {
-        uint256 a = getA(timeToMaturity.fromUint(), G2);
+        uint256 exponent = getYieldExponent(timeToMaturity.fromUint(), G2);
         unchecked {
             require(underlyingAmount <= underlyingReserves, "YieldSpace: too much underlying out");
             uint256 newUnderlyingReserves = underlyingReserves - underlyingAmount;
 
             // TODO: can this overflow?
             uint256 sum =
-                underlyingReserves.fromUint().pow(a) +
-                    fyTokenReserves.fromUint().pow(a) -
-                    newUnderlyingReserves.fromUint().pow(a);
-            fyTokenAmount = sum.pow(a.inv()).toUint() - fyTokenReserves;
-
-            // TODO: wut the heck is this? The fee charged by the AMM?
-            fyTokenAmount = fyTokenAmount < PRBMathUD60x18.MAX_UD60x18 - 1e12
-                ? fyTokenAmount + 1e12
-                : PRBMathUD60x18.MAX_UD60x18;
+                underlyingReserves.fromUint().pow(exponent) +
+                    fyTokenReserves.fromUint().pow(exponent) -
+                    newUnderlyingReserves.fromUint().pow(exponent);
+            fyTokenAmount = sum.pow(exponent.inv()).toUint() - fyTokenReserves;
         }
     }
 
@@ -75,34 +66,31 @@ library YieldSpace {
         uint256 underlyingAmount,
         uint256 timeToMaturity
     ) internal pure returns (uint256 fyTokenAmount) {
-        uint256 a = getA(timeToMaturity.fromUint(), G1);
+        uint256 exponent = getYieldExponent(timeToMaturity.fromUint(), G1);
         unchecked {
             uint256 newUnderlyingReserves = underlyingReserves + underlyingAmount;
             require(newUnderlyingReserves >= underlyingReserves, "YieldSpace: too much underlying in");
 
             // TODO: can this overflow?
             uint256 sum =
-                underlyingReserves.fromUint().pow(a) +
-                    fyTokenReserves.fromUint().pow(a) -
-                    newUnderlyingReserves.fromUint().pow(a);
-            fyTokenAmount = fyTokenReserves - sum.pow(a.inv()).toUint();
-
-            // TODO: wut the heck is this? The fee charged by the AMM?
-            fyTokenAmount = fyTokenAmount > 1e12 ? fyTokenAmount - 1e12 : uint256(0);
+                underlyingReserves.fromUint().pow(exponent) +
+                    fyTokenReserves.fromUint().pow(exponent) -
+                    newUnderlyingReserves.fromUint().pow(exponent);
+            fyTokenAmount = fyTokenReserves - sum.pow(exponent.inv()).toUint();
         }
     }
 
-    /// @notice Computes the "a" exponent 1 - g*t, as per the whitepaper.
+    /// @notice Computes the yield exponent 1 - g*t, as per the whitepaper.
     /// @param timeToMaturity Time to maturity in seconds, as an unsigned 60.18-decimal fixed-point number.
     /// @param g The fee coefficient as an unsigned 60.18-decimal fixed-point number.
-    /// @return a The exponent, as per the whitepaper, as an unsigned 60.18-decimal fixed-point number.
-    function getA(uint256 timeToMaturity, uint256 g) internal pure returns (uint256 a) {
-        require(timeToMaturity <= CUTOFF_TIME_TO_MATURITY, "YieldSpace: too far from maturity");
+    /// @return exponent The yield exponent, as per the whitepaper, as an unsigned 60.18-decimal fixed-point number.
+    function getYieldExponent(uint256 timeToMaturity, uint256 g) internal pure returns (uint256 exponent) {
+        require(timeToMaturity <= CUTOFF_TTM, "YieldSpace: too far from maturity");
         unchecked {
             uint256 t = K.mul(timeToMaturity);
 
             // This cannot get lower than zero due to the require statement above.
-            a = SCALE - g.mul(t);
+            exponent = SCALE - g.mul(t);
         }
     }
 
@@ -118,22 +106,17 @@ library YieldSpace {
         uint256 fyTokenAmount,
         uint256 timeToMaturity
     ) internal pure returns (uint256 underlyingAmount) {
-        uint256 a = getA(timeToMaturity.fromUint(), G1);
+        uint256 exponent = getYieldExponent(timeToMaturity.fromUint(), G1);
         unchecked {
             require(fyTokenAmount <= fyTokenReserves, "YieldSpace: too much fyToken out");
             uint256 newFyTokenReserves = fyTokenReserves - fyTokenAmount;
 
             // TODO: can this overflow?
             uint256 sum =
-                underlyingReserves.fromUint().pow(a) +
-                    fyTokenReserves.fromUint().pow(a) -
-                    newFyTokenReserves.fromUint().pow(a);
-            underlyingAmount = sum.pow(a.inv()).toUint() - underlyingReserves;
-
-            // TODO: wut the heck is this? The fee charged by the AMM?
-            underlyingAmount = underlyingAmount < PRBMathUD60x18.MAX_UD60x18 - 1e12
-                ? underlyingAmount + 1e12
-                : PRBMathUD60x18.MAX_UD60x18;
+                underlyingReserves.fromUint().pow(exponent) +
+                    fyTokenReserves.fromUint().pow(exponent) -
+                    newFyTokenReserves.fromUint().pow(exponent);
+            underlyingAmount = sum.pow(exponent.inv()).toUint() - underlyingReserves;
         }
     }
 
@@ -149,20 +132,17 @@ library YieldSpace {
         uint256 fyTokenAmount,
         uint256 timeToMaturity
     ) internal pure returns (uint256 underlyingAmount) {
-        uint256 a = getA(timeToMaturity.fromUint(), G2);
+        uint256 exponent = getYieldExponent(timeToMaturity.fromUint(), G2);
         unchecked {
             uint256 newFyTokenReserves = fyTokenReserves + fyTokenAmount;
             require(newFyTokenReserves >= fyTokenReserves, "YieldSpace: too much fyToken in");
 
             // TODO: can this overflow?
             uint256 sum =
-                underlyingReserves.fromUint().pow(a) +
-                    fyTokenReserves.fromUint().pow(a) -
-                    newFyTokenReserves.fromUint().pow(a);
-            underlyingAmount = underlyingReserves - sum.pow(a.inv()).toUint();
-
-            // TODO: wut the heck is this? The fee charged by the AMM?
-            underlyingAmount = underlyingAmount > 1e12 ? underlyingAmount - 1e12 : uint256(0);
+                underlyingReserves.fromUint().pow(exponent) +
+                    fyTokenReserves.fromUint().pow(exponent) -
+                    newFyTokenReserves.fromUint().pow(exponent);
+            underlyingAmount = underlyingReserves - sum.pow(exponent.inv()).toUint();
         }
     }
 }

@@ -32,8 +32,8 @@ contract YieldSpaceMock {
         );
     }
 
-    function doGetA(uint256 timeToMaturity, uint256 g) external pure returns (uint256 a) {
-        a = YieldSpace.getA(timeToMaturity, g);
+    function doGetYieldExponent(uint256 timeToMaturity, uint256 g) external pure returns (uint256 a) {
+        a = YieldSpace.getYieldExponent(timeToMaturity, g);
     }
 
     function doUnderlyingInForFyTokenOut(
