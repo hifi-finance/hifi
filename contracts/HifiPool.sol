@@ -67,7 +67,7 @@ contract HifiPool is
                 normalizedUnderlyingReserves,
                 virtualFyTokenReserves,
                 fyTokenOut,
-                uint256(maturity - block.timestamp)
+                maturity - block.timestamp
             );
         require(
             virtualFyTokenReserves - fyTokenOut >= normalizedUnderlyingReserves + normalizedUnderlyingIn,
@@ -88,7 +88,7 @@ contract HifiPool is
             getNormalizedUnderlyingReserves(),
             getVirtualFyTokenReserves(),
             normalize(underlyingOut),
-            uint256(maturity - block.timestamp)
+            maturity - block.timestamp
         );
     }
 
@@ -105,7 +105,7 @@ contract HifiPool is
                 getNormalizedUnderlyingReserves(),
                 getVirtualFyTokenReserves(),
                 fyTokenIn,
-                uint256(maturity - block.timestamp)
+                maturity - block.timestamp
             );
         underlyingOut = denormalize(normalizedUnderlyingOut);
     }
@@ -125,7 +125,7 @@ contract HifiPool is
             normalizedUnderlyingReserves,
             virtualFyTokenReserves,
             normalizedUnderlyingIn,
-            uint256(maturity - block.timestamp)
+            maturity - block.timestamp
         );
         require(
             virtualFyTokenReserves - fyTokenOut >= normalizedUnderlyingReserves + normalizedUnderlyingIn,
@@ -188,7 +188,7 @@ contract HifiPool is
         fyToken.transfer(to, uint256(fyTokenOut));
 
         // TODO: implement safe cast
-        emit Trade(maturity, msg.sender, to, -int256(underlyingIn), int256(fyTokenOut));
+        emit Trade(maturity, msg.sender, to, -toInt256(underlyingIn), toInt256(fyTokenOut));
     }
 
     /// @inheritdoc HifiPoolInterface
@@ -203,7 +203,7 @@ contract HifiPool is
         fyToken.transferFrom(msg.sender, address(this), uint256(fyTokenIn));
 
         // TODO: implement safe cast
-        emit Trade(maturity, msg.sender, to, int256(underlyingOut), -int256(fyTokenIn));
+        emit Trade(maturity, msg.sender, to, toInt256(underlyingOut), -toInt256(fyTokenIn));
     }
 
     /// @inheritdoc HifiPoolInterface
@@ -259,7 +259,7 @@ contract HifiPool is
         fyToken.transferFrom(msg.sender, address(this), uint256(fyTokenIn));
 
         // TODO: check if `fyTokenIn` is not min uint256
-        emit Trade(maturity, msg.sender, to, int256(underlyingOut), -int256(fyTokenIn));
+        emit Trade(maturity, msg.sender, to, toInt256(underlyingOut), -toInt256(fyTokenIn));
     }
 
     /// @inheritdoc HifiPoolInterface
@@ -274,7 +274,7 @@ contract HifiPool is
         fyToken.transfer(to, uint256(fyTokenOut));
 
         // TODO: check if `underlyingIn` is not min uint256
-        emit Trade(maturity, msg.sender, to, -int256(underlyingIn), int256(fyTokenOut));
+        emit Trade(maturity, msg.sender, to, -toInt256(underlyingIn), toInt256(fyTokenOut));
     }
 
     /// CONSTANT INTERNAL FUNCTIONS ///
@@ -297,5 +297,11 @@ contract HifiPool is
         normalizedUnderlyingAmount = underlyingPrecisionScalar != 1
             ? underlyingAmount * underlyingPrecisionScalar
             : underlyingAmount;
+    }
+
+    /// @notice Safe cast from uint256 to int256
+    function toInt256(uint256 x) internal pure returns (int256 result) {
+        require(x <= uint256(type(int256).max), "HifiPool: Cast overflow");
+        result = int256(x);
     }
 }
