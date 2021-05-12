@@ -1,13 +1,10 @@
 /// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
-import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
+import "@paulrberg/contracts/interfaces/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 
-import "./BatterseaTargetV1Interface.sol";
-import "../BalanceSheetInterface.sol";
-import "../FyTokenInterface.sol";
-import "../RedemptionPoolInterface.sol";
+import "./IBatterseaTargetV1.sol";
 import "../external/balancer/ExchangeProxyInterface.sol";
 import "../external/balancer/TokenInterface.sol";
 import "../external/weth/WethInterface.sol";
@@ -16,14 +13,22 @@ import "../external/weth/WethInterface.sol";
 /// @author Hifi
 /// @notice Target contract with scripts for the Battersea release of the protocol.
 /// @dev Meant to be used with a DSProxy contract via delegatecall.
-contract BatterseaTargetV1 is BatterseaTargetV1Interface {
-    using SafeErc20 for Erc20Interface;
-    using SafeErc20 for FyTokenInterface;
+contract BatterseaTargetV1 is IBatterseaTargetV1 {
+    using SafeErc20 for IErc20;
+    using SafeErc20 for IFyToken;
+
+    /// @notice The contract that enables trading on the Balancer Exchange.
+    /// @dev This is the mainnet version of the Exchange Proxy. Change it with the testnet version when needed.
+    address public override constant EXCHANGE_PROXY_ADDRESS = 0x3E66B66Fd1d0b02fDa6C811Da9E0547970DB2f21;
+
+    /// @notice The contract that enables wrapping ETH into ERC-20 form.
+    /// @dev This is the mainnet version of WETH. Change it with the testnet version when needed.
+    address public override constant WETH_ADDRESS = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
 
     /// @notice Borrows fyTokens.
     /// @param fyToken The address of the FyToken contract.
     /// @param borrowAmount The amount of fyTokens to borrow.
-    function borrow(FyTokenInterface fyToken, uint256 borrowAmount) public {
+    function borrow(IFyToken fyToken, uint256 borrowAmount) public {
         fyToken.borrow(borrowAmount);
         fyToken.safeTransfer(msg.sender, borrowAmount);
     }
@@ -38,11 +43,11 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
     /// @param borrowAmount The amount of fyTokens to borrow.
     /// @param underlyingAmount The amount of underlying to sell fyTokens for.
     function borrowAndSellFyTokens(
-        FyTokenInterface fyToken,
+        IFyToken fyToken,
         uint256 borrowAmount,
         uint256 underlyingAmount
-    ) public payable {
-        Erc20Interface underlying = fyToken.underlying();
+    ) public override payable {
+        IErc20 underlying = fyToken.underlying();
 
         // Borrow the fyTokens.
         fyToken.borrow(borrowAmount);
@@ -94,10 +99,10 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
     /// @param fyToken The address of the FyToken contract.
     /// @param collateralAmount The amount of collateral to deposit.
     function depositCollateral(
-        BalanceSheetInterface balanceSheet,
-        FyTokenInterface fyToken,
+        IBalanceSheet balanceSheet,
+        IFyToken fyToken,
         uint256 collateralAmount
-    ) public {
+    ) public override {
         // Transfer the collateral to the DSProxy.
         fyToken.collateral().safeTransferFrom(msg.sender, address(this), collateralAmount);
 
@@ -114,10 +119,10 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
     /// @param fyToken The address of the FyToken contract.
     /// @param collateralAmount The amount of collateral to deposit and lock.
     function depositAndLockCollateral(
-        BalanceSheetInterface balanceSheet,
-        FyTokenInterface fyToken,
+        IBalanceSheet balanceSheet,
+        IFyToken fyToken,
         uint256 collateralAmount
-    ) public {
+    ) public override {
         depositCollateral(balanceSheet, fyToken, collateralAmount);
         balanceSheet.lockCollateral(fyToken, collateralAmount);
     }
@@ -135,11 +140,11 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
     /// @param collateralAmount The amount of collateral to deposit and lock.
     /// @param borrowAmount The amount of fyTokens to borrow.
     function depositAndLockCollateralAndBorrow(
-        BalanceSheetInterface balanceSheet,
-        FyTokenInterface fyToken,
+        IBalanceSheet balanceSheet,
+        IFyToken fyToken,
         uint256 collateralAmount,
         uint256 borrowAmount
-    ) public payable {
+    ) public override payable {
         depositAndLockCollateral(balanceSheet, fyToken, collateralAmount);
         borrow(fyToken, borrowAmount);
     }
@@ -158,12 +163,12 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
     /// @param borrowAmount The amount of fyTokens to borrow.
     /// @param underlyingAmount The amount of underlying to sell fyTokens for.
     function depositAndLockCollateralAndBorrowAndSellFyTokens(
-        BalanceSheetInterface balanceSheet,
-        FyTokenInterface fyToken,
+        IBalanceSheet balanceSheet,
+        IFyToken fyToken,
         uint256 collateralAmount,
         uint256 borrowAmount,
         uint256 underlyingAmount
-    ) external payable {
+    ) external override payable {
         depositAndLockCollateral(balanceSheet, fyToken, collateralAmount);
         borrowAndSellFyTokens(fyToken, borrowAmount, underlyingAmount);
     }
@@ -173,10 +178,10 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
     /// @param fyToken The address of the FyToken contract.
     /// @param collateralAmount The amount of collateral to free.
     function freeCollateral(
-        BalanceSheetInterface balanceSheet,
-        FyTokenInterface fyToken,
+        IBalanceSheet balanceSheet,
+        IFyToken fyToken,
         uint256 collateralAmount
-    ) external {
+    ) external override {
         balanceSheet.freeCollateral(fyToken, collateralAmount);
     }
 
@@ -186,10 +191,10 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
     /// @param fyToken The address of the FyToken contract.
     /// @param collateralAmount The amount of collateral to free and withdraw.
     function freeAndWithdrawCollateral(
-        BalanceSheetInterface balanceSheet,
-        FyTokenInterface fyToken,
+        IBalanceSheet balanceSheet,
+        IFyToken fyToken,
         uint256 collateralAmount
-    ) external {
+    ) external override {
         balanceSheet.freeCollateral(fyToken, collateralAmount);
         withdrawCollateral(balanceSheet, fyToken, collateralAmount);
     }
@@ -199,10 +204,10 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
     /// @param fyToken The address of the FyToken contract.
     /// @param collateralAmount The amount of collateral to lock.
     function lockCollateral(
-        BalanceSheetInterface balanceSheet,
-        FyTokenInterface fyToken,
+        IBalanceSheet balanceSheet,
+        IFyToken fyToken,
         uint256 collateralAmount
-    ) external {
+    ) external override {
         balanceSheet.lockCollateral(fyToken, collateralAmount);
     }
 
@@ -214,12 +219,12 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
     /// @param borrowAmount The amount of fyTokens to borrow.
     /// @param underlyingAmount The amount of underlying to sell fyTokens for.
     function lockCollateralAndBorrow(
-        BalanceSheetInterface balanceSheet,
-        FyTokenInterface fyToken,
+        IBalanceSheet balanceSheet,
+        IFyToken fyToken,
         uint256 collateralAmount,
         uint256 borrowAmount,
         uint256 underlyingAmount
-    ) external {
+    ) external override {
         balanceSheet.lockCollateral(fyToken, collateralAmount);
         borrowAndSellFyTokens(fyToken, borrowAmount, underlyingAmount);
     }
@@ -227,7 +232,7 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
     /// @notice Open the vaults in the BalanceSheet contract for the given fyToken.
     /// @param balanceSheet The address of the BalanceSheet contract.
     /// @param fyToken The address of the FyToken contract.
-    function openVault(BalanceSheetInterface balanceSheet, FyTokenInterface fyToken) external {
+    function openVault(IBalanceSheet balanceSheet, IFyToken fyToken) external override {
         balanceSheet.openVault(fyToken);
     }
 
@@ -238,9 +243,9 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
     ///
     /// @param fyToken The address of the FyToken contract.
     /// @param fyTokenAmount The amount of fyTokens to redeem.
-    function redeemFyTokens(FyTokenInterface fyToken, uint256 fyTokenAmount) public {
-        Erc20Interface underlying = fyToken.underlying();
-        RedemptionPoolInterface redemptionPool = fyToken.redemptionPool();
+    function redeemFyTokens(IFyToken fyToken, uint256 fyTokenAmount) public override {
+        IErc20 underlying = fyToken.underlying();
+        IRedemptionPool redemptionPool = fyToken.redemptionPool();
 
         // Transfer the fyTokens to the DSProxy.
         fyToken.safeTransferFrom(msg.sender, address(this), fyTokenAmount);
@@ -264,7 +269,7 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
     ///
     /// @param fyToken The address of the FyToken contract.
     /// @param repayAmount The amount of fyTokens to repay.
-    function repayBorrow(FyTokenInterface fyToken, uint256 repayAmount) public {
+    function repayBorrow(IFyToken fyToken, uint256 repayAmount) public override {
         // Transfer the fyTokens to the DSProxy.
         fyToken.safeTransferFrom(msg.sender, address(this), repayAmount);
 
@@ -281,11 +286,11 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
     /// @param underlyingAmount The amount of underlying to sell.
     /// @param repayAmount The amount of fyTokens to repay.
     function sellUnderlyingAndRepayBorrow(
-        FyTokenInterface fyToken,
+        IFyToken fyToken,
         uint256 underlyingAmount,
         uint256 repayAmount
-    ) external {
-        Erc20Interface underlying = fyToken.underlying();
+    ) external override {
+        IErc20 underlying = fyToken.underlying();
 
         // Transfer the underlying to the DSProxy.
         underlying.safeTransferFrom(msg.sender, address(this), underlyingAmount);
@@ -328,7 +333,7 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
     /// @notice Supplies the underlying to the RedemptionPool contract and mints fyTokens.
     /// @param fyToken The address of the FyToken contract.
     /// @param underlyingAmount The amount of underlying to supply.
-    function supplyUnderlying(FyTokenInterface fyToken, uint256 underlyingAmount) public {
+    function supplyUnderlying(IFyToken fyToken, uint256 underlyingAmount) public override {
         uint256 preFyTokenBalance = fyToken.balanceOf(address(this));
         supplyUnderlyingInternal(fyToken, underlyingAmount);
 
@@ -348,7 +353,7 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
     ///
     /// @param fyToken The address of the FyToken contract.
     /// @param underlyingAmount The amount of underlying to supply.
-    function supplyUnderlyingAndRepayBorrow(FyTokenInterface fyToken, uint256 underlyingAmount) external {
+    function supplyUnderlyingAndRepayBorrow(IFyToken fyToken, uint256 underlyingAmount) external override {
         uint256 preFyTokenBalance = fyToken.balanceOf(address(this));
         supplyUnderlyingInternal(fyToken, underlyingAmount);
 
@@ -365,14 +370,14 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
     /// @param fyToken The address of the FyToken contract.
     /// @param collateralAmount The amount of collateral to withdraw.
     function withdrawCollateral(
-        BalanceSheetInterface balanceSheet,
-        FyTokenInterface fyToken,
+        IBalanceSheet balanceSheet,
+        IFyToken fyToken,
         uint256 collateralAmount
-    ) public {
+    ) public override {
         balanceSheet.withdrawCollateral(fyToken, collateralAmount);
 
         // The collateral is now in the DSProxy, so we relay it to the end user.
-        Erc20Interface collateral = fyToken.collateral();
+        IErc20 collateral = fyToken.collateral();
         collateral.safeTransfer(msg.sender, collateralAmount);
     }
 
@@ -382,7 +387,7 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
     ///
     /// @param balanceSheet The address of the BalanceSheet contract.
     /// @param fyToken The address of the FyToken contract.
-    function wrapEthAndDepositCollateral(BalanceSheetInterface balanceSheet, FyTokenInterface fyToken) public payable {
+    function wrapEthAndDepositCollateral(IBalanceSheet balanceSheet, IFyToken fyToken) public override payable {
         uint256 collateralAmount = msg.value;
 
         // Convert the received ETH to WETH.
@@ -399,8 +404,9 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
     ///
     /// @param balanceSheet The address of the BalanceSheet contract.
     /// @param fyToken The address of the FyToken contract.
-    function wrapEthAndDepositAndLockCollateral(BalanceSheetInterface balanceSheet, FyTokenInterface fyToken)
+    function wrapEthAndDepositAndLockCollateral(IBalanceSheet balanceSheet, IFyToken fyToken)
         public
+        override
         payable
     {
         uint256 collateralAmount = msg.value;
@@ -418,11 +424,11 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
     /// @param borrowAmount The amount of fyTokens to borrow.
     /// @param underlyingAmount The amount of underlying to sell fyTokens for.
     function wrapEthAndDepositAndLockCollateralAndBorrow(
-        BalanceSheetInterface balanceSheet,
-        FyTokenInterface fyToken,
+        IBalanceSheet balanceSheet,
+        IFyToken fyToken,
         uint256 borrowAmount,
         uint256 underlyingAmount
-    ) external payable {
+    ) external override payable {
         wrapEthAndDepositAndLockCollateral(balanceSheet, fyToken);
         borrowAndSellFyTokens(fyToken, borrowAmount, underlyingAmount);
     }
@@ -431,12 +437,12 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
 
     /// @dev See the documentation for the public functions that call this internal function.
     function depositCollateralInternal(
-        BalanceSheetInterface balanceSheet,
-        FyTokenInterface fyToken,
+        IBalanceSheet balanceSheet,
+        IFyToken fyToken,
         uint256 collateralAmount
     ) internal {
         // Allow the BalanceSheet contract to spend tokens if allowance not enough.
-        Erc20Interface collateral = fyToken.collateral();
+        IErc20 collateral = fyToken.collateral();
         uint256 allowance = collateral.allowance(address(this), address(balanceSheet));
         if (allowance < collateralAmount) {
             collateral.approve(address(balanceSheet), type(uint256).max);
@@ -453,9 +459,9 @@ contract BatterseaTargetV1 is BatterseaTargetV1Interface {
     }
 
     /// @dev See the documentation for the public functions that call this internal function.
-    function supplyUnderlyingInternal(FyTokenInterface fyToken, uint256 underlyingAmount) internal {
-        RedemptionPoolInterface redemptionPool = fyToken.redemptionPool();
-        Erc20Interface underlying = fyToken.underlying();
+    function supplyUnderlyingInternal(IFyToken fyToken, uint256 underlyingAmount) internal {
+        IRedemptionPool redemptionPool = fyToken.redemptionPool();
+        IErc20 underlying = fyToken.underlying();
 
         // Transfer the underlying to the DSProxy.
         underlying.safeTransferFrom(msg.sender, address(this), underlyingAmount);
