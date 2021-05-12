@@ -15,20 +15,16 @@ export function fp(x: string): BigNumber {
   return parseFixed(x, precision);
 }
 
-export function fpPowOfTwo(exp: number | BigNumber): BigNumber {
+export function fpPowOfTwo(exp: number): BigNumber {
   const scale: BigNumber = BigNumber.from(10).pow(18);
   return powOfTwo(exp).mul(scale);
 }
 
-export function maxInt(exp: number): BigNumber {
-  return powOfTwo(exp - 1).sub(1);
+export function maxUint(exp: number): BigNumber {
+  return BigNumber.from(2).pow(exp).sub(1);
 }
 
-export function minInt(exp: number): BigNumber {
-  return powOfTwo(exp - 1).mul(-1);
-}
-
-export function powOfTwo(exp: number | BigNumber): BigNumber {
+export function powOfTwo(exp: number): BigNumber {
   return BigNumber.from(2).pow(BigNumber.from(exp));
 }
 
