@@ -1,16 +1,18 @@
 /// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
-import "./RedemptionPoolStorage.sol";
+import "@paulrberg/contracts/interfaces/IErc20Recover.sol";
 
-/// @title RedemptionPoolInterface
-/// @author Hifi
-abstract contract RedemptionPoolInterface is RedemptionPoolStorage {
+import "./IFintroller.sol";
+import "./IFyToken.sol";
+
+interface IRedemptionPool is IErc20Recover {
     /// EVENTS ///
 
     event RedeemFyTokens(address indexed account, uint256 fyTokenAmount, uint256 underlyingAmount);
 
     event SupplyUnderlying(address indexed account, uint256 underlyingAmount, uint256 fyTokenAmount);
+
 
     /// NON-CONSTANT FUNCTIONS ///
 
@@ -27,7 +29,7 @@ abstract contract RedemptionPoolInterface is RedemptionPoolStorage {
     ///
     /// @param fyTokenAmount The amount of fyTokens to redeem for the underlying asset.
     /// @return bool true = success, otherwise it reverts.
-    function redeemFyTokens(uint256 fyTokenAmount) external virtual returns (bool);
+    function redeemFyTokens(uint256 fyTokenAmount) external returns (bool);
 
     /// @notice An alternative to the usual minting method that does not involve taking on debt.
     ///
@@ -42,5 +44,20 @@ abstract contract RedemptionPoolInterface is RedemptionPoolStorage {
     ///
     /// @param underlyingAmount The amount of underlying to supply to the RedemptionPool.
     /// @return bool true = success, otherwise it reverts.
-    function supplyUnderlying(uint256 underlyingAmount) external virtual returns (bool);
+    function supplyUnderlying(uint256 underlyingAmount) external returns (bool);
+
+
+    /// CONSTANT FUNCTIONS ///
+
+    /// @notice The unique Fintroller associated with this contract.
+    function fintroller() external view returns (IFintroller);
+
+    /// @notice The amount of the underlying asset available to be redeemed after maturation.
+    function totalUnderlyingSupply() external view returns (uint256);
+
+    /// @notice The unique fyToken associated with this RedemptionPool.
+    function fyToken() external view returns (IFyToken);
+
+    /// @notice Indicator that this is a RedemptionPool contract, for inspection.
+    function isRedemptionPool() external view returns (bool);
 }

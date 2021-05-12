@@ -12,10 +12,10 @@ contract GodModeFyToken is FyToken {
         string memory name_,
         string memory symbol_,
         uint256 expirationTime_,
-        FintrollerInterface fintroller_,
-        BalanceSheetInterface balanceSheet_,
-        Erc20Interface underlying_,
-        Erc20Interface collateral_
+        IFintroller fintroller_,
+        IBalanceSheet balanceSheet_,
+        IErc20 underlying_,
+        IErc20 collateral_
     ) FyToken(name_, symbol_, expirationTime_, fintroller_, balanceSheet_, underlying_, collateral_) {
         // solhint-disable-previous-line no-empty-blocks
     }
@@ -24,7 +24,7 @@ contract GodModeFyToken is FyToken {
         mintInternal(beneficiary, mintAmount);
     }
 
-    function __godMode__setRedemptionPool(RedemptionPoolInterface redemptionPool_) external {
+    function __godMode__setRedemptionPool(IRedemptionPool redemptionPool_) external {
         redemptionPool = redemptionPool_;
     }
 }

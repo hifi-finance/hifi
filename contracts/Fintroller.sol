@@ -2,92 +2,120 @@
 pragma solidity ^0.8.0;
 
 import "@paulrberg/contracts/access/Admin.sol";
-import "@paulrberg/contracts/math/Exponential.sol";
+import "./Exponential.sol";
 
-import "./FintrollerInterface.sol";
-import "./FyTokenInterface.sol";
-import "./oracles/ChainlinkOperatorInterface.sol";
+import "./interfaces/IFintroller.sol";
+import "./interfaces/IFyToken.sol";
+import "./interfaces/IChainlinkOperator.sol";
 
 /// @notice Fintroller
 /// @author Hifi
 /// @notice Controls the financial permissions and risk parameters for the Hifi protocol.
 contract Fintroller is
-    FintrollerInterface, /// one dependency
+    IFintroller, /// one dependency
     Admin /// two dependencies
 {
+    /// @dev Maps the fyToken address to the Bond structs.
+    mapping(IFyToken => Bond) internal bonds;
+
+    /// @notice The contract that provides price data for the collateral and the underlying asset.
+    IChainlinkOperator override public oracle;
+
+    /// @dev The threshold below which the collateralization ratio cannot be set, equivalent to 100%.
+    uint256 internal constant collateralizationRatioLowerBoundMantissa = 1.0e18;
+
+    /// @dev The threshold above which the collateralization ratio cannot be set, equivalent to 10,000%.
+    uint256 internal constant collateralizationRatioUpperBoundMantissa = 1.0e20;
+
+    /// @dev The dafault collateralization ratio set when a new bond is listed, equivalent to 150%.
+    uint256 internal constant defaultCollateralizationRatioMantissa = 1.5e18;
+
+    /// @dev The dafault liquidation incentive mantissa set when a new bond is listed, equivalent to 110%.
+    uint256 internal constant defaultLiquidationIncentiveMantissa = 1.1e18;
+
+    /// @dev The threshold below which the liquidation incentive cannot be set, equivalent to 100%.
+    uint256 internal constant liquidationIncentiveLowerBoundMantissa = 1.0e18;
+
+    /// @dev The threshold above which the liquidation incentive cannot be set, equivalent to 150%.
+    uint256 internal constant liquidationIncentiveUpperBoundMantissa = 1.5e18;
+
+    /// @notice Indicator that this is a Fintroller contract, for inspection.
+    bool public override constant isFintroller = true;
+
+
     /// CONSTANT FUNCTIONS ///
 
-    /// @inheritdoc FintrollerInterface
-    function getBond(FyTokenInterface fyToken) external view override returns (Bond memory) {
+    /// @inheritdoc IFintroller
+    function getBond(IFyToken fyToken) external view override returns (Bond memory) {
         return bonds[fyToken];
     }
 
-    /// @inheritdoc FintrollerInterface
-    function getBondCollateralizationRatio(FyTokenInterface fyToken) external view override returns (uint256) {
+    /// @inheritdoc IFintroller
+    function getBondCollateralizationRatio(IFyToken fyToken) external view override returns (uint256) {
         return bonds[fyToken].collateralizationRatio.mantissa;
     }
 
-    /// @inheritdoc FintrollerInterface
-    function getBondDebtCeiling(FyTokenInterface fyToken) external view override returns (uint256) {
+    /// @inheritdoc IFintroller
+    function getBondDebtCeiling(IFyToken fyToken) external view override returns (uint256) {
         return bonds[fyToken].debtCeiling;
     }
 
-    /// @inheritdoc FintrollerInterface
-    function getBondLiquidationIncentive(FyTokenInterface fyToken) external view override returns (uint256) {
+    /// @inheritdoc IFintroller
+    function getBondLiquidationIncentive(IFyToken fyToken) external view override returns (uint256) {
         return bonds[fyToken].liquidationIncentive;
     }
 
-    /// @inheritdoc FintrollerInterface
-    function getBorrowAllowed(FyTokenInterface fyToken) external view override returns (bool) {
+    /// @inheritdoc IFintroller
+    function getBorrowAllowed(IFyToken fyToken) external view override returns (bool) {
         Bond memory bond = bonds[fyToken];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
         return bond.isBorrowAllowed;
     }
 
-    /// @inheritdoc FintrollerInterface
-    function getDepositCollateralAllowed(FyTokenInterface fyToken) external view override returns (bool) {
+    /// @inheritdoc IFintroller
+    function getDepositCollateralAllowed(IFyToken fyToken) external view override returns (bool) {
         Bond memory bond = bonds[fyToken];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
         return bond.isDepositCollateralAllowed;
     }
 
-    /// @inheritdoc FintrollerInterface
-    function getLiquidateBorrowAllowed(FyTokenInterface fyToken) external view override returns (bool) {
+    /// @inheritdoc IFintroller
+    function getLiquidateBorrowAllowed(IFyToken fyToken) external view override returns (bool) {
         Bond memory bond = bonds[fyToken];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
         return bond.isLiquidateBorrowAllowed;
     }
 
-    /// @inheritdoc FintrollerInterface
-    function getRedeemFyTokensAllowed(FyTokenInterface fyToken) external view override returns (bool) {
+    /// @inheritdoc IFintroller
+    function getRedeemFyTokensAllowed(IFyToken fyToken) external view override returns (bool) {
         Bond memory bond = bonds[fyToken];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
         return bond.isRedeemFyTokenAllowed;
     }
 
-    /// @inheritdoc FintrollerInterface
-    function getRepayBorrowAllowed(FyTokenInterface fyToken) external view override returns (bool) {
+    /// @inheritdoc IFintroller
+    function getRepayBorrowAllowed(IFyToken fyToken) external view override returns (bool) {
         Bond memory bond = bonds[fyToken];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
         return bond.isRepayBorrowAllowed;
     }
 
-    /// @inheritdoc FintrollerInterface
-    function getSupplyUnderlyingAllowed(FyTokenInterface fyToken) external view override returns (bool) {
+    /// @inheritdoc IFintroller
+    function getSupplyUnderlyingAllowed(IFyToken fyToken) external view override returns (bool) {
         Bond memory bond = bonds[fyToken];
         require(bond.isListed, "ERR_BOND_NOT_LISTED");
         return bond.isSupplyUnderlyingAllowed;
     }
 
-    /// @inheritdoc FintrollerInterface
-    function isBondListed(FyTokenInterface fyToken) external view override returns (bool) {
+    /// @inheritdoc IFintroller
+    function isBondListed(IFyToken fyToken) external view override returns (bool) {
         return bonds[fyToken].isListed;
     }
 
     /// NON-CONSTANT FUNCTIONS ///
 
-    /// @inheritdoc FintrollerInterface
-    function listBond(FyTokenInterface fyToken) external override onlyAdmin returns (bool) {
+    /// @inheritdoc IFintroller
+    function listBond(IFyToken fyToken) external override onlyAdmin returns (bool) {
         require(fyToken.isFyToken(), "ERR_LIST_BOND_FYTOKEN_INSPECTION");
         bonds[fyToken] = Bond({
             collateralizationRatio: Exp({ mantissa: defaultCollateralizationRatioMantissa }),
@@ -105,8 +133,8 @@ contract Fintroller is
         return true;
     }
 
-    /// @inheritdoc FintrollerInterface
-    function setBondCollateralizationRatio(FyTokenInterface fyToken, uint256 newCollateralizationRatioMantissa)
+    /// @inheritdoc IFintroller
+    function setBondCollateralizationRatio(IFyToken fyToken, uint256 newCollateralizationRatioMantissa)
         external
         override
         onlyAdmin
@@ -139,8 +167,8 @@ contract Fintroller is
         return true;
     }
 
-    /// @inheritdoc FintrollerInterface
-    function setBondDebtCeiling(FyTokenInterface fyToken, uint256 newDebtCeiling)
+    /// @inheritdoc IFintroller
+    function setBondDebtCeiling(IFyToken fyToken, uint256 newDebtCeiling)
         external
         override
         onlyAdmin
@@ -165,8 +193,8 @@ contract Fintroller is
         return true;
     }
 
-    /// @inheritdoc FintrollerInterface
-    function setBondLiquidationIncentive(FyTokenInterface fyToken, uint256 newLiquidationIncentive)
+    /// @inheritdoc IFintroller
+    function setBondLiquidationIncentive(IFyToken fyToken, uint256 newLiquidationIncentive)
         external
         override
         onlyAdmin
@@ -194,16 +222,16 @@ contract Fintroller is
         return true;
     }
 
-    /// @inheritdoc FintrollerInterface
-    function setBorrowAllowed(FyTokenInterface fyToken, bool state) external override onlyAdmin returns (bool) {
+    /// @inheritdoc IFintroller
+    function setBorrowAllowed(IFyToken fyToken, bool state) external override onlyAdmin returns (bool) {
         require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
         bonds[fyToken].isBorrowAllowed = state;
         emit SetBorrowAllowed(admin, fyToken, state);
         return true;
     }
 
-    /// @inheritdoc FintrollerInterface
-    function setDepositCollateralAllowed(FyTokenInterface fyToken, bool state)
+    /// @inheritdoc IFintroller
+    function setDepositCollateralAllowed(IFyToken fyToken, bool state)
         external
         override
         onlyAdmin
@@ -215,8 +243,8 @@ contract Fintroller is
         return true;
     }
 
-    /// @inheritdoc FintrollerInterface
-    function setLiquidateBorrowAllowed(FyTokenInterface fyToken, bool state)
+    /// @inheritdoc IFintroller
+    function setLiquidateBorrowAllowed(IFyToken fyToken, bool state)
         external
         override
         onlyAdmin
@@ -228,8 +256,8 @@ contract Fintroller is
         return true;
     }
 
-    /// @inheritdoc FintrollerInterface
-    function setOracle(ChainlinkOperatorInterface newOracle) external override onlyAdmin returns (bool) {
+    /// @inheritdoc IFintroller
+    function setOracle(IChainlinkOperator newOracle) external override onlyAdmin returns (bool) {
         require(address(newOracle) != address(0x00), "ERR_SET_ORACLE_ZERO_ADDRESS");
         address oldOracle = address(oracle);
         oracle = newOracle;
@@ -237,24 +265,24 @@ contract Fintroller is
         return true;
     }
 
-    /// @inheritdoc FintrollerInterface
-    function setRedeemFyTokensAllowed(FyTokenInterface fyToken, bool state) external override onlyAdmin returns (bool) {
+    /// @inheritdoc IFintroller
+    function setRedeemFyTokensAllowed(IFyToken fyToken, bool state) external override onlyAdmin returns (bool) {
         require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
         bonds[fyToken].isRedeemFyTokenAllowed = state;
         emit SetRedeemFyTokensAllowed(admin, fyToken, state);
         return true;
     }
 
-    /// @inheritdoc FintrollerInterface
-    function setRepayBorrowAllowed(FyTokenInterface fyToken, bool state) external override onlyAdmin returns (bool) {
+    /// @inheritdoc IFintroller
+    function setRepayBorrowAllowed(IFyToken fyToken, bool state) external override onlyAdmin returns (bool) {
         require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
         bonds[fyToken].isRepayBorrowAllowed = state;
         emit SetRepayBorrowAllowed(admin, fyToken, state);
         return true;
     }
 
-    /// @inheritdoc FintrollerInterface
-    function setSupplyUnderlyingAllowed(FyTokenInterface fyToken, bool state)
+    /// @inheritdoc IFintroller
+    function setSupplyUnderlyingAllowed(IFyToken fyToken, bool state)
         external
         override
         onlyAdmin

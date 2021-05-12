@@ -1,14 +1,14 @@
 /// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
-import "@paulrberg/contracts/access/Admin.sol";
-import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
+import "@paulrberg/contracts/interfaces/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Recover.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 import "@paulrberg/contracts/utils/ReentrancyGuard.sol";
 
-import "./FintrollerInterface.sol";
-import "./RedemptionPoolInterface.sol";
+import "./interfaces/IRedemptionPool.sol";
+import "./interfaces/IFintroller.sol";
+import "./interfaces/IFyToken.sol";
 
 /// @title RedemptionPool
 /// @author Hifi
@@ -16,16 +16,27 @@ import "./RedemptionPoolInterface.sol";
 /// in exchange for 1 underlying after maturation.
 /// @dev Instantiated by the fyToken in its constructor.
 contract RedemptionPool is
-    ReentrancyGuard, /// no dependency
-    RedemptionPoolInterface, /// one dependency
-    Admin, /// two dependencies
-    Erc20Recover /// five dependencies
+    IRedemptionPool,
+    Erc20Recover,
+    ReentrancyGuard
 {
-    using SafeErc20 for Erc20Interface;
+    using SafeErc20 for IErc20;
+
+    /// @inheritdoc IRedemptionPool
+    IFintroller public override fintroller;
+
+    /// @inheritdoc IRedemptionPool
+    uint256 public override totalUnderlyingSupply;
+
+    /// @inheritdoc IRedemptionPool
+    IFyToken public override fyToken;
+
+    /// @inheritdoc IRedemptionPool
+    bool public override constant isRedemptionPool = true;
 
     /// @param fintroller_ The address of the Fintroller contract.
     /// @param fyToken_ The address of the fyToken contract.
-    constructor(FintrollerInterface fintroller_, FyTokenInterface fyToken_) Admin() {
+    constructor(IFintroller fintroller_, IFyToken fyToken_) Admin() {
         // Set the Fintroller contract and sanity check it.
         fintroller = fintroller_;
         fintroller.isFintroller();
@@ -35,7 +46,7 @@ contract RedemptionPool is
         fyToken = fyToken_;
     }
 
-    /// @inheritdoc RedemptionPoolInterface
+    /// @inheritdoc IRedemptionPool
     function redeemFyTokens(uint256 fyTokenAmount) external override nonReentrant returns (bool) {
         // Checks: maturation time.
         require(block.timestamp >= fyToken.expirationTime(), "ERR_BOND_NOT_MATURED");
@@ -73,7 +84,7 @@ contract RedemptionPool is
         return true;
     }
 
-    /// @inheritdoc RedemptionPoolInterface
+    /// @inheritdoc IRedemptionPool
     function supplyUnderlying(uint256 underlyingAmount) external override nonReentrant returns (bool) {
         // Checks: maturation time.
         require(block.timestamp < fyToken.expirationTime(), "ERR_BOND_MATURED");

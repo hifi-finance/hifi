@@ -3,28 +3,57 @@ pragma solidity ^0.8.0;
 
 import "@paulrberg/contracts/access/Admin.sol";
 import "@paulrberg/contracts/token/erc20/Erc20.sol";
-import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Permit.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Recover.sol";
 import "@paulrberg/contracts/utils/ReentrancyGuard.sol";
 
-import "./BalanceSheetInterface.sol";
-import "./FintrollerInterface.sol";
-import "./FyTokenInterface.sol";
+import "./interfaces/IFyToken.sol";
+import "./interfaces/IBalanceSheet.sol";
+
 import "./RedemptionPool.sol";
+import "./Exponential.sol";
 
 /// @title FyToken
 /// @author Hifi
 /// @notice Zero-coupon bond that tracks an Erc20 underlying asset.
 contract FyToken is
     ReentrancyGuard, /// no depedency
-    FyTokenInterface, /// one dependency
+    IFyToken, /// one dependency
     Admin, /// two dependencies
     Erc20, /// two dependencies
     Exponential, /// two dependencies
     Erc20Permit, /// five dependencies
     Erc20Recover /// five dependencies
 {
+    /// STORAGE PROPERTIES ///
+
+    /// @inheritdoc IFyToken
+    IBalanceSheet public override balanceSheet;
+
+    /// @inheritdoc IFyToken
+    IErc20 public override collateral;
+
+    /// @inheritdoc IFyToken
+    uint256 public override collateralPrecisionScalar;
+
+    /// @inheritdoc IFyToken
+    uint256 public override expirationTime;
+
+    /// @inheritdoc IFyToken
+    IFintroller public override fintroller;
+
+    /// @inheritdoc IFyToken
+    IRedemptionPool public override redemptionPool;
+
+    /// @inheritdoc IFyToken
+    IErc20 public override underlying;
+
+    /// @inheritdoc IFyToken
+    uint256 public override underlyingPrecisionScalar;
+
+    /// @inheritdoc IFyToken
+    bool public override constant isFyToken = true;
+
     modifier isVaultOpen(address account) {
         require(balanceSheet.isVaultOpen(this, account), "ERR_VAULT_NOT_OPEN");
         _;
@@ -43,10 +72,10 @@ contract FyToken is
         string memory name_,
         string memory symbol_,
         uint256 expirationTime_,
-        FintrollerInterface fintroller_,
-        BalanceSheetInterface balanceSheet_,
-        Erc20Interface underlying_,
-        Erc20Interface collateral_
+        IFintroller fintroller_,
+        IBalanceSheet balanceSheet_,
+        IErc20 underlying_,
+        IErc20 collateral_
     ) Erc20Permit(name_, symbol_, 18) Admin() {
         uint8 defaultNumberOfDecimals = 18;
 
@@ -78,19 +107,19 @@ contract FyToken is
 
         // Create the RedemptionPool contract and transfer the owner from the fyToken itself to the current caller.
         redemptionPool = new RedemptionPool(fintroller_, this);
-        AdminInterface(address(redemptionPool))._transferAdmin(msg.sender);
+        IAdmin(address(redemptionPool))._transferAdmin(msg.sender);
     }
 
     /// CONSTANT FUNCTIONS ///
 
-    /// @inheritdoc FyTokenInterface
+    /// @inheritdoc IFyToken
     function isMatured() public view override returns (bool) {
         return block.timestamp >= expirationTime;
     }
 
     /// NON-CONSTANT FUNCTIONS ///
 
-    /// @inheritdoc FyTokenInterface
+    /// @inheritdoc IFyToken
     function borrow(uint256 borrowAmount) public override isVaultOpen(msg.sender) nonReentrant returns (bool) {
         // Checks: bond not matured.
         require(isMatured() == false, "ERR_BOND_MATURED");
@@ -107,7 +136,7 @@ contract FyToken is
         require(hypotheticalTotalSupply <= bondDebtCeiling, "ERR_BORROW_DEBT_CEILING_OVERFLOW");
 
         // Add the borrow amount to the borrower account's current debt.
-        BalanceSheetStorage.Vault memory vault = balanceSheet.getVault(this, msg.sender);
+        IBalanceSheet.Vault memory vault = balanceSheet.getVault(this, msg.sender);
         require(vault.lockedCollateral > 0, "ERR_BORROW_LOCKED_COLLATERAL_ZERO");
         uint256 newDebt = vault.debt + borrowAmount;
 
@@ -133,7 +162,7 @@ contract FyToken is
         return true;
     }
 
-    /// @inheritdoc FyTokenInterface
+    /// @inheritdoc IFyToken
     function burn(address holder, uint256 burnAmount) external override nonReentrant returns (bool) {
         // Checks: the caller is the RedemptionPool.
         require(msg.sender == address(redemptionPool), "ERR_BURN_NOT_AUTHORIZED");
@@ -151,7 +180,7 @@ contract FyToken is
         return true;
     }
 
-    /// @inheritdoc FyTokenInterface
+    /// @inheritdoc IFyToken
     function liquidateBorrow(address borrower, uint256 repayAmount)
         external
         override
@@ -190,7 +219,7 @@ contract FyToken is
         return true;
     }
 
-    /// @inheritdoc FyTokenInterface
+    /// @inheritdoc IFyToken
     function mint(address beneficiary, uint256 mintAmount) external override nonReentrant returns (bool) {
         // Checks: the caller is the RedemptionPool.
         require(msg.sender == address(redemptionPool), "ERR_MINT_NOT_AUTHORIZED");
@@ -208,13 +237,13 @@ contract FyToken is
         return true;
     }
 
-    /// @inheritdoc FyTokenInterface
+    /// @inheritdoc IFyToken
     function repayBorrow(uint256 repayAmount) external override isVaultOpen(msg.sender) nonReentrant returns (bool) {
         repayBorrowInternal(msg.sender, msg.sender, repayAmount);
         return true;
     }
 
-    /// @inheritdoc FyTokenInterface
+    /// @inheritdoc IFyToken
     function repayBorrowBehalf(address borrower, uint256 repayAmount)
         external
         override
@@ -226,13 +255,13 @@ contract FyToken is
         return true;
     }
 
-    /// @inheritdoc FyTokenInterface
-    function _setFintroller(FintrollerInterface newFintroller) external override onlyAdmin returns (bool) {
+    /// @inheritdoc IFyToken
+    function _setFintroller(IFintroller newFintroller) external override onlyAdmin returns (bool) {
         // Checks: sanity check the new Fintroller contract.
         require(newFintroller.isFintroller(), "ERR_SET_FINTROLLER_INSPECTION");
 
         // Effects: update storage.
-        FintrollerInterface oldFintroller = fintroller;
+        IFintroller oldFintroller = fintroller;
         fintroller = newFintroller;
 
         emit SetFintroller(admin, oldFintroller, newFintroller);
@@ -259,7 +288,7 @@ contract FyToken is
         require(debt >= repayAmount, "ERR_REPAY_BORROW_INSUFFICIENT_DEBT");
 
         // Checks: the payer has enough fyTokens.
-        require(balanceOf(payer) >= repayAmount, "ERR_REPAY_BORROW_INSUFFICIENT_BALANCE");
+        require(balanceOf[payer] >= repayAmount, "ERR_REPAY_BORROW_INSUFFICIENT_BALANCE");
 
         // Effects: burn the fyTokens.
         burnInternal(payer, repayAmount);

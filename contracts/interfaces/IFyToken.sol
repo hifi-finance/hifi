@@ -1,15 +1,16 @@
 /// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
-import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
-import "./FyTokenStorage.sol";
+import "@paulrberg/contracts/interfaces/IErc20.sol";
+import "@paulrberg/contracts/interfaces/IErc20Permit.sol";
+import "@paulrberg/contracts/interfaces/IErc20Recover.sol";
+import "@paulrberg/contracts/interfaces/IAdmin.sol";
 
-/// @title FyTokenInterface
-/// @author Hifi
-abstract contract FyTokenInterface is
-    FyTokenStorage, /// no dependency
-    Erc20Interface /// one dependency
-{
+import "./IFintroller.sol";
+import "./IBalanceSheet.sol";
+import "./IRedemptionPool.sol";
+
+interface IFyToken is IErc20Permit, IAdmin {
     /// EVENTS ///
 
     event Borrow(address indexed borrower, uint256 borrowAmount);
@@ -27,13 +28,8 @@ abstract contract FyTokenInterface is
 
     event RepayBorrow(address indexed payer, address indexed borrower, uint256 repayAmount, uint256 newDebt);
 
-    event SetFintroller(address indexed admin, FintrollerInterface oldFintroller, FintrollerInterface newFintroller);
+    event SetFintroller(address indexed admin, IFintroller oldFintroller, IFintroller newFintroller);
 
-    /// CONSTANT FUNCTIONS ///
-
-    /// @notice Checks if the bond matured.
-    /// @return bool true = bond matured, otherwise it didn't.
-    function isMatured() public view virtual returns (bool);
 
     /// NON-CONSTANT FUNCTIONS ///
 
@@ -53,7 +49,7 @@ abstract contract FyTokenInterface is
     ///
     /// @param borrowAmount The amount of fyTokens to borrow and print into existence.
     /// @return bool true = success, otherwise it reverts.
-    function borrow(uint256 borrowAmount) external virtual returns (bool);
+    function borrow(uint256 borrowAmount) external returns (bool);
 
     /// @notice Destroys `burnAmount` tokens from `holder`, reducing the token supply.
     ///
@@ -68,7 +64,7 @@ abstract contract FyTokenInterface is
     /// @param holder The account whose fyTokens to burn.
     /// @param burnAmount The amount of fyTokens to burn.
     /// @return bool true = success, otherwise it reverts.
-    function burn(address holder, uint256 burnAmount) external virtual returns (bool);
+    function burn(address holder, uint256 burnAmount) external returns (bool);
 
     /// @notice Repays the debt of the borrower and rewards the caler with a surplus of collateral.
     ///
@@ -88,7 +84,7 @@ abstract contract FyTokenInterface is
     /// @param borrower The account to liquidate.
     /// @param repayAmount The amount of fyTokens to repay.
     /// @return bool true = success, otherwise it reverts.
-    function liquidateBorrow(address borrower, uint256 repayAmount) external virtual returns (bool);
+    function liquidateBorrow(address borrower, uint256 repayAmount) external returns (bool);
 
     /// @notice Prints new tokens into existence and assigns them to `beneficiary`,
     /// increasing the total supply.
@@ -103,7 +99,7 @@ abstract contract FyTokenInterface is
     /// @param beneficiary The borrower account for which to mint the tokens.
     /// @param mintAmount The amount of fyTokens to print into existence.
     /// @return bool true = success, otherwise it reverts.
-    function mint(address beneficiary, uint256 mintAmount) external virtual returns (bool);
+    function mint(address beneficiary, uint256 mintAmount) external returns (bool);
 
     /// @notice Deletes the borrower account's debt from the registry and take the fyTokens
     /// out of circulation.
@@ -120,7 +116,7 @@ abstract contract FyTokenInterface is
     ///
     /// @param repayAmount The amount of fyTokens to repay.
     /// @return bool true = success, otherwise it reverts.
-    function repayBorrow(uint256 repayAmount) external virtual returns (bool);
+    function repayBorrow(uint256 repayAmount) external returns (bool);
 
     /// @notice Clears the borrower account's debt from the registry and take the fyTokens
     /// out of circulation.
@@ -134,7 +130,7 @@ abstract contract FyTokenInterface is
     /// @param borrower The borrower account for which to repay the borrow.
     /// @param repayAmount The amount of fyTokens to repay.
     /// @return bool true = success, otherwise it reverts.
-    function repayBorrowBehalf(address borrower, uint256 repayAmount) external virtual returns (bool);
+    function repayBorrowBehalf(address borrower, uint256 repayAmount) external returns (bool);
 
     /// @notice Updates the Fintroller contract's address saved in storage.
     ///
@@ -147,5 +143,37 @@ abstract contract FyTokenInterface is
     ///
     /// @param newFintroller The address of the new Fintroller contract.
     /// @return bool true = success, otherwise it reverts.
-    function _setFintroller(FintrollerInterface newFintroller) external virtual returns (bool);
+    function _setFintroller(IFintroller newFintroller) external returns (bool);
+
+
+
+    /// CONSTANT FUNCTIONS ///
+    function balanceSheet() external view returns (IBalanceSheet);
+
+    function collateral() external view returns (IErc20);
+
+    /// @notice The ratio between mantissa precision (1e18) and the collateral precision.
+    function collateralPrecisionScalar() external view returns (uint256);
+
+    /// @notice Unix timestamp in seconds for when this fyToken expires.
+    function expirationTime() external view returns (uint256);
+
+    /// @notice The unique Fintroller associated with this fyToken.
+    function fintroller() external view returns (IFintroller);
+
+    /// @notice The unique RedemptionPool associated with this fyToken.
+    function redemptionPool() external view returns (IRedemptionPool);
+
+    /// @notice The Erc20 underlying, or target, asset for this fyToken.
+    function underlying() external view returns (IErc20);
+
+    /// @notice The ratio between mantissa precision (1e18) and the underlying precision.
+    function underlyingPrecisionScalar() external view returns (uint256);
+
+    /// @notice Indicator that this is a FyToken contract, for inspection.
+    function isFyToken() external view returns (bool);
+
+    /// @notice Checks if the bond matured.
+    /// @return bool true = bond matured, otherwise it didn't.
+    function isMatured() external view returns (bool);
 }

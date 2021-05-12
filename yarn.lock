@@ -1119,7 +1119,7 @@ __metadata:
     "@ethersproject/units": ^5.0.10
     "@nomiclabs/hardhat-ethers": ^2.0.2
     "@nomiclabs/hardhat-waffle": ^2.0.1
-    "@paulrberg": "git://github.com/paulrberg/contracts.git#2828887923329c35f2a10951d722e862d17f84b8"
+    "@paulrberg": "git://github.com/clemlak/contracts.git#21170e9081254eca4087564574e844f0f377e39d"
     "@typechain/ethers-v5": ^6.0.1
     "@typechain/hardhat": ^1.0.1
     "@types/chai": ^4.2.15
@@ -1209,10 +1209,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@paulrberg@git://github.com/paulrberg/contracts.git#2828887923329c35f2a10951d722e862d17f84b8":
-  version: 2.0.0
-  resolution: "@paulrberg@git://github.com/paulrberg/contracts.git#commit=2828887923329c35f2a10951d722e862d17f84b8"
-  checksum: 6f20d8eb49b16d28e71daf8217c7f3a742bd5696a7c9ffe632c27afb5bf1f17814f87f1941c54ad98a65cd959e2de5d83c3ee5450902d6075153154db787b32e
+"@paulrberg@git://github.com/clemlak/contracts.git#21170e9081254eca4087564574e844f0f377e39d":
+  version: 2.1.0
+  resolution: "@paulrberg@git://github.com/clemlak/contracts.git#commit=21170e9081254eca4087564574e844f0f377e39d"
+  dependencies:
+    prb-math: ^1.1.0
+  peerDependencies:
+    prb-math: ^1.1.0
+  checksum: 302fbfb38c5f9fcf226926feff0a2846c7b33c865960ae26fbd6bbae13517711f785f702658f7d6624986e5ca7bfd6eb96accb706d28f089b29a1d53b7cdbbe7
   languageName: node
   linkType: hard
 
@@ -10723,6 +10727,13 @@ fsevents@~2.3.1:
   version: 2.1.0
   resolution: "postinstall-postinstall@npm:2.1.0"
   checksum: e637f608f504ead45a2cc457db40cc70aab392d19504db5d7d55a84c0d04024d6d36393e066f001cdf0c8a634b2866c41df40fc964b3e88fc1c1672efde5c6be
+  languageName: node
+  linkType: hard
+
+"prb-math@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "prb-math@npm:1.1.0"
+  checksum: 8470a19cab9faafbb0f35974132df8f4915b84486ea63ba10bde22ce9c8f3755064370ffb5a288923e7c3c11f4db40d4a475e46fec6e9d88d64401070855e01d
   languageName: node
   linkType: hard
 

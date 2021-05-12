@@ -2,34 +2,45 @@
 pragma solidity ^0.8.0;
 
 import "@paulrberg/contracts/access/Admin.sol";
-import "@paulrberg/contracts/math/Exponential.sol";
-import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
+import "@paulrberg/contracts/interfaces/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 import "@paulrberg/contracts/utils/ReentrancyGuard.sol";
 
-import "./BalanceSheetInterface.sol";
-import "./FintrollerInterface.sol";
-import "./FyTokenInterface.sol";
-import "./oracles/ChainlinkOperatorInterface.sol";
+import "./Exponential.sol";
+
+import "./interfaces/IBalanceSheet.sol";
+import "./interfaces/IFintroller.sol";
+import "./interfaces/IFyToken.sol";
+import "./interfaces/IChainlinkOperator.sol";
+
 
 /// @title BalanceSheet
 /// @author Hifi
 /// @notice Manages the debt vault for all fyTokens.
 contract BalanceSheet is
     ReentrancyGuard, /// no depedency
-    BalanceSheetInterface, /// one dependency
+    IBalanceSheet, /// one dependency
     Exponential, /// one dependency
     Admin /// two dependencies
 {
-    using SafeErc20 for Erc20Interface;
+    using SafeErc20 for IErc20;
 
-    modifier isVaultOpenForMsgSender(FyTokenInterface fyToken) {
+    /// @notice The unique Fintroller associated with this contract.
+    IFintroller public override fintroller;
+
+    /// @dev One vault for each fyToken for each account.
+    mapping(IFyToken => mapping(address => Vault)) internal vaults;
+
+    /// @notice Indicator that this is a BalanceSheet contract, for inspection.
+    bool public override constant isBalanceSheet = true;
+
+    modifier isVaultOpenForMsgSender(IFyToken fyToken) {
         require(vaults[fyToken][msg.sender].isOpen, "ERR_VAULT_NOT_OPEN");
         _;
     }
 
     /// @param fintroller_ The address of the Fintroller contract.
-    constructor(FintrollerInterface fintroller_) Admin() {
+    constructor(IFintroller fintroller_) Admin() {
         // Set the fyToken contract and sanity check it.
         fintroller = fintroller_;
         fintroller.isFintroller();
@@ -48,8 +59,8 @@ contract BalanceSheet is
         uint256 underlyingPriceUpscaled;
     }
 
-    /// @inheritdoc BalanceSheetInterface
-    function getClutchableCollateral(FyTokenInterface fyToken, uint256 repayAmount)
+    /// @inheritdoc IBalanceSheet
+    function getClutchableCollateral(IFyToken fyToken, uint256 repayAmount)
         external
         view
         override
@@ -67,7 +78,7 @@ contract BalanceSheet is
         }
 
         // Grab the upscaled USD price of the underlying.
-        ChainlinkOperatorInterface oracle = fintroller.oracle();
+        IChainlinkOperator oracle = fintroller.oracle();
         vars.underlyingPriceUpscaled = oracle.getAdjustedPrice(fyToken.underlying().symbol());
 
         // Grab the upscaled USD price of the collateral.
@@ -99,8 +110,8 @@ contract BalanceSheet is
         return vars.clutchableCollateralAmount;
     }
 
-    /// @inheritdoc BalanceSheetInterface
-    function getCurrentCollateralizationRatio(FyTokenInterface fyToken, address borrower)
+    /// @inheritdoc IBalanceSheet
+    function getCurrentCollateralizationRatio(IFyToken fyToken, address borrower)
         public
         view
         override
@@ -123,9 +134,9 @@ contract BalanceSheet is
         uint256 underlyingPrecisionScalar;
     }
 
-    /// @inheritdoc BalanceSheetInterface
+    /// @inheritdoc IBalanceSheet
     function getHypotheticalCollateralizationRatio(
-        FyTokenInterface fyToken,
+        IFyToken fyToken,
         address borrower,
         uint256 lockedCollateral,
         uint256 debt
@@ -142,7 +153,7 @@ contract BalanceSheet is
         require(debt > 0, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_DEBT_ZERO");
 
         // Grab the upscaled USD price of the collateral.
-        ChainlinkOperatorInterface oracle = fintroller.oracle();
+        IChainlinkOperator oracle = fintroller.oracle();
         vars.collateralPriceUpscaled = oracle.getAdjustedPrice(fyToken.collateral().symbol());
 
         // Grab the upscaled USD price of the underlying.
@@ -172,18 +183,18 @@ contract BalanceSheet is
         return vars.hypotheticalCollateralizationRatio.mantissa;
     }
 
-    /// @inheritdoc BalanceSheetInterface
-    function getVault(FyTokenInterface fyToken, address borrower) external view override returns (Vault memory) {
+    /// @inheritdoc IBalanceSheet
+    function getVault(IFyToken fyToken, address borrower) external view override returns (Vault memory) {
         return vaults[fyToken][borrower];
     }
 
-    /// @inheritdoc BalanceSheetInterface
-    function getVaultDebt(FyTokenInterface fyToken, address borrower) external view override returns (uint256) {
+    /// @inheritdoc IBalanceSheet
+    function getVaultDebt(IFyToken fyToken, address borrower) external view override returns (uint256) {
         return vaults[fyToken][borrower].debt;
     }
 
-    /// @inheritdoc BalanceSheetInterface
-    function getVaultLockedCollateral(FyTokenInterface fyToken, address borrower)
+    /// @inheritdoc IBalanceSheet
+    function getVaultLockedCollateral(IFyToken fyToken, address borrower)
         external
         view
         override
@@ -192,8 +203,8 @@ contract BalanceSheet is
         return vaults[fyToken][borrower].lockedCollateral;
     }
 
-    /// @inheritdoc BalanceSheetInterface
-    function isAccountUnderwater(FyTokenInterface fyToken, address borrower) external view override returns (bool) {
+    /// @inheritdoc IBalanceSheet
+    function isAccountUnderwater(IFyToken fyToken, address borrower) external view override returns (bool) {
         Vault memory vault = vaults[fyToken][borrower];
         if (!vault.isOpen || vault.debt == 0) {
             return false;
@@ -203,16 +214,16 @@ contract BalanceSheet is
         return currentCollateralizationRatioMantissa < thresholdCollateralizationRatioMantissa;
     }
 
-    /// @inheritdoc BalanceSheetInterface
-    function isVaultOpen(FyTokenInterface fyToken, address borrower) external view override returns (bool) {
+    /// @inheritdoc IBalanceSheet
+    function isVaultOpen(IFyToken fyToken, address borrower) external view override returns (bool) {
         return vaults[fyToken][borrower].isOpen;
     }
 
     /// NON-CONSTANT FUNCTIONS ///
 
-    /// @inheritdoc BalanceSheetInterface
+    /// @inheritdoc IBalanceSheet
     function clutchCollateral(
-        FyTokenInterface fyToken,
+        IFyToken fyToken,
         address liquidator,
         address borrower,
         uint256 collateralAmount
@@ -238,9 +249,9 @@ contract BalanceSheet is
         return true;
     }
 
-    /// @inheritdoc BalanceSheetInterface
+    /// @inheritdoc IBalanceSheet
     function decreaseVaultDebt(
-        FyTokenInterface fyToken,
+        IFyToken fyToken,
         address borrower,
         uint256 subtractedDebt
     ) external override returns (bool) {
@@ -256,8 +267,8 @@ contract BalanceSheet is
         return true;
     }
 
-    /// @inheritdoc BalanceSheetInterface
-    function depositCollateral(FyTokenInterface fyToken, uint256 collateralAmount)
+    /// @inheritdoc IBalanceSheet
+    function depositCollateral(IFyToken fyToken, uint256 collateralAmount)
         external
         override
         isVaultOpenForMsgSender(fyToken)
@@ -282,8 +293,8 @@ contract BalanceSheet is
         return true;
     }
 
-    /// @inheritdoc BalanceSheetInterface
-    function freeCollateral(FyTokenInterface fyToken, uint256 collateralAmount)
+    /// @inheritdoc IBalanceSheet
+    function freeCollateral(IFyToken fyToken, uint256 collateralAmount)
         external
         override
         isVaultOpenForMsgSender(fyToken)
@@ -318,9 +329,9 @@ contract BalanceSheet is
         return true;
     }
 
-    /// @inheritdoc BalanceSheetInterface
+    /// @inheritdoc IBalanceSheet
     function increaseVaultDebt(
-        FyTokenInterface fyToken,
+        IFyToken fyToken,
         address borrower,
         uint256 addedDebt
     ) external override returns (bool) {
@@ -336,8 +347,8 @@ contract BalanceSheet is
         return true;
     }
 
-    /// @inheritdoc BalanceSheetInterface
-    function lockCollateral(FyTokenInterface fyToken, uint256 collateralAmount)
+    /// @inheritdoc IBalanceSheet
+    function lockCollateral(IFyToken fyToken, uint256 collateralAmount)
         external
         override
         isVaultOpenForMsgSender(fyToken)
@@ -360,8 +371,8 @@ contract BalanceSheet is
         return true;
     }
 
-    /// @inheritdoc BalanceSheetInterface
-    function openVault(FyTokenInterface fyToken) external override returns (bool) {
+    /// @inheritdoc IBalanceSheet
+    function openVault(IFyToken fyToken) external override returns (bool) {
         require(fintroller.isBondListed(fyToken), "ERR_BOND_NOT_LISTED");
         require(fyToken.isFyToken(), "ERR_OPEN_VAULT_FYTOKEN_INSPECTION");
         require(vaults[fyToken][msg.sender].isOpen == false, "ERR_VAULT_OPEN");
@@ -370,8 +381,8 @@ contract BalanceSheet is
         return true;
     }
 
-    /// @inheritdoc BalanceSheetInterface
-    function withdrawCollateral(FyTokenInterface fyToken, uint256 collateralAmount)
+    /// @inheritdoc IBalanceSheet
+    function withdrawCollateral(IFyToken fyToken, uint256 collateralAmount)
         external
         override
         isVaultOpenForMsgSender(fyToken)

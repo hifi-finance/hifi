@@ -1,19 +1,18 @@
 /// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
-import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
+import "@paulrberg/contracts/interfaces/IErc20.sol";
+import "@paulrberg/contracts/interfaces/IAdmin.sol";
 
-import "./ChainlinkOperatorStorage.sol";
 import "../external/chainlink/AggregatorV3Interface.sol";
 
-/// @title ChainlinkOperatorInterface
-/// @author Hifi
-abstract contract ChainlinkOperatorInterface is ChainlinkOperatorStorage {
+interface IChainlinkOperator {
     /// EVENTS ///
 
-    event DeleteFeed(Erc20Interface indexed asset, AggregatorV3Interface indexed feed);
+    event DeleteFeed(IErc20 indexed asset, AggregatorV3Interface indexed feed);
 
-    event SetFeed(Erc20Interface indexed asset, AggregatorV3Interface indexed feed);
+    event SetFeed(IErc20 indexed asset, AggregatorV3Interface indexed feed);
+
 
     /// CONSTANT FUNCTIONS ///
 
@@ -25,7 +24,7 @@ abstract contract ChainlinkOperatorInterface is ChainlinkOperatorStorage {
     ///
     /// @param symbol The Erc20 symbol of the token for which to query the price.
     /// @return The upscaled price as a mantissa.
-    function getAdjustedPrice(string memory symbol) external view virtual returns (uint256);
+    function getAdjustedPrice(string memory symbol) external view returns (uint256);
 
     /// @notice Gets the official feed for a symbol.
     /// @param symbol The symbol to return the feed for.
@@ -33,9 +32,8 @@ abstract contract ChainlinkOperatorInterface is ChainlinkOperatorStorage {
     function getFeed(string memory symbol)
         external
         view
-        virtual
         returns (
-            Erc20Interface,
+            IErc20,
             AggregatorV3Interface,
             bool
         );
@@ -50,7 +48,8 @@ abstract contract ChainlinkOperatorInterface is ChainlinkOperatorStorage {
     ///
     /// @param symbol The symbol to fetch the price for.
     /// @return Price denominated in USD, with 8 decimals.
-    function getPrice(string memory symbol) public view virtual returns (uint256);
+    function getPrice(string memory symbol) external view returns (uint256);
+
 
     /// NON-CONSTANT FUNCTIONS ///
 
@@ -65,7 +64,7 @@ abstract contract ChainlinkOperatorInterface is ChainlinkOperatorStorage {
     ///
     /// @param symbol The Erc20 symbol of the asset to delete the feed for.
     /// @return bool true = success, otherwise it reverts.
-    function deleteFeed(string memory symbol) external virtual returns (bool);
+    function deleteFeed(string memory symbol) external returns (bool);
 
     /// @notice Sets a Chainlink price feed. It is not an error to set a feed twice.
     ///
@@ -79,5 +78,11 @@ abstract contract ChainlinkOperatorInterface is ChainlinkOperatorStorage {
     /// @param asset The address of the Erc20 contract for which to get the price.
     /// @param feed The address of the Chainlink price feed contract.
     /// @return bool true = success, otherwise it reverts.
-    function setFeed(Erc20Interface asset, AggregatorV3Interface feed) external virtual returns (bool);
+    function setFeed(IErc20 asset, AggregatorV3Interface feed) external returns (bool);
+
+    /// @notice Chainlink price precision for USD-quoted data.
+    function pricePrecision() external view returns (uint256);
+
+    /// @notice The ratio between mantissa precision (1e18) and the Chainlink price precision (1e8).
+    function pricePrecisionScalar() external view returns (uint256);
 }
