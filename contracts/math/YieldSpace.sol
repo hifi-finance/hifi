@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity >=0.8.0;
 
+import "hardhat/console.sol";
 import "@paulrberg/contracts/math/PRBMathUD60x18.sol";
 
 /// @title YieldSpace
@@ -42,11 +43,11 @@ library YieldSpace {
     ) internal pure returns (uint256 fyTokenIn) {
         uint256 exponent = getYieldExponent(timeToMaturity.fromUint(), G2);
         unchecked {
-            require(normalizedUnderlyingOut <= normalizedUnderlyingReserves, "YieldSpace: too much underlying out");
+            require(normalizedUnderlyingReserves >= normalizedUnderlyingOut, "YieldSpace: too much underlying out");
             uint256 newNormalizedUnderlyingReserves = normalizedUnderlyingReserves - normalizedUnderlyingOut;
 
             // The addition can't overflow and the subtraction can't underflow.
-            //   1. The max value the `pow` function can yield is ~2^128 * 10^18.
+            //   1. The max value the "pow" function can yield is ~2^128 * 10^18.
             //   2. normalizedUnderlyingReserves >= newNormalizedUnderlyingReserves.
             uint256 sum =
                 normalizedUnderlyingReserves.fromUint().pow(exponent) +
@@ -55,10 +56,11 @@ library YieldSpace {
 
             // In theory, "newFyTokenReserves" should never become less than "fyTokenReserves", because the inverse
             // of the exponent is supraunitary and so sum^(1/exponent) should produce a result bigger than
-            // "fyTokenReserves" - that is, in a purely mathematical sense. In practice though, due to the `pow`
+            // "fyTokenReserves" - that is, in a purely mathematical sense. In practice though, due to the "pow"
             // function having lossy precision, specifically that it produces results slightly smaller than what
-            // they should be, it is possible in certain  circumstances for newFyTokenReserves to be less than
-            // "fyTokenReserves". For instance, this happens when "normalizedUnderlyingOut" is very small.
+            // they should be, it is possible for "newFyTokenReserves" to be less than "fyTokenReserves" in
+            // in certain circumstances. For instance, this happens when underlying reserves and
+            // and the fyToken reserves have very different magnitudes.
             uint256 newFyTokenReserves = sum.pow(exponent.inv()).toUint();
             require(newFyTokenReserves >= fyTokenReserves, "YieldSpace: lossy precision underflow");
             fyTokenIn = newFyTokenReserves - fyTokenReserves;
@@ -87,7 +89,7 @@ library YieldSpace {
             );
 
             // The first two factors in the right-hand side of the equation. Don't need to guard against overflow
-            // because the `pow` function yields a maximum of ~2^128 in fixed-point form.
+            // because the "pow" function yields a maximum of ~2^128 in fixed-point form.
             uint256 startingReservesFactor =
                 normalizedUnderlyingReserves.fromUint().pow(exponent) + fyTokenReserves.fromUint().pow(exponent);
 
@@ -136,18 +138,30 @@ library YieldSpace {
     ) internal pure returns (uint256 normalizedUnderlyingIn) {
         uint256 exponent = getYieldExponent(timeToMaturity.fromUint(), G1);
         unchecked {
-            require(fyTokenOut <= fyTokenReserves, "YieldSpace: too much fyToken out");
+            require(fyTokenReserves >= fyTokenOut, "YieldSpace: too much fyToken out");
             uint256 newFyTokenReserves = fyTokenReserves - fyTokenOut;
 
-            // None of these operations can overflow or underflow.
-            //   1. The max value the `pow` function can yield is ~2^128 * 10^18.
-            //   2. newFyTokenReserves >= newFyTokenReserves.
-            //   3. sum^(1/exponent) > fyTokenReserves, because the exponent is less than 1.
+            // The addition can't overflow and the subtraction can't underflow.
+            //   1. The max value the "pow" function can yield is ~2^128 * 10^18.
+            //   2. normalizedUnderlyingReserves >= newNormalizedUnderlyingReserves.
             uint256 sum =
                 normalizedUnderlyingReserves.fromUint().pow(exponent) +
                     fyTokenReserves.fromUint().pow(exponent) -
                     newFyTokenReserves.fromUint().pow(exponent);
-            normalizedUnderlyingIn = sum.pow(exponent.inv()).toUint() - normalizedUnderlyingReserves;
+
+            // In theory, "newNormalizedUnderlyingReserves" should never become less than "normalizedUnderlyingReserves"
+            // because the inverse of the exponent is supraunitary and so sum^(1/exponent) should produce a result
+            // bigger than "normalizedUnderlyingReserves" - that is, in a purely mathematical sense. In practice though,
+            // due to the "pow" function having lossy precision, specifically that it produces results slightly smaller
+            // than what they should be, it is possible in certain  circumstances for "newNormalizedUnderlyingReserves
+            // to be less than "normalizedUnderlyingReserves". For instance, this happens when underlying reserves and
+            // and the fyToken reserves have very different magnitudes.
+            uint256 newNormalizedUnderlyingReserves = sum.pow(exponent.inv()).toUint();
+            require(
+                newNormalizedUnderlyingReserves >= normalizedUnderlyingReserves,
+                "YieldSpace: lossy precision underflow"
+            );
+            normalizedUnderlyingIn = newNormalizedUnderlyingReserves - normalizedUnderlyingReserves;
         }
     }
 

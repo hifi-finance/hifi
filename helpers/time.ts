@@ -10,6 +10,7 @@ export function secondsInHours(hours: BigNumberish): BigNumber {
   return hoursBn.mul(BigNumber.from("3600"));
 }
 
+/// This is based on the calendar common year definition, which assumes 365 days.
 export function secondsInYears(years: BigNumberish): BigNumber {
   const yearsBn = BigNumber.from(years);
   return yearsBn.mul(BigNumber.from("31536000"));
