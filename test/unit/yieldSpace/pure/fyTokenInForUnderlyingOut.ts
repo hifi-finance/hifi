@@ -124,8 +124,23 @@ export default function shouldBehaveLikeFyTokenInForUnderlyingOut(): void {
             [ZERO, ZERO, ZERO, ZERO, ZERO],
             [fp("1"), fp("1"), fp("1"), bn("1"), fp("1.000000011568185778")],
             [fp("1"), fp("1"), fp("1"), secondsInYears(1), fp("1.561773379534934633")],
+            [fp("3.14"), fp("5.04"), fp("0.54"), secondsInYears(3), fp("0.901675576966934915")],
             [fp("100"), fp("120"), fp("10"), secondsInDays(30), fp("10.059630229028745486")],
             [fp("100"), fp("120"), fp("10"), secondsInYears(1), fp("10.758042609858826623")],
+            [
+              fp("4077.248409399657329853"),
+              fp("5528.584115752365727396"),
+              fp("307.1381232"),
+              secondsInDays(270),
+              fp("330.234836640542669566"),
+            ],
+            [
+              fp("995660.5689"),
+              fp("9248335"),
+              fp("255866.119"),
+              secondsInYears(2).add(secondsInDays(125)),
+              fp("1145339.583376550805405438"),
+            ],
           ];
 
           forEach(testSets).it(
