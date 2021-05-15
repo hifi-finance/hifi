@@ -60,15 +60,17 @@ contract HifiPool is
         isBeforeMaturity
         returns (uint256 underlyingIn)
     {
-        uint256 normalizedUnderlyingReserves = getNormalizedUnderlyingReserves();
         uint256 virtualFyTokenReserves = getVirtualFyTokenReserves();
-        uint256 normalizedUnderlyingIn =
-            YieldSpace.underlyingInForFyTokenOut(
-                normalizedUnderlyingReserves,
+        uint256 normalizedUnderlyingReserves = getNormalizedUnderlyingReserves();
+        uint256 normalizedUnderlyingIn;
+        unchecked {
+            normalizedUnderlyingIn = YieldSpace.underlyingInForFyTokenOut(
                 virtualFyTokenReserves,
+                normalizedUnderlyingReserves,
                 fyTokenOut,
                 maturity - block.timestamp
             );
+        }
         require(
             virtualFyTokenReserves - fyTokenOut >= normalizedUnderlyingReserves + normalizedUnderlyingIn,
             "HifiPool: too low fyToken reserves"
@@ -84,12 +86,14 @@ contract HifiPool is
         isBeforeMaturity
         returns (uint256 fyTokenIn)
     {
-        fyTokenIn = YieldSpace.fyTokenInForUnderlyingOut(
-            getNormalizedUnderlyingReserves(),
-            getVirtualFyTokenReserves(),
-            normalize(underlyingOut),
-            maturity - block.timestamp
-        );
+        unchecked {
+            fyTokenIn = YieldSpace.fyTokenInForUnderlyingOut(
+                getNormalizedUnderlyingReserves(),
+                getVirtualFyTokenReserves(),
+                normalize(underlyingOut),
+                maturity - block.timestamp
+            );
+        }
     }
 
     /// @inheritdoc HifiPoolInterface
@@ -100,14 +104,16 @@ contract HifiPool is
         isBeforeMaturity
         returns (uint256 underlyingOut)
     {
-        uint256 normalizedUnderlyingOut =
-            YieldSpace.underlyingOutForFyTokenIn(
-                getNormalizedUnderlyingReserves(),
-                getVirtualFyTokenReserves(),
-                fyTokenIn,
-                maturity - block.timestamp
-            );
-        underlyingOut = denormalize(normalizedUnderlyingOut);
+        unchecked {
+            uint256 normalizedUnderlyingOut =
+                YieldSpace.underlyingOutForFyTokenIn(
+                    getVirtualFyTokenReserves(),
+                    getNormalizedUnderlyingReserves(),
+                    fyTokenIn,
+                    maturity - block.timestamp
+                );
+            underlyingOut = denormalize(normalizedUnderlyingOut);
+        }
     }
 
     /// @inheritdoc HifiPoolInterface
@@ -118,15 +124,17 @@ contract HifiPool is
         isBeforeMaturity
         returns (uint256 fyTokenOut)
     {
-        uint256 normalizedUnderlyingIn = normalize(underlyingIn);
         uint256 normalizedUnderlyingReserves = getNormalizedUnderlyingReserves();
         uint256 virtualFyTokenReserves = getVirtualFyTokenReserves();
-        fyTokenOut = YieldSpace.fyTokenOutForUnderlyingIn(
-            normalizedUnderlyingReserves,
-            virtualFyTokenReserves,
-            normalizedUnderlyingIn,
-            maturity - block.timestamp
-        );
+        uint256 normalizedUnderlyingIn = normalize(underlyingIn);
+        unchecked {
+            fyTokenOut = YieldSpace.fyTokenOutForUnderlyingIn(
+                normalizedUnderlyingReserves,
+                virtualFyTokenReserves,
+                normalizedUnderlyingIn,
+                maturity - block.timestamp
+            );
+        }
         require(
             virtualFyTokenReserves - fyTokenOut >= normalizedUnderlyingReserves + normalizedUnderlyingIn,
             "HifiPool: too low fyToken reserves"
@@ -187,7 +195,6 @@ contract HifiPool is
         underlying.safeTransferFrom(msg.sender, address(this), uint256(underlyingIn));
         fyToken.transfer(to, uint256(fyTokenOut));
 
-        // TODO: implement safe cast
         emit Trade(maturity, msg.sender, to, -toInt256(underlyingIn), toInt256(fyTokenOut));
     }
 
@@ -202,7 +209,6 @@ contract HifiPool is
         underlying.safeTransfer(to, uint256(underlyingOut));
         fyToken.transferFrom(msg.sender, address(this), uint256(fyTokenIn));
 
-        // TODO: implement safe cast
         emit Trade(maturity, msg.sender, to, toInt256(underlyingOut), -toInt256(fyTokenIn));
     }
 

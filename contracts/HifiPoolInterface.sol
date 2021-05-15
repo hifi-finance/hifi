@@ -34,25 +34,41 @@ abstract contract HifiPoolInterface is HifiPoolStorage {
 
     /// CONSTANT FUNCTIONS ///
 
-    /// @dev Quotes how much underlying would be obtained by selling `fyTokenIn` fyToken.
-    /// @param fyTokenIn Hypothetical amount of fyToken to sell.
-    /// @return underlyingOut Hypothetical amount of underlying that would be obtained.
-    function getQuoteForSellingFyToken(uint256 fyTokenIn) public view virtual returns (uint256 underlyingOut);
-
-    /// @notice Quotes how much fyToken would be obtained by selling `underlyingIn` underlying.
-    /// @param underlyingIn Hypothetical amount of underlying to sell.
-    /// @return fyTokenOut Hypothetical amount of fyToken that would be obtained.
-    function getQuoteForSellingUnderlying(uint256 underlyingIn) public view virtual returns (uint256 fyTokenOut);
-
     /// @notice Quotes how much underlying would be required to buy `fyTokenOut` fyToken.
+    ///
+    /// @dev Requirements:
+    /// - Cannot be called after maturity.
+    ///
     /// @param fyTokenOut Hypothetical amount of fyToken to sell.
     /// @return underlyingIn Hypothetical amount of underlying required.
     function getQuoteForBuyingFyToken(uint256 fyTokenOut) public view virtual returns (uint256 underlyingIn);
 
     /// @notice Quotes how much fyToken would be required to buy `underlyingOut` underlying.
+    ///
+    /// @dev Requirements:
+    /// - Cannot be called after maturity.
+    ///
     /// @param underlyingOut Hypothetical amount of underlying desired.
     /// @return fyTokenIn Hypothetical amount of fyToken required.
     function getQuoteForBuyingUnderlying(uint256 underlyingOut) public view virtual returns (uint256 fyTokenIn);
+
+    /// @notice Quotes how much underlying would be obtained by selling `fyTokenIn` fyToken.
+    ///
+    /// @dev Requirements:
+    /// - Cannot be called after maturity.
+    ///
+    /// @param fyTokenIn Hypothetical amount of fyToken to sell.
+    /// @return underlyingOut Hypothetical amount of underlying that would be obtained.
+    function getQuoteForSellingFyToken(uint256 fyTokenIn) public view virtual returns (uint256 underlyingOut);
+
+    /// @notice Quotes how much fyToken would be obtained by selling `underlyingIn` underlying.
+    ///
+    /// @dev Requirements:
+    /// - Cannot be called after maturity.
+    ///
+    /// @param underlyingIn Hypothetical amount of underlying to sell.
+    /// @return fyTokenOut Hypothetical amount of fyToken that would be obtained.
+    function getQuoteForSellingUnderlying(uint256 underlyingIn) public view virtual returns (uint256 fyTokenOut);
 
     /// @notice Retrieves the normalized underlying reserves, i.e. the Erc20 balance scaled to have 18 decimals.
     function getNormalizedUnderlyingReserves() public view virtual returns (uint256 normalizedUnderlyingReserves);
@@ -85,6 +101,7 @@ abstract contract HifiPoolInterface is HifiPoolStorage {
     /// @dev Emits a {Trade} event.
     ///
     /// Requirements:
+    /// - All from "getQuoteForBuyingFyToken".
     /// - The caller must have allowed this contract to spend `underlyingIn` tokens.
     /// - The caller must have at least `underlyingIn` underlying in their account.
     ///
@@ -96,6 +113,7 @@ abstract contract HifiPoolInterface is HifiPoolStorage {
     /// @notice Buys underlying with fyToken.
     ///
     /// Requirements:
+    /// - All from "getQuoteForBuyingUnderlying".
     /// - The caller must have allowed this contract to spend `fyTokenIn` tokens.
     /// - The caller must have at least `fyTokenIn` fyToken in their account.
     ///
@@ -121,6 +139,7 @@ abstract contract HifiPoolInterface is HifiPoolStorage {
     /// @dev Emits a {Trade} event.
     ///
     /// Requirements:
+    /// - All from "getQuoteForSellingFyToken".
     /// - The caller must have allowed this contract to spend `fyTokenIn` tokens.
     /// - The caller must have at least `underlyingIn` fyToken in their account.
     ///
@@ -134,6 +153,7 @@ abstract contract HifiPoolInterface is HifiPoolStorage {
     /// @dev Emits a {Trade} event.
     ///
     /// Requirements:
+    /// - All from "getQuoteForSellingUnderlying".
     /// - The caller must have allowed this contract to spend `underlyingIn` tokens.
     /// - The caller must have at least `underlyingIn` underlying in their account.
     ///

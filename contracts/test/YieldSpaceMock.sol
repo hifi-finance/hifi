@@ -1,9 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity >=0.8.0;
 
+import "hardhat/console.sol";
 import "../math/YieldSpace.sol";
 
 contract YieldSpaceMock {
+    using PRBMathUD60x18 for uint256;
+
     function doFyTokenInForUnderlyingOut(
         uint256 normalizedUnderlyingReserves,
         uint256 fyTokenReserves,
@@ -37,28 +40,28 @@ contract YieldSpaceMock {
     }
 
     function doUnderlyingInForFyTokenOut(
-        uint256 normalizedUnderlyingReserves,
         uint256 fyTokenReserves,
+        uint256 normalizedUnderlyingReserves,
         uint256 fyTokenOut,
         uint256 timeToMaturity
     ) external pure returns (uint256 normalizedUnderlyingIn) {
         normalizedUnderlyingIn = YieldSpace.underlyingInForFyTokenOut(
-            normalizedUnderlyingReserves,
             fyTokenReserves,
+            normalizedUnderlyingReserves,
             fyTokenOut,
             timeToMaturity
         );
     }
 
     function doUnderlyingOutForFyTokenIn(
-        uint256 normalizedUnderlyingReserves,
         uint256 fyTokenReserves,
+        uint256 normalizedUnderlyingReserves,
         uint256 fyTokenIn,
         uint256 timeToMaturity
     ) external pure returns (uint256 normalizedUnderlyingOut) {
         normalizedUnderlyingOut = YieldSpace.underlyingOutForFyTokenIn(
-            normalizedUnderlyingReserves,
             fyTokenReserves,
+            normalizedUnderlyingReserves,
             fyTokenIn,
             timeToMaturity
         );

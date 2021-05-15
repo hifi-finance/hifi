@@ -125,14 +125,14 @@ library YieldSpace {
 
     /// @notice Calculates the amount of underlying a user could sell for a given amount of fyToken.
     /// @dev Based on the equation y = (x_s^(1-gt) + y_s^(1-gt) - x^(1-gt))^(1/(1-gt)).
-    /// @param normalizedUnderlyingReserves Amount of underlying reserves.
     /// @param fyTokenReserves Amount of fyToken reserves.
+    /// @param normalizedUnderlyingReserves Amount of underlying reserves.
     /// @param fyTokenOut Amount of underlying to be traded.
     /// @param timeToMaturity Time to maturity in seconds.
     /// @return normalizedUnderlyingIn Amount of fyToken a user could sell.
     function underlyingInForFyTokenOut(
-        uint256 normalizedUnderlyingReserves,
         uint256 fyTokenReserves,
+        uint256 normalizedUnderlyingReserves,
         uint256 fyTokenOut,
         uint256 timeToMaturity
     ) internal pure returns (uint256 normalizedUnderlyingIn) {
@@ -143,10 +143,10 @@ library YieldSpace {
 
             // The addition can't overflow and the subtraction can't underflow.
             //   1. The max value the "pow" function can yield is ~2^128 * 10^18.
-            //   2. normalizedUnderlyingReserves >= newNormalizedUnderlyingReserves.
+            //   2. fyTokenReserves >= newFyTokenReserves.
             uint256 sum =
-                normalizedUnderlyingReserves.fromUint().pow(exponent) +
-                    fyTokenReserves.fromUint().pow(exponent) -
+                fyTokenReserves.fromUint().pow(exponent) +
+                    normalizedUnderlyingReserves.fromUint().pow(exponent) -
                     newFyTokenReserves.fromUint().pow(exponent);
 
             // In theory, "newNormalizedUnderlyingReserves" should never become less than "normalizedUnderlyingReserves"
@@ -167,14 +167,14 @@ library YieldSpace {
 
     /// @notice Calculates the amount of underyling a user would get for a given amount of fyToken.
     /// @dev Based on the equation y = (x_s^(1-gt) + y_s^(1-gt) - x^(1-gt))^(1/(1-gt)).
-    /// @param normalizedUnderlyingReserves Amount of underlying reserves.
     /// @param fyTokenReserves Amount of fyToken reserves.
+    /// @param normalizedUnderlyingReserves Amount of underlying reserves.
     /// @param fyTokenIn Amount of fyToken to be traded.
     /// @param timeToMaturity Time to maturity in seconds.
     /// @return normalizedUnderlyingOut Amount of underlying the user would get.
     function underlyingOutForFyTokenIn(
-        uint256 normalizedUnderlyingReserves,
         uint256 fyTokenReserves,
+        uint256 normalizedUnderlyingReserves,
         uint256 fyTokenIn,
         uint256 timeToMaturity
     ) internal pure returns (uint256 normalizedUnderlyingOut) {
@@ -185,7 +185,7 @@ library YieldSpace {
 
             // The first two factors in the right-hand side of the equation.
             uint256 startingReservesFactor =
-                normalizedUnderlyingReserves.fromUint().pow(exponent) + fyTokenReserves.fromUint().pow(exponent);
+                fyTokenReserves.fromUint().pow(exponent) + normalizedUnderlyingReserves.fromUint().pow(exponent);
 
             // The third factor in the right-hand side of the equation.
             uint256 newFyTokenReservesFactor = newFyTokenReserves.fromUint().pow(exponent);
