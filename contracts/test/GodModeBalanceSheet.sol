@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "../BalanceSheet.sol";
-import "../interfaces/IFyToken.sol";
+import "../IFyToken.sol";
 
 /// @title GodModeBalanceSheet
 /// @author Hifi

@@ -1,22 +1,39 @@
 /// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
-import "@paulrberg/contracts/interfaces/IErc20.sol";
-import "@paulrberg/contracts/interfaces/IErc20Permit.sol";
-import "@paulrberg/contracts/interfaces/IErc20Recover.sol";
-import "@paulrberg/contracts/interfaces/IAdmin.sol";
+import "@paulrberg/contracts/token/erc20/IErc20.sol";
+import "@paulrberg/contracts/token/erc20/IErc20Permit.sol";
+import "@paulrberg/contracts/token/erc20/IErc20Recover.sol";
+import "@paulrberg/contracts/access/IAdmin.sol";
 
 import "./IFintroller.sol";
 import "./IBalanceSheet.sol";
 import "./IRedemptionPool.sol";
 
-interface IFyToken is IErc20Permit, IAdmin {
+/// @title IFyToken
+/// @author Hifi
+/// @notice Interface for the FyToken contract
+interface IFyToken is
+    IErc20Permit, /// one dependency
+    IAdmin /// no dependency
+{
     /// EVENTS ///
 
+    /// @notice Emitted when a funds are borrowed.
+    /// @param borrower The addresss of the borrower.
+    /// @param borrowAmount The amount of funds borrowed.
     event Borrow(address indexed borrower, uint256 borrowAmount);
 
+    /// @notice Emitted when tokens are burnt.
+    /// @param holder The address of the holder.
+    /// @param burnAmount The amount of burnt tokens.
     event Burn(address indexed holder, uint256 burnAmount);
 
+    /// @notice Emitted when a borrow is liquidated.
+    /// @param liquidator The address of the liquidator.
+    /// @param borrower The address of the borrower.
+    /// @param repayAmount The amount of repaid funds.
+    /// @param clutchedCollateralAmount The amount of clutched collateral.
     event LiquidateBorrow(
         address indexed liquidator,
         address indexed borrower,
@@ -24,12 +41,23 @@ interface IFyToken is IErc20Permit, IAdmin {
         uint256 clutchedCollateralAmount
     );
 
+    /// @notice Emitted when tokens are minted.
+    /// @param beneficiary The address of the holder.
+    /// @param mintAmount The amount of minted tokens.
     event Mint(address indexed beneficiary, uint256 mintAmount);
 
+    /// @notice Emitted when a borrow is repaid.
+    /// @param payer The address of the payer.
+    /// @param borrower The address of the borrower.
+    /// @param repayAmount The amount of repaid funds.
+    /// @param newDebt The amount of the new debt.
     event RepayBorrow(address indexed payer, address indexed borrower, uint256 repayAmount, uint256 newDebt);
 
+    /// @notice Emitted when the Fintroller is set.
+    /// @param admin The address of the admin.
+    /// @param oldFintroller The address of the old Fintroller.
+    /// @param newFintroller The address of the new Fintroller.
     event SetFintroller(address indexed admin, IFintroller oldFintroller, IFintroller newFintroller);
-
 
     /// NON-CONSTANT FUNCTIONS ///
 
@@ -145,26 +173,29 @@ interface IFyToken is IErc20Permit, IAdmin {
     /// @return bool true = success, otherwise it reverts.
     function _setFintroller(IFintroller newFintroller) external returns (bool);
 
-
-
     /// CONSTANT FUNCTIONS ///
+
+    /// @notice The unique BalanceSheet associated with this FyToken.
+    /// @return The BalanceSheet contract.
     function balanceSheet() external view returns (IBalanceSheet);
 
+    /// @notice The Erc20 collateral associated with this FyToken.
+    /// @return The collateral Erc20.
     function collateral() external view returns (IErc20);
 
     /// @notice The ratio between mantissa precision (1e18) and the collateral precision.
     function collateralPrecisionScalar() external view returns (uint256);
 
-    /// @notice Unix timestamp in seconds for when this fyToken expires.
+    /// @notice Unix timestamp in seconds for when this FyToken expires.
     function expirationTime() external view returns (uint256);
 
-    /// @notice The unique Fintroller associated with this fyToken.
+    /// @notice The unique Fintroller associated with this FyToken.
     function fintroller() external view returns (IFintroller);
 
-    /// @notice The unique RedemptionPool associated with this fyToken.
+    /// @notice The unique RedemptionPool associated with this FyToken.
     function redemptionPool() external view returns (IRedemptionPool);
 
-    /// @notice The Erc20 underlying, or target, asset for this fyToken.
+    /// @notice The Erc20 underlying, or target, asset for this FyToken.
     function underlying() external view returns (IErc20);
 
     /// @notice The ratio between mantissa precision (1e18) and the underlying precision.

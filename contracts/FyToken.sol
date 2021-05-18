@@ -7,8 +7,8 @@ import "@paulrberg/contracts/token/erc20/Erc20Permit.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Recover.sol";
 import "@paulrberg/contracts/utils/ReentrancyGuard.sol";
 
-import "./interfaces/IFyToken.sol";
-import "./interfaces/IBalanceSheet.sol";
+import "./IFyToken.sol";
+import "./IBalanceSheet.sol";
 
 import "./RedemptionPool.sol";
 import "./Exponential.sol";
@@ -17,13 +17,13 @@ import "./Exponential.sol";
 /// @author Hifi
 /// @notice Zero-coupon bond that tracks an Erc20 underlying asset.
 contract FyToken is
+    IFyToken, /// two dependencies
     ReentrancyGuard, /// no depedency
-    IFyToken, /// one dependency
-    Admin, /// two dependencies
-    Erc20, /// two dependencies
+    Admin, /// one dependency
+    Erc20, /// one dependency
     Exponential, /// two dependencies
-    Erc20Permit, /// five dependencies
-    Erc20Recover /// five dependencies
+    Erc20Permit, /// two dependencies
+    Erc20Recover /// two dependencies
 {
     /// STORAGE PROPERTIES ///
 
@@ -52,7 +52,7 @@ contract FyToken is
     uint256 public override underlyingPrecisionScalar;
 
     /// @inheritdoc IFyToken
-    bool public override constant isFyToken = true;
+    bool public constant override isFyToken = true;
 
     modifier isVaultOpen(address account) {
         require(balanceSheet.isVaultOpen(this, account), "ERR_VAULT_NOT_OPEN");
@@ -108,13 +108,6 @@ contract FyToken is
         // Create the RedemptionPool contract and transfer the owner from the fyToken itself to the current caller.
         redemptionPool = new RedemptionPool(fintroller_, this);
         IAdmin(address(redemptionPool))._transferAdmin(msg.sender);
-    }
-
-    /// CONSTANT FUNCTIONS ///
-
-    /// @inheritdoc IFyToken
-    function isMatured() public view override returns (bool) {
-        return block.timestamp >= expirationTime;
     }
 
     /// NON-CONSTANT FUNCTIONS ///
@@ -267,6 +260,13 @@ contract FyToken is
         emit SetFintroller(admin, oldFintroller, newFintroller);
 
         return true;
+    }
+
+    /// CONSTANT FUNCTIONS ///
+
+    /// @inheritdoc IFyToken
+    function isMatured() public view override returns (bool) {
+        return block.timestamp >= expirationTime;
     }
 
     /// INTERNAL FUNCTIONS ///

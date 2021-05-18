@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "./BaseInvariants.sol";
 import "../Fintroller.sol";
-import "../interfaces/IFyToken.sol";
+import "../IFyToken.sol";
 
 contract FyTokenLike {
     bool public constant isFyToken = true;

@@ -1,18 +1,30 @@
 /// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
-import "@paulrberg/contracts/interfaces/IErc20Recover.sol";
+import "@paulrberg/contracts/token/erc20/IErc20Recover.sol";
 
 import "./IFintroller.sol";
 import "./IFyToken.sol";
 
-interface IRedemptionPool is IErc20Recover {
+/// @title IRedemptionPool
+/// @author Hifi
+/// @notice The interface of the RedemptionPool contract
+interface IRedemptionPool is
+    IErc20Recover /// one dependency
+{
     /// EVENTS ///
 
+    /// @notice Emitted when fyTokens are redeemed.
+    /// @param account The account redeeming the fyTokens.
+    /// @param fyTokenAmount The amount of redeeming fyTokens.
+    /// @param underlyingAmount The amount of received underlying tokens.
     event RedeemFyTokens(address indexed account, uint256 fyTokenAmount, uint256 underlyingAmount);
 
+    /// @notice Emitted when underlying is supplied.
+    /// @param account The account supplying underlying.
+    /// @param underlyingAmount The amount of supplied underlying.
+    /// @param fyTokenAmount The amount of received fyTokens.
     event SupplyUnderlying(address indexed account, uint256 underlyingAmount, uint256 fyTokenAmount);
-
 
     /// NON-CONSTANT FUNCTIONS ///
 
@@ -45,7 +57,6 @@ interface IRedemptionPool is IErc20Recover {
     /// @param underlyingAmount The amount of underlying to supply to the RedemptionPool.
     /// @return bool true = success, otherwise it reverts.
     function supplyUnderlying(uint256 underlyingAmount) external returns (bool);
-
 
     /// CONSTANT FUNCTIONS ///
 

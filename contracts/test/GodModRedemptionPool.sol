@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "../RedemptionPool.sol";
-import "../interfaces/IFyToken.sol";
+import "../IFyToken.sol";
 
 /// @title GodModeRedemptionPool
 /// @author Hifi

@@ -1,18 +1,26 @@
 /// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
-import "@paulrberg/contracts/interfaces/IErc20.sol";
-import "@paulrberg/contracts/interfaces/IAdmin.sol";
+import "@paulrberg/contracts/token/erc20/IErc20.sol";
+import "@paulrberg/contracts/access/IAdmin.sol";
 
 import "../external/chainlink/AggregatorV3Interface.sol";
 
+/// @title IChainlinkOperator
+/// @author Hifi
+/// @notice Interface for the ChainlinkOperator contract
 interface IChainlinkOperator {
     /// EVENTS ///
 
+    /// @notice Emitted when a feed is deleted.
+    /// @param asset The related asset.
+    /// @param feed The related feed.
     event DeleteFeed(IErc20 indexed asset, AggregatorV3Interface indexed feed);
 
+    /// @notice Emitted when a feed is set.
+    /// @param asset The related asset.
+    /// @param feed The related feed.
     event SetFeed(IErc20 indexed asset, AggregatorV3Interface indexed feed);
-
 
     /// CONSTANT FUNCTIONS ///
 
@@ -49,7 +57,6 @@ interface IChainlinkOperator {
     /// @param symbol The symbol to fetch the price for.
     /// @return Price denominated in USD, with 8 decimals.
     function getPrice(string memory symbol) external view returns (uint256);
-
 
     /// NON-CONSTANT FUNCTIONS ///
 

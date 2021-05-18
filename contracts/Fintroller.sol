@@ -3,23 +3,27 @@ pragma solidity ^0.8.0;
 
 import "@paulrberg/contracts/access/Admin.sol";
 import "./Exponential.sol";
-
-import "./interfaces/IFintroller.sol";
-import "./interfaces/IFyToken.sol";
-import "./interfaces/IChainlinkOperator.sol";
+import "./IFintroller.sol";
+import "./IFyToken.sol";
+import "./oracles/ChainlinkOperator.sol";
 
 /// @notice Fintroller
 /// @author Hifi
 /// @notice Controls the financial permissions and risk parameters for the Hifi protocol.
 contract Fintroller is
     IFintroller, /// one dependency
-    Admin /// two dependencies
+    Admin /// one dependency
 {
+    /// STORAGE PROPERTIES ///
+
+    /// @inheritdoc IFintroller
+    IChainlinkOperator public override oracle;
+
+    /// @inheritdoc IFintroller
+    bool public constant override isFintroller = true;
+
     /// @dev Maps the fyToken address to the Bond structs.
     mapping(IFyToken => Bond) internal bonds;
-
-    /// @notice The contract that provides price data for the collateral and the underlying asset.
-    IChainlinkOperator override public oracle;
 
     /// @dev The threshold below which the collateralization ratio cannot be set, equivalent to 100%.
     uint256 internal constant collateralizationRatioLowerBoundMantissa = 1.0e18;
@@ -27,10 +31,10 @@ contract Fintroller is
     /// @dev The threshold above which the collateralization ratio cannot be set, equivalent to 10,000%.
     uint256 internal constant collateralizationRatioUpperBoundMantissa = 1.0e20;
 
-    /// @dev The dafault collateralization ratio set when a new bond is listed, equivalent to 150%.
+    /// @dev The default collateralization ratio set when a new bond is listed, equivalent to 150%.
     uint256 internal constant defaultCollateralizationRatioMantissa = 1.5e18;
 
-    /// @dev The dafault liquidation incentive mantissa set when a new bond is listed, equivalent to 110%.
+    /// @dev The default liquidation incentive mantissa set when a new bond is listed, equivalent to 110%.
     uint256 internal constant defaultLiquidationIncentiveMantissa = 1.1e18;
 
     /// @dev The threshold below which the liquidation incentive cannot be set, equivalent to 100%.
@@ -38,10 +42,6 @@ contract Fintroller is
 
     /// @dev The threshold above which the liquidation incentive cannot be set, equivalent to 150%.
     uint256 internal constant liquidationIncentiveUpperBoundMantissa = 1.5e18;
-
-    /// @notice Indicator that this is a Fintroller contract, for inspection.
-    bool public override constant isFintroller = true;
-
 
     /// CONSTANT FUNCTIONS ///
 
@@ -168,12 +168,7 @@ contract Fintroller is
     }
 
     /// @inheritdoc IFintroller
-    function setBondDebtCeiling(IFyToken fyToken, uint256 newDebtCeiling)
-        external
-        override
-        onlyAdmin
-        returns (bool)
-    {
+    function setBondDebtCeiling(IFyToken fyToken, uint256 newDebtCeiling) external override onlyAdmin returns (bool) {
         // Checks: bond is listed.
         require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
 
@@ -231,12 +226,7 @@ contract Fintroller is
     }
 
     /// @inheritdoc IFintroller
-    function setDepositCollateralAllowed(IFyToken fyToken, bool state)
-        external
-        override
-        onlyAdmin
-        returns (bool)
-    {
+    function setDepositCollateralAllowed(IFyToken fyToken, bool state) external override onlyAdmin returns (bool) {
         require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
         bonds[fyToken].isDepositCollateralAllowed = state;
         emit SetDepositCollateralAllowed(admin, fyToken, state);
@@ -244,12 +234,7 @@ contract Fintroller is
     }
 
     /// @inheritdoc IFintroller
-    function setLiquidateBorrowAllowed(IFyToken fyToken, bool state)
-        external
-        override
-        onlyAdmin
-        returns (bool)
-    {
+    function setLiquidateBorrowAllowed(IFyToken fyToken, bool state) external override onlyAdmin returns (bool) {
         require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
         bonds[fyToken].isLiquidateBorrowAllowed = state;
         emit SetLiquidateBorrowAllowed(admin, fyToken, state);
@@ -282,12 +267,7 @@ contract Fintroller is
     }
 
     /// @inheritdoc IFintroller
-    function setSupplyUnderlyingAllowed(IFyToken fyToken, bool state)
-        external
-        override
-        onlyAdmin
-        returns (bool)
-    {
+    function setSupplyUnderlyingAllowed(IFyToken fyToken, bool state) external override onlyAdmin returns (bool) {
         require(bonds[fyToken].isListed, "ERR_BOND_NOT_LISTED");
         bonds[fyToken].isSupplyUnderlyingAllowed = state;
         emit SetSupplyUnderlyingAllowed(admin, fyToken, state);

@@ -1,14 +1,14 @@
 /// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
-import "@paulrberg/contracts/interfaces/IErc20.sol";
+import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Recover.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 import "@paulrberg/contracts/utils/ReentrancyGuard.sol";
 
-import "./interfaces/IRedemptionPool.sol";
-import "./interfaces/IFintroller.sol";
-import "./interfaces/IFyToken.sol";
+import "./IRedemptionPool.sol";
+import "./IFintroller.sol";
+import "./IFyToken.sol";
 
 /// @title RedemptionPool
 /// @author Hifi
@@ -16,11 +16,13 @@ import "./interfaces/IFyToken.sol";
 /// in exchange for 1 underlying after maturation.
 /// @dev Instantiated by the fyToken in its constructor.
 contract RedemptionPool is
-    IRedemptionPool,
-    Erc20Recover,
-    ReentrancyGuard
+    IRedemptionPool, /// one dependency
+    Erc20Recover, /// two dependencies
+    ReentrancyGuard /// no dependency
 {
     using SafeErc20 for IErc20;
+
+    /// STORAGE PROPERTIES ///
 
     /// @inheritdoc IRedemptionPool
     IFintroller public override fintroller;
@@ -32,7 +34,7 @@ contract RedemptionPool is
     IFyToken public override fyToken;
 
     /// @inheritdoc IRedemptionPool
-    bool public override constant isRedemptionPool = true;
+    bool public constant override isRedemptionPool = true;
 
     /// @param fintroller_ The address of the Fintroller contract.
     /// @param fyToken_ The address of the fyToken contract.

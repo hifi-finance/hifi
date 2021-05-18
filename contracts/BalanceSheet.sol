@@ -2,37 +2,38 @@
 pragma solidity ^0.8.0;
 
 import "@paulrberg/contracts/access/Admin.sol";
-import "@paulrberg/contracts/interfaces/IErc20.sol";
+import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 import "@paulrberg/contracts/utils/ReentrancyGuard.sol";
 
 import "./Exponential.sol";
 
-import "./interfaces/IBalanceSheet.sol";
-import "./interfaces/IFintroller.sol";
-import "./interfaces/IFyToken.sol";
-import "./interfaces/IChainlinkOperator.sol";
-
+import "./IBalanceSheet.sol";
+import "./IFintroller.sol";
+import "./IFyToken.sol";
+import "./oracles/IChainlinkOperator.sol";
 
 /// @title BalanceSheet
 /// @author Hifi
 /// @notice Manages the debt vault for all fyTokens.
 contract BalanceSheet is
-    ReentrancyGuard, /// no depedency
     IBalanceSheet, /// one dependency
+    ReentrancyGuard, /// no depedency
     Exponential, /// one dependency
-    Admin /// two dependencies
+    Admin /// one dependency
 {
     using SafeErc20 for IErc20;
 
-    /// @notice The unique Fintroller associated with this contract.
+    /// STORAGE PROPERTIES ///
+
+    /// @inheritdoc IBalanceSheet
     IFintroller public override fintroller;
+
+    /// @inheritdoc IBalanceSheet
+    bool public constant override isBalanceSheet = true;
 
     /// @dev One vault for each fyToken for each account.
     mapping(IFyToken => mapping(address => Vault)) internal vaults;
-
-    /// @notice Indicator that this is a BalanceSheet contract, for inspection.
-    bool public override constant isBalanceSheet = true;
 
     modifier isVaultOpenForMsgSender(IFyToken fyToken) {
         require(vaults[fyToken][msg.sender].isOpen, "ERR_VAULT_NOT_OPEN");
@@ -60,12 +61,7 @@ contract BalanceSheet is
     }
 
     /// @inheritdoc IBalanceSheet
-    function getClutchableCollateral(IFyToken fyToken, uint256 repayAmount)
-        external
-        view
-        override
-        returns (uint256)
-    {
+    function getClutchableCollateral(IFyToken fyToken, uint256 repayAmount) external view override returns (uint256) {
         GetClutchableCollateralLocalVars memory vars;
 
         // Avoid the zero edge cases.
@@ -194,12 +190,7 @@ contract BalanceSheet is
     }
 
     /// @inheritdoc IBalanceSheet
-    function getVaultLockedCollateral(IFyToken fyToken, address borrower)
-        external
-        view
-        override
-        returns (uint256)
-    {
+    function getVaultLockedCollateral(IFyToken fyToken, address borrower) external view override returns (uint256) {
         return vaults[fyToken][borrower].lockedCollateral;
     }
 

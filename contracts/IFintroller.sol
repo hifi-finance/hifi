@@ -1,12 +1,17 @@
 /// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
-import "@paulrberg/contracts/interfaces/IAdmin.sol";
+import "@paulrberg/contracts/access/IAdmin.sol";
+
 import "./IFyToken.sol";
-import "./IChainlinkOperator.sol";
+import "./oracles/IChainlinkOperator.sol";
 
-
-interface IFintroller is IAdmin {
+/// @notice IFintroller
+/// @author Hifi
+/// @notice Interface for the Fintroller contract
+interface IFintroller is
+    IAdmin /// one dependency
+{
     struct Exp {
         uint256 mantissa;
     }
@@ -24,13 +29,24 @@ interface IFintroller is IAdmin {
         bool isSupplyUnderlyingAllowed;
     }
 
-
     /// EVENTS ///
 
+    /// @notice Emitted when a bond is listed.
+    /// @param admin The address of the admin.
+    /// @param fyToken The new listed token.
     event ListBond(address indexed admin, IFyToken indexed fyToken);
 
+    /// @notice Emitted when the borrowing of a FyToken is set.
+    /// @param admin The address of the admin.
+    /// @param fyToken The related FyToken.
+    /// @param state True if borrowing is allowed.
     event SetBorrowAllowed(address indexed admin, IFyToken indexed fyToken, bool state);
 
+    /// @notice Emitted when the collateralization ratio is updated.
+    /// @param admin The address of the admin.
+    /// @param fyToken The related FyToken.
+    /// @param oldCollateralizationRatio The old collateralization ratio.
+    /// @param newCollateralizationRatio the new collateralization ratio.
     event SetBondCollateralizationRatio(
         address indexed admin,
         IFyToken indexed fyToken,
@@ -38,6 +54,11 @@ interface IFintroller is IAdmin {
         uint256 newCollateralizationRatio
     );
 
+    /// @notice Emitted when the debt ceiling of a bond is set.
+    /// @param admin The address of the admin.
+    /// @param fyToken The related FyToken.
+    /// @param oldDebtCeiling The old debt ceiling.
+    /// @param newDebtCeiling The new debt ceiling.
     event SetBondDebtCeiling(
         address indexed admin,
         IFyToken indexed fyToken,
@@ -45,6 +66,11 @@ interface IFintroller is IAdmin {
         uint256 newDebtCeiling
     );
 
+    /// @notice Emitted when the liquidation incentive is set.
+    /// @param admin The address of the admin.
+    /// @param fyToken The related FyToken.
+    /// @param oldLiquidationIncentive The old liquidation incentive.
+    /// @param newLiquidationIncentive The new liquidation incentive.
     event SetBondLiquidationIncentive(
         address indexed admin,
         IFyToken fyToken,
@@ -52,18 +78,41 @@ interface IFintroller is IAdmin {
         uint256 newLiquidationIncentive
     );
 
+    /// @notice Emitted when depositing collateral is updated.
+    /// @param admin The address of the admin.
+    /// @param fyToken The related FyToken.
+    /// @param state True if depositing collateral is allowed.
     event SetDepositCollateralAllowed(address indexed admin, IFyToken indexed fyToken, bool state);
 
+    /// @notice Emitted when liquidating borrow is updated.
+    /// @param admin The address of the admin.
+    /// @param fyToken The related FyToken.
+    /// @param state True if liquidating borrow is allowed.
     event SetLiquidateBorrowAllowed(address indexed admin, IFyToken indexed fyToken, bool state);
 
+    /// @notice Emitted when redeeming fyTokens is updated.
+    /// @param admin The address of the admin.
+    /// @param fyToken The related FyToken.
+    /// @param state True if redeeming fyTokens is allowed.
     event SetRedeemFyTokensAllowed(address indexed admin, IFyToken indexed fyToken, bool state);
 
+    /// @notice Emitted when repaying borrow is updated.
+    /// @param admin The address of the admin.
+    /// @param fyToken The related FyToken.
+    /// @param state True if repaying borrow is allowed.
     event SetRepayBorrowAllowed(address indexed admin, IFyToken indexed fyToken, bool state);
 
+    /// @notice Emitted when a new oracle is set.
+    /// @param admin The address of the admin.
+    /// @param oldOracle The address of the old oracle.
+    /// @param newOracle The address of the new oracle.
     event SetOracle(address indexed admin, address oldOracle, address newOracle);
 
+    /// @notice Emitted when supplying underlying is set.
+    /// @param admin The address of the admin.
+    /// @param fyToken The related FyToken.
+    /// @param state True if supplying underlying is allowed.
     event SetSupplyUnderlyingAllowed(address indexed admin, IFyToken indexed fyToken, bool state);
-
 
     /// NON-CONSTANT FUNCTIONS ///
 
@@ -128,9 +177,7 @@ interface IFintroller is IAdmin {
     /// @param fyToken The bond for which to update the liquidation incentive.
     /// @param newLiquidationIncentive The new liquidation incentive as a mantissa.
     /// @return bool true = success, otherwise it reverts.
-    function setBondLiquidationIncentive(IFyToken fyToken, uint256 newLiquidationIncentive)
-        external
-        returns (bool);
+    function setBondLiquidationIncentive(IFyToken fyToken, uint256 newLiquidationIncentive) external returns (bool);
 
     /// @notice Updates the state of the permission accessed by the fyToken before a borrow.
     ///
@@ -226,7 +273,6 @@ interface IFintroller is IAdmin {
     /// @param state The new state to put in storage.
     /// @return bool true = success, otherwise it reverts.
     function setSupplyUnderlyingAllowed(IFyToken fyToken, bool state) external returns (bool);
-
 
     /// CONSTANT FUNCTIONS ///
 

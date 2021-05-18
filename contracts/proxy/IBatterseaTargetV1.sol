@@ -1,12 +1,20 @@
 /// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
-import "../interfaces/IBalanceSheet.sol";
-import "../interfaces/IFyToken.sol";
+import "../IBalanceSheet.sol";
+import "../IFyToken.sol";
 
+/// @title IBatterseaTargetV1
+/// @author Hifi
+/// @notice Interface for the BatterseaTargetV1 contract
 interface IBatterseaTargetV1 {
     /// EVENTS
 
+    /// @notice Emitted when fyTokens are borrowed and sold.
+    /// @param borrower The address of the borrower.
+    /// @param borrowAmount The amount of borrow funds.
+    /// @param fyTokenDelta The fyToken delta.
+    /// @param underlyingAmount The amount of underlying tokens.
     event BorrowAndSellFyTokens(
         address indexed borrower,
         uint256 borrowAmount,
@@ -14,8 +22,12 @@ interface IBatterseaTargetV1 {
         uint256 underlyingAmount
     );
 
-
     /// NON-CONSTANT FUNCTIONS ///
+
+    /// @notice Borrows fyTokens.
+    /// @param fyToken The address of the FyToken contract.
+    /// @param borrowAmount The amount of fyTokens to borrow.
+    function borrow(IFyToken fyToken, uint256 borrowAmount) external;
 
     /// @notice Borrows fyTokens and sells them on Balancer in exchange for underlying.
     ///
@@ -223,10 +235,7 @@ interface IBatterseaTargetV1 {
     ///
     /// @param balanceSheet The address of the BalanceSheet contract.
     /// @param fyToken The address of the FyToken contract.
-    function wrapEthAndDepositAndLockCollateral(
-        IBalanceSheet balanceSheet,
-        IFyToken fyToken
-    ) external payable;
+    function wrapEthAndDepositAndLockCollateral(IBalanceSheet balanceSheet, IFyToken fyToken) external payable;
 
     /// @notice Wraps ETH into WETH, deposits and locks collateral into the vault in the BalanceSheet
     /// contracts and borrows fyTokens.

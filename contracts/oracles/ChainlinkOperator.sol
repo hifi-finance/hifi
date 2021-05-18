@@ -2,31 +2,33 @@
 pragma solidity ^0.8.0;
 
 import "@paulrberg/contracts/access/Admin.sol";
-import "@paulrberg/contracts/interfaces/IErc20.sol";
+import "@paulrberg/contracts/token/erc20/IErc20.sol";
 
-import "../interfaces/IChainlinkOperator.sol";
+import "../oracles/IChainlinkOperator.sol";
 
 /// @title ChainlinkOperator
 /// @author Hifi
 /// @notice Manages USD-quoted Chainlink price feeds.
 contract ChainlinkOperator is
     IChainlinkOperator, /// no dependency
-    Admin /// two dependencies
+    Admin /// one dependency
 {
+    /// STORAGE PROPERTIES ///
+
     struct Feed {
         IErc20 asset;
         AggregatorV3Interface id;
         bool isSet;
     }
 
+    /// @inheritdoc IChainlinkOperator
+    uint256 public constant override pricePrecision = 8;
+
+    /// @inheritdoc IChainlinkOperator
+    uint256 public constant override pricePrecisionScalar = 1.0e10;
+
     /// @dev Mapping between Erc20 symbols and Feed structs.
     mapping(string => Feed) internal feeds;
-
-    /// @notice Chainlink price precision for USD-quoted data.
-    uint256 public override constant pricePrecision = 8;
-
-    /// @notice The ratio between mantissa precision (1e18) and the Chainlink price precision (1e8).
-    uint256 public override constant pricePrecisionScalar = 1.0e10;
 
     constructor() Admin() {
         // solhint-disable-previous-line no-empty-blocks
@@ -63,7 +65,6 @@ contract ChainlinkOperator is
         require(price > 0, "ERR_PRICE_ZERO");
         return price;
     }
-
 
     /// NON-CONSTANT FUNCTIONS ///
 
