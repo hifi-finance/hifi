@@ -2,8 +2,6 @@ import { BigNumber, parseFixed } from "@ethersproject/bignumber";
 import fromExponential from "from-exponential";
 import { BigNumber as MathjsBigNumber, bignumber as mathjsbignumber } from "mathjs";
 
-const precision: number = 18;
-
 export function bn(x: string): BigNumber {
   let xs: string = x;
   if (x.includes("e")) {
@@ -36,6 +34,7 @@ export function fp(x: string | MathjsBigNumber): BigNumber {
   }
 
   if (/^[-+]?(\d{1,60}|(?=\d+\.\d+)\d{1,60}\.\d{1,18})$/.test(xs)) {
+    const precision: number = 18;
     return parseFixed(xs, precision);
   } else {
     throw new Error(`Unknown format for fixed-point number: ${xs}`);
@@ -44,8 +43,4 @@ export function fp(x: string | MathjsBigNumber): BigNumber {
 
 export function mbn(x: string): MathjsBigNumber {
   return mathjsbignumber(x);
-}
-
-export function maxUint(exp: number): BigNumber {
-  return BigNumber.from(2).pow(exp).sub(1);
 }

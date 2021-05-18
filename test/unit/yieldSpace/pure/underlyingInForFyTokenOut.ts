@@ -37,10 +37,10 @@ export default function shouldBehaveLikeUnderlyingInForFyTokenOut(): void {
   context("when not too much fyToken out", function () {
     context("when the call to fromUint reverts", function () {
       const testSets = [
-        [bn(MAX_UD60x18), fp("100"), fp("10"), secondsInYears(1)],
-        [bn(MAX_UD60x18).div(SCALE), fp("100"), fp("10"), secondsInYears(1)],
-        [fp("120"), bn(MAX_UD60x18), fp("10"), secondsInYears(1)],
-        [fp("120"), bn(MAX_UD60x18).div(SCALE), fp("10"), secondsInYears(1)],
+        [fp(MAX_UD60x18), fp("100"), fp("10"), secondsInYears(1)],
+        [fp(MAX_UD60x18).div(SCALE), fp("100"), fp("10"), secondsInYears(1)],
+        [fp("120"), fp(MAX_UD60x18), fp("10"), secondsInYears(1)],
+        [fp("120"), fp(MAX_UD60x18).div(SCALE), fp("10"), secondsInYears(1)],
       ];
 
       forEach(testSets).it(
@@ -70,7 +70,7 @@ export default function shouldBehaveLikeUnderlyingInForFyTokenOut(): void {
           // possible, which is ~0.999999992468924404, yields a little bit over 128e18 in Solidity. This is the first
           // value which causes the internal call to the "exp2" function to revert.
           [bn("340282594290346490168884578954373811637"), fp("100"), fp("10"), bn("1")],
-          [bn(MAX_UD60x18).div(SCALE).sub(1), fp("100"), fp("10"), bn("1")],
+          [fp(MAX_UD60x18).div(SCALE).sub(1), fp("100"), fp("10"), bn("1")],
         ];
 
         forEach(testSets).it(
