@@ -51,13 +51,13 @@ contract RedemptionPool is
     /// @inheritdoc IRedemptionPool
     function redeemFyTokens(uint256 fyTokenAmount) external override nonReentrant returns (bool) {
         // Checks: maturation time.
-        require(block.timestamp >= fyToken.expirationTime(), "ERR_BOND_NOT_MATURED");
+        require(block.timestamp >= fyToken.expirationTime(), "BOND_NOT_MATURED");
 
         // Checks: the zero edge case.
-        require(fyTokenAmount > 0, "ERR_REDEEM_FYTOKENS_ZERO");
+        require(fyTokenAmount > 0, "REDEEM_FYTOKENS_ZERO");
 
         // Checks: the Fintroller allows this action to be performed.
-        require(fintroller.getRedeemFyTokensAllowed(fyToken), "ERR_REDEEM_FYTOKENS_NOT_ALLOWED");
+        require(fintroller.getRedeemFyTokensAllowed(fyToken), "REDEEM_FYTOKENS_NOT_ALLOWED");
 
         // fyTokens always have 18 decimals so the underlying amount needs to be downscaled.
         // If the precision scalar is 1, it means that the underlying also has 18 decimals.
@@ -70,13 +70,13 @@ contract RedemptionPool is
         }
 
         // Checks: there is enough liquidity.
-        require(underlyingAmount <= totalUnderlyingSupply, "ERR_REDEEM_FYTOKENS_INSUFFICIENT_UNDERLYING");
+        require(underlyingAmount <= totalUnderlyingSupply, "REDEEM_FYTOKENS_INSUFFICIENT_UNDERLYING");
 
         // Effects: decrease the remaining supply of underlying.
         totalUnderlyingSupply -= underlyingAmount;
 
         // Interactions: burn the fyTokens.
-        require(fyToken.burn(msg.sender, fyTokenAmount), "ERR_SUPPLY_UNDERLYING_CALL_BURN");
+        require(fyToken.burn(msg.sender, fyTokenAmount), "SUPPLY_UNDERLYING_CALL_BURN");
 
         // Interactions: perform the Erc20 transfer.
         fyToken.underlying().safeTransfer(msg.sender, underlyingAmount);
@@ -89,13 +89,13 @@ contract RedemptionPool is
     /// @inheritdoc IRedemptionPool
     function supplyUnderlying(uint256 underlyingAmount) external override nonReentrant returns (bool) {
         // Checks: maturation time.
-        require(block.timestamp < fyToken.expirationTime(), "ERR_BOND_MATURED");
+        require(block.timestamp < fyToken.expirationTime(), "BOND_MATURED");
 
         // Checks: the zero edge case.
-        require(underlyingAmount > 0, "ERR_SUPPLY_UNDERLYING_ZERO");
+        require(underlyingAmount > 0, "SUPPLY_UNDERLYING_ZERO");
 
         // Checks: the Fintroller allows this action to be performed.
-        require(fintroller.getSupplyUnderlyingAllowed(fyToken), "ERR_SUPPLY_UNDERLYING_NOT_ALLOWED");
+        require(fintroller.getSupplyUnderlyingAllowed(fyToken), "SUPPLY_UNDERLYING_NOT_ALLOWED");
 
         // Effects: update storage.
         totalUnderlyingSupply += underlyingAmount;
@@ -111,7 +111,7 @@ contract RedemptionPool is
         }
 
         // Interactions: mint the fyTokens.
-        require(fyToken.mint(msg.sender, fyTokenAmount), "ERR_SUPPLY_UNDERLYING_CALL_MINT");
+        require(fyToken.mint(msg.sender, fyTokenAmount), "SUPPLY_UNDERLYING_CALL_MINT");
 
         // Interactions: perform the Erc20 transfer.
         fyToken.underlying().safeTransferFrom(msg.sender, address(this), underlyingAmount);

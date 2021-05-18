@@ -36,7 +36,7 @@ contract BalanceSheet is
     mapping(IFyToken => mapping(address => Vault)) internal vaults;
 
     modifier isVaultOpenForMsgSender(IFyToken fyToken) {
-        require(vaults[fyToken][msg.sender].isOpen, "ERR_VAULT_NOT_OPEN");
+        require(vaults[fyToken][msg.sender].isOpen, "VAULT_NOT_OPEN");
         _;
     }
 
@@ -65,7 +65,7 @@ contract BalanceSheet is
         GetClutchableCollateralLocalVars memory vars;
 
         // Avoid the zero edge cases.
-        require(repayAmount > 0, "ERR_GET_CLUTCHABLE_COLLATERAL_ZERO");
+        require(repayAmount > 0, "GET_CLUTCHABLE_COLLATERAL_ZERO");
 
         // When the liquidation incentive is zero, the end result would be zero anyways.
         vars.liquidationIncentive = fintroller.getBondLiquidationIncentive(fyToken);
@@ -140,13 +140,13 @@ contract BalanceSheet is
         GetHypotheticalAccountLiquidityLocalVars memory vars;
 
         // If the vault is not open, a hypothetical collateralization ratio cannot be calculated.
-        require(vaults[fyToken][borrower].isOpen, "ERR_VAULT_NOT_OPEN");
+        require(vaults[fyToken][borrower].isOpen, "VAULT_NOT_OPEN");
 
         // Avoid the zero edge cases.
         if (lockedCollateral == 0) {
             return 0;
         }
-        require(debt > 0, "ERR_GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_DEBT_ZERO");
+        require(debt > 0, "GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_DEBT_ZERO");
 
         // Grab the upscaled USD price of the collateral.
         IChainlinkOperator oracle = fintroller.oracle();
@@ -220,11 +220,11 @@ contract BalanceSheet is
         uint256 collateralAmount
     ) external override nonReentrant returns (bool) {
         // Checks: the caller is the fyToken.
-        require(msg.sender == address(fyToken), "ERR_CLUTCH_COLLATERAL_NOT_AUTHORIZED");
+        require(msg.sender == address(fyToken), "CLUTCH_COLLATERAL_NOT_AUTHORIZED");
 
         // Checks: there is enough clutchable collateral in the vault.
         uint256 lockedCollateral = vaults[fyToken][borrower].lockedCollateral;
-        require(lockedCollateral >= collateralAmount, "ERR_INSUFFICIENT_LOCKED_COLLATERAL");
+        require(lockedCollateral >= collateralAmount, "INSUFFICIENT_LOCKED_COLLATERAL");
 
         // Calculate the new locked collateral amount.
         uint256 newLockedCollateral = lockedCollateral - collateralAmount;
@@ -247,7 +247,7 @@ contract BalanceSheet is
         uint256 subtractedDebt
     ) external override returns (bool) {
         // Checks: the caller is the fyToken.
-        require(msg.sender == address(fyToken), "ERR_DECREASE_VAULT_DEBT_NOT_AUTHORIZED");
+        require(msg.sender == address(fyToken), "DECREASE_VAULT_DEBT_NOT_AUTHORIZED");
 
         // Effects: update storage.
         uint256 oldVaultDebt = vaults[fyToken][borrower].debt;
@@ -267,10 +267,10 @@ contract BalanceSheet is
         returns (bool)
     {
         // Checks: the zero edge case.
-        require(collateralAmount > 0, "ERR_DEPOSIT_COLLATERAL_ZERO");
+        require(collateralAmount > 0, "DEPOSIT_COLLATERAL_ZERO");
 
         // Checks: the Fintroller allows this action to be performed.
-        require(fintroller.getDepositCollateralAllowed(fyToken), "ERR_DEPOSIT_COLLATERAL_NOT_ALLOWED");
+        require(fintroller.getDepositCollateralAllowed(fyToken), "DEPOSIT_COLLATERAL_NOT_ALLOWED");
 
         // Effects: update storage.
         uint256 hypotheticalFreeCollateral = vaults[fyToken][msg.sender].freeCollateral + collateralAmount;
@@ -292,11 +292,11 @@ contract BalanceSheet is
         returns (bool)
     {
         // Checks: the zero edge case.
-        require(collateralAmount > 0, "ERR_FREE_COLLATERAL_ZERO");
+        require(collateralAmount > 0, "FREE_COLLATERAL_ZERO");
 
         // Checks: enough locked collateral.
         Vault memory vault = vaults[fyToken][msg.sender];
-        require(vault.lockedCollateral >= collateralAmount, "ERR_INSUFFICIENT_LOCKED_COLLATERAL");
+        require(vault.lockedCollateral >= collateralAmount, "INSUFFICIENT_LOCKED_COLLATERAL");
         uint256 newLockedCollateral = vault.lockedCollateral - collateralAmount;
 
         // Checks: the hypothetical collateralization ratio is above the threshold.
@@ -306,7 +306,7 @@ contract BalanceSheet is
             uint256 bondCollateralizationRatio = fintroller.getBondCollateralizationRatio(fyToken);
             require(
                 hypotheticalCollateralizationRatio >= bondCollateralizationRatio,
-                "ERR_BELOW_COLLATERALIZATION_RATIO"
+                "BELOW_COLLATERALIZATION_RATIO"
             );
         }
 
@@ -327,7 +327,7 @@ contract BalanceSheet is
         uint256 addedDebt
     ) external override returns (bool) {
         // Checks: the caller is the fyToken.
-        require(msg.sender == address(fyToken), "ERR_INCREASE_VAULT_DEBT_NOT_AUTHORIZED");
+        require(msg.sender == address(fyToken), "INCREASE_VAULT_DEBT_NOT_AUTHORIZED");
 
         // Effects: update storage.
         uint256 oldVaultDebt = vaults[fyToken][borrower].debt;
@@ -346,10 +346,10 @@ contract BalanceSheet is
         returns (bool)
     {
         // Avoid the zero edge case.
-        require(collateralAmount > 0, "ERR_LOCK_COLLATERAL_ZERO");
+        require(collateralAmount > 0, "LOCK_COLLATERAL_ZERO");
 
         Vault memory vault = vaults[fyToken][msg.sender];
-        require(vault.freeCollateral >= collateralAmount, "ERR_INSUFFICIENT_FREE_COLLATERAL");
+        require(vault.freeCollateral >= collateralAmount, "INSUFFICIENT_FREE_COLLATERAL");
 
         uint256 newLockedCollateral = vault.lockedCollateral + collateralAmount;
         vaults[fyToken][msg.sender].lockedCollateral = newLockedCollateral;
@@ -364,9 +364,9 @@ contract BalanceSheet is
 
     /// @inheritdoc IBalanceSheet
     function openVault(IFyToken fyToken) external override returns (bool) {
-        require(fintroller.isBondListed(fyToken), "ERR_BOND_NOT_LISTED");
-        require(fyToken.isFyToken(), "ERR_OPEN_VAULT_FYTOKEN_INSPECTION");
-        require(vaults[fyToken][msg.sender].isOpen == false, "ERR_VAULT_OPEN");
+        require(fintroller.isBondListed(fyToken), "BOND_NOT_LISTED");
+        require(fyToken.isFyToken(), "OPEN_VAULT_FYTOKEN_INSPECTION");
+        require(vaults[fyToken][msg.sender].isOpen == false, "VAULT_OPEN");
         vaults[fyToken][msg.sender].isOpen = true;
         emit OpenVault(fyToken, msg.sender);
         return true;
@@ -381,10 +381,10 @@ contract BalanceSheet is
         returns (bool)
     {
         // Checks: the zero edge case.
-        require(collateralAmount > 0, "ERR_WITHDRAW_COLLATERAL_ZERO");
+        require(collateralAmount > 0, "WITHDRAW_COLLATERAL_ZERO");
 
         // Checks: there is enough free collateral.
-        require(vaults[fyToken][msg.sender].freeCollateral >= collateralAmount, "ERR_INSUFFICIENT_FREE_COLLATERAL");
+        require(vaults[fyToken][msg.sender].freeCollateral >= collateralAmount, "INSUFFICIENT_FREE_COLLATERAL");
 
         // Effects: update storage.
         uint256 newFreeCollateral = vaults[fyToken][msg.sender].freeCollateral - collateralAmount;
