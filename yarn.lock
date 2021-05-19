@@ -902,6 +902,7 @@ __metadata:
     eslint-config-prettier: ^8.3.0
     ethereum-waffle: ^3.2.0
     ethers: ^5.1.4
+    evm-fp: ^1.0.0
     from-exponential: ^1.1.0
     fs-extra: ^10.0.0
     hardhat: ^2.3.0
@@ -5648,6 +5649,18 @@ __metadata:
   version: 3.3.0
   resolution: "events@npm:3.3.0"
   checksum: 56fa12567013e85b98782a1d971442ea29df057129d8a94432711fd68303357594ea37bfbe234860e28581a7768f943a8bea88c16b48aa01b96acf804bc01d52
+  languageName: node
+  linkType: hard
+
+"evm-fp@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "evm-fp@npm:1.0.0"
+  dependencies:
+    "@ethersproject/bignumber": ^5.1.1
+    from-exponential: ^1.1.0
+  peerDependencies:
+    "@ethersproject/bignumber": ^5.1.1
+  checksum: 213a2b5952289e69e610cb8116411a4d9aa8489e1e5138ea080c2cbff9bedb0c33a717c04ec595f3b45d4fc7cfd8a5919933eaa56f98aba2ddfaf3da8cc105a6
   languageName: node
   linkType: hard
 

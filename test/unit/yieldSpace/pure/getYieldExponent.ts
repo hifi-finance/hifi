@@ -1,9 +1,11 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
+import fp from "evm-fp";
 import forEach from "mocha-each";
 
 import { CUTOFF_TTM, EPSILON, G1, G2, K, SCALE } from "../../../../helpers/constants";
-import { bn, fp, mbn } from "../../../../helpers/numbers";
+import { mbn } from "../../../../helpers/math";
+import { bn } from "../../../../helpers/numbers";
 import { secondsInDays, secondsInHours, secondsInYears } from "../../../../helpers/time";
 
 export default function shouldBehaveLikeGetYieldExponent(): void {
@@ -48,7 +50,7 @@ export default function shouldBehaveLikeGetYieldExponent(): void {
       "takes %e and %e and returns the correct value",
       async function (timeToMaturity: string, g: string) {
         const result: BigNumber = await this.contracts.yieldSpace.doGetYieldExponent(fp(timeToMaturity), fp(g));
-        const expected: BigNumber = fp(mbn("1").sub(mbn(K).mul(mbn(timeToMaturity)).mul(mbn(g))));
+        const expected: BigNumber = fp(String(mbn("1").sub(mbn(K).mul(mbn(timeToMaturity)).mul(mbn(g)))));
         const delta: BigNumber = expected.sub(result).abs();
         expect(delta).to.be.lte(EPSILON);
       },

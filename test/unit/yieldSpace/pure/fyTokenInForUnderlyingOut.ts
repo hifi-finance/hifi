@@ -1,10 +1,12 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
+import fp from "evm-fp";
 import { BigNumber as MathjsBigNumber, pow } from "mathjs";
 import forEach from "mocha-each";
 
 import { EPSILON, G2, K, MAX_UD60x18, SCALE } from "../../../../helpers/constants";
-import { bn, fp, mbn } from "../../../../helpers/numbers";
+import { mbn } from "../../../../helpers/math";
+import { bn } from "../../../../helpers/numbers";
 import { secondsInDays, secondsInYears } from "../../../../helpers/time";
 
 export default function shouldBehaveLikeFyTokenInForUnderlyingOut(): void {
@@ -153,7 +155,8 @@ export default function shouldBehaveLikeFyTokenInForUnderlyingOut(): void {
               const x: MathjsBigNumber = mbn(normalizedUnderlyingReserves).sub(mbn(normalizedUnderlyingOut));
               const x1gt = <MathjsBigNumber>pow(x, exponent);
               const y = <MathjsBigNumber>pow(xs1gt.add(ys1gt).sub(x1gt), mbn("1").div(exponent));
-              const expected = fp(y.sub(fyTokenReserves));
+              const fyTokenIn = <MathjsBigNumber>y.sub(mbn(fyTokenReserves));
+              const expected = fp(String(fyTokenIn));
 
               const delta: BigNumber = expected.sub(result).abs();
               expect(delta).to.be.lte(EPSILON);

@@ -1,6 +1,5 @@
 import { BigNumber } from "@ethersproject/bignumber";
-
-import { fp } from "./numbers";
+import fp from "evm-fp";
 
 export const CUTOFF_TTM: string = "119836799";
 export const E: string = "2.718281828459045235";
