@@ -1,9 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { BigNumber as MathjsBigNumber, pow } from "mathjs";
 import { expect } from "chai";
+import { BigNumber as MathjsBigNumber, pow } from "mathjs";
 import forEach from "mocha-each";
 
-import { EPSILON, K, G1, MAX_UD60x18, SCALE } from "../../../../helpers/constants";
+import { EPSILON, G1, K, MAX_UD60x18, SCALE } from "../../../../helpers/constants";
 import { bn, fp, mbn } from "../../../../helpers/numbers";
 import { secondsInDays, secondsInYears } from "../../../../helpers/time";
 

@@ -1,6 +1,6 @@
+import { Signer } from "@ethersproject/abstract-signer";
 import hre from "hardhat";
 import { Artifact } from "hardhat/types";
-import { Signer } from "@ethersproject/abstract-signer";
 
 import { YieldSpaceMock } from "../../typechain/YieldSpaceMock";
 
