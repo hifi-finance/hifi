@@ -11,12 +11,12 @@ import { secondsInDays, secondsInHours, secondsInYears } from "../../../../helpe
 export default function shouldBehaveLikeGetYieldExponent(): void {
   context("when too far from maturity", function () {
     const g1TestSets = [
-      [bn(CUTOFF_TTM).mul(SCALE).add(1), fp(G1)],
-      [bn(CUTOFF_TTM).mul(SCALE).mul(2), fp(G1)],
+      [bn(CUTOFF_TTM).mul(fp(SCALE)).add(1), fp(G1)],
+      [bn(CUTOFF_TTM).mul(fp(SCALE)).mul(2), fp(G1)],
     ];
     const g2TestSets = [
-      [bn(CUTOFF_TTM).mul(SCALE).add(1), fp(G2)],
-      [bn(CUTOFF_TTM).mul(SCALE).mul(2), fp(G2)],
+      [bn(CUTOFF_TTM).mul(fp(SCALE)).add(1), fp(G2)],
+      [bn(CUTOFF_TTM).mul(fp(SCALE)).mul(2), fp(G2)],
     ];
     const testSets = g1TestSets.concat(g2TestSets);
 
