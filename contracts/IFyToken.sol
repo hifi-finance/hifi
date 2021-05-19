@@ -76,8 +76,7 @@ interface IFyToken is
     /// - The caller must not fall below the threshold collateralization ratio.
     ///
     /// @param borrowAmount The amount of fyTokens to borrow and print into existence.
-    /// @return bool true = success, otherwise it reverts.
-    function borrow(uint256 borrowAmount) external returns (bool);
+    function borrow(uint256 borrowAmount) external;
 
     /// @notice Destroys `burnAmount` tokens from `holder`, reducing the token supply.
     ///
@@ -91,8 +90,7 @@ interface IFyToken is
     ///
     /// @param holder The account whose fyTokens to burn.
     /// @param burnAmount The amount of fyTokens to burn.
-    /// @return bool true = success, otherwise it reverts.
-    function burn(address holder, uint256 burnAmount) external returns (bool);
+    function burn(address holder, uint256 burnAmount) external;
 
     /// @notice Repays the debt of the borrower and rewards the caler with a surplus of collateral.
     ///
@@ -111,8 +109,7 @@ interface IFyToken is
     ///
     /// @param borrower The account to liquidate.
     /// @param repayAmount The amount of fyTokens to repay.
-    /// @return bool true = success, otherwise it reverts.
-    function liquidateBorrow(address borrower, uint256 repayAmount) external returns (bool);
+    function liquidateBorrow(address borrower, uint256 repayAmount) external;
 
     /// @notice Prints new tokens into existence and assigns them to `beneficiary`,
     /// increasing the total supply.
@@ -126,8 +123,7 @@ interface IFyToken is
     ///
     /// @param beneficiary The borrower account for which to mint the tokens.
     /// @param mintAmount The amount of fyTokens to print into existence.
-    /// @return bool true = success, otherwise it reverts.
-    function mint(address beneficiary, uint256 mintAmount) external returns (bool);
+    function mint(address beneficiary, uint256 mintAmount) external;
 
     /// @notice Deletes the borrower account's debt from the registry and take the fyTokens
     /// out of circulation.
@@ -143,8 +139,7 @@ interface IFyToken is
     /// - The caller must have at least `repayAmount` debt.
     ///
     /// @param repayAmount The amount of fyTokens to repay.
-    /// @return bool true = success, otherwise it reverts.
-    function repayBorrow(uint256 repayAmount) external returns (bool);
+    function repayBorrow(uint256 repayAmount) external;
 
     /// @notice Clears the borrower account's debt from the registry and take the fyTokens
     /// out of circulation.
@@ -157,8 +152,7 @@ interface IFyToken is
     ///
     /// @param borrower The borrower account for which to repay the borrow.
     /// @param repayAmount The amount of fyTokens to repay.
-    /// @return bool true = success, otherwise it reverts.
-    function repayBorrowBehalf(address borrower, uint256 repayAmount) external returns (bool);
+    function repayBorrowBehalf(address borrower, uint256 repayAmount) external;
 
     /// @notice Updates the Fintroller contract's address saved in storage.
     ///
@@ -170,8 +164,7 @@ interface IFyToken is
     /// - The new Fintroller must pass the inspection.
     ///
     /// @param newFintroller The address of the new Fintroller contract.
-    /// @return bool true = success, otherwise it reverts.
-    function _setFintroller(IFintroller newFintroller) external returns (bool);
+    function _setFintroller(IFintroller newFintroller) external;
 
     /// CONSTANT FUNCTIONS ///
 

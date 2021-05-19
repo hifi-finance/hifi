@@ -40,8 +40,7 @@ interface IRedemptionPool is
     /// - There must be enough liquidity in the RedemptionPool.
     ///
     /// @param fyTokenAmount The amount of fyTokens to redeem for the underlying asset.
-    /// @return bool true = success, otherwise it reverts.
-    function redeemFyTokens(uint256 fyTokenAmount) external returns (bool);
+    function redeemFyTokens(uint256 fyTokenAmount) external;
 
     /// @notice An alternative to the usual minting method that does not involve taking on debt.
     ///
@@ -55,8 +54,7 @@ interface IRedemptionPool is
     /// - The caller must have allowed this contract to spend `underlyingAmount` tokens.
     ///
     /// @param underlyingAmount The amount of underlying to supply to the RedemptionPool.
-    /// @return bool true = success, otherwise it reverts.
-    function supplyUnderlying(uint256 underlyingAmount) external returns (bool);
+    function supplyUnderlying(uint256 underlyingAmount) external;
 
     /// CONSTANT FUNCTIONS ///
 

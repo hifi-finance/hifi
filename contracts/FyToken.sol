@@ -113,7 +113,7 @@ contract FyToken is
     /// NON-CONSTANT FUNCTIONS ///
 
     /// @inheritdoc IFyToken
-    function borrow(uint256 borrowAmount) public override isVaultOpen(msg.sender) nonReentrant returns (bool) {
+    function borrow(uint256 borrowAmount) public override isVaultOpen(msg.sender) nonReentrant {
         // Checks: bond not matured.
         require(isMatured() == false, "BOND_MATURED");
 
@@ -147,16 +147,14 @@ contract FyToken is
         emit Transfer(address(this), msg.sender, borrowAmount);
 
         // Interactions: increase the debt of the borrower account.
-        require(balanceSheet.increaseVaultDebt(this, msg.sender, borrowAmount), "BORROW_CALL_INCREASE_VAULT_DEBT");
+        balanceSheet.increaseVaultDebt(this, msg.sender, borrowAmount);
 
         // Emit a Borrow event.
         emit Borrow(msg.sender, borrowAmount);
-
-        return true;
     }
 
     /// @inheritdoc IFyToken
-    function burn(address holder, uint256 burnAmount) external override nonReentrant returns (bool) {
+    function burn(address holder, uint256 burnAmount) external override nonReentrant {
         // Checks: the caller is the RedemptionPool.
         require(msg.sender == address(redemptionPool), "BURN_NOT_AUTHORIZED");
 
@@ -169,8 +167,6 @@ contract FyToken is
         // Emit a Burn and a Transfer event.
         emit Burn(holder, burnAmount);
         emit Transfer(holder, address(this), burnAmount);
-
-        return true;
     }
 
     /// @inheritdoc IFyToken
@@ -179,7 +175,6 @@ contract FyToken is
         override
         isVaultOpen(borrower)
         nonReentrant
-        returns (bool)
     {
         // Checks: borrowers cannot self liquidate.
         require(msg.sender != borrower, "LIQUIDATE_BORROW_SELF");
@@ -202,18 +197,13 @@ contract FyToken is
 
         // Interactions: clutch the collateral.
         uint256 clutchableCollateralAmount = balanceSheet.getClutchableCollateral(this, repayAmount);
-        require(
-            balanceSheet.clutchCollateral(this, msg.sender, borrower, clutchableCollateralAmount),
-            "LIQUIDATE_BORROW_CALL_CLUTCH_COLLATERAL"
-        );
+        balanceSheet.clutchCollateral(this, msg.sender, borrower, clutchableCollateralAmount);
 
         emit LiquidateBorrow(msg.sender, borrower, repayAmount, clutchableCollateralAmount);
-
-        return true;
     }
 
     /// @inheritdoc IFyToken
-    function mint(address beneficiary, uint256 mintAmount) external override nonReentrant returns (bool) {
+    function mint(address beneficiary, uint256 mintAmount) external override nonReentrant {
         // Checks: the caller is the RedemptionPool.
         require(msg.sender == address(redemptionPool), "MINT_NOT_AUTHORIZED");
 
@@ -226,14 +216,11 @@ contract FyToken is
         // Emit a Mint and a Transfer event.
         emit Mint(beneficiary, mintAmount);
         emit Transfer(address(this), beneficiary, mintAmount);
-
-        return true;
     }
 
     /// @inheritdoc IFyToken
-    function repayBorrow(uint256 repayAmount) external override isVaultOpen(msg.sender) nonReentrant returns (bool) {
+    function repayBorrow(uint256 repayAmount) external override isVaultOpen(msg.sender) nonReentrant {
         repayBorrowInternal(msg.sender, msg.sender, repayAmount);
-        return true;
     }
 
     /// @inheritdoc IFyToken
@@ -242,14 +229,12 @@ contract FyToken is
         override
         isVaultOpen(borrower)
         nonReentrant
-        returns (bool)
     {
         repayBorrowInternal(msg.sender, borrower, repayAmount);
-        return true;
     }
 
     /// @inheritdoc IFyToken
-    function _setFintroller(IFintroller newFintroller) external override onlyAdmin returns (bool) {
+    function _setFintroller(IFintroller newFintroller) external override onlyAdmin {
         // Checks: sanity check the new Fintroller contract.
         require(newFintroller.isFintroller(), "SET_FINTROLLER_INSPECTION");
 
@@ -258,8 +243,6 @@ contract FyToken is
         fintroller = newFintroller;
 
         emit SetFintroller(admin, oldFintroller, newFintroller);
-
-        return true;
     }
 
     /// CONSTANT FUNCTIONS ///
@@ -298,10 +281,7 @@ contract FyToken is
         emit Transfer(payer, address(this), repayAmount);
 
         // Interactions: decrease the debt of the borrower account.
-        require(
-            balanceSheet.decreaseVaultDebt(this, borrower, repayAmount),
-            "REPAY_BORROW_CALL_DECREASE_VAULT_DEBT"
-        );
+        balanceSheet.decreaseVaultDebt(this, borrower, repayAmount);
 
         // Emit both a RepayBorrow event.
         uint256 newDebt = debt - repayAmount;

@@ -96,13 +96,12 @@ interface IBalanceSheet is
     /// @param liquidator The account who repays the borrower's debt and receives the collateral.
     /// @param borrower The account who fell underwater and is liquidated.
     /// @param collateralAmount The amount of collateral to clutch, specified in the collateral's decimal system.
-    /// @return bool true = success, otherwise it reverts.
     function clutchCollateral(
         IFyToken fyToken,
         address liquidator,
         address borrower,
         uint256 collateralAmount
-    ) external returns (bool);
+    ) external;
 
     /// @notice Decreases the debt accrued by the borrower account.
     ///
@@ -114,12 +113,11 @@ interface IBalanceSheet is
     /// @param fyToken The address of the fyToken contract.
     /// @param borrower The borrower account for which to decrease the debt.
     /// @param subtractedDebt The amount by which to decrease the debt of the borrower account.
-    /// @return bool=true success, otherwise it reverts.
     function decreaseVaultDebt(
         IFyToken fyToken,
         address borrower,
         uint256 subtractedDebt
-    ) external returns (bool);
+    ) external;
 
     /// @notice Deposits collateral into the account's vault.
     ///
@@ -134,8 +132,7 @@ interface IBalanceSheet is
     ///
     /// @param fyToken The address of the fyToken contract.
     /// @param collateralAmount The amount of collateral to deposit.
-    /// @return bool true = success, otherwise it reverts.
-    function depositCollateral(IFyToken fyToken, uint256 collateralAmount) external returns (bool);
+    function depositCollateral(IFyToken fyToken, uint256 collateralAmount) external;
 
     /// @notice Frees a portion or all of the locked collateral.
     /// @dev Emits a {FreeCollateral} event.
@@ -149,8 +146,7 @@ interface IBalanceSheet is
     ///
     /// @param fyToken The address of the fyToken contract.
     /// @param collateralAmount The amount of locked collateral to free.
-    /// @return bool true = success, otherwise it reverts.
-    function freeCollateral(IFyToken fyToken, uint256 collateralAmount) external returns (bool);
+    function freeCollateral(IFyToken fyToken, uint256 collateralAmount) external;
 
     /// @notice Increases the debt accrued by the borrower account.
     ///
@@ -162,12 +158,11 @@ interface IBalanceSheet is
     /// @param fyToken The address of the fyToken contract.
     /// @param borrower The borrower account for which to increase the debt.
     /// @param addedDebt The amount by which to increase the debt of the borrower account.
-    /// @return bool=true success, otherwise it reverts.
     function increaseVaultDebt(
         IFyToken fyToken,
         address borrower,
         uint256 addedDebt
-    ) external returns (bool);
+    ) external;
 
     /// @notice Locks a portion or all of the free collateral to make it eligible for borrowing.
     /// @dev Emits a {LockCollateral} event.
@@ -180,8 +175,7 @@ interface IBalanceSheet is
     ///
     /// @param fyToken The address of the fyToken contract.
     /// @param collateralAmount The amount of free collateral to lock.
-    /// @return bool true = success, otherwise it reverts.
-    function lockCollateral(IFyToken fyToken, uint256 collateralAmount) external returns (bool);
+    function lockCollateral(IFyToken fyToken, uint256 collateralAmount) external;
 
     /// @notice Opens a Vault for the caller.
     /// @dev Emits an {OpenVault} event.
@@ -193,8 +187,7 @@ interface IBalanceSheet is
     /// - The fyToken must pass the inspection.
     ///
     /// @param fyToken The address of the fyToken contract for which to open the vault.
-    /// @return bool true = success, otherwise it reverts.
-    function openVault(IFyToken fyToken) external returns (bool);
+    function openVault(IFyToken fyToken) external;
 
     /// @notice Withdraws a portion or all of the free collateral.
     ///
@@ -208,8 +201,7 @@ interface IBalanceSheet is
     ///
     /// @param fyToken The address of the fyToken contract.
     /// @param collateralAmount The amount of collateral to withdraw.
-    /// @return bool true = success, otherwise it reverts.
-    function withdrawCollateral(IFyToken fyToken, uint256 collateralAmount) external returns (bool);
+    function withdrawCollateral(IFyToken fyToken, uint256 collateralAmount) external;
 
     /// CONSTANT FUNCTIONS ///
 

@@ -19,9 +19,7 @@ contract Erc20Mintable is Erc20 {
     /// @notice Prints new tokens into existence.
     /// @param beneficiary The account for which to mint the tokens.
     /// @param mintAmount The amount of fyTokens to print into existence.
-    /// @return bool true = success, otherwise it reverts.
-    function mint(address beneficiary, uint256 mintAmount) external returns (bool) {
+    function mint(address beneficiary, uint256 mintAmount) external {
         mintInternal(beneficiary, mintAmount);
-        return true;
     }
 }

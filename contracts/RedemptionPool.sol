@@ -48,8 +48,10 @@ contract RedemptionPool is
         fyToken = fyToken_;
     }
 
+    /// NON-CONSTANT FUNCTIONS ///
+
     /// @inheritdoc IRedemptionPool
-    function redeemFyTokens(uint256 fyTokenAmount) external override nonReentrant returns (bool) {
+    function redeemFyTokens(uint256 fyTokenAmount) external override nonReentrant {
         // Checks: maturation time.
         require(block.timestamp >= fyToken.expirationTime(), "BOND_NOT_MATURED");
 
@@ -76,18 +78,16 @@ contract RedemptionPool is
         totalUnderlyingSupply -= underlyingAmount;
 
         // Interactions: burn the fyTokens.
-        require(fyToken.burn(msg.sender, fyTokenAmount), "SUPPLY_UNDERLYING_CALL_BURN");
+        fyToken.burn(msg.sender, fyTokenAmount);
 
         // Interactions: perform the Erc20 transfer.
         fyToken.underlying().safeTransfer(msg.sender, underlyingAmount);
 
         emit RedeemFyTokens(msg.sender, fyTokenAmount, underlyingAmount);
-
-        return true;
     }
 
     /// @inheritdoc IRedemptionPool
-    function supplyUnderlying(uint256 underlyingAmount) external override nonReentrant returns (bool) {
+    function supplyUnderlying(uint256 underlyingAmount) external override nonReentrant {
         // Checks: maturation time.
         require(block.timestamp < fyToken.expirationTime(), "BOND_MATURED");
 
@@ -111,13 +111,11 @@ contract RedemptionPool is
         }
 
         // Interactions: mint the fyTokens.
-        require(fyToken.mint(msg.sender, fyTokenAmount), "SUPPLY_UNDERLYING_CALL_MINT");
+        fyToken.mint(msg.sender, fyTokenAmount);
 
         // Interactions: perform the Erc20 transfer.
         fyToken.underlying().safeTransferFrom(msg.sender, address(this), underlyingAmount);
 
         emit SupplyUnderlying(msg.sender, underlyingAmount, fyTokenAmount);
-
-        return true;
     }
 }

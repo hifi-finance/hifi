@@ -126,8 +126,7 @@ interface IFintroller is
     /// - The fyToken must pass the inspection.
     ///
     /// @param fyToken The fyToken contract to list.
-    /// @return bool true = success, otherwise it reverts.
-    function listBond(IFyToken fyToken) external returns (bool);
+    function listBond(IFyToken fyToken) external;
 
     /// @notice Updates the bond's collateralization ratio.
     ///
@@ -142,10 +141,7 @@ interface IFintroller is
     ///
     /// @param fyToken The bond for which to update the collateralization ratio.
     /// @param newCollateralizationRatioMantissa The new collateralization ratio as a mantissa.
-    /// @return bool true = success, otherwise it reverts.
-    function setBondCollateralizationRatio(IFyToken fyToken, uint256 newCollateralizationRatioMantissa)
-        external
-        returns (bool);
+    function setBondCollateralizationRatio(IFyToken fyToken, uint256 newCollateralizationRatioMantissa) external;
 
     /// @notice Updates the debt ceiling, which limits how much debt can be issued for this specific bond.
     ///
@@ -160,8 +156,7 @@ interface IFintroller is
     ///
     /// @param fyToken The bond for which to update the debt ceiling.
     /// @param newDebtCeiling The uint256 value of the new debt ceiling, specified in the bond's decimal system.
-    /// @return bool true = success, otherwise it reverts.
-    function setBondDebtCeiling(IFyToken fyToken, uint256 newDebtCeiling) external returns (bool);
+    function setBondDebtCeiling(IFyToken fyToken, uint256 newDebtCeiling) external;
 
     /// @notice Sets a new value for the liquidation incentive applicable to this specific bond.
     ///
@@ -176,8 +171,7 @@ interface IFintroller is
     ///
     /// @param fyToken The bond for which to update the liquidation incentive.
     /// @param newLiquidationIncentive The new liquidation incentive as a mantissa.
-    /// @return bool true = success, otherwise it reverts.
-    function setBondLiquidationIncentive(IFyToken fyToken, uint256 newLiquidationIncentive) external returns (bool);
+    function setBondLiquidationIncentive(IFyToken fyToken, uint256 newLiquidationIncentive) external;
 
     /// @notice Updates the state of the permission accessed by the fyToken before a borrow.
     ///
@@ -190,8 +184,7 @@ interface IFintroller is
     ///
     /// @param fyToken The fyToken contract to update the permission for.
     /// @param state The new state to put in storage.
-    /// @return bool true = success, otherwise it reverts.
-    function setBorrowAllowed(IFyToken fyToken, bool state) external returns (bool);
+    function setBorrowAllowed(IFyToken fyToken, bool state) external;
 
     /// @notice Updates the state of the permission accessed by the fyToken before a collateral deposit.
     ///
@@ -204,8 +197,7 @@ interface IFintroller is
     ///
     /// @param fyToken The fyToken contract to update the permission for.
     /// @param state The new state to put in storage.
-    /// @return bool true = success, otherwise it reverts.
-    function setDepositCollateralAllowed(IFyToken fyToken, bool state) external returns (bool);
+    function setDepositCollateralAllowed(IFyToken fyToken, bool state) external;
 
     /// @notice Updates the state of the permission accessed by the fyToken before a liquidate borrow.
     ///
@@ -218,8 +210,7 @@ interface IFintroller is
     ///
     /// @param fyToken The fyToken contract to update the permission for.
     /// @param state The new state to put in storage.
-    /// @return bool true = success, otherwise it reverts.
-    function setLiquidateBorrowAllowed(IFyToken fyToken, bool state) external returns (bool);
+    function setLiquidateBorrowAllowed(IFyToken fyToken, bool state) external;
 
     /// @notice Updates the oracle contract's address saved in storage.
     ///
@@ -231,8 +222,7 @@ interface IFintroller is
     /// - The new address cannot be the zero address.
     ///
     /// @param newOracle The new oracle contract.
-    /// @return bool true = success, otherwise it reverts.
-    function setOracle(IChainlinkOperator newOracle) external returns (bool);
+    function setOracle(IChainlinkOperator newOracle) external;
 
     /// @notice Updates the state of the permission accessed by the RedemptionPool before a redemption of underlying.
     ///
@@ -245,8 +235,7 @@ interface IFintroller is
     ///
     /// @param fyToken The fyToken contract to update the permission for.
     /// @param state The new state to put in storage.
-    /// @return bool true = success, otherwise it reverts.
-    function setRedeemFyTokensAllowed(IFyToken fyToken, bool state) external returns (bool);
+    function setRedeemFyTokensAllowed(IFyToken fyToken, bool state) external;
 
     /// @notice Updates the state of the permission accessed by the fyToken before a repay borrow.
     ///
@@ -259,8 +248,7 @@ interface IFintroller is
     ///
     /// @param fyToken The fyToken contract to update the permission for.
     /// @param state The new state to put in storage.
-    /// @return bool true = success, otherwise it reverts.
-    function setRepayBorrowAllowed(IFyToken fyToken, bool state) external returns (bool);
+    function setRepayBorrowAllowed(IFyToken fyToken, bool state) external;
 
     /// @notice Updates the state of the permission accessed by the RedemptionPool before a supply of underlying.
     ///
@@ -271,8 +259,7 @@ interface IFintroller is
     ///
     /// @param fyToken The fyToken contract to update the permission for.
     /// @param state The new state to put in storage.
-    /// @return bool true = success, otherwise it reverts.
-    function setSupplyUnderlyingAllowed(IFyToken fyToken, bool state) external returns (bool);
+    function setSupplyUnderlyingAllowed(IFyToken fyToken, bool state) external;
 
     /// CONSTANT FUNCTIONS ///
 

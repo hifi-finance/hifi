@@ -17,13 +17,13 @@ async function stubLiquidateBorrowInternalCalls(
 ): Promise<void> {
   await this.stubs.balanceSheet.mock.decreaseVaultDebt
     .withArgs(fyTokenAddress, this.signers.borrower.address, repayAmount)
-    .returns(true);
+    .returns();
   await this.stubs.balanceSheet.mock.getClutchableCollateral
     .withArgs(fyTokenAddress, repayAmount)
     .returns(clutchedCollateralAmount);
   await this.stubs.balanceSheet.mock.clutchCollateral
     .withArgs(fyTokenAddress, this.signers.liquidator.address, this.signers.borrower.address, clutchedCollateralAmount)
-    .returns(true);
+    .returns();
 }
 
 export default function shouldBehaveLikeLiquidateBorrow(): void {

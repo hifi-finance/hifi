@@ -201,7 +201,7 @@ export default function shouldBehaveLikeBorrow(): void {
                       beforeEach(async function () {
                         await this.stubs.balanceSheet.mock.increaseVaultDebt
                           .withArgs(this.contracts.fyToken.address, this.signers.borrower.address, borrowAmount)
-                          .returns(false);
+                          .reverts();
                       });
 
                       it("reverts", async function () {
@@ -214,7 +214,7 @@ export default function shouldBehaveLikeBorrow(): void {
                       beforeEach(async function () {
                         await this.stubs.balanceSheet.mock.increaseVaultDebt
                           .withArgs(this.contracts.fyToken.address, this.signers.borrower.address, borrowAmount)
-                          .returns(true);
+                          .returns();
                       });
 
                       it("borrows fyTokens", async function () {
