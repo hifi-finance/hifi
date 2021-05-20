@@ -2,20 +2,32 @@
 pragma solidity >=0.8.0;
 
 import "@paulrberg/contracts/token/erc20/Erc20.sol";
-import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
+import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Permit.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 
-import "./HifiPoolInterface.sol";
+import "./IHifiPool.sol";
 import "./interfaces/FyTokenLike.sol";
 import "./math/YieldSpace.sol";
 
 contract HifiPool is
-    HifiPoolInterface, /// one dependency
-    Erc20, /// two dependencies
-    Erc20Permit /// five dependencies
+    IHifiPool, /// no dependency
+    Erc20, /// one dependency
+    Erc20Permit /// four dependencies
 {
-    using SafeErc20 for Erc20Interface;
+    using SafeErc20 for IErc20;
+
+    /// @inheritdoc IHifiPool
+    uint256 public override maturity;
+
+    /// @inheritdoc IHifiPool
+    FyTokenLike public override fyToken;
+
+    /// @inheritdoc IHifiPool
+    IErc20 public override underlying;
+
+    /// @inheritdoc IHifiPool
+    uint256 public override underlyingPrecisionScalar;
 
     /// @dev Trading can only occur prior to maturity.
     modifier isBeforeMaturity() {
@@ -32,7 +44,7 @@ contract HifiPool is
     constructor(
         string memory name_,
         string memory symbol_,
-        Erc20Interface underlying_,
+        IErc20 underlying_,
         FyTokenLike fyToken_
     ) Erc20Permit(name_, symbol_, 18) {
         // Calculate the precision scalar and save the underlying contract address in storage.
@@ -52,7 +64,7 @@ contract HifiPool is
 
     /// CONSTANT FUNCTIONS ///
 
-    /// @inheritdoc HifiPoolInterface
+    /// @inheritdoc IHifiPool
     function getQuoteForBuyingFyToken(uint256 fyTokenOut)
         public
         view
@@ -78,7 +90,7 @@ contract HifiPool is
         underlyingIn = denormalize(normalizedUnderlyingIn);
     }
 
-    /// @inheritdoc HifiPoolInterface
+    /// @inheritdoc IHifiPool
     function getQuoteForBuyingUnderlying(uint256 underlyingOut)
         public
         view
@@ -96,7 +108,7 @@ contract HifiPool is
         }
     }
 
-    /// @inheritdoc HifiPoolInterface
+    /// @inheritdoc IHifiPool
     function getQuoteForSellingFyToken(uint256 fyTokenIn)
         public
         view
@@ -116,7 +128,7 @@ contract HifiPool is
         }
     }
 
-    /// @inheritdoc HifiPoolInterface
+    /// @inheritdoc IHifiPool
     function getQuoteForSellingUnderlying(uint256 underlyingIn)
         public
         view
@@ -141,19 +153,19 @@ contract HifiPool is
         }
     }
 
-    /// @inheritdoc HifiPoolInterface
+    /// @inheritdoc IHifiPool
     function getNormalizedUnderlyingReserves() public view override returns (uint256 normalizedUnderlyingReserves) {
         normalizedUnderlyingReserves = normalize(underlying.balanceOf(address(this)));
     }
 
-    /// @inheritdoc HifiPoolInterface
+    /// @inheritdoc IHifiPool
     function getVirtualFyTokenReserves() public view override returns (uint256 virtualFyTokenReserves) {
         virtualFyTokenReserves = fyToken.balanceOf(address(this)) + totalSupply;
     }
 
     /// NON-CONSTANT EXTERNAL FUNCTIONS ///
 
-    /// @inheritdoc HifiPoolInterface
+    /// @inheritdoc IHifiPool
     function burn(uint256 poolTokensBurned)
         external
         override
@@ -184,7 +196,7 @@ contract HifiPool is
         emit RemoveLiquidity(maturity, msg.sender, underlyingReturned, fyTokenReturned, poolTokensBurned);
     }
 
-    /// @inheritdoc HifiPoolInterface
+    /// @inheritdoc IHifiPool
     function buyFyToken(address to, uint256 fyTokenOut) external override returns (uint256 underlyingIn) {
         // Checks: avoid the zero edge case.
         require(fyTokenOut > 0, "HifiPool: cannot buy with zero fyToken");
@@ -198,7 +210,7 @@ contract HifiPool is
         emit Trade(maturity, msg.sender, to, -toInt256(underlyingIn), toInt256(fyTokenOut));
     }
 
-    /// @inheritdoc HifiPoolInterface
+    /// @inheritdoc IHifiPool
     function buyUnderlying(address to, uint256 underlyingOut) external override returns (uint256 fyTokenIn) {
         // Checks: avoid the zero edge case.
         require(underlyingOut > 0, "HifiPool: cannot buy with zero underlying");
@@ -212,7 +224,7 @@ contract HifiPool is
         emit Trade(maturity, msg.sender, to, toInt256(underlyingOut), -toInt256(fyTokenIn));
     }
 
-    /// @inheritdoc HifiPoolInterface
+    /// @inheritdoc IHifiPool
     function mint(uint256 underlyingOffered) external override returns (uint256 poolTokensMinted) {
         // Checks: avoid the zero edge case.
         require(underlyingOffered > 0, "HifiPool: cannot offer zero underlying");
@@ -248,7 +260,7 @@ contract HifiPool is
         emit AddLiquidity(maturity, msg.sender, underlyingOffered, fyTokenRequired, poolTokensMinted);
     }
 
-    /// @inheritdoc HifiPoolInterface
+    /// @inheritdoc IHifiPool
     function sellFyToken(address to, uint256 fyTokenIn)
         external
         override
@@ -268,7 +280,7 @@ contract HifiPool is
         emit Trade(maturity, msg.sender, to, toInt256(underlyingOut), -toInt256(fyTokenIn));
     }
 
-    /// @inheritdoc HifiPoolInterface
+    /// @inheritdoc IHifiPool
     function sellUnderlying(address to, uint256 underlyingIn) external override returns (uint256 fyTokenOut) {
         // Checks: avoid the zero edge case.
         require(underlyingIn > 0, "HifiPool: cannot sell zero underlying");

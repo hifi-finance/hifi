@@ -883,7 +883,7 @@ __metadata:
     "@ethersproject/wallet": ^5.1.0
     "@nomiclabs/hardhat-ethers": ^2.0.2
     "@nomiclabs/hardhat-waffle": ^2.0.1
-    "@paulrberg/contracts": ^2.1.0
+    "@paulrberg/contracts": latest
     "@typechain/ethers-v5": ^7.0.0
     "@typechain/hardhat": ^2.0.1
     "@types/chai": ^4.2.18
@@ -988,14 +988,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@paulrberg/contracts@npm:^2.1.0":
-  version: 2.1.0
-  resolution: "@paulrberg/contracts@npm:2.1.0"
+"@paulrberg/contracts@npm:latest":
+  version: 3.0.0
+  resolution: "@paulrberg/contracts@npm:3.0.0"
   dependencies:
     prb-math: ^1.1.0
   peerDependencies:
     prb-math: ^1.1.0
-  checksum: 28c14c853d1e97d8b3850e2f3024d75f507803f1319a556b11f6c6b181ceebdda3a134c3ba93e78cd738defde986fe3885f73e429b7555ecc0beb276229e97ed
+  checksum: edd1d41d319357026d258b89da1da9a82d513e9e6707f26c17f0b6d0ed7da614e96ddf5a1913c2b5f330a97707d0dafaf1f3fb93f093cd67fd15e80604026fde
   languageName: node
   linkType: hard
 
