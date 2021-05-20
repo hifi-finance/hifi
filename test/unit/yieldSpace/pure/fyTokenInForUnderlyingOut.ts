@@ -1,11 +1,10 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 import fp from "evm-fp";
-import { BigNumber as MathjsBigNumber, pow } from "mathjs";
 import forEach from "mocha-each";
 
-import { EPSILON, G2, K, MAX_UD60x18, SCALE } from "../../../../helpers/constants";
-import { mbn } from "../../../../helpers/math";
+import { EPSILON, G2, MAX_UD60x18, SCALE } from "../../../../helpers/constants";
+import { getYieldExponent, yieldSpace } from "../../../../helpers/math";
 import { bn } from "../../../../helpers/numbers";
 import { secondsInDays, secondsInYears } from "../../../../helpers/time";
 
@@ -149,14 +148,10 @@ export default function shouldBehaveLikeFyTokenInForUnderlyingOut(): void {
                 bn(timeToMaturity),
               );
 
-              const exponent: MathjsBigNumber = mbn("1").sub(mbn(K).mul(mbn(timeToMaturity)).mul(mbn(G2)));
-              const xs1gt = <MathjsBigNumber>pow(mbn(normalizedUnderlyingReserves), exponent);
-              const ys1gt = <MathjsBigNumber>pow(mbn(fyTokenReserves), exponent);
-              const x: MathjsBigNumber = mbn(normalizedUnderlyingReserves).sub(mbn(normalizedUnderlyingOut));
-              const x1gt = <MathjsBigNumber>pow(x, exponent);
-              const y = <MathjsBigNumber>pow(xs1gt.add(ys1gt).sub(x1gt), mbn("1").div(exponent));
-              const fyTokenIn = <MathjsBigNumber>y.sub(mbn(fyTokenReserves));
-              const expected = fp(String(fyTokenIn));
+              const exponent: string = getYieldExponent(timeToMaturity, G2);
+              const expected: BigNumber = fp(
+                yieldSpace(normalizedUnderlyingReserves, fyTokenReserves, "-" + normalizedUnderlyingOut, exponent),
+              );
 
               const delta: BigNumber = expected.sub(result).abs();
               expect(delta).to.be.lte(EPSILON);

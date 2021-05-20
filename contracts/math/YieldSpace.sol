@@ -87,7 +87,7 @@ library YieldSpace {
                 "YieldSpace: too much underlying in"
             );
 
-            // The first two factors in the right-hand side of the equation. Don't need to guard against overflow
+            // The first two factors in the right-hand side of the equation. There is no need to guard against overflow
             // because the "pow" function yields a maximum of ~2^128 in fixed-point form.
             uint256 startingReservesFactor =
                 normalizedUnderlyingReserves.fromUint().pow(exponent) + fyTokenReserves.fromUint().pow(exponent);
@@ -182,7 +182,8 @@ library YieldSpace {
             uint256 newFyTokenReserves = fyTokenReserves + fyTokenIn;
             require(newFyTokenReserves >= fyTokenReserves, "YieldSpace: too much fyToken in");
 
-            // The first two factors in the right-hand side of the equation.
+            // The first two factors in the right-hand side of the equation. There is no need to guard against overflow
+            // because the "pow" function yields a maximum of ~2^128 in fixed-point form.
             uint256 startingReservesFactor =
                 fyTokenReserves.fromUint().pow(exponent) + normalizedUnderlyingReserves.fromUint().pow(exponent);
 

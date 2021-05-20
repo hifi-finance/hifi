@@ -70,11 +70,11 @@ contract HifiPool is
                 fyTokenOut,
                 maturity - block.timestamp
             );
+            require(
+                virtualFyTokenReserves - fyTokenOut >= normalizedUnderlyingReserves + normalizedUnderlyingIn,
+                "HifiPool: too low fyToken reserves"
+            );
         }
-        require(
-            virtualFyTokenReserves - fyTokenOut >= normalizedUnderlyingReserves + normalizedUnderlyingIn,
-            "HifiPool: too low fyToken reserves"
-        );
         underlyingIn = denormalize(normalizedUnderlyingIn);
     }
 
@@ -134,11 +134,11 @@ contract HifiPool is
                 normalizedUnderlyingIn,
                 maturity - block.timestamp
             );
+            require(
+                virtualFyTokenReserves - fyTokenOut >= normalizedUnderlyingReserves + normalizedUnderlyingIn,
+                "HifiPool: too low fyToken reserves"
+            );
         }
-        require(
-            virtualFyTokenReserves - fyTokenOut >= normalizedUnderlyingReserves + normalizedUnderlyingIn,
-            "HifiPool: too low fyToken reserves"
-        );
     }
 
     /// @inheritdoc HifiPoolInterface
