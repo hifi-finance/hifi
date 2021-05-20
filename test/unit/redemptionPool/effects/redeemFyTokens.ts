@@ -96,9 +96,7 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
 
             describe("when the call to burn the fyTokens does not succeed", function () {
               beforeEach(async function () {
-                await this.stubs.fyToken.mock.burn
-                  .withArgs(this.signers.maker.address, underlyingAmount)
-                  .reverts();
+                await this.stubs.fyToken.mock.burn.withArgs(this.signers.maker.address, underlyingAmount).reverts();
               });
 
               it("reverts", async function () {

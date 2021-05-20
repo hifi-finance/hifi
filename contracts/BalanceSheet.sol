@@ -133,10 +133,7 @@ contract BalanceSheet is
             uint256 hypotheticalCollateralizationRatio =
                 getHypotheticalCollateralizationRatio(fyToken, msg.sender, newLockedCollateral, vault.debt);
             uint256 bondCollateralizationRatio = fintroller.getBondCollateralizationRatio(fyToken);
-            require(
-                hypotheticalCollateralizationRatio >= bondCollateralizationRatio,
-                "BELOW_COLLATERALIZATION_RATIO"
-            );
+            require(hypotheticalCollateralizationRatio >= bondCollateralizationRatio, "BELOW_COLLATERALIZATION_RATIO");
         }
 
         // Effects: update storage.
