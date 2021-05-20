@@ -89,7 +89,7 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
 
           describe("when the call to mint the fyTokens does not succeed", function () {
             beforeEach(async function () {
-              await this.stubs.fyToken.mock.mint.withArgs(this.signers.maker.address, underlyingAmount).returns(false);
+              await this.stubs.fyToken.mock.mint.withArgs(this.signers.maker.address, underlyingAmount).reverts();
             });
 
             it("reverts", async function () {
@@ -100,7 +100,7 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
 
           describe("when the call to mint the fyTokens succeeds", function () {
             beforeEach(async function () {
-              await this.stubs.fyToken.mock.mint.withArgs(this.signers.maker.address, fyTokenAmount).returns(true);
+              await this.stubs.fyToken.mock.mint.withArgs(this.signers.maker.address, fyTokenAmount).returns();
             });
 
             describe("when the underlying has 8 decimals", function () {

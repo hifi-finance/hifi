@@ -98,7 +98,7 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
               beforeEach(async function () {
                 await this.stubs.fyToken.mock.burn
                   .withArgs(this.signers.maker.address, underlyingAmount)
-                  .returns(false);
+                  .reverts();
               });
 
               it("reverts", async function () {
@@ -109,7 +109,7 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
 
             describe("when the call to burn the fyTokens succeeds", function () {
               beforeEach(async function () {
-                await this.stubs.fyToken.mock.burn.withArgs(this.signers.maker.address, fyTokenAmount).returns(true);
+                await this.stubs.fyToken.mock.burn.withArgs(this.signers.maker.address, fyTokenAmount).returns();
               });
 
               describe("when the underlying has 8 decimals", function () {
