@@ -4,7 +4,7 @@ import fp from "evm-fp";
 import forEach from "mocha-each";
 
 import { EPSILON, G1, MAX_UD60x18, SCALE } from "../../../../helpers/constants";
-import { getYieldExponent, yieldSpace } from "../../../../helpers/math";
+import { getYieldExponent, inForOut } from "../../../../helpers/math";
 import { bn } from "../../../../helpers/numbers";
 import { secondsInDays, secondsInYears } from "../../../../helpers/time";
 
@@ -150,7 +150,7 @@ export default function shouldBehaveLikeUnderlyingInForFyTokenOut(): void {
 
               const exponent: string = getYieldExponent(timeToMaturity, G1);
               const expected: BigNumber = fp(
-                yieldSpace(fyTokenReserves, normalizedUnderlyingReserves, "-" + fyTokenOut, exponent),
+                inForOut(fyTokenReserves, normalizedUnderlyingReserves, fyTokenOut, exponent),
               );
 
               const delta: BigNumber = expected.sub(result).abs();

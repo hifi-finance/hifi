@@ -58,8 +58,8 @@ library YieldSpace {
             // "fyTokenReserves" - that is, in a purely mathematical sense. In practice though, due to the "pow"
             // function having lossy precision, specifically that it produces results slightly smaller than what
             // they should be, it is possible for "newFyTokenReserves" to be less than "fyTokenReserves" in
-            // in certain circumstances. For instance, this happens when underlying reserves and
-            // and the fyToken reserves have very different magnitudes.
+            // in certain circumstances. For instance, when underlying reserves and the fyToken reserves
+            // have very different magnitudes.
             uint256 newFyTokenReserves = sum.pow(exponent.inv()).toUint();
             require(newFyTokenReserves >= fyTokenReserves, "YieldSpace: lossy precision underflow");
             fyTokenIn = newFyTokenReserves - fyTokenReserves;
@@ -88,7 +88,7 @@ library YieldSpace {
             );
 
             // The first two factors in the right-hand side of the equation. There is no need to guard against overflow
-            // because the "pow" function yields a maximum of ~2^128 in fixed-point form.
+            // because the "pow" function yields a maximum of ~2^128 in fixed-point representation.
             uint256 startingReservesFactor =
                 normalizedUnderlyingReserves.fromUint().pow(exponent) + fyTokenReserves.fromUint().pow(exponent);
 
@@ -101,13 +101,13 @@ library YieldSpace {
 
             uint256 newFyTokenReserves =
                 (startingReservesFactor - newNormalizedUnderlyingReservesFactor).pow(exponent.inv()).toUint();
-            // TODO: check if this needs a "require".
+            require(fyTokenReserves >= newFyTokenReserves, "YieldSpace: lossy precision underflow");
             fyTokenOut = fyTokenReserves - newFyTokenReserves;
         }
     }
 
     /// @notice Computes the yield exponent 1 - g*t, as per the whitepaper.
-    /// @dev The reason the cutoff time-to-maturity is less than four years is because the invariant applied is t/g < 1
+    /// @dev The reason the cutoff time to maturity is less than four years is because the invariant applied is t/g < 1
     /// instead of t < 1.
     /// @param timeToMaturity Time to maturity in seconds, as an unsigned 60.18-decimal fixed-point number.
     /// @param g The fee coefficient as an unsigned 60.18-decimal fixed-point number.
@@ -153,8 +153,8 @@ library YieldSpace {
             // bigger than "normalizedUnderlyingReserves" - that is, in a purely mathematical sense. In practice though,
             // due to the "pow" function having lossy precision, specifically that it produces results slightly smaller
             // than what they should be, it is possible in certain  circumstances for "newNormalizedUnderlyingReserves
-            // to be less than "normalizedUnderlyingReserves". For instance, this happens when underlying reserves and
-            // and the fyToken reserves have very different magnitudes.
+            // to be less than "normalizedUnderlyingReserves". For instance, when underlying reserves and the fyToken
+            // reserves have very different magnitudes.
             uint256 newNormalizedUnderlyingReserves = sum.pow(exponent.inv()).toUint();
             require(
                 newNormalizedUnderlyingReserves >= normalizedUnderlyingReserves,
@@ -183,7 +183,7 @@ library YieldSpace {
             require(newFyTokenReserves >= fyTokenReserves, "YieldSpace: too much fyToken in");
 
             // The first two factors in the right-hand side of the equation. There is no need to guard against overflow
-            // because the "pow" function yields a maximum of ~2^128 in fixed-point form.
+            // because the "pow" function yields a maximum of ~2^128 in fixed-point representation.
             uint256 startingReservesFactor =
                 fyTokenReserves.fromUint().pow(exponent) + normalizedUnderlyingReserves.fromUint().pow(exponent);
 
@@ -193,7 +193,10 @@ library YieldSpace {
 
             uint256 newNormalizedUnderlyingReserves =
                 (startingReservesFactor - newFyTokenReservesFactor).pow(exponent.inv()).toUint();
-            // TODO: check if this needs a "require".
+            require(
+                normalizedUnderlyingReserves >= newNormalizedUnderlyingReserves,
+                "YieldSpace: lossy precision underflow"
+            );
             normalizedUnderlyingOut = normalizedUnderlyingReserves - newNormalizedUnderlyingReserves;
         }
     }
