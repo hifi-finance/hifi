@@ -2,7 +2,8 @@
 pragma solidity ^0.8.0;
 
 import "@paulrberg/contracts/access/Admin.sol";
-import "./Exponential.sol";
+import "@paulrberg/contracts/math/PRBMathUD60x18.sol";
+
 import "./IFintroller.sol";
 import "./IFyToken.sol";
 import "./oracles/ChainlinkOperator.sol";
@@ -14,6 +15,8 @@ contract Fintroller is
     IFintroller, /// one dependency
     Admin /// one dependency
 {
+    using PRBMathUD60x18 for uint256;
+
     /// STORAGE PROPERTIES ///
 
     /// @inheritdoc IFintroller
@@ -52,7 +55,7 @@ contract Fintroller is
 
     /// @inheritdoc IFintroller
     function getBondCollateralizationRatio(IFyToken fyToken) external view override returns (uint256) {
-        return bonds[fyToken].collateralizationRatio.mantissa;
+        return bonds[fyToken].collateralizationRatio;
     }
 
     /// @inheritdoc IFintroller
@@ -118,7 +121,7 @@ contract Fintroller is
     function listBond(IFyToken fyToken) external override onlyAdmin {
         require(fyToken.isFyToken(), "LIST_BOND_FYTOKEN_INSPECTION");
         bonds[fyToken] = Bond({
-            collateralizationRatio: Exp({ mantissa: defaultCollateralizationRatioMantissa }),
+            collateralizationRatio: defaultCollateralizationRatioMantissa,
             debtCeiling: 0,
             isBorrowAllowed: true,
             isDepositCollateralAllowed: true,
@@ -152,8 +155,8 @@ contract Fintroller is
         );
 
         // Effects: update storage.
-        uint256 oldCollateralizationRatioMantissa = bonds[fyToken].collateralizationRatio.mantissa;
-        bonds[fyToken].collateralizationRatio = Exp({ mantissa: newCollateralizationRatioMantissa });
+        uint256 oldCollateralizationRatioMantissa = bonds[fyToken].collateralizationRatio;
+        bonds[fyToken].collateralizationRatio = newCollateralizationRatioMantissa;
 
         emit SetBondCollateralizationRatio(
             admin,

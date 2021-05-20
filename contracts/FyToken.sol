@@ -9,9 +9,7 @@ import "@paulrberg/contracts/utils/ReentrancyGuard.sol";
 
 import "./IFyToken.sol";
 import "./IBalanceSheet.sol";
-
 import "./RedemptionPool.sol";
-import "./Exponential.sol";
 
 /// @title FyToken
 /// @author Hifi
@@ -21,7 +19,6 @@ contract FyToken is
     ReentrancyGuard, /// no depedency
     Admin, /// one dependency
     Erc20, /// one dependency
-    Exponential, /// two dependencies
     Erc20Permit, /// two dependencies
     Erc20Recover /// two dependencies
 {

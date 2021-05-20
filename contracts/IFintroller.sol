@@ -12,12 +12,8 @@ import "./oracles/IChainlinkOperator.sol";
 interface IFintroller is
     IAdmin /// one dependency
 {
-    struct Exp {
-        uint256 mantissa;
-    }
-
     struct Bond {
-        Exp collateralizationRatio;
+        uint256 collateralizationRatio;
         uint256 debtCeiling;
         uint256 liquidationIncentive;
         bool isBorrowAllowed;

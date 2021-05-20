@@ -7,7 +7,7 @@ export default function shouldBehaveLikeGetBondCollateralizationRatio(): void {
   describe("when the bond is not listed", function () {
     it("retrieves the default values", async function () {
       const bond = await this.contracts.fintroller.getBond(this.stubs.fyToken.address);
-      expect(bond.collateralizationRatio.mantissa).to.equal(Zero);
+      expect(bond.collateralizationRatio).to.equal(Zero);
       expect(bond.debtCeiling).to.equal(Zero);
       expect(bond.isBorrowAllowed).to.equal(false);
       expect(bond.isDepositCollateralAllowed).to.equal(false);
@@ -27,7 +27,7 @@ export default function shouldBehaveLikeGetBondCollateralizationRatio(): void {
 
     it("retrieves the default values after listing", async function () {
       const bond = await this.contracts.fintroller.getBond(this.stubs.fyToken.address);
-      expect(bond.collateralizationRatio.mantissa).to.equal(fintrollerConstants.defaultCollateralizationRatio);
+      expect(bond.collateralizationRatio).to.equal(fintrollerConstants.defaultCollateralizationRatio);
       expect(bond.debtCeiling).to.equal(Zero);
       expect(bond.isBorrowAllowed).to.equal(true);
       expect(bond.isDepositCollateralAllowed).to.equal(true);

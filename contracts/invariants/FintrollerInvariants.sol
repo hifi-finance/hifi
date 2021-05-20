@@ -25,8 +25,8 @@ contract FintrollerInvariants is
             return true;
         } else {
             return
-                bonds[fyToken].collateralizationRatio.mantissa >= collateralizationRatioLowerBoundMantissa &&
-                bonds[fyToken].collateralizationRatio.mantissa <= collateralizationRatioUpperBoundMantissa;
+                bonds[fyToken].collateralizationRatio >= collateralizationRatioLowerBoundMantissa &&
+                bonds[fyToken].collateralizationRatio <= collateralizationRatioUpperBoundMantissa;
         }
     }
 

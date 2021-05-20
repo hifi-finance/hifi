@@ -5,8 +5,7 @@ import "@paulrberg/contracts/access/Admin.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 import "@paulrberg/contracts/utils/ReentrancyGuard.sol";
-
-import "./Exponential.sol";
+import "@paulrberg/contracts/math/PRBMathUD60x18.sol";
 
 import "./IBalanceSheet.sol";
 import "./IFintroller.sol";
@@ -19,10 +18,10 @@ import "./oracles/IChainlinkOperator.sol";
 contract BalanceSheet is
     IBalanceSheet, /// one dependency
     ReentrancyGuard, /// no depedency
-    Exponential, /// one dependency
     Admin /// one dependency
 {
     using SafeErc20 for IErc20;
+    using PRBMathUD60x18 for uint256;
 
     /// STORAGE PROPERTIES ///
 
@@ -216,12 +215,12 @@ contract BalanceSheet is
     /// CONSTANT FUNCTIONS ///
 
     struct GetClutchableCollateralLocalVars {
-        Exp clutchableCollateralAmountUpscaled;
+        uint256 clutchableCollateralAmountUpscaled;
         uint256 clutchableCollateralAmount;
         uint256 collateralPrecisionScalar;
         uint256 collateralPriceUpscaled;
         uint256 liquidationIncentive;
-        Exp numerator;
+        uint256 numerator;
         uint256 oraclePricePrecisionScalar;
         uint256 underlyingPriceUpscaled;
     }
@@ -247,26 +246,17 @@ contract BalanceSheet is
         vars.collateralPriceUpscaled = oracle.getAdjustedPrice(fyToken.collateral().symbol());
 
         // Calculate the top part of the equation.
-        vars.numerator = mulExp3(
-            Exp({ mantissa: repayAmount }),
-            Exp({ mantissa: vars.liquidationIncentive }),
-            Exp({ mantissa: vars.underlyingPriceUpscaled })
-        );
+        vars.numerator = repayAmount.mul(vars.liquidationIncentive.mul(vars.underlyingPriceUpscaled));
 
         // Calculate the mantissa form of the clutched collateral amount.
-        vars.clutchableCollateralAmountUpscaled = divExp(
-            vars.numerator,
-            Exp({ mantissa: vars.collateralPriceUpscaled })
-        );
+        vars.clutchableCollateralAmountUpscaled = vars.numerator.div(vars.collateralPriceUpscaled);
 
         // If the precision scalar is not 1, calculate the final form of the clutched collateral amount.
         vars.collateralPrecisionScalar = fyToken.collateralPrecisionScalar();
         if (vars.collateralPrecisionScalar != 1) {
-            vars.clutchableCollateralAmount =
-                vars.clutchableCollateralAmountUpscaled.mantissa /
-                vars.collateralPrecisionScalar;
+            vars.clutchableCollateralAmount = vars.clutchableCollateralAmountUpscaled / vars.collateralPrecisionScalar;
         } else {
-            vars.clutchableCollateralAmount = vars.clutchableCollateralAmountUpscaled.mantissa;
+            vars.clutchableCollateralAmount = vars.clutchableCollateralAmountUpscaled;
         }
 
         return vars.clutchableCollateralAmount;
@@ -287,9 +277,9 @@ contract BalanceSheet is
         uint256 collateralPriceUpscaled;
         uint256 collateralPrecisionScalar;
         uint256 collateralizationRatioMantissa;
-        Exp debtValueUsd;
-        Exp hypotheticalCollateralizationRatio;
-        Exp lockedCollateralValueUsd;
+        uint256 debtValueUsd;
+        uint256 hypotheticalCollateralizationRatio;
+        uint256 lockedCollateralValueUsd;
         uint256 lockedCollateralUpscaled;
         uint256 oraclePricePrecisionScalar;
         uint256 underlyingPriceUpscaled;
@@ -330,19 +320,16 @@ contract BalanceSheet is
         }
 
         // Calculate the USD value of the collateral.
-        vars.lockedCollateralValueUsd = mulExp(
-            Exp({ mantissa: vars.lockedCollateralUpscaled }),
-            Exp({ mantissa: vars.collateralPriceUpscaled })
-        );
+        vars.lockedCollateralValueUsd = vars.lockedCollateralUpscaled.mul(vars.collateralPriceUpscaled);
 
         // Calculate the USD value of the debt.
-        vars.debtValueUsd = mulExp(Exp({ mantissa: debt }), Exp({ mantissa: vars.underlyingPriceUpscaled }));
+        vars.debtValueUsd = debt.mul(vars.underlyingPriceUpscaled);
 
         // Calculate the collateralization ratio by dividing the USD value of the hypothetical locked collateral by
         // the USD value of the debt.
-        vars.hypotheticalCollateralizationRatio = divExp(vars.lockedCollateralValueUsd, vars.debtValueUsd);
+        vars.hypotheticalCollateralizationRatio = vars.lockedCollateralValueUsd.div(vars.debtValueUsd);
 
-        return vars.hypotheticalCollateralizationRatio.mantissa;
+        return vars.hypotheticalCollateralizationRatio;
     }
 
     /// @inheritdoc IBalanceSheet
