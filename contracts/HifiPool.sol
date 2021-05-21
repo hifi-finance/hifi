@@ -7,7 +7,7 @@ import "@paulrberg/contracts/token/erc20/Erc20Permit.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 
 import "./IHifiPool.sol";
-import "./interfaces/FyTokenLike.sol";
+import "./external/hifi/FyTokenLike.sol";
 import "./math/YieldSpace.sol";
 
 contract HifiPool is
@@ -39,24 +39,24 @@ contract HifiPool is
     /// @dev The HifiPool LP token always has 18 decimals.
     /// @param name_ Erc20 name of this token.
     /// @param symbol_ Erc20 symbol of this token.
-    /// @param underlying_ The contract address of the underlying.
     /// @param fyToken_ The contract address of the fyToken.
+    /// @param underlying_ The contract address of the underlying.
     constructor(
         string memory name_,
         string memory symbol_,
-        IErc20 underlying_,
-        FyTokenLike fyToken_
+        FyTokenLike fyToken_,
+        IErc20 underlying_
     ) Erc20Permit(name_, symbol_, 18) {
+        // Save the fyToken contract address in storage and sanity check it.
+        fyToken = fyToken_;
+        fyToken.isFyToken();
+
         // Calculate the precision scalar and save the underlying contract address in storage.
         uint256 underlyingDecimals = underlying_.decimals();
         require(underlyingDecimals > 0, "HifiPool: zero decimals underlying");
         require(underlyingDecimals <= 18, "HifiPool: >18 decimals underlying");
         underlyingPrecisionScalar = 10**(18 - underlyingDecimals);
         underlying = underlying_;
-
-        // Save the fyToken contract address in storage and sanity check it.
-        fyToken = fyToken_;
-        fyToken.isFyToken();
 
         // Save the fyToken maturity time in storage.
         maturity = fyToken_.expirationTime();
@@ -160,7 +160,11 @@ contract HifiPool is
 
     /// @inheritdoc IHifiPool
     function getVirtualFyTokenReserves() public view override returns (uint256 virtualFyTokenReserves) {
-        virtualFyTokenReserves = fyToken.balanceOf(address(this)) + totalSupply;
+        unchecked {
+            uint256 fyTokenBalance = fyToken.balanceOf(address(this));
+            virtualFyTokenReserves = fyTokenBalance + totalSupply;
+            require(virtualFyTokenReserves >= fyTokenBalance, "HifiPool: virtual fyToken reserves overflow");
+        }
     }
 
     /// NON-CONSTANT EXTERNAL FUNCTIONS ///

@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
-import "./interfaces/FyTokenLike.sol";
+import "./external/hifi/FyTokenLike.sol";
 
 /// @title HifiPoolInterface
 /// @author Hifi

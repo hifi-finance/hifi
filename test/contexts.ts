@@ -4,7 +4,7 @@ import { Wallet } from "@ethersproject/wallet";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 import { ethers, waffle } from "hardhat";
 
-import { Contracts, Signers } from "../types/index";
+import { Contracts, Signers, Stubs } from "../types/index";
 
 const { createFixtureLoader } = waffle;
 
@@ -13,6 +13,7 @@ export function baseContext(description: string, hooks: () => void): void {
     before(async function () {
       this.contracts = {} as Contracts;
       this.signers = {} as Signers;
+      this.stubs = {} as Stubs;
 
       const signers: SignerWithAddress[] = await ethers.getSigners();
       this.signers.admin = signers[0];
