@@ -1,4 +1,5 @@
 import shouldBehaveLikeHifiPoolConstructor from "./constructor";
+import shouldBehaveLikeMint from "./effects/mint";
 import shouldBehaveLikeGetNormalizedUnderlyingReserves from "./view/getNormalizedUnderlyingReserves";
 import shouldBehaveLikeGetVirtualFyTokenReserves from "./view/getVirtualFyTokenReserves";
 
@@ -7,12 +8,18 @@ export function shouldBehaveLikeHifiPool(): void {
     shouldBehaveLikeHifiPoolConstructor();
   });
 
+  describe("Effects Functions", function () {
+    describe("mint", function () {
+      shouldBehaveLikeMint();
+    });
+  });
+
   describe("View Functions", function () {
-    context("getNormalizedUnderlyingReserves", function () {
+    describe("getNormalizedUnderlyingReserves", function () {
       shouldBehaveLikeGetNormalizedUnderlyingReserves();
     });
 
-    context("getVirtualFyTokenReserves", function () {
+    describe("getVirtualFyTokenReserves", function () {
       shouldBehaveLikeGetVirtualFyTokenReserves();
     });
   });

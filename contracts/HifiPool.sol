@@ -195,7 +195,9 @@ contract HifiPool is
 
         // Interactions
         underlying.safeTransfer(msg.sender, underlyingReturned);
-        fyToken.transfer(msg.sender, fyTokenReturned);
+        if (fyTokenReturned > 0) {
+            fyToken.transfer(msg.sender, fyTokenReturned);
+        }
 
         emit RemoveLiquidity(maturity, msg.sender, underlyingReturned, fyTokenReturned, poolTokensBurned);
     }
@@ -243,9 +245,9 @@ contract HifiPool is
             mintInternal(msg.sender, normalizedUnderlyingOffered);
 
             // Interactions
-            underlying.safeTransferFrom(msg.sender, address(this), normalizedUnderlyingOffered);
+            underlying.safeTransferFrom(msg.sender, address(this), underlyingOffered);
 
-            emit AddLiquidity(maturity, msg.sender, underlyingOffered, 0, underlyingOffered);
+            emit AddLiquidity(maturity, msg.sender, underlyingOffered, 0, normalizedUnderlyingOffered);
             return normalizedUnderlyingOffered;
         }
 
@@ -259,7 +261,9 @@ contract HifiPool is
 
         // Interactions
         underlying.safeTransferFrom(msg.sender, address(this), underlyingOffered);
-        fyToken.transferFrom(msg.sender, address(this), fyTokenRequired);
+        if (fyTokenRequired > 0) {
+            fyToken.transferFrom(msg.sender, address(this), fyTokenRequired);
+        }
 
         emit AddLiquidity(maturity, msg.sender, underlyingOffered, fyTokenRequired, poolTokensMinted);
     }

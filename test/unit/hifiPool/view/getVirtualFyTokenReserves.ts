@@ -49,7 +49,7 @@ export default function shouldBehaveLikeGetVirtualFyTokenReserves(): void {
         [fp("28094.892"), fp("89904.556")],
         [fp("549846.799912"), fp("5159245.001")],
         [fp("12e6"), fp("189e8")],
-        [fp("3.14e15"), fp("27.18e18")],
+        [fp("3.1415e15"), fp("27.18e18")],
         [fp(MAX_UD60x18).sub(1), bn("1")],
       ];
 

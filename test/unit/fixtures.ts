@@ -3,6 +3,13 @@ import { MockContract as StubContract } from "ethereum-waffle";
 import hre from "hardhat";
 import { Artifact } from "hardhat/types";
 
+import {
+  FY_TOKEN_EXPIRATION_TIME,
+  FY_TOKEN_NAME,
+  FY_TOKEN_SYMBOL,
+  HIFI_POOL_NAME,
+  HIFI_POOL_SYMBOL,
+} from "../../helpers/constants";
 import { bn } from "../../helpers/numbers";
 import { GodModeHifiPool } from "../../typechain/GodModeHifiPool";
 import { YieldSpaceMock } from "../../typechain/YieldSpaceMock";
@@ -32,17 +39,17 @@ export async function unitFixtureHifiPool(signers: Signer[]): Promise<HifiPoolFi
 
   const fyToken: StubContract = await deployStubFyToken(
     deployer,
-    "Hifi USDC (2022-06-30)",
-    "hUSDCJun22",
-    bn("1656626400"), // June 30, 2022
+    FY_TOKEN_NAME,
+    FY_TOKEN_SYMBOL,
+    FY_TOKEN_EXPIRATION_TIME,
   );
   const underlying: StubContract = await deployStubErc20(deployer, "USD Coin", "USDC", bn("6"));
 
   const hifiPoolArtifact: Artifact = await hre.artifacts.readArtifact("GodModeHifiPool");
   const hifiPool = <GodModeHifiPool>(
     await deployContract(deployer, hifiPoolArtifact, [
-      "Hifi USDC (2022-06-30) Pool",
-      "hUSDCJun22LP",
+      HIFI_POOL_NAME,
+      HIFI_POOL_SYMBOL,
       fyToken.address,
       underlying.address,
     ])
