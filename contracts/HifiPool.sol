@@ -53,7 +53,7 @@ contract HifiPool is
 
         // Calculate the precision scalar and save the underlying contract address in storage.
         uint256 underlyingDecimals = underlying_.decimals();
-        require(underlyingDecimals > 0, "HifiPool: zero decimals underlying");
+        require(underlyingDecimals > 0, "HifiPool: 0 decimals underlying");
         require(underlyingDecimals <= 18, "HifiPool: >18 decimals underlying");
         underlyingPrecisionScalar = 10**(18 - underlyingDecimals);
         underlying = underlying_;
