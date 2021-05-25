@@ -66,6 +66,12 @@ interface IChainlinkOperator {
     /// @return Price denominated in USD, with 8 decimals.
     function getPrice(string memory symbol) external view returns (uint256);
 
+    /// @notice Chainlink price precision for USD-quoted data.
+    function pricePrecision() external view returns (uint256);
+
+    /// @notice The ratio between mantissa precision (1e18) and the Chainlink price precision (1e8).
+    function pricePrecisionScalar() external view returns (uint256);
+
     /// NON-CONSTANT FUNCTIONS ///
 
     /// @notice Deletes a previously set Chainlink price feed.
@@ -79,12 +85,6 @@ interface IChainlinkOperator {
     ///
     /// @param symbol The Erc20 symbol of the asset to delete the feed for.
     function deleteFeed(string memory symbol) external;
-
-    /// @notice Chainlink price precision for USD-quoted data.
-    function pricePrecision() external view returns (uint256);
-
-    /// @notice The ratio between mantissa precision (1e18) and the Chainlink price precision (1e8).
-    function pricePrecisionScalar() external view returns (uint256);
 
     /// @notice Sets a Chainlink price feed. It is not an error to set a feed twice.
     ///
