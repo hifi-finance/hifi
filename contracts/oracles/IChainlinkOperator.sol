@@ -30,6 +30,33 @@ interface IChainlinkOperator {
     /// @param feed The related feed.
     event SetFeed(IErc20 indexed asset, AggregatorV3Interface indexed feed);
 
+    /// NON-CONSTANT FUNCTIONS ///
+
+    /// @notice Deletes a previously set Chainlink price feed.
+    ///
+    /// @dev Emits a {DeleteFeed} event.
+    ///
+    /// Requirements:
+    ///
+    /// - The caller must be the admin.
+    /// - The feed must have been previously set.
+    ///
+    /// @param symbol The Erc20 symbol of the asset to delete the feed for.
+    function deleteFeed(string memory symbol) external;
+
+    /// @notice Sets a Chainlink price feed. It is not an error to set a feed twice.
+    ///
+    /// @dev Emits a {SetFeed} event.
+    ///
+    /// Requirements:
+    ///
+    /// - The caller must be the admin.
+    /// - The number of decimals of the feed must be 8.
+    ///
+    /// @param asset The address of the Erc20 contract for which to get the price.
+    /// @param feed The address of the Chainlink price feed contract.
+    function setFeed(IErc20 asset, AggregatorV3Interface feed) external;
+
     /// CONSTANT FUNCTIONS ///
 
     /// @notice Gets the official price for a symbol and adjusts it have 18 decimals instead of the
@@ -71,31 +98,4 @@ interface IChainlinkOperator {
 
     /// @notice The ratio between mantissa precision (1e18) and the Chainlink price precision (1e8).
     function pricePrecisionScalar() external view returns (uint256);
-
-    /// NON-CONSTANT FUNCTIONS ///
-
-    /// @notice Deletes a previously set Chainlink price feed.
-    ///
-    /// @dev Emits a {DeleteFeed} event.
-    ///
-    /// Requirements:
-    ///
-    /// - The caller must be the admin.
-    /// - The feed must have been previously set.
-    ///
-    /// @param symbol The Erc20 symbol of the asset to delete the feed for.
-    function deleteFeed(string memory symbol) external;
-
-    /// @notice Sets a Chainlink price feed. It is not an error to set a feed twice.
-    ///
-    /// @dev Emits a {SetFeed} event.
-    ///
-    /// Requirements:
-    ///
-    /// - The caller must be the admin.
-    /// - The number of decimals of the feed must be 8.
-    ///
-    /// @param asset The address of the Erc20 contract for which to get the price.
-    /// @param feed The address of the Chainlink price feed contract.
-    function setFeed(IErc20 asset, AggregatorV3Interface feed) external;
 }
