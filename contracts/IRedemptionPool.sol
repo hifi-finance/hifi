@@ -9,9 +9,7 @@ import "./IFyToken.sol";
 /// @title IRedemptionPool
 /// @author Hifi
 /// @notice The interface of the RedemptionPool contract
-interface IRedemptionPool is
-    IErc20Recover /// one dependency
-{
+interface IRedemptionPool is IErc20Recover {
     /// EVENTS ///
 
     /// @notice Emitted when fyTokens are redeemed.
@@ -61,12 +59,12 @@ interface IRedemptionPool is
     /// @notice The unique Fintroller associated with this contract.
     function fintroller() external view returns (IFintroller);
 
-    /// @notice The amount of the underlying asset available to be redeemed after maturation.
-    function totalUnderlyingSupply() external view returns (uint256);
+    /// @notice Indicator that this is a RedemptionPool contract, for inspection.
+    function isRedemptionPool() external view returns (bool);
 
     /// @notice The unique fyToken associated with this RedemptionPool.
     function fyToken() external view returns (IFyToken);
 
-    /// @notice Indicator that this is a RedemptionPool contract, for inspection.
-    function isRedemptionPool() external view returns (bool);
+    /// @notice The amount of the underlying asset available to be redeemed after maturation.
+    function totalUnderlyingSupply() external view returns (uint256);
 }
