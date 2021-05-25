@@ -1,4 +1,5 @@
 import shouldBehaveLikeHifiPoolConstructor from "./constructor";
+import shouldBehaveLikeBurn from "./effects/burn";
 import shouldBehaveLikeMint from "./effects/mint";
 import shouldBehaveLikeGetNormalizedUnderlyingReserves from "./view/getNormalizedUnderlyingReserves";
 import shouldBehaveLikeGetVirtualFyTokenReserves from "./view/getVirtualFyTokenReserves";
@@ -9,6 +10,10 @@ export function shouldBehaveLikeHifiPool(): void {
   });
 
   describe("Effects Functions", function () {
+    describe("burn", function () {
+      shouldBehaveLikeBurn();
+    });
+
     describe("mint", function () {
       shouldBehaveLikeMint();
     });

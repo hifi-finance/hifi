@@ -18,3 +18,4 @@ export const HIFI_POOL_SYMBOL: string = "hUSDCJun22LP";
 export const MAX_UD60x18: string = "115792089237316195423570985008687907853269984665640564039457.584007913129639935";
 export const PI: string = "3.141592653589793238";
 export const SCALE: string = "1";
+export const UNDERLYING_PRECISION_SCALAR: BigNumber = bn("1e12");

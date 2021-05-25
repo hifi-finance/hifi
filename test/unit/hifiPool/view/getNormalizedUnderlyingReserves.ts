@@ -3,7 +3,7 @@ import { expect } from "chai";
 import fp from "evm-fp";
 import forEach from "mocha-each";
 
-import { MAX_UD60x18 } from "../../../../helpers/constants";
+import { MAX_UD60x18, UNDERLYING_PRECISION_SCALAR } from "../../../../helpers/constants";
 import { bn, usdc } from "../../../../helpers/numbers";
 
 export default function shouldBehaveLikeGetNormalizedUnderlyingReserves(): void {
@@ -34,10 +34,8 @@ export default function shouldBehaveLikeGetNormalizedUnderlyingReserves(): void 
     });
 
     context("when the underlying has 6 decimals", function () {
-      const underlyingPrecisionScalar: BigNumber = bn("1e12");
-
       beforeEach(async function () {
-        await this.contracts.hifiPool.__godMode_setUnderlyingPrecisionScalar(underlyingPrecisionScalar);
+        await this.contracts.hifiPool.__godMode_setUnderlyingPrecisionScalar(UNDERLYING_PRECISION_SCALAR);
       });
 
       const testSets = [[usdc("1e-6")], [usdc("1e2")], [usdc("1729")], [fp("31415.92")], [usdc(MAX_UD60x18)]];
@@ -45,7 +43,7 @@ export default function shouldBehaveLikeGetNormalizedUnderlyingReserves(): void 
       forEach(testSets).it("takes %e and returns the correct underlying reserves", async function (x: BigNumber) {
         await this.stubs.underlying.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(x);
         const result: BigNumber = await this.contracts.hifiPool.getNormalizedUnderlyingReserves();
-        expect(x.mul(underlyingPrecisionScalar)).to.equal(result);
+        expect(x.mul(UNDERLYING_PRECISION_SCALAR)).to.equal(result);
       });
     });
   });

@@ -16,6 +16,10 @@ contract GodModeHifiPool is HifiPool {
         // solhint-disable-previous-line no-empty-blocks
     }
 
+    function __godMode_mint(uint256 mintAmount) external {
+        mintInternal(msg.sender, mintAmount);
+    }
+
     function __godMode_setUnderlyingPrecisionScalar(uint256 underlyingPrecisionScalar_) external {
         underlyingPrecisionScalar = underlyingPrecisionScalar_;
     }

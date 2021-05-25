@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.0;
 
+import "hardhat/console.sol";
+
 import "@paulrberg/contracts/token/erc20/Erc20.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Permit.sol";
@@ -181,9 +183,9 @@ contract HifiPool is
         uint256 supply = totalSupply;
         uint256 normalizedUnderlyingReserves = getNormalizedUnderlyingReserves();
 
-        // Use the actual reserves rather than the virtual reserves.
+        // This block avoids the stack too deep error.
         {
-            // Avoiding stack too deep.
+            // Use the actual reserves rather than the virtual reserves.
             uint256 fyTokenReserves = fyToken.balanceOf(address(this));
             uint256 normalizedUnderlyingReturned = (poolTokensBurned * normalizedUnderlyingReserves) / supply;
             underlyingReturned = denormalize(normalizedUnderlyingReturned);
@@ -210,8 +212,8 @@ contract HifiPool is
         underlyingIn = getQuoteForBuyingFyToken(fyTokenOut);
 
         // Interactions
-        underlying.safeTransferFrom(msg.sender, address(this), uint256(underlyingIn));
-        fyToken.transfer(to, uint256(fyTokenOut));
+        underlying.safeTransferFrom(msg.sender, address(this), underlyingIn);
+        fyToken.transfer(to, fyTokenOut);
 
         emit Trade(maturity, msg.sender, to, -toInt256(underlyingIn), toInt256(fyTokenOut));
     }
@@ -224,8 +226,8 @@ contract HifiPool is
         fyTokenIn = getQuoteForBuyingUnderlying(underlyingOut);
 
         // Interactions
-        underlying.safeTransfer(to, uint256(underlyingOut));
-        fyToken.transferFrom(msg.sender, address(this), uint256(fyTokenIn));
+        underlying.safeTransfer(to, underlyingOut);
+        fyToken.transferFrom(msg.sender, address(this), fyTokenIn);
 
         emit Trade(maturity, msg.sender, to, toInt256(underlyingOut), -toInt256(fyTokenIn));
     }
@@ -281,8 +283,8 @@ contract HifiPool is
         underlyingOut = getQuoteForSellingFyToken(fyTokenIn);
 
         // Interactions
-        underlying.safeTransfer(to, uint256(underlyingOut));
-        fyToken.transferFrom(msg.sender, address(this), uint256(fyTokenIn));
+        underlying.safeTransfer(to, underlyingOut);
+        fyToken.transferFrom(msg.sender, address(this), fyTokenIn);
 
         // TODO: check if `fyTokenIn` is not min uint256
         emit Trade(maturity, msg.sender, to, toInt256(underlyingOut), -toInt256(fyTokenIn));
@@ -296,8 +298,8 @@ contract HifiPool is
         fyTokenOut = getQuoteForSellingUnderlying(underlyingIn);
 
         // Interactions
-        underlying.safeTransferFrom(msg.sender, address(this), uint256(underlyingIn));
-        fyToken.transfer(to, uint256(fyTokenOut));
+        underlying.safeTransferFrom(msg.sender, address(this), underlyingIn);
+        fyToken.transfer(to, fyTokenOut);
 
         // TODO: check if `underlyingIn` is not min uint256
         emit Trade(maturity, msg.sender, to, -toInt256(underlyingIn), toInt256(fyTokenOut));
