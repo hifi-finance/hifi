@@ -1,11 +1,11 @@
 /// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
-/// @title AggregatorV3Interface
+/// @title IAggregatorV3
 /// @author Hifi
 /// @dev Forked from Chainlink
-/// github.com/smartcontractkit/chainlink/blob/v0.9.9/evm-contracts/src/v0.7/interfaces/AggregatorV3Interface.sol
-interface AggregatorV3Interface {
+/// github.com/smartcontractkit/chainlink/blob/v0.9.9/evm-contracts/src/v0.7/interfaces/IAggregatorV3.sol
+interface IAggregatorV3 {
     function decimals() external view returns (uint8);
 
     function description() external view returns (string memory);

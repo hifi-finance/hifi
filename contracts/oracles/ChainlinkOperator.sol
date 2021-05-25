@@ -44,7 +44,7 @@ contract ChainlinkOperator is
         override
         returns (
             IErc20,
-            AggregatorV3Interface,
+            IAggregatorV3,
             bool
         )
     {
@@ -54,7 +54,7 @@ contract ChainlinkOperator is
     /// @inheritdoc IChainlinkOperator
     function getPrice(string memory symbol) public view override returns (uint256) {
         require(feeds[symbol].isSet, "FEED_NOT_SET");
-        (, int256 intPrice, , , ) = AggregatorV3Interface(feeds[symbol].id).latestRoundData();
+        (, int256 intPrice, , , ) = IAggregatorV3(feeds[symbol].id).latestRoundData();
         uint256 price = uint256(intPrice);
         require(price > 0, "PRICE_ZERO");
         return price;
@@ -68,7 +68,7 @@ contract ChainlinkOperator is
         require(feeds[symbol].isSet, "FEED_NOT_SET");
 
         // Effects: delete the feed from storage.
-        AggregatorV3Interface feed = feeds[symbol].id;
+        IAggregatorV3 feed = feeds[symbol].id;
         IErc20 asset = feeds[symbol].asset;
         delete feeds[symbol];
 
@@ -76,7 +76,7 @@ contract ChainlinkOperator is
     }
 
     /// @inheritdoc IChainlinkOperator
-    function setFeed(IErc20 asset, AggregatorV3Interface feed) external override onlyAdmin {
+    function setFeed(IErc20 asset, IAggregatorV3 feed) external override onlyAdmin {
         string memory symbol = asset.symbol();
 
         // Checks: price precision.

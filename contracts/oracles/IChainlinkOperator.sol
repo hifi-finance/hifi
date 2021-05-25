@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/access/IAdmin.sol";
 
-import "../external/chainlink/AggregatorV3Interface.sol";
+import "../external/chainlink/IAggregatorV3.sol";
 
 /// @title IChainlinkOperator
 /// @author Hifi
@@ -14,7 +14,7 @@ interface IChainlinkOperator {
 
     struct Feed {
         IErc20 asset;
-        AggregatorV3Interface id;
+        IAggregatorV3 id;
         bool isSet;
     }
 
@@ -23,12 +23,12 @@ interface IChainlinkOperator {
     /// @notice Emitted when a feed is deleted.
     /// @param asset The related asset.
     /// @param feed The related feed.
-    event DeleteFeed(IErc20 indexed asset, AggregatorV3Interface indexed feed);
+    event DeleteFeed(IErc20 indexed asset, IAggregatorV3 indexed feed);
 
     /// @notice Emitted when a feed is set.
     /// @param asset The related asset.
     /// @param feed The related feed.
-    event SetFeed(IErc20 indexed asset, AggregatorV3Interface indexed feed);
+    event SetFeed(IErc20 indexed asset, IAggregatorV3 indexed feed);
 
     /// NON-CONSTANT FUNCTIONS ///
 
@@ -55,7 +55,7 @@ interface IChainlinkOperator {
     ///
     /// @param asset The address of the Erc20 contract for which to get the price.
     /// @param feed The address of the Chainlink price feed contract.
-    function setFeed(IErc20 asset, AggregatorV3Interface feed) external;
+    function setFeed(IErc20 asset, IAggregatorV3 feed) external;
 
     /// CONSTANT FUNCTIONS ///
 
@@ -77,7 +77,7 @@ interface IChainlinkOperator {
         view
         returns (
             IErc20,
-            AggregatorV3Interface,
+            IAggregatorV3,
             bool
         );
 
