@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "@paulrberg/contracts/access/Admin.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 
-import "../oracles/IChainlinkOperator.sol";
+import "./IChainlinkOperator.sol";
 
 /// @title ChainlinkOperator
 /// @author Hifi
@@ -15,20 +15,14 @@ contract ChainlinkOperator is
 {
     /// STORAGE PROPERTIES ///
 
-    struct Feed {
-        IErc20 asset;
-        AggregatorV3Interface id;
-        bool isSet;
-    }
+    /// @dev Mapping between Erc20 symbols and Feed structs.
+    mapping(string => Feed) internal feeds;
 
     /// @inheritdoc IChainlinkOperator
     uint256 public constant override pricePrecision = 8;
 
     /// @inheritdoc IChainlinkOperator
     uint256 public constant override pricePrecisionScalar = 1.0e10;
-
-    /// @dev Mapping between Erc20 symbols and Feed structs.
-    mapping(string => Feed) internal feeds;
 
     constructor() Admin() {
         // solhint-disable-previous-line no-empty-blocks
@@ -69,7 +63,7 @@ contract ChainlinkOperator is
     /// NON-CONSTANT FUNCTIONS ///
 
     /// @inheritdoc IChainlinkOperator
-    function deleteFeed(string memory symbol) external override onlyAdmin returns (bool) {
+    function deleteFeed(string memory symbol) external override onlyAdmin {
         // Checks
         require(feeds[symbol].isSet, "FEED_NOT_SET");
 
@@ -79,11 +73,10 @@ contract ChainlinkOperator is
         delete feeds[symbol];
 
         emit DeleteFeed(asset, feed);
-        return true;
     }
 
     /// @inheritdoc IChainlinkOperator
-    function setFeed(IErc20 asset, AggregatorV3Interface feed) external override onlyAdmin returns (bool) {
+    function setFeed(IErc20 asset, AggregatorV3Interface feed) external override onlyAdmin {
         string memory symbol = asset.symbol();
 
         // Checks: price precision.
@@ -94,6 +87,5 @@ contract ChainlinkOperator is
         feeds[symbol] = Feed({ asset: asset, id: feed, isSet: true });
 
         emit SetFeed(asset, feed);
-        return true;
     }
 }

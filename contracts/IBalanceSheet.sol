@@ -12,6 +12,8 @@ import "./IFintroller.sol";
 interface IBalanceSheet is
     IAdmin /// one dependency
 {
+    /// STRUCTS ///
+
     /// @notice Structure of a vault.
     /// @param debt The current debt of the account.
     /// @param freeCollateral The current amount of free collateral.

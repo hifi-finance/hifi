@@ -10,6 +10,14 @@ import "../external/chainlink/AggregatorV3Interface.sol";
 /// @author Hifi
 /// @notice Interface for the ChainlinkOperator contract
 interface IChainlinkOperator {
+    /// STRUCTS ///
+
+    struct Feed {
+        IErc20 asset;
+        AggregatorV3Interface id;
+        bool isSet;
+    }
+
     /// EVENTS ///
 
     /// @notice Emitted when a feed is deleted.
@@ -70,8 +78,13 @@ interface IChainlinkOperator {
     /// - The feed must have been previously set.
     ///
     /// @param symbol The Erc20 symbol of the asset to delete the feed for.
-    /// @return bool true = success, otherwise it reverts.
-    function deleteFeed(string memory symbol) external returns (bool);
+    function deleteFeed(string memory symbol) external;
+
+    /// @notice Chainlink price precision for USD-quoted data.
+    function pricePrecision() external view returns (uint256);
+
+    /// @notice The ratio between mantissa precision (1e18) and the Chainlink price precision (1e8).
+    function pricePrecisionScalar() external view returns (uint256);
 
     /// @notice Sets a Chainlink price feed. It is not an error to set a feed twice.
     ///
@@ -84,12 +97,5 @@ interface IChainlinkOperator {
     ///
     /// @param asset The address of the Erc20 contract for which to get the price.
     /// @param feed The address of the Chainlink price feed contract.
-    /// @return bool true = success, otherwise it reverts.
-    function setFeed(IErc20 asset, AggregatorV3Interface feed) external returns (bool);
-
-    /// @notice Chainlink price precision for USD-quoted data.
-    function pricePrecision() external view returns (uint256);
-
-    /// @notice The ratio between mantissa precision (1e18) and the Chainlink price precision (1e8).
-    function pricePrecisionScalar() external view returns (uint256);
+    function setFeed(IErc20 asset, AggregatorV3Interface feed) external;
 }
