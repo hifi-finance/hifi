@@ -7,20 +7,20 @@ import "@paulrberg/contracts/token/erc20/Erc20Permit.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Recover.sol";
 import "@paulrberg/contracts/utils/ReentrancyGuard.sol";
 
-import "./IFyToken.sol";
 import "./IBalanceSheet.sol";
+import "./IFyToken.sol";
 import "./RedemptionPool.sol";
 
 /// @title FyToken
 /// @author Hifi
 /// @notice Zero-coupon bond that tracks an Erc20 underlying asset.
 contract FyToken is
-    IFyToken, /// two dependencies
-    ReentrancyGuard, /// no depedency
+    ReentrancyGuard, /// no dependency
     Admin, /// one dependency
     Erc20, /// one dependency
-    Erc20Permit, /// two dependencies
-    Erc20Recover /// two dependencies
+    IFyToken, /// three dependencies
+    Erc20Permit, /// four dependencies
+    Erc20Recover /// five dependencies
 {
     /// STORAGE PROPERTIES ///
 
@@ -40,6 +40,9 @@ contract FyToken is
     IFintroller public override fintroller;
 
     /// @inheritdoc IFyToken
+    bool public constant override isFyToken = true;
+
+    /// @inheritdoc IFyToken
     IRedemptionPool public override redemptionPool;
 
     /// @inheritdoc IFyToken
@@ -47,9 +50,6 @@ contract FyToken is
 
     /// @inheritdoc IFyToken
     uint256 public override underlyingPrecisionScalar;
-
-    /// @inheritdoc IFyToken
-    bool public constant override isFyToken = true;
 
     modifier isVaultOpen(address account) {
         require(balanceSheet.isVaultOpen(this, account), "VAULT_NOT_OPEN");

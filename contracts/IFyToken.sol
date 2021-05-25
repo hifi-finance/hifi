@@ -1,21 +1,22 @@
 /// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
+import "@paulrberg/contracts/access/IAdmin.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/IErc20Permit.sol";
 import "@paulrberg/contracts/token/erc20/IErc20Recover.sol";
-import "@paulrberg/contracts/access/IAdmin.sol";
 
-import "./IFintroller.sol";
 import "./IBalanceSheet.sol";
+import "./IFintroller.sol";
 import "./IRedemptionPool.sol";
 
 /// @title IFyToken
 /// @author Hifi
 /// @notice Interface for the FyToken contract
 interface IFyToken is
+    IAdmin, /// no dependency
     IErc20Permit, /// one dependency
-    IAdmin /// no dependency
+    IErc20Recover /// one dependency
 {
     /// EVENTS ///
 
@@ -188,16 +189,16 @@ interface IFyToken is
     /// @notice The unique RedemptionPool associated with this FyToken.
     function redemptionPool() external view returns (IRedemptionPool);
 
-    /// @notice The Erc20 underlying, or target, asset for this FyToken.
-    function underlying() external view returns (IErc20);
-
-    /// @notice The ratio between mantissa precision (1e18) and the underlying precision.
-    function underlyingPrecisionScalar() external view returns (uint256);
-
     /// @notice Indicator that this is a FyToken contract, for inspection.
     function isFyToken() external view returns (bool);
 
     /// @notice Checks if the bond matured.
     /// @return bool true = bond matured, otherwise it didn't.
     function isMatured() external view returns (bool);
+
+    /// @notice The Erc20 underlying, or target, asset for this FyToken.
+    function underlying() external view returns (IErc20);
+
+    /// @notice The ratio between mantissa precision (1e18) and the underlying precision.
+    function underlyingPrecisionScalar() external view returns (uint256);
 }
