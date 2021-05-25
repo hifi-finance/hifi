@@ -124,9 +124,11 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
                 });
 
                 it("redeems the underlying", async function () {
-                  const oldUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
+                  const oldUnderlyingTotalSupply: BigNumber =
+                    await this.contracts.redemptionPool.totalUnderlyingSupply();
                   await this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(fyTokenAmount);
-                  const newUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
+                  const newUnderlyingTotalSupply: BigNumber =
+                    await this.contracts.redemptionPool.totalUnderlyingSupply();
                   expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.add(upscaledUnderlyingAmount));
                 });
               });
@@ -144,9 +146,11 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
                 });
 
                 it("redeems the underlying", async function () {
-                  const oldUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
+                  const oldUnderlyingTotalSupply: BigNumber =
+                    await this.contracts.redemptionPool.totalUnderlyingSupply();
                   await this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(fyTokenAmount);
-                  const newUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
+                  const newUnderlyingTotalSupply: BigNumber =
+                    await this.contracts.redemptionPool.totalUnderlyingSupply();
                   expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.add(underlyingAmount));
                 });
 
