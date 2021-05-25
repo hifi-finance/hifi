@@ -8,10 +8,8 @@ import "./oracles/IChainlinkOperator.sol";
 
 /// @notice IFintroller
 /// @author Hifi
-/// @notice Interface for the Fintroller contract
-interface IFintroller is
-    IAdmin /// one dependency
-{
+/// @notice Interface for the Fintroller contract.
+interface IFintroller is IAdmin {
     struct Bond {
         uint256 collateralizationRatio;
         uint256 debtCeiling;
@@ -324,9 +322,9 @@ interface IFintroller is
     /// @return bool true = listed, otherwise not.
     function isBondListed(IFyToken fyToken) external view returns (bool);
 
-    /// @notice The contract that provides price data for the collateral and the underlying asset.
-    function oracle() external view returns (IChainlinkOperator);
-
     /// @notice Indicator that this is a Fintroller contract, for inspection.
     function isFintroller() external view returns (bool);
+
+    /// @notice The contract that provides price data for the collateral and the underlying asset.
+    function oracle() external view returns (IChainlinkOperator);
 }

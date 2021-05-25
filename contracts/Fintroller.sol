@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 import "@paulrberg/contracts/access/Admin.sol";
-import "@paulrberg/contracts/math/PRBMathUD60x18.sol";
 
 import "./IFintroller.sol";
 import "./IFyToken.sol";
@@ -12,18 +11,16 @@ import "./oracles/ChainlinkOperator.sol";
 /// @author Hifi
 /// @notice Controls the financial permissions and risk parameters for the Hifi protocol.
 contract Fintroller is
-    IFintroller, /// one dependency
-    Admin /// one dependency
+    Admin, /// one dependency
+    IFintroller /// one dependency
 {
-    using PRBMathUD60x18 for uint256;
-
     /// STORAGE PROPERTIES ///
 
     /// @inheritdoc IFintroller
-    IChainlinkOperator public override oracle;
+    bool public constant override isFintroller = true;
 
     /// @inheritdoc IFintroller
-    bool public constant override isFintroller = true;
+    IChainlinkOperator public override oracle;
 
     /// @dev Maps the fyToken address to the Bond structs.
     mapping(IFyToken => Bond) internal bonds;
