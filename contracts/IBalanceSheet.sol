@@ -210,9 +210,6 @@ interface IBalanceSheet is
     /// @notice The unique Fintroller associated with this contract.
     function fintroller() external view returns (IFintroller);
 
-    /// @notice Indicator that this is a BalanceSheet contract, for inspection.
-    function isBalanceSheet() external view returns (bool);
-
     /// @notice Determines the amount of collateral that can be clutched when liquidating a borrow.
     ///
     /// @dev The formula applied:
@@ -273,6 +270,9 @@ interface IBalanceSheet is
     /// @param borrower The borrower account for which to make the query against.
     /// @return bool true = is underwater, otherwise not.
     function isAccountUnderwater(IFyToken fyToken, address borrower) external view returns (bool);
+
+    /// @notice Indicator that this is a BalanceSheet contract, for inspection.
+    function isBalanceSheet() external view returns (bool);
 
     /// @notice Checks whether the borrower account has a vault opened for a particular fyToken.
     /// @return bool true = vault open, otherwise not.

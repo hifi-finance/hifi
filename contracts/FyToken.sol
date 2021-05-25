@@ -51,6 +51,8 @@ contract FyToken is
     /// @inheritdoc IFyToken
     uint256 public override underlyingPrecisionScalar;
 
+    /// MODIFIERS ///
+
     modifier isVaultOpen(address account) {
         require(balanceSheet.isVaultOpen(this, account), "VAULT_NOT_OPEN");
         _;

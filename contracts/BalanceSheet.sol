@@ -2,10 +2,10 @@
 pragma solidity ^0.8.0;
 
 import "@paulrberg/contracts/access/Admin.sol";
+import "@paulrberg/contracts/math/PRBMathUD60x18.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 import "@paulrberg/contracts/utils/ReentrancyGuard.sol";
-import "@paulrberg/contracts/math/PRBMathUD60x18.sol";
 
 import "./IBalanceSheet.sol";
 import "./IFintroller.sol";
@@ -16,12 +16,12 @@ import "./oracles/IChainlinkOperator.sol";
 /// @author Hifi
 /// @notice Manages the debt vault for all fyTokens.
 contract BalanceSheet is
-    IBalanceSheet, /// one dependency
     ReentrancyGuard, /// no depedency
-    Admin /// one dependency
+    Admin, /// one dependency
+    IBalanceSheet /// one dependency
 {
-    using SafeErc20 for IErc20;
     using PRBMathUD60x18 for uint256;
+    using SafeErc20 for IErc20;
 
     /// STORAGE PROPERTIES ///
 
@@ -33,6 +33,8 @@ contract BalanceSheet is
 
     /// @dev One vault for each fyToken for each account.
     mapping(IFyToken => mapping(address => Vault)) internal vaults;
+
+    /// MODIFIERS ///
 
     modifier isVaultOpenForMsgSender(IFyToken fyToken) {
         require(vaults[fyToken][msg.sender].isOpen, "VAULT_NOT_OPEN");
