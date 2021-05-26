@@ -1,6 +1,7 @@
 /// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
+import "@paulrberg/contracts/access/IAdmin.sol";
 import "@paulrberg/contracts/token/erc20/IErc20Recover.sol";
 
 import "./IFintroller.sol";
@@ -9,7 +10,10 @@ import "./IFyToken.sol";
 /// @title IRedemptionPool
 /// @author Hifi
 /// @notice The interface of the RedemptionPool contract
-interface IRedemptionPool is IErc20Recover {
+interface IRedemptionPool is
+    IAdmin, // no dependency
+    IErc20Recover // one dependency
+{
     /// EVENTS ///
 
     /// @notice Emitted when fyTokens are redeemed.

@@ -1,6 +1,7 @@
 /// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
+import "@paulrberg/contracts/access/Admin.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Recover.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
@@ -17,6 +18,7 @@ import "./IFyToken.sol";
 /// @dev Instantiated by the fyToken in its constructor.
 contract RedemptionPool is
     ReentrancyGuard, /// no dependency
+    Admin, /// one dependency
     IRedemptionPool, /// one dependency
     Erc20Recover /// five dependencies
 {
