@@ -47,10 +47,8 @@ export default function shouldBehaveLikeGetClutchableCollateral(): void {
         });
 
         it("retrieves the clutchable collateral amount", async function () {
-          const contractClutchableCollateralAmount: BigNumber = await this.contracts.balanceSheet.getClutchableCollateral(
-            this.stubs.fyToken.address,
-            repayAmount,
-          );
+          const contractClutchableCollateralAmount: BigNumber =
+            await this.contracts.balanceSheet.getClutchableCollateral(this.stubs.fyToken.address, repayAmount);
           expect(contractClutchableCollateralAmount).to.equal(clutchableCollateralAmount);
         });
       });
@@ -66,10 +64,8 @@ export default function shouldBehaveLikeGetClutchableCollateral(): void {
             precisionScalars.tokenWith8Decimals,
           );
 
-          const contractClutchableCollateralAmount: BigNumber = await this.contracts.balanceSheet.getClutchableCollateral(
-            this.stubs.fyToken.address,
-            repayAmount,
-          );
+          const contractClutchableCollateralAmount: BigNumber =
+            await this.contracts.balanceSheet.getClutchableCollateral(this.stubs.fyToken.address, repayAmount);
           expect(contractClutchableCollateralAmount).to.equal(downscaledClutchableCollateralAmount);
         });
       });

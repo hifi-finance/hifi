@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "./BaseInvariants.sol";
 import "../Fintroller.sol";
-import "../FyTokenInterface.sol";
+import "../IFyToken.sol";
 
 contract FyTokenLike {
     bool public constant isFyToken = true;
@@ -13,11 +13,11 @@ contract FintrollerInvariants is
     BaseInvariants, /// no dependency
     Fintroller /// five dependencies
 {
-    FyTokenInterface private fyToken;
+    IFyToken private fyToken;
 
     constructor() Fintroller() {
         FyTokenLike fyTokenLike = new FyTokenLike();
-        fyToken = FyTokenInterface(address(fyTokenLike));
+        fyToken = IFyToken(address(fyTokenLike));
     }
 
     function echidna_bond_collateralization_ratio() external view returns (bool) {
@@ -25,8 +25,8 @@ contract FintrollerInvariants is
             return true;
         } else {
             return
-                bonds[fyToken].collateralizationRatio.mantissa >= collateralizationRatioLowerBoundMantissa &&
-                bonds[fyToken].collateralizationRatio.mantissa <= collateralizationRatioUpperBoundMantissa;
+                bonds[fyToken].collateralizationRatio >= collateralizationRatioLowerBoundMantissa &&
+                bonds[fyToken].collateralizationRatio <= collateralizationRatioUpperBoundMantissa;
         }
     }
 

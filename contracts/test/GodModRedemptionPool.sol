@@ -2,13 +2,13 @@
 pragma solidity ^0.8.0;
 
 import "../RedemptionPool.sol";
-import "../FyTokenInterface.sol";
+import "../IFyToken.sol";
 
 /// @title GodModeRedemptionPool
 /// @author Hifi
 /// @dev Strictly for test purposes. Do not use in production.
 contract GodModeRedemptionPool is RedemptionPool {
-    constructor(FintrollerInterface fintroller_, FyTokenInterface fyToken_) RedemptionPool(fintroller_, fyToken_) {
+    constructor(IFintroller fintroller_, IFyToken fyToken_) RedemptionPool(fintroller_, fyToken_) {
         // solhint-disable-previous-line no-empty-blocks
     }
 

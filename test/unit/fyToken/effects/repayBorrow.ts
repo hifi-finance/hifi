@@ -107,7 +107,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
               // The fyToken makes an internal call to this stubbed function.
               await this.stubs.balanceSheet.mock.decreaseVaultDebt
                 .withArgs(this.contracts.fyToken.address, this.signers.borrower.address, repayAmount)
-                .returns(true);
+                .returns();
             });
 
             describe("when the caller does not have enough fyTokens", function () {

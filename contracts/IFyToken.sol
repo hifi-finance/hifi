@@ -1,21 +1,40 @@
 /// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.8.0;
 
-import "@paulrberg/contracts/token/erc20/Erc20Interface.sol";
-import "./FyTokenStorage.sol";
+import "@paulrberg/contracts/access/IAdmin.sol";
+import "@paulrberg/contracts/token/erc20/IErc20.sol";
+import "@paulrberg/contracts/token/erc20/IErc20Permit.sol";
+import "@paulrberg/contracts/token/erc20/IErc20Recover.sol";
 
-/// @title FyTokenInterface
+import "./IBalanceSheet.sol";
+import "./IFintroller.sol";
+import "./IRedemptionPool.sol";
+
+/// @title IFyToken
 /// @author Hifi
-abstract contract FyTokenInterface is
-    FyTokenStorage, /// no dependency
-    Erc20Interface /// one dependency
+/// @notice Interface for the FyToken contract
+interface IFyToken is
+    IAdmin, /// no dependency
+    IErc20Permit, /// one dependency
+    IErc20Recover /// one dependency
 {
     /// EVENTS ///
 
+    /// @notice Emitted when a funds are borrowed.
+    /// @param borrower The addresss of the borrower.
+    /// @param borrowAmount The amount of funds borrowed.
     event Borrow(address indexed borrower, uint256 borrowAmount);
 
+    /// @notice Emitted when tokens are burnt.
+    /// @param holder The address of the holder.
+    /// @param burnAmount The amount of burnt tokens.
     event Burn(address indexed holder, uint256 burnAmount);
 
+    /// @notice Emitted when a borrow is liquidated.
+    /// @param liquidator The address of the liquidator.
+    /// @param borrower The address of the borrower.
+    /// @param repayAmount The amount of repaid funds.
+    /// @param clutchedCollateralAmount The amount of clutched collateral.
     event LiquidateBorrow(
         address indexed liquidator,
         address indexed borrower,
@@ -23,17 +42,23 @@ abstract contract FyTokenInterface is
         uint256 clutchedCollateralAmount
     );
 
+    /// @notice Emitted when tokens are minted.
+    /// @param beneficiary The address of the holder.
+    /// @param mintAmount The amount of minted tokens.
     event Mint(address indexed beneficiary, uint256 mintAmount);
 
+    /// @notice Emitted when a borrow is repaid.
+    /// @param payer The address of the payer.
+    /// @param borrower The address of the borrower.
+    /// @param repayAmount The amount of repaid funds.
+    /// @param newDebt The amount of the new debt.
     event RepayBorrow(address indexed payer, address indexed borrower, uint256 repayAmount, uint256 newDebt);
 
-    event SetFintroller(address indexed admin, FintrollerInterface oldFintroller, FintrollerInterface newFintroller);
-
-    /// CONSTANT FUNCTIONS ///
-
-    /// @notice Checks if the bond matured.
-    /// @return bool true = bond matured, otherwise it didn't.
-    function isMatured() public view virtual returns (bool);
+    /// @notice Emitted when the Fintroller is set.
+    /// @param admin The address of the admin.
+    /// @param oldFintroller The address of the old Fintroller.
+    /// @param newFintroller The address of the new Fintroller.
+    event SetFintroller(address indexed admin, IFintroller oldFintroller, IFintroller newFintroller);
 
     /// NON-CONSTANT FUNCTIONS ///
 
@@ -52,8 +77,7 @@ abstract contract FyTokenInterface is
     /// - The caller must not fall below the threshold collateralization ratio.
     ///
     /// @param borrowAmount The amount of fyTokens to borrow and print into existence.
-    /// @return bool true = success, otherwise it reverts.
-    function borrow(uint256 borrowAmount) external virtual returns (bool);
+    function borrow(uint256 borrowAmount) external;
 
     /// @notice Destroys `burnAmount` tokens from `holder`, reducing the token supply.
     ///
@@ -67,8 +91,7 @@ abstract contract FyTokenInterface is
     ///
     /// @param holder The account whose fyTokens to burn.
     /// @param burnAmount The amount of fyTokens to burn.
-    /// @return bool true = success, otherwise it reverts.
-    function burn(address holder, uint256 burnAmount) external virtual returns (bool);
+    function burn(address holder, uint256 burnAmount) external;
 
     /// @notice Repays the debt of the borrower and rewards the caler with a surplus of collateral.
     ///
@@ -87,8 +110,7 @@ abstract contract FyTokenInterface is
     ///
     /// @param borrower The account to liquidate.
     /// @param repayAmount The amount of fyTokens to repay.
-    /// @return bool true = success, otherwise it reverts.
-    function liquidateBorrow(address borrower, uint256 repayAmount) external virtual returns (bool);
+    function liquidateBorrow(address borrower, uint256 repayAmount) external;
 
     /// @notice Prints new tokens into existence and assigns them to `beneficiary`,
     /// increasing the total supply.
@@ -102,8 +124,7 @@ abstract contract FyTokenInterface is
     ///
     /// @param beneficiary The borrower account for which to mint the tokens.
     /// @param mintAmount The amount of fyTokens to print into existence.
-    /// @return bool true = success, otherwise it reverts.
-    function mint(address beneficiary, uint256 mintAmount) external virtual returns (bool);
+    function mint(address beneficiary, uint256 mintAmount) external;
 
     /// @notice Deletes the borrower account's debt from the registry and take the fyTokens
     /// out of circulation.
@@ -119,8 +140,7 @@ abstract contract FyTokenInterface is
     /// - The caller must have at least `repayAmount` debt.
     ///
     /// @param repayAmount The amount of fyTokens to repay.
-    /// @return bool true = success, otherwise it reverts.
-    function repayBorrow(uint256 repayAmount) external virtual returns (bool);
+    function repayBorrow(uint256 repayAmount) external;
 
     /// @notice Clears the borrower account's debt from the registry and take the fyTokens
     /// out of circulation.
@@ -133,8 +153,7 @@ abstract contract FyTokenInterface is
     ///
     /// @param borrower The borrower account for which to repay the borrow.
     /// @param repayAmount The amount of fyTokens to repay.
-    /// @return bool true = success, otherwise it reverts.
-    function repayBorrowBehalf(address borrower, uint256 repayAmount) external virtual returns (bool);
+    function repayBorrowBehalf(address borrower, uint256 repayAmount) external;
 
     /// @notice Updates the Fintroller contract's address saved in storage.
     ///
@@ -146,6 +165,40 @@ abstract contract FyTokenInterface is
     /// - The new Fintroller must pass the inspection.
     ///
     /// @param newFintroller The address of the new Fintroller contract.
-    /// @return bool true = success, otherwise it reverts.
-    function _setFintroller(FintrollerInterface newFintroller) external virtual returns (bool);
+    function _setFintroller(IFintroller newFintroller) external;
+
+    /// CONSTANT FUNCTIONS ///
+
+    /// @notice The unique BalanceSheet associated with this FyToken.
+    /// @return The BalanceSheet contract.
+    function balanceSheet() external view returns (IBalanceSheet);
+
+    /// @notice The Erc20 collateral associated with this FyToken.
+    /// @return The collateral Erc20.
+    function collateral() external view returns (IErc20);
+
+    /// @notice The ratio between mantissa precision (1e18) and the collateral precision.
+    function collateralPrecisionScalar() external view returns (uint256);
+
+    /// @notice Unix timestamp in seconds for when this FyToken expires.
+    function expirationTime() external view returns (uint256);
+
+    /// @notice The unique Fintroller associated with this FyToken.
+    function fintroller() external view returns (IFintroller);
+
+    /// @notice The unique RedemptionPool associated with this FyToken.
+    function redemptionPool() external view returns (IRedemptionPool);
+
+    /// @notice Indicator that this is a FyToken contract, for inspection.
+    function isFyToken() external view returns (bool);
+
+    /// @notice Checks if the bond matured.
+    /// @return bool true = bond matured, otherwise it didn't.
+    function isMatured() external view returns (bool);
+
+    /// @notice The Erc20 underlying, or target, asset for this FyToken.
+    function underlying() external view returns (IErc20);
+
+    /// @notice The ratio between mantissa precision (1e18) and the underlying precision.
+    function underlyingPrecisionScalar() external view returns (uint256);
 }

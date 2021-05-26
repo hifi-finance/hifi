@@ -96,9 +96,7 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
 
             describe("when the call to burn the fyTokens does not succeed", function () {
               beforeEach(async function () {
-                await this.stubs.fyToken.mock.burn
-                  .withArgs(this.signers.maker.address, underlyingAmount)
-                  .returns(false);
+                await this.stubs.fyToken.mock.burn.withArgs(this.signers.maker.address, underlyingAmount).reverts();
               });
 
               it("reverts", async function () {
@@ -109,7 +107,7 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
 
             describe("when the call to burn the fyTokens succeeds", function () {
               beforeEach(async function () {
-                await this.stubs.fyToken.mock.burn.withArgs(this.signers.maker.address, fyTokenAmount).returns(true);
+                await this.stubs.fyToken.mock.burn.withArgs(this.signers.maker.address, fyTokenAmount).returns();
               });
 
               describe("when the underlying has 8 decimals", function () {
@@ -126,9 +124,11 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
                 });
 
                 it("redeems the underlying", async function () {
-                  const oldUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
+                  const oldUnderlyingTotalSupply: BigNumber =
+                    await this.contracts.redemptionPool.totalUnderlyingSupply();
                   await this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(fyTokenAmount);
-                  const newUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
+                  const newUnderlyingTotalSupply: BigNumber =
+                    await this.contracts.redemptionPool.totalUnderlyingSupply();
                   expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.add(upscaledUnderlyingAmount));
                 });
               });
@@ -146,9 +146,11 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
                 });
 
                 it("redeems the underlying", async function () {
-                  const oldUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
+                  const oldUnderlyingTotalSupply: BigNumber =
+                    await this.contracts.redemptionPool.totalUnderlyingSupply();
                   await this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(fyTokenAmount);
-                  const newUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
+                  const newUnderlyingTotalSupply: BigNumber =
+                    await this.contracts.redemptionPool.totalUnderlyingSupply();
                   expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.add(underlyingAmount));
                 });
 

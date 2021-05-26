@@ -7,12 +7,10 @@ import { AdminErrors, FintrollerErrors, GenericErrors } from "../../../../helper
 
 export default function shouldBehaveLikeSetBondCollateralizationRatio(): void {
   const newCollateralizationRatioMantissa: BigNumber = percentages.oneHundredAndSeventyFive;
-  const overflowCollateralizationRatioMantissa: BigNumber = fintrollerConstants.collateralizationRatioUpperBoundMantissa.add(
-    One,
-  );
-  const underflowCollateralizationRatioMantissa: BigNumber = fintrollerConstants.collateralizationRatioLowerBoundMantissa.sub(
-    One,
-  );
+  const overflowCollateralizationRatioMantissa: BigNumber =
+    fintrollerConstants.collateralizationRatioUpperBoundMantissa.add(One);
+  const underflowCollateralizationRatioMantissa: BigNumber =
+    fintrollerConstants.collateralizationRatioLowerBoundMantissa.sub(One);
 
   describe("when the caller is not the admin", function () {
     it("reverts", async function () {
@@ -77,9 +75,8 @@ export default function shouldBehaveLikeSetBondCollateralizationRatio(): void {
           await this.contracts.fintroller
             .connect(this.signers.admin)
             .setBondCollateralizationRatio(this.stubs.fyToken.address, newCollateralizationRatioMantissa);
-          const contractCollateralizationRatioMantissa: BigNumber = await this.contracts.fintroller.getBondCollateralizationRatio(
-            this.stubs.fyToken.address,
-          );
+          const contractCollateralizationRatioMantissa: BigNumber =
+            await this.contracts.fintroller.getBondCollateralizationRatio(this.stubs.fyToken.address);
           expect(contractCollateralizationRatioMantissa).to.equal(newCollateralizationRatioMantissa);
         });
 

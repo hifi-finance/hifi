@@ -2,18 +2,18 @@
 pragma solidity ^0.8.0;
 
 import "../BalanceSheet.sol";
-import "../FyTokenInterface.sol";
+import "../IFyToken.sol";
 
 /// @title GodModeBalanceSheet
 /// @author Hifi
 /// @dev Strictly for test purposes. Do not use in production.
 contract GodModeBalanceSheet is BalanceSheet {
-    constructor(FintrollerInterface fintroller_) BalanceSheet(fintroller_) {
+    constructor(IFintroller fintroller_) BalanceSheet(fintroller_) {
         // solhint-disable-previous-line no-empty-blocks
     }
 
     function __godMode_setVaultDebt(
-        FyTokenInterface fyToken,
+        IFyToken fyToken,
         address borrower,
         uint256 newVaultDebt
     ) external {
@@ -21,7 +21,7 @@ contract GodModeBalanceSheet is BalanceSheet {
     }
 
     function __godMode_setVaultFreeCollateral(
-        FyTokenInterface fyToken,
+        IFyToken fyToken,
         address borrower,
         uint256 newFreeCollateral
     ) external {
@@ -29,7 +29,7 @@ contract GodModeBalanceSheet is BalanceSheet {
     }
 
     function __godMode_setVaultLockedCollateral(
-        FyTokenInterface fyToken,
+        IFyToken fyToken,
         address borrower,
         uint256 newLockedCollateral
     ) external {
@@ -37,7 +37,7 @@ contract GodModeBalanceSheet is BalanceSheet {
     }
 
     function __godMode_setVaultIsOpen(
-        FyTokenInterface fyToken,
+        IFyToken fyToken,
         address borrower,
         bool newIsOpen
     ) external {
