@@ -17,10 +17,10 @@ export default function shouldBehaveLikeGetRedeemFyTokensAllowed(): void {
     });
 
     it("retrieves the default value", async function () {
-      const redeemYTokensAllowed: boolean = await this.contracts.fintroller.getRedeemFyTokensAllowed(
+      const redeemFyTokensAllowed: boolean = await this.contracts.fintroller.getRedeemFyTokensAllowed(
         this.stubs.fyToken.address,
       );
-      expect(redeemYTokensAllowed).to.equal(true);
+      expect(redeemFyTokensAllowed).to.equal(true);
     });
   });
 }

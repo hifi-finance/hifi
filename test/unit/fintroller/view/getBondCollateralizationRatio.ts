@@ -20,10 +20,10 @@ export default function shouldBehaveLikeGetBondCollateralizationRatio(): void {
     });
 
     it("retrieves the default collateralization ratio", async function () {
-      const collateralizationRatioMantissa: BigNumber = await this.contracts.fintroller.getBondCollateralizationRatio(
+      const collateralizationRatio: BigNumber = await this.contracts.fintroller.getBondCollateralizationRatio(
         this.stubs.fyToken.address,
       );
-      expect(collateralizationRatioMantissa).to.equal(fintrollerConstants.defaultCollateralizationRatio);
+      expect(collateralizationRatio).to.equal(fintrollerConstants.defaultCollateralizationRatio);
     });
   });
 }

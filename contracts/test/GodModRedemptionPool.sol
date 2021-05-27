@@ -12,11 +12,11 @@ contract GodModeRedemptionPool is RedemptionPool {
         // solhint-disable-previous-line no-empty-blocks
     }
 
-    function __godMode_burnYTokens(uint256 fyTokenAmount) external {
+    function __godMode_burnFyTokens(uint256 fyTokenAmount) external {
         fyToken.burn(msg.sender, fyTokenAmount);
     }
 
-    function __godMode_mintYTokens(uint256 fyTokenAmount) external {
+    function __godMode_mintFyTokens(uint256 fyTokenAmount) external {
         fyToken.mint(msg.sender, fyTokenAmount);
     }
 

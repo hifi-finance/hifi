@@ -7,7 +7,7 @@ import { BalanceSheetErrors } from "../../../../helpers/errors";
 export default function shouldBehaveLikeDecreaseVaultDebt(): void {
   const subtractedDebt: BigNumber = Zero;
 
-  describe("when the caller is not the fyToken contract", function () {
+  describe("when the caller is not the FyToken contract", function () {
     it("reverts", async function () {
       await expect(
         this.contracts.balanceSheet

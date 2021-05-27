@@ -19,7 +19,7 @@ export const defaultNumberOfDecimals: BigNumber = BigNumber.from(18);
 export const chainlinkPricePrecision: BigNumber = BigNumber.from(8);
 export const chainlinkPricePrecisionScalar: BigNumber = ten.pow(defaultNumberOfDecimals.sub(chainlinkPricePrecision));
 
-// Percentages as mantissas (decimal scalars with 18 decimals).
+// Percentages (decimal scalars with 18 decimals).
 export const percentages: { [name: string]: BigNumber } = {
   oneHundred: ten.pow(18),
   oneHundredAndTen: ten.pow(18).add(ten.pow(17)),
@@ -104,12 +104,12 @@ export const balanceSheetConstants = {
 };
 
 export const fintrollerConstants = {
-  collateralizationRatioLowerBoundMantissa: percentages.oneHundred,
-  collateralizationRatioUpperBoundMantissa: percentages.tenThousand,
+  collateralizationRatioLowerBound: percentages.oneHundred,
+  collateralizationRatioUpperBound: percentages.tenThousand,
   defaultCollateralizationRatio: percentages.oneHundredAndFifty,
   defaultLiquidationIncentive: percentages.oneHundredAndTen,
-  liquidationIncentiveLowerBoundMantissa: percentages.oneHundred,
-  liquidationIncentiveUpperBoundMantissa: percentages.oneHundredAndFifty,
+  liquidationIncentiveLowerBound: percentages.oneHundred,
+  liquidationIncentiveUpperBound: percentages.oneHundredAndFifty,
   oraclePrecisionScalar: chainlinkPricePrecisionScalar,
 };
 

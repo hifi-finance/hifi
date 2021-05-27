@@ -25,14 +25,14 @@ contract FintrollerInvariants is
             return true;
         } else {
             return
-                bonds[fyToken].collateralizationRatio >= collateralizationRatioLowerBoundMantissa &&
-                bonds[fyToken].collateralizationRatio <= collateralizationRatioUpperBoundMantissa;
+                bonds[fyToken].collateralizationRatio >= collateralizationRatioLowerBound &&
+                bonds[fyToken].collateralizationRatio <= collateralizationRatioUpperBound;
         }
     }
 
     function echidna_liquidation_incentive() external view returns (bool) {
         return
-            bonds[fyToken].liquidationIncentive >= liquidationIncentiveLowerBoundMantissa &&
-            bonds[fyToken].liquidationIncentive <= liquidationIncentiveUpperBoundMantissa;
+            bonds[fyToken].liquidationIncentive >= liquidationIncentiveLowerBound &&
+            bonds[fyToken].liquidationIncentive <= liquidationIncentiveUpperBound;
     }
 }

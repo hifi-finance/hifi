@@ -3,6 +3,7 @@ import { expect } from "chai";
 
 import { percentages, prices, tokenAmounts } from "../../../../helpers/constants";
 import { BalanceSheetErrors } from "../../../../helpers/errors";
+import { GodModeFyToken } from "../../../../typechain";
 
 export default function shouldBehaveLikeLiquidateBorrow(): void {
   const borrowAmount: BigNumber = tokenAmounts.oneHundred;
@@ -61,7 +62,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
     await this.contracts.collateralPriceFeed.setPrice(prices.twelveDollars);
 
     // Mint 100 fyUSDC to the liquidator so he can repay the debt.
-    await this.contracts.fyToken.__godMode_mint(this.signers.liquidator.address, repayAmount);
+    await (this.contracts.fyToken as GodModeFyToken).__godMode_mint(this.signers.liquidator.address, repayAmount);
 
     // Calculate the amount of clutchable collateral.
     clutchableCollateralAmount = await this.contracts.balanceSheet.getClutchableCollateral(

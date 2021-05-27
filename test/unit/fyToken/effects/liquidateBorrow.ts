@@ -4,6 +4,7 @@ import { expect } from "chai";
 
 import { fintrollerConstants, fyTokenConstants, tokenAmounts } from "../../../../helpers/constants";
 import { FyTokenErrors, GenericErrors } from "../../../../helpers/errors";
+import { GodModeFyToken } from "../../../../typechain";
 import { contextForTimeDependentTests } from "../../../contexts";
 import { increaseTime } from "../../../jsonRpc";
 import { stubIsVaultOpen } from "../../stubs";
@@ -60,7 +61,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
         await this.stubs.balanceSheet.mock.getVaultDebt
           .withArgs(this.contracts.fyToken.address, this.signers.borrower.address)
           .returns(borrowAmount);
-        await this.contracts.fyToken.__godMode_mint(this.signers.borrower.address, borrowAmount);
+        await (this.contracts.fyToken as GodModeFyToken).__godMode_mint(this.signers.borrower.address, borrowAmount);
       });
 
       it("reverts", async function () {
@@ -161,7 +162,10 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
                 await this.stubs.balanceSheet.mock.getVaultDebt
                   .withArgs(this.contracts.fyToken.address, this.signers.borrower.address)
                   .returns(borrowAmount);
-                await this.contracts.fyToken.__godMode_mint(this.signers.borrower.address, borrowAmount);
+                await (this.contracts.fyToken as GodModeFyToken).__godMode_mint(
+                  this.signers.borrower.address,
+                  borrowAmount,
+                );
 
                 // The fyToken makes internal calls to these stubbed functions.
                 await stubLiquidateBorrowInternalCalls.call(
@@ -195,7 +199,10 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
                     await increaseTime(fyTokenConstants.expirationTime);
 
                     // Mint 100 fyUSDC to the liquidator so he can repay the debt.
-                    await this.contracts.fyToken.__godMode_mint(this.signers.liquidator.address, repayAmount);
+                    await (this.contracts.fyToken as GodModeFyToken).__godMode_mint(
+                      this.signers.liquidator.address,
+                      repayAmount,
+                    );
                   });
 
                   it("liquidates the borrower", async function () {
@@ -233,7 +240,10 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
                 describe("when the caller has enough fyTokens", function () {
                   beforeEach(async function () {
                     // Mint 100 fyUSDC to the liquidator so he can repay the debt.
-                    await this.contracts.fyToken.__godMode_mint(this.signers.liquidator.address, repayAmount);
+                    await (this.contracts.fyToken as GodModeFyToken).__godMode_mint(
+                      this.signers.liquidator.address,
+                      repayAmount,
+                    );
                   });
 
                   it("liquidates the borrower", async function () {

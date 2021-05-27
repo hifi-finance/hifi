@@ -279,7 +279,7 @@ contract BalanceSheet is
 
     struct GetHypotheticalAccountLiquidityLocalVars {
         uint256 collateralPrecisionScalar;
-        uint256 collateralizationRatioMantissa;
+        uint256 collateralizationRatio;
         uint256 debtValueUsd;
         uint256 hypotheticalCollateralizationRatio;
         uint256 lockedCollateralValueUsd;
@@ -315,7 +315,7 @@ contract BalanceSheet is
         // Grab the normalized USD price of the underlying.
         vars.normalizedUnderlyingPrice = oracle.getAdjustedPrice(fyToken.underlying().symbol());
 
-        // Upscale the collateral, which can have any precision, to mantissa precision.
+        // Normalize the collateral amount.
         vars.collateralPrecisionScalar = fyToken.collateralPrecisionScalar();
         if (vars.collateralPrecisionScalar != 1) {
             vars.normalizedLockedCollateral = lockedCollateral * vars.collateralPrecisionScalar;
@@ -357,9 +357,9 @@ contract BalanceSheet is
         if (!vault.isOpen || vault.debt == 0) {
             return false;
         }
-        uint256 currentCollateralizationRatioMantissa = getCurrentCollateralizationRatio(fyToken, borrower);
-        uint256 thresholdCollateralizationRatioMantissa = fintroller.getBondCollateralizationRatio(fyToken);
-        return currentCollateralizationRatioMantissa < thresholdCollateralizationRatioMantissa;
+        uint256 currentCollateralizationRatio = getCurrentCollateralizationRatio(fyToken, borrower);
+        uint256 thresholdCollateralizationRatio = fintroller.getBondCollateralizationRatio(fyToken);
+        return currentCollateralizationRatio < thresholdCollateralizationRatio;
     }
 
     /// @inheritdoc IBalanceSheet

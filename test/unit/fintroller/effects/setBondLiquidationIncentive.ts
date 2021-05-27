@@ -7,8 +7,8 @@ import { AdminErrors, FintrollerErrors, GenericErrors } from "../../../../helper
 
 export default function shouldBehaveLikeSetBondLiquidationIncentive(): void {
   const newLiquidationIncentive: BigNumber = percentages.oneHundredAndTwenty;
-  const overflowLiquidationIncentive: BigNumber = fintrollerConstants.liquidationIncentiveUpperBoundMantissa.add(One);
-  const underflowLiquidationIncentive: BigNumber = fintrollerConstants.liquidationIncentiveLowerBoundMantissa.sub(One);
+  const overflowLiquidationIncentive: BigNumber = fintrollerConstants.liquidationIncentiveUpperBound.add(One);
+  const underflowLiquidationIncentive: BigNumber = fintrollerConstants.liquidationIncentiveLowerBound.sub(One);
 
   describe("when the caller is not the admin", function () {
     it("reverts", async function () {

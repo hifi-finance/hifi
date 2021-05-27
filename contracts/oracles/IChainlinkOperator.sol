@@ -66,7 +66,7 @@ interface IChainlinkOperator {
     /// - The normalized price cannot overflow.
     ///
     /// @param symbol The Erc20 symbol of the token for which to query the price.
-    /// @return The normalized price as a mantissa.
+    /// @return The normalized price.
     function getAdjustedPrice(string memory symbol) external view returns (uint256);
 
     /// @notice Gets the official feed for a symbol.
@@ -96,6 +96,6 @@ interface IChainlinkOperator {
     /// @notice Chainlink price precision for USD-quoted data.
     function pricePrecision() external view returns (uint256);
 
-    /// @notice The ratio between mantissa precision (1e18) and the Chainlink price precision (1e8).
+    /// @notice The ratio between normalized precision (1e18) and the Chainlink price precision (1e8).
     function pricePrecisionScalar() external view returns (uint256);
 }

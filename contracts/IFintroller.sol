@@ -134,8 +134,8 @@ interface IFintroller is IAdmin {
     /// - The new collateralization ratio cannot be lower than the minimum collateralization ratio.
     ///
     /// @param fyToken The bond for which to update the collateralization ratio.
-    /// @param newCollateralizationRatioMantissa The new collateralization ratio as a mantissa.
-    function setBondCollateralizationRatio(IFyToken fyToken, uint256 newCollateralizationRatioMantissa) external;
+    /// @param newCollateralizationRatio The new collateralization ratio.
+    function setBondCollateralizationRatio(IFyToken fyToken, uint256 newCollateralizationRatio) external;
 
     /// @notice Updates the debt ceiling, which limits how much debt can be issued for this specific bond.
     ///
@@ -164,7 +164,7 @@ interface IFintroller is IAdmin {
     /// - The new liquidation incentive cannot be lower than the minimum liquidation incentive.
     ///
     /// @param fyToken The bond for which to update the liquidation incentive.
-    /// @param newLiquidationIncentive The new liquidation incentive as a mantissa.
+    /// @param newLiquidationIncentive The new liquidation incentive.
     function setBondLiquidationIncentive(IFyToken fyToken, uint256 newLiquidationIncentive) external;
 
     /// @notice Updates the state of the permission accessed by the fyToken before a borrow.
@@ -266,7 +266,7 @@ interface IFintroller is IAdmin {
     /// @notice Reads the collateralization ratio of the given bond.
     /// @dev It is not an error to provide an invalid fyToken address.
     /// @param fyToken The address of the bond contract.
-    /// @return The collateralization ratio as a mantissa, or zero if an invalid address was provided.
+    /// @return The collateralization ratio, or zero if an invalid address was provided.
     function getBondCollateralizationRatio(IFyToken fyToken) external view returns (uint256);
 
     /// @notice Reads the debt ceiling of the given bond.
@@ -278,7 +278,7 @@ interface IFintroller is IAdmin {
     /// @notice Reads the liquidation incentive of the given bond.
     /// @dev It is not an error to provide an invalid fyToken address.
     /// @param fyToken The address of the bond contract.
-    /// @return The liquidation incentive as a mantissa, or zero if an invalid address was provided.
+    /// @return The liquidation incentive, or zero if an invalid address was provided.
     function getBondLiquidationIncentive(IFyToken fyToken) external view returns (uint256);
 
     /// @notice Check if the account should be allowed to borrow fyTokens.

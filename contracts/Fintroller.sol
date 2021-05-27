@@ -26,22 +26,22 @@ contract Fintroller is
     mapping(IFyToken => Bond) internal bonds;
 
     /// @dev The threshold below which the collateralization ratio cannot be set, equivalent to 100%.
-    uint256 internal constant collateralizationRatioLowerBoundMantissa = 1.0e18;
+    uint256 internal constant collateralizationRatioLowerBound = 1.0e18;
 
     /// @dev The threshold above which the collateralization ratio cannot be set, equivalent to 10,000%.
-    uint256 internal constant collateralizationRatioUpperBoundMantissa = 1.0e20;
+    uint256 internal constant collateralizationRatioUpperBound = 1.0e20;
 
     /// @dev The default collateralization ratio set when a new bond is listed, equivalent to 150%.
-    uint256 internal constant defaultCollateralizationRatioMantissa = 1.5e18;
+    uint256 internal constant defaultCollateralizationRatio = 1.5e18;
 
-    /// @dev The default liquidation incentive mantissa set when a new bond is listed, equivalent to 110%.
-    uint256 internal constant defaultLiquidationIncentiveMantissa = 1.1e18;
+    /// @dev The default liquidation incentive set when a new bond is listed, equivalent to 110%.
+    uint256 internal constant defaultLiquidationIncentive = 1.1e18;
 
     /// @dev The threshold below which the liquidation incentive cannot be set, equivalent to 100%.
-    uint256 internal constant liquidationIncentiveLowerBoundMantissa = 1.0e18;
+    uint256 internal constant liquidationIncentiveLowerBound = 1.0e18;
 
     /// @dev The threshold above which the liquidation incentive cannot be set, equivalent to 150%.
-    uint256 internal constant liquidationIncentiveUpperBoundMantissa = 1.5e18;
+    uint256 internal constant liquidationIncentiveUpperBound = 1.5e18;
 
     /// CONSTANT FUNCTIONS ///
 
@@ -118,7 +118,7 @@ contract Fintroller is
     function listBond(IFyToken fyToken) external override onlyAdmin {
         require(fyToken.isFyToken(), "LIST_BOND_FYTOKEN_INSPECTION");
         bonds[fyToken] = Bond({
-            collateralizationRatio: defaultCollateralizationRatioMantissa,
+            collateralizationRatio: defaultCollateralizationRatio,
             debtCeiling: 0,
             isBorrowAllowed: true,
             isDepositCollateralAllowed: true,
@@ -127,13 +127,13 @@ contract Fintroller is
             isRedeemFyTokenAllowed: true,
             isRepayBorrowAllowed: true,
             isSupplyUnderlyingAllowed: true,
-            liquidationIncentive: defaultLiquidationIncentiveMantissa
+            liquidationIncentive: defaultLiquidationIncentive
         });
         emit ListBond(admin, fyToken);
     }
 
     /// @inheritdoc IFintroller
-    function setBondCollateralizationRatio(IFyToken fyToken, uint256 newCollateralizationRatioMantissa)
+    function setBondCollateralizationRatio(IFyToken fyToken, uint256 newCollateralizationRatio)
         external
         override
         onlyAdmin
@@ -143,24 +143,19 @@ contract Fintroller is
 
         // Checks: new collateralization ratio is within the accepted bounds.
         require(
-            newCollateralizationRatioMantissa <= collateralizationRatioUpperBoundMantissa,
+            newCollateralizationRatio <= collateralizationRatioUpperBound,
             "SET_BOND_COLLATERALIZATION_RATIO_UPPER_BOUND"
         );
         require(
-            newCollateralizationRatioMantissa >= collateralizationRatioLowerBoundMantissa,
+            newCollateralizationRatio >= collateralizationRatioLowerBound,
             "SET_BOND_COLLATERALIZATION_RATIO_LOWER_BOUND"
         );
 
         // Effects: update storage.
-        uint256 oldCollateralizationRatioMantissa = bonds[fyToken].collateralizationRatio;
-        bonds[fyToken].collateralizationRatio = newCollateralizationRatioMantissa;
+        uint256 oldCollateralizationRatio = bonds[fyToken].collateralizationRatio;
+        bonds[fyToken].collateralizationRatio = newCollateralizationRatio;
 
-        emit SetBondCollateralizationRatio(
-            admin,
-            fyToken,
-            oldCollateralizationRatioMantissa,
-            newCollateralizationRatioMantissa
-        );
+        emit SetBondCollateralizationRatio(admin, fyToken, oldCollateralizationRatio, newCollateralizationRatio);
     }
 
     /// @inheritdoc IFintroller
@@ -193,11 +188,11 @@ contract Fintroller is
 
         // Checks: new collateralization ratio is within the accepted bounds.
         require(
-            newLiquidationIncentive <= liquidationIncentiveUpperBoundMantissa,
+            newLiquidationIncentive <= liquidationIncentiveUpperBound,
             "SET_BOND_LIQUIDATION_INCENTIVE_UPPER_BOUND"
         );
         require(
-            newLiquidationIncentive >= liquidationIncentiveLowerBoundMantissa,
+            newLiquidationIncentive >= liquidationIncentiveLowerBound,
             "SET_BOND_LIQUIDATION_INCENTIVE_LOWER_BOUND"
         );
 

@@ -244,8 +244,8 @@ interface IBalanceSheet is
     /// @param borrower The borrower account for which to make the query against.
     /// @param lockedCollateral The hypothetical locked collateral.
     /// @param debt The hypothetical debt.
-    /// @return The hypothetical collateralization ratio as a percentage mantissa if locked collateral
-    /// is non-zero, otherwise zero.
+    /// @return The hypothetical collateralization ratio as a percentage if locked collateral is non-zero,
+    /// otherwise zero.
     function getHypotheticalCollateralizationRatio(
         IFyToken fyToken,
         address borrower,

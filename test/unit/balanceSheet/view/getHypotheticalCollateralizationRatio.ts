@@ -6,7 +6,7 @@ import { percentages, precisionScalars, tokenAmounts } from "../../../../helpers
 import { BalanceSheetErrors, ChainlinkOperatorErrors, GenericErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio(): void {
-  const hypotheticalCollateralizationRatioMantissa: BigNumber = percentages.oneThousand;
+  const hypotheticalCollateralizationRatio: BigNumber = percentages.oneThousand;
   const lockedCollateral: BigNumber = tokenAmounts.ten;
   const debt: BigNumber = tokenAmounts.oneHundred;
 
@@ -34,14 +34,14 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
     describe("when the locked collateral is zero", function () {
       it("reverts", async function () {
         const zeroCollateralAmount: BigNumber = Zero;
-        const hypotheticalCollateralizationRatioMantissa =
+        const hypotheticalCollateralizationRatio =
           await this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
             this.stubs.fyToken.address,
             this.signers.borrower.address,
             zeroCollateralAmount,
             debt,
           );
-        expect(hypotheticalCollateralizationRatioMantissa).to.equal(Zero);
+        expect(hypotheticalCollateralizationRatio).to.equal(Zero);
       });
     });
 
@@ -107,18 +107,16 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
                 await this.stubs.fyToken.mock.collateralPrecisionScalar.returns(precisionScalars.tokenWith8Decimals);
               });
 
-              it("retrieves the hypothetical collateralization ratio mantissa", async function () {
+              it("retrieves the hypothetical collateralization ratio", async function () {
                 const denormalizedLockedCollateral = lockedCollateral.div(precisionScalars.tokenWith8Decimals);
-                const contractHypotheticalCollateralizationRatioMantissa: BigNumber =
+                const contractHypotheticalCollateralizationRatio: BigNumber =
                   await this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
                     this.stubs.fyToken.address,
                     this.signers.borrower.address,
                     denormalizedLockedCollateral,
                     debt,
                   );
-                expect(contractHypotheticalCollateralizationRatioMantissa).to.equal(
-                  hypotheticalCollateralizationRatioMantissa,
-                );
+                expect(contractHypotheticalCollateralizationRatio).to.equal(hypotheticalCollateralizationRatio);
               });
             });
 
@@ -128,17 +126,15 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
                 await this.stubs.fyToken.mock.collateralPrecisionScalar.returns(precisionScalars.tokenWith18Decimals);
               });
 
-              it("retrieves the hypothetical collateralization ratio mantissa", async function () {
-                const contractHypotheticalCollateralizationRatioMantissa: BigNumber =
+              it("retrieves the hypothetical collateralization ratio", async function () {
+                const contractHypotheticalCollateralizationRatio: BigNumber =
                   await this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
                     this.stubs.fyToken.address,
                     this.signers.borrower.address,
                     lockedCollateral,
                     debt,
                   );
-                expect(contractHypotheticalCollateralizationRatioMantissa).to.equal(
-                  hypotheticalCollateralizationRatioMantissa,
-                );
+                expect(contractHypotheticalCollateralizationRatio).to.equal(hypotheticalCollateralizationRatio);
               });
             });
           });

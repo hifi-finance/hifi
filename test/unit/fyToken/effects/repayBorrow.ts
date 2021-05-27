@@ -4,6 +4,7 @@ import { expect } from "chai";
 
 import { addressOne, fintrollerConstants, tokenAmounts } from "../../../../helpers/constants";
 import { FyTokenErrors, GenericErrors } from "../../../../helpers/errors";
+import { GodModeFyToken } from "../../../../typechain";
 import { stubIsVaultOpen } from "../../stubs";
 
 export default function shouldBehaveLikeRepayBorrow(): void {
@@ -99,7 +100,10 @@ export default function shouldBehaveLikeRepayBorrow(): void {
           describe("when the caller has a debt", function () {
             beforeEach(async function () {
               // User borrows 100 fyUSDC.
-              await this.contracts.fyToken.__godMode_mint(this.signers.borrower.address, borrowAmount);
+              await (this.contracts.fyToken as GodModeFyToken).__godMode_mint(
+                this.signers.borrower.address,
+                borrowAmount,
+              );
               await this.stubs.balanceSheet.mock.getVaultDebt
                 .withArgs(this.contracts.fyToken.address, this.signers.borrower.address)
                 .returns(repayAmount);

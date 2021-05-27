@@ -6,7 +6,7 @@ import { FyTokenErrors } from "../../../../helpers/errors";
 export default function shouldBehaveLikeMint(): void {
   describe("when the amount to mint is zero", function () {
     it("reverts", async function () {
-      await expect(this.contracts.redemptionPool.__godMode_mintYTokens(Zero)).to.be.revertedWith(
+      await expect(this.contracts.redemptionPool.__godMode_mintFyTokens(Zero)).to.be.revertedWith(
         FyTokenErrors.MintZero,
       );
     });

@@ -177,7 +177,7 @@ interface IFyToken is
     /// @return The collateral Erc20.
     function collateral() external view returns (IErc20);
 
-    /// @notice The ratio between mantissa precision (1e18) and the collateral precision.
+    /// @notice The ratio between normalized precision (1e18) and the collateral precision.
     function collateralPrecisionScalar() external view returns (uint256);
 
     /// @notice Unix timestamp in seconds for when this FyToken expires.
@@ -199,6 +199,6 @@ interface IFyToken is
     /// @notice The Erc20 underlying, or target, asset for this FyToken.
     function underlying() external view returns (IErc20);
 
-    /// @notice The ratio between mantissa precision (1e18) and the underlying precision.
+    /// @notice The ratio between normalized precision (1e18) and the underlying precision.
     function underlyingPrecisionScalar() external view returns (uint256);
 }

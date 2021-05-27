@@ -4,6 +4,7 @@ import { expect } from "chai";
 
 import { fintrollerConstants, tokenAmounts } from "../../../../helpers/constants";
 import { FyTokenErrors, GenericErrors } from "../../../../helpers/errors";
+import { GodModeFyToken } from "../../../../typechain/GodModeFyToken";
 import { stubIsVaultOpen } from "../../stubs";
 
 /**
@@ -78,7 +79,10 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
 
           describe("when the user has a debt", function () {
             beforeEach(async function () {
-              await this.contracts.fyToken.__godMode_mint(this.signers.lender.address, borrowAmount);
+              await (this.contracts.fyToken as GodModeFyToken).__godMode_mint(
+                this.signers.lender.address,
+                borrowAmount,
+              );
 
               // The fyToken makes internal calls to these stubbed functions.
               await this.stubs.balanceSheet.mock.getVaultDebt

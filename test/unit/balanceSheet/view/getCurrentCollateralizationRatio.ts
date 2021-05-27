@@ -22,12 +22,11 @@ export default function shouldBehaveLikeGetCurrentCollateralizationRatio(): void
     );
   });
 
-  it("returns the current collateralization ratio mantissa", async function () {
-    const currentCollateralizationRatioMantissa: BigNumber =
-      await this.contracts.balanceSheet.getCurrentCollateralizationRatio(
-        this.stubs.fyToken.address,
-        this.signers.borrower.address,
-      );
-    expect(currentCollateralizationRatioMantissa).to.equal(percentages.oneThousand);
+  it("returns the current collateralization ratio", async function () {
+    const currentCollateralizationRatio: BigNumber = await this.contracts.balanceSheet.getCurrentCollateralizationRatio(
+      this.stubs.fyToken.address,
+      this.signers.borrower.address,
+    );
+    expect(currentCollateralizationRatio).to.equal(percentages.oneThousand);
   });
 }

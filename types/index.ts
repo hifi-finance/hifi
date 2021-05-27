@@ -2,7 +2,6 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 import { MockContract } from "ethereum-waffle";
 
-import { BalanceSheet } from "../typechain/BalanceSheet";
 import { ChainlinkOperator } from "../typechain/ChainlinkOperator";
 import { Erc20Mintable } from "../typechain/Erc20Mintable";
 import { Fintroller } from "../typechain/Fintroller";
@@ -10,19 +9,16 @@ import { FyToken } from "../typechain/FyToken";
 import { GodModeBalanceSheet } from "../typechain/GodModeBalanceSheet";
 import { GodModeFyToken } from "../typechain/GodModeFyToken";
 import { GodModeRedemptionPool } from "../typechain/GodModeRedemptionPool";
-import { RedemptionPool } from "../typechain/RedemptionPool";
 import { SimplePriceFeed } from "../typechain/SimplePriceFeed";
 
-/// The first type is for Hardhat Network tests, the second for Ethereum Mainnet.
-/// TODO: refactor this so that contract types differ for each test suite type.
 export interface Contracts {
-  balanceSheet: GodModeBalanceSheet | BalanceSheet;
+  balanceSheet: GodModeBalanceSheet;
   collateral: Erc20Mintable;
   collateralPriceFeed: SimplePriceFeed;
   fintroller: Fintroller;
   fyToken: GodModeFyToken | FyToken;
   oracle: ChainlinkOperator;
-  redemptionPool: GodModeRedemptionPool | RedemptionPool;
+  redemptionPool: GodModeRedemptionPool;
   underlying: Erc20Mintable;
   underlyingPriceFeed: SimplePriceFeed;
 }

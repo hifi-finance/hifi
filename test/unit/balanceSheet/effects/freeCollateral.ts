@@ -108,7 +108,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
           describe("when the caller has a debt", function () {
             beforeEach(async function () {
               await this.stubs.fintroller.mock.getBorrowAllowed.withArgs(this.stubs.fyToken.address).returns(true);
-              // The balance sheet will ask the oracle what's the value of 9 WETH collateral.
+              // The BalanceSheet asks the oracle what's the value of 9 WETH collateral.
             });
 
             describe("when the caller is dangerously collateralized", function () {
