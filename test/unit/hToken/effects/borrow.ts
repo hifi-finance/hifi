@@ -4,7 +4,7 @@ import { expect } from "chai";
 
 import { fintrollerConstants, percentages, tokenAmounts } from "../../../../helpers/constants";
 import { hTokenConstants } from "../../../../helpers/constants";
-import { HTokenErrors, GenericErrors } from "../../../../helpers/errors";
+import { GenericErrors, HTokenErrors } from "../../../../helpers/errors";
 import { contextForTimeDependentTests } from "../../../contexts";
 import { increaseTime } from "../../../jsonRpc";
 import { stubIsVaultOpen, stubVaultFreeCollateral, stubVaultLockedCollateral } from "../../stubs";

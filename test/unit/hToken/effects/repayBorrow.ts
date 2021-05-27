@@ -3,7 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { addressOne, fintrollerConstants, tokenAmounts } from "../../../../helpers/constants";
-import { HTokenErrors, GenericErrors } from "../../../../helpers/errors";
+import { GenericErrors, HTokenErrors } from "../../../../helpers/errors";
 import { GodModeHToken } from "../../../../typechain";
 import { stubIsVaultOpen } from "../../stubs";
 

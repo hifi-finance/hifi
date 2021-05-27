@@ -1,18 +1,18 @@
+import { Signer } from "@ethersproject/abstract-signer";
+import { BigNumber } from "@ethersproject/bignumber";
+import { TransactionRequest } from "@ethersproject/providers";
 import hre from "hardhat";
 import { Artifact } from "hardhat/types";
-import { BigNumber } from "@ethersproject/bignumber";
-import { Signer } from "@ethersproject/abstract-signer";
-import { TransactionRequest } from "@ethersproject/providers";
 
+import { gasLimits, hTokenConstants, prices } from "../helpers/constants";
 import { ChainlinkOperator } from "../typechain/ChainlinkOperator";
 import { Erc20Mintable } from "../typechain/Erc20Mintable";
 import { Fintroller } from "../typechain/Fintroller";
-import { HToken } from "../typechain/HToken";
 import { GodModeBalanceSheet } from "../typechain/GodModeBalanceSheet";
-import { GodModeRedemptionPool } from "../typechain/GodModeRedemptionPool";
 import { GodModeHToken } from "../typechain/GodModeHToken";
+import { GodModeRedemptionPool } from "../typechain/GodModeRedemptionPool";
+import { HToken } from "../typechain/HToken";
 import { SimplePriceFeed } from "../typechain/SimplePriceFeed";
-import { hTokenConstants, gasLimits, prices } from "../helpers/constants";
 
 const overrideOptions: TransactionRequest = {
   gasLimit: process.env.CODE_COVERAGE

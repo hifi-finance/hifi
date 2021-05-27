@@ -3,7 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { fintrollerConstants, hTokenConstants, tokenAmounts } from "../../../../helpers/constants";
-import { HTokenErrors, GenericErrors } from "../../../../helpers/errors";
+import { GenericErrors, HTokenErrors } from "../../../../helpers/errors";
 import { GodModeHToken } from "../../../../typechain";
 import { contextForTimeDependentTests } from "../../../contexts";
 import { increaseTime } from "../../../jsonRpc";

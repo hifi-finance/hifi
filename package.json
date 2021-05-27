@@ -51,6 +51,7 @@
     "hardhat": "^2.3.0",
     "hardhat-gas-reporter": "^1.0.4",
     "husky": "^6.0.0",
+    "import-sort-parser-typescript": "^6.0.0",
     "import-sort-style-module": "^6.0.0",
     "mocha": "^8.4.0",
     "prettier": "^2.3.0",
@@ -71,6 +72,16 @@
     "/typechain"
   ],
   "homepage": "https://github.com/hifi-finance/hifi-protocol#readme",
+  "importSort": {
+    ".js, .jsx": {
+      "parser": "babylon",
+      "style": "module"
+    },
+    ".ts, .tsx": {
+      "parser": "typescript",
+      "style": "module"
+    }
+  },
   "keywords": [
     "blockchain",
     "ethereum",
