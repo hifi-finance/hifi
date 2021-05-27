@@ -2,14 +2,16 @@ import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
+
 import "./tasks/accounts";
 import "./tasks/clean";
 
-import { HardhatUserConfig, NetworkUserConfig } from "hardhat/types";
-import { chainIds, gasLimits } from "./helpers/constants";
+import { resolve } from "path";
 
 import { config as dotenvConfig } from "dotenv";
-import { resolve } from "path";
+import { HardhatUserConfig, NetworkUserConfig } from "hardhat/types";
+
+import { chainIds, gasLimits } from "./helpers/constants";
 
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
@@ -72,7 +74,7 @@ const config: HardhatUserConfig = {
     tests: "./test",
   },
   solidity: {
-    version: "0.8.1",
+    version: "0.8.4",
     settings: {
       optimizer: {
         enabled: true,

@@ -2,7 +2,7 @@ extends:
   - "eslint:recommended"
   - "plugin:@typescript-eslint/eslint-recommended"
   - "plugin:@typescript-eslint/recommended"
-  - "prettier/@typescript-eslint"
+  - "prettier"
 parser: "@typescript-eslint/parser"
 parserOptions:
   project: "tsconfig.json"
@@ -10,13 +10,12 @@ plugins:
   - "@typescript-eslint"
 root: true
 rules:
-  "@explicit-module-boundary-types": "off"
   "@typescript-eslint/no-floating-promises":
-    - "error"
+    - error
     - ignoreIIFE: true
       ignoreVoid: true
   "@typescript-eslint/no-inferrable-types": "off"
   "@typescript-eslint/no-unused-vars":
-    - "error"
+    - error
     - argsIgnorePattern: _
       varsIgnorePattern: _
