@@ -63,7 +63,7 @@ contract RedemptionPool is
         // Checks: the Fintroller allows this action to be performed.
         require(fintroller.getRedeemFyTokensAllowed(fyToken), "REDEEM_FYTOKENS_NOT_ALLOWED");
 
-        // fyTokens always have 18 decimals so the underlying amount needs to be downscaled.
+        // fyTokens always have 18 decimals so the underlying amount needs to be denormalized.
         // If the precision scalar is 1, it means that the underlying also has 18 decimals.
         uint256 underlyingPrecisionScalar = fyToken.underlyingPrecisionScalar();
         uint256 underlyingAmount;
@@ -102,7 +102,7 @@ contract RedemptionPool is
         // Effects: update storage.
         totalUnderlyingSupply += underlyingAmount;
 
-        // fyTokens always have 18 decimals so the underlying amount needs to be upscaled. If the precision scalar
+        // fyTokens always have 18 decimals so the underlying amount needs to be normalized. If the precision scalar
         // is 1, it means that the underlying also 18 decimals too.
         uint256 underlyingPrecisionScalar = fyToken.underlyingPrecisionScalar();
         uint256 fyTokenAmount;

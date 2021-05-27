@@ -63,10 +63,10 @@ interface IChainlinkOperator {
     /// format used by Chainlink, which has 8 decimals.
     ///
     /// @dev Requirements:
-    /// - The upscaled price cannot overflow.
+    /// - The normalized price cannot overflow.
     ///
     /// @param symbol The Erc20 symbol of the token for which to query the price.
-    /// @return The upscaled price as a mantissa.
+    /// @return The normalized price as a mantissa.
     function getAdjustedPrice(string memory symbol) external view returns (uint256);
 
     /// @notice Gets the official feed for a symbol.

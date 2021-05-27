@@ -217,14 +217,14 @@ contract BalanceSheet is
     /// CONSTANT FUNCTIONS ///
 
     struct GetClutchableCollateralLocalVars {
-        uint256 clutchableCollateralAmountUpscaled;
         uint256 clutchableCollateralAmount;
         uint256 collateralPrecisionScalar;
-        uint256 collateralPriceUpscaled;
         uint256 liquidationIncentive;
+        uint256 normalizedClutchableCollateralAmount;
+        uint256 normalizedCollateralPrice;
+        uint256 normalizedUnderlyingPrice;
         uint256 numerator;
         uint256 oraclePricePrecisionScalar;
-        uint256 underlyingPriceUpscaled;
     }
 
     /// @inheritdoc IBalanceSheet
@@ -240,25 +240,27 @@ contract BalanceSheet is
             return 0;
         }
 
-        // Grab the upscaled USD price of the underlying.
+        // Grab the normalized USD price of the underlying.
         IChainlinkOperator oracle = fintroller.oracle();
-        vars.underlyingPriceUpscaled = oracle.getAdjustedPrice(fyToken.underlying().symbol());
+        vars.normalizedUnderlyingPrice = oracle.getAdjustedPrice(fyToken.underlying().symbol());
 
-        // Grab the upscaled USD price of the collateral.
-        vars.collateralPriceUpscaled = oracle.getAdjustedPrice(fyToken.collateral().symbol());
+        // Grab the normalized USD price of the collateral.
+        vars.normalizedCollateralPrice = oracle.getAdjustedPrice(fyToken.collateral().symbol());
 
         // Calculate the top part of the equation.
-        vars.numerator = repayAmount.mul(vars.liquidationIncentive.mul(vars.underlyingPriceUpscaled));
+        vars.numerator = repayAmount.mul(vars.liquidationIncentive.mul(vars.normalizedUnderlyingPrice));
 
-        // Calculate the mantissa form of the clutched collateral amount.
-        vars.clutchableCollateralAmountUpscaled = vars.numerator.div(vars.collateralPriceUpscaled);
+        // Calculate the normalized clutched collateral amount.
+        vars.normalizedClutchableCollateralAmount = vars.numerator.div(vars.normalizedCollateralPrice);
 
         // If the precision scalar is not 1, calculate the final form of the clutched collateral amount.
         vars.collateralPrecisionScalar = fyToken.collateralPrecisionScalar();
         if (vars.collateralPrecisionScalar != 1) {
-            vars.clutchableCollateralAmount = vars.clutchableCollateralAmountUpscaled / vars.collateralPrecisionScalar;
+            vars.clutchableCollateralAmount =
+                vars.normalizedClutchableCollateralAmount /
+                vars.collateralPrecisionScalar;
         } else {
-            vars.clutchableCollateralAmount = vars.clutchableCollateralAmountUpscaled;
+            vars.clutchableCollateralAmount = vars.normalizedClutchableCollateralAmount;
         }
 
         return vars.clutchableCollateralAmount;
@@ -276,15 +278,15 @@ contract BalanceSheet is
     }
 
     struct GetHypotheticalAccountLiquidityLocalVars {
-        uint256 collateralPriceUpscaled;
         uint256 collateralPrecisionScalar;
         uint256 collateralizationRatioMantissa;
         uint256 debtValueUsd;
         uint256 hypotheticalCollateralizationRatio;
         uint256 lockedCollateralValueUsd;
-        uint256 lockedCollateralUpscaled;
+        uint256 normalizedCollateralPrice;
+        uint256 normalizedLockedCollateral;
+        uint256 normalizedUnderlyingPrice;
         uint256 oraclePricePrecisionScalar;
-        uint256 underlyingPriceUpscaled;
         uint256 underlyingPrecisionScalar;
     }
 
@@ -306,26 +308,26 @@ contract BalanceSheet is
         }
         require(debt > 0, "GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_DEBT_ZERO");
 
-        // Grab the upscaled USD price of the collateral.
+        // Grab the normalized USD price of the collateral.
         IChainlinkOperator oracle = fintroller.oracle();
-        vars.collateralPriceUpscaled = oracle.getAdjustedPrice(fyToken.collateral().symbol());
+        vars.normalizedCollateralPrice = oracle.getAdjustedPrice(fyToken.collateral().symbol());
 
-        // Grab the upscaled USD price of the underlying.
-        vars.underlyingPriceUpscaled = oracle.getAdjustedPrice(fyToken.underlying().symbol());
+        // Grab the normalized USD price of the underlying.
+        vars.normalizedUnderlyingPrice = oracle.getAdjustedPrice(fyToken.underlying().symbol());
 
         // Upscale the collateral, which can have any precision, to mantissa precision.
         vars.collateralPrecisionScalar = fyToken.collateralPrecisionScalar();
         if (vars.collateralPrecisionScalar != 1) {
-            vars.lockedCollateralUpscaled = lockedCollateral * vars.collateralPrecisionScalar;
+            vars.normalizedLockedCollateral = lockedCollateral * vars.collateralPrecisionScalar;
         } else {
-            vars.lockedCollateralUpscaled = lockedCollateral;
+            vars.normalizedLockedCollateral = lockedCollateral;
         }
 
         // Calculate the USD value of the collateral.
-        vars.lockedCollateralValueUsd = vars.lockedCollateralUpscaled.mul(vars.collateralPriceUpscaled);
+        vars.lockedCollateralValueUsd = vars.normalizedLockedCollateral.mul(vars.normalizedCollateralPrice);
 
         // Calculate the USD value of the debt.
-        vars.debtValueUsd = debt.mul(vars.underlyingPriceUpscaled);
+        vars.debtValueUsd = debt.mul(vars.normalizedUnderlyingPrice);
 
         // Calculate the collateralization ratio by dividing the USD value of the hypothetical locked collateral by
         // the USD value of the debt.

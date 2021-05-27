@@ -108,12 +108,12 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
               });
 
               it("retrieves the hypothetical collateralization ratio mantissa", async function () {
-                const downscaledLockedCollateral = lockedCollateral.div(precisionScalars.tokenWith8Decimals);
+                const denormalizedLockedCollateral = lockedCollateral.div(precisionScalars.tokenWith8Decimals);
                 const contractHypotheticalCollateralizationRatioMantissa: BigNumber =
                   await this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
                     this.stubs.fyToken.address,
                     this.signers.borrower.address,
-                    downscaledLockedCollateral,
+                    denormalizedLockedCollateral,
                     debt,
                   );
                 expect(contractHypotheticalCollateralizationRatioMantissa).to.equal(

@@ -115,11 +115,11 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
                   await this.stubs.underlying.mock.decimals.returns(BigNumber.from(8));
                   await this.stubs.fyToken.mock.underlyingPrecisionScalar.returns(precisionScalars.tokenWith8Decimals);
                 });
-                const upscaledUnderlyingAmount: BigNumber = ten.pow(8).mul(100);
+                const normalizedUnderlyingAmount: BigNumber = ten.pow(8).mul(100);
 
                 beforeEach(async function () {
                   await this.stubs.underlying.mock.transfer
-                    .withArgs(this.signers.maker.address, upscaledUnderlyingAmount)
+                    .withArgs(this.signers.maker.address, normalizedUnderlyingAmount)
                     .returns(true);
                 });
 
@@ -129,7 +129,7 @@ export default function shouldBehaveLikeRedeemFyTokens(): void {
                   await this.contracts.redemptionPool.connect(this.signers.maker).redeemFyTokens(fyTokenAmount);
                   const newUnderlyingTotalSupply: BigNumber =
                     await this.contracts.redemptionPool.totalUnderlyingSupply();
-                  expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.add(upscaledUnderlyingAmount));
+                  expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.add(normalizedUnderlyingAmount));
                 });
               });
 

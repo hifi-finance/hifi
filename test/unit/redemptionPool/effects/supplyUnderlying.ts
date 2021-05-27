@@ -109,11 +109,15 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
                 await this.stubs.fyToken.mock.underlyingPrecisionScalar.returns(precisionScalars.tokenWith8Decimals);
               });
 
-              const upscaledUnderlyingAmount: BigNumber = ten.pow(8).mul(100);
+              const normalizedUnderlyingAmount: BigNumber = ten.pow(8).mul(100);
 
               beforeEach(async function () {
                 await this.stubs.underlying.mock.transferFrom
-                  .withArgs(this.signers.maker.address, this.contracts.redemptionPool.address, upscaledUnderlyingAmount)
+                  .withArgs(
+                    this.signers.maker.address,
+                    this.contracts.redemptionPool.address,
+                    normalizedUnderlyingAmount,
+                  )
                   .returns(true);
               });
 
@@ -121,9 +125,9 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
                 const oldUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
                 await this.contracts.redemptionPool
                   .connect(this.signers.maker)
-                  .supplyUnderlying(upscaledUnderlyingAmount);
+                  .supplyUnderlying(normalizedUnderlyingAmount);
                 const newUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
-                expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.sub(upscaledUnderlyingAmount));
+                expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.sub(normalizedUnderlyingAmount));
               });
             });
 

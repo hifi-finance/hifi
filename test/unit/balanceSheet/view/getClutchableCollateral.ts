@@ -59,14 +59,14 @@ export default function shouldBehaveLikeGetClutchableCollateral(): void {
           await this.stubs.fyToken.mock.collateralPrecisionScalar.returns(precisionScalars.tokenWith8Decimals);
         });
 
-        it("retrieves the downscaled clutchable collateral amount", async function () {
-          const downscaledClutchableCollateralAmount = clutchableCollateralAmount.div(
+        it("retrieves the denormalized clutchable collateral amount", async function () {
+          const denormalizedClutchableCollateralAmount = clutchableCollateralAmount.div(
             precisionScalars.tokenWith8Decimals,
           );
 
           const contractClutchableCollateralAmount: BigNumber =
             await this.contracts.balanceSheet.getClutchableCollateral(this.stubs.fyToken.address, repayAmount);
-          expect(contractClutchableCollateralAmount).to.equal(downscaledClutchableCollateralAmount);
+          expect(contractClutchableCollateralAmount).to.equal(denormalizedClutchableCollateralAmount);
         });
       });
     });
