@@ -1,5 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { One, Zero } from "@ethersproject/constants";
+import { TransactionRequest } from "@ethersproject/providers";
 
 import { getDaysInSeconds, getNow } from "./time";
 
@@ -101,6 +102,12 @@ export const balanceSheetConstants = {
     lockedCollateral: Zero,
     isOpen: true,
   },
+};
+
+export const deployContractOverrides: TransactionRequest = {
+  gasLimit: process.env.CODE_COVERAGE
+    ? gasLimits.coverage.deployContractGasLimit
+    : gasLimits.hardhat.deployContractGasLimit,
 };
 
 export const fintrollerConstants = {

@@ -1,10 +1,9 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { BigNumber } from "@ethersproject/bignumber";
-import { TransactionRequest } from "@ethersproject/providers";
 import hre from "hardhat";
 import { Artifact } from "hardhat/types";
 
-import { gasLimits, hTokenConstants, prices } from "../helpers/constants";
+import { deployContractOverrides, hTokenConstants, prices } from "../helpers/constants";
 import { ChainlinkOperator } from "../typechain/ChainlinkOperator";
 import { Erc20Mintable } from "../typechain/Erc20Mintable";
 import { Fintroller } from "../typechain/Fintroller";
@@ -14,17 +13,12 @@ import { GodModeRedemptionPool } from "../typechain/GodModeRedemptionPool";
 import { HToken } from "../typechain/HToken";
 import { SimplePriceFeed } from "../typechain/SimplePriceFeed";
 
-const overrideOptions: TransactionRequest = {
-  gasLimit: process.env.CODE_COVERAGE
-    ? gasLimits.coverage.deployContractGasLimit
-    : gasLimits.hardhat.deployContractGasLimit,
-};
 const { deployContract } = hre.waffle;
 
 export async function deployChainlinkOperator(deployer: Signer): Promise<ChainlinkOperator> {
   const chainlinkOperatorArtifact: Artifact = await hre.artifacts.readArtifact("ChainlinkOperator");
   const chainlinkOperator: ChainlinkOperator = <ChainlinkOperator>(
-    await deployContract(deployer, chainlinkOperatorArtifact, [], overrideOptions)
+    await deployContract(deployer, chainlinkOperatorArtifact, [], deployContractOverrides)
   );
   return chainlinkOperator;
 }
@@ -32,7 +26,12 @@ export async function deployChainlinkOperator(deployer: Signer): Promise<Chainli
 export async function deployCollateral(deployer: Signer): Promise<Erc20Mintable> {
   const erc20MintableArtifact: Artifact = await hre.artifacts.readArtifact("Erc20Mintable");
   const collateral: Erc20Mintable = <Erc20Mintable>(
-    await deployContract(deployer, erc20MintableArtifact, ["Wrapped ETH", "WETH", BigNumber.from(18)], overrideOptions)
+    await deployContract(
+      deployer,
+      erc20MintableArtifact,
+      ["Wrapped ETH", "WETH", BigNumber.from(18)],
+      deployContractOverrides,
+    )
   );
   return collateral;
 }
@@ -40,7 +39,7 @@ export async function deployCollateral(deployer: Signer): Promise<Erc20Mintable>
 export async function deployCollateralPriceFeed(deployer: Signer): Promise<SimplePriceFeed> {
   const simplePriceFeedArtifact: Artifact = await hre.artifacts.readArtifact("SimplePriceFeed");
   const collateralPriceFeed: SimplePriceFeed = <SimplePriceFeed>(
-    await deployContract(deployer, simplePriceFeedArtifact, ["WETH/USD"], overrideOptions)
+    await deployContract(deployer, simplePriceFeedArtifact, ["WETH/USD"], deployContractOverrides)
   );
   await collateralPriceFeed.setPrice(prices.oneHundredDollars);
   return collateralPriceFeed;
@@ -48,7 +47,9 @@ export async function deployCollateralPriceFeed(deployer: Signer): Promise<Simpl
 
 export async function deployFintroller(deployer: Signer): Promise<Fintroller> {
   const fintrollerArtifact: Artifact = await hre.artifacts.readArtifact("Fintroller");
-  const fintroller: Fintroller = <Fintroller>await deployContract(deployer, fintrollerArtifact, [], overrideOptions);
+  const fintroller: Fintroller = <Fintroller>(
+    await deployContract(deployer, fintrollerArtifact, [], deployContractOverrides)
+  );
   return fintroller;
 }
 
@@ -74,7 +75,7 @@ export async function deployHToken(
         underlyingAddress,
         collateralAddress,
       ],
-      overrideOptions,
+      deployContractOverrides,
     )
   );
   return hToken;
@@ -86,7 +87,7 @@ export async function deployGodModeBalanceSheet(
 ): Promise<GodModeBalanceSheet> {
   const godModeBalanceSheetArtifact: Artifact = await hre.artifacts.readArtifact("GodModeBalanceSheet");
   const balanceSheet: GodModeBalanceSheet = <GodModeBalanceSheet>(
-    await deployContract(deployer, godModeBalanceSheetArtifact, [fintrollerAddress], overrideOptions)
+    await deployContract(deployer, godModeBalanceSheetArtifact, [fintrollerAddress], deployContractOverrides)
   );
   return balanceSheet;
 }
@@ -113,7 +114,7 @@ export async function deployGodModeHToken(
         underlyingAddress,
         collateralAddress,
       ],
-      overrideOptions,
+      deployContractOverrides,
     )
   );
   return hToken;
@@ -126,7 +127,12 @@ export async function deployGodModeRedemptionPool(
 ): Promise<GodModeRedemptionPool> {
   const godModeRedemptionPoolArtifact: Artifact = await hre.artifacts.readArtifact("GodModeRedemptionPool");
   const redemptionPool: GodModeRedemptionPool = <GodModeRedemptionPool>(
-    await deployContract(deployer, godModeRedemptionPoolArtifact, [fintrollerAddress, hTokenAddress], overrideOptions)
+    await deployContract(
+      deployer,
+      godModeRedemptionPoolArtifact,
+      [fintrollerAddress, hTokenAddress],
+      deployContractOverrides,
+    )
   );
   return redemptionPool;
 }
@@ -134,7 +140,12 @@ export async function deployGodModeRedemptionPool(
 export async function deployUnderlying(deployer: Signer): Promise<Erc20Mintable> {
   const erc20MintableArtifact: Artifact = await hre.artifacts.readArtifact("Erc20Mintable");
   const underlying: Erc20Mintable = <Erc20Mintable>(
-    await deployContract(deployer, erc20MintableArtifact, ["USD Coin", "USDC", BigNumber.from(6)], overrideOptions)
+    await deployContract(
+      deployer,
+      erc20MintableArtifact,
+      ["USD Coin", "USDC", BigNumber.from(6)],
+      deployContractOverrides,
+    )
   );
   return underlying;
 }
@@ -142,7 +153,7 @@ export async function deployUnderlying(deployer: Signer): Promise<Erc20Mintable>
 export async function deployUnderlyingPriceFeed(deployer: Signer): Promise<SimplePriceFeed> {
   const simplePriceFeedArtifact: Artifact = await hre.artifacts.readArtifact("SimplePriceFeed");
   const underlyingPriceFeed: SimplePriceFeed = <SimplePriceFeed>(
-    await deployContract(deployer, simplePriceFeedArtifact, ["USDC/USD"], overrideOptions)
+    await deployContract(deployer, simplePriceFeedArtifact, ["USDC/USD"], deployContractOverrides)
   );
   await underlyingPriceFeed.setPrice(prices.oneDollar);
   return underlyingPriceFeed;

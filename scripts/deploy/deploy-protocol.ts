@@ -4,9 +4,9 @@ import { ethers } from "hardhat";
 import { getEnvVar } from "../../helpers/env";
 
 const collateralAddress: string = getEnvVar("COLLATERAL_ADDRESS");
-const hTokenExpirationTime: string = getEnvVar("FY_TOKEN_EXPIRATION_TIME");
-const hTokenName: string = getEnvVar("FY_TOKEN_NAME");
-const hTokenSymbol: string = getEnvVar("FY_TOKEN_SYMBOL");
+const hTokenExpirationTime: string = getEnvVar("H_TOKEN_EXPIRATION_TIME");
+const hTokenName: string = getEnvVar("H_TOKEN_NAME");
+const hTokenSymbol: string = getEnvVar("H_TOKEN_SYMBOL");
 const stablecoinPrice: string = getEnvVar("STABLECOIN_PRICE");
 const stablecoinPriceFeedDescription: string = getEnvVar("STABLECOIN_PRICE_FEED_DESCRIPTION");
 const underlyingAddress: string = getEnvVar("UNDERLYING_ADDRESS");
