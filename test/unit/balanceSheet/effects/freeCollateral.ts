@@ -9,7 +9,7 @@ import { Vault } from "../../../../types";
 export default function shouldBehaveLikeLockCollateral(): void {
   const depositCollateralAmount: BigNumber = tokenAmounts.ten;
 
-  describe("when the vault is not open", function () {
+  context("when the vault is not open", function () {
     it("reverts", async function () {
       await expect(
         this.contracts.balanceSheet
@@ -19,13 +19,13 @@ export default function shouldBehaveLikeLockCollateral(): void {
     });
   });
 
-  describe("when the vault is open", function () {
+  context("when the vault is open", function () {
     beforeEach(async function () {
       await this.stubs.fintroller.mock.isBondListed.withArgs(this.stubs.hToken.address).returns(true);
       await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.hToken.address);
     });
 
-    describe("when the collateral amount to free is zero", function () {
+    context("when the collateral amount to free is zero", function () {
       it("reverts", async function () {
         await expect(
           this.contracts.balanceSheet.connect(this.signers.borrower).freeCollateral(this.stubs.hToken.address, Zero),
@@ -33,8 +33,8 @@ export default function shouldBehaveLikeLockCollateral(): void {
       });
     });
 
-    describe("when the collateral amount to free is not zero", function () {
-      describe("when the caller did not deposit any collateral", function () {
+    context("when the collateral amount to free is not zero", function () {
+      context("when the caller did not deposit any collateral", function () {
         it("reverts", async function () {
           await expect(
             this.contracts.balanceSheet
@@ -44,7 +44,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
         });
       });
 
-      describe("when the caller deposited collateral", function () {
+      context("when the caller deposited collateral", function () {
         beforeEach(async function () {
           // Mock the required functions on the Fintroller and the collateral token stubs.
           await this.stubs.fintroller.mock.getBondCollateralizationRatio
@@ -63,7 +63,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
             .depositCollateral(this.stubs.hToken.address, depositCollateralAmount);
         });
 
-        describe("when the caller did not lock the collateral", function () {
+        context("when the caller did not lock the collateral", function () {
           it("reverts", async function () {
             await expect(
               this.contracts.balanceSheet
@@ -73,14 +73,14 @@ export default function shouldBehaveLikeLockCollateral(): void {
           });
         });
 
-        describe("when the caller locked the collateral", function () {
+        context("when the caller locked the collateral", function () {
           beforeEach(async function () {
             await this.contracts.balanceSheet
               .connect(this.signers.borrower)
               .lockCollateral(this.stubs.hToken.address, depositCollateralAmount);
           });
 
-          describe("when the caller does not have a debt", function () {
+          context("when the caller does not have a debt", function () {
             it("it frees the collateral", async function () {
               const oldVault: Vault = await this.contracts.balanceSheet.getVault(
                 this.stubs.hToken.address,
@@ -105,13 +105,13 @@ export default function shouldBehaveLikeLockCollateral(): void {
             });
           });
 
-          describe("when the caller has a debt", function () {
+          context("when the caller has a debt", function () {
             beforeEach(async function () {
               await this.stubs.fintroller.mock.getBorrowAllowed.withArgs(this.stubs.hToken.address).returns(true);
               // The BalanceSheet asks the oracle what's the value of 9 WETH collateral.
             });
 
-            describe("when the caller is dangerously collateralized", function () {
+            context("when the caller is dangerously collateralized", function () {
               beforeEach(async function () {
                 // This is a 150% collateralization ratio. We deposited 10 WETH and the oracle assumes 1 WETH = $100.
                 const debt: BigNumber = tokenAmounts.one.mul(666);
@@ -134,7 +134,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
               });
             });
 
-            describe("when the caller is safely over-collateralized", async function () {
+            context("when the caller is safely over-collateralized", async function () {
               beforeEach(async function () {
                 const debt: BigNumber = tokenAmounts.oneHundred;
                 await this.contracts.balanceSheet.__godMode_setVaultDebt(

@@ -2,7 +2,7 @@ import { AddressZero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 export default function shouldBehaveLikeGetFeed(): void {
-  describe("when the feed is not set", function () {
+  context("when the feed is not set", function () {
     it("retrieves the default values", async function () {
       const feed = await this.contracts.oracle.getFeed("FOO");
       expect(feed[0]).to.equal(AddressZero); // asset
@@ -11,7 +11,7 @@ export default function shouldBehaveLikeGetFeed(): void {
     });
   });
 
-  describe("when the feed is set", function () {
+  context("when the feed is set", function () {
     beforeEach(async function () {
       await this.contracts.oracle
         .connect(this.signers.admin)

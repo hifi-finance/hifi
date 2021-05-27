@@ -6,20 +6,20 @@ import { prices } from "../../../../helpers/constants";
 import { ChainlinkOperatorErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeGetPrice(): void {
-  describe("when the feed is not set", function () {
+  context("when the feed is not set", function () {
     it("reverts", async function () {
       await expect(this.contracts.oracle.getPrice("FOO")).to.be.revertedWith(ChainlinkOperatorErrors.FeedNotSet);
     });
   });
 
-  describe("when the feed is set", function () {
+  context("when the feed is set", function () {
     beforeEach(async function () {
       await this.contracts.oracle
         .connect(this.signers.admin)
         .setFeed(this.stubs.collateral.address, this.stubs.collateralPriceFeed.address);
     });
 
-    describe("when the price is zero", function () {
+    context("when the price is zero", function () {
       beforeEach(async function () {
         await this.stubs.collateralPriceFeed.mock.latestRoundData.returns(Zero, Zero, Zero, Zero, Zero);
       });
@@ -29,7 +29,7 @@ export default function shouldBehaveLikeGetPrice(): void {
       });
     });
 
-    describe("when the price is not zero", function () {
+    context("when the price is not zero", function () {
       beforeEach(async function () {
         await this.stubs.collateralPriceFeed.mock.latestRoundData.returns(
           Zero,

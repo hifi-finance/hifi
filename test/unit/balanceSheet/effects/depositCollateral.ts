@@ -9,7 +9,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
   const collateralAmount: BigNumber = tokenAmounts.ten;
   const zeroCollateralAmount: BigNumber = Zero;
 
-  describe("when the vault is not open", function () {
+  context("when the vault is not open", function () {
     it("reverts", async function () {
       await expect(
         this.contracts.balanceSheet
@@ -19,13 +19,13 @@ export default function shouldBehaveLikeDepositCollateral(): void {
     });
   });
 
-  describe("when the vault is open", function () {
+  context("when the vault is open", function () {
     beforeEach(async function () {
       await this.stubs.fintroller.mock.isBondListed.withArgs(this.stubs.hToken.address).returns(true);
       await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.hToken.address);
     });
 
-    describe("when the amount to deposit is zero", function () {
+    context("when the amount to deposit is zero", function () {
       it("reverts", async function () {
         await expect(
           this.contracts.balanceSheet
@@ -35,8 +35,8 @@ export default function shouldBehaveLikeDepositCollateral(): void {
       });
     });
 
-    describe("when the amount to deposit is not zero", function () {
-      describe("when the bond is not listed", function () {
+    context("when the amount to deposit is not zero", function () {
+      context("when the bond is not listed", function () {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.getDepositCollateralAllowed
             .withArgs(this.stubs.hToken.address)
@@ -52,14 +52,14 @@ export default function shouldBehaveLikeDepositCollateral(): void {
         });
       });
 
-      describe("when the bond is listed", function () {
+      context("when the bond is listed", function () {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.getBondCollateralizationRatio
             .withArgs(this.stubs.hToken.address)
             .returns(fintrollerConstants.defaultCollateralizationRatio);
         });
 
-        describe("when the fintroller does not allow deposit collateral", function () {
+        context("when the fintroller does not allow deposit collateral", function () {
           beforeEach(async function () {
             await this.stubs.fintroller.mock.getDepositCollateralAllowed
               .withArgs(this.stubs.hToken.address)
@@ -75,14 +75,14 @@ export default function shouldBehaveLikeDepositCollateral(): void {
           });
         });
 
-        describe("when the fintroller allows deposit collateral", function () {
+        context("when the fintroller allows deposit collateral", function () {
           beforeEach(async function () {
             await this.stubs.fintroller.mock.getDepositCollateralAllowed
               .withArgs(this.stubs.hToken.address)
               .returns(true);
           });
 
-          describe("when the call to transfer the collateral does not succeed", function () {
+          context("when the call to transfer the collateral does not succeed", function () {
             beforeEach(async function () {
               await this.stubs.collateral.mock.transferFrom
                 .withArgs(this.signers.borrower.address, this.contracts.balanceSheet.address, collateralAmount)
@@ -98,7 +98,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
             });
           });
 
-          describe("when the call to transfer the collateral succeeds", function () {
+          context("when the call to transfer the collateral succeeds", function () {
             beforeEach(async function () {
               await this.stubs.collateral.mock.transferFrom
                 .withArgs(this.signers.borrower.address, this.contracts.balanceSheet.address, collateralAmount)

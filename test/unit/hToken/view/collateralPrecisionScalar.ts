@@ -6,7 +6,7 @@ import { HToken } from "../../../../typechain/HToken";
 import { deployHToken } from "../../../deployers";
 
 export default function shouldBehaveLikeCollateralPrecisionScalarGetter(): void {
-  describe("when the collateral has 18 decimals", function () {
+  context("when the collateral has 18 decimals", function () {
     beforeEach(async function () {
       await this.stubs.collateral.mock.decimals.returns(BigNumber.from(18));
     });
@@ -25,7 +25,7 @@ export default function shouldBehaveLikeCollateralPrecisionScalarGetter(): void 
     });
   });
 
-  describe("when the collateral has 8 decimals", function () {
+  context("when the collateral has 8 decimals", function () {
     beforeEach(async function () {
       await this.stubs.collateral.mock.decimals.returns(BigNumber.from(8));
     });

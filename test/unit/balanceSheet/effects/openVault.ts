@@ -3,7 +3,7 @@ import { expect } from "chai";
 import { BalanceSheetErrors, GenericErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeOpenVault(): void {
-  describe("when the bond is not listed", function () {
+  context("when the bond is not listed", function () {
     beforeEach(async function () {
       await this.stubs.fintroller.mock.isBondListed.withArgs(this.stubs.hToken.address).returns(false);
     });
@@ -15,12 +15,12 @@ export default function shouldBehaveLikeOpenVault(): void {
     });
   });
 
-  describe("when the bond is listed", function () {
+  context("when the bond is listed", function () {
     beforeEach(async function () {
       await this.stubs.fintroller.mock.isBondListed.withArgs(this.stubs.hToken.address).returns(true);
     });
 
-    describe("when the vault is open", function () {
+    context("when the vault is open", function () {
       beforeEach(async function () {
         await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.hToken.address);
       });
@@ -32,8 +32,8 @@ export default function shouldBehaveLikeOpenVault(): void {
       });
     });
 
-    describe("when the vault is not open", function () {
-      describe("when the hToken is not compliant", function () {
+    context("when the vault is not open", function () {
+      context("when the hToken is not compliant", function () {
         beforeEach(async function () {
           await this.stubs.hToken.mock.isHToken.returns(false);
         });
@@ -45,7 +45,7 @@ export default function shouldBehaveLikeOpenVault(): void {
         });
       });
 
-      describe("when the hToken is compliant", function () {
+      context("when the hToken is compliant", function () {
         it("opens the vault", async function () {
           await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.hToken.address);
         });

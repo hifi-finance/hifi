@@ -10,7 +10,7 @@ export default function shouldBehaveLikeSetBondCollateralizationRatio(): void {
   const overflowCollateralizationRatio: BigNumber = fintrollerConstants.collateralizationRatioUpperBound.add(One);
   const underflowCollateralizationRatio: BigNumber = fintrollerConstants.collateralizationRatioLowerBound.sub(One);
 
-  describe("when the caller is not the admin", function () {
+  context("when the caller is not the admin", function () {
     it("reverts", async function () {
       await expect(
         this.contracts.fintroller
@@ -20,8 +20,8 @@ export default function shouldBehaveLikeSetBondCollateralizationRatio(): void {
     });
   });
 
-  describe("when the caller is the admin", function () {
-    describe("when the bond is not listed", function () {
+  context("when the caller is the admin", function () {
+    context("when the bond is not listed", function () {
       it("reverts", async function () {
         await expect(
           this.contracts.fintroller
@@ -31,13 +31,13 @@ export default function shouldBehaveLikeSetBondCollateralizationRatio(): void {
       });
     });
 
-    describe("when the bond is listed", function () {
+    context("when the bond is listed", function () {
       beforeEach(async function () {
         await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.hToken.address);
       });
 
-      describe("when the collateralization ratio is not valid", function () {
-        describe("when the collateralization ratio is higher than 10,000%", function () {
+      context("when the collateralization ratio is not valid", function () {
+        context("when the collateralization ratio is higher than 10,000%", function () {
           it("reverts", async function () {
             await expect(
               this.contracts.fintroller
@@ -47,7 +47,7 @@ export default function shouldBehaveLikeSetBondCollateralizationRatio(): void {
           });
         });
 
-        describe("when the collateralization ratio is lower than 100%", function () {
+        context("when the collateralization ratio is lower than 100%", function () {
           it("reverts", async function () {
             await expect(
               this.contracts.fintroller
@@ -57,7 +57,7 @@ export default function shouldBehaveLikeSetBondCollateralizationRatio(): void {
           });
         });
 
-        describe("when the collateralization ratio is zero", function () {
+        context("when the collateralization ratio is zero", function () {
           it("reverts", async function () {
             await expect(
               this.contracts.fintroller
@@ -68,7 +68,7 @@ export default function shouldBehaveLikeSetBondCollateralizationRatio(): void {
         });
       });
 
-      describe("when the collateralization ratio is valid", function () {
+      context("when the collateralization ratio is valid", function () {
         it("sets the new collateralization ratio", async function () {
           await this.contracts.fintroller
             .connect(this.signers.admin)

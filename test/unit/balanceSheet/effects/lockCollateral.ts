@@ -9,14 +9,14 @@ import { Vault } from "../../../../types";
 export default function shouldBehaveLikeLockCollateral(): void {
   const depositCollateralAmount: BigNumber = tokenAmounts.ten;
 
-  describe("when the vault is open", function () {
+  context("when the vault is open", function () {
     beforeEach(async function () {
       await this.stubs.fintroller.mock.isBondListed.withArgs(this.stubs.hToken.address).returns(true);
       await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.hToken.address);
     });
 
-    describe("when the collateral amount to lock is not zero", function () {
-      describe("when the caller deposited collateral", function () {
+    context("when the collateral amount to lock is not zero", function () {
+      context("when the caller deposited collateral", function () {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.getDepositCollateralAllowed
             .withArgs(this.stubs.hToken.address)
@@ -63,7 +63,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
         });
       });
 
-      describe("when the caller did not deposit any collateral", function () {
+      context("when the caller did not deposit any collateral", function () {
         it("reverts", async function () {
           await expect(
             this.contracts.balanceSheet
@@ -74,7 +74,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
       });
     });
 
-    describe("when the collateral amount to lock is zero", function () {
+    context("when the collateral amount to lock is zero", function () {
       it("reverts", async function () {
         await expect(
           this.contracts.balanceSheet.connect(this.signers.borrower).lockCollateral(this.stubs.hToken.address, Zero),
@@ -83,7 +83,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
     });
   });
 
-  describe("when the vault is not open", function () {
+  context("when the vault is not open", function () {
     it("reverts", async function () {
       await expect(
         this.contracts.balanceSheet

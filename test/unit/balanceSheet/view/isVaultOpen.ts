@@ -1,7 +1,7 @@
 import { expect } from "chai";
 
 export default function shouldBehaveLikeOpenVault(): void {
-  describe("when the vault is not open", function () {
+  context("when the vault is not open", function () {
     it("retrieves false", async function () {
       const isVaultOpen: boolean = await this.contracts.balanceSheet.isVaultOpen(
         this.stubs.hToken.address,
@@ -11,7 +11,7 @@ export default function shouldBehaveLikeOpenVault(): void {
     });
   });
 
-  describe("when the vault is open", function () {
+  context("when the vault is open", function () {
     beforeEach(async function () {
       await this.stubs.fintroller.mock.isBondListed.withArgs(this.stubs.hToken.address).returns(true);
       await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.hToken.address);

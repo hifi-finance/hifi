@@ -10,7 +10,7 @@ export default function shouldBehaveLikeSetBondLiquidationIncentive(): void {
   const overflowLiquidationIncentive: BigNumber = fintrollerConstants.liquidationIncentiveUpperBound.add(One);
   const underflowLiquidationIncentive: BigNumber = fintrollerConstants.liquidationIncentiveLowerBound.sub(One);
 
-  describe("when the caller is not the admin", function () {
+  context("when the caller is not the admin", function () {
     it("reverts", async function () {
       await expect(
         this.contracts.fintroller
@@ -20,8 +20,8 @@ export default function shouldBehaveLikeSetBondLiquidationIncentive(): void {
     });
   });
 
-  describe("when the caller is the admin", function () {
-    describe("when the bond is not listed", function () {
+  context("when the caller is the admin", function () {
+    context("when the bond is not listed", function () {
       it("reverts", async function () {
         await expect(
           this.contracts.fintroller
@@ -31,13 +31,13 @@ export default function shouldBehaveLikeSetBondLiquidationIncentive(): void {
       });
     });
 
-    describe("when the bond is listed", function () {
+    context("when the bond is listed", function () {
       beforeEach(async function () {
         await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.hToken.address);
       });
 
-      describe("when the liquidation incentive is not valid", function () {
-        describe("when the liquidation ratio is zero", function () {
+      context("when the liquidation incentive is not valid", function () {
+        context("when the liquidation ratio is zero", function () {
           it("reverts", async function () {
             await expect(
               this.contracts.fintroller
@@ -47,7 +47,7 @@ export default function shouldBehaveLikeSetBondLiquidationIncentive(): void {
           });
         });
 
-        describe("when the liquidation incentive is higher than 150%", function () {
+        context("when the liquidation incentive is higher than 150%", function () {
           it("reverts", async function () {
             await expect(
               this.contracts.fintroller
@@ -57,7 +57,7 @@ export default function shouldBehaveLikeSetBondLiquidationIncentive(): void {
           });
         });
 
-        describe("when the liquidation incentive is lower than 100%", function () {
+        context("when the liquidation incentive is lower than 100%", function () {
           it("reverts", async function () {
             await expect(
               this.contracts.fintroller
@@ -68,7 +68,7 @@ export default function shouldBehaveLikeSetBondLiquidationIncentive(): void {
         });
       });
 
-      describe("when the liquidation incentive is valid", function () {
+      context("when the liquidation incentive is valid", function () {
         it("sets the new liquidation incentive", async function () {
           await this.contracts.fintroller
             .connect(this.signers.admin)

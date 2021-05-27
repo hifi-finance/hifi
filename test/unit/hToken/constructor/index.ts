@@ -11,7 +11,7 @@ import { deployHToken } from "../../../deployers";
 export default function shouldBehaveLikeConstructor(): void {
   const thirtySixDecimals: BigNumber = BigNumber.from(36);
 
-  describe("when the underlying has zero decimals", function () {
+  context("when the underlying has zero decimals", function () {
     beforeEach(async function () {
       await this.stubs.underlying.mock.decimals.returns(Zero);
     });
@@ -29,7 +29,7 @@ export default function shouldBehaveLikeConstructor(): void {
     });
   });
 
-  describe("when the underlying has more than 18 decimals", function () {
+  context("when the underlying has more than 18 decimals", function () {
     beforeEach(async function () {
       await this.stubs.underlying.mock.decimals.returns(thirtySixDecimals);
     });
@@ -47,7 +47,7 @@ export default function shouldBehaveLikeConstructor(): void {
     });
   });
 
-  describe("when the collateral has zero decimals", function () {
+  context("when the collateral has zero decimals", function () {
     beforeEach(async function () {
       await this.stubs.collateral.mock.decimals.returns(Zero);
     });
@@ -65,7 +65,7 @@ export default function shouldBehaveLikeConstructor(): void {
     });
   });
 
-  describe("when the collateral has more than 18 decimals", function () {
+  context("when the collateral has more than 18 decimals", function () {
     beforeEach(async function () {
       await this.stubs.collateral.mock.decimals.returns(BigNumber.from(36));
     });
@@ -83,7 +83,7 @@ export default function shouldBehaveLikeConstructor(): void {
     });
   });
 
-  describe("when the expiration time is in the past", function () {
+  context("when the expiration time is in the past", function () {
     it("reverts", async function () {
       const nowMinusOneHour: BigNumber = getNow().sub(3600);
       const deployHTokenPromise: Promise<HToken> = deployHToken(

@@ -4,7 +4,7 @@ import { expect } from "chai";
 import { AdminErrors, FintrollerErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeSetOracle(): void {
-  describe("when the caller is not the admin", function () {
+  context("when the caller is not the admin", function () {
     it("reverts", async function () {
       await expect(this.contracts.fintroller.connect(this.signers.raider).setOracle(AddressZero)).to.be.revertedWith(
         AdminErrors.NotAdmin,
@@ -12,8 +12,8 @@ export default function shouldBehaveLikeSetOracle(): void {
     });
   });
 
-  describe("when the caller is the admin", function () {
-    describe("when oracle address is not the zero address", function () {
+  context("when the caller is the admin", function () {
+    context("when oracle address is not the zero address", function () {
       it("sets the new oracle", async function () {
         await this.contracts.fintroller.connect(this.signers.admin).setOracle(this.stubs.oracle.address);
         const oracle: string = await this.contracts.fintroller.oracle();
@@ -28,7 +28,7 @@ export default function shouldBehaveLikeSetOracle(): void {
       });
     });
 
-    describe("when the oracle address is the zero address", function () {
+    context("when the oracle address is the zero address", function () {
       it("reverts", async function () {
         await expect(this.contracts.fintroller.connect(this.signers.admin).setOracle(AddressZero)).to.be.revertedWith(
           FintrollerErrors.SetOracleZeroAddress,

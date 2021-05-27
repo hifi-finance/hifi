@@ -6,7 +6,7 @@ import { AdminErrors, HTokenErrors } from "../../../../helpers/errors";
 import { deployStubFintroller } from "../../stubs";
 
 export default function shouldBehaveLikeSetFintroller(): void {
-  describe("when the caller is not the admin", function () {
+  context("when the caller is not the admin", function () {
     it("reverts", async function () {
       await expect(this.contracts.hToken.connect(this.signers.raider)._setFintroller(AddressZero)).to.be.revertedWith(
         AdminErrors.NotAdmin,
@@ -14,14 +14,14 @@ export default function shouldBehaveLikeSetFintroller(): void {
     });
   });
 
-  describe("when the caller is the admin", function () {
+  context("when the caller is the admin", function () {
     let newFintroller: MockContract;
 
     beforeEach(async function () {
       newFintroller = await deployStubFintroller(this.signers.admin);
     });
 
-    describe("when the new Fintroller is not compliant", function () {
+    context("when the new Fintroller is not compliant", function () {
       beforeEach(async function () {
         await newFintroller.mock.isFintroller.returns(false);
       });
@@ -33,7 +33,7 @@ export default function shouldBehaveLikeSetFintroller(): void {
       });
     });
 
-    describe("when the new Fintroller is compliant", function () {
+    context("when the new Fintroller is compliant", function () {
       beforeEach(async function () {
         await newFintroller.mock.isFintroller.returns(true);
       });

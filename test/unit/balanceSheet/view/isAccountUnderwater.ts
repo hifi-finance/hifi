@@ -4,7 +4,7 @@ import { expect } from "chai";
 import { fintrollerConstants, prices, tokenAmounts } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeIsAccountUnderwater(): void {
-  describe("when the vault is not open", function () {
+  context("when the vault is not open", function () {
     it("retrieves false", async function () {
       const isAccountUnderwater: boolean = await this.contracts.balanceSheet.isAccountUnderwater(
         this.stubs.hToken.address,
@@ -14,13 +14,13 @@ export default function shouldBehaveLikeIsAccountUnderwater(): void {
     });
   });
 
-  describe("when the vault is open", function () {
+  context("when the vault is open", function () {
     beforeEach(async function () {
       await this.stubs.fintroller.mock.isBondListed.withArgs(this.stubs.hToken.address).returns(true);
       await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.hToken.address);
     });
 
-    describe("when the debt is zero", function () {
+    context("when the debt is zero", function () {
       it("retrieves false", async function () {
         const isAccountUnderwater: boolean = await this.contracts.balanceSheet.isAccountUnderwater(
           this.stubs.hToken.address,
@@ -30,7 +30,7 @@ export default function shouldBehaveLikeIsAccountUnderwater(): void {
       });
     });
 
-    describe("when the debt is non-zero", function () {
+    context("when the debt is non-zero", function () {
       const debt: BigNumber = tokenAmounts.oneHundred;
       const lockedCollateral: BigNumber = tokenAmounts.ten;
 
@@ -50,7 +50,7 @@ export default function shouldBehaveLikeIsAccountUnderwater(): void {
         );
       });
 
-      describe("when the user is safely collateralized", function () {
+      context("when the user is safely collateralized", function () {
         // Recall that the default oracle price for 1 WETH is $100.
         it("retrieves false", async function () {
           const isAccountUnderwater: boolean = await this.contracts.balanceSheet.isAccountUnderwater(
@@ -61,7 +61,7 @@ export default function shouldBehaveLikeIsAccountUnderwater(): void {
         });
       });
 
-      describe("when the user is dangerously collateralized", function () {
+      context("when the user is dangerously collateralized", function () {
         beforeEach(async function () {
           await this.stubs.oracle.mock.getAdjustedPrice.withArgs("WETH").returns(prices.twelveDollars);
         });

@@ -11,7 +11,7 @@ export default function shouldBehaveLikeRedeemHTokens(): void {
   const underlyingAmount: BigNumber = ten.pow(underlyingConstants.decimals).mul(100);
   const hTokenAmount: BigNumber = tokenAmounts.oneHundred;
 
-  describe("when the bond did not mature", function () {
+  context("when the bond did not mature", function () {
     beforeEach(async function () {
       await this.stubs.hToken.mock.expirationTime.returns(hTokenConstants.expirationTime);
     });
@@ -23,13 +23,13 @@ export default function shouldBehaveLikeRedeemHTokens(): void {
     });
   });
 
-  describe("when the bond matured", function () {
+  context("when the bond matured", function () {
     beforeEach(async function () {
       const nowMinusOneHour: BigNumber = getNow().sub(3600);
       await this.stubs.hToken.mock.expirationTime.returns(nowMinusOneHour);
     });
 
-    describe("when the amount to redeemHTokens is zero", function () {
+    context("when the amount to redeemHTokens is zero", function () {
       it("reverts", async function () {
         await expect(this.contracts.redemptionPool.connect(this.signers.maker).redeemHTokens(Zero)).to.be.revertedWith(
           RedemptionPoolErrors.RedeemHTokensZero,
@@ -37,8 +37,8 @@ export default function shouldBehaveLikeRedeemHTokens(): void {
       });
     });
 
-    describe("when the amount to redeemHTokens is not zero", function () {
-      describe("when the bond is not listed", function () {
+    context("when the amount to redeemHTokens is not zero", function () {
+      context("when the bond is not listed", function () {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.getRedeemHTokensAllowed
             .withArgs(this.stubs.hToken.address)
@@ -52,14 +52,14 @@ export default function shouldBehaveLikeRedeemHTokens(): void {
         });
       });
 
-      describe("when the bond is listed", function () {
+      context("when the bond is listed", function () {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.getBondCollateralizationRatio
             .withArgs(this.stubs.hToken.address)
             .returns(fintrollerConstants.defaultCollateralizationRatio);
         });
 
-        describe("when the fintroller does not allow redeem hTokens", function () {
+        context("when the fintroller does not allow redeem hTokens", function () {
           beforeEach(async function () {
             await this.stubs.fintroller.mock.getRedeemHTokensAllowed.withArgs(this.stubs.hToken.address).returns(false);
           });
@@ -71,12 +71,12 @@ export default function shouldBehaveLikeRedeemHTokens(): void {
           });
         });
 
-        describe("when the fintroller allows redeem hTokens", function () {
+        context("when the fintroller allows redeem hTokens", function () {
           beforeEach(async function () {
             await this.stubs.fintroller.mock.getRedeemHTokensAllowed.withArgs(this.stubs.hToken.address).returns(true);
           });
 
-          describe("when there is not enough liquidity", function () {
+          context("when there is not enough liquidity", function () {
             it("reverts", async function () {
               await expect(
                 this.contracts.redemptionPool.connect(this.signers.maker).redeemHTokens(hTokenAmount),
@@ -84,29 +84,30 @@ export default function shouldBehaveLikeRedeemHTokens(): void {
             });
           });
 
-          describe("when there is enough liquidity", function () {
+          context("when there is enough liquidity", function () {
             beforeEach(async function () {
               const totalUnderlyingSupply: BigNumber = tokenAmounts.oneMillion;
               await this.contracts.redemptionPool.__godMode_setTotalUnderlyingSupply(totalUnderlyingSupply);
             });
 
-            describe("when the call to burn the hTokens does not succeed", function () {
+            context("when the call to burn the hTokens does not succeed", function () {
               beforeEach(async function () {
                 await this.stubs.hToken.mock.burn.withArgs(this.signers.maker.address, underlyingAmount).reverts();
               });
 
               it("reverts", async function () {
-                await expect(this.contracts.redemptionPool.connect(this.signers.maker).redeemHTokens(hTokenAmount)).to
-                  .be.reverted;
+                await expect(
+                  this.contracts.redemptionPool.connect(this.signers.maker).redeemHTokens(hTokenAmount),
+                ).to.be.reverted;
               });
             });
 
-            describe("when the call to burn the hTokens succeeds", function () {
+            context("when the call to burn the hTokens succeeds", function () {
               beforeEach(async function () {
                 await this.stubs.hToken.mock.burn.withArgs(this.signers.maker.address, hTokenAmount).returns();
               });
 
-              describe("when the underlying has 8 decimals", function () {
+              context("when the underlying has 8 decimals", function () {
                 beforeEach(async function () {
                   await this.stubs.underlying.mock.decimals.returns(BigNumber.from(8));
                   await this.stubs.hToken.mock.underlyingPrecisionScalar.returns(precisionScalars.tokenWith8Decimals);
@@ -129,7 +130,7 @@ export default function shouldBehaveLikeRedeemHTokens(): void {
                 });
               });
 
-              describe("when the underlying has 6 decimals", function () {
+              context("when the underlying has 6 decimals", function () {
                 beforeEach(async function () {
                   await this.stubs.underlying.mock.decimals.returns(BigNumber.from(6));
                   await this.stubs.hToken.mock.underlyingPrecisionScalar.returns(precisionScalars.tokenWith6Decimals);

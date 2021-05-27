@@ -6,7 +6,7 @@ import { AdminErrors, ChainlinkOperatorErrors } from "../../../../helpers/errors
 export default function shouldBehaveLikeDeleteFeed(): void {
   const symbol: string = "WETH";
 
-  describe("when the caller is not the admin", function () {
+  context("when the caller is not the admin", function () {
     it("reverts", async function () {
       await expect(this.contracts.oracle.connect(this.signers.raider).deleteFeed(symbol)).to.be.revertedWith(
         AdminErrors.NotAdmin,
@@ -14,8 +14,8 @@ export default function shouldBehaveLikeDeleteFeed(): void {
     });
   });
 
-  describe("when the caller is the admin", function () {
-    describe("when the feed is not set", function () {
+  context("when the caller is the admin", function () {
+    context("when the feed is not set", function () {
       it("reverts", async function () {
         await expect(this.contracts.oracle.connect(this.signers.admin).deleteFeed(symbol)).to.be.revertedWith(
           ChainlinkOperatorErrors.FeedNotSet,
@@ -23,7 +23,7 @@ export default function shouldBehaveLikeDeleteFeed(): void {
       });
     });
 
-    describe("when the feed is set", function () {
+    context("when the feed is set", function () {
       beforeEach(async function () {
         await this.contracts.oracle
           .connect(this.signers.admin)

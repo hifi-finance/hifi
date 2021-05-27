@@ -11,7 +11,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
   const borrowAmount: BigNumber = tokenAmounts.oneHundred;
   const repayAmount: BigNumber = tokenAmounts.forty;
 
-  describe("when the vault is not open", function () {
+  context("when the vault is not open", function () {
     beforeEach(async function () {
       await this.stubs.balanceSheet.mock.isVaultOpen
         .withArgs(this.contracts.hToken.address, this.signers.borrower.address)
@@ -25,12 +25,12 @@ export default function shouldBehaveLikeRepayBorrow(): void {
     });
   });
 
-  describe("when the vault is open", function () {
+  context("when the vault is open", function () {
     beforeEach(async function () {
       await stubIsVaultOpen.call(this, this.contracts.hToken.address, this.signers.borrower.address);
     });
 
-    describe("when the amount to repay is zero", function () {
+    context("when the amount to repay is zero", function () {
       it("reverts", async function () {
         await expect(this.contracts.hToken.connect(this.signers.borrower).repayBorrow(Zero)).to.be.revertedWith(
           HTokenErrors.RepayBorrowZero,
@@ -38,8 +38,8 @@ export default function shouldBehaveLikeRepayBorrow(): void {
       });
     });
 
-    describe("when the amount to repay is not zero", function () {
-      describe("when the bond is not listed", function () {
+    context("when the amount to repay is not zero", function () {
+      context("when the bond is not listed", function () {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.getRepayBorrowAllowed
             .withArgs(this.contracts.hToken.address)
@@ -53,14 +53,14 @@ export default function shouldBehaveLikeRepayBorrow(): void {
         });
       });
 
-      describe("when the bond is listed", function () {
+      context("when the bond is listed", function () {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.getBondCollateralizationRatio
             .withArgs(this.contracts.hToken.address)
             .returns(fintrollerConstants.defaultCollateralizationRatio);
         });
 
-        describe("when the fintroller does not allow repay borrow", function () {
+        context("when the fintroller does not allow repay borrow", function () {
           beforeEach(async function () {
             await this.stubs.fintroller.mock.getRepayBorrowAllowed
               .withArgs(this.contracts.hToken.address)
@@ -74,14 +74,14 @@ export default function shouldBehaveLikeRepayBorrow(): void {
           });
         });
 
-        describe("when the fintroller allows repay borrow", function () {
+        context("when the fintroller allows repay borrow", function () {
           beforeEach(async function () {
             await this.stubs.fintroller.mock.getRepayBorrowAllowed
               .withArgs(this.contracts.hToken.address)
               .returns(true);
           });
 
-          describe("when the caller does not have a debt", function () {
+          context("when the caller does not have a debt", function () {
             beforeEach(async function () {
               await stubIsVaultOpen.call(this, this.contracts.hToken.address, this.signers.lender.address);
               await this.stubs.balanceSheet.mock.getVaultDebt
@@ -97,7 +97,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
             });
           });
 
-          describe("when the caller has a debt", function () {
+          context("when the caller has a debt", function () {
             beforeEach(async function () {
               // User borrows 100 fyUSDC.
               await (this.contracts.hToken as GodModeHToken).__godMode_mint(
@@ -114,7 +114,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
                 .returns();
             });
 
-            describe("when the caller does not have enough hTokens", function () {
+            context("when the caller does not have enough hTokens", function () {
               beforeEach(async function () {
                 // User burns all of his hTokens.
                 await this.contracts.hToken.connect(this.signers.borrower).transfer(addressOne, borrowAmount);
@@ -127,7 +127,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
               });
             });
 
-            describe("when the caller has enough hTokens", function () {
+            context("when the caller has enough hTokens", function () {
               it("repays the borrowed hTokens", async function () {
                 const oldBalance: BigNumber = await this.contracts.hToken.balanceOf(this.signers.borrower.address);
                 await this.contracts.hToken.connect(this.signers.borrower).repayBorrow(repayAmount);

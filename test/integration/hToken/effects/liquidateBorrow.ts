@@ -73,7 +73,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
 
   /// This happens when the price of the collateral fell so rapidly that there
   /// isn't enough (in dollar terms) to compensate the liquidator.
-  describe("when there is not enough locked collateral", function () {
+  context("when there is not enough locked collateral", function () {
     beforeEach(async function () {
       // Set the price of 1 WETH = $1 so that the new collateralization ratio becomes 10%.
       await this.contracts.collateralPriceFeed.setPrice(prices.oneDollar);
@@ -88,7 +88,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
     });
   });
 
-  describe("when there is enough locked collateral", function () {
+  context("when there is enough locked collateral", function () {
     it("liquidates the borrower", async function () {
       const oldBalance: BigNumber = await this.contracts.hToken.balanceOf(this.signers.liquidator.address);
       await this.contracts.hToken

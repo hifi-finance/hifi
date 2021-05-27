@@ -4,7 +4,7 @@ import { expect } from "chai";
 import { AdminErrors, ChainlinkOperatorErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeSetFeed(): void {
-  describe("when the caller is not the admin", function () {
+  context("when the caller is not the admin", function () {
     it("reverts", async function () {
       await expect(
         this.contracts.oracle
@@ -14,8 +14,8 @@ export default function shouldBehaveLikeSetFeed(): void {
     });
   });
 
-  describe("when the caller is the admin", function () {
-    describe("when the feed does not have 8 decimals", function () {
+  context("when the caller is the admin", function () {
+    context("when the feed does not have 8 decimals", function () {
       beforeEach(async function () {
         await this.stubs.collateralPriceFeed.mock.decimals.returns(BigNumber.from(6));
       });
@@ -29,7 +29,7 @@ export default function shouldBehaveLikeSetFeed(): void {
       });
     });
 
-    describe("when the feed has 8 decimals", function () {
+    context("when the feed has 8 decimals", function () {
       it("sets the feed", async function () {
         await this.contracts.oracle
           .connect(this.signers.admin)

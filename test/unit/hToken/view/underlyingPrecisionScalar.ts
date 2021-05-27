@@ -6,7 +6,7 @@ import { HToken } from "../../../../typechain/HToken";
 import { deployHToken } from "../../../deployers";
 
 export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void {
-  describe("when the underlying has 6 decimals", function () {
+  context("when the underlying has 6 decimals", function () {
     beforeEach(async function () {
       await this.stubs.underlying.mock.decimals.returns(BigNumber.from(6));
     });
@@ -25,7 +25,7 @@ export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void 
     });
   });
 
-  describe("when the underlying has 8 decimals", function () {
+  context("when the underlying has 8 decimals", function () {
     beforeEach(async function () {
       await this.stubs.underlying.mock.decimals.returns(BigNumber.from(8));
     });
@@ -44,7 +44,7 @@ export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void 
     });
   });
 
-  describe("when the underlying has 18 decimals", function () {
+  context("when the underlying has 18 decimals", function () {
     beforeEach(async function () {
       await this.stubs.underlying.mock.decimals.returns(BigNumber.from(18));
     });

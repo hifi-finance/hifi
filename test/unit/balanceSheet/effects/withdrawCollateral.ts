@@ -8,7 +8,7 @@ import { BalanceSheetErrors, GenericErrors } from "../../../../helpers/errors";
 export default function shouldBehaveLikeWithdrawCollateral(): void {
   const collateralAmount: BigNumber = tokenAmounts.ten;
 
-  describe("when the vault is not open", function () {
+  context("when the vault is not open", function () {
     it("reverts", async function () {
       await expect(
         this.contracts.balanceSheet
@@ -18,13 +18,13 @@ export default function shouldBehaveLikeWithdrawCollateral(): void {
     });
   });
 
-  describe("when the vault is open", function () {
+  context("when the vault is open", function () {
     beforeEach(async function () {
       await this.stubs.fintroller.mock.isBondListed.withArgs(this.stubs.hToken.address).returns(true);
       await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.hToken.address);
     });
 
-    describe("when the amount to withdraw is zero", function () {
+    context("when the amount to withdraw is zero", function () {
       it("reverts", async function () {
         await expect(
           this.contracts.balanceSheet
@@ -34,8 +34,8 @@ export default function shouldBehaveLikeWithdrawCollateral(): void {
       });
     });
 
-    describe("when the amount to withdraw is not zero", function () {
-      describe("when the caller did not deposit any collateral", function () {
+    context("when the amount to withdraw is not zero", function () {
+      context("when the caller did not deposit any collateral", function () {
         it("reverts", async function () {
           await expect(
             this.contracts.balanceSheet
@@ -45,7 +45,7 @@ export default function shouldBehaveLikeWithdrawCollateral(): void {
         });
       });
 
-      describe("when the caller deposited collateral", function () {
+      context("when the caller deposited collateral", function () {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.getDepositCollateralAllowed
             .withArgs(this.stubs.hToken.address)
@@ -58,7 +58,7 @@ export default function shouldBehaveLikeWithdrawCollateral(): void {
             .depositCollateral(this.stubs.hToken.address, collateralAmount);
         });
 
-        describe("when the caller locked the collateral", function () {
+        context("when the caller locked the collateral", function () {
           beforeEach(async function () {
             await this.contracts.balanceSheet
               .connect(this.signers.borrower)
@@ -74,7 +74,7 @@ export default function shouldBehaveLikeWithdrawCollateral(): void {
           });
         });
 
-        describe("when the caller did not lock the collateral", function () {
+        context("when the caller did not lock the collateral", function () {
           beforeEach(async function () {
             await this.stubs.collateral.mock.transfer
               .withArgs(this.signers.borrower.address, collateralAmount)

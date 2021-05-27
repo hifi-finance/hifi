@@ -10,7 +10,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
   const lockedCollateral: BigNumber = tokenAmounts.ten;
   const debt: BigNumber = tokenAmounts.oneHundred;
 
-  describe("when the vault is not open", function () {
+  context("when the vault is not open", function () {
     it("reverts", async function () {
       await expect(
         this.contracts.balanceSheet
@@ -25,13 +25,13 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
     });
   });
 
-  describe("when the vault is open", function () {
+  context("when the vault is open", function () {
     beforeEach(async function () {
       await this.stubs.fintroller.mock.isBondListed.withArgs(this.stubs.hToken.address).returns(true);
       await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.hToken.address);
     });
 
-    describe("when the locked collateral is zero", function () {
+    context("when the locked collateral is zero", function () {
       it("reverts", async function () {
         const zeroCollateralAmount: BigNumber = Zero;
         const hypotheticalCollateralizationRatio =
@@ -45,8 +45,8 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
       });
     });
 
-    describe("when the locked collateral is not zero", function () {
-      describe("when the debt is zero", function () {
+    context("when the locked collateral is not zero", function () {
+      context("when the debt is zero", function () {
         it("reverts", async function () {
           const zeroDebt: BigNumber = Zero;
           await expect(
@@ -60,8 +60,8 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
         });
       });
 
-      describe("when the debt is not zero", function () {
-        describe("when the collateral price from the oracle is zero", function () {
+      context("when the debt is not zero", function () {
+        context("when the collateral price from the oracle is zero", function () {
           beforeEach(async function () {
             await this.stubs.oracle.mock.getAdjustedPrice
               .withArgs("WETH")
@@ -80,8 +80,8 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
           });
         });
 
-        describe("when the collateral price from the oracle is not zero", function () {
-          describe("when the underlying price from the oracle is zero", function () {
+        context("when the collateral price from the oracle is not zero", function () {
+          context("when the underlying price from the oracle is zero", function () {
             beforeEach(async function () {
               await this.stubs.oracle.mock.getAdjustedPrice
                 .withArgs("USDC")
@@ -100,8 +100,8 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
             });
           });
 
-          describe("when the underlying price from the oracle is not zero", function () {
-            describe("when the collateral has 8 decimals", function () {
+          context("when the underlying price from the oracle is not zero", function () {
+            context("when the collateral has 8 decimals", function () {
               beforeEach(async function () {
                 await this.stubs.collateral.mock.decimals.returns(BigNumber.from(8));
                 await this.stubs.hToken.mock.collateralPrecisionScalar.returns(precisionScalars.tokenWith8Decimals);
@@ -120,7 +120,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
               });
             });
 
-            describe("when the collateral has 18 decimals", function () {
+            context("when the collateral has 18 decimals", function () {
               beforeEach(async function () {
                 await this.stubs.collateral.mock.decimals.returns(BigNumber.from(18));
                 await this.stubs.hToken.mock.collateralPrecisionScalar.returns(precisionScalars.tokenWith18Decimals);

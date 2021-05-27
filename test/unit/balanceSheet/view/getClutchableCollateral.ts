@@ -10,7 +10,7 @@ export default function shouldBehaveLikeGetClutchableCollateral(): void {
   const clutchableCollateralAmount: BigNumber = tokenAmounts.pointFiftyFive;
   const repayAmount: BigNumber = tokenAmounts.fifty;
 
-  describe("when the amount to repay is zero", function () {
+  context("when the amount to repay is zero", function () {
     it("reverts", async function () {
       await expect(
         this.contracts.balanceSheet.getClutchableCollateral(this.stubs.hToken.address, Zero),
@@ -18,8 +18,8 @@ export default function shouldBehaveLikeGetClutchableCollateral(): void {
     });
   });
 
-  describe("when the amount to repay is not zero", function () {
-    describe("when the liquidation incentive is zero", function () {
+  context("when the amount to repay is not zero", function () {
+    context("when the liquidation incentive is zero", function () {
       beforeEach(async function () {
         await this.stubs.fintroller.mock.getBondLiquidationIncentive.withArgs(this.stubs.hToken.address).returns(Zero);
       });
@@ -33,14 +33,14 @@ export default function shouldBehaveLikeGetClutchableCollateral(): void {
       });
     });
 
-    describe("when the liquidation incentive is not zero", function () {
+    context("when the liquidation incentive is not zero", function () {
       beforeEach(async function () {
         await this.stubs.fintroller.mock.getBondLiquidationIncentive
           .withArgs(this.stubs.hToken.address)
           .returns(percentages.oneHundredAndTen);
       });
 
-      describe("when the collateral has 18 decimals", function () {
+      context("when the collateral has 18 decimals", function () {
         beforeEach(async function () {
           await this.stubs.collateral.mock.decimals.returns(BigNumber.from(18));
           await this.stubs.hToken.mock.collateralPrecisionScalar.returns(precisionScalars.tokenWith18Decimals);
@@ -53,7 +53,7 @@ export default function shouldBehaveLikeGetClutchableCollateral(): void {
         });
       });
 
-      describe("when the collateral has 8 decimals", function () {
+      context("when the collateral has 8 decimals", function () {
         beforeEach(async function () {
           await this.stubs.collateral.mock.decimals.returns(BigNumber.from(8));
           await this.stubs.hToken.mock.collateralPrecisionScalar.returns(precisionScalars.tokenWith8Decimals);

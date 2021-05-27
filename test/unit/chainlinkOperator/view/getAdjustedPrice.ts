@@ -6,7 +6,7 @@ import { chainlinkPricePrecisionScalar, maxInt256, prices } from "../../../../he
 import { ChainlinkOperatorErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeGetAdjustedPrice(): void {
-  describe("when the feed is not set", function () {
+  context("when the feed is not set", function () {
     it("reverts", async function () {
       await expect(this.contracts.oracle.getAdjustedPrice("FOO")).to.be.revertedWith(
         ChainlinkOperatorErrors.FeedNotSet,
@@ -14,14 +14,14 @@ export default function shouldBehaveLikeGetAdjustedPrice(): void {
     });
   });
 
-  describe("when the feed is set", function () {
+  context("when the feed is set", function () {
     beforeEach(async function () {
       await this.contracts.oracle
         .connect(this.signers.admin)
         .setFeed(this.stubs.collateral.address, this.stubs.collateralPriceFeed.address);
     });
 
-    describe("when the multiplication overflows uint256", function () {
+    context("when the multiplication overflows uint256", function () {
       beforeEach(async function () {
         await this.stubs.collateralPriceFeed.mock.latestRoundData.returns(Zero, maxInt256, Zero, Zero, Zero);
       });
@@ -31,7 +31,7 @@ export default function shouldBehaveLikeGetAdjustedPrice(): void {
       });
     });
 
-    describe("when the multiplication does not overflow uint256", function () {
+    context("when the multiplication does not overflow uint256", function () {
       it("retrieves the adjusted price", async function () {
         const adjustedPrice: BigNumber = await this.contracts.oracle.getAdjustedPrice("WETH");
         expect(adjustedPrice).to.equal(prices.oneHundredDollars.mul(chainlinkPricePrecisionScalar));

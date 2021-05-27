@@ -7,7 +7,7 @@ import { ten, underlyingConstants } from "../../../../helpers/constants";
 export default function shouldBehaveLikeTotalUnderlyingSupplyGetter(): void {
   const underlyingAmount: BigNumber = ten.pow(underlyingConstants.decimals).mul(10);
 
-  describe("when the underlying supply is zero", function () {
+  context("when the underlying supply is zero", function () {
     it("retrieves zero", async function () {
       const zeroUnderlyingAmount: BigNumber = Zero;
       const totalUnderlyingSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
@@ -15,7 +15,7 @@ export default function shouldBehaveLikeTotalUnderlyingSupplyGetter(): void {
     });
   });
 
-  describe("when the total underlying supply is not zero", function () {
+  context("when the total underlying supply is not zero", function () {
     beforeEach(async function () {
       await this.contracts.redemptionPool.__godMode_setTotalUnderlyingSupply(underlyingAmount);
     });

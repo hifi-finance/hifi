@@ -4,7 +4,7 @@ import { expect } from "chai";
 import { fintrollerConstants } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeGetBondCollateralizationRatio(): void {
-  describe("when the bond is not listed", function () {
+  context("when the bond is not listed", function () {
     it("retrieves the default values", async function () {
       const bond = await this.contracts.fintroller.getBond(this.stubs.hToken.address);
       expect(bond.collateralizationRatio).to.equal(Zero);
@@ -20,7 +20,7 @@ export default function shouldBehaveLikeGetBondCollateralizationRatio(): void {
     });
   });
 
-  describe("when the bond is listed", function () {
+  context("when the bond is listed", function () {
     beforeEach(async function () {
       await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.hToken.address);
     });

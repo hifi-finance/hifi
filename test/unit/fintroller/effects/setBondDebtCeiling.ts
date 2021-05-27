@@ -8,7 +8,7 @@ import { AdminErrors, FintrollerErrors, GenericErrors } from "../../../../helper
 export default function shouldBehaveLikeSetDebtCeiling(): void {
   const newDebtCeiling: BigNumber = tokenAmounts.oneHundred;
 
-  describe("when the caller is not the admin", function () {
+  context("when the caller is not the admin", function () {
     it("reverts", async function () {
       await expect(
         this.contracts.fintroller
@@ -18,8 +18,8 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
     });
   });
 
-  describe("when the caller is the admin", function () {
-    describe("when the bond is not listed", function () {
+  context("when the caller is the admin", function () {
+    context("when the bond is not listed", function () {
       it("reverts", async function () {
         await expect(
           this.contracts.fintroller
@@ -29,12 +29,12 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
       });
     });
 
-    describe("when the bond is listed", function () {
+    context("when the bond is listed", function () {
       beforeEach(async function () {
         await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.hToken.address);
       });
 
-      describe("when the debt ceiling is zero", function () {
+      context("when the debt ceiling is zero", function () {
         it("reverts", async function () {
           await expect(
             this.contracts.fintroller.connect(this.signers.admin).setBondDebtCeiling(this.stubs.hToken.address, Zero),
@@ -42,8 +42,8 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
         });
       });
 
-      describe("when the debt ceiling is not zero", function () {
-        describe("when the debt ceiling is below the current debt", function () {
+      context("when the debt ceiling is not zero", function () {
+        context("when the debt ceiling is below the current debt", function () {
           beforeEach(async function () {
             await this.stubs.hToken.mock.totalSupply.returns(tokenAmounts.oneMillion);
           });
@@ -57,7 +57,7 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
           });
         });
 
-        describe("when the debt ceiling is not below the current debt", function () {
+        context("when the debt ceiling is not below the current debt", function () {
           beforeEach(async function () {
             await this.stubs.hToken.mock.totalSupply.returns(Zero);
           });

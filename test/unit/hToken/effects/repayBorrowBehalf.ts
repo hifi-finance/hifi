@@ -15,7 +15,7 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
   const borrowAmount: BigNumber = tokenAmounts.oneHundred;
   const repayAmount: BigNumber = tokenAmounts.forty;
 
-  describe("when the vault is not open", function () {
+  context("when the vault is not open", function () {
     beforeEach(async function () {
       await this.stubs.balanceSheet.mock.isVaultOpen
         .withArgs(this.contracts.hToken.address, this.signers.borrower.address)
@@ -31,12 +31,12 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
     });
   });
 
-  describe("when the vault is open", function () {
+  context("when the vault is open", function () {
     beforeEach(async function () {
       await stubIsVaultOpen.call(this, this.contracts.hToken.address, this.signers.borrower.address);
     });
 
-    describe("when the amount to repay is zero", function () {
+    context("when the amount to repay is zero", function () {
       it("reverts", async function () {
         await expect(
           this.contracts.hToken.connect(this.signers.borrower).repayBorrowBehalf(this.signers.borrower.address, Zero),
@@ -44,22 +44,22 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
       });
     });
 
-    describe("when the amount to repay is not zero", function () {
-      describe("when the bond is listed", function () {
+    context("when the amount to repay is not zero", function () {
+      context("when the bond is listed", function () {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.getBondCollateralizationRatio
             .withArgs(this.contracts.hToken.address)
             .returns(fintrollerConstants.defaultCollateralizationRatio);
         });
 
-        describe("when the fintroller allows repay borrow", function () {
+        context("when the fintroller allows repay borrow", function () {
           beforeEach(async function () {
             await this.stubs.fintroller.mock.getRepayBorrowAllowed
               .withArgs(this.contracts.hToken.address)
               .returns(true);
           });
 
-          describe("when the user does not have a debt", function () {
+          context("when the user does not have a debt", function () {
             beforeEach(async function () {
               // The hToken makes an internal call to this stubbed function.
               await this.stubs.balanceSheet.mock.getVaultDebt
@@ -77,7 +77,7 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
             });
           });
 
-          describe("when the user has a debt", function () {
+          context("when the user has a debt", function () {
             beforeEach(async function () {
               await (this.contracts.hToken as GodModeHToken).__godMode_mint(this.signers.lender.address, borrowAmount);
 

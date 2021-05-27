@@ -3,7 +3,7 @@ import { expect } from "chai";
 import { AdminErrors, GenericErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeSetBorrowAllowed(): void {
-  describe("when the caller is not the admin", function () {
+  context("when the caller is not the admin", function () {
     it("reverts", async function () {
       await expect(
         this.contracts.fintroller.connect(this.signers.raider).setBorrowAllowed(this.stubs.hToken.address, true),
@@ -11,8 +11,8 @@ export default function shouldBehaveLikeSetBorrowAllowed(): void {
     });
   });
 
-  describe("when the caller is the admin", function () {
-    describe("when the bond is not listed", function () {
+  context("when the caller is the admin", function () {
+    context("when the bond is not listed", function () {
       it("rejects", async function () {
         await expect(
           this.contracts.fintroller.connect(this.signers.admin).setBorrowAllowed(this.stubs.hToken.address, true),
@@ -20,7 +20,7 @@ export default function shouldBehaveLikeSetBorrowAllowed(): void {
       });
     });
 
-    describe("when the bond is listed", function () {
+    context("when the bond is listed", function () {
       beforeEach(async function () {
         await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.hToken.address);
       });

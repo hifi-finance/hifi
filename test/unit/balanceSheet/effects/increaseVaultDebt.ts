@@ -7,7 +7,7 @@ import { BalanceSheetErrors } from "../../../../helpers/errors";
 export default function shouldBehaveLikeIncreaseVaultDebt(): void {
   const addedDebt: BigNumber = Zero;
 
-  describe("when the caller is not the HToken contract", function () {
+  context("when the caller is not the HToken contract", function () {
     it("reverts", async function () {
       await expect(
         this.contracts.balanceSheet
