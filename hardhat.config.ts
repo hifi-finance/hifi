@@ -11,7 +11,7 @@ import { resolve } from "path";
 import { config as dotenvConfig } from "dotenv";
 import { HardhatUserConfig, NetworkUserConfig } from "hardhat/types";
 
-import { gasLimits } from "./helpers/constants";
+import { GAS_LIMIT_HARDHAT } from "./helpers/constants";
 
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
@@ -67,9 +67,9 @@ const config: HardhatUserConfig = {
         mnemonic,
       },
       allowUnlimitedContractSize: true,
-      blockGasLimit: gasLimits.hardhat.blockGasLimit.toNumber(),
+      blockGasLimit: GAS_LIMIT_HARDHAT.toNumber(),
       chainId: chainIds.hardhat,
-      gas: gasLimits.hardhat.callGasLimit.toNumber(), // https://github.com/nomiclabs/hardhat/issues/660#issuecomment-715897156
+      gas: GAS_LIMIT_HARDHAT.toNumber(), // https://github.com/nomiclabs/hardhat/issues/660#issuecomment-715897156
     },
     goerli: createTestnetConfig("goerli"),
     kovan: createTestnetConfig("kovan"),

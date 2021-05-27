@@ -3,7 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 import fp from "evm-fp";
 
-import { fintrollerConstants } from "../../../../helpers/constants";
+import { FINTROLLER_DEFAULT_COLLATERALIZATION_RATIO } from "../../../../helpers/constants";
 import { BalanceSheetErrors, GenericErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeDepositCollateral(): void {
@@ -57,7 +57,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.getBondCollateralizationRatio
             .withArgs(this.stubs.hToken.address)
-            .returns(fintrollerConstants.defaultCollateralizationRatio);
+            .returns(FINTROLLER_DEFAULT_COLLATERALIZATION_RATIO);
         });
 
         context("when the fintroller does not allow deposit collateral", function () {

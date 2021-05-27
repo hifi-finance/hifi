@@ -76,20 +76,18 @@ contract HToken is
         IErc20 underlying_,
         IErc20 collateral_
     ) Erc20Permit(name_, symbol_, 18) Admin() {
-        uint8 defaultNumberOfDecimals = 18;
-
         // Set the underlying contract and calculate the decimal scalar offsets.
         uint256 underlyingDecimals = underlying_.decimals();
         require(underlyingDecimals > 0, "HTOKEN_CONSTRUCTOR_UNDERLYING_DECIMALS_ZERO");
-        require(underlyingDecimals <= defaultNumberOfDecimals, "HTOKEN_CONSTRUCTOR_UNDERLYING_DECIMALS_OVERFLOW");
-        underlyingPrecisionScalar = 10**(defaultNumberOfDecimals - underlyingDecimals);
+        require(underlyingDecimals <= 18, "HTOKEN_CONSTRUCTOR_UNDERLYING_DECIMALS_OVERFLOW");
+        underlyingPrecisionScalar = 10**(18 - underlyingDecimals);
         underlying = underlying_;
 
         // Set the collateral contract and calculate the decimal scalar offsets.
         uint256 collateralDecimals = collateral_.decimals();
         require(collateralDecimals > 0, "HTOKEN_CONSTRUCTOR_COLLATERAL_DECIMALS_ZERO");
-        require(defaultNumberOfDecimals >= collateralDecimals, "HTOKEN_CONSTRUCTOR_COLLATERAL_DECIMALS_OVERFLOW");
-        collateralPrecisionScalar = 10**(defaultNumberOfDecimals - collateralDecimals);
+        require(18 >= collateralDecimals, "HTOKEN_CONSTRUCTOR_COLLATERAL_DECIMALS_OVERFLOW");
+        collateralPrecisionScalar = 10**(18 - collateralDecimals);
         collateral = collateral_;
 
         // Set the unix expiration time.

@@ -1,6 +1,8 @@
 import { AddressZero } from "@ethersproject/constants";
 import { expect } from "chai";
 
+import { COLLATERAL_SYMBOL } from "../../../../helpers/constants";
+
 export default function shouldBehaveLikeGetFeed(): void {
   context("when the feed is not set", function () {
     it("retrieves the default values", async function () {
@@ -19,7 +21,7 @@ export default function shouldBehaveLikeGetFeed(): void {
     });
 
     it("retrieves the storage properties of the feed", async function () {
-      const feed = await this.contracts.oracle.getFeed("WETH");
+      const feed = await this.contracts.oracle.getFeed(COLLATERAL_SYMBOL);
       expect(feed[0]).to.equal(this.stubs.collateral.address); // asset
       expect(feed[1]).to.equal(this.stubs.collateralPriceFeed.address); // id
       expect(feed[2]).to.equal(true); // isSet

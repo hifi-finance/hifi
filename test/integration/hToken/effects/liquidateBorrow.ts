@@ -3,8 +3,8 @@ import { expect } from "chai";
 import fp from "evm-fp";
 
 import { BalanceSheetErrors } from "../../../../helpers/errors";
-import { GodModeHToken } from "../../../../typechain";
 import { price } from "../../../../helpers/numbers";
+import { GodModeHToken } from "../../../../typechain";
 
 export default function shouldBehaveLikeLiquidateBorrow(): void {
   const borrowAmount: BigNumber = fp("100");

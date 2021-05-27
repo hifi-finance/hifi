@@ -2,7 +2,7 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { One } from "@ethersproject/constants";
 import { MockContract } from "ethereum-waffle";
 
-import { hTokenConstants } from "../../helpers/constants";
+import { H_TOKEN_EXPIRATION_TIME } from "../../helpers/constants";
 import { ChainlinkOperator } from "../../typechain/ChainlinkOperator";
 import { Fintroller } from "../../typechain/Fintroller";
 import { GodModeBalanceSheet } from "../../typechain/GodModeBalanceSheet";
@@ -105,7 +105,7 @@ export async function unitFixtureHToken(signers: Signer[]): Promise<UnitFixtureH
   const collateral: MockContract = await deployStubCollateral(deployer);
   const hToken: GodModeHToken = await deployGodModeHToken(
     deployer,
-    hTokenConstants.expirationTime,
+    H_TOKEN_EXPIRATION_TIME,
     fintroller.address,
     balanceSheet.address,
     underlying.address,

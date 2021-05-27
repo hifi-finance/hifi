@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 import fp from "evm-fp";
 
-import { hTokenConstants } from "../../../../helpers/constants";
+import { H_TOKEN_EXPIRATION_TIME } from "../../../../helpers/constants";
 import { usdc } from "../../../../helpers/numbers";
 import { contextForTimeDependentTests } from "../../../contexts";
 import { increaseTime } from "../../../jsonRpc";
@@ -31,7 +31,7 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
       await this.contracts.redemptionPool.connect(this.signers.maker).supplyUnderlying(underlyingAmount);
 
       // Fast-forward to the future so that hTokens can be redeemed.
-      await increaseTime(hTokenConstants.expirationTime);
+      await increaseTime(H_TOKEN_EXPIRATION_TIME);
     });
 
     it("redeems the hTokens", async function () {

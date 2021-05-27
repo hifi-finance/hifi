@@ -1,6 +1,6 @@
 import { Signer } from "@ethersproject/abstract-signer";
 
-import { hTokenConstants } from "../../helpers/constants";
+import { H_TOKEN_EXPIRATION_TIME } from "../../helpers/constants";
 import { ChainlinkOperator } from "../../typechain/ChainlinkOperator";
 import { Erc20Mintable } from "../../typechain/Erc20Mintable";
 import { Fintroller } from "../../typechain/Fintroller";
@@ -51,7 +51,7 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
 
   const hToken: GodModeHToken = await deployGodModeHToken(
     deployer,
-    hTokenConstants.expirationTime,
+    H_TOKEN_EXPIRATION_TIME,
     fintroller.address,
     balanceSheet.address,
     underlying.address,

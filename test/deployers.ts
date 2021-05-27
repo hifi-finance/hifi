@@ -3,7 +3,18 @@ import { BigNumber } from "@ethersproject/bignumber";
 import hre from "hardhat";
 import { Artifact } from "hardhat/types";
 
-import { deployContractOverrides, hTokenConstants } from "../helpers/constants";
+import {
+  COLLATERAL_DECIMALS,
+  COLLATERAL_NAME,
+  COLLATERAL_SYMBOL,
+  H_TOKEN_EXPIRATION_TIME,
+  H_TOKEN_NAME,
+  H_TOKEN_SYMBOL,
+  UNDERLYING_DECIMALS,
+  UNDERLYING_NAME,
+  UNDERLYING_SYMBOL,
+} from "../helpers/constants";
+import { getDeployContractOverrides } from "../helpers/env";
 import { price } from "../helpers/numbers";
 import { ChainlinkOperator } from "../typechain/ChainlinkOperator";
 import { Erc20Mintable } from "../typechain/Erc20Mintable";
@@ -19,7 +30,7 @@ const { deployContract } = hre.waffle;
 export async function deployChainlinkOperator(deployer: Signer): Promise<ChainlinkOperator> {
   const chainlinkOperatorArtifact: Artifact = await hre.artifacts.readArtifact("ChainlinkOperator");
   const chainlinkOperator: ChainlinkOperator = <ChainlinkOperator>(
-    await deployContract(deployer, chainlinkOperatorArtifact, [], deployContractOverrides)
+    await deployContract(deployer, chainlinkOperatorArtifact, [], getDeployContractOverrides())
   );
   return chainlinkOperator;
 }
@@ -30,8 +41,8 @@ export async function deployCollateral(deployer: Signer): Promise<Erc20Mintable>
     await deployContract(
       deployer,
       erc20MintableArtifact,
-      ["Wrapped ETH", "WETH", BigNumber.from(18)],
-      deployContractOverrides,
+      [COLLATERAL_NAME, COLLATERAL_SYMBOL, COLLATERAL_DECIMALS],
+      getDeployContractOverrides(),
     )
   );
   return collateral;
@@ -40,7 +51,7 @@ export async function deployCollateral(deployer: Signer): Promise<Erc20Mintable>
 export async function deployCollateralPriceFeed(deployer: Signer): Promise<SimplePriceFeed> {
   const simplePriceFeedArtifact: Artifact = await hre.artifacts.readArtifact("SimplePriceFeed");
   const collateralPriceFeed: SimplePriceFeed = <SimplePriceFeed>(
-    await deployContract(deployer, simplePriceFeedArtifact, ["WETH/USD"], deployContractOverrides)
+    await deployContract(deployer, simplePriceFeedArtifact, ["WETH/USD"], getDeployContractOverrides())
   );
   await collateralPriceFeed.setPrice(price("100"));
   return collateralPriceFeed;
@@ -49,7 +60,7 @@ export async function deployCollateralPriceFeed(deployer: Signer): Promise<Simpl
 export async function deployFintroller(deployer: Signer): Promise<Fintroller> {
   const fintrollerArtifact: Artifact = await hre.artifacts.readArtifact("Fintroller");
   const fintroller: Fintroller = <Fintroller>(
-    await deployContract(deployer, fintrollerArtifact, [], deployContractOverrides)
+    await deployContract(deployer, fintrollerArtifact, [], getDeployContractOverrides())
   );
   return fintroller;
 }
@@ -68,15 +79,15 @@ export async function deployHToken(
       deployer,
       hTokenArtifact,
       [
-        hTokenConstants.name,
-        hTokenConstants.symbol,
+        H_TOKEN_NAME,
+        H_TOKEN_SYMBOL,
         expirationTime,
         fintrollerAddress,
         balanceSheetAddress,
         underlyingAddress,
         collateralAddress,
       ],
-      deployContractOverrides,
+      getDeployContractOverrides(),
     )
   );
   return hToken;
@@ -88,7 +99,7 @@ export async function deployGodModeBalanceSheet(
 ): Promise<GodModeBalanceSheet> {
   const godModeBalanceSheetArtifact: Artifact = await hre.artifacts.readArtifact("GodModeBalanceSheet");
   const balanceSheet: GodModeBalanceSheet = <GodModeBalanceSheet>(
-    await deployContract(deployer, godModeBalanceSheetArtifact, [fintrollerAddress], deployContractOverrides)
+    await deployContract(deployer, godModeBalanceSheetArtifact, [fintrollerAddress], getDeployContractOverrides())
   );
   return balanceSheet;
 }
@@ -107,15 +118,15 @@ export async function deployGodModeHToken(
       deployer,
       godModeHTokenArtifact,
       [
-        hTokenConstants.name,
-        hTokenConstants.symbol,
-        hTokenConstants.expirationTime,
+        H_TOKEN_NAME,
+        H_TOKEN_SYMBOL,
+        H_TOKEN_EXPIRATION_TIME,
         fintrollerAddress,
         balanceSheetAddress,
         underlyingAddress,
         collateralAddress,
       ],
-      deployContractOverrides,
+      getDeployContractOverrides(),
     )
   );
   return hToken;
@@ -132,7 +143,7 @@ export async function deployGodModeRedemptionPool(
       deployer,
       godModeRedemptionPoolArtifact,
       [fintrollerAddress, hTokenAddress],
-      deployContractOverrides,
+      getDeployContractOverrides(),
     )
   );
   return redemptionPool;
@@ -144,8 +155,8 @@ export async function deployUnderlying(deployer: Signer): Promise<Erc20Mintable>
     await deployContract(
       deployer,
       erc20MintableArtifact,
-      ["USD Coin", "USDC", BigNumber.from(6)],
-      deployContractOverrides,
+      [UNDERLYING_NAME, UNDERLYING_SYMBOL, UNDERLYING_DECIMALS],
+      getDeployContractOverrides(),
     )
   );
   return underlying;
@@ -154,7 +165,7 @@ export async function deployUnderlying(deployer: Signer): Promise<Erc20Mintable>
 export async function deployUnderlyingPriceFeed(deployer: Signer): Promise<SimplePriceFeed> {
   const simplePriceFeedArtifact: Artifact = await hre.artifacts.readArtifact("SimplePriceFeed");
   const underlyingPriceFeed: SimplePriceFeed = <SimplePriceFeed>(
-    await deployContract(deployer, simplePriceFeedArtifact, ["USDC/USD"], deployContractOverrides)
+    await deployContract(deployer, simplePriceFeedArtifact, ["USDC/USD"], getDeployContractOverrides())
   );
   await underlyingPriceFeed.setPrice(price("1"));
   return underlyingPriceFeed;

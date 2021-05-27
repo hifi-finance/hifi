@@ -1,7 +1,10 @@
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { fintrollerConstants } from "../../../../helpers/constants";
+import {
+  FINTROLLER_DEFAULT_COLLATERALIZATION_RATIO,
+  FINTROLLER_DEFAULT_LIQUIDATION_INCENTIVE,
+} from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeGetBondCollateralizationRatio(): void {
   context("when the bond is not listed", function () {
@@ -27,7 +30,7 @@ export default function shouldBehaveLikeGetBondCollateralizationRatio(): void {
 
     it("retrieves the default values after listing", async function () {
       const bond = await this.contracts.fintroller.getBond(this.stubs.hToken.address);
-      expect(bond.collateralizationRatio).to.equal(fintrollerConstants.defaultCollateralizationRatio);
+      expect(bond.collateralizationRatio).to.equal(FINTROLLER_DEFAULT_COLLATERALIZATION_RATIO);
       expect(bond.debtCeiling).to.equal(Zero);
       expect(bond.isBorrowAllowed).to.equal(true);
       expect(bond.isDepositCollateralAllowed).to.equal(true);
@@ -36,7 +39,7 @@ export default function shouldBehaveLikeGetBondCollateralizationRatio(): void {
       expect(bond.isRedeemHTokenAllowed).to.equal(true);
       expect(bond.isRepayBorrowAllowed).to.equal(true);
       expect(bond.isSupplyUnderlyingAllowed).to.equal(true);
-      expect(bond.liquidationIncentive).to.equal(fintrollerConstants.defaultLiquidationIncentive);
+      expect(bond.liquidationIncentive).to.equal(FINTROLLER_DEFAULT_LIQUIDATION_INCENTIVE);
     });
   });
 }

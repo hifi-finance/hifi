@@ -3,8 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 import fp from "evm-fp";
 
-import { fintrollerConstants } from "../../../../helpers/constants";
-import { hTokenConstants } from "../../../../helpers/constants";
+import { FINTROLLER_DEFAULT_COLLATERALIZATION_RATIO, H_TOKEN_EXPIRATION_TIME } from "../../../../helpers/constants";
 import { GenericErrors, HTokenErrors } from "../../../../helpers/errors";
 import { contextForTimeDependentTests } from "../../../contexts";
 import { increaseTime } from "../../../jsonRpc";
@@ -35,7 +34,7 @@ export default function shouldBehaveLikeBorrow(): void {
 
     contextForTimeDependentTests("when the bond matured", function () {
       beforeEach(async function () {
-        await increaseTime(hTokenConstants.expirationTime);
+        await increaseTime(H_TOKEN_EXPIRATION_TIME);
       });
 
       it("reverts", async function () {
@@ -73,7 +72,7 @@ export default function shouldBehaveLikeBorrow(): void {
           beforeEach(async function () {
             await this.stubs.fintroller.mock.getBondCollateralizationRatio
               .withArgs(this.contracts.hToken.address)
-              .returns(fintrollerConstants.defaultCollateralizationRatio);
+              .returns(FINTROLLER_DEFAULT_COLLATERALIZATION_RATIO);
           });
 
           context("when the fintroller does not allow borrows", function () {

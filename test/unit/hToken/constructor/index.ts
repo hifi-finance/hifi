@@ -2,15 +2,14 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { hTokenConstants } from "../../../../helpers/constants";
+import { H_TOKEN_EXPIRATION_TIME } from "../../../../helpers/constants";
 import { HTokenErrors } from "../../../../helpers/errors";
+import { bn } from "../../../../helpers/numbers";
 import { now } from "../../../../helpers/time";
 import { HToken } from "../../../../typechain/HToken";
 import { deployHToken } from "../../../deployers";
 
 export default function shouldBehaveLikeConstructor(): void {
-  const thirtySixDecimals: BigNumber = BigNumber.from(36);
-
   context("when the underlying has zero decimals", function () {
     beforeEach(async function () {
       await this.stubs.underlying.mock.decimals.returns(Zero);
@@ -19,7 +18,7 @@ export default function shouldBehaveLikeConstructor(): void {
     it("reverts", async function () {
       const deployHTokenPromise: Promise<HToken> = deployHToken(
         this.signers.admin,
-        hTokenConstants.expirationTime,
+        H_TOKEN_EXPIRATION_TIME,
         this.stubs.fintroller.address,
         this.stubs.balanceSheet.address,
         this.stubs.underlying.address,
@@ -31,13 +30,13 @@ export default function shouldBehaveLikeConstructor(): void {
 
   context("when the underlying has more than 18 decimals", function () {
     beforeEach(async function () {
-      await this.stubs.underlying.mock.decimals.returns(thirtySixDecimals);
+      await this.stubs.underlying.mock.decimals.returns(bn("36"));
     });
 
     it("reverts", async function () {
       const deployHTokenPromise: Promise<HToken> = deployHToken(
         this.signers.admin,
-        hTokenConstants.expirationTime,
+        H_TOKEN_EXPIRATION_TIME,
         this.stubs.fintroller.address,
         this.stubs.balanceSheet.address,
         this.stubs.underlying.address,
@@ -55,7 +54,7 @@ export default function shouldBehaveLikeConstructor(): void {
     it("reverts", async function () {
       const deployHTokenPromise: Promise<HToken> = deployHToken(
         this.signers.admin,
-        hTokenConstants.expirationTime,
+        H_TOKEN_EXPIRATION_TIME,
         this.stubs.fintroller.address,
         this.stubs.balanceSheet.address,
         this.stubs.underlying.address,
@@ -67,13 +66,13 @@ export default function shouldBehaveLikeConstructor(): void {
 
   context("when the collateral has more than 18 decimals", function () {
     beforeEach(async function () {
-      await this.stubs.collateral.mock.decimals.returns(BigNumber.from(36));
+      await this.stubs.collateral.mock.decimals.returns(bn("36"));
     });
 
     it("reverts", async function () {
       const deployHTokenPromise: Promise<HToken> = deployHToken(
         this.signers.admin,
-        hTokenConstants.expirationTime,
+        H_TOKEN_EXPIRATION_TIME,
         this.stubs.fintroller.address,
         this.stubs.balanceSheet.address,
         this.stubs.underlying.address,

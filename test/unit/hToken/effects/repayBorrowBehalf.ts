@@ -3,7 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 import fp from "evm-fp";
 
-import { fintrollerConstants } from "../../../../helpers/constants";
+import { FINTROLLER_DEFAULT_COLLATERALIZATION_RATIO } from "../../../../helpers/constants";
 import { GenericErrors, HTokenErrors } from "../../../../helpers/errors";
 import { GodModeHToken } from "../../../../typechain/GodModeHToken";
 import { stubIsVaultOpen } from "../../stubs";
@@ -50,7 +50,7 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.getBondCollateralizationRatio
             .withArgs(this.contracts.hToken.address)
-            .returns(fintrollerConstants.defaultCollateralizationRatio);
+            .returns(FINTROLLER_DEFAULT_COLLATERALIZATION_RATIO);
         });
 
         context("when the fintroller allows repay borrow", function () {

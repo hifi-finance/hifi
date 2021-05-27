@@ -3,13 +3,18 @@ import { One, Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 import fp from "evm-fp";
 
-import { fintrollerConstants } from "../../../../helpers/constants";
+import {
+  FINTROLLER_DEFAULT_COLLATERALIZATION_RATIO,
+  FINTROLLER_DEFAULT_LIQUIDATION_INCENTIVE,
+  FINTROLLER_LIQUIDATION_INCENTIVE_LOWER_BOUND,
+  FINTROLLER_LIQUIDATION_INCENTIVE_UPPER_BOUND,
+} from "../../../../helpers/constants";
 import { AdminErrors, FintrollerErrors, GenericErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeSetBondLiquidationIncentive(): void {
   const newLiquidationIncentive: BigNumber = fp("1.20");
-  const overflowLiquidationIncentive: BigNumber = fintrollerConstants.liquidationIncentiveUpperBound.add(One);
-  const underflowLiquidationIncentive: BigNumber = fintrollerConstants.liquidationIncentiveLowerBound.sub(One);
+  const overflowLiquidationIncentive: BigNumber = FINTROLLER_LIQUIDATION_INCENTIVE_UPPER_BOUND.add(One);
+  const underflowLiquidationIncentive: BigNumber = FINTROLLER_LIQUIDATION_INCENTIVE_LOWER_BOUND.sub(One);
 
   context("when the caller is not the admin", function () {
     it("reverts", async function () {
@@ -90,7 +95,7 @@ export default function shouldBehaveLikeSetBondLiquidationIncentive(): void {
             .withArgs(
               this.signers.admin.address,
               this.stubs.hToken.address,
-              fintrollerConstants.defaultLiquidationIncentive,
+              FINTROLLER_DEFAULT_LIQUIDATION_INCENTIVE,
               newLiquidationIncentive,
             );
         });

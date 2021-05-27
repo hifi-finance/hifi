@@ -2,6 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
+import { COLLATERAL_SYMBOL } from "../../../../helpers/constants";
 import { ChainlinkOperatorErrors } from "../../../../helpers/errors";
 import { price } from "../../../../helpers/numbers";
 
@@ -25,7 +26,9 @@ export default function shouldBehaveLikeGetPrice(): void {
       });
 
       it("reverts", async function () {
-        await expect(this.contracts.oracle.getPrice("WETH")).to.be.revertedWith(ChainlinkOperatorErrors.PriceZero);
+        await expect(this.contracts.oracle.getPrice(COLLATERAL_SYMBOL)).to.be.revertedWith(
+          ChainlinkOperatorErrors.PriceZero,
+        );
       });
     });
 
@@ -35,7 +38,7 @@ export default function shouldBehaveLikeGetPrice(): void {
       });
 
       it("retrieves the price", async function () {
-        const contractPrice: BigNumber = await this.contracts.oracle.getPrice("WETH");
+        const contractPrice: BigNumber = await this.contracts.oracle.getPrice(COLLATERAL_SYMBOL);
         expect(contractPrice).to.equal(price("100"));
       });
     });

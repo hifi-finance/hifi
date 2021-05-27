@@ -1,7 +1,8 @@
-import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
+import { COLLATERAL_SYMBOL } from "../../../../helpers/constants";
 import { AdminErrors, ChainlinkOperatorErrors } from "../../../../helpers/errors";
+import { bn } from "../../../../helpers/numbers";
 
 export default function shouldBehaveLikeSetFeed(): void {
   context("when the caller is not the admin", function () {
@@ -17,7 +18,7 @@ export default function shouldBehaveLikeSetFeed(): void {
   context("when the caller is the admin", function () {
     context("when the feed does not have 8 decimals", function () {
       beforeEach(async function () {
-        await this.stubs.collateralPriceFeed.mock.decimals.returns(BigNumber.from(6));
+        await this.stubs.collateralPriceFeed.mock.decimals.returns(bn("6"));
       });
 
       it("reverts", async function () {
@@ -34,7 +35,7 @@ export default function shouldBehaveLikeSetFeed(): void {
         await this.contracts.oracle
           .connect(this.signers.admin)
           .setFeed(this.stubs.collateral.address, this.stubs.collateralPriceFeed.address);
-        const feed = await this.contracts.oracle.getFeed("WETH");
+        const feed = await this.contracts.oracle.getFeed(COLLATERAL_SYMBOL);
         expect(feed[0]).to.equal(this.stubs.collateral.address); // asset
         expect(feed[1]).to.equal(this.stubs.collateralPriceFeed.address); // id
         expect(feed[2]).to.equal(true); // isSet

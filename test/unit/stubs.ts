@@ -5,7 +5,15 @@ import { MockContract } from "ethereum-waffle";
 import hre from "hardhat";
 import { Artifact } from "hardhat/types";
 
-import { balanceSheetConstants, chainlinkPricePrecision } from "../../helpers/constants";
+import {
+  CHAINLINK_PRICE_PRECISION,
+  COLLATERAL_DECIMALS,
+  COLLATERAL_NAME,
+  COLLATERAL_SYMBOL,
+  UNDERLYING_DECIMALS,
+  UNDERLYING_NAME,
+  UNDERLYING_SYMBOL,
+} from "../../helpers/constants";
 import { price } from "../../helpers/numbers";
 
 const { deployMockContract: deployStubContract } = hre.waffle;
@@ -23,20 +31,25 @@ export async function deployStubBalanceSheet(deployer: Signer): Promise<MockCont
 export async function deployStubChainlinkOperator(deployer: Signer): Promise<MockContract> {
   const chainlinkOperatorArtifact: Artifact = await hre.artifacts.readArtifact("ChainlinkOperator");
   const chainlinkOperator: MockContract = await deployStubContract(deployer, chainlinkOperatorArtifact.abi);
-  await chainlinkOperator.mock.getAdjustedPrice.withArgs("WETH").returns(price("100"));
-  await chainlinkOperator.mock.getAdjustedPrice.withArgs("USDC").returns(price("1"));
+  await chainlinkOperator.mock.getAdjustedPrice.withArgs(COLLATERAL_SYMBOL).returns(price("100"));
+  await chainlinkOperator.mock.getAdjustedPrice.withArgs(UNDERLYING_SYMBOL).returns(price("1"));
   return chainlinkOperator;
 }
 
 export async function deployStubCollateral(deployer: Signer): Promise<MockContract> {
-  const collateral: MockContract = await deployStubErc20(deployer, "Wrapped ETH", "WETH", BigNumber.from(18));
+  const collateral: MockContract = await deployStubErc20(
+    deployer,
+    COLLATERAL_NAME,
+    COLLATERAL_SYMBOL,
+    COLLATERAL_DECIMALS,
+  );
   return collateral;
 }
 
 export async function deployStubCollateralPriceFeed(deployer: Signer): Promise<MockContract> {
   const simplePriceFeedArtifact: Artifact = await hre.artifacts.readArtifact("SimplePriceFeed");
   const collateralPriceFeed: MockContract = await deployStubContract(deployer, simplePriceFeedArtifact.abi);
-  await collateralPriceFeed.mock.decimals.returns(chainlinkPricePrecision);
+  await collateralPriceFeed.mock.decimals.returns(CHAINLINK_PRICE_PRECISION);
   await collateralPriceFeed.mock.latestRoundData.returns(Zero, price("100"), Zero, Zero, Zero);
   return collateralPriceFeed;
 }
@@ -78,7 +91,12 @@ export async function deployStubRedemptionPool(deployer: Signer): Promise<MockCo
 }
 
 export async function deployStubUnderlying(deployer: Signer): Promise<MockContract> {
-  const underlying: MockContract = await deployStubErc20(deployer, "USD Coin", "USDC", BigNumber.from(6));
+  const underlying: MockContract = await deployStubErc20(
+    deployer,
+    UNDERLYING_NAME,
+    UNDERLYING_SYMBOL,
+    UNDERLYING_DECIMALS,
+  );
   return underlying;
 }
 
@@ -100,9 +118,13 @@ export async function stubGetVault(
 }
 
 export async function stubIsVaultOpen(this: Mocha.Context, hTokenAddress: string, account: string): Promise<void> {
-  await this.stubs.balanceSheet.mock.getVault
-    .withArgs(hTokenAddress, account)
-    .returns(balanceSheetConstants.defaultVault);
+  const defaultVault = {
+    debt: Zero,
+    freeCollateral: Zero,
+    lockedCollateral: Zero,
+    isOpen: true,
+  };
+  await this.stubs.balanceSheet.mock.getVault.withArgs(hTokenAddress, account).returns(defaultVault);
   await this.stubs.balanceSheet.mock.isVaultOpen.withArgs(hTokenAddress, account).returns(true);
 }
 
@@ -112,15 +134,10 @@ export async function stubVaultFreeCollateral(
   account: string,
   freeCollateral: BigNumber,
 ): Promise<void> {
-  await stubGetVault.call(
-    this,
-    hTokenAddress,
-    account,
-    balanceSheetConstants.defaultVault.debt,
-    freeCollateral,
-    balanceSheetConstants.defaultVault.lockedCollateral,
-    balanceSheetConstants.defaultVault.isOpen,
-  );
+  const debt: BigNumber = Zero;
+  const lockedCollateral: BigNumber = Zero;
+  const isOpen: boolean = true;
+  await stubGetVault.call(this, hTokenAddress, account, debt, freeCollateral, lockedCollateral, isOpen);
 }
 
 export async function stubVaultLockedCollateral(
@@ -129,13 +146,8 @@ export async function stubVaultLockedCollateral(
   account: string,
   lockedCollateral: BigNumber,
 ): Promise<void> {
-  await stubGetVault.call(
-    this,
-    hTokenAddress,
-    account,
-    balanceSheetConstants.defaultVault.debt,
-    balanceSheetConstants.defaultVault.freeCollateral,
-    lockedCollateral,
-    balanceSheetConstants.defaultVault.isOpen,
-  );
+  const debt: BigNumber = Zero;
+  const freeCollateral: BigNumber = Zero;
+  const isOpen: boolean = true;
+  await stubGetVault.call(this, hTokenAddress, account, debt, freeCollateral, lockedCollateral, isOpen);
 }

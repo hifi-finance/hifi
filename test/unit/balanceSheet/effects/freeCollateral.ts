@@ -3,7 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 import fp from "evm-fp";
 
-import { fintrollerConstants } from "../../../../helpers/constants";
+import { FINTROLLER_DEFAULT_COLLATERALIZATION_RATIO } from "../../../../helpers/constants";
 import { BalanceSheetErrors, GenericErrors } from "../../../../helpers/errors";
 import { Vault } from "../../../../types";
 
@@ -50,7 +50,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
           // Mock the required functions on the Fintroller and the collateral token stubs.
           await this.stubs.fintroller.mock.getBondCollateralizationRatio
             .withArgs(this.stubs.hToken.address)
-            .returns(fintrollerConstants.defaultCollateralizationRatio);
+            .returns(FINTROLLER_DEFAULT_COLLATERALIZATION_RATIO);
           await this.stubs.fintroller.mock.getDepositCollateralAllowed
             .withArgs(this.stubs.hToken.address)
             .returns(true);

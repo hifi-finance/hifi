@@ -3,13 +3,17 @@ import { One, Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 import fp from "evm-fp";
 
-import { fintrollerConstants } from "../../../../helpers/constants";
+import {
+  FINTROLLER_COLLATERALIZATION_RATIO_LOWER_BOUND,
+  FINTROLLER_COLLATERALIZATION_RATIO_UPPER_BOUND,
+  FINTROLLER_DEFAULT_COLLATERALIZATION_RATIO,
+} from "../../../../helpers/constants";
 import { AdminErrors, FintrollerErrors, GenericErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeSetBondCollateralizationRatio(): void {
   const newCollateralizationRatio: BigNumber = fp("1.75");
-  const overflowCollateralizationRatio: BigNumber = fintrollerConstants.collateralizationRatioUpperBound.add(One);
-  const underflowCollateralizationRatio: BigNumber = fintrollerConstants.collateralizationRatioLowerBound.sub(One);
+  const overflowCollateralizationRatio: BigNumber = FINTROLLER_COLLATERALIZATION_RATIO_UPPER_BOUND.add(One);
+  const underflowCollateralizationRatio: BigNumber = FINTROLLER_COLLATERALIZATION_RATIO_LOWER_BOUND.sub(One);
 
   context("when the caller is not the admin", function () {
     it("reverts", async function () {
@@ -89,7 +93,7 @@ export default function shouldBehaveLikeSetBondCollateralizationRatio(): void {
             .withArgs(
               this.signers.admin.address,
               this.stubs.hToken.address,
-              fintrollerConstants.defaultCollateralizationRatio,
+              FINTROLLER_DEFAULT_COLLATERALIZATION_RATIO,
               newCollateralizationRatio,
             );
         });

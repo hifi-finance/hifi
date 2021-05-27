@@ -3,10 +3,15 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 import fp from "evm-fp";
 
-import { fintrollerConstants, hTokenConstants, precisionScalars } from "../../../../helpers/constants";
+import {
+  FINTROLLER_DEFAULT_COLLATERALIZATION_RATIO,
+  H_TOKEN_EXPIRATION_TIME,
+  TOKEN_WITH_6_DECIMALS_PRECISION_SCALAR,
+  TOKEN_WITH_8_DECIMALS_PRECISION_SCALAR,
+} from "../../../../helpers/constants";
 import { GenericErrors, RedemptionPoolErrors } from "../../../../helpers/errors";
+import { bn, usdc } from "../../../../helpers/numbers";
 import { now } from "../../../../helpers/time";
-import { usdc } from "../../../../helpers/numbers";
 
 export default function shouldBehaveLikeSupplyUnderlying(): void {
   const underlyingAmount: BigNumber = usdc("100");
@@ -27,7 +32,7 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
 
   context("when the bond did not mature", function () {
     beforeEach(async function () {
-      await this.stubs.hToken.mock.expirationTime.returns(hTokenConstants.expirationTime);
+      await this.stubs.hToken.mock.expirationTime.returns(H_TOKEN_EXPIRATION_TIME);
     });
 
     context("when the amount of underlying to supply is zero", function () {
@@ -58,7 +63,7 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
         beforeEach(async function () {
           await this.stubs.fintroller.mock.getBondCollateralizationRatio
             .withArgs(this.stubs.hToken.address)
-            .returns(fintrollerConstants.defaultCollateralizationRatio);
+            .returns(FINTROLLER_DEFAULT_COLLATERALIZATION_RATIO);
         });
 
         context("when the fintroller does not allow supply underlying", function () {
@@ -101,8 +106,8 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
 
             context("when the underlying has 8 decimals", function () {
               beforeEach(async function () {
-                await this.stubs.underlying.mock.decimals.returns(BigNumber.from(8));
-                await this.stubs.hToken.mock.underlyingPrecisionScalar.returns(precisionScalars.tokenWith8Decimals);
+                await this.stubs.underlying.mock.decimals.returns(bn("8"));
+                await this.stubs.hToken.mock.underlyingPrecisionScalar.returns(TOKEN_WITH_8_DECIMALS_PRECISION_SCALAR);
               });
 
               const underlyingAmount: BigNumber = fp("100", 8);
@@ -123,8 +128,8 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
 
             context("when the underlying has 6 decimals", function () {
               beforeEach(async function () {
-                await this.stubs.underlying.mock.decimals.returns(BigNumber.from(6));
-                await this.stubs.hToken.mock.underlyingPrecisionScalar.returns(precisionScalars.tokenWith6Decimals);
+                await this.stubs.underlying.mock.decimals.returns(bn("6"));
+                await this.stubs.hToken.mock.underlyingPrecisionScalar.returns(TOKEN_WITH_6_DECIMALS_PRECISION_SCALAR);
               });
 
               beforeEach(async function () {

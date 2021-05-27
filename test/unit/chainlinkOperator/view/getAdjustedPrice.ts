@@ -3,7 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 import fp from "evm-fp";
 
-import { MAX_INT256 } from "../../../../helpers/constants";
+import { COLLATERAL_SYMBOL, MAX_INT256 } from "../../../../helpers/constants";
 import { ChainlinkOperatorErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeGetAdjustedPrice(): void {
@@ -28,13 +28,13 @@ export default function shouldBehaveLikeGetAdjustedPrice(): void {
       });
 
       it("reverts", async function () {
-        await expect(this.contracts.oracle.getAdjustedPrice("WETH")).to.be.reverted;
+        await expect(this.contracts.oracle.getAdjustedPrice(COLLATERAL_SYMBOL)).to.be.reverted;
       });
     });
 
     context("when the multiplication does not overflow uint256", function () {
       it("retrieves the adjusted price", async function () {
-        const adjustedPrice: BigNumber = await this.contracts.oracle.getAdjustedPrice("WETH");
+        const adjustedPrice: BigNumber = await this.contracts.oracle.getAdjustedPrice(COLLATERAL_SYMBOL);
         expect(adjustedPrice).to.equal(fp("100"));
       });
     });

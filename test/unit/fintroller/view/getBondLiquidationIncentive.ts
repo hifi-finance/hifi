@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { fintrollerConstants } from "../../../../helpers/constants";
+import { FINTROLLER_DEFAULT_LIQUIDATION_INCENTIVE } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeGetBondDebtCeiling(): void {
   context("when the bond is not listed", function () {
@@ -23,7 +23,7 @@ export default function shouldBehaveLikeGetBondDebtCeiling(): void {
       const bondLiquidationIncentive: BigNumber = await this.contracts.fintroller.getBondLiquidationIncentive(
         this.stubs.hToken.address,
       );
-      expect(bondLiquidationIncentive).to.equal(fintrollerConstants.defaultLiquidationIncentive);
+      expect(bondLiquidationIncentive).to.equal(FINTROLLER_DEFAULT_LIQUIDATION_INCENTIVE);
     });
   });
 }

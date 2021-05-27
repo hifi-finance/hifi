@@ -3,8 +3,14 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 import fp from "evm-fp";
 
-import { precisionScalars } from "../../../../helpers/constants";
+import {
+  COLLATERAL_SYMBOL,
+  TOKEN_WITH_18_DECIMALS_PRECISION_SCALAR,
+  TOKEN_WITH_8_DECIMALS_PRECISION_SCALAR,
+  UNDERLYING_SYMBOL,
+} from "../../../../helpers/constants";
 import { BalanceSheetErrors, ChainlinkOperatorErrors, GenericErrors } from "../../../../helpers/errors";
+import { bn } from "../../../../helpers/numbers";
 
 export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio(): void {
   const hypotheticalCollateralizationRatio: BigNumber = fp("10.00");
@@ -65,7 +71,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
         context("when the collateral price from the oracle is zero", function () {
           beforeEach(async function () {
             await this.stubs.oracle.mock.getAdjustedPrice
-              .withArgs("WETH")
+              .withArgs(COLLATERAL_SYMBOL)
               .revertsWithReason(ChainlinkOperatorErrors.PriceZero);
           });
 
@@ -85,7 +91,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
           context("when the underlying price from the oracle is zero", function () {
             beforeEach(async function () {
               await this.stubs.oracle.mock.getAdjustedPrice
-                .withArgs("USDC")
+                .withArgs(UNDERLYING_SYMBOL)
                 .revertsWithReason(ChainlinkOperatorErrors.PriceZero);
             });
 
@@ -104,12 +110,12 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
           context("when the underlying price from the oracle is not zero", function () {
             context("when the collateral has 8 decimals", function () {
               beforeEach(async function () {
-                await this.stubs.collateral.mock.decimals.returns(BigNumber.from(8));
-                await this.stubs.hToken.mock.collateralPrecisionScalar.returns(precisionScalars.tokenWith8Decimals);
+                await this.stubs.collateral.mock.decimals.returns(bn("8"));
+                await this.stubs.hToken.mock.collateralPrecisionScalar.returns(TOKEN_WITH_8_DECIMALS_PRECISION_SCALAR);
               });
 
               it("retrieves the hypothetical collateralization ratio", async function () {
-                const denormalizedLockedCollateral = lockedCollateral.div(precisionScalars.tokenWith8Decimals);
+                const denormalizedLockedCollateral = lockedCollateral.div(TOKEN_WITH_8_DECIMALS_PRECISION_SCALAR);
                 const contractHypotheticalCollateralizationRatio: BigNumber =
                   await this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
                     this.stubs.hToken.address,
@@ -123,8 +129,8 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
 
             context("when the collateral has 18 decimals", function () {
               beforeEach(async function () {
-                await this.stubs.collateral.mock.decimals.returns(BigNumber.from(18));
-                await this.stubs.hToken.mock.collateralPrecisionScalar.returns(precisionScalars.tokenWith18Decimals);
+                await this.stubs.collateral.mock.decimals.returns(bn("18"));
+                await this.stubs.hToken.mock.collateralPrecisionScalar.returns(TOKEN_WITH_18_DECIMALS_PRECISION_SCALAR);
               });
 
               it("retrieves the hypothetical collateralization ratio", async function () {

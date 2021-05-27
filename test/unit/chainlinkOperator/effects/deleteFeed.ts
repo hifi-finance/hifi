@@ -1,10 +1,11 @@
 import { AddressZero } from "@ethersproject/constants";
 import { expect } from "chai";
 
+import { COLLATERAL_SYMBOL } from "../../../../helpers/constants";
 import { AdminErrors, ChainlinkOperatorErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeDeleteFeed(): void {
-  const symbol: string = "WETH";
+  const symbol: string = COLLATERAL_SYMBOL;
 
   context("when the caller is not the admin", function () {
     it("reverts", async function () {
@@ -32,7 +33,7 @@ export default function shouldBehaveLikeDeleteFeed(): void {
 
       it("deletes the feed", async function () {
         await this.contracts.oracle.connect(this.signers.admin).deleteFeed(symbol);
-        const feed = await this.contracts.oracle.getFeed("WETH");
+        const feed = await this.contracts.oracle.getFeed(COLLATERAL_SYMBOL);
         expect(feed[0]).to.equal(AddressZero); // asset
         expect(feed[1]).to.equal(AddressZero); // id
         expect(feed[2]).to.equal(false); // isSet

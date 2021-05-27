@@ -3,7 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 import fp from "evm-fp";
 
-import { fintrollerConstants, hTokenConstants } from "../../../../helpers/constants";
+import { FINTROLLER_DEFAULT_COLLATERALIZATION_RATIO, H_TOKEN_EXPIRATION_TIME } from "../../../../helpers/constants";
 import { GenericErrors, HTokenErrors } from "../../../../helpers/errors";
 import { GodModeHToken } from "../../../../typechain";
 import { contextForTimeDependentTests } from "../../../contexts";
@@ -58,7 +58,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
       beforeEach(async function () {
         await this.stubs.fintroller.mock.getBondCollateralizationRatio
           .withArgs(this.contracts.hToken.address)
-          .returns(fintrollerConstants.defaultCollateralizationRatio);
+          .returns(FINTROLLER_DEFAULT_COLLATERALIZATION_RATIO);
         await this.stubs.balanceSheet.mock.getVaultDebt
           .withArgs(this.contracts.hToken.address, this.signers.borrower.address)
           .returns(borrowAmount);
@@ -102,7 +102,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
           beforeEach(async function () {
             await this.stubs.fintroller.mock.getBondCollateralizationRatio
               .withArgs(this.contracts.hToken.address)
-              .returns(fintrollerConstants.defaultCollateralizationRatio);
+              .returns(FINTROLLER_DEFAULT_COLLATERALIZATION_RATIO);
           });
 
           context("when the fintroller does not allow liquidate borrow", function () {
@@ -195,7 +195,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
 
                 contextForTimeDependentTests("when the bond matured", function () {
                   beforeEach(async function () {
-                    await increaseTime(hTokenConstants.expirationTime);
+                    await increaseTime(H_TOKEN_EXPIRATION_TIME);
 
                     // Mint 100 fyUSDC to the liquidator so he can repay the debt.
                     await (this.contracts.hToken as GodModeHToken).__godMode_mint(

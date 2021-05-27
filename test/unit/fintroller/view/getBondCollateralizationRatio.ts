@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { fintrollerConstants } from "../../../../helpers/constants";
+import { FINTROLLER_DEFAULT_COLLATERALIZATION_RATIO } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeGetBondCollateralizationRatio(): void {
   context("when the bond is not listed", function () {
@@ -23,7 +23,7 @@ export default function shouldBehaveLikeGetBondCollateralizationRatio(): void {
       const collateralizationRatio: BigNumber = await this.contracts.fintroller.getBondCollateralizationRatio(
         this.stubs.hToken.address,
       );
-      expect(collateralizationRatio).to.equal(fintrollerConstants.defaultCollateralizationRatio);
+      expect(collateralizationRatio).to.equal(FINTROLLER_DEFAULT_COLLATERALIZATION_RATIO);
     });
   });
 }
