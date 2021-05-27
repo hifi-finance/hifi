@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "../IBalanceSheet.sol";
-import "../IFyToken.sol";
+import "../IHToken.sol";
 
 /// @title IBatterseaTargetV1
 /// @author Hifi
@@ -10,36 +10,36 @@ import "../IFyToken.sol";
 interface IBatterseaTargetV1 {
     /// EVENTS
 
-    /// @notice Emitted when fyTokens are borrowed and sold.
+    /// @notice Emitted when hTokens are borrowed and sold.
     /// @param borrower The address of the borrower.
     /// @param borrowAmount The amount of borrow funds.
-    /// @param fyTokenDelta The fyToken delta.
+    /// @param hTokenDelta The hToken delta.
     /// @param underlyingAmount The amount of underlying tokens.
-    event BorrowAndSellFyTokens(
+    event BorrowAndSellHTokens(
         address indexed borrower,
         uint256 borrowAmount,
-        uint256 fyTokenDelta,
+        uint256 hTokenDelta,
         uint256 underlyingAmount
     );
 
     /// NON-CONSTANT FUNCTIONS ///
 
-    /// @notice Borrows fyTokens.
-    /// @param fyToken The address of the FyToken contract.
-    /// @param borrowAmount The amount of fyTokens to borrow.
-    function borrow(IFyToken fyToken, uint256 borrowAmount) external;
+    /// @notice Borrows hTokens.
+    /// @param hToken The address of the HToken contract.
+    /// @param borrowAmount The amount of hTokens to borrow.
+    function borrow(IHToken hToken, uint256 borrowAmount) external;
 
-    /// @notice Borrows fyTokens and sells them on Balancer in exchange for underlying.
+    /// @notice Borrows hTokens and sells them on Balancer in exchange for underlying.
     ///
-    /// @dev Emits a {BorrowAndSellFyTokens} event.
+    /// @dev Emits a {BorrowAndSellHTokens} event.
     ///
     /// This is a payable function so it can receive ETH transfers.
     ///
-    /// @param fyToken The address of the FyToken contract.
-    /// @param borrowAmount The amount of fyTokens to borrow.
-    /// @param underlyingAmount The amount of underlying to sell fyTokens for.
-    function borrowAndSellFyTokens(
-        IFyToken fyToken,
+    /// @param hToken The address of the HToken contract.
+    /// @param borrowAmount The amount of hTokens to borrow.
+    /// @param underlyingAmount The amount of underlying to sell hTokens for.
+    function borrowAndSellHTokens(
+        IHToken hToken,
         uint256 borrowAmount,
         uint256 underlyingAmount
     ) external payable;
@@ -50,11 +50,11 @@ interface IBatterseaTargetV1 {
     /// - The caller must have allowed the DSProxy to spend `collateralAmount` tokens.
     ///
     /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param fyToken The address of the FyToken contract.
+    /// @param hToken The address of the HToken contract.
     /// @param collateralAmount The amount of collateral to deposit.
     function depositCollateral(
         IBalanceSheet balanceSheet,
-        IFyToken fyToken,
+        IHToken hToken,
         uint256 collateralAmount
     ) external;
 
@@ -64,16 +64,16 @@ interface IBatterseaTargetV1 {
     /// - The caller must have allowed the DSProxy to spend `collateralAmount` tokens.
     ///
     /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param fyToken The address of the FyToken contract.
+    /// @param hToken The address of the HToken contract.
     /// @param collateralAmount The amount of collateral to deposit and lock.
     function depositAndLockCollateral(
         IBalanceSheet balanceSheet,
-        IFyToken fyToken,
+        IHToken hToken,
         uint256 collateralAmount
     ) external;
 
     /// @notice Deposits and locks collateral into the vault via the BalanceSheet contract
-    /// and borrows fyTokens.
+    /// and borrows hTokens.
     ///
     /// @dev This is a payable function so it can receive ETH transfers.
     ///
@@ -81,17 +81,17 @@ interface IBatterseaTargetV1 {
     /// - The caller must have allowed the DSProxy to spend `collateralAmount` tokens.
     ///
     /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param fyToken The address of the FyToken contract.
+    /// @param hToken The address of the HToken contract.
     /// @param collateralAmount The amount of collateral to deposit and lock.
-    /// @param borrowAmount The amount of fyTokens to borrow.
+    /// @param borrowAmount The amount of hTokens to borrow.
     function depositAndLockCollateralAndBorrow(
         IBalanceSheet balanceSheet,
-        IFyToken fyToken,
+        IHToken hToken,
         uint256 collateralAmount,
         uint256 borrowAmount
     ) external payable;
 
-    /// @notice Deposits and locks collateral into the vault via the BalanceSheet contract, borrows fyTokens
+    /// @notice Deposits and locks collateral into the vault via the BalanceSheet contract, borrows hTokens
     /// and sells them on Balancer in exchange for underlying.
     ///
     /// @dev This is a payable function so it can receive ETH transfers.
@@ -100,13 +100,13 @@ interface IBatterseaTargetV1 {
     /// - The caller must have allowed the DSProxy to spend `collateralAmount` tokens.
     ///
     /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param fyToken The address of the FyToken contract.
+    /// @param hToken The address of the HToken contract.
     /// @param collateralAmount The amount of collateral to deposit and lock.
-    /// @param borrowAmount The amount of fyTokens to borrow.
-    /// @param underlyingAmount The amount of underlying to sell fyTokens for.
-    function depositAndLockCollateralAndBorrowAndSellFyTokens(
+    /// @param borrowAmount The amount of hTokens to borrow.
+    /// @param underlyingAmount The amount of underlying to sell hTokens for.
+    function depositAndLockCollateralAndBorrowAndSellHTokens(
         IBalanceSheet balanceSheet,
-        IFyToken fyToken,
+        IHToken hToken,
         uint256 collateralAmount,
         uint256 borrowAmount,
         uint256 underlyingAmount
@@ -114,109 +114,109 @@ interface IBatterseaTargetV1 {
 
     /// @notice Frees collateral from the vault in the BalanceSheet contract.
     /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param fyToken The address of the FyToken contract.
+    /// @param hToken The address of the HToken contract.
     /// @param collateralAmount The amount of collateral to free.
     function freeCollateral(
         IBalanceSheet balanceSheet,
-        IFyToken fyToken,
+        IHToken hToken,
         uint256 collateralAmount
     ) external;
 
     /// @notice Frees collateral from the vault and withdraws it from the
     /// BalanceSheet contract.
     /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param fyToken The address of the FyToken contract.
+    /// @param hToken The address of the HToken contract.
     /// @param collateralAmount The amount of collateral to free and withdraw.
     function freeAndWithdrawCollateral(
         IBalanceSheet balanceSheet,
-        IFyToken fyToken,
+        IHToken hToken,
         uint256 collateralAmount
     ) external;
 
     /// @notice Locks collateral in the vault in the BalanceSheet contract.
     /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param fyToken The address of the FyToken contract.
+    /// @param hToken The address of the HToken contract.
     /// @param collateralAmount The amount of collateral to lock.
     function lockCollateral(
         IBalanceSheet balanceSheet,
-        IFyToken fyToken,
+        IHToken hToken,
         uint256 collateralAmount
     ) external;
 
     /// @notice Locks collateral into the vault in the BalanceSheet contract
-    /// and draws debt via the FyToken contract.
+    /// and draws debt via the HToken contract.
     /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param fyToken The address of the FyToken contract.
+    /// @param hToken The address of the HToken contract.
     /// @param collateralAmount The amount of collateral to lock.
-    /// @param borrowAmount The amount of fyTokens to borrow.
-    /// @param underlyingAmount The amount of underlying to sell fyTokens for.
+    /// @param borrowAmount The amount of hTokens to borrow.
+    /// @param underlyingAmount The amount of underlying to sell hTokens for.
     function lockCollateralAndBorrow(
         IBalanceSheet balanceSheet,
-        IFyToken fyToken,
+        IHToken hToken,
         uint256 collateralAmount,
         uint256 borrowAmount,
         uint256 underlyingAmount
     ) external;
 
-    /// @notice Open the vaults in the BalanceSheet contract for the given fyToken.
+    /// @notice Open the vaults in the BalanceSheet contract for the given hToken.
     /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param fyToken The address of the FyToken contract.
-    function openVault(IBalanceSheet balanceSheet, IFyToken fyToken) external;
+    /// @param hToken The address of the HToken contract.
+    function openVault(IBalanceSheet balanceSheet, IHToken hToken) external;
 
-    /// @notice Redeems fyTokens in exchange for underlying tokens.
+    /// @notice Redeems hTokens in exchange for underlying tokens.
     ///
     /// @dev Requirements:
-    /// - The caller must have allowed the DSProxy to spend `repayAmount` fyTokens.
+    /// - The caller must have allowed the DSProxy to spend `repayAmount` hTokens.
     ///
-    /// @param fyToken The address of the FyToken contract.
-    /// @param fyTokenAmount The amount of fyTokens to redeem.
-    function redeemFyTokens(IFyToken fyToken, uint256 fyTokenAmount) external;
+    /// @param hToken The address of the HToken contract.
+    /// @param hTokenAmount The amount of hTokens to redeem.
+    function redeemHTokens(IHToken hToken, uint256 hTokenAmount) external;
 
-    /// @notice Repays the fyToken borrow.
+    /// @notice Repays the hToken borrow.
     ///
     /// @dev Requirements:
-    /// - The caller must have allowed the DSProxy to spend `repayAmount` fyTokens.
+    /// - The caller must have allowed the DSProxy to spend `repayAmount` hTokens.
     ///
-    /// @param fyToken The address of the FyToken contract.
-    /// @param repayAmount The amount of fyTokens to repay.
-    function repayBorrow(IFyToken fyToken, uint256 repayAmount) external;
+    /// @param hToken The address of the HToken contract.
+    /// @param repayAmount The amount of hTokens to repay.
+    function repayBorrow(IHToken hToken, uint256 repayAmount) external;
 
-    /// @notice Market sells underlying and repays the borrows via the FyToken contract.
+    /// @notice Market sells underlying and repays the borrows via the HToken contract.
     ///
     /// @dev Requirements:
     /// - The caller must have allowed the DSProxy to spend `underlyingAmount` tokens.
     ///
-    /// @param fyToken The address of the FyToken contract.
+    /// @param hToken The address of the HToken contract.
     /// @param underlyingAmount The amount of underlying to sell.
-    /// @param repayAmount The amount of fyTokens to repay.
+    /// @param repayAmount The amount of hTokens to repay.
     function sellUnderlyingAndRepayBorrow(
-        IFyToken fyToken,
+        IHToken hToken,
         uint256 underlyingAmount,
         uint256 repayAmount
     ) external;
 
-    /// @notice Supplies the underlying to the RedemptionPool contract and mints fyTokens.
-    /// @param fyToken The address of the FyToken contract.
+    /// @notice Supplies the underlying to the RedemptionPool contract and mints hTokens.
+    /// @param hToken The address of the HToken contract.
     /// @param underlyingAmount The amount of underlying to supply.
-    function supplyUnderlying(IFyToken fyToken, uint256 underlyingAmount) external;
+    function supplyUnderlying(IHToken hToken, uint256 underlyingAmount) external;
 
-    /// @notice Supplies the underlying to the RedemptionPool contract, mints fyTokens
+    /// @notice Supplies the underlying to the RedemptionPool contract, mints hTokens
     /// and repays the borrow.
     ///
     /// @dev Requirements:
     /// - The caller must have allowed the DSProxy to spend `underlyingAmount` tokens.
     ///
-    /// @param fyToken The address of the FyToken contract.
+    /// @param hToken The address of the HToken contract.
     /// @param underlyingAmount The amount of underlying to supply.
-    function supplyUnderlyingAndRepayBorrow(IFyToken fyToken, uint256 underlyingAmount) external;
+    function supplyUnderlyingAndRepayBorrow(IHToken hToken, uint256 underlyingAmount) external;
 
     /// @notice Withdraws collateral from the vault in the BalanceSheet contract.
     /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param fyToken The address of the FyToken contract.
+    /// @param hToken The address of the HToken contract.
     /// @param collateralAmount The amount of collateral to withdraw.
     function withdrawCollateral(
         IBalanceSheet balanceSheet,
-        IFyToken fyToken,
+        IHToken hToken,
         uint256 collateralAmount
     ) external;
 
@@ -225,30 +225,30 @@ interface IBatterseaTargetV1 {
     /// @dev This is a payable function so it can receive ETH transfers.
     ///
     /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param fyToken The address of the FyToken contract.
-    function wrapEthAndDepositCollateral(IBalanceSheet balanceSheet, IFyToken fyToken) external payable;
+    /// @param hToken The address of the HToken contract.
+    function wrapEthAndDepositCollateral(IBalanceSheet balanceSheet, IHToken hToken) external payable;
 
     /// @notice Wraps ETH into WETH, deposits and locks collateral into the BalanceSheet contract
-    /// and borrows fyTokens.
+    /// and borrows hTokens.
     ///
     /// @dev This is a payable function so it can receive ETH transfers.
     ///
     /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param fyToken The address of the FyToken contract.
-    function wrapEthAndDepositAndLockCollateral(IBalanceSheet balanceSheet, IFyToken fyToken) external payable;
+    /// @param hToken The address of the HToken contract.
+    function wrapEthAndDepositAndLockCollateral(IBalanceSheet balanceSheet, IHToken hToken) external payable;
 
     /// @notice Wraps ETH into WETH, deposits and locks collateral into the vault in the BalanceSheet
-    /// contracts and borrows fyTokens.
+    /// contracts and borrows hTokens.
     ///
     /// @dev This is a payable function so it can receive ETH transfers.
     ///
     /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param fyToken The address of the FyToken contract.
-    /// @param borrowAmount The amount of fyTokens to borrow.
-    /// @param underlyingAmount The amount of underlying to sell fyTokens for.
+    /// @param hToken The address of the HToken contract.
+    /// @param borrowAmount The amount of hTokens to borrow.
+    /// @param underlyingAmount The amount of underlying to sell hTokens for.
     function wrapEthAndDepositAndLockCollateralAndBorrow(
         IBalanceSheet balanceSheet,
-        IFyToken fyToken,
+        IHToken hToken,
         uint256 borrowAmount,
         uint256 underlyingAmount
     ) external payable;

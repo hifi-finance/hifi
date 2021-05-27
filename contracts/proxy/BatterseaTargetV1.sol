@@ -17,7 +17,7 @@ contract BatterseaTargetV1 is
     IBatterseaTargetV1 /// no dependency
 {
     using SafeErc20 for IErc20;
-    using SafeErc20 for IFyToken;
+    using SafeErc20 for IHToken;
 
     /// STORAGE PROPERTIES ///
 
@@ -30,30 +30,30 @@ contract BatterseaTargetV1 is
     /// NON-CONSTANT FUNCTIONS ///
 
     /// @inheritdoc IBatterseaTargetV1
-    function borrow(IFyToken fyToken, uint256 borrowAmount) public override {
-        fyToken.borrow(borrowAmount);
-        fyToken.safeTransfer(msg.sender, borrowAmount);
+    function borrow(IHToken hToken, uint256 borrowAmount) public override {
+        hToken.borrow(borrowAmount);
+        hToken.safeTransfer(msg.sender, borrowAmount);
     }
 
     /// @inheritdoc IBatterseaTargetV1
-    function borrowAndSellFyTokens(
-        IFyToken fyToken,
+    function borrowAndSellHTokens(
+        IHToken hToken,
         uint256 borrowAmount,
         uint256 underlyingAmount
     ) public payable override {
-        IErc20 underlying = fyToken.underlying();
+        IErc20 underlying = hToken.underlying();
 
-        // Borrow the fyTokens.
-        fyToken.borrow(borrowAmount);
+        // Borrow the hTokens.
+        hToken.borrow(borrowAmount);
 
-        // Allow the Balancer contract to spend fyTokens if allowance not enough.
-        uint256 allowance = fyToken.allowance(address(this), EXCHANGE_PROXY_ADDRESS);
+        // Allow the Balancer contract to spend hTokens if allowance not enough.
+        uint256 allowance = hToken.allowance(address(this), EXCHANGE_PROXY_ADDRESS);
         if (allowance < borrowAmount) {
-            fyToken.approve(EXCHANGE_PROXY_ADDRESS, type(uint256).max);
+            hToken.approve(EXCHANGE_PROXY_ADDRESS, type(uint256).max);
         }
 
         // Prepare the parameters for calling Balancer.
-        TokenInterface tokenIn = TokenInterface(address(fyToken));
+        TokenInterface tokenIn = TokenInterface(address(hToken));
         TokenInterface tokenOut = TokenInterface(address(underlying));
         uint256 totalAmountOut = underlyingAmount;
         uint256 maxTotalAmountIn = borrowAmount;
@@ -69,123 +69,123 @@ contract BatterseaTargetV1 is
                 nPools
             );
 
-        // When we get a better price than the worst that we assumed we would, not all fyTokens are sold.
-        uint256 fyTokenDelta = borrowAmount - totalAmountIn;
+        // When we get a better price than the worst that we assumed we would, not all hTokens are sold.
+        uint256 hTokenDelta = borrowAmount - totalAmountIn;
 
-        // If the fyToken delta is non-zero, we use it to partially repay the borrow.
+        // If the hToken delta is non-zero, we use it to partially repay the borrow.
         // Note: this is not gas-efficient.
-        if (fyTokenDelta > 0) {
-            fyToken.repayBorrow(fyTokenDelta);
+        if (hTokenDelta > 0) {
+            hToken.repayBorrow(hTokenDelta);
         }
 
         // Finally, transfer the recently bought underlying to the end user.
         underlying.safeTransfer(msg.sender, underlyingAmount);
 
-        emit BorrowAndSellFyTokens(msg.sender, borrowAmount, fyTokenDelta, underlyingAmount);
+        emit BorrowAndSellHTokens(msg.sender, borrowAmount, hTokenDelta, underlyingAmount);
     }
 
     /// @inheritdoc IBatterseaTargetV1
     function depositCollateral(
         IBalanceSheet balanceSheet,
-        IFyToken fyToken,
+        IHToken hToken,
         uint256 collateralAmount
     ) public override {
         // Transfer the collateral to the DSProxy.
-        fyToken.collateral().safeTransferFrom(msg.sender, address(this), collateralAmount);
+        hToken.collateral().safeTransferFrom(msg.sender, address(this), collateralAmount);
 
         // Deposit the collateral into the BalanceSheet contract.
-        depositCollateralInternal(balanceSheet, fyToken, collateralAmount);
+        depositCollateralInternal(balanceSheet, hToken, collateralAmount);
     }
 
     /// @inheritdoc IBatterseaTargetV1
     function depositAndLockCollateral(
         IBalanceSheet balanceSheet,
-        IFyToken fyToken,
+        IHToken hToken,
         uint256 collateralAmount
     ) public override {
-        depositCollateral(balanceSheet, fyToken, collateralAmount);
-        balanceSheet.lockCollateral(fyToken, collateralAmount);
+        depositCollateral(balanceSheet, hToken, collateralAmount);
+        balanceSheet.lockCollateral(hToken, collateralAmount);
     }
 
     /// @inheritdoc IBatterseaTargetV1
     function depositAndLockCollateralAndBorrow(
         IBalanceSheet balanceSheet,
-        IFyToken fyToken,
+        IHToken hToken,
         uint256 collateralAmount,
         uint256 borrowAmount
     ) public payable override {
-        depositAndLockCollateral(balanceSheet, fyToken, collateralAmount);
-        borrow(fyToken, borrowAmount);
+        depositAndLockCollateral(balanceSheet, hToken, collateralAmount);
+        borrow(hToken, borrowAmount);
     }
 
     /// @inheritdoc IBatterseaTargetV1
-    function depositAndLockCollateralAndBorrowAndSellFyTokens(
+    function depositAndLockCollateralAndBorrowAndSellHTokens(
         IBalanceSheet balanceSheet,
-        IFyToken fyToken,
+        IHToken hToken,
         uint256 collateralAmount,
         uint256 borrowAmount,
         uint256 underlyingAmount
     ) external payable override {
-        depositAndLockCollateral(balanceSheet, fyToken, collateralAmount);
-        borrowAndSellFyTokens(fyToken, borrowAmount, underlyingAmount);
+        depositAndLockCollateral(balanceSheet, hToken, collateralAmount);
+        borrowAndSellHTokens(hToken, borrowAmount, underlyingAmount);
     }
 
     /// @inheritdoc IBatterseaTargetV1
     function freeCollateral(
         IBalanceSheet balanceSheet,
-        IFyToken fyToken,
+        IHToken hToken,
         uint256 collateralAmount
     ) external override {
-        balanceSheet.freeCollateral(fyToken, collateralAmount);
+        balanceSheet.freeCollateral(hToken, collateralAmount);
     }
 
     /// @inheritdoc IBatterseaTargetV1
     function freeAndWithdrawCollateral(
         IBalanceSheet balanceSheet,
-        IFyToken fyToken,
+        IHToken hToken,
         uint256 collateralAmount
     ) external override {
-        balanceSheet.freeCollateral(fyToken, collateralAmount);
-        withdrawCollateral(balanceSheet, fyToken, collateralAmount);
+        balanceSheet.freeCollateral(hToken, collateralAmount);
+        withdrawCollateral(balanceSheet, hToken, collateralAmount);
     }
 
     /// @inheritdoc IBatterseaTargetV1
     function lockCollateral(
         IBalanceSheet balanceSheet,
-        IFyToken fyToken,
+        IHToken hToken,
         uint256 collateralAmount
     ) external override {
-        balanceSheet.lockCollateral(fyToken, collateralAmount);
+        balanceSheet.lockCollateral(hToken, collateralAmount);
     }
 
     /// @inheritdoc IBatterseaTargetV1
     function lockCollateralAndBorrow(
         IBalanceSheet balanceSheet,
-        IFyToken fyToken,
+        IHToken hToken,
         uint256 collateralAmount,
         uint256 borrowAmount,
         uint256 underlyingAmount
     ) external override {
-        balanceSheet.lockCollateral(fyToken, collateralAmount);
-        borrowAndSellFyTokens(fyToken, borrowAmount, underlyingAmount);
+        balanceSheet.lockCollateral(hToken, collateralAmount);
+        borrowAndSellHTokens(hToken, borrowAmount, underlyingAmount);
     }
 
     /// @inheritdoc IBatterseaTargetV1
-    function openVault(IBalanceSheet balanceSheet, IFyToken fyToken) external override {
-        balanceSheet.openVault(fyToken);
+    function openVault(IBalanceSheet balanceSheet, IHToken hToken) external override {
+        balanceSheet.openVault(hToken);
     }
 
     /// @inheritdoc IBatterseaTargetV1
-    function redeemFyTokens(IFyToken fyToken, uint256 fyTokenAmount) public override {
-        IErc20 underlying = fyToken.underlying();
-        IRedemptionPool redemptionPool = fyToken.redemptionPool();
+    function redeemHTokens(IHToken hToken, uint256 hTokenAmount) public override {
+        IErc20 underlying = hToken.underlying();
+        IRedemptionPool redemptionPool = hToken.redemptionPool();
 
-        // Transfer the fyTokens to the DSProxy.
-        fyToken.safeTransferFrom(msg.sender, address(this), fyTokenAmount);
+        // Transfer the hTokens to the DSProxy.
+        hToken.safeTransferFrom(msg.sender, address(this), hTokenAmount);
 
-        // Redeem the fyTokens.
+        // Redeem the hTokens.
         uint256 preUnderlyingBalance = underlying.balanceOf(address(this));
-        redemptionPool.redeemFyTokens(fyTokenAmount);
+        redemptionPool.redeemHTokens(hTokenAmount);
 
         // Calculate how many underlying have been redeemed.
         uint256 postUnderlyigBalance = underlying.balanceOf(address(this));
@@ -196,21 +196,21 @@ contract BatterseaTargetV1 is
     }
 
     /// @inheritdoc IBatterseaTargetV1
-    function repayBorrow(IFyToken fyToken, uint256 repayAmount) public override {
-        // Transfer the fyTokens to the DSProxy.
-        fyToken.safeTransferFrom(msg.sender, address(this), repayAmount);
+    function repayBorrow(IHToken hToken, uint256 repayAmount) public override {
+        // Transfer the hTokens to the DSProxy.
+        hToken.safeTransferFrom(msg.sender, address(this), repayAmount);
 
         // Repay the borrow.
-        fyToken.repayBorrow(repayAmount);
+        hToken.repayBorrow(repayAmount);
     }
 
     /// @inheritdoc IBatterseaTargetV1
     function sellUnderlyingAndRepayBorrow(
-        IFyToken fyToken,
+        IHToken hToken,
         uint256 underlyingAmount,
         uint256 repayAmount
     ) external override {
-        IErc20 underlying = fyToken.underlying();
+        IErc20 underlying = hToken.underlying();
 
         // Transfer the underlying to the DSProxy.
         underlying.safeTransferFrom(msg.sender, address(this), underlyingAmount);
@@ -223,7 +223,7 @@ contract BatterseaTargetV1 is
 
         // Prepare the parameters for calling Balancer.
         TokenInterface tokenIn = TokenInterface(address(underlying));
-        TokenInterface tokenOut = TokenInterface(address(fyToken));
+        TokenInterface tokenOut = TokenInterface(address(hToken));
         uint256 totalAmountOut = repayAmount;
         uint256 maxTotalAmountIn = underlyingAmount;
         uint256 nPools = 1;
@@ -238,8 +238,8 @@ contract BatterseaTargetV1 is
                 nPools
             );
 
-        // Use the recently bought fyTokens to repay the borrow.
-        fyToken.repayBorrow(repayAmount);
+        // Use the recently bought hTokens to repay the borrow.
+        hToken.repayBorrow(repayAmount);
 
         // When we get a better price than the worst that we assumed we would, not all underlying is sold.
         uint256 underlyingDelta = underlyingAmount - totalAmountIn;
@@ -251,71 +251,71 @@ contract BatterseaTargetV1 is
     }
 
     /// @inheritdoc IBatterseaTargetV1
-    function supplyUnderlying(IFyToken fyToken, uint256 underlyingAmount) public override {
-        uint256 preFyTokenBalance = fyToken.balanceOf(address(this));
-        supplyUnderlyingInternal(fyToken, underlyingAmount);
+    function supplyUnderlying(IHToken hToken, uint256 underlyingAmount) public override {
+        uint256 preHTokenBalance = hToken.balanceOf(address(this));
+        supplyUnderlyingInternal(hToken, underlyingAmount);
 
-        //Calculate how many fyTokens have been minted.
-        uint256 postFyTokenBalance = fyToken.balanceOf(address(this));
-        uint256 fyTokenAmount = postFyTokenBalance - preFyTokenBalance;
+        //Calculate how many hTokens have been minted.
+        uint256 postHTokenBalance = hToken.balanceOf(address(this));
+        uint256 hTokenAmount = postHTokenBalance - preHTokenBalance;
 
-        // The fyTokens are now in the DSProxy, so we relay them to the end user.
-        fyToken.safeTransfer(msg.sender, fyTokenAmount);
+        // The hTokens are now in the DSProxy, so we relay them to the end user.
+        hToken.safeTransfer(msg.sender, hTokenAmount);
     }
 
     /// @inheritdoc IBatterseaTargetV1
-    function supplyUnderlyingAndRepayBorrow(IFyToken fyToken, uint256 underlyingAmount) external override {
-        uint256 preFyTokenBalance = fyToken.balanceOf(address(this));
-        supplyUnderlyingInternal(fyToken, underlyingAmount);
+    function supplyUnderlyingAndRepayBorrow(IHToken hToken, uint256 underlyingAmount) external override {
+        uint256 preHTokenBalance = hToken.balanceOf(address(this));
+        supplyUnderlyingInternal(hToken, underlyingAmount);
 
-        // Calculate how many fyTokens have been minted.
-        uint256 postFyTokenBalance = fyToken.balanceOf(address(this));
-        uint256 fyTokenAmount = postFyTokenBalance - preFyTokenBalance;
+        // Calculate how many hTokens have been minted.
+        uint256 postHTokenBalance = hToken.balanceOf(address(this));
+        uint256 hTokenAmount = postHTokenBalance - preHTokenBalance;
 
-        // Use the newly minted fyTokens to repay the debt.
-        fyToken.repayBorrow(fyTokenAmount);
+        // Use the newly minted hTokens to repay the debt.
+        hToken.repayBorrow(hTokenAmount);
     }
 
     /// @inheritdoc IBatterseaTargetV1
     function withdrawCollateral(
         IBalanceSheet balanceSheet,
-        IFyToken fyToken,
+        IHToken hToken,
         uint256 collateralAmount
     ) public override {
-        balanceSheet.withdrawCollateral(fyToken, collateralAmount);
+        balanceSheet.withdrawCollateral(hToken, collateralAmount);
 
         // The collateral is now in the DSProxy, so we relay it to the end user.
-        IErc20 collateral = fyToken.collateral();
+        IErc20 collateral = hToken.collateral();
         collateral.safeTransfer(msg.sender, collateralAmount);
     }
 
     /// @inheritdoc IBatterseaTargetV1
-    function wrapEthAndDepositCollateral(IBalanceSheet balanceSheet, IFyToken fyToken) public payable override {
+    function wrapEthAndDepositCollateral(IBalanceSheet balanceSheet, IHToken hToken) public payable override {
         uint256 collateralAmount = msg.value;
 
         // Convert the received ETH to WETH.
         WethInterface(WETH_ADDRESS).deposit{ value: collateralAmount }();
 
         // Deposit the collateral into the BalanceSheet contract.
-        depositCollateralInternal(balanceSheet, fyToken, collateralAmount);
+        depositCollateralInternal(balanceSheet, hToken, collateralAmount);
     }
 
     /// @inheritdoc IBatterseaTargetV1
-    function wrapEthAndDepositAndLockCollateral(IBalanceSheet balanceSheet, IFyToken fyToken) public payable override {
+    function wrapEthAndDepositAndLockCollateral(IBalanceSheet balanceSheet, IHToken hToken) public payable override {
         uint256 collateralAmount = msg.value;
-        wrapEthAndDepositCollateral(balanceSheet, fyToken);
-        balanceSheet.lockCollateral(fyToken, collateralAmount);
+        wrapEthAndDepositCollateral(balanceSheet, hToken);
+        balanceSheet.lockCollateral(hToken, collateralAmount);
     }
 
     /// @inheritdoc IBatterseaTargetV1
     function wrapEthAndDepositAndLockCollateralAndBorrow(
         IBalanceSheet balanceSheet,
-        IFyToken fyToken,
+        IHToken hToken,
         uint256 borrowAmount,
         uint256 underlyingAmount
     ) external payable override {
-        wrapEthAndDepositAndLockCollateral(balanceSheet, fyToken);
-        borrowAndSellFyTokens(fyToken, borrowAmount, underlyingAmount);
+        wrapEthAndDepositAndLockCollateral(balanceSheet, hToken);
+        borrowAndSellHTokens(hToken, borrowAmount, underlyingAmount);
     }
 
     /// INTERNAL FUNCTIONS ///
@@ -323,30 +323,30 @@ contract BatterseaTargetV1 is
     /// @dev See the documentation for the public functions that call this internal function.
     function depositCollateralInternal(
         IBalanceSheet balanceSheet,
-        IFyToken fyToken,
+        IHToken hToken,
         uint256 collateralAmount
     ) internal {
         // Allow the BalanceSheet contract to spend tokens if allowance not enough.
-        IErc20 collateral = fyToken.collateral();
+        IErc20 collateral = hToken.collateral();
         uint256 allowance = collateral.allowance(address(this), address(balanceSheet));
         if (allowance < collateralAmount) {
             collateral.approve(address(balanceSheet), type(uint256).max);
         }
 
         // Open the vault if not already open.
-        bool isVaultOpen = balanceSheet.isVaultOpen(fyToken, address(this));
+        bool isVaultOpen = balanceSheet.isVaultOpen(hToken, address(this));
         if (isVaultOpen == false) {
-            balanceSheet.openVault(fyToken);
+            balanceSheet.openVault(hToken);
         }
 
         // Deposit the collateral into the BalanceSheet contract.
-        balanceSheet.depositCollateral(fyToken, collateralAmount);
+        balanceSheet.depositCollateral(hToken, collateralAmount);
     }
 
     /// @dev See the documentation for the public functions that call this internal function.
-    function supplyUnderlyingInternal(IFyToken fyToken, uint256 underlyingAmount) internal {
-        IRedemptionPool redemptionPool = fyToken.redemptionPool();
-        IErc20 underlying = fyToken.underlying();
+    function supplyUnderlyingInternal(IHToken hToken, uint256 underlyingAmount) internal {
+        IRedemptionPool redemptionPool = hToken.redemptionPool();
+        IErc20 underlying = hToken.underlying();
 
         // Transfer the underlying to the DSProxy.
         underlying.safeTransferFrom(msg.sender, address(this), underlyingAmount);
@@ -357,7 +357,7 @@ contract BatterseaTargetV1 is
             underlying.approve(address(redemptionPool), type(uint256).max);
         }
 
-        // Supply the underlying and mint fyTokens.
+        // Supply the underlying and mint hTokens.
         redemptionPool.supplyUnderlying(underlyingAmount);
     }
 }
