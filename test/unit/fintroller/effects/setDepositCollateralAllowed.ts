@@ -8,7 +8,7 @@ export default function shouldBehaveLikeSetDepositCollateralAllowed(): void {
       await expect(
         this.contracts.fintroller
           .connect(this.signers.raider)
-          .setDepositCollateralAllowed(this.stubs.fyToken.address, true),
+          .setDepositCollateralAllowed(this.stubs.hToken.address, true),
       ).to.be.revertedWith(AdminErrors.NotAdmin);
     });
   });
@@ -19,22 +19,22 @@ export default function shouldBehaveLikeSetDepositCollateralAllowed(): void {
         await expect(
           this.contracts.fintroller
             .connect(this.signers.admin)
-            .setDepositCollateralAllowed(this.stubs.fyToken.address, true),
+            .setDepositCollateralAllowed(this.stubs.hToken.address, true),
         ).to.be.revertedWith(GenericErrors.BondNotListed);
       });
     });
 
     describe("when the bond is listed", function () {
       beforeEach(async function () {
-        await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.fyToken.address);
+        await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.hToken.address);
       });
 
       it("sets the value to true", async function () {
         await this.contracts.fintroller
           .connect(this.signers.admin)
-          .setDepositCollateralAllowed(this.stubs.fyToken.address, true);
+          .setDepositCollateralAllowed(this.stubs.hToken.address, true);
         const newState: boolean = await this.contracts.fintroller.getDepositCollateralAllowed(
-          this.stubs.fyToken.address,
+          this.stubs.hToken.address,
         );
         expect(newState).to.equal(true);
       });
@@ -42,9 +42,9 @@ export default function shouldBehaveLikeSetDepositCollateralAllowed(): void {
       it("sets the value to false", async function () {
         await this.contracts.fintroller
           .connect(this.signers.admin)
-          .setDepositCollateralAllowed(this.stubs.fyToken.address, false);
+          .setDepositCollateralAllowed(this.stubs.hToken.address, false);
         const newState: boolean = await this.contracts.fintroller.getDepositCollateralAllowed(
-          this.stubs.fyToken.address,
+          this.stubs.hToken.address,
         );
         expect(newState).to.equal(false);
       });
@@ -53,10 +53,10 @@ export default function shouldBehaveLikeSetDepositCollateralAllowed(): void {
         await expect(
           this.contracts.fintroller
             .connect(this.signers.admin)
-            .setDepositCollateralAllowed(this.stubs.fyToken.address, true),
+            .setDepositCollateralAllowed(this.stubs.hToken.address, true),
         )
           .to.emit(this.contracts.fintroller, "SetDepositCollateralAllowed")
-          .withArgs(this.signers.admin.address, this.stubs.fyToken.address, true);
+          .withArgs(this.signers.admin.address, this.stubs.hToken.address, true);
       });
     });
   });

@@ -15,7 +15,7 @@ export default function shouldBehaveLikeSetBondLiquidationIncentive(): void {
       await expect(
         this.contracts.fintroller
           .connect(this.signers.raider)
-          .setBondLiquidationIncentive(this.stubs.fyToken.address, newLiquidationIncentive),
+          .setBondLiquidationIncentive(this.stubs.hToken.address, newLiquidationIncentive),
       ).to.be.revertedWith(AdminErrors.NotAdmin);
     });
   });
@@ -26,14 +26,14 @@ export default function shouldBehaveLikeSetBondLiquidationIncentive(): void {
         await expect(
           this.contracts.fintroller
             .connect(this.signers.admin)
-            .setBondLiquidationIncentive(this.stubs.fyToken.address, newLiquidationIncentive),
+            .setBondLiquidationIncentive(this.stubs.hToken.address, newLiquidationIncentive),
         ).to.be.revertedWith(GenericErrors.BondNotListed);
       });
     });
 
     describe("when the bond is listed", function () {
       beforeEach(async function () {
-        await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.fyToken.address);
+        await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.hToken.address);
       });
 
       describe("when the liquidation incentive is not valid", function () {
@@ -42,7 +42,7 @@ export default function shouldBehaveLikeSetBondLiquidationIncentive(): void {
             await expect(
               this.contracts.fintroller
                 .connect(this.signers.admin)
-                .setBondLiquidationIncentive(this.stubs.fyToken.address, Zero),
+                .setBondLiquidationIncentive(this.stubs.hToken.address, Zero),
             ).to.be.revertedWith(FintrollerErrors.SetBondLiquidationIncentiveLowerBound);
           });
         });
@@ -52,7 +52,7 @@ export default function shouldBehaveLikeSetBondLiquidationIncentive(): void {
             await expect(
               this.contracts.fintroller
                 .connect(this.signers.admin)
-                .setBondLiquidationIncentive(this.stubs.fyToken.address, overflowLiquidationIncentive),
+                .setBondLiquidationIncentive(this.stubs.hToken.address, overflowLiquidationIncentive),
             ).to.be.revertedWith(FintrollerErrors.SetBondLiquidationIncentiveUpperBound);
           });
         });
@@ -62,7 +62,7 @@ export default function shouldBehaveLikeSetBondLiquidationIncentive(): void {
             await expect(
               this.contracts.fintroller
                 .connect(this.signers.admin)
-                .setBondLiquidationIncentive(this.stubs.fyToken.address, underflowLiquidationIncentive),
+                .setBondLiquidationIncentive(this.stubs.hToken.address, underflowLiquidationIncentive),
             ).to.be.revertedWith(FintrollerErrors.SetBondLiquidationIncentiveLowerBound);
           });
         });
@@ -72,9 +72,9 @@ export default function shouldBehaveLikeSetBondLiquidationIncentive(): void {
         it("sets the new liquidation incentive", async function () {
           await this.contracts.fintroller
             .connect(this.signers.admin)
-            .setBondLiquidationIncentive(this.stubs.fyToken.address, newLiquidationIncentive);
+            .setBondLiquidationIncentive(this.stubs.hToken.address, newLiquidationIncentive);
           const liquidationIncentive: BigNumber = await this.contracts.fintroller.getBondLiquidationIncentive(
-            this.stubs.fyToken.address,
+            this.stubs.hToken.address,
           );
           expect(liquidationIncentive).to.equal(newLiquidationIncentive);
         });
@@ -83,12 +83,12 @@ export default function shouldBehaveLikeSetBondLiquidationIncentive(): void {
           await expect(
             this.contracts.fintroller
               .connect(this.signers.admin)
-              .setBondLiquidationIncentive(this.stubs.fyToken.address, newLiquidationIncentive),
+              .setBondLiquidationIncentive(this.stubs.hToken.address, newLiquidationIncentive),
           )
             .to.emit(this.contracts.fintroller, "SetBondLiquidationIncentive")
             .withArgs(
               this.signers.admin.address,
-              this.stubs.fyToken.address,
+              this.stubs.hToken.address,
               fintrollerConstants.defaultLiquidationIncentive,
               newLiquidationIncentive,
             );

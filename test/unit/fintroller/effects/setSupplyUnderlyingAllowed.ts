@@ -8,7 +8,7 @@ export default function shouldBehaveLikeSetSupplyUnderlyingAllowed(): void {
       await expect(
         this.contracts.fintroller
           .connect(this.signers.raider)
-          .setSupplyUnderlyingAllowed(this.stubs.fyToken.address, true),
+          .setSupplyUnderlyingAllowed(this.stubs.hToken.address, true),
       ).to.be.revertedWith(AdminErrors.NotAdmin);
     });
   });
@@ -19,33 +19,29 @@ export default function shouldBehaveLikeSetSupplyUnderlyingAllowed(): void {
         await expect(
           this.contracts.fintroller
             .connect(this.signers.admin)
-            .setSupplyUnderlyingAllowed(this.stubs.fyToken.address, true),
+            .setSupplyUnderlyingAllowed(this.stubs.hToken.address, true),
         ).to.be.revertedWith(GenericErrors.BondNotListed);
       });
     });
 
     describe("when the bond is listed", function () {
       beforeEach(async function () {
-        await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.fyToken.address);
+        await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.hToken.address);
       });
 
       it("sets the value to true", async function () {
         await this.contracts.fintroller
           .connect(this.signers.admin)
-          .setSupplyUnderlyingAllowed(this.stubs.fyToken.address, true);
-        const newState: boolean = await this.contracts.fintroller.getSupplyUnderlyingAllowed(
-          this.stubs.fyToken.address,
-        );
+          .setSupplyUnderlyingAllowed(this.stubs.hToken.address, true);
+        const newState: boolean = await this.contracts.fintroller.getSupplyUnderlyingAllowed(this.stubs.hToken.address);
         expect(newState).to.equal(true);
       });
 
       it("sets the value to false", async function () {
         await this.contracts.fintroller
           .connect(this.signers.admin)
-          .setSupplyUnderlyingAllowed(this.stubs.fyToken.address, false);
-        const newState: boolean = await this.contracts.fintroller.getSupplyUnderlyingAllowed(
-          this.stubs.fyToken.address,
-        );
+          .setSupplyUnderlyingAllowed(this.stubs.hToken.address, false);
+        const newState: boolean = await this.contracts.fintroller.getSupplyUnderlyingAllowed(this.stubs.hToken.address);
         expect(newState).to.equal(false);
       });
 
@@ -53,10 +49,10 @@ export default function shouldBehaveLikeSetSupplyUnderlyingAllowed(): void {
         await expect(
           this.contracts.fintroller
             .connect(this.signers.admin)
-            .setSupplyUnderlyingAllowed(this.stubs.fyToken.address, true),
+            .setSupplyUnderlyingAllowed(this.stubs.hToken.address, true),
         )
           .to.emit(this.contracts.fintroller, "SetSupplyUnderlyingAllowed")
-          .withArgs(this.signers.admin.address, this.stubs.fyToken.address, true);
+          .withArgs(this.signers.admin.address, this.stubs.hToken.address, true);
       });
     });
   });

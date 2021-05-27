@@ -4,7 +4,7 @@ import { shouldBehaveLikeBalanceSheet } from "./BalanceSheet.behavior";
 export function unitTestBalanceSheet(): void {
   describe("BalanceSheet", function () {
     beforeEach(async function () {
-      const { balanceSheet, collateral, fintroller, oracle, underlying, fyToken } = await this.loadFixture(
+      const { balanceSheet, collateral, fintroller, oracle, underlying, hToken } = await this.loadFixture(
         unitFixtureBalanceSheet,
       );
       this.contracts.balanceSheet = balanceSheet;
@@ -12,7 +12,7 @@ export function unitTestBalanceSheet(): void {
       this.stubs.fintroller = fintroller;
       this.stubs.oracle = oracle;
       this.stubs.underlying = underlying;
-      this.stubs.fyToken = fyToken;
+      this.stubs.hToken = hToken;
     });
 
     shouldBehaveLikeBalanceSheet();

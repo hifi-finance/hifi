@@ -6,7 +6,7 @@ import shouldBehaveLikeSetBorrowAllowed from "./effects/setBorrowAllowed";
 import shouldBehaveLikeSetDepositCollateralAllowed from "./effects/setDepositCollateralAllowed";
 import shouldBehaveLikeSetLiquidateBorrowAllowed from "./effects/setLiquidateBorrowAllowed";
 import shouldBehaveLikeSetOracle from "./effects/setOracle";
-import shouldBehaveLikeSetRedeemFyTokensAllowed from "./effects/setRedeemFyTokensAllowed";
+import shouldBehaveLikeSetRedeemHTokensAllowed from "./effects/setRedeemHTokensAllowed";
 import shouldBehaveLikeSetRepayBorrowAllowed from "./effects/setRepayBorrowAllowed";
 import shouldBehaveLikeSetSupplyUnderlyingAllowed from "./effects/setSupplyUnderlyingAllowed";
 import shouldBehaveLikeGetBond from "./view/getBond";
@@ -16,7 +16,7 @@ import shouldBehaveLikeGetBondLiquidationIncentive from "./view/getBondLiquidati
 import shouldBehaveLikeGetBorrowAllowed from "./view/getBorrowAllowed";
 import shouldBehaveLikeGetDepositCollateralAllowed from "./view/getDepositCollateralAllowed";
 import shouldBehaveLikeGetLiquidateBorrowAllowed from "./view/getLiquidateBorrowAllowed";
-import shouldBehaveLikeGetRedeemFyTokensAllowed from "./view/getRedeemFyTokensAllowed";
+import shouldBehaveLikeGetRedeemHTokensAllowed from "./view/getRedeemHTokensAllowed";
 import shouldBehaveLikeGetRepayBorrowAllowed from "./view/getRepayBorrowAllowed";
 import shouldBehaveLikeGetSupplyUnderlyingAllowed from "./view/getSupplyUnderlyingAllowed";
 import shouldBehaveLikeIsBondListed from "./view/isBondListed";
@@ -53,8 +53,8 @@ export function shouldBehaveLikeFintroller(): void {
       shouldBehaveLikeGetLiquidateBorrowAllowed();
     });
 
-    describe("getRedeemFyTokensAllowed", function () {
-      shouldBehaveLikeGetRedeemFyTokensAllowed();
+    describe("getRedeemHTokensAllowed", function () {
+      shouldBehaveLikeGetRedeemHTokensAllowed();
     });
 
     describe("getRepayBorrowAllowed", function () {
@@ -111,8 +111,8 @@ export function shouldBehaveLikeFintroller(): void {
       shouldBehaveLikeSetOracle();
     });
 
-    describe("setRedeemFyTokensAllowed", function () {
-      shouldBehaveLikeSetRedeemFyTokensAllowed();
+    describe("setRedeemHTokensAllowed", function () {
+      shouldBehaveLikeSetRedeemHTokensAllowed();
     });
 
     describe("setRepayBorrowAllowed", function () {

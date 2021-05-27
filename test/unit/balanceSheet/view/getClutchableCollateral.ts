@@ -13,7 +13,7 @@ export default function shouldBehaveLikeGetClutchableCollateral(): void {
   describe("when the amount to repay is zero", function () {
     it("reverts", async function () {
       await expect(
-        this.contracts.balanceSheet.getClutchableCollateral(this.stubs.fyToken.address, Zero),
+        this.contracts.balanceSheet.getClutchableCollateral(this.stubs.hToken.address, Zero),
       ).to.be.revertedWith(BalanceSheetErrors.GetClutchableCollateralZero);
     });
   });
@@ -21,12 +21,12 @@ export default function shouldBehaveLikeGetClutchableCollateral(): void {
   describe("when the amount to repay is not zero", function () {
     describe("when the liquidation incentive is zero", function () {
       beforeEach(async function () {
-        await this.stubs.fintroller.mock.getBondLiquidationIncentive.withArgs(this.stubs.fyToken.address).returns(Zero);
+        await this.stubs.fintroller.mock.getBondLiquidationIncentive.withArgs(this.stubs.hToken.address).returns(Zero);
       });
 
       it("retrieves zero", async function () {
         const clutchableCollateralAmount: BigNumber = await this.contracts.balanceSheet.getClutchableCollateral(
-          this.stubs.fyToken.address,
+          this.stubs.hToken.address,
           repayAmount,
         );
         expect(clutchableCollateralAmount).to.equal(Zero);
@@ -36,19 +36,19 @@ export default function shouldBehaveLikeGetClutchableCollateral(): void {
     describe("when the liquidation incentive is not zero", function () {
       beforeEach(async function () {
         await this.stubs.fintroller.mock.getBondLiquidationIncentive
-          .withArgs(this.stubs.fyToken.address)
+          .withArgs(this.stubs.hToken.address)
           .returns(percentages.oneHundredAndTen);
       });
 
       describe("when the collateral has 18 decimals", function () {
         beforeEach(async function () {
           await this.stubs.collateral.mock.decimals.returns(BigNumber.from(18));
-          await this.stubs.fyToken.mock.collateralPrecisionScalar.returns(precisionScalars.tokenWith18Decimals);
+          await this.stubs.hToken.mock.collateralPrecisionScalar.returns(precisionScalars.tokenWith18Decimals);
         });
 
         it("retrieves the clutchable collateral amount", async function () {
           const contractClutchableCollateralAmount: BigNumber =
-            await this.contracts.balanceSheet.getClutchableCollateral(this.stubs.fyToken.address, repayAmount);
+            await this.contracts.balanceSheet.getClutchableCollateral(this.stubs.hToken.address, repayAmount);
           expect(contractClutchableCollateralAmount).to.equal(clutchableCollateralAmount);
         });
       });
@@ -56,7 +56,7 @@ export default function shouldBehaveLikeGetClutchableCollateral(): void {
       describe("when the collateral has 8 decimals", function () {
         beforeEach(async function () {
           await this.stubs.collateral.mock.decimals.returns(BigNumber.from(8));
-          await this.stubs.fyToken.mock.collateralPrecisionScalar.returns(precisionScalars.tokenWith8Decimals);
+          await this.stubs.hToken.mock.collateralPrecisionScalar.returns(precisionScalars.tokenWith8Decimals);
         });
 
         it("retrieves the denormalized clutchable collateral amount", async function () {
@@ -65,7 +65,7 @@ export default function shouldBehaveLikeGetClutchableCollateral(): void {
           );
 
           const contractClutchableCollateralAmount: BigNumber =
-            await this.contracts.balanceSheet.getClutchableCollateral(this.stubs.fyToken.address, repayAmount);
+            await this.contracts.balanceSheet.getClutchableCollateral(this.stubs.hToken.address, repayAmount);
           expect(contractClutchableCollateralAmount).to.equal(denormalizedClutchableCollateralAmount);
         });
       });

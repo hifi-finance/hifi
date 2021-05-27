@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@paulrberg/contracts/access/IAdmin.sol";
 
-import "./IFyToken.sol";
+import "./IHToken.sol";
 import "./oracles/IChainlinkOperator.sol";
 
 /// @notice IFintroller
@@ -18,7 +18,7 @@ interface IFintroller is IAdmin {
         bool isDepositCollateralAllowed;
         bool isLiquidateBorrowAllowed;
         bool isListed;
-        bool isRedeemFyTokenAllowed;
+        bool isRedeemHTokenAllowed;
         bool isRepayBorrowAllowed;
         bool isSupplyUnderlyingAllowed;
     }
@@ -27,74 +27,74 @@ interface IFintroller is IAdmin {
 
     /// @notice Emitted when a bond is listed.
     /// @param admin The address of the admin.
-    /// @param fyToken The new listed token.
-    event ListBond(address indexed admin, IFyToken indexed fyToken);
+    /// @param hToken The new listed token.
+    event ListBond(address indexed admin, IHToken indexed hToken);
 
-    /// @notice Emitted when the borrowing of a FyToken is set.
+    /// @notice Emitted when the borrowing of a HToken is set.
     /// @param admin The address of the admin.
-    /// @param fyToken The related FyToken.
+    /// @param hToken The related HToken.
     /// @param state True if borrowing is allowed.
-    event SetBorrowAllowed(address indexed admin, IFyToken indexed fyToken, bool state);
+    event SetBorrowAllowed(address indexed admin, IHToken indexed hToken, bool state);
 
     /// @notice Emitted when the collateralization ratio is updated.
     /// @param admin The address of the admin.
-    /// @param fyToken The related FyToken.
+    /// @param hToken The related HToken.
     /// @param oldCollateralizationRatio The old collateralization ratio.
     /// @param newCollateralizationRatio the new collateralization ratio.
     event SetBondCollateralizationRatio(
         address indexed admin,
-        IFyToken indexed fyToken,
+        IHToken indexed hToken,
         uint256 oldCollateralizationRatio,
         uint256 newCollateralizationRatio
     );
 
     /// @notice Emitted when the debt ceiling of a bond is set.
     /// @param admin The address of the admin.
-    /// @param fyToken The related FyToken.
+    /// @param hToken The related HToken.
     /// @param oldDebtCeiling The old debt ceiling.
     /// @param newDebtCeiling The new debt ceiling.
     event SetBondDebtCeiling(
         address indexed admin,
-        IFyToken indexed fyToken,
+        IHToken indexed hToken,
         uint256 oldDebtCeiling,
         uint256 newDebtCeiling
     );
 
     /// @notice Emitted when the liquidation incentive is set.
     /// @param admin The address of the admin.
-    /// @param fyToken The related FyToken.
+    /// @param hToken The related HToken.
     /// @param oldLiquidationIncentive The old liquidation incentive.
     /// @param newLiquidationIncentive The new liquidation incentive.
     event SetBondLiquidationIncentive(
         address indexed admin,
-        IFyToken fyToken,
+        IHToken hToken,
         uint256 oldLiquidationIncentive,
         uint256 newLiquidationIncentive
     );
 
     /// @notice Emitted when depositing collateral is updated.
     /// @param admin The address of the admin.
-    /// @param fyToken The related FyToken.
+    /// @param hToken The related HToken.
     /// @param state True if depositing collateral is allowed.
-    event SetDepositCollateralAllowed(address indexed admin, IFyToken indexed fyToken, bool state);
+    event SetDepositCollateralAllowed(address indexed admin, IHToken indexed hToken, bool state);
 
     /// @notice Emitted when liquidating borrow is updated.
     /// @param admin The address of the admin.
-    /// @param fyToken The related FyToken.
+    /// @param hToken The related HToken.
     /// @param state True if liquidating borrow is allowed.
-    event SetLiquidateBorrowAllowed(address indexed admin, IFyToken indexed fyToken, bool state);
+    event SetLiquidateBorrowAllowed(address indexed admin, IHToken indexed hToken, bool state);
 
-    /// @notice Emitted when redeeming fyTokens is updated.
+    /// @notice Emitted when redeeming hTokens is updated.
     /// @param admin The address of the admin.
-    /// @param fyToken The related FyToken.
-    /// @param state True if redeeming fyTokens is allowed.
-    event SetRedeemFyTokensAllowed(address indexed admin, IFyToken indexed fyToken, bool state);
+    /// @param hToken The related HToken.
+    /// @param state True if redeeming hTokens is allowed.
+    event SetRedeemHTokensAllowed(address indexed admin, IHToken indexed hToken, bool state);
 
     /// @notice Emitted when repaying borrow is updated.
     /// @param admin The address of the admin.
-    /// @param fyToken The related FyToken.
+    /// @param hToken The related HToken.
     /// @param state True if repaying borrow is allowed.
-    event SetRepayBorrowAllowed(address indexed admin, IFyToken indexed fyToken, bool state);
+    event SetRepayBorrowAllowed(address indexed admin, IHToken indexed hToken, bool state);
 
     /// @notice Emitted when a new oracle is set.
     /// @param admin The address of the admin.
@@ -104,9 +104,9 @@ interface IFintroller is IAdmin {
 
     /// @notice Emitted when supplying underlying is set.
     /// @param admin The address of the admin.
-    /// @param fyToken The related FyToken.
+    /// @param hToken The related HToken.
     /// @param state True if supplying underlying is allowed.
-    event SetSupplyUnderlyingAllowed(address indexed admin, IFyToken indexed fyToken, bool state);
+    event SetSupplyUnderlyingAllowed(address indexed admin, IHToken indexed hToken, bool state);
 
     /// NON-CONSTANT FUNCTIONS ///
 
@@ -117,10 +117,10 @@ interface IFintroller is IAdmin {
     /// Requirements:
     ///
     /// - The caller must be the admin.
-    /// - The fyToken must pass the inspection.
+    /// - The hToken must pass the inspection.
     ///
-    /// @param fyToken The fyToken contract to list.
-    function listBond(IFyToken fyToken) external;
+    /// @param hToken The hToken contract to list.
+    function listBond(IHToken hToken) external;
 
     /// @notice Updates the bond's collateralization ratio.
     ///
@@ -133,9 +133,9 @@ interface IFintroller is IAdmin {
     /// - The new collateralization ratio cannot be higher than the maximum collateralization ratio.
     /// - The new collateralization ratio cannot be lower than the minimum collateralization ratio.
     ///
-    /// @param fyToken The bond for which to update the collateralization ratio.
+    /// @param hToken The bond for which to update the collateralization ratio.
     /// @param newCollateralizationRatio The new collateralization ratio.
-    function setBondCollateralizationRatio(IFyToken fyToken, uint256 newCollateralizationRatio) external;
+    function setBondCollateralizationRatio(IHToken hToken, uint256 newCollateralizationRatio) external;
 
     /// @notice Updates the debt ceiling, which limits how much debt can be issued for this specific bond.
     ///
@@ -146,11 +146,11 @@ interface IFintroller is IAdmin {
     /// - The caller must be the admin.
     /// - The bond must be listed.
     /// - The debt ceiling cannot be zero.
-    /// - The debt ceiling cannot fall below the current total supply of fyTokens.
+    /// - The debt ceiling cannot fall below the current total supply of hTokens.
     ///
-    /// @param fyToken The bond for which to update the debt ceiling.
+    /// @param hToken The bond for which to update the debt ceiling.
     /// @param newDebtCeiling The uint256 value of the new debt ceiling, specified in the bond's decimal system.
-    function setBondDebtCeiling(IFyToken fyToken, uint256 newDebtCeiling) external;
+    function setBondDebtCeiling(IHToken hToken, uint256 newDebtCeiling) external;
 
     /// @notice Sets a new value for the liquidation incentive applicable to this specific bond.
     ///
@@ -163,11 +163,11 @@ interface IFintroller is IAdmin {
     /// - The new liquidation incentive cannot be higher than the maximum liquidation incentive.
     /// - The new liquidation incentive cannot be lower than the minimum liquidation incentive.
     ///
-    /// @param fyToken The bond for which to update the liquidation incentive.
+    /// @param hToken The bond for which to update the liquidation incentive.
     /// @param newLiquidationIncentive The new liquidation incentive.
-    function setBondLiquidationIncentive(IFyToken fyToken, uint256 newLiquidationIncentive) external;
+    function setBondLiquidationIncentive(IHToken hToken, uint256 newLiquidationIncentive) external;
 
-    /// @notice Updates the state of the permission accessed by the fyToken before a borrow.
+    /// @notice Updates the state of the permission accessed by the hToken before a borrow.
     ///
     /// @dev Emits a {SetBorrowAllowed} event.
     ///
@@ -176,11 +176,11 @@ interface IFintroller is IAdmin {
     /// - The caller must be the admin.
     /// - The bond must be listed.
     ///
-    /// @param fyToken The fyToken contract to update the permission for.
+    /// @param hToken The hToken contract to update the permission for.
     /// @param state The new state to put in storage.
-    function setBorrowAllowed(IFyToken fyToken, bool state) external;
+    function setBorrowAllowed(IHToken hToken, bool state) external;
 
-    /// @notice Updates the state of the permission accessed by the fyToken before a collateral deposit.
+    /// @notice Updates the state of the permission accessed by the hToken before a collateral deposit.
     ///
     /// @dev Emits a {SetDepositCollateralAllowed} event.
     ///
@@ -189,11 +189,11 @@ interface IFintroller is IAdmin {
     /// - The caller must be the admin.
     /// - The bond must be listed.
     ///
-    /// @param fyToken The fyToken contract to update the permission for.
+    /// @param hToken The hToken contract to update the permission for.
     /// @param state The new state to put in storage.
-    function setDepositCollateralAllowed(IFyToken fyToken, bool state) external;
+    function setDepositCollateralAllowed(IHToken hToken, bool state) external;
 
-    /// @notice Updates the state of the permission accessed by the fyToken before a liquidate borrow.
+    /// @notice Updates the state of the permission accessed by the hToken before a liquidate borrow.
     ///
     /// @dev Emits a {SetLiquidateBorrowAllowed} event.
     ///
@@ -202,9 +202,9 @@ interface IFintroller is IAdmin {
     /// - The caller must be the admin.
     /// - The bond must be listed.
     ///
-    /// @param fyToken The fyToken contract to update the permission for.
+    /// @param hToken The hToken contract to update the permission for.
     /// @param state The new state to put in storage.
-    function setLiquidateBorrowAllowed(IFyToken fyToken, bool state) external;
+    function setLiquidateBorrowAllowed(IHToken hToken, bool state) external;
 
     /// @notice Updates the oracle contract's address saved in storage.
     ///
@@ -220,18 +220,18 @@ interface IFintroller is IAdmin {
 
     /// @notice Updates the state of the permission accessed by the RedemptionPool before a redemption of underlying.
     ///
-    /// @dev Emits a {SetRedeemFyTokensAllowed} event.
+    /// @dev Emits a {SetRedeemHTokensAllowed} event.
     ///
     /// Requirements:
     ///
     /// - The caller must be the admin.
     /// - The bond must be listed.
     ///
-    /// @param fyToken The fyToken contract to update the permission for.
+    /// @param hToken The hToken contract to update the permission for.
     /// @param state The new state to put in storage.
-    function setRedeemFyTokensAllowed(IFyToken fyToken, bool state) external;
+    function setRedeemHTokensAllowed(IHToken hToken, bool state) external;
 
-    /// @notice Updates the state of the permission accessed by the fyToken before a repay borrow.
+    /// @notice Updates the state of the permission accessed by the hToken before a repay borrow.
     ///
     /// @dev Emits a {SetRepayBorrowAllowed} event.
     ///
@@ -240,9 +240,9 @@ interface IFintroller is IAdmin {
     /// - The caller must be the admin.
     /// - The bond must be listed.
     ///
-    /// @param fyToken The fyToken contract to update the permission for.
+    /// @param hToken The hToken contract to update the permission for.
     /// @param state The new state to put in storage.
-    function setRepayBorrowAllowed(IFyToken fyToken, bool state) external;
+    function setRepayBorrowAllowed(IHToken hToken, bool state) external;
 
     /// @notice Updates the state of the permission accessed by the RedemptionPool before a supply of underlying.
     ///
@@ -251,76 +251,76 @@ interface IFintroller is IAdmin {
     /// Requirements:
     /// - The caller must be the admin
     ///
-    /// @param fyToken The fyToken contract to update the permission for.
+    /// @param hToken The hToken contract to update the permission for.
     /// @param state The new state to put in storage.
-    function setSupplyUnderlyingAllowed(IFyToken fyToken, bool state) external;
+    function setSupplyUnderlyingAllowed(IHToken hToken, bool state) external;
 
     /// CONSTANT FUNCTIONS ///
 
     /// @notice Reads the storage properties of the bond.
-    /// @dev It is not an error to provide an invalid fyToken address. The returned values would all be zero.
-    /// @param fyToken The address of the bond contract.
+    /// @dev It is not an error to provide an invalid hToken address. The returned values would all be zero.
+    /// @param hToken The address of the bond contract.
     /// @return The bond object.
-    function getBond(IFyToken fyToken) external view returns (Bond memory);
+    function getBond(IHToken hToken) external view returns (Bond memory);
 
     /// @notice Reads the collateralization ratio of the given bond.
-    /// @dev It is not an error to provide an invalid fyToken address.
-    /// @param fyToken The address of the bond contract.
+    /// @dev It is not an error to provide an invalid hToken address.
+    /// @param hToken The address of the bond contract.
     /// @return The collateralization ratio, or zero if an invalid address was provided.
-    function getBondCollateralizationRatio(IFyToken fyToken) external view returns (uint256);
+    function getBondCollateralizationRatio(IHToken hToken) external view returns (uint256);
 
     /// @notice Reads the debt ceiling of the given bond.
-    /// @dev It is not an error to provide an invalid fyToken address.
-    /// @param fyToken The address of the bond contract.
+    /// @dev It is not an error to provide an invalid hToken address.
+    /// @param hToken The address of the bond contract.
     /// @return The debt ceiling as a uint256, or zero if an invalid address was provided.
-    function getBondDebtCeiling(IFyToken fyToken) external view returns (uint256);
+    function getBondDebtCeiling(IHToken hToken) external view returns (uint256);
 
     /// @notice Reads the liquidation incentive of the given bond.
-    /// @dev It is not an error to provide an invalid fyToken address.
-    /// @param fyToken The address of the bond contract.
+    /// @dev It is not an error to provide an invalid hToken address.
+    /// @param hToken The address of the bond contract.
     /// @return The liquidation incentive, or zero if an invalid address was provided.
-    function getBondLiquidationIncentive(IFyToken fyToken) external view returns (uint256);
+    function getBondLiquidationIncentive(IHToken hToken) external view returns (uint256);
 
-    /// @notice Check if the account should be allowed to borrow fyTokens.
+    /// @notice Check if the account should be allowed to borrow hTokens.
     /// @dev The bond must be listed.
-    /// @param fyToken The bond to make the check against.
+    /// @param hToken The bond to make the check against.
     /// @return bool true = allowed, false = not allowed.
-    function getBorrowAllowed(IFyToken fyToken) external view returns (bool);
+    function getBorrowAllowed(IHToken hToken) external view returns (bool);
 
     /// @notice Checks if the account should be allowed to deposit collateral.
     /// @dev The bond must be listed.
-    /// @param fyToken The bond to make the check against.
+    /// @param hToken The bond to make the check against.
     /// @return bool true = allowed, false = not allowed.
-    function getDepositCollateralAllowed(IFyToken fyToken) external view returns (bool);
+    function getDepositCollateralAllowed(IHToken hToken) external view returns (bool);
 
-    /// @notice Check if the account should be allowed to liquidate fyToken borrows.
+    /// @notice Check if the account should be allowed to liquidate hToken borrows.
     /// @dev The bond must be listed.
-    /// @param fyToken The bond to make the check against.
+    /// @param hToken The bond to make the check against.
     /// @return bool true = allowed, false = not allowed.
-    function getLiquidateBorrowAllowed(IFyToken fyToken) external view returns (bool);
+    function getLiquidateBorrowAllowed(IHToken hToken) external view returns (bool);
 
     /// @notice Checks if the account should be allowed to redeem the underlying from the RedemptionPool.
     /// @dev The bond must be listed.
-    /// @param fyToken The bond to make the check against.
+    /// @param hToken The bond to make the check against.
     /// @return bool true = allowed, false = not allowed.
-    function getRedeemFyTokensAllowed(IFyToken fyToken) external view returns (bool);
+    function getRedeemHTokensAllowed(IHToken hToken) external view returns (bool);
 
     /// @notice Checks if the account should be allowed to repay borrows.
     /// @dev The bond must be listed.
-    /// @param fyToken The bond to make the check against.
+    /// @param hToken The bond to make the check against.
     /// @return bool true = allowed, false = not allowed.
-    function getRepayBorrowAllowed(IFyToken fyToken) external view returns (bool);
+    function getRepayBorrowAllowed(IHToken hToken) external view returns (bool);
 
     /// @notice Checks if the account should be allowed to the supply underlying to the RedemptionPool.
     /// @dev The bond must be listed.
-    /// @param fyToken The bond to make the check against.
+    /// @param hToken The bond to make the check against.
     /// @return bool true = allowed, false = not allowed.
-    function getSupplyUnderlyingAllowed(IFyToken fyToken) external view returns (bool);
+    function getSupplyUnderlyingAllowed(IHToken hToken) external view returns (bool);
 
     /// @notice Checks if the bond is listed.
-    /// @param fyToken The bond to make the check against.
+    /// @param hToken The bond to make the check against.
     /// @return bool true = listed, otherwise not.
-    function isBondListed(IFyToken fyToken) external view returns (bool);
+    function isBondListed(IHToken hToken) external view returns (bool);
 
     /// @notice Indicator that this is a Fintroller contract, for inspection.
     function isFintroller() external view returns (bool);

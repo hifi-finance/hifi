@@ -4,7 +4,7 @@ import { shouldBehaveLikeRedemptionPool } from "./RedemptionPool.behavior";
 export function integrationTestRedemptionPool(): void {
   describe("RedemptionPool", function () {
     beforeEach(async function () {
-      const { balanceSheet, fintroller, oracle, redemptionPool, underlying, fyToken } = await this.loadFixture(
+      const { balanceSheet, fintroller, oracle, redemptionPool, underlying, hToken } = await this.loadFixture(
         integrationFixture,
       );
       this.contracts.balanceSheet = balanceSheet;
@@ -12,7 +12,7 @@ export function integrationTestRedemptionPool(): void {
       this.contracts.redemptionPool = redemptionPool;
       this.contracts.oracle = oracle;
       this.contracts.underlying = underlying;
-      this.contracts.fyToken = fyToken;
+      this.contracts.hToken = hToken;
     });
 
     shouldBehaveLikeRedemptionPool();

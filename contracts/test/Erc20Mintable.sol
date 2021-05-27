@@ -18,7 +18,7 @@ contract Erc20Mintable is Erc20 {
 
     /// @notice Prints new tokens into existence.
     /// @param beneficiary The account for which to mint the tokens.
-    /// @param mintAmount The amount of fyTokens to print into existence.
+    /// @param mintAmount The amount of hTokens to print into existence.
     function mint(address beneficiary, uint256 mintAmount) external {
         mintInternal(beneficiary, mintAmount);
     }

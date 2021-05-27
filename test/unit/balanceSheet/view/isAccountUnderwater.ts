@@ -7,7 +7,7 @@ export default function shouldBehaveLikeIsAccountUnderwater(): void {
   describe("when the vault is not open", function () {
     it("retrieves false", async function () {
       const isAccountUnderwater: boolean = await this.contracts.balanceSheet.isAccountUnderwater(
-        this.stubs.fyToken.address,
+        this.stubs.hToken.address,
         this.signers.borrower.address,
       );
       expect(isAccountUnderwater).to.equal(false);
@@ -16,14 +16,14 @@ export default function shouldBehaveLikeIsAccountUnderwater(): void {
 
   describe("when the vault is open", function () {
     beforeEach(async function () {
-      await this.stubs.fintroller.mock.isBondListed.withArgs(this.stubs.fyToken.address).returns(true);
-      await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.fyToken.address);
+      await this.stubs.fintroller.mock.isBondListed.withArgs(this.stubs.hToken.address).returns(true);
+      await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.hToken.address);
     });
 
     describe("when the debt is zero", function () {
       it("retrieves false", async function () {
         const isAccountUnderwater: boolean = await this.contracts.balanceSheet.isAccountUnderwater(
-          this.stubs.fyToken.address,
+          this.stubs.hToken.address,
           this.signers.borrower.address,
         );
         expect(isAccountUnderwater).to.equal(false);
@@ -36,15 +36,15 @@ export default function shouldBehaveLikeIsAccountUnderwater(): void {
 
       beforeEach(async function () {
         await this.stubs.fintroller.mock.getBondCollateralizationRatio
-          .withArgs(this.stubs.fyToken.address)
+          .withArgs(this.stubs.hToken.address)
           .returns(fintrollerConstants.defaultCollateralizationRatio);
         await this.contracts.balanceSheet.__godMode_setVaultLockedCollateral(
-          this.stubs.fyToken.address,
+          this.stubs.hToken.address,
           this.signers.borrower.address,
           lockedCollateral,
         );
         await this.contracts.balanceSheet.__godMode_setVaultDebt(
-          this.stubs.fyToken.address,
+          this.stubs.hToken.address,
           this.signers.borrower.address,
           debt,
         );
@@ -54,7 +54,7 @@ export default function shouldBehaveLikeIsAccountUnderwater(): void {
         // Recall that the default oracle price for 1 WETH is $100.
         it("retrieves false", async function () {
           const isAccountUnderwater: boolean = await this.contracts.balanceSheet.isAccountUnderwater(
-            this.stubs.fyToken.address,
+            this.stubs.hToken.address,
             this.signers.borrower.address,
           );
           expect(isAccountUnderwater).to.equal(false);
@@ -69,7 +69,7 @@ export default function shouldBehaveLikeIsAccountUnderwater(): void {
         // The price of 1 WETH is $12 so the new collateralization ratio becomes 120%.
         it("retrieves true", async function () {
           const isAccountUnderwater: boolean = await this.contracts.balanceSheet.isAccountUnderwater(
-            this.stubs.fyToken.address,
+            this.stubs.hToken.address,
             this.signers.borrower.address,
           );
           expect(isAccountUnderwater).to.equal(true);

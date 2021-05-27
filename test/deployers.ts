@@ -7,12 +7,12 @@ import { TransactionRequest } from "@ethersproject/providers";
 import { ChainlinkOperator } from "../typechain/ChainlinkOperator";
 import { Erc20Mintable } from "../typechain/Erc20Mintable";
 import { Fintroller } from "../typechain/Fintroller";
-import { FyToken } from "../typechain/FyToken";
+import { HToken } from "../typechain/HToken";
 import { GodModeBalanceSheet } from "../typechain/GodModeBalanceSheet";
 import { GodModeRedemptionPool } from "../typechain/GodModeRedemptionPool";
-import { GodModeFyToken } from "../typechain/GodModeFyToken";
+import { GodModeHToken } from "../typechain/GodModeHToken";
 import { SimplePriceFeed } from "../typechain/SimplePriceFeed";
-import { fyTokenConstants, gasLimits, prices } from "../helpers/constants";
+import { hTokenConstants, gasLimits, prices } from "../helpers/constants";
 
 const overrideOptions: TransactionRequest = {
   gasLimit: process.env.CODE_COVERAGE
@@ -52,22 +52,22 @@ export async function deployFintroller(deployer: Signer): Promise<Fintroller> {
   return fintroller;
 }
 
-export async function deployFyToken(
+export async function deployHToken(
   deployer: Signer,
   expirationTime: BigNumber,
   fintrollerAddress: string,
   balanceSheetAddress: string,
   underlyingAddress: string,
   collateralAddress: string,
-): Promise<FyToken> {
-  const fyTokenArtifact: Artifact = await hre.artifacts.readArtifact("FyToken");
-  const fyToken: FyToken = <FyToken>(
+): Promise<HToken> {
+  const hTokenArtifact: Artifact = await hre.artifacts.readArtifact("HToken");
+  const hToken: HToken = <HToken>(
     await deployContract(
       deployer,
-      fyTokenArtifact,
+      hTokenArtifact,
       [
-        fyTokenConstants.name,
-        fyTokenConstants.symbol,
+        hTokenConstants.name,
+        hTokenConstants.symbol,
         expirationTime,
         fintrollerAddress,
         balanceSheetAddress,
@@ -77,7 +77,7 @@ export async function deployFyToken(
       overrideOptions,
     )
   );
-  return fyToken;
+  return hToken;
 }
 
 export async function deployGodModeBalanceSheet(
@@ -91,23 +91,23 @@ export async function deployGodModeBalanceSheet(
   return balanceSheet;
 }
 
-export async function deployGodModeFyToken(
+export async function deployGodModeHToken(
   deployer: Signer,
   expirationTime: BigNumber,
   fintrollerAddress: string,
   balanceSheetAddress: string,
   underlyingAddress: string,
   collateralAddress: string,
-): Promise<GodModeFyToken> {
-  const godModeFyTokenArtifact: Artifact = await hre.artifacts.readArtifact("GodModeFyToken");
-  const fyToken: GodModeFyToken = <GodModeFyToken>(
+): Promise<GodModeHToken> {
+  const godModeHTokenArtifact: Artifact = await hre.artifacts.readArtifact("GodModeHToken");
+  const hToken: GodModeHToken = <GodModeHToken>(
     await deployContract(
       deployer,
-      godModeFyTokenArtifact,
+      godModeHTokenArtifact,
       [
-        fyTokenConstants.name,
-        fyTokenConstants.symbol,
-        fyTokenConstants.expirationTime,
+        hTokenConstants.name,
+        hTokenConstants.symbol,
+        hTokenConstants.expirationTime,
         fintrollerAddress,
         balanceSheetAddress,
         underlyingAddress,
@@ -116,17 +116,17 @@ export async function deployGodModeFyToken(
       overrideOptions,
     )
   );
-  return fyToken;
+  return hToken;
 }
 
 export async function deployGodModeRedemptionPool(
   deployer: Signer,
   fintrollerAddress: string,
-  fyTokenAddress: string,
+  hTokenAddress: string,
 ): Promise<GodModeRedemptionPool> {
   const godModeRedemptionPoolArtifact: Artifact = await hre.artifacts.readArtifact("GodModeRedemptionPool");
   const redemptionPool: GodModeRedemptionPool = <GodModeRedemptionPool>(
-    await deployContract(deployer, godModeRedemptionPoolArtifact, [fintrollerAddress, fyTokenAddress], overrideOptions)
+    await deployContract(deployer, godModeRedemptionPoolArtifact, [fintrollerAddress, hTokenAddress], overrideOptions)
   );
   return redemptionPool;
 }

@@ -15,7 +15,7 @@ export default function shouldBehaveLikeSetBondCollateralizationRatio(): void {
       await expect(
         this.contracts.fintroller
           .connect(this.signers.raider)
-          .setBondCollateralizationRatio(this.stubs.fyToken.address, newCollateralizationRatio),
+          .setBondCollateralizationRatio(this.stubs.hToken.address, newCollateralizationRatio),
       ).to.be.revertedWith(AdminErrors.NotAdmin);
     });
   });
@@ -26,14 +26,14 @@ export default function shouldBehaveLikeSetBondCollateralizationRatio(): void {
         await expect(
           this.contracts.fintroller
             .connect(this.signers.admin)
-            .setBondCollateralizationRatio(this.stubs.fyToken.address, newCollateralizationRatio),
+            .setBondCollateralizationRatio(this.stubs.hToken.address, newCollateralizationRatio),
         ).to.be.revertedWith(GenericErrors.BondNotListed);
       });
     });
 
     describe("when the bond is listed", function () {
       beforeEach(async function () {
-        await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.fyToken.address);
+        await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.hToken.address);
       });
 
       describe("when the collateralization ratio is not valid", function () {
@@ -42,7 +42,7 @@ export default function shouldBehaveLikeSetBondCollateralizationRatio(): void {
             await expect(
               this.contracts.fintroller
                 .connect(this.signers.admin)
-                .setBondCollateralizationRatio(this.stubs.fyToken.address, overflowCollateralizationRatio),
+                .setBondCollateralizationRatio(this.stubs.hToken.address, overflowCollateralizationRatio),
             ).to.be.revertedWith(FintrollerErrors.SetBondCollateralizationRatioUpperBound);
           });
         });
@@ -52,7 +52,7 @@ export default function shouldBehaveLikeSetBondCollateralizationRatio(): void {
             await expect(
               this.contracts.fintroller
                 .connect(this.signers.admin)
-                .setBondCollateralizationRatio(this.stubs.fyToken.address, underflowCollateralizationRatio),
+                .setBondCollateralizationRatio(this.stubs.hToken.address, underflowCollateralizationRatio),
             ).to.be.revertedWith(FintrollerErrors.SetBondCollateralizationRatioLowerBound);
           });
         });
@@ -62,7 +62,7 @@ export default function shouldBehaveLikeSetBondCollateralizationRatio(): void {
             await expect(
               this.contracts.fintroller
                 .connect(this.signers.admin)
-                .setBondCollateralizationRatio(this.stubs.fyToken.address, Zero),
+                .setBondCollateralizationRatio(this.stubs.hToken.address, Zero),
             ).to.be.revertedWith(FintrollerErrors.SetBondCollateralizationRatioLowerBound);
           });
         });
@@ -72,9 +72,9 @@ export default function shouldBehaveLikeSetBondCollateralizationRatio(): void {
         it("sets the new collateralization ratio", async function () {
           await this.contracts.fintroller
             .connect(this.signers.admin)
-            .setBondCollateralizationRatio(this.stubs.fyToken.address, newCollateralizationRatio);
+            .setBondCollateralizationRatio(this.stubs.hToken.address, newCollateralizationRatio);
           const contractCollateralizationRatio: BigNumber =
-            await this.contracts.fintroller.getBondCollateralizationRatio(this.stubs.fyToken.address);
+            await this.contracts.fintroller.getBondCollateralizationRatio(this.stubs.hToken.address);
           expect(contractCollateralizationRatio).to.equal(newCollateralizationRatio);
         });
 
@@ -82,12 +82,12 @@ export default function shouldBehaveLikeSetBondCollateralizationRatio(): void {
           await expect(
             this.contracts.fintroller
               .connect(this.signers.admin)
-              .setBondCollateralizationRatio(this.stubs.fyToken.address, newCollateralizationRatio),
+              .setBondCollateralizationRatio(this.stubs.hToken.address, newCollateralizationRatio),
           )
             .to.emit(this.contracts.fintroller, "SetBondCollateralizationRatio")
             .withArgs(
               this.signers.admin.address,
-              this.stubs.fyToken.address,
+              this.stubs.hToken.address,
               fintrollerConstants.defaultCollateralizationRatio,
               newCollateralizationRatio,
             );

@@ -62,11 +62,11 @@ export async function deployStubFintroller(deployer: Signer): Promise<MockContra
   return fintroller;
 }
 
-export async function deployStubFyToken(deployer: Signer): Promise<MockContract> {
-  const fyTokenArtifact: Artifact = await hre.artifacts.readArtifact("FyToken");
-  const fyToken: MockContract = await deployStubContract(deployer, fyTokenArtifact.abi);
-  await fyToken.mock.isFyToken.returns(true);
-  return fyToken;
+export async function deployStubHToken(deployer: Signer): Promise<MockContract> {
+  const hTokenArtifact: Artifact = await hre.artifacts.readArtifact("HToken");
+  const hToken: MockContract = await deployStubContract(deployer, hTokenArtifact.abi);
+  await hToken.mock.isHToken.returns(true);
+  return hToken;
 }
 
 export async function deployStubRedemptionPool(deployer: Signer): Promise<MockContract> {
@@ -86,7 +86,7 @@ export async function deployStubUnderlying(deployer: Signer): Promise<MockContra
  */
 export async function stubGetVault(
   this: Mocha.Context,
-  fyTokenAddress: string,
+  hTokenAddress: string,
   account: string,
   debt: BigNumber,
   freeCollateral: BigNumber,
@@ -94,26 +94,26 @@ export async function stubGetVault(
   isOpen: boolean,
 ): Promise<void> {
   await this.stubs.balanceSheet.mock.getVault
-    .withArgs(fyTokenAddress, account)
+    .withArgs(hTokenAddress, account)
     .returns({ debt, freeCollateral, lockedCollateral, isOpen });
 }
 
-export async function stubIsVaultOpen(this: Mocha.Context, fyTokenAddress: string, account: string): Promise<void> {
+export async function stubIsVaultOpen(this: Mocha.Context, hTokenAddress: string, account: string): Promise<void> {
   await this.stubs.balanceSheet.mock.getVault
-    .withArgs(fyTokenAddress, account)
+    .withArgs(hTokenAddress, account)
     .returns(balanceSheetConstants.defaultVault);
-  await this.stubs.balanceSheet.mock.isVaultOpen.withArgs(fyTokenAddress, account).returns(true);
+  await this.stubs.balanceSheet.mock.isVaultOpen.withArgs(hTokenAddress, account).returns(true);
 }
 
 export async function stubVaultFreeCollateral(
   this: Mocha.Context,
-  fyTokenAddress: string,
+  hTokenAddress: string,
   account: string,
   freeCollateral: BigNumber,
 ): Promise<void> {
   await stubGetVault.call(
     this,
-    fyTokenAddress,
+    hTokenAddress,
     account,
     balanceSheetConstants.defaultVault.debt,
     freeCollateral,
@@ -124,13 +124,13 @@ export async function stubVaultFreeCollateral(
 
 export async function stubVaultLockedCollateral(
   this: Mocha.Context,
-  fyTokenAddress: string,
+  hTokenAddress: string,
   account: string,
   lockedCollateral: BigNumber,
 ): Promise<void> {
   await stubGetVault.call(
     this,
-    fyTokenAddress,
+    hTokenAddress,
     account,
     balanceSheetConstants.defaultVault.debt,
     balanceSheetConstants.defaultVault.freeCollateral,

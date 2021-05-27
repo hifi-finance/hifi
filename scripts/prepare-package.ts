@@ -13,7 +13,7 @@ const contracts: string[] = [
   "Erc20",
   "Erc20Permit",
   "Fintroller",
-  "FyToken",
+  "HToken",
   "IAdmin",
   "IAggregatorV3",
   "IBalanceSheet",
@@ -23,7 +23,7 @@ const contracts: string[] = [
   "IErc20Permit",
   "IFintroller",
   "IRedemptionPool",
-  "IFyToken",
+  "IHToken",
   "RedemptionPool",
   "StablecoinPriceFeed",
 ];

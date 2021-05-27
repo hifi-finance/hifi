@@ -4,9 +4,9 @@ import { ethers } from "hardhat";
 import { getEnvVar } from "../../helpers/env";
 
 const collateralAddress: string = getEnvVar("COLLATERAL_ADDRESS");
-const fyTokenExpirationTime: string = getEnvVar("FY_TOKEN_EXPIRATION_TIME");
-const fyTokenName: string = getEnvVar("FY_TOKEN_NAME");
-const fyTokenSymbol: string = getEnvVar("FY_TOKEN_SYMBOL");
+const hTokenExpirationTime: string = getEnvVar("FY_TOKEN_EXPIRATION_TIME");
+const hTokenName: string = getEnvVar("FY_TOKEN_NAME");
+const hTokenSymbol: string = getEnvVar("FY_TOKEN_SYMBOL");
 const stablecoinPrice: string = getEnvVar("STABLECOIN_PRICE");
 const stablecoinPriceFeedDescription: string = getEnvVar("STABLECOIN_PRICE_FEED_DESCRIPTION");
 const underlyingAddress: string = getEnvVar("UNDERLYING_ADDRESS");
@@ -24,19 +24,19 @@ async function main(): Promise<void> {
   await balanceSheet.deployed();
   console.log("BalanceSheet deployed to: ", balanceSheet.address);
 
-  // Deploy FyToken
-  const fyTokenFactory: ContractFactory = await ethers.getContractFactory("FyToken");
-  const fyToken: Contract = await fyTokenFactory.deploy(
-    fyTokenName,
-    fyTokenSymbol,
-    fyTokenExpirationTime,
+  // Deploy HToken
+  const hTokenFactory: ContractFactory = await ethers.getContractFactory("HToken");
+  const hToken: Contract = await hTokenFactory.deploy(
+    hTokenName,
+    hTokenSymbol,
+    hTokenExpirationTime,
     fintroller.address,
     balanceSheet.address,
     underlyingAddress,
     collateralAddress,
   );
-  await fyToken.deployed();
-  console.log("FyToken deployed to: ", fyToken.address);
+  await hToken.deployed();
+  console.log("HToken deployed to: ", hToken.address);
 
   // Deploy ChainlinkOperator
   const chainlinkOperatorFactory: ContractFactory = await ethers.getContractFactory("ChainlinkOperator");

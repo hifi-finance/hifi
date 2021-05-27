@@ -2,17 +2,17 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { One } from "@ethersproject/constants";
 import { MockContract } from "ethereum-waffle";
 
-import { fyTokenConstants } from "../../helpers/constants";
+import { hTokenConstants } from "../../helpers/constants";
 import { ChainlinkOperator } from "../../typechain/ChainlinkOperator";
 import { Fintroller } from "../../typechain/Fintroller";
 import { GodModeBalanceSheet } from "../../typechain/GodModeBalanceSheet";
-import { GodModeFyToken } from "../../typechain/GodModeFyToken";
+import { GodModeHToken } from "../../typechain/GodModeHToken";
 import { GodModeRedemptionPool } from "../../typechain/GodModeRedemptionPool";
 import {
   deployChainlinkOperator,
   deployFintroller,
   deployGodModeBalanceSheet,
-  deployGodModeFyToken,
+  deployGodModeHToken,
   deployGodModeRedemptionPool,
 } from "../deployers";
 import {
@@ -21,7 +21,7 @@ import {
   deployStubCollateral,
   deployStubCollateralPriceFeed,
   deployStubFintroller,
-  deployStubFyToken,
+  deployStubHToken,
   deployStubRedemptionPool,
   deployStubUnderlying,
 } from "./stubs";
@@ -32,7 +32,7 @@ type UnitFixtureBalanceSheetReturnType = {
   fintroller: MockContract;
   oracle: MockContract;
   underlying: MockContract;
-  fyToken: MockContract;
+  hToken: MockContract;
 };
 
 export async function unitFixtureBalanceSheet(signers: Signer[]): Promise<UnitFixtureBalanceSheetReturnType> {
@@ -45,14 +45,14 @@ export async function unitFixtureBalanceSheet(signers: Signer[]): Promise<UnitFi
   const fintroller: MockContract = await deployStubFintroller(deployer);
   await fintroller.mock.oracle.returns(oracle.address);
 
-  const fyToken: MockContract = await deployStubFyToken(deployer);
-  await fyToken.mock.collateral.returns(collateral.address);
-  await fyToken.mock.collateralPrecisionScalar.returns(One);
-  await fyToken.mock.underlying.returns(underlying.address);
-  await fyToken.mock.underlyingPrecisionScalar.returns(One);
+  const hToken: MockContract = await deployStubHToken(deployer);
+  await hToken.mock.collateral.returns(collateral.address);
+  await hToken.mock.collateralPrecisionScalar.returns(One);
+  await hToken.mock.underlying.returns(underlying.address);
+  await hToken.mock.underlyingPrecisionScalar.returns(One);
 
   const balanceSheet: GodModeBalanceSheet = await deployGodModeBalanceSheet(deployer, fintroller.address);
-  return { balanceSheet, collateral, fintroller, oracle, underlying, fyToken };
+  return { balanceSheet, collateral, fintroller, oracle, underlying, hToken };
 }
 
 type UnitFixtureChainlinkOperatorReturnType = {
@@ -71,29 +71,29 @@ export async function unitFixtureChainlinkOperator(signers: Signer[]): Promise<U
 
 type UnitFixtureFintrollerReturnType = {
   fintroller: Fintroller;
-  fyToken: MockContract;
+  hToken: MockContract;
   oracle: MockContract;
 };
 
 export async function unitFixtureFintroller(signers: Signer[]): Promise<UnitFixtureFintrollerReturnType> {
   const deployer: Signer = signers[0];
   const oracle: MockContract = await deployStubChainlinkOperator(deployer);
-  const fyToken: MockContract = await deployStubFyToken(deployer);
+  const hToken: MockContract = await deployStubHToken(deployer);
   const fintroller: Fintroller = await deployFintroller(deployer);
-  return { fintroller, fyToken, oracle };
+  return { fintroller, hToken, oracle };
 }
 
-type UnitFixtureFyTokenReturnType = {
+type UnitFixtureHTokenReturnType = {
   balanceSheet: MockContract;
   collateral: MockContract;
   fintroller: MockContract;
-  fyToken: GodModeFyToken;
+  hToken: GodModeHToken;
   oracle: MockContract;
   redemptionPool: MockContract;
   underlying: MockContract;
 };
 
-export async function unitFixtureFyToken(signers: Signer[]): Promise<UnitFixtureFyTokenReturnType> {
+export async function unitFixtureHToken(signers: Signer[]): Promise<UnitFixtureHTokenReturnType> {
   const deployer: Signer = signers[0];
 
   const oracle: MockContract = await deployStubChainlinkOperator(deployer);
@@ -103,9 +103,9 @@ export async function unitFixtureFyToken(signers: Signer[]): Promise<UnitFixture
   const balanceSheet: MockContract = await deployStubBalanceSheet(deployer);
   const underlying: MockContract = await deployStubUnderlying(deployer);
   const collateral: MockContract = await deployStubCollateral(deployer);
-  const fyToken: GodModeFyToken = await deployGodModeFyToken(
+  const hToken: GodModeHToken = await deployGodModeHToken(
     deployer,
-    fyTokenConstants.expirationTime,
+    hTokenConstants.expirationTime,
     fintroller.address,
     balanceSheet.address,
     underlying.address,
@@ -113,21 +113,21 @@ export async function unitFixtureFyToken(signers: Signer[]): Promise<UnitFixture
   );
 
   /**
-   * The fyToken initializes the RedemptionPool in its constructor, but we don't want
+   * The hToken initializes the RedemptionPool in its constructor, but we don't want
    * it for our unit tests. With help from the god-mode, we override the RedemptionPool
    * with a mock contract.
    */
   const redemptionPool: MockContract = await deployStubRedemptionPool(deployer);
-  await fyToken.__godMode__setRedemptionPool(redemptionPool.address);
+  await hToken.__godMode__setRedemptionPool(redemptionPool.address);
 
-  return { balanceSheet, collateral, fintroller, oracle, redemptionPool, underlying, fyToken };
+  return { balanceSheet, collateral, fintroller, oracle, redemptionPool, underlying, hToken };
 }
 
 type UnitFixtureRedemptionPoolReturnType = {
   fintroller: MockContract;
   redemptionPool: GodModeRedemptionPool;
   underlying: MockContract;
-  fyToken: MockContract;
+  hToken: MockContract;
 };
 
 export async function unitFixtureRedemptionPool(signers: Signer[]): Promise<UnitFixtureRedemptionPoolReturnType> {
@@ -136,14 +136,14 @@ export async function unitFixtureRedemptionPool(signers: Signer[]): Promise<Unit
   const fintroller: MockContract = await deployStubFintroller(deployer);
   const underlying: MockContract = await deployStubUnderlying(deployer);
 
-  const fyToken: MockContract = await deployStubFyToken(deployer);
-  await fyToken.mock.underlying.returns(underlying.address);
-  await fyToken.mock.underlyingPrecisionScalar.returns(One);
+  const hToken: MockContract = await deployStubHToken(deployer);
+  await hToken.mock.underlying.returns(underlying.address);
+  await hToken.mock.underlyingPrecisionScalar.returns(One);
 
   const redemptionPool: GodModeRedemptionPool = await deployGodModeRedemptionPool(
     deployer,
     fintroller.address,
-    fyToken.address,
+    hToken.address,
   );
-  return { fintroller, redemptionPool, underlying, fyToken };
+  return { fintroller, redemptionPool, underlying, hToken };
 }

@@ -6,7 +6,7 @@ export default function shouldBehaveLikeSetBorrowAllowed(): void {
   describe("when the caller is not the admin", function () {
     it("reverts", async function () {
       await expect(
-        this.contracts.fintroller.connect(this.signers.raider).setBorrowAllowed(this.stubs.fyToken.address, true),
+        this.contracts.fintroller.connect(this.signers.raider).setBorrowAllowed(this.stubs.hToken.address, true),
       ).to.be.revertedWith(AdminErrors.NotAdmin);
     });
   });
@@ -15,34 +15,34 @@ export default function shouldBehaveLikeSetBorrowAllowed(): void {
     describe("when the bond is not listed", function () {
       it("rejects", async function () {
         await expect(
-          this.contracts.fintroller.connect(this.signers.admin).setBorrowAllowed(this.stubs.fyToken.address, true),
+          this.contracts.fintroller.connect(this.signers.admin).setBorrowAllowed(this.stubs.hToken.address, true),
         ).to.be.revertedWith(GenericErrors.BondNotListed);
       });
     });
 
     describe("when the bond is listed", function () {
       beforeEach(async function () {
-        await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.fyToken.address);
+        await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.hToken.address);
       });
 
       it("sets the value to true", async function () {
-        await this.contracts.fintroller.connect(this.signers.admin).setBorrowAllowed(this.stubs.fyToken.address, true);
-        const newState: boolean = await this.contracts.fintroller.getBorrowAllowed(this.stubs.fyToken.address);
+        await this.contracts.fintroller.connect(this.signers.admin).setBorrowAllowed(this.stubs.hToken.address, true);
+        const newState: boolean = await this.contracts.fintroller.getBorrowAllowed(this.stubs.hToken.address);
         expect(newState).to.equal(true);
       });
 
       it("sets the value to false", async function () {
-        await this.contracts.fintroller.connect(this.signers.admin).setBorrowAllowed(this.stubs.fyToken.address, false);
-        const newState: boolean = await this.contracts.fintroller.getBorrowAllowed(this.stubs.fyToken.address);
+        await this.contracts.fintroller.connect(this.signers.admin).setBorrowAllowed(this.stubs.hToken.address, false);
+        const newState: boolean = await this.contracts.fintroller.getBorrowAllowed(this.stubs.hToken.address);
         expect(newState).to.equal(false);
       });
 
       it("emits a SetBorrowAllowed event", async function () {
         await expect(
-          this.contracts.fintroller.connect(this.signers.admin).setBorrowAllowed(this.stubs.fyToken.address, true),
+          this.contracts.fintroller.connect(this.signers.admin).setBorrowAllowed(this.stubs.hToken.address, true),
         )
           .to.emit(this.contracts.fintroller, "SetBorrowAllowed")
-          .withArgs(this.signers.admin.address, this.stubs.fyToken.address, true);
+          .withArgs(this.signers.admin.address, this.stubs.hToken.address, true);
       });
     });
   });

@@ -3,7 +3,7 @@ pragma solidity ^0.8.0;
 
 import "@paulrberg/contracts/access/IAdmin.sol";
 
-import "./IFyToken.sol";
+import "./IHToken.sol";
 import "./IFintroller.sol";
 
 /// @title IBalanceSheet
@@ -29,59 +29,59 @@ interface IBalanceSheet is
     /// EVENTS ///
 
     /// @notice Emitted when collateral is clutched.
-    /// @param fyToken The related FyToken.
+    /// @param hToken The related HToken.
     /// @param liquidator The address of the liquidator.
     /// @param borrower The address of the liquidated borrower.
     /// @param collateralAmount The amount of clutched collateral.
     event ClutchCollateral(
-        IFyToken indexed fyToken,
+        IHToken indexed hToken,
         address indexed liquidator,
         address indexed borrower,
         uint256 collateralAmount
     );
 
     /// @notice Emitted when the default of a vault is decreased.
-    /// @param fyToken The related FyToken.
+    /// @param hToken The related HToken.
     /// @param borrower The address of the borrower.
     /// @param oldDebt The amount of the old debt.
     /// @param newDebt The amount of the new debt.
-    event DecreaseVaultDebt(IFyToken indexed fyToken, address indexed borrower, uint256 oldDebt, uint256 newDebt);
+    event DecreaseVaultDebt(IHToken indexed hToken, address indexed borrower, uint256 oldDebt, uint256 newDebt);
 
     /// @notice Emitted when collateral is deposited.
-    /// @param fyToken The related FyToken.
+    /// @param hToken The related HToken.
     /// @param borrower The address of the borrower.
     /// @param collateralAmount The amount of deposited collateral.
-    event DepositCollateral(IFyToken indexed fyToken, address indexed borrower, uint256 collateralAmount);
+    event DepositCollateral(IHToken indexed hToken, address indexed borrower, uint256 collateralAmount);
 
     /// @notice Emitted when collateral is freed.
-    /// @param fyToken The related FyToken.
+    /// @param hToken The related HToken.
     /// @param borrower The address of the borrower.
     /// @param collateralAmount The amount of freed collateral.
-    event FreeCollateral(IFyToken indexed fyToken, address indexed borrower, uint256 collateralAmount);
+    event FreeCollateral(IHToken indexed hToken, address indexed borrower, uint256 collateralAmount);
 
     /// @notice Emitted when collateral is locked
-    /// @param fyToken The related FyToken.
+    /// @param hToken The related HToken.
     /// @param borrower The address of the borrower.
     /// @param collateralAmount The amount of locked collateral.
-    event LockCollateral(IFyToken indexed fyToken, address indexed borrower, uint256 collateralAmount);
+    event LockCollateral(IHToken indexed hToken, address indexed borrower, uint256 collateralAmount);
 
     /// @notice Emitted when a vault is opened.
-    /// @param fyToken The related FyToken.
+    /// @param hToken The related HToken.
     /// @param borrower The address of the borrower.
-    event OpenVault(IFyToken indexed fyToken, address indexed borrower);
+    event OpenVault(IHToken indexed hToken, address indexed borrower);
 
     /// @notice Emitted when the debt of a vault is increased.
-    /// @param fyToken The related FyToken.
+    /// @param hToken The related HToken.
     /// @param borrower The address of the borrower.
     /// @param oldDebt The amount of the old debt.
     /// @param newDebt The amount of the new debt.
-    event IncreaseVaultDebt(IFyToken indexed fyToken, address indexed borrower, uint256 oldDebt, uint256 newDebt);
+    event IncreaseVaultDebt(IHToken indexed hToken, address indexed borrower, uint256 oldDebt, uint256 newDebt);
 
     /// @notice Emitted when collateral is withdrawn.
-    /// @param fyToken The related FyToken.
+    /// @param hToken The related HToken.
     /// @param borrower The address of the borrower.
     /// @param collateralAmount The amount of withdrawn collateral.
-    event WithdrawCollateral(IFyToken indexed fyToken, address indexed borrower, uint256 collateralAmount);
+    event WithdrawCollateral(IHToken indexed hToken, address indexed borrower, uint256 collateralAmount);
 
     /// NON-CONSTANT FUNCTIONS ///
 
@@ -91,15 +91,15 @@ interface IBalanceSheet is
     ///
     /// Requirements:
     ///
-    /// - Can only be called by the fyToken.
+    /// - Can only be called by the hToken.
     /// - There must be enough collateral in the borrower's vault.
     ///
-    /// @param fyToken The address of the fyToken contract.
+    /// @param hToken The address of the hToken contract.
     /// @param liquidator The account who repays the borrower's debt and receives the collateral.
     /// @param borrower The account who fell underwater and is liquidated.
     /// @param collateralAmount The amount of collateral to clutch, specified in the collateral's decimal system.
     function clutchCollateral(
-        IFyToken fyToken,
+        IHToken hToken,
         address liquidator,
         address borrower,
         uint256 collateralAmount
@@ -110,13 +110,13 @@ interface IBalanceSheet is
     /// @dev Emits an {DecreaseVaultDebt} event.
     ///
     /// Requirements:
-    /// - Can only be called by the fyToken.
+    /// - Can only be called by the hToken.
     ///
-    /// @param fyToken The address of the fyToken contract.
+    /// @param hToken The address of the hToken contract.
     /// @param borrower The borrower account for which to decrease the debt.
     /// @param subtractedDebt The amount by which to decrease the debt of the borrower account.
     function decreaseVaultDebt(
-        IFyToken fyToken,
+        IHToken hToken,
         address borrower,
         uint256 subtractedDebt
     ) external;
@@ -132,9 +132,9 @@ interface IBalanceSheet is
     /// - The Fintroller must allow this action to be performed.
     /// - The caller must have allowed this contract to spend `collateralAmount` tokens.
     ///
-    /// @param fyToken The address of the fyToken contract.
+    /// @param hToken The address of the hToken contract.
     /// @param collateralAmount The amount of collateral to deposit.
-    function depositCollateral(IFyToken fyToken, uint256 collateralAmount) external;
+    function depositCollateral(IHToken hToken, uint256 collateralAmount) external;
 
     /// @notice Frees a portion or all of the locked collateral.
     /// @dev Emits a {FreeCollateral} event.
@@ -146,22 +146,22 @@ interface IBalanceSheet is
     /// - There must be enough locked collateral.
     /// - The borrower account cannot fall below the collateralization ratio.
     ///
-    /// @param fyToken The address of the fyToken contract.
+    /// @param hToken The address of the hToken contract.
     /// @param collateralAmount The amount of locked collateral to free.
-    function freeCollateral(IFyToken fyToken, uint256 collateralAmount) external;
+    function freeCollateral(IHToken hToken, uint256 collateralAmount) external;
 
     /// @notice Increases the debt accrued by the borrower account.
     ///
     /// @dev Emits an {IncreaseVaultDebt} event.
     ///
     /// Requirements:
-    /// - Can only be called by the fyToken.
+    /// - Can only be called by the hToken.
     ///
-    /// @param fyToken The address of the fyToken contract.
+    /// @param hToken The address of the hToken contract.
     /// @param borrower The borrower account for which to increase the debt.
     /// @param addedDebt The amount by which to increase the debt of the borrower account.
     function increaseVaultDebt(
-        IFyToken fyToken,
+        IHToken hToken,
         address borrower,
         uint256 addedDebt
     ) external;
@@ -175,9 +175,9 @@ interface IBalanceSheet is
     /// - The amount to lock cannot be zero.
     /// - There must be enough free collateral.
     ///
-    /// @param fyToken The address of the fyToken contract.
+    /// @param hToken The address of the hToken contract.
     /// @param collateralAmount The amount of free collateral to lock.
-    function lockCollateral(IFyToken fyToken, uint256 collateralAmount) external;
+    function lockCollateral(IHToken hToken, uint256 collateralAmount) external;
 
     /// @notice Opens a Vault for the caller.
     /// @dev Emits an {OpenVault} event.
@@ -186,10 +186,10 @@ interface IBalanceSheet is
     ///
     /// - The bond must be listed.
     /// - The vault cannot be already open.
-    /// - The fyToken must pass the inspection.
+    /// - The hToken must pass the inspection.
     ///
-    /// @param fyToken The address of the fyToken contract for which to open the vault.
-    function openVault(IFyToken fyToken) external;
+    /// @param hToken The address of the hToken contract for which to open the vault.
+    function openVault(IHToken hToken) external;
 
     /// @notice Withdraws a portion or all of the free collateral.
     ///
@@ -201,9 +201,9 @@ interface IBalanceSheet is
     /// - The amount to withdraw cannot be zero.
     /// - There must be enough free collateral in the vault.
     ///
-    /// @param fyToken The address of the fyToken contract.
+    /// @param hToken The address of the hToken contract.
     /// @param collateralAmount The amount of collateral to withdraw.
-    function withdrawCollateral(IFyToken fyToken, uint256 collateralAmount) external;
+    function withdrawCollateral(IHToken hToken, uint256 collateralAmount) external;
 
     /// CONSTANT FUNCTIONS ///
 
@@ -218,16 +218,16 @@ interface IBalanceSheet is
     /// Requirements:
     /// - `repayAmount` must be non-zero.
     ///
-    /// @param fyToken The fyToken to make the query against.
-    /// @param repayAmount The amount of fyTokens to repay.
+    /// @param hToken The hToken to make the query against.
+    /// @param repayAmount The amount of hTokens to repay.
     /// @return The amount of clutchable collateral as uint256, specified in the collateral's decimal system.
-    function getClutchableCollateral(IFyToken fyToken, uint256 repayAmount) external view returns (uint256);
+    function getClutchableCollateral(IHToken hToken, uint256 repayAmount) external view returns (uint256);
 
     /// @notice Determines the current collateralization ratio for the given borrower account.
-    /// @param fyToken The fyToken to make the query against.
+    /// @param hToken The hToken to make the query against.
     /// @param borrower The borrower account to make the query against.
     /// @return A quotient if locked collateral is non-zero, otherwise zero.
-    function getCurrentCollateralizationRatio(IFyToken fyToken, address borrower) external view returns (uint256);
+    function getCurrentCollateralizationRatio(IHToken hToken, address borrower) external view returns (uint256);
 
     /// @notice Determines the hypothetical collateralization ratio for the given locked
     /// collateral and debt, at the current prices provided by the oracle.
@@ -240,14 +240,14 @@ interface IBalanceSheet is
     /// - `debt` must be non-zero.
     /// - The oracle prices must be non-zero.
     ///
-    /// @param fyToken The fyToken for which to make the query against.
+    /// @param hToken The hToken for which to make the query against.
     /// @param borrower The borrower account for which to make the query against.
     /// @param lockedCollateral The hypothetical locked collateral.
     /// @param debt The hypothetical debt.
     /// @return The hypothetical collateralization ratio as a percentage if locked collateral is non-zero,
     /// otherwise zero.
     function getHypotheticalCollateralizationRatio(
-        IFyToken fyToken,
+        IHToken hToken,
         address borrower,
         uint256 lockedCollateral,
         uint256 debt
@@ -255,26 +255,26 @@ interface IBalanceSheet is
 
     /// @notice Reads the storage properties of the vault.
     /// @return The vault object.
-    function getVault(IFyToken fyToken, address borrower) external view returns (Vault memory);
+    function getVault(IHToken hToken, address borrower) external view returns (Vault memory);
 
     /// @notice Reads the debt held by the given account.
     /// @return The debt held by the borrower, as an uint256.
-    function getVaultDebt(IFyToken fyToken, address borrower) external view returns (uint256);
+    function getVaultDebt(IHToken hToken, address borrower) external view returns (uint256);
 
     /// @notice Reads the amount of collateral that the given borrower account locked in the vault.
     /// @return The collateral locked in the vault by the borrower, as an uint256.
-    function getVaultLockedCollateral(IFyToken fyToken, address borrower) external view returns (uint256);
+    function getVaultLockedCollateral(IHToken hToken, address borrower) external view returns (uint256);
 
     /// @notice Checks whether the borrower account can be liquidated or not.
-    /// @param fyToken The fyToken for which to make the query against.
+    /// @param hToken The hToken for which to make the query against.
     /// @param borrower The borrower account for which to make the query against.
     /// @return bool true = is underwater, otherwise not.
-    function isAccountUnderwater(IFyToken fyToken, address borrower) external view returns (bool);
+    function isAccountUnderwater(IHToken hToken, address borrower) external view returns (bool);
 
     /// @notice Indicator that this is a BalanceSheet contract, for inspection.
     function isBalanceSheet() external view returns (bool);
 
-    /// @notice Checks whether the borrower account has a vault opened for a particular fyToken.
+    /// @notice Checks whether the borrower account has a vault opened for a particular hToken.
     /// @return bool true = vault open, otherwise not.
-    function isVaultOpen(IFyToken fyToken, address borrower) external view returns (bool);
+    function isVaultOpen(IHToken hToken, address borrower) external view returns (bool);
 }

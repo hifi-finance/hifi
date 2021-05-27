@@ -1,11 +1,11 @@
 import { Signer } from "@ethersproject/abstract-signer";
 
-import { fyTokenConstants } from "../../helpers/constants";
+import { hTokenConstants } from "../../helpers/constants";
 import { ChainlinkOperator } from "../../typechain/ChainlinkOperator";
 import { Erc20Mintable } from "../../typechain/Erc20Mintable";
 import { Fintroller } from "../../typechain/Fintroller";
 import { GodModeBalanceSheet } from "../../typechain/GodModeBalanceSheet";
-import { GodModeFyToken } from "../../typechain/GodModeFyToken";
+import { GodModeHToken } from "../../typechain/GodModeHToken";
 import { GodModeRedemptionPool } from "../../typechain/GodModeRedemptionPool";
 import { SimplePriceFeed } from "../../typechain/SimplePriceFeed";
 import {
@@ -14,7 +14,7 @@ import {
   deployCollateralPriceFeed,
   deployFintroller,
   deployGodModeBalanceSheet,
-  deployGodModeFyToken,
+  deployGodModeHToken,
   deployGodModeRedemptionPool,
   deployUnderlying,
   deployUnderlyingPriceFeed,
@@ -25,7 +25,7 @@ type IntegrationFixtureReturnType = {
   collateral: Erc20Mintable;
   collateralPriceFeed: SimplePriceFeed;
   fintroller: Fintroller;
-  fyToken: GodModeFyToken;
+  hToken: GodModeHToken;
   oracle: ChainlinkOperator;
   redemptionPool: GodModeRedemptionPool;
   underlying: Erc20Mintable;
@@ -49,29 +49,29 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
 
   const balanceSheet: GodModeBalanceSheet = await deployGodModeBalanceSheet(deployer, fintroller.address);
 
-  const fyToken: GodModeFyToken = await deployGodModeFyToken(
+  const hToken: GodModeHToken = await deployGodModeHToken(
     deployer,
-    fyTokenConstants.expirationTime,
+    hTokenConstants.expirationTime,
     fintroller.address,
     balanceSheet.address,
     underlying.address,
     collateral.address,
   );
 
-  // We have to override the RedemptionPool.sol contract created by the fyToken with GodModeRedemptionPool.sol
+  // We have to override the RedemptionPool.sol contract created by the hToken with GodModeRedemptionPool.sol
   const redemptionPool: GodModeRedemptionPool = await deployGodModeRedemptionPool(
     deployer,
     fintroller.address,
-    fyToken.address,
+    hToken.address,
   );
-  await fyToken.__godMode__setRedemptionPool(redemptionPool.address);
+  await hToken.__godMode__setRedemptionPool(redemptionPool.address);
 
   return {
     balanceSheet,
     collateral,
     collateralPriceFeed,
     fintroller,
-    fyToken,
+    hToken,
     oracle,
     redemptionPool,
     underlying,

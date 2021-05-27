@@ -5,10 +5,10 @@ import { MockContract } from "ethereum-waffle";
 import { ChainlinkOperator } from "../typechain/ChainlinkOperator";
 import { Erc20Mintable } from "../typechain/Erc20Mintable";
 import { Fintroller } from "../typechain/Fintroller";
-import { FyToken } from "../typechain/FyToken";
 import { GodModeBalanceSheet } from "../typechain/GodModeBalanceSheet";
-import { GodModeFyToken } from "../typechain/GodModeFyToken";
+import { GodModeHToken } from "../typechain/GodModeHToken";
 import { GodModeRedemptionPool } from "../typechain/GodModeRedemptionPool";
+import { HToken } from "../typechain/HToken";
 import { SimplePriceFeed } from "../typechain/SimplePriceFeed";
 
 export interface Contracts {
@@ -16,7 +16,7 @@ export interface Contracts {
   collateral: Erc20Mintable;
   collateralPriceFeed: SimplePriceFeed;
   fintroller: Fintroller;
-  fyToken: GodModeFyToken | FyToken;
+  hToken: GodModeHToken | HToken;
   oracle: ChainlinkOperator;
   redemptionPool: GodModeRedemptionPool;
   underlying: Erc20Mintable;
@@ -37,7 +37,7 @@ export interface Stubs {
   collateral: MockContract;
   collateralPriceFeed: MockContract;
   fintroller: MockContract;
-  fyToken: MockContract;
+  hToken: MockContract;
   oracle: MockContract;
   redemptionPool: MockContract;
   underlying: MockContract;

@@ -1,13 +1,13 @@
-import shouldBehaveLikeRedeemFyTokens from "./effects/redeemFyTokens";
+import shouldBehaveLikeRedeemHTokens from "./effects/redeemHTokens";
 import shouldBehaveLikeSupplyUnderlying from "./effects/supplyUnderlying";
-import shouldBehaveLikeFyTokenGetter from "./view/fyToken";
+import shouldBehaveLikeHTokenGetter from "./view/hToken";
 import shouldBehaveLikeIsRedemptionPoolGetter from "./view/isRedemptionPool";
 import shouldBehaveLikeTotalUnderlyingSupplyGetter from "./view/totalUnderlyingSupply";
 
 export function shouldBehaveLikeRedemptionPool(): void {
   describe("View Functions", function () {
-    describe("fyToken", function () {
-      shouldBehaveLikeFyTokenGetter();
+    describe("hToken", function () {
+      shouldBehaveLikeHTokenGetter();
     });
 
     describe("isRedemptionPool", function () {
@@ -20,8 +20,8 @@ export function shouldBehaveLikeRedemptionPool(): void {
   });
 
   describe("Effects Functions", function () {
-    describe("redeemFyTokens", function () {
-      shouldBehaveLikeRedeemFyTokens();
+    describe("redeemHTokens", function () {
+      shouldBehaveLikeRedeemHTokens();
     });
 
     describe("supplyUnderlying", function () {

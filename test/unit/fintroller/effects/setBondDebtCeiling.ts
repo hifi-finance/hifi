@@ -13,7 +13,7 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
       await expect(
         this.contracts.fintroller
           .connect(this.signers.raider)
-          .setBondDebtCeiling(this.stubs.fyToken.address, newDebtCeiling),
+          .setBondDebtCeiling(this.stubs.hToken.address, newDebtCeiling),
       ).to.be.revertedWith(AdminErrors.NotAdmin);
     });
   });
@@ -24,20 +24,20 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
         await expect(
           this.contracts.fintroller
             .connect(this.signers.admin)
-            .setBondDebtCeiling(this.stubs.fyToken.address, newDebtCeiling),
+            .setBondDebtCeiling(this.stubs.hToken.address, newDebtCeiling),
         ).to.be.revertedWith(GenericErrors.BondNotListed);
       });
     });
 
     describe("when the bond is listed", function () {
       beforeEach(async function () {
-        await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.fyToken.address);
+        await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.hToken.address);
       });
 
       describe("when the debt ceiling is zero", function () {
         it("reverts", async function () {
           await expect(
-            this.contracts.fintroller.connect(this.signers.admin).setBondDebtCeiling(this.stubs.fyToken.address, Zero),
+            this.contracts.fintroller.connect(this.signers.admin).setBondDebtCeiling(this.stubs.hToken.address, Zero),
           ).to.be.revertedWith(FintrollerErrors.SetBondDebtCeilingZero);
         });
       });
@@ -45,29 +45,29 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
       describe("when the debt ceiling is not zero", function () {
         describe("when the debt ceiling is below the current debt", function () {
           beforeEach(async function () {
-            await this.stubs.fyToken.mock.totalSupply.returns(tokenAmounts.oneMillion);
+            await this.stubs.hToken.mock.totalSupply.returns(tokenAmounts.oneMillion);
           });
 
           it("reverts", async function () {
             await expect(
               this.contracts.fintroller
                 .connect(this.signers.admin)
-                .setBondDebtCeiling(this.stubs.fyToken.address, newDebtCeiling),
+                .setBondDebtCeiling(this.stubs.hToken.address, newDebtCeiling),
             ).to.be.revertedWith(FintrollerErrors.SetBondDebtCeilingUnderflow);
           });
         });
 
         describe("when the debt ceiling is not below the current debt", function () {
           beforeEach(async function () {
-            await this.stubs.fyToken.mock.totalSupply.returns(Zero);
+            await this.stubs.hToken.mock.totalSupply.returns(Zero);
           });
 
           it("sets the new debt ceiling", async function () {
             await this.contracts.fintroller
               .connect(this.signers.admin)
-              .setBondDebtCeiling(this.stubs.fyToken.address, newDebtCeiling);
+              .setBondDebtCeiling(this.stubs.hToken.address, newDebtCeiling);
             const contractDebtCeiling: BigNumber = await this.contracts.fintroller.getBondDebtCeiling(
-              this.stubs.fyToken.address,
+              this.stubs.hToken.address,
             );
             expect(contractDebtCeiling).to.equal(newDebtCeiling);
           });
@@ -76,10 +76,10 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
             await expect(
               this.contracts.fintroller
                 .connect(this.signers.admin)
-                .setBondDebtCeiling(this.stubs.fyToken.address, newDebtCeiling),
+                .setBondDebtCeiling(this.stubs.hToken.address, newDebtCeiling),
             )
               .to.emit(this.contracts.fintroller, "SetBondDebtCeiling")
-              .withArgs(this.signers.admin.address, this.stubs.fyToken.address, Zero, newDebtCeiling);
+              .withArgs(this.signers.admin.address, this.stubs.hToken.address, Zero, newDebtCeiling);
           });
         });
       });

@@ -14,7 +14,7 @@ export enum BalanceSheetErrors {
   InsufficientFreeCollateral = "INSUFFICIENT_FREE_COLLATERAL",
   InsufficientLockedCollateral = "INSUFFICIENT_LOCKED_COLLATERAL",
   LockCollateralZero = "LOCK_COLLATERAL_ZERO",
-  OpenVaultFyTokenInspection = "OPEN_VAULT_FYTOKEN_INSPECTION",
+  OpenVaultHTokenInspection = "OPEN_VAULT_HTOKEN_INSPECTION",
   WithdrawCollateralZero = "WITHDRAW_COLLATERAL_ZERO",
 }
 
@@ -26,7 +26,7 @@ export enum ChainlinkOperatorErrors {
 }
 
 export enum FintrollerErrors {
-  ListBondFyTokenInspection = "LIST_BOND_FYTOKEN_INSPECTION",
+  ListBondHTokenInspection = "LIST_BOND_HTOKEN_INSPECTION",
   SetBondDebtCeilingUnderflow = "SET_BOND_DEBT_CEILING_UNDERFLOW",
   SetBondDebtCeilingZero = "SET_BOND_DEBT_CEILING_ZERO",
   SetBondCollateralizationRatioLowerBound = "SET_BOND_COLLATERALIZATION_RATIO_LOWER_BOUND",
@@ -36,18 +36,18 @@ export enum FintrollerErrors {
   SetOracleZeroAddress = "SET_ORACLE_ZERO_ADDRESS",
 }
 
-export enum FyTokenErrors {
+export enum HTokenErrors {
   BorrowDebtCeilingOverflow = "BORROW_DEBT_CEILING_OVERFLOW",
   BorrowLockedCollateralZero = "BORROW_LOCKED_COLLATERAL_ZERO",
   BorrowNotAllowed = "BORROW_NOT_ALLOWED",
   BorrowZero = "BORROW_ZERO",
   BurnNotAuthorized = "BURN_NOT_AUTHORIZED",
   BurnZero = "BURN_ZERO",
-  ConstructorCollateralDecimalsOverflow = "FYTOKEN_CONSTRUCTOR_COLLATERAL_DECIMALS_OVERFLOW",
-  ConstructorCollateralDecimalsZero = "FYTOKEN_CONSTRUCTOR_COLLATERAL_DECIMALS_ZERO",
-  ConstructorExpirationTimeNotValid = "FYTOKEN_CONSTRUCTOR_EXPIRATION_TIME_NOT_VALID",
-  ConstructorUnderlyingDecimalsOverflow = "FYTOKEN_CONSTRUCTOR_UNDERLYING_DECIMALS_OVERFLOW",
-  ConstructorUnderlyingDecimalsZero = "FYTOKEN_CONSTRUCTOR_UNDERLYING_DECIMALS_ZERO",
+  ConstructorCollateralDecimalsOverflow = "HTOKEN_CONSTRUCTOR_COLLATERAL_DECIMALS_OVERFLOW",
+  ConstructorCollateralDecimalsZero = "HTOKEN_CONSTRUCTOR_COLLATERAL_DECIMALS_ZERO",
+  ConstructorExpirationTimeNotValid = "HTOKEN_CONSTRUCTOR_EXPIRATION_TIME_NOT_VALID",
+  ConstructorUnderlyingDecimalsOverflow = "HTOKEN_CONSTRUCTOR_UNDERLYING_DECIMALS_OVERFLOW",
+  ConstructorUnderlyingDecimalsZero = "HTOKEN_CONSTRUCTOR_UNDERLYING_DECIMALS_ZERO",
   LiquidateBorrowNotAllowed = "LIQUIDATE_BORROW_NOT_ALLOWED",
   LiquidateBorrowSelf = "LIQUIDATE_BORROW_SELF",
   LiquidateBorrowZero = "LIQUIDATE_BORROW_ZERO",
@@ -72,9 +72,9 @@ export enum GenericErrors {
 }
 
 export enum RedemptionPoolErrors {
-  RedeemFyTokensInsufficientUnderlying = "REDEEM_FYTOKENS_INSUFFICIENT_UNDERLYING",
-  RedeemFyTokensNotAllowed = "REDEEM_FYTOKENS_NOT_ALLOWED",
-  RedeemFyTokensZero = "REDEEM_FYTOKENS_ZERO",
+  RedeemHTokensInsufficientUnderlying = "REDEEM_HTOKENS_INSUFFICIENT_UNDERLYING",
+  RedeemHTokensNotAllowed = "REDEEM_HTOKENS_NOT_ALLOWED",
+  RedeemHTokensZero = "REDEEM_HTOKENS_ZERO",
   SupplyUnderlyingNotAllowed = "SUPPLY_UNDERLYING_NOT_ALLOWED",
   SupplyUnderlyingZero = "SUPPLY_UNDERLYING_ZERO",
 }

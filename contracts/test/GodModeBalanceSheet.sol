@@ -2,7 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "../BalanceSheet.sol";
-import "../IFyToken.sol";
+import "../IHToken.sol";
 
 /// @title GodModeBalanceSheet
 /// @author Hifi
@@ -13,34 +13,34 @@ contract GodModeBalanceSheet is BalanceSheet {
     }
 
     function __godMode_setVaultDebt(
-        IFyToken fyToken,
+        IHToken hToken,
         address borrower,
         uint256 newVaultDebt
     ) external {
-        vaults[fyToken][borrower].debt = newVaultDebt;
+        vaults[hToken][borrower].debt = newVaultDebt;
     }
 
     function __godMode_setVaultFreeCollateral(
-        IFyToken fyToken,
+        IHToken hToken,
         address borrower,
         uint256 newFreeCollateral
     ) external {
-        vaults[fyToken][borrower].freeCollateral = newFreeCollateral;
+        vaults[hToken][borrower].freeCollateral = newFreeCollateral;
     }
 
     function __godMode_setVaultLockedCollateral(
-        IFyToken fyToken,
+        IHToken hToken,
         address borrower,
         uint256 newLockedCollateral
     ) external {
-        vaults[fyToken][borrower].lockedCollateral = newLockedCollateral;
+        vaults[hToken][borrower].lockedCollateral = newLockedCollateral;
     }
 
     function __godMode_setVaultIsOpen(
-        IFyToken fyToken,
+        IHToken hToken,
         address borrower,
         bool newIsOpen
     ) external {
-        vaults[fyToken][borrower].isOpen = newIsOpen;
+        vaults[hToken][borrower].isOpen = newIsOpen;
     }
 }

@@ -8,15 +8,15 @@ export default function shouldBehaveLikeGetCurrentCollateralizationRatio(): void
   const lockedCollateral: BigNumber = tokenAmounts.ten;
 
   beforeEach(async function () {
-    await this.stubs.fintroller.mock.isBondListed.withArgs(this.stubs.fyToken.address).returns(true);
-    await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.fyToken.address);
+    await this.stubs.fintroller.mock.isBondListed.withArgs(this.stubs.hToken.address).returns(true);
+    await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.hToken.address);
     await this.contracts.balanceSheet.__godMode_setVaultLockedCollateral(
-      this.stubs.fyToken.address,
+      this.stubs.hToken.address,
       this.signers.borrower.address,
       lockedCollateral,
     );
     await this.contracts.balanceSheet.__godMode_setVaultDebt(
-      this.stubs.fyToken.address,
+      this.stubs.hToken.address,
       this.signers.borrower.address,
       debt,
     );
@@ -24,7 +24,7 @@ export default function shouldBehaveLikeGetCurrentCollateralizationRatio(): void
 
   it("returns the current collateralization ratio", async function () {
     const currentCollateralizationRatio: BigNumber = await this.contracts.balanceSheet.getCurrentCollateralizationRatio(
-      this.stubs.fyToken.address,
+      this.stubs.hToken.address,
       this.signers.borrower.address,
     );
     expect(currentCollateralizationRatio).to.equal(percentages.oneThousand);
