@@ -1,8 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
+import fp from "evm-fp";
 
-import { fintrollerConstants, tokenAmounts } from "../../../../helpers/constants";
+import { fintrollerConstants } from "../../../../helpers/constants";
 import { GenericErrors, HTokenErrors } from "../../../../helpers/errors";
 import { GodModeHToken } from "../../../../typechain/GodModeHToken";
 import { stubIsVaultOpen } from "../../stubs";
@@ -12,8 +13,8 @@ import { stubIsVaultOpen } from "../../stubs";
  * Also, this is not as comprehensive as repayBorrow.ts, to avoid re-testing the same logic.
  */
 export default function shouldBehaveLikeRepayBorrowBehalf(): void {
-  const borrowAmount: BigNumber = tokenAmounts.oneHundred;
-  const repayAmount: BigNumber = tokenAmounts.forty;
+  const borrowAmount: BigNumber = fp("100");
+  const repayAmount: BigNumber = fp("40");
 
   context("when the vault is not open", function () {
     beforeEach(async function () {

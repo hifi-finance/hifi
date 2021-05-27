@@ -1,14 +1,15 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
+import fp from "evm-fp";
 
-import { percentages, precisionScalars, tokenAmounts } from "../../../../helpers/constants";
+import { precisionScalars } from "../../../../helpers/constants";
 import { BalanceSheetErrors, ChainlinkOperatorErrors, GenericErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio(): void {
-  const hypotheticalCollateralizationRatio: BigNumber = percentages.oneThousand;
-  const lockedCollateral: BigNumber = tokenAmounts.ten;
-  const debt: BigNumber = tokenAmounts.oneHundred;
+  const hypotheticalCollateralizationRatio: BigNumber = fp("10.00");
+  const lockedCollateral: BigNumber = fp("10");
+  const debt: BigNumber = fp("100");
 
   context("when the vault is not open", function () {
     it("reverts", async function () {

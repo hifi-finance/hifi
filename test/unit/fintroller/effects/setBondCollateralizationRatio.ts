@@ -1,12 +1,13 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { One, Zero } from "@ethersproject/constants";
 import { expect } from "chai";
+import fp from "evm-fp";
 
-import { fintrollerConstants, percentages } from "../../../../helpers/constants";
+import { fintrollerConstants } from "../../../../helpers/constants";
 import { AdminErrors, FintrollerErrors, GenericErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeSetBondCollateralizationRatio(): void {
-  const newCollateralizationRatio: BigNumber = percentages.oneHundredAndSeventyFive;
+  const newCollateralizationRatio: BigNumber = fp("1.75");
   const overflowCollateralizationRatio: BigNumber = fintrollerConstants.collateralizationRatioUpperBound.add(One);
   const underflowCollateralizationRatio: BigNumber = fintrollerConstants.collateralizationRatioLowerBound.sub(One);
 

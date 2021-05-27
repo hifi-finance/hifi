@@ -1,12 +1,12 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
+import fp from "evm-fp";
 
-import { tokenAmounts } from "../../../../helpers/constants";
 import { AdminErrors, FintrollerErrors, GenericErrors } from "../../../../helpers/errors";
 
-export default function shouldBehaveLikeSetDebtCeiling(): void {
-  const newDebtCeiling: BigNumber = tokenAmounts.oneHundred;
+export default function shouldBehaveLikeSetBondDebtCeiling(): void {
+  const newDebtCeiling: BigNumber = fp("100");
 
   context("when the caller is not the admin", function () {
     it("reverts", async function () {
@@ -45,7 +45,7 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
       context("when the debt ceiling is not zero", function () {
         context("when the debt ceiling is below the current debt", function () {
           beforeEach(async function () {
-            await this.stubs.hToken.mock.totalSupply.returns(tokenAmounts.oneMillion);
+            await this.stubs.hToken.mock.totalSupply.returns(fp("1e7"));
           });
 
           it("reverts", async function () {

@@ -1,12 +1,11 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
-
-import { tokenAmounts } from "../../../../helpers/constants";
+import fp from "evm-fp";
 
 export default function shouldBehaveLikeLiquidateBorrow(): void {
-  const borrowAmount: BigNumber = tokenAmounts.oneHundred;
-  const collateralAmount: BigNumber = tokenAmounts.ten;
-  const repayAmount: BigNumber = tokenAmounts.forty;
+  const borrowAmount: BigNumber = fp("100");
+  const collateralAmount: BigNumber = fp("10");
+  const repayAmount: BigNumber = fp("40");
   const newBorrowAmount = borrowAmount.sub(repayAmount);
 
   beforeEach(async function () {
@@ -21,10 +20,10 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
       .connect(this.signers.admin)
       .setRepayBorrowAllowed(this.contracts.hToken.address, true);
 
-    // Set the debt ceiling to 1,000 fyUSDC.
+    // Set the debt ceiling to 100k fyUSDC.
     await this.contracts.fintroller
       .connect(this.signers.admin)
-      .setBondDebtCeiling(this.contracts.hToken.address, tokenAmounts.oneHundredThousand);
+      .setBondDebtCeiling(this.contracts.hToken.address, fp("1e6"));
 
     // Mint 10 WETH and approve the BalanceSheet to spend it all.
     await this.contracts.collateral.mint(this.signers.borrower.address, collateralAmount);

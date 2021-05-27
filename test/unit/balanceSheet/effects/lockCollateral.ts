@@ -1,13 +1,13 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
+import fp from "evm-fp";
 
-import { tokenAmounts } from "../../../../helpers/constants";
 import { BalanceSheetErrors, GenericErrors } from "../../../../helpers/errors";
 import { Vault } from "../../../../types";
 
 export default function shouldBehaveLikeLockCollateral(): void {
-  const depositCollateralAmount: BigNumber = tokenAmounts.ten;
+  const depositCollateralAmount: BigNumber = fp("10");
 
   context("when the vault is open", function () {
     beforeEach(async function () {

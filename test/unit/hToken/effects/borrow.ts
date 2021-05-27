@@ -1,8 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
+import fp from "evm-fp";
 
-import { fintrollerConstants, percentages, tokenAmounts } from "../../../../helpers/constants";
+import { fintrollerConstants } from "../../../../helpers/constants";
 import { hTokenConstants } from "../../../../helpers/constants";
 import { GenericErrors, HTokenErrors } from "../../../../helpers/errors";
 import { contextForTimeDependentTests } from "../../../contexts";
@@ -10,8 +11,8 @@ import { increaseTime } from "../../../jsonRpc";
 import { stubIsVaultOpen, stubVaultFreeCollateral, stubVaultLockedCollateral } from "../../stubs";
 
 export default function shouldBehaveLikeBorrow(): void {
-  const borrowAmount: BigNumber = tokenAmounts.oneHundred;
-  const collateralAmount: BigNumber = tokenAmounts.ten;
+  const borrowAmount: BigNumber = fp("100");
+  const collateralAmount: BigNumber = fp("10");
 
   context("when the vault is not open", function () {
     beforeEach(async function () {
@@ -110,7 +111,7 @@ export default function shouldBehaveLikeBorrow(): void {
               beforeEach(async function () {
                 await this.stubs.fintroller.mock.getBondDebtCeiling
                   .withArgs(this.contracts.hToken.address)
-                  .returns(tokenAmounts.oneHundred);
+                  .returns(fp("100"));
               });
 
               context("when the caller did not deposit any collateral", function () {
@@ -163,7 +164,7 @@ export default function shouldBehaveLikeBorrow(): void {
                   });
 
                   context("when the user is dangerously collateralized", function () {
-                    const dangerousCollateralizationRatio: BigNumber = percentages.oneHundredAndTwenty;
+                    const dangerousCollateralizationRatio: BigNumber = fp("1.20");
 
                     beforeEach(async function () {
                       await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio
@@ -184,7 +185,7 @@ export default function shouldBehaveLikeBorrow(): void {
                   });
 
                   context("when the user is safely collateralized", function () {
-                    const safeCollateralizationRatio: BigNumber = percentages.oneThousand;
+                    const safeCollateralizationRatio: BigNumber = fp("10.00");
 
                     beforeEach(async function () {
                       await this.stubs.balanceSheet.mock.getHypotheticalCollateralizationRatio

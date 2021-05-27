@@ -1,14 +1,15 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
+import fp from "evm-fp";
 
-import { percentages, precisionScalars, tokenAmounts } from "../../../../helpers/constants";
+import { precisionScalars } from "../../../../helpers/constants";
 import { BalanceSheetErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeGetClutchableCollateral(): void {
   // 0.5 = 50 (repay amount) * 1.1 (liquidation incentive) * 1.0 (underlying price) / 100 (collateral price)
-  const clutchableCollateralAmount: BigNumber = tokenAmounts.pointFiftyFive;
-  const repayAmount: BigNumber = tokenAmounts.fifty;
+  const clutchableCollateralAmount: BigNumber = fp("0.55");
+  const repayAmount: BigNumber = fp("50");
 
   context("when the amount to repay is zero", function () {
     it("reverts", async function () {
@@ -37,7 +38,7 @@ export default function shouldBehaveLikeGetClutchableCollateral(): void {
       beforeEach(async function () {
         await this.stubs.fintroller.mock.getBondLiquidationIncentive
           .withArgs(this.stubs.hToken.address)
-          .returns(percentages.oneHundredAndTen);
+          .returns(fp("1.10"));
       });
 
       context("when the collateral has 18 decimals", function () {

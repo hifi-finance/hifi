@@ -1,15 +1,16 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
+import fp from "evm-fp";
 
-import { addressOne, fintrollerConstants, tokenAmounts } from "../../../../helpers/constants";
+import { ADDRESS_ONE, fintrollerConstants } from "../../../../helpers/constants";
 import { GenericErrors, HTokenErrors } from "../../../../helpers/errors";
 import { GodModeHToken } from "../../../../typechain";
 import { stubIsVaultOpen } from "../../stubs";
 
 export default function shouldBehaveLikeRepayBorrow(): void {
-  const borrowAmount: BigNumber = tokenAmounts.oneHundred;
-  const repayAmount: BigNumber = tokenAmounts.forty;
+  const borrowAmount: BigNumber = fp("100");
+  const repayAmount: BigNumber = fp("40");
 
   context("when the vault is not open", function () {
     beforeEach(async function () {
@@ -117,7 +118,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
             context("when the caller does not have enough hTokens", function () {
               beforeEach(async function () {
                 // User burns all of his hTokens.
-                await this.contracts.hToken.connect(this.signers.borrower).transfer(addressOne, borrowAmount);
+                await this.contracts.hToken.connect(this.signers.borrower).transfer(ADDRESS_ONE, borrowAmount);
               });
 
               it("reverts", async function () {

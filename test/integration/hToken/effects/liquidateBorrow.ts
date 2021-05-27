@@ -1,14 +1,15 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
+import fp from "evm-fp";
 
-import { percentages, prices, tokenAmounts } from "../../../../helpers/constants";
 import { BalanceSheetErrors } from "../../../../helpers/errors";
 import { GodModeHToken } from "../../../../typechain";
+import { price } from "../../../../helpers/numbers";
 
 export default function shouldBehaveLikeLiquidateBorrow(): void {
-  const borrowAmount: BigNumber = tokenAmounts.oneHundred;
-  const collateralAmount: BigNumber = tokenAmounts.ten;
-  const repayAmount: BigNumber = tokenAmounts.fifty;
+  const borrowAmount: BigNumber = fp("100");
+  const collateralAmount: BigNumber = fp("10");
+  const repayAmount: BigNumber = fp("50");
 
   let clutchableCollateralAmount: BigNumber;
 
@@ -29,15 +30,15 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
       .connect(this.signers.admin)
       .setRepayBorrowAllowed(this.contracts.hToken.address, true);
 
-    // Set the debt ceiling to 1,000 fyUSDC.
+    // Set the debt ceiling to 100k fyUSDC.
     await this.contracts.fintroller
       .connect(this.signers.admin)
-      .setBondDebtCeiling(this.contracts.hToken.address, tokenAmounts.oneHundredThousand);
+      .setBondDebtCeiling(this.contracts.hToken.address, fp("1e6"));
 
     // Set the liquidation incentive to 110%.
     await this.contracts.fintroller
       .connect(this.signers.admin)
-      .setBondLiquidationIncentive(this.contracts.hToken.address, percentages.oneHundredAndTen);
+      .setBondLiquidationIncentive(this.contracts.hToken.address, fp("1.10"));
 
     // Mint 10 WETH and approve the BalanceSheet to spend it all.
     await this.contracts.collateral.mint(this.signers.borrower.address, collateralAmount);
@@ -59,7 +60,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
     await this.contracts.hToken.connect(this.signers.borrower).borrow(borrowAmount);
 
     // Set the price of 1 WETH to $12 so that the new collateralization ratio becomes 120%.
-    await this.contracts.collateralPriceFeed.setPrice(prices.twelveDollars);
+    await this.contracts.collateralPriceFeed.setPrice(price("12"));
 
     // Mint 100 fyUSDC to the liquidator so he can repay the debt.
     await (this.contracts.hToken as GodModeHToken).__godMode_mint(this.signers.liquidator.address, repayAmount);
@@ -76,7 +77,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
   context("when there is not enough locked collateral", function () {
     beforeEach(async function () {
       // Set the price of 1 WETH = $1 so that the new collateralization ratio becomes 10%.
-      await this.contracts.collateralPriceFeed.setPrice(prices.oneDollar);
+      await this.contracts.collateralPriceFeed.setPrice(price("1"));
     });
 
     it("reverts", async function () {

@@ -1,11 +1,10 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
-
-import { percentages, tokenAmounts } from "../../../../helpers/constants";
+import fp from "evm-fp";
 
 export default function shouldBehaveLikeGetCurrentCollateralizationRatio(): void {
-  const debt: BigNumber = tokenAmounts.oneHundred;
-  const lockedCollateral: BigNumber = tokenAmounts.ten;
+  const debt: BigNumber = fp("100");
+  const lockedCollateral: BigNumber = fp("10");
 
   beforeEach(async function () {
     await this.stubs.fintroller.mock.isBondListed.withArgs(this.stubs.hToken.address).returns(true);
@@ -27,6 +26,6 @@ export default function shouldBehaveLikeGetCurrentCollateralizationRatio(): void
       this.stubs.hToken.address,
       this.signers.borrower.address,
     );
-    expect(currentCollateralizationRatio).to.equal(percentages.oneThousand);
+    expect(currentCollateralizationRatio).to.equal(fp("10.00"));
   });
 }

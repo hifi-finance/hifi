@@ -1,11 +1,12 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
+import fp from "evm-fp";
 
-import { ten, tokenAmounts, underlyingConstants } from "../../../../helpers/constants";
+import { usdc } from "../../../../helpers/numbers";
 
 export default function shouldBehaveLikeSupplyUnderlying(): void {
-  const underlyingAmount: BigNumber = ten.pow(underlyingConstants.decimals).mul(100);
-  const hTokenAmount: BigNumber = tokenAmounts.oneHundred;
+  const underlyingAmount: BigNumber = usdc("100");
+  const hTokenAmount: BigNumber = fp("100");
 
   beforeEach(async function () {
     // List the bond in the Fintroller.

@@ -3,7 +3,8 @@ import { BigNumber } from "@ethersproject/bignumber";
 import hre from "hardhat";
 import { Artifact } from "hardhat/types";
 
-import { deployContractOverrides, hTokenConstants, prices } from "../helpers/constants";
+import { deployContractOverrides, hTokenConstants } from "../helpers/constants";
+import { price } from "../helpers/numbers";
 import { ChainlinkOperator } from "../typechain/ChainlinkOperator";
 import { Erc20Mintable } from "../typechain/Erc20Mintable";
 import { Fintroller } from "../typechain/Fintroller";
@@ -41,7 +42,7 @@ export async function deployCollateralPriceFeed(deployer: Signer): Promise<Simpl
   const collateralPriceFeed: SimplePriceFeed = <SimplePriceFeed>(
     await deployContract(deployer, simplePriceFeedArtifact, ["WETH/USD"], deployContractOverrides)
   );
-  await collateralPriceFeed.setPrice(prices.oneHundredDollars);
+  await collateralPriceFeed.setPrice(price("100"));
   return collateralPriceFeed;
 }
 
@@ -155,6 +156,6 @@ export async function deployUnderlyingPriceFeed(deployer: Signer): Promise<Simpl
   const underlyingPriceFeed: SimplePriceFeed = <SimplePriceFeed>(
     await deployContract(deployer, simplePriceFeedArtifact, ["USDC/USD"], deployContractOverrides)
   );
-  await underlyingPriceFeed.setPrice(prices.oneDollar);
+  await underlyingPriceFeed.setPrice(price("1"));
   return underlyingPriceFeed;
 }

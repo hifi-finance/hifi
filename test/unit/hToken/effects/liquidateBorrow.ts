@@ -1,8 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
+import fp from "evm-fp";
 
-import { fintrollerConstants, hTokenConstants, tokenAmounts } from "../../../../helpers/constants";
+import { fintrollerConstants, hTokenConstants } from "../../../../helpers/constants";
 import { GenericErrors, HTokenErrors } from "../../../../helpers/errors";
 import { GodModeHToken } from "../../../../typechain";
 import { contextForTimeDependentTests } from "../../../contexts";
@@ -28,8 +29,8 @@ async function stubLiquidateBorrowInternalCalls(
 }
 
 export default function shouldBehaveLikeLiquidateBorrow(): void {
-  const borrowAmount: BigNumber = tokenAmounts.oneHundred;
-  const repayAmount: BigNumber = tokenAmounts.forty;
+  const borrowAmount: BigNumber = fp("100");
+  const repayAmount: BigNumber = fp("40");
   const newBorrowAmount: BigNumber = borrowAmount.sub(repayAmount);
 
   context("when the vault is not open", function () {
@@ -153,7 +154,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
             });
 
             context("when the borrower has a debt", function () {
-              const clutchableCollateralAmount: BigNumber = tokenAmounts.pointFiftyFive;
+              const clutchableCollateralAmount: BigNumber = fp("0.55");
 
               beforeEach(async function () {
                 // User borrows 100 fyUSDC.

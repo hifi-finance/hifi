@@ -5,7 +5,8 @@ import { MockContract } from "ethereum-waffle";
 import hre from "hardhat";
 import { Artifact } from "hardhat/types";
 
-import { balanceSheetConstants, chainlinkPricePrecision, prices } from "../../helpers/constants";
+import { balanceSheetConstants, chainlinkPricePrecision } from "../../helpers/constants";
+import { price } from "../../helpers/numbers";
 
 const { deployMockContract: deployStubContract } = hre.waffle;
 
@@ -22,8 +23,8 @@ export async function deployStubBalanceSheet(deployer: Signer): Promise<MockCont
 export async function deployStubChainlinkOperator(deployer: Signer): Promise<MockContract> {
   const chainlinkOperatorArtifact: Artifact = await hre.artifacts.readArtifact("ChainlinkOperator");
   const chainlinkOperator: MockContract = await deployStubContract(deployer, chainlinkOperatorArtifact.abi);
-  await chainlinkOperator.mock.getAdjustedPrice.withArgs("WETH").returns(prices.oneHundredDollars);
-  await chainlinkOperator.mock.getAdjustedPrice.withArgs("USDC").returns(prices.oneDollar);
+  await chainlinkOperator.mock.getAdjustedPrice.withArgs("WETH").returns(price("100"));
+  await chainlinkOperator.mock.getAdjustedPrice.withArgs("USDC").returns(price("1"));
   return chainlinkOperator;
 }
 
@@ -36,7 +37,7 @@ export async function deployStubCollateralPriceFeed(deployer: Signer): Promise<M
   const simplePriceFeedArtifact: Artifact = await hre.artifacts.readArtifact("SimplePriceFeed");
   const collateralPriceFeed: MockContract = await deployStubContract(deployer, simplePriceFeedArtifact.abi);
   await collateralPriceFeed.mock.decimals.returns(chainlinkPricePrecision);
-  await collateralPriceFeed.mock.latestRoundData.returns(Zero, prices.oneHundredDollars, Zero, Zero, Zero);
+  await collateralPriceFeed.mock.latestRoundData.returns(Zero, price("100"), Zero, Zero, Zero);
   return collateralPriceFeed;
 }
 

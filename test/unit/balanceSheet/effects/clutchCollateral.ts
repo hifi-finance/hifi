@@ -1,11 +1,11 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
+import fp from "evm-fp";
 
-import { tokenAmounts } from "../../../../helpers/constants";
 import { BalanceSheetErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeClutchCollateral(): void {
-  const collateralAmount: BigNumber = tokenAmounts.fifty;
+  const collateralAmount: BigNumber = fp("50");
 
   context("when the caller is not the HToken contract", function () {
     it("reverts", async function () {

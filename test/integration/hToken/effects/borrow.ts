@@ -1,12 +1,11 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
-
-import { tokenAmounts } from "../../../../helpers/constants";
+import fp from "evm-fp";
 
 export default function shouldBehaveLikeBorrow(): void {
-  const borrowAmount: BigNumber = tokenAmounts.oneHundred;
-  const collateralAmount: BigNumber = tokenAmounts.ten;
+  const borrowAmount: BigNumber = fp("100");
+  const collateralAmount: BigNumber = fp("10");
 
   beforeEach(async function () {
     // List the bond in the Fintroller.
@@ -21,7 +20,7 @@ export default function shouldBehaveLikeBorrow(): void {
     // Set the debt ceiling to 1,000 fyUSDC.
     await this.contracts.fintroller
       .connect(this.signers.admin)
-      .setBondDebtCeiling(this.contracts.hToken.address, tokenAmounts.oneHundredThousand);
+      .setBondDebtCeiling(this.contracts.hToken.address, fp("1e6"));
 
     // Mint 10 WETH and approve the BalanceSheet to spend it all.
     await this.contracts.collateral.mint(this.signers.borrower.address, collateralAmount);

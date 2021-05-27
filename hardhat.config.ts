@@ -11,9 +11,18 @@ import { resolve } from "path";
 import { config as dotenvConfig } from "dotenv";
 import { HardhatUserConfig, NetworkUserConfig } from "hardhat/types";
 
-import { chainIds, gasLimits } from "./helpers/constants";
+import { gasLimits } from "./helpers/constants";
 
 dotenvConfig({ path: resolve(__dirname, "./.env") });
+
+const chainIds = {
+  hardhat: 31337,
+  goerli: 5,
+  kovan: 42,
+  mainnet: 1,
+  rinkeby: 4,
+  ropsten: 3,
+};
 
 // Ensure that we have the environment variables we need.
 let mnemonic: string;

@@ -1,12 +1,13 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
+import fp from "evm-fp";
 
-import { fintrollerConstants, tokenAmounts } from "../../../../helpers/constants";
+import { fintrollerConstants } from "../../../../helpers/constants";
 import { BalanceSheetErrors, GenericErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeDepositCollateral(): void {
-  const collateralAmount: BigNumber = tokenAmounts.ten;
+  const collateralAmount: BigNumber = fp("10");
   const zeroCollateralAmount: BigNumber = Zero;
 
   context("when the vault is not open", function () {

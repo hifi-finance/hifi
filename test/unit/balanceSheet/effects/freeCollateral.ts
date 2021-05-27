@@ -1,13 +1,14 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
+import fp from "evm-fp";
 
-import { fintrollerConstants, tokenAmounts } from "../../../../helpers/constants";
+import { fintrollerConstants } from "../../../../helpers/constants";
 import { BalanceSheetErrors, GenericErrors } from "../../../../helpers/errors";
 import { Vault } from "../../../../types";
 
 export default function shouldBehaveLikeLockCollateral(): void {
-  const depositCollateralAmount: BigNumber = tokenAmounts.ten;
+  const depositCollateralAmount: BigNumber = fp("10");
 
   context("when the vault is not open", function () {
     it("reverts", async function () {
@@ -114,7 +115,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
             context("when the caller is dangerously collateralized", function () {
               beforeEach(async function () {
                 // This is a 150% collateralization ratio. We deposited 10 WETH and the oracle assumes 1 WETH = $100.
-                const debt: BigNumber = tokenAmounts.one.mul(666);
+                const debt: BigNumber = fp("666");
 
                 // Cannot call the usual `increaseVaultDebt` since the hToken is stubbed.
                 await this.contracts.balanceSheet.__godMode_setVaultDebt(
@@ -125,7 +126,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
               });
 
               it("reverts", async function () {
-                const collateralAmount: BigNumber = tokenAmounts.one;
+                const collateralAmount: BigNumber = fp("1");
                 await expect(
                   this.contracts.balanceSheet
                     .connect(this.signers.borrower)
@@ -136,7 +137,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
 
             context("when the caller is safely over-collateralized", async function () {
               beforeEach(async function () {
-                const debt: BigNumber = tokenAmounts.oneHundred;
+                const debt: BigNumber = fp("100");
                 await this.contracts.balanceSheet.__godMode_setVaultDebt(
                   this.stubs.hToken.address,
                   this.signers.borrower.address,
@@ -152,7 +153,7 @@ export default function shouldBehaveLikeLockCollateral(): void {
                 const oldFreeCollateral: BigNumber = oldVault[1];
                 const oldLockedCollateral: BigNumber = oldVault[2];
 
-                const collateralAmount: BigNumber = tokenAmounts.one;
+                const collateralAmount: BigNumber = fp("1");
                 await this.contracts.balanceSheet
                   .connect(this.signers.borrower)
                   .freeCollateral(this.stubs.hToken.address, collateralAmount);
@@ -164,12 +165,12 @@ export default function shouldBehaveLikeLockCollateral(): void {
                 const newFreeCollateral: BigNumber = newVault[1];
                 const newLockedCollateral: BigNumber = newVault[2];
 
-                expect(oldFreeCollateral).to.equal(newFreeCollateral.sub(tokenAmounts.one));
-                expect(oldLockedCollateral).to.equal(newLockedCollateral.add(tokenAmounts.one));
+                expect(oldFreeCollateral).to.equal(newFreeCollateral.sub(fp("1")));
+                expect(oldLockedCollateral).to.equal(newLockedCollateral.add(fp("1")));
               });
 
               it("emits a FreeCollateral event", async function () {
-                const collateralAmount: BigNumber = tokenAmounts.one;
+                const collateralAmount: BigNumber = fp("1");
                 await expect(
                   this.contracts.balanceSheet
                     .connect(this.signers.borrower)

@@ -1,12 +1,13 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { One, Zero } from "@ethersproject/constants";
 import { expect } from "chai";
+import fp from "evm-fp";
 
-import { fintrollerConstants, percentages } from "../../../../helpers/constants";
+import { fintrollerConstants } from "../../../../helpers/constants";
 import { AdminErrors, FintrollerErrors, GenericErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeSetBondLiquidationIncentive(): void {
-  const newLiquidationIncentive: BigNumber = percentages.oneHundredAndTwenty;
+  const newLiquidationIncentive: BigNumber = fp("1.20");
   const overflowLiquidationIncentive: BigNumber = fintrollerConstants.liquidationIncentiveUpperBound.add(One);
   const underflowLiquidationIncentive: BigNumber = fintrollerConstants.liquidationIncentiveLowerBound.sub(One);
 

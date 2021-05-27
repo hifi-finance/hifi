@@ -1,12 +1,12 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
+import fp from "evm-fp";
 
-import { tokenAmounts } from "../../../../helpers/constants";
 import { BalanceSheetErrors, GenericErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeWithdrawCollateral(): void {
-  const collateralAmount: BigNumber = tokenAmounts.ten;
+  const collateralAmount: BigNumber = fp("10");
 
   context("when the vault is not open", function () {
     it("reverts", async function () {

@@ -1,14 +1,15 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
+import fp from "evm-fp";
 
 import { hTokenConstants } from "../../../../helpers/constants";
-import { ten, tokenAmounts, underlyingConstants } from "../../../../helpers/constants";
+import { usdc } from "../../../../helpers/numbers";
 import { contextForTimeDependentTests } from "../../../contexts";
 import { increaseTime } from "../../../jsonRpc";
 
 export default function shouldBehaveLikeSupplyUnderlying(): void {
-  const underlyingAmount: BigNumber = ten.pow(underlyingConstants.decimals).mul(100);
-  const hTokenAmount: BigNumber = tokenAmounts.oneHundred;
+  const underlyingAmount: BigNumber = usdc("100");
+  const hTokenAmount: BigNumber = fp("100");
 
   contextForTimeDependentTests("when the bond matured", function () {
     beforeEach(async function () {

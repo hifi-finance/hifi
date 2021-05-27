@@ -1,7 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
+import fp from "evm-fp";
 
-import { fintrollerConstants, prices, tokenAmounts } from "../../../../helpers/constants";
+import { fintrollerConstants } from "../../../../helpers/constants";
+import { price } from "../../../../helpers/numbers";
 
 export default function shouldBehaveLikeIsAccountUnderwater(): void {
   context("when the vault is not open", function () {
@@ -31,8 +33,8 @@ export default function shouldBehaveLikeIsAccountUnderwater(): void {
     });
 
     context("when the debt is non-zero", function () {
-      const debt: BigNumber = tokenAmounts.oneHundred;
-      const lockedCollateral: BigNumber = tokenAmounts.ten;
+      const debt: BigNumber = fp("100");
+      const lockedCollateral: BigNumber = fp("10");
 
       beforeEach(async function () {
         await this.stubs.fintroller.mock.getBondCollateralizationRatio
@@ -63,7 +65,7 @@ export default function shouldBehaveLikeIsAccountUnderwater(): void {
 
       context("when the user is dangerously collateralized", function () {
         beforeEach(async function () {
-          await this.stubs.oracle.mock.getAdjustedPrice.withArgs("WETH").returns(prices.twelveDollars);
+          await this.stubs.oracle.mock.getAdjustedPrice.withArgs("WETH").returns(price("12"));
         });
 
         // The price of 1 WETH is $12 so the new collateralization ratio becomes 120%.

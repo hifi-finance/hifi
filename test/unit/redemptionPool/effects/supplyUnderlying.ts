@@ -1,25 +1,20 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
+import fp from "evm-fp";
 
-import {
-  fintrollerConstants,
-  hTokenConstants,
-  precisionScalars,
-  ten,
-  tokenAmounts,
-  underlyingConstants,
-} from "../../../../helpers/constants";
+import { fintrollerConstants, hTokenConstants, precisionScalars } from "../../../../helpers/constants";
 import { GenericErrors, RedemptionPoolErrors } from "../../../../helpers/errors";
-import { getNow } from "../../../../helpers/time";
+import { now } from "../../../../helpers/time";
+import { usdc } from "../../../../helpers/numbers";
 
 export default function shouldBehaveLikeSupplyUnderlying(): void {
-  const underlyingAmount: BigNumber = ten.pow(underlyingConstants.decimals).mul(100);
-  const hTokenAmount: BigNumber = tokenAmounts.oneHundred;
+  const underlyingAmount: BigNumber = usdc("100");
+  const hTokenAmount: BigNumber = fp("100");
 
   context("when the bond matured", function () {
     beforeEach(async function () {
-      const nowMinusOneHour: BigNumber = getNow().sub(3600);
+      const nowMinusOneHour: BigNumber = now().sub(3600);
       await this.stubs.hToken.mock.expirationTime.returns(nowMinusOneHour);
     });
 
@@ -110,25 +105,19 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
                 await this.stubs.hToken.mock.underlyingPrecisionScalar.returns(precisionScalars.tokenWith8Decimals);
               });
 
-              const normalizedUnderlyingAmount: BigNumber = ten.pow(8).mul(100);
+              const underlyingAmount: BigNumber = fp("100", 8);
 
               beforeEach(async function () {
                 await this.stubs.underlying.mock.transferFrom
-                  .withArgs(
-                    this.signers.maker.address,
-                    this.contracts.redemptionPool.address,
-                    normalizedUnderlyingAmount,
-                  )
+                  .withArgs(this.signers.maker.address, this.contracts.redemptionPool.address, underlyingAmount)
                   .returns(true);
               });
 
               it("supplies the underlying", async function () {
                 const oldUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
-                await this.contracts.redemptionPool
-                  .connect(this.signers.maker)
-                  .supplyUnderlying(normalizedUnderlyingAmount);
+                await this.contracts.redemptionPool.connect(this.signers.maker).supplyUnderlying(underlyingAmount);
                 const newUnderlyingTotalSupply: BigNumber = await this.contracts.redemptionPool.totalUnderlyingSupply();
-                expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.sub(normalizedUnderlyingAmount));
+                expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.sub(underlyingAmount));
               });
             });
 
