@@ -1,6 +1,6 @@
 /// SPDX-License-Identifier: LGPL-3.0-or-later
 // solhint-disable func-name-mixedcase
-pragma solidity ^0.8.0;
+pragma solidity >=0.8.0;
 
 import "../HToken.sol";
 
