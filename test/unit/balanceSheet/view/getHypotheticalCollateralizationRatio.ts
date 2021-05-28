@@ -3,14 +3,9 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 import fp from "evm-fp";
 
-import {
-  COLLATERAL_SYMBOL,
-  TOKEN_WITH_18_DECIMALS_PRECISION_SCALAR,
-  TOKEN_WITH_8_DECIMALS_PRECISION_SCALAR,
-  UNDERLYING_SYMBOL,
-} from "../../../../helpers/constants";
+import { COLLATERAL_SYMBOL, UNDERLYING_SYMBOL } from "../../../../helpers/constants";
 import { BalanceSheetErrors, ChainlinkOperatorErrors, GenericErrors } from "../../../../helpers/errors";
-import { bn } from "../../../../helpers/numbers";
+import { bn, tokenWithNDecimalsPrecisionScalar } from "../../../../helpers/numbers";
 
 export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio(): void {
   const hypotheticalCollateralizationRatio: BigNumber = fp("10.00");
@@ -111,11 +106,11 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
             context("when the collateral has 8 decimals", function () {
               beforeEach(async function () {
                 await this.stubs.collateral.mock.decimals.returns(bn("8"));
-                await this.stubs.hToken.mock.collateralPrecisionScalar.returns(TOKEN_WITH_8_DECIMALS_PRECISION_SCALAR);
+                await this.stubs.hToken.mock.collateralPrecisionScalar.returns(tokenWithNDecimalsPrecisionScalar(8));
               });
 
               it("retrieves the hypothetical collateralization ratio", async function () {
-                const denormalizedLockedCollateral = lockedCollateral.div(TOKEN_WITH_8_DECIMALS_PRECISION_SCALAR);
+                const denormalizedLockedCollateral = lockedCollateral.div(tokenWithNDecimalsPrecisionScalar(8));
                 const contractHypotheticalCollateralizationRatio: BigNumber =
                   await this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
                     this.stubs.hToken.address,
@@ -130,7 +125,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
             context("when the collateral has 18 decimals", function () {
               beforeEach(async function () {
                 await this.stubs.collateral.mock.decimals.returns(bn("18"));
-                await this.stubs.hToken.mock.collateralPrecisionScalar.returns(TOKEN_WITH_18_DECIMALS_PRECISION_SCALAR);
+                await this.stubs.hToken.mock.collateralPrecisionScalar.returns(tokenWithNDecimalsPrecisionScalar(18));
               });
 
               it("retrieves the hypothetical collateralization ratio", async function () {

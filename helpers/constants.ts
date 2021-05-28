@@ -24,9 +24,6 @@ export const H_TOKEN_SYMBOL: string = "hUSDC22Jun";
 export const MAX_INT256: BigNumber = bn(
   "57896044618658097711785492504343953926634992332820282019728792003956564819967",
 );
-export const TOKEN_WITH_6_DECIMALS_PRECISION_SCALAR: BigNumber = bn("1e12");
-export const TOKEN_WITH_8_DECIMALS_PRECISION_SCALAR: BigNumber = bn("1e10");
-export const TOKEN_WITH_18_DECIMALS_PRECISION_SCALAR: BigNumber = bn("1");
 export const UNDERLYING_DECIMALS: BigNumber = bn("6");
 export const UNDERLYING_NAME: string = "USD Coin";
 export const UNDERLYING_SYMBOL: string = "USDC";

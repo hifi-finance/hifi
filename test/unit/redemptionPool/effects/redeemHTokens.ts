@@ -3,14 +3,9 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 import fp from "evm-fp";
 
-import {
-  FINTROLLER_DEFAULT_COLLATERALIZATION_RATIO,
-  H_TOKEN_EXPIRATION_TIME,
-  TOKEN_WITH_6_DECIMALS_PRECISION_SCALAR,
-  TOKEN_WITH_8_DECIMALS_PRECISION_SCALAR,
-} from "../../../../helpers/constants";
+import { FINTROLLER_DEFAULT_COLLATERALIZATION_RATIO, H_TOKEN_EXPIRATION_TIME } from "../../../../helpers/constants";
 import { GenericErrors, RedemptionPoolErrors } from "../../../../helpers/errors";
-import { bn, usdc } from "../../../../helpers/numbers";
+import { bn, tokenWithNDecimalsPrecisionScalar, usdc } from "../../../../helpers/numbers";
 import { now } from "../../../../helpers/time";
 
 export default function shouldBehaveLikeRedeemHTokens(): void {
@@ -116,9 +111,7 @@ export default function shouldBehaveLikeRedeemHTokens(): void {
               context("when the underlying has 8 decimals", function () {
                 beforeEach(async function () {
                   await this.stubs.underlying.mock.decimals.returns(bn("8"));
-                  await this.stubs.hToken.mock.underlyingPrecisionScalar.returns(
-                    TOKEN_WITH_8_DECIMALS_PRECISION_SCALAR,
-                  );
+                  await this.stubs.hToken.mock.underlyingPrecisionScalar.returns(tokenWithNDecimalsPrecisionScalar(8));
                 });
                 const underlyingAmount: BigNumber = fp("100", 8);
 
@@ -141,9 +134,7 @@ export default function shouldBehaveLikeRedeemHTokens(): void {
               context("when the underlying has 6 decimals", function () {
                 beforeEach(async function () {
                   await this.stubs.underlying.mock.decimals.returns(bn("6"));
-                  await this.stubs.hToken.mock.underlyingPrecisionScalar.returns(
-                    TOKEN_WITH_6_DECIMALS_PRECISION_SCALAR,
-                  );
+                  await this.stubs.hToken.mock.underlyingPrecisionScalar.returns(tokenWithNDecimalsPrecisionScalar(6));
                 });
 
                 beforeEach(async function () {
