@@ -41,7 +41,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@codechecks/client@npm:^0.1.0":
+"@codechecks/client@npm:^0.1.10":
   version: 0.1.10
   resolution: "@codechecks/client@npm:0.1.10"
   dependencies:
@@ -501,7 +501,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/abi@npm:5.2.0, @ethersproject/abi@npm:^5.0.0-beta.146, @ethersproject/abi@npm:^5.0.1, @ethersproject/abi@npm:^5.1.2, @ethersproject/abi@npm:^5.2.0":
+"@ethersproject/abi@npm:5.2.0, @ethersproject/abi@npm:^5.0.0-beta.146, @ethersproject/abi@npm:^5.0.1, @ethersproject/abi@npm:^5.2.0":
   version: 5.2.0
   resolution: "@ethersproject/abi@npm:5.2.0"
   dependencies:
@@ -533,7 +533,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/abstract-signer@npm:5.2.0, @ethersproject/abstract-signer@npm:^5.0.13, @ethersproject/abstract-signer@npm:^5.2.0":
+"@ethersproject/abstract-signer@npm:5.2.0, @ethersproject/abstract-signer@npm:^5.2.0":
   version: 5.2.0
   resolution: "@ethersproject/abstract-signer@npm:5.2.0"
   dependencies:
@@ -578,7 +578,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/bignumber@npm:5.2.0, @ethersproject/bignumber@npm:>=5.0.0-beta.130, @ethersproject/bignumber@npm:^5.0.14, @ethersproject/bignumber@npm:^5.0.7, @ethersproject/bignumber@npm:^5.2.0":
+"@ethersproject/bignumber@npm:5.2.0, @ethersproject/bignumber@npm:>=5.0.0-beta.130, @ethersproject/bignumber@npm:^5.0.7, @ethersproject/bignumber@npm:^5.2.0":
   version: 5.2.0
   resolution: "@ethersproject/bignumber@npm:5.2.0"
   dependencies:
@@ -589,7 +589,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/bytes@npm:5.2.0, @ethersproject/bytes@npm:>=5.0.0-beta.129, @ethersproject/bytes@npm:^5.0.4, @ethersproject/bytes@npm:^5.1.0, @ethersproject/bytes@npm:^5.2.0":
+"@ethersproject/bytes@npm:5.2.0, @ethersproject/bytes@npm:>=5.0.0-beta.129, @ethersproject/bytes@npm:^5.0.4, @ethersproject/bytes@npm:^5.2.0":
   version: 5.2.0
   resolution: "@ethersproject/bytes@npm:5.2.0"
   dependencies:
@@ -598,7 +598,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/constants@npm:5.2.0, @ethersproject/constants@npm:>=5.0.0-beta.128, @ethersproject/constants@npm:^5.0.4, @ethersproject/constants@npm:^5.0.9, @ethersproject/constants@npm:^5.2.0":
+"@ethersproject/constants@npm:5.2.0, @ethersproject/constants@npm:>=5.0.0-beta.128, @ethersproject/constants@npm:^5.0.4, @ethersproject/constants@npm:^5.2.0":
   version: 5.2.0
   resolution: "@ethersproject/constants@npm:5.2.0"
   dependencies:
@@ -607,7 +607,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/contracts@npm:5.2.0, @ethersproject/contracts@npm:^5.0.11":
+"@ethersproject/contracts@npm:5.2.0, @ethersproject/contracts@npm:^5.2.0":
   version: 5.2.0
   resolution: "@ethersproject/contracts@npm:5.2.0"
   dependencies:
@@ -682,7 +682,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/keccak256@npm:5.2.0, @ethersproject/keccak256@npm:>=5.0.0-beta.127, @ethersproject/keccak256@npm:^5.0.3, @ethersproject/keccak256@npm:^5.0.8, @ethersproject/keccak256@npm:^5.2.0":
+"@ethersproject/keccak256@npm:5.2.0, @ethersproject/keccak256@npm:>=5.0.0-beta.127, @ethersproject/keccak256@npm:^5.0.3, @ethersproject/keccak256@npm:^5.2.0":
   version: 5.2.0
   resolution: "@ethersproject/keccak256@npm:5.2.0"
   dependencies:
@@ -727,7 +727,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/providers@npm:5.2.0, @ethersproject/providers@npm:^5.1.2":
+"@ethersproject/providers@npm:5.2.0, @ethersproject/providers@npm:^5.2.0":
   version: 5.2.0
   resolution: "@ethersproject/providers@npm:5.2.0"
   dependencies:
@@ -785,7 +785,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/signing-key@npm:5.2.0, @ethersproject/signing-key@npm:^5.0.10, @ethersproject/signing-key@npm:^5.2.0":
+"@ethersproject/signing-key@npm:5.2.0, @ethersproject/signing-key@npm:^5.2.0":
   version: 5.2.0
   resolution: "@ethersproject/signing-key@npm:5.2.0"
   dependencies:
@@ -811,7 +811,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/strings@npm:5.2.0, @ethersproject/strings@npm:>=5.0.0-beta.130, @ethersproject/strings@npm:^5.0.4, @ethersproject/strings@npm:^5.0.9, @ethersproject/strings@npm:^5.2.0":
+"@ethersproject/strings@npm:5.2.0, @ethersproject/strings@npm:>=5.0.0-beta.130, @ethersproject/strings@npm:^5.0.4, @ethersproject/strings@npm:^5.2.0":
   version: 5.2.0
   resolution: "@ethersproject/strings@npm:5.2.0"
   dependencies:
@@ -839,7 +839,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/units@npm:5.2.0, @ethersproject/units@npm:^5.0.10":
+"@ethersproject/units@npm:5.2.0, @ethersproject/units@npm:^5.2.0":
   version: 5.2.0
   resolution: "@ethersproject/units@npm:5.2.0"
   dependencies:
@@ -903,20 +903,20 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@hifi/protocol@workspace:."
   dependencies:
-    "@codechecks/client": ^0.1.0
+    "@codechecks/client": ^0.1.10
     "@commitlint/cli": ^12.1.4
     "@commitlint/config-conventional": ^12.1.4
-    "@ethersproject/abi": ^5.1.2
-    "@ethersproject/abstract-signer": ^5.0.13
-    "@ethersproject/bignumber": ^5.0.14
-    "@ethersproject/bytes": ^5.1.0
-    "@ethersproject/constants": ^5.0.9
-    "@ethersproject/contracts": ^5.0.11
-    "@ethersproject/keccak256": ^5.0.8
-    "@ethersproject/providers": ^5.1.2
-    "@ethersproject/signing-key": ^5.0.10
-    "@ethersproject/strings": ^5.0.9
-    "@ethersproject/units": ^5.0.10
+    "@ethersproject/abi": ^5.2.0
+    "@ethersproject/abstract-signer": ^5.2.0
+    "@ethersproject/bignumber": ^5.2.0
+    "@ethersproject/bytes": ^5.2.0
+    "@ethersproject/constants": ^5.2.0
+    "@ethersproject/contracts": ^5.2.0
+    "@ethersproject/keccak256": ^5.2.0
+    "@ethersproject/providers": ^5.2.0
+    "@ethersproject/signing-key": ^5.2.0
+    "@ethersproject/strings": ^5.2.0
+    "@ethersproject/units": ^5.2.0
     "@nomiclabs/hardhat-ethers": ^2.0.2
     "@nomiclabs/hardhat-waffle": ^2.0.1
     "@paulrberg/contracts": ^3.0.0
@@ -925,18 +925,18 @@ __metadata:
     "@types/chai": ^4.2.18
     "@types/fs-extra": ^9.0.11
     "@types/mocha": ^8.2.2
-    "@types/node": ^15.3.0
-    "@typescript-eslint/eslint-plugin": ^4.23.0
-    "@typescript-eslint/parser": ^4.23.0
+    "@types/node": ^15.6.1
+    "@typescript-eslint/eslint-plugin": ^4.25.0
+    "@typescript-eslint/parser": ^4.25.0
     chai: ^4.3.4
     commitizen: ^4.2.4
-    cross-env: ^7.0.2
+    cross-env: ^7.0.3
     cz-conventional-changelog: ^3.3.0
-    dotenv: ^9.0.2
-    eslint: ^7.26.0
+    dotenv: ^10.0.0
+    eslint: ^7.27.0
     eslint-config-prettier: ^8.3.0
     ethereum-waffle: ^3.3.0
-    ethers: ^5.1.4
+    ethers: ^5.2.0
     evm-fp: ^1.1.1
     fs-extra: ^10.0.0
     hardhat: ^2.3.0
@@ -946,18 +946,18 @@ __metadata:
     import-sort-style-module: ^6.0.0
     lint-staged: ^11.0.0
     mocha: ^8.4.0
-    pinst: ^2.0.0
+    pinst: ^2.1.6
     prettier: ^2.3.0
     prettier-plugin-solidity: ^1.0.0-beta.10
     shelljs: ^0.8.4
-    shx: ^0.3.2
-    solhint: ^3.3.4
+    shx: ^0.3.3
+    solhint: ^3.3.5
     solhint-plugin-prettier: ^0.0.5
     solidity-coverage: ^0.7.16
     ts-generator: ^0.1.1
-    ts-node: ^9.1.1
+    ts-node: ^10.0.0
     typechain: ^5.0.0
-    typescript: ^4.2.4
+    typescript: ~4.2.4
   languageName: unknown
   linkType: soft
 
@@ -1254,6 +1254,34 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tsconfig/node10@npm:^1.0.7":
+  version: 1.0.7
+  resolution: "@tsconfig/node10@npm:1.0.7"
+  checksum: a1ca75224357c60829533061f9be6898a2df02cb0e360a356112070596ffa6102c56964d195023d5abb451e22473ceb7e138c82025ae84c7b5a1f69259e5f8a4
+  languageName: node
+  linkType: hard
+
+"@tsconfig/node12@npm:^1.0.7":
+  version: 1.0.7
+  resolution: "@tsconfig/node12@npm:1.0.7"
+  checksum: 82b0352f66bb84afcf4fe4d771d25dcdc2fbfd0dcd6c5efe475830e0df6806d687bdde3aba52d5c4d2d4dfee252093ed5cfc27a3fc47dc389a3f4fb0ea323390
+  languageName: node
+  linkType: hard
+
+"@tsconfig/node14@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@tsconfig/node14@npm:1.0.0"
+  checksum: 3eda14250ed8a03910ce822056f0d2fc2bcf41d9f1f3c6b202a6b32277dc638f475425fe7a1c03fbdba4e7f3b89668ecbac92d101c9e9fb56018c098393759ec
+  languageName: node
+  linkType: hard
+
+"@tsconfig/node16@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@tsconfig/node16@npm:1.0.1"
+  checksum: c389a4a81c291a27b96705de7fbe46d29aa4eb771450a41dfc075d89e1fdd63141898043a0d9f627460a1c409d06635a044dc4b3a4516173769a7d0a1558c51d
+  languageName: node
+  linkType: hard
+
 "@typechain/ethers-v5@npm:^2.0.0":
   version: 2.0.0
   resolution: "@typechain/ethers-v5@npm:2.0.0"
@@ -1433,7 +1461,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^15.3.0":
+"@types/node@npm:*, @types/node@npm:^15.6.1":
   version: 15.6.1
   resolution: "@types/node@npm:15.6.1"
   checksum: 07b3855bc0a1ba2215455a3ef4ed5e88711321b3cdc0ba1ea0286f6facbdf61530970b9fa7eec79eb1d46231f986c21ef3b7c1f1e0c365cf1b887d76b0addb86
@@ -1561,7 +1589,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/eslint-plugin@npm:^4.23.0":
+"@typescript-eslint/eslint-plugin@npm:^4.25.0":
   version: 4.25.0
   resolution: "@typescript-eslint/eslint-plugin@npm:4.25.0"
   dependencies:
@@ -1599,7 +1627,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@typescript-eslint/parser@npm:^4.23.0":
+"@typescript-eslint/parser@npm:^4.25.0":
   version: 4.25.0
   resolution: "@typescript-eslint/parser@npm:4.25.0"
   dependencies:
@@ -4202,7 +4230,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-env@npm:^7.0.2":
+"cross-env@npm:^7.0.3":
   version: 7.0.3
   resolution: "cross-env@npm:7.0.3"
   dependencies:
@@ -4698,10 +4726,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dotenv@npm:^9.0.2":
-  version: 9.0.2
-  resolution: "dotenv@npm:9.0.2"
-  checksum: 062a31a2fd024a8a7efee4f2d3972d488a1485e0545b97ab3c338f59f17689a2ae84b6e8ddb9ebca2902cc9b4926e7b672a476f5e326c6902648312fc3da54d9
+"dotenv@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "dotenv@npm:10.0.0"
+  checksum: 9c45712e213de63bdb646b8e5344749b7566e25a67bbd3f03711d54e40eff10066c1f23eff0081d0949fda7c8efcc6e9e8bf18d0f023a8274f55f5d5f97bb6db
   languageName: node
   linkType: hard
 
@@ -5132,7 +5160,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint@npm:^7.26.0":
+"eslint@npm:^7.27.0":
   version: 7.27.0
   resolution: "eslint@npm:7.27.0"
   dependencies:
@@ -5799,7 +5827,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ethers@npm:^5.0.0, ethers@npm:^5.0.1, ethers@npm:^5.0.2, ethers@npm:^5.1.4":
+"ethers@npm:^5.0.0, ethers@npm:^5.0.1, ethers@npm:^5.0.2, ethers@npm:^5.2.0":
   version: 5.2.0
   resolution: "ethers@npm:5.2.0"
   dependencies:
@@ -10898,7 +10926,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"pinst@npm:^2.0.0":
+"pinst@npm:^2.1.6":
   version: 2.1.6
   resolution: "pinst@npm:2.1.6"
   dependencies:
@@ -12313,7 +12341,7 @@ resolve@1.1.x:
   languageName: node
   linkType: hard
 
-"shx@npm:^0.3.2":
+"shx@npm:^0.3.3":
   version: 0.3.3
   resolution: "shx@npm:0.3.3"
   dependencies:
@@ -12543,7 +12571,7 @@ resolve@1.1.x:
   languageName: node
   linkType: hard
 
-"solhint@npm:^3.3.4":
+"solhint@npm:^3.3.5":
   version: 3.3.5
   resolution: "solhint@npm:3.3.5"
   dependencies:
@@ -13465,6 +13493,40 @@ resolve@1.1.x:
   languageName: node
   linkType: hard
 
+"ts-node@npm:^10.0.0":
+  version: 10.0.0
+  resolution: "ts-node@npm:10.0.0"
+  dependencies:
+    "@tsconfig/node10": ^1.0.7
+    "@tsconfig/node12": ^1.0.7
+    "@tsconfig/node14": ^1.0.0
+    "@tsconfig/node16": ^1.0.1
+    arg: ^4.1.0
+    create-require: ^1.1.0
+    diff: ^4.0.1
+    make-error: ^1.1.1
+    source-map-support: ^0.5.17
+    yn: 3.1.1
+  peerDependencies:
+    "@swc/core": ">=1.2.45"
+    "@swc/wasm": ">=1.2.45"
+    "@types/node": "*"
+    typescript: ">=2.7"
+  peerDependenciesMeta:
+    "@swc/core":
+      optional: true
+    "@swc/wasm":
+      optional: true
+  bin:
+    ts-node: dist/bin.js
+    ts-node-cwd: dist/bin-cwd.js
+    ts-node-script: dist/bin-script.js
+    ts-node-transpile-only: dist/bin-transpile.js
+    ts-script: dist/bin-script-deprecated.js
+  checksum: dc461e2b9b931b00ff065530a0247f86da1d035e72a7ef6d7ed072dd8e6b236d1879f113dcc73a354d240c81b6b845445c3d32b16eeb68022ed27ab6d130c049
+  languageName: node
+  linkType: hard
+
 "ts-node@npm:^8.0.2":
   version: 8.10.2
   resolution: "ts-node@npm:8.10.2"
@@ -13482,27 +13544,6 @@ resolve@1.1.x:
     ts-node-transpile-only: dist/bin-transpile.js
     ts-script: dist/bin-script-deprecated.js
   checksum: cd6e023e073d65ea346cf4a5b70bfd1e7c7f342c967a23a83038fd3462067558a4dda4fc8b238e6709db69aca3847590a93b4c52ae001e23ed9fef3b4fecbc71
-  languageName: node
-  linkType: hard
-
-"ts-node@npm:^9.1.1":
-  version: 9.1.1
-  resolution: "ts-node@npm:9.1.1"
-  dependencies:
-    arg: ^4.1.0
-    create-require: ^1.1.0
-    diff: ^4.0.1
-    make-error: ^1.1.1
-    source-map-support: ^0.5.17
-    yn: 3.1.1
-  peerDependencies:
-    typescript: ">=2.7"
-  bin:
-    ts-node: dist/bin.js
-    ts-node-script: dist/bin-script.js
-    ts-node-transpile-only: dist/bin-transpile.js
-    ts-script: dist/bin-script-deprecated.js
-  checksum: a90db4a342872cd0e7a80babdfcb15d2f7c06e700d735003098f7cc79db575c3380580c58a19ae0d0eaab553af083651d4237060c92170e6f8ac4e64693113ea
   languageName: node
   linkType: hard
 
@@ -13714,16 +13755,6 @@ typescript@^3.2.4:
   languageName: node
   linkType: hard
 
-typescript@^4.2.4:
-  version: 4.2.4
-  resolution: "typescript@npm:4.2.4"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: edaede2fa77f56b7fba80ee624a2368ab1216e75b0434d968ccb47ab0a5e2f6d94f848b3b111c1237dd71e988cd376af26370dcdad3b94355c76e759f0dd0a1e
-  languageName: node
-  linkType: hard
-
 "typescript@patch:typescript@^3.2.4#builtin<compat/typescript>":
   version: 3.9.9
   resolution: "typescript@patch:typescript@npm%3A3.9.9#builtin<compat/typescript>::version=3.9.9&hash=a45b0e"
@@ -13734,13 +13765,23 @@ typescript@^4.2.4:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.2.4#builtin<compat/typescript>":
+"typescript@patch:typescript@~4.2.4#builtin<compat/typescript>":
   version: 4.2.4
   resolution: "typescript@patch:typescript@npm%3A4.2.4#builtin<compat/typescript>::version=4.2.4&hash=a45b0e"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 3be44317593182e8ce494c114e7ad9b0bb2553a22f3085cc6da4f0a36912c20850daa9be4c898af2ab6fc8b12f430c1c9e46ac715721867cd38643f2350d3ef9
+  languageName: node
+  linkType: hard
+
+typescript@~4.2.4:
+  version: 4.2.4
+  resolution: "typescript@npm:4.2.4"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: edaede2fa77f56b7fba80ee624a2368ab1216e75b0434d968ccb47ab0a5e2f6d94f848b3b111c1237dd71e988cd376af26370dcdad3b94355c76e759f0dd0a1e
   languageName: node
   linkType: hard
 
