@@ -31,10 +31,10 @@ contract ChainlinkOperator is
     /// CONSTANT FUNCTIONS ///
 
     /// @inheritdoc IChainlinkOperator
-    function getAdjustedPrice(string memory symbol) external view override returns (uint256) {
+    function getNormalizedPrice(string memory symbol) external view override returns (uint256) {
         uint256 price = getPrice(symbol);
-        uint256 adjustedPrice = price * pricePrecisionScalar;
-        return adjustedPrice;
+        uint256 normalizedPrice = price * pricePrecisionScalar;
+        return normalizedPrice;
     }
 
     /// @inheritdoc IChainlinkOperator

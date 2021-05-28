@@ -67,7 +67,7 @@ interface IChainlinkOperator {
     ///
     /// @param symbol The Erc20 symbol of the token for which to query the price.
     /// @return The normalized price.
-    function getAdjustedPrice(string memory symbol) external view returns (uint256);
+    function getNormalizedPrice(string memory symbol) external view returns (uint256);
 
     /// @notice Gets the official feed for a symbol.
     /// @param symbol The symbol to return the feed for.

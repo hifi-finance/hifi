@@ -65,7 +65,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
       context("when the debt is not zero", function () {
         context("when the collateral price from the oracle is zero", function () {
           beforeEach(async function () {
-            await this.stubs.oracle.mock.getAdjustedPrice
+            await this.stubs.oracle.mock.getNormalizedPrice
               .withArgs(COLLATERAL_SYMBOL)
               .revertsWithReason(ChainlinkOperatorErrors.PriceZero);
           });
@@ -85,7 +85,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
         context("when the collateral price from the oracle is not zero", function () {
           context("when the underlying price from the oracle is zero", function () {
             beforeEach(async function () {
-              await this.stubs.oracle.mock.getAdjustedPrice
+              await this.stubs.oracle.mock.getNormalizedPrice
                 .withArgs(UNDERLYING_SYMBOL)
                 .revertsWithReason(ChainlinkOperatorErrors.PriceZero);
             });
