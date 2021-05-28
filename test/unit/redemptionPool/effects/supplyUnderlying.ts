@@ -5,7 +5,7 @@ import fp from "evm-fp";
 
 import { FINTROLLER_DEFAULT_COLLATERALIZATION_RATIO, H_TOKEN_EXPIRATION_TIME } from "../../../../helpers/constants";
 import { GenericErrors, RedemptionPoolErrors } from "../../../../helpers/errors";
-import { bn, tokenWithNDecimalsPrecisionScalar, usdc } from "../../../../helpers/numbers";
+import { bn, precisionScalarForDecimals, usdc } from "../../../../helpers/numbers";
 import { now } from "../../../../helpers/time";
 
 export default function shouldBehaveLikeSupplyUnderlying(): void {
@@ -102,7 +102,7 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
             context("when the underlying has 8 decimals", function () {
               beforeEach(async function () {
                 await this.stubs.underlying.mock.decimals.returns(bn("8"));
-                await this.stubs.hToken.mock.underlyingPrecisionScalar.returns(tokenWithNDecimalsPrecisionScalar(8));
+                await this.stubs.hToken.mock.underlyingPrecisionScalar.returns(precisionScalarForDecimals(8));
               });
 
               const underlyingAmount: BigNumber = fp("100", 8);
@@ -124,7 +124,7 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
             context("when the underlying has 6 decimals", function () {
               beforeEach(async function () {
                 await this.stubs.underlying.mock.decimals.returns(bn("6"));
-                await this.stubs.hToken.mock.underlyingPrecisionScalar.returns(tokenWithNDecimalsPrecisionScalar(6));
+                await this.stubs.hToken.mock.underlyingPrecisionScalar.returns(precisionScalarForDecimals(6));
               });
 
               beforeEach(async function () {

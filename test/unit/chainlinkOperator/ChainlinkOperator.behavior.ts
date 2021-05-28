@@ -6,12 +6,12 @@ import shouldBehaveLikeGetPrice from "./view/getPrice";
 
 export function shouldBehaveLikeChainlinkOperator(): void {
   describe("View Functions", function () {
-    describe("getNormalizedPrice", function () {
-      shouldBehaveLikegetNormalizedPrice();
-    });
-
     describe("getFeed", function () {
       shouldBehaveLikeGetFeed();
+    });
+
+    describe("getNormalizedPrice", function () {
+      shouldBehaveLikegetNormalizedPrice();
     });
 
     describe("getPrice", function () {

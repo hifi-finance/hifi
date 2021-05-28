@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
 import { H_TOKEN_EXPIRATION_TIME } from "../../../../helpers/constants";
-import { bn, tokenWithNDecimalsPrecisionScalar } from "../../../../helpers/numbers";
+import { bn, precisionScalarForDecimals } from "../../../../helpers/numbers";
 import { HToken } from "../../../../typechain/HToken";
 import { deployHToken } from "../../../deployers";
 
@@ -22,7 +22,7 @@ export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void 
         this.stubs.collateral.address,
       );
       const underlyingPrecisionScalar: BigNumber = await hToken.underlyingPrecisionScalar();
-      expect(underlyingPrecisionScalar).to.equal(tokenWithNDecimalsPrecisionScalar(6));
+      expect(underlyingPrecisionScalar).to.equal(precisionScalarForDecimals(6));
     });
   });
 
@@ -41,7 +41,7 @@ export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void 
         this.stubs.collateral.address,
       );
       const underlyingPrecisionScalar: BigNumber = await hToken.underlyingPrecisionScalar();
-      expect(underlyingPrecisionScalar).to.equal(tokenWithNDecimalsPrecisionScalar(8));
+      expect(underlyingPrecisionScalar).to.equal(precisionScalarForDecimals(8));
     });
   });
 
@@ -60,7 +60,7 @@ export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void 
         this.stubs.collateral.address,
       );
       const underlyingPrecisionScalar: BigNumber = await hToken.underlyingPrecisionScalar();
-      expect(underlyingPrecisionScalar).to.equal(tokenWithNDecimalsPrecisionScalar(18));
+      expect(underlyingPrecisionScalar).to.equal(precisionScalarForDecimals(18));
     });
   });
 }

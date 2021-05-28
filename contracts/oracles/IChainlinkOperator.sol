@@ -59,16 +59,6 @@ interface IChainlinkOperator {
 
     /// CONSTANT FUNCTIONS ///
 
-    /// @notice Gets the official price for a symbol and adjusts it have 18 decimals instead of the
-    /// format used by Chainlink, which has 8 decimals.
-    ///
-    /// @dev Requirements:
-    /// - The normalized price cannot overflow.
-    ///
-    /// @param symbol The Erc20 symbol of the token for which to query the price.
-    /// @return The normalized price.
-    function getNormalizedPrice(string memory symbol) external view returns (uint256);
-
     /// @notice Gets the official feed for a symbol.
     /// @param symbol The symbol to return the feed for.
     /// @return (address asset, address id, bool isSet).
@@ -80,6 +70,16 @@ interface IChainlinkOperator {
             IAggregatorV3,
             bool
         );
+
+    /// @notice Gets the official price for a symbol and adjusts it have 18 decimals instead of the
+    /// format used by Chainlink, which has 8 decimals.
+    ///
+    /// @dev Requirements:
+    /// - The normalized price cannot overflow.
+    ///
+    /// @param symbol The Erc20 symbol of the token for which to query the price.
+    /// @return The normalized price.
+    function getNormalizedPrice(string memory symbol) external view returns (uint256);
 
     /// @notice Gets the official price for a symbol in the default format used by Chainlink, which
     /// has 8 decimals.

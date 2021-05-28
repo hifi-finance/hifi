@@ -24,8 +24,8 @@ export const H_TOKEN_EXPIRATION_DATE_FULL = H_TOKEN_EXPIRATION_DATE.toISOString(
 export const H_TOKEN_EXPIRATION_DATE_SHORT =
   H_TOKEN_EXPIRATION_DATE.toLocaleString("default", { year: "2-digit" }).toUpperCase() +
   H_TOKEN_EXPIRATION_DATE.toLocaleString("default", { month: "short" }).toUpperCase();
-export const H_TOKEN_NAME: string = `Hifi USDC (${H_TOKEN_EXPIRATION_DATE_FULL})`;
-export const H_TOKEN_SYMBOL: string = `hUSDC${H_TOKEN_EXPIRATION_DATE_SHORT}`;
+export const H_TOKEN_NAME: string = "Hifi USDC (" + H_TOKEN_EXPIRATION_DATE_FULL + ")";
+export const H_TOKEN_SYMBOL: string = "hUSDC" + H_TOKEN_EXPIRATION_DATE_SHORT;
 export const MAX_INT256: BigNumber = bn(
   "57896044618658097711785492504343953926634992332820282019728792003956564819967",
 );

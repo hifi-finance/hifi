@@ -5,7 +5,7 @@ import fp from "evm-fp";
 
 import { COLLATERAL_SYMBOL, UNDERLYING_SYMBOL } from "../../../../helpers/constants";
 import { BalanceSheetErrors, ChainlinkOperatorErrors, GenericErrors } from "../../../../helpers/errors";
-import { bn, tokenWithNDecimalsPrecisionScalar } from "../../../../helpers/numbers";
+import { bn, precisionScalarForDecimals } from "../../../../helpers/numbers";
 
 export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio(): void {
   const hypotheticalCollateralizationRatio: BigNumber = fp("10.00");
@@ -106,11 +106,11 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
             context("when the collateral has 8 decimals", function () {
               beforeEach(async function () {
                 await this.stubs.collateral.mock.decimals.returns(bn("8"));
-                await this.stubs.hToken.mock.collateralPrecisionScalar.returns(tokenWithNDecimalsPrecisionScalar(8));
+                await this.stubs.hToken.mock.collateralPrecisionScalar.returns(precisionScalarForDecimals(8));
               });
 
               it("retrieves the hypothetical collateralization ratio", async function () {
-                const denormalizedLockedCollateral = lockedCollateral.div(tokenWithNDecimalsPrecisionScalar(8));
+                const denormalizedLockedCollateral = lockedCollateral.div(precisionScalarForDecimals(8));
                 const contractHypotheticalCollateralizationRatio: BigNumber =
                   await this.contracts.balanceSheet.getHypotheticalCollateralizationRatio(
                     this.stubs.hToken.address,
@@ -125,7 +125,7 @@ export default function shouldBehaveLikeGetHypotheticalCollateralizationRatio():
             context("when the collateral has 18 decimals", function () {
               beforeEach(async function () {
                 await this.stubs.collateral.mock.decimals.returns(bn("18"));
-                await this.stubs.hToken.mock.collateralPrecisionScalar.returns(tokenWithNDecimalsPrecisionScalar(18));
+                await this.stubs.hToken.mock.collateralPrecisionScalar.returns(precisionScalarForDecimals(18));
               });
 
               it("retrieves the hypothetical collateralization ratio", async function () {

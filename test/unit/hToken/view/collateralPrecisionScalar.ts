@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
 import { H_TOKEN_EXPIRATION_TIME } from "../../../../helpers/constants";
-import { bn, tokenWithNDecimalsPrecisionScalar } from "../../../../helpers/numbers";
+import { bn, precisionScalarForDecimals } from "../../../../helpers/numbers";
 import { HToken } from "../../../../typechain/HToken";
 import { deployHToken } from "../../../deployers";
 
@@ -22,7 +22,7 @@ export default function shouldBehaveLikeCollateralPrecisionScalarGetter(): void 
         this.stubs.collateral.address,
       );
       const collateralPrecisionScalar: BigNumber = await hToken.collateralPrecisionScalar();
-      expect(collateralPrecisionScalar).to.equal(tokenWithNDecimalsPrecisionScalar(18));
+      expect(collateralPrecisionScalar).to.equal(precisionScalarForDecimals(18));
     });
   });
 
@@ -41,7 +41,7 @@ export default function shouldBehaveLikeCollateralPrecisionScalarGetter(): void 
         this.stubs.collateral.address,
       );
       const collateralPrecisionScalar: BigNumber = await hToken.collateralPrecisionScalar();
-      expect(collateralPrecisionScalar).to.equal(tokenWithNDecimalsPrecisionScalar(8));
+      expect(collateralPrecisionScalar).to.equal(precisionScalarForDecimals(8));
     });
   });
 }

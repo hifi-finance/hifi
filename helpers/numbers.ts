@@ -19,8 +19,12 @@ export function usdc(x: string): BigNumber {
   return fp(x, 6);
 }
 
-export function tokenWithNDecimalsPrecisionScalar(n: number): BigNumber {
-  if (n > 18 || n < 0) throw new Error(`Invalid n given: ${n}`);
-  if (n === 18) return bn("1");
+export function precisionScalarForDecimals(n: number): BigNumber {
+  if (n > 18 || n < 0) {
+    throw new Error(`Invalid n given: ${n}`);
+  }
+  if (n === 18) {
+    return bn("1");
+  }
   return bn(`1e${18 - n}`);
 }
