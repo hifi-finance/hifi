@@ -101,6 +101,9 @@
     "type": "git",
     "url": "https://github.com/hifi-finance/hifi-protocol"
   },
+  "resolutions": {
+    "@ethersproject/wallet": "^5.2.0"
+  },
   "scripts": {
     "clean": "hardhat clean",
     "commit": "git-cz",

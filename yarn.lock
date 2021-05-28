@@ -850,7 +850,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/wallet@npm:5.2.0":
+"@ethersproject/wallet@npm:^5.2.0":
   version: 5.2.0
   resolution: "@ethersproject/wallet@npm:5.2.0"
   dependencies:
