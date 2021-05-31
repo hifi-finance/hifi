@@ -1,15 +1,13 @@
 import { AddressZero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { COLLATERAL_SYMBOL } from "../../../../helpers/constants";
+import { WBTC_SYMBOL } from "../../../../helpers/constants";
 import { AdminErrors, ChainlinkOperatorErrors } from "../../../../helpers/errors";
 
 export default function shouldBehaveLikeDeleteFeed(): void {
-  const symbol: string = COLLATERAL_SYMBOL;
-
   context("when the caller is not the admin", function () {
     it("reverts", async function () {
-      await expect(this.contracts.oracle.connect(this.signers.raider).deleteFeed(symbol)).to.be.revertedWith(
+      await expect(this.contracts.oracle.connect(this.signers.raider).deleteFeed(WBTC_SYMBOL)).to.be.revertedWith(
         AdminErrors.NotAdmin,
       );
     });
@@ -18,7 +16,7 @@ export default function shouldBehaveLikeDeleteFeed(): void {
   context("when the caller is the admin", function () {
     context("when the feed is not set", function () {
       it("reverts", async function () {
-        await expect(this.contracts.oracle.connect(this.signers.admin).deleteFeed(symbol)).to.be.revertedWith(
+        await expect(this.contracts.oracle.connect(this.signers.admin).deleteFeed(WBTC_SYMBOL)).to.be.revertedWith(
           ChainlinkOperatorErrors.FeedNotSet,
         );
       });
@@ -28,21 +26,21 @@ export default function shouldBehaveLikeDeleteFeed(): void {
       beforeEach(async function () {
         await this.contracts.oracle
           .connect(this.signers.admin)
-          .setFeed(this.stubs.collateral.address, this.stubs.collateralPriceFeed.address);
+          .setFeed(this.mocks.wbtc.address, this.mocks.wbtcPriceFeed.address);
       });
 
       it("deletes the feed", async function () {
-        await this.contracts.oracle.connect(this.signers.admin).deleteFeed(symbol);
-        const feed = await this.contracts.oracle.getFeed(COLLATERAL_SYMBOL);
+        await this.contracts.oracle.connect(this.signers.admin).deleteFeed(WBTC_SYMBOL);
+        const feed = await this.contracts.oracle.getFeed(WBTC_SYMBOL);
         expect(feed[0]).to.equal(AddressZero); // asset
         expect(feed[1]).to.equal(AddressZero); // id
         expect(feed[2]).to.equal(false); // isSet
       });
 
       it("emits a DeleteFeed event", async function () {
-        await expect(this.contracts.oracle.connect(this.signers.admin).deleteFeed(symbol))
+        await expect(this.contracts.oracle.connect(this.signers.admin).deleteFeed(WBTC_SYMBOL))
           .to.emit(this.contracts.oracle, "DeleteFeed")
-          .withArgs(this.stubs.collateral.address, this.stubs.collateralPriceFeed.address);
+          .withArgs(this.mocks.wbtc.address, this.mocks.wbtcPriceFeed.address);
       });
     });
   });

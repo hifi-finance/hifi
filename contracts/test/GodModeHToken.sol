@@ -12,11 +12,9 @@ contract GodModeHToken is HToken {
         string memory name_,
         string memory symbol_,
         uint256 expirationTime_,
-        IFintroller fintroller_,
         IBalanceSheet balanceSheet_,
-        IErc20 underlying_,
-        IErc20 collateral_
-    ) HToken(name_, symbol_, expirationTime_, fintroller_, balanceSheet_, underlying_, collateral_) {
+        IErc20 underlying_
+    ) HToken(name_, symbol_, expirationTime_, balanceSheet_, underlying_) {
         // solhint-disable-previous-line no-empty-blocks
     }
 
@@ -24,7 +22,7 @@ contract GodModeHToken is HToken {
         mintInternal(beneficiary, mintAmount);
     }
 
-    function __godMode__setRedemptionPool(IRedemptionPool redemptionPool_) external {
-        redemptionPool = redemptionPool_;
+    function __godMode_setExpirationTime(uint256 newExpirationTime) external {
+        expirationTime = newExpirationTime;
     }
 }

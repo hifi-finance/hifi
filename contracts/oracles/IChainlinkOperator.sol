@@ -8,7 +8,7 @@ import "../external/chainlink/IAggregatorV3.sol";
 
 /// @title IChainlinkOperator
 /// @author Hifi
-/// @notice Interface for the ChainlinkOperator contract
+/// @notice Manages USD-quoted Chainlink price feeds.
 interface IChainlinkOperator {
     /// STRUCTS ///
 

@@ -8,7 +8,7 @@ export default function shouldBehaveLikeSetBorrowAllowed(): void {
       await expect(
         this.contracts.fintroller
           .connect(this.signers.raider)
-          .setLiquidateBorrowAllowed(this.stubs.hToken.address, true),
+          .setLiquidateBorrowAllowed(this.mocks.hTokens[0].address, true),
       ).to.be.revertedWith(AdminErrors.NotAdmin);
     });
   });
@@ -19,29 +19,33 @@ export default function shouldBehaveLikeSetBorrowAllowed(): void {
         await expect(
           this.contracts.fintroller
             .connect(this.signers.admin)
-            .setLiquidateBorrowAllowed(this.stubs.hToken.address, true),
+            .setLiquidateBorrowAllowed(this.mocks.hTokens[0].address, true),
         ).to.be.revertedWith(GenericErrors.BondNotListed);
       });
     });
 
     context("when the bond is listed", function () {
       beforeEach(async function () {
-        await this.contracts.fintroller.connect(this.signers.admin).listBond(this.stubs.hToken.address);
+        await this.contracts.fintroller.connect(this.signers.admin).listBond(this.mocks.hTokens[0].address);
       });
 
       it("sets the value to true", async function () {
         await this.contracts.fintroller
           .connect(this.signers.admin)
-          .setLiquidateBorrowAllowed(this.stubs.hToken.address, true);
-        const newState: boolean = await this.contracts.fintroller.getLiquidateBorrowAllowed(this.stubs.hToken.address);
+          .setLiquidateBorrowAllowed(this.mocks.hTokens[0].address, true);
+        const newState: boolean = await this.contracts.fintroller.getLiquidateBorrowAllowed(
+          this.mocks.hTokens[0].address,
+        );
         expect(newState).to.equal(true);
       });
 
       it("sets the value to false", async function () {
         await this.contracts.fintroller
           .connect(this.signers.admin)
-          .setLiquidateBorrowAllowed(this.stubs.hToken.address, false);
-        const newState: boolean = await this.contracts.fintroller.getLiquidateBorrowAllowed(this.stubs.hToken.address);
+          .setLiquidateBorrowAllowed(this.mocks.hTokens[0].address, false);
+        const newState: boolean = await this.contracts.fintroller.getLiquidateBorrowAllowed(
+          this.mocks.hTokens[0].address,
+        );
         expect(newState).to.equal(false);
       });
 
@@ -49,10 +53,10 @@ export default function shouldBehaveLikeSetBorrowAllowed(): void {
         await expect(
           this.contracts.fintroller
             .connect(this.signers.admin)
-            .setLiquidateBorrowAllowed(this.stubs.hToken.address, true),
+            .setLiquidateBorrowAllowed(this.mocks.hTokens[0].address, true),
         )
           .to.emit(this.contracts.fintroller, "SetLiquidateBorrowAllowed")
-          .withArgs(this.signers.admin.address, this.stubs.hToken.address, true);
+          .withArgs(this.signers.admin.address, this.mocks.hTokens[0].address, true);
       });
     });
   });

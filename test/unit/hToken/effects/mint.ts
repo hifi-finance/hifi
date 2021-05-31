@@ -10,7 +10,7 @@ export default function shouldBehaveLikeSetVaultDebt(): void {
   context("when the caller is not the HToken contract", function () {
     it("reverts", async function () {
       await expect(
-        this.contracts.hToken.connect(this.signers.raider).mint(this.signers.raider.address, mintAmount),
+        this.contracts.hTokens[0].connect(this.signers.raider).mint(this.signers.raider.address, mintAmount),
       ).to.be.revertedWith(HTokenErrors.MintNotAuthorized);
     });
   });

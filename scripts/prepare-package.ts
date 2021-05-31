@@ -22,9 +22,7 @@ const contracts: string[] = [
   "IErc20",
   "IErc20Permit",
   "IFintroller",
-  "IRedemptionPool",
   "IHToken",
-  "RedemptionPool",
   "StablecoinPriceFeed",
 ];
 const tempArtifactsDir: string = path.join(__dirname, "..", "artifacts-temp");

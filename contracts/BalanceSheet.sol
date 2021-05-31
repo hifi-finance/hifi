@@ -4,235 +4,76 @@ pragma solidity >=0.8.0;
 import "@paulrberg/contracts/access/Admin.sol";
 import "@paulrberg/contracts/math/PRBMathUD60x18.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
-import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 import "@paulrberg/contracts/utils/ReentrancyGuard.sol";
+import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 
-import "./IBalanceSheet.sol";
 import "./IFintroller.sol";
-import "./IHToken.sol";
-import "./oracles/IChainlinkOperator.sol";
+import "./IBalanceSheet.sol";
 
 /// @title BalanceSheet
 /// @author Hifi
-/// @notice Manages the debt vault for all hTokens.
 contract BalanceSheet is
-    ReentrancyGuard, /// no depedency
-    Admin, /// one dependency
+    ReentrancyGuard, /// no dependency
+    Admin, // one dependency
     IBalanceSheet /// one dependency
 {
     using PRBMathUD60x18 for uint256;
     using SafeErc20 for IErc20;
 
-    /// STORAGE PROPERTIES ///
+    /// STORAGE ///
 
     /// @inheritdoc IBalanceSheet
     IFintroller public override fintroller;
 
     /// @inheritdoc IBalanceSheet
-    bool public constant override isBalanceSheet = true;
+    IChainlinkOperator public override oracle;
 
-    /// @dev One vault for each hToken for each account.
-    mapping(IHToken => mapping(address => Vault)) internal vaults;
+    /// @dev Borrower vaults.
+    mapping(address => Vault) internal vaults;
 
     /// MODIFIERS ///
 
-    modifier isVaultOpenForMsgSender(IHToken hToken) {
-        require(vaults[hToken][msg.sender].isOpen, "VAULT_NOT_OPEN");
-        _;
-    }
-
     /// @param fintroller_ The address of the Fintroller contract.
-    constructor(IFintroller fintroller_) Admin() {
-        // Set the hToken contract and sanity check it.
+    constructor(IFintroller fintroller_, IChainlinkOperator oracle_) Admin() {
+        // Set the Fintroller contract.
         fintroller = fintroller_;
-        fintroller.isFintroller();
+
+        // Set the oracle contract.
+        oracle = oracle_;
     }
 
-    /// NON-CONSTANT FUNCTIONS ///
+    /// PUBLIC CONSTANT FUNCTIONS ///
 
     /// @inheritdoc IBalanceSheet
-    function clutchCollateral(
-        IHToken hToken,
-        address liquidator,
-        address borrower,
-        uint256 collateralAmount
-    ) external override nonReentrant {
-        // Checks: the caller is the hToken.
-        require(msg.sender == address(hToken), "CLUTCH_COLLATERAL_NOT_AUTHORIZED");
-
-        // Checks: there is enough clutchable collateral in the vault.
-        uint256 lockedCollateral = vaults[hToken][borrower].lockedCollateral;
-        require(lockedCollateral >= collateralAmount, "INSUFFICIENT_LOCKED_COLLATERAL");
-
-        // Calculate the new locked collateral amount.
-        uint256 newLockedCollateral = lockedCollateral - collateralAmount;
-
-        // Effects: update the vault.
-        vaults[hToken][borrower].lockedCollateral = newLockedCollateral;
-
-        // Interactions: transfer the collateral.
-        hToken.collateral().safeTransfer(liquidator, collateralAmount);
-
-        emit ClutchCollateral(hToken, liquidator, borrower, collateralAmount);
+    function getBondList(address account) external view override returns (IHToken[] memory) {
+        return vaults[account].bondList;
     }
 
     /// @inheritdoc IBalanceSheet
-    function decreaseVaultDebt(
-        IHToken hToken,
-        address borrower,
-        uint256 subtractedDebt
-    ) external override {
-        // Checks: the caller is the hToken.
-        require(msg.sender == address(hToken), "DECREASE_VAULT_DEBT_NOT_AUTHORIZED");
-
-        // Effects: update storage.
-        uint256 oldVaultDebt = vaults[hToken][borrower].debt;
-        vaults[hToken][borrower].debt -= subtractedDebt;
-
-        emit DecreaseVaultDebt(hToken, borrower, oldVaultDebt, vaults[hToken][borrower].debt);
+    function getCollateralList(address account) external view override returns (IErc20[] memory) {
+        return vaults[account].collateralList;
     }
 
     /// @inheritdoc IBalanceSheet
-    function depositCollateral(IHToken hToken, uint256 collateralAmount)
-        external
-        override
-        isVaultOpenForMsgSender(hToken)
-        nonReentrant
-    {
-        // Checks: the zero edge case.
-        require(collateralAmount > 0, "DEPOSIT_COLLATERAL_ZERO");
-
-        // Checks: the Fintroller allows this action to be performed.
-        require(fintroller.getDepositCollateralAllowed(hToken), "DEPOSIT_COLLATERAL_NOT_ALLOWED");
-
-        // Effects: update storage.
-        uint256 hypotheticalFreeCollateral = vaults[hToken][msg.sender].freeCollateral + collateralAmount;
-        vaults[hToken][msg.sender].freeCollateral = hypotheticalFreeCollateral;
-
-        // Interactions: perform the Erc20 transfer.
-        hToken.collateral().safeTransferFrom(msg.sender, address(this), collateralAmount);
-
-        emit DepositCollateral(hToken, msg.sender, collateralAmount);
-    }
-
-    /// @inheritdoc IBalanceSheet
-    function freeCollateral(IHToken hToken, uint256 collateralAmount)
-        external
-        override
-        isVaultOpenForMsgSender(hToken)
-    {
-        // Checks: the zero edge case.
-        require(collateralAmount > 0, "FREE_COLLATERAL_ZERO");
-
-        // Checks: enough locked collateral.
-        Vault memory vault = vaults[hToken][msg.sender];
-        require(vault.lockedCollateral >= collateralAmount, "INSUFFICIENT_LOCKED_COLLATERAL");
-        uint256 newLockedCollateral = vault.lockedCollateral - collateralAmount;
-
-        // Checks: the hypothetical collateralization ratio is above the threshold.
-        if (vault.debt > 0) {
-            uint256 hypotheticalCollateralizationRatio =
-                getHypotheticalCollateralizationRatio(hToken, msg.sender, newLockedCollateral, vault.debt);
-            uint256 bondCollateralizationRatio = fintroller.getBondCollateralizationRatio(hToken);
-            require(hypotheticalCollateralizationRatio >= bondCollateralizationRatio, "BELOW_COLLATERALIZATION_RATIO");
-        }
-
-        // Effects: update storage.
-        vaults[hToken][msg.sender].lockedCollateral = newLockedCollateral;
-        uint256 newFreeCollateral = vault.freeCollateral + collateralAmount;
-        vaults[hToken][msg.sender].freeCollateral = newFreeCollateral;
-
-        emit FreeCollateral(hToken, msg.sender, collateralAmount);
-    }
-
-    /// @inheritdoc IBalanceSheet
-    function increaseVaultDebt(
-        IHToken hToken,
-        address borrower,
-        uint256 addedDebt
-    ) external override {
-        // Checks: the caller is the hToken.
-        require(msg.sender == address(hToken), "INCREASE_VAULT_DEBT_NOT_AUTHORIZED");
-
-        // Effects: update storage.
-        uint256 oldVaultDebt = vaults[hToken][borrower].debt;
-        vaults[hToken][borrower].debt += addedDebt;
-
-        emit IncreaseVaultDebt(hToken, borrower, oldVaultDebt, vaults[hToken][borrower].debt);
-    }
-
-    /// @inheritdoc IBalanceSheet
-    function lockCollateral(IHToken hToken, uint256 collateralAmount)
-        external
-        override
-        isVaultOpenForMsgSender(hToken)
-    {
-        // Avoid the zero edge case.
-        require(collateralAmount > 0, "LOCK_COLLATERAL_ZERO");
-
-        Vault memory vault = vaults[hToken][msg.sender];
-        require(vault.freeCollateral >= collateralAmount, "INSUFFICIENT_FREE_COLLATERAL");
-
-        uint256 newLockedCollateral = vault.lockedCollateral + collateralAmount;
-        vaults[hToken][msg.sender].lockedCollateral = newLockedCollateral;
-
-        uint256 hypotheticalFreeCollateral = vault.freeCollateral - collateralAmount;
-        vaults[hToken][msg.sender].freeCollateral = hypotheticalFreeCollateral;
-
-        emit LockCollateral(hToken, msg.sender, collateralAmount);
-    }
-
-    /// @inheritdoc IBalanceSheet
-    function openVault(IHToken hToken) external override {
-        require(fintroller.isBondListed(hToken), "BOND_NOT_LISTED");
-        require(hToken.isHToken(), "OPEN_VAULT_HTOKEN_INSPECTION");
-        require(vaults[hToken][msg.sender].isOpen == false, "VAULT_OPEN");
-        vaults[hToken][msg.sender].isOpen = true;
-        emit OpenVault(hToken, msg.sender);
-    }
-
-    /// @inheritdoc IBalanceSheet
-    function withdrawCollateral(IHToken hToken, uint256 collateralAmount)
-        external
-        override
-        isVaultOpenForMsgSender(hToken)
-        nonReentrant
-    {
-        // Checks: the zero edge case.
-        require(collateralAmount > 0, "WITHDRAW_COLLATERAL_ZERO");
-
-        // Checks: there is enough free collateral.
-        require(vaults[hToken][msg.sender].freeCollateral >= collateralAmount, "INSUFFICIENT_FREE_COLLATERAL");
-
-        // Effects: update storage.
-        uint256 newFreeCollateral = vaults[hToken][msg.sender].freeCollateral - collateralAmount;
-        vaults[hToken][msg.sender].freeCollateral = newFreeCollateral;
-
-        // Interactions: perform the Erc20 transfer.
-        hToken.collateral().safeTransfer(msg.sender, collateralAmount);
-
-        emit WithdrawCollateral(hToken, msg.sender, collateralAmount);
-    }
-
-    /// CONSTANT FUNCTIONS ///
-
-    /// @inheritdoc IBalanceSheet
-    function getClutchableCollateral(IHToken hToken, uint256 repayAmount) external view override returns (uint256) {
+    function getClutchableCollateralAmount(
+        IHToken bond,
+        uint256 repayAmount,
+        IErc20 collateral
+    ) public view override returns (uint256 clutchableCollateralAmount) {
         // Avoid the zero edge cases.
         require(repayAmount > 0, "GET_CLUTCHABLE_COLLATERAL_ZERO");
 
         // When the liquidation incentive is zero, the end result would be zero anyways.
-        uint256 liquidationIncentive = fintroller.getBondLiquidationIncentive(hToken);
+        uint256 liquidationIncentive = fintroller.getLiquidationIncentive(collateral);
         if (liquidationIncentive == 0) {
             return 0;
         }
 
-        // Grab the normalized USD price of the underlying.
-        IChainlinkOperator oracle = fintroller.oracle();
-        uint256 normalizedUnderlyingPrice = oracle.getNormalizedPrice(hToken.underlying().symbol());
-
         // Grab the normalized USD price of the collateral.
-        uint256 normalizedCollateralPrice = oracle.getNormalizedPrice(hToken.collateral().symbol());
+        uint256 normalizedCollateralPrice = oracle.getNormalizedPrice(collateral.symbol());
+
+        // Grab the normalized USD price of the underlying.
+        uint256 normalizedUnderlyingPrice = oracle.getNormalizedPrice(bond.underlying().symbol());
 
         // Calculate the top part of the equation.
         uint256 numerator = repayAmount.mul(liquidationIncentive.mul(normalizedUnderlyingPrice));
@@ -240,97 +81,376 @@ contract BalanceSheet is
         // Calculate the normalized clutched collateral amount.
         uint256 normalizedClutchableCollateralAmount = numerator.div(normalizedCollateralPrice);
 
-        // If the precision scalar is not 1, calculate the final form of the clutched collateral amount.
-        uint256 collateralPrecisionScalar = hToken.collateralPrecisionScalar();
-        uint256 clutchableCollateralAmount;
+        // Denormalize the collateral amount.
+        uint256 collateralPrecisionScalar = 10**(18 - collateral.decimals());
         if (collateralPrecisionScalar != 1) {
             clutchableCollateralAmount = normalizedClutchableCollateralAmount / collateralPrecisionScalar;
         } else {
             clutchableCollateralAmount = normalizedClutchableCollateralAmount;
         }
-
-        return clutchableCollateralAmount;
     }
 
     /// @inheritdoc IBalanceSheet
-    function getCurrentCollateralizationRatio(IHToken hToken, address borrower) public view override returns (uint256) {
-        Vault memory vault = vaults[hToken][borrower];
-        return getHypotheticalCollateralizationRatio(hToken, borrower, vault.lockedCollateral, vault.debt);
+    function getCurrentAccountLiquidity(address account)
+        public
+        view
+        override
+        returns (uint256 excessLiquidity, uint256 shortfallLiquidity)
+    {
+        return getHypotheticalAccountLiquidity(account, IErc20(address(0x00)), 0, IHToken(address(0x00)), 0);
+    }
+
+    struct HypotheticalAccountLiquidityLocalVars {
+        uint256 bondListLength;
+        uint256 collateralAmount;
+        uint256 collateralListLength;
+        uint256 collateralValueUsd;
+        uint256 collateralizationRatio;
+        uint256 debtAmount;
+        uint256 debtValueUsd;
+        uint256 normalizedCollateralAmount;
+        uint256 normalizedCollateralPrice;
+        uint256 precisionScalar;
+        uint256 totalDebtValueUsd;
+        uint256 totalWeightedCollateralValueUsd;
+        uint256 normalizedUnderlyingPrice;
+        uint256 weightedCollateralValueUsd;
     }
 
     /// @inheritdoc IBalanceSheet
-    function getHypotheticalCollateralizationRatio(
-        IHToken hToken,
+    function getHypotheticalAccountLiquidity(
+        address account,
+        IErc20 collateralModify,
+        uint256 collateralAmountModify,
+        IHToken bondModify,
+        uint256 debtAmountModify
+    ) public view override returns (uint256 excessLiquidity, uint256 shortfallLiquidity) {
+        HypotheticalAccountLiquidityLocalVars memory vars;
+
+        // Load into memory for faster iteration.
+        IErc20[] memory collateralList = vaults[account].collateralList;
+        vars.collateralListLength = collateralList.length;
+
+        // Sum up each collateral USD value divided by the collateralization ratio.
+        for (uint256 i = 0; i < vars.collateralListLength; i++) {
+            IErc20 collateral = collateralList[i];
+
+            if (collateralModify != collateral) {
+                vars.collateralAmount = vaults[account].collateralAmounts[collateral];
+            } else {
+                vars.collateralAmount = collateralAmountModify;
+            }
+
+            // Normalize the collateral amount.
+            vars.precisionScalar = 10**(18 - collateral.decimals());
+            if (vars.precisionScalar != 1) {
+                vars.normalizedCollateralAmount = vars.collateralAmount * vars.precisionScalar;
+            } else {
+                vars.normalizedCollateralAmount = vars.collateralAmount;
+            }
+
+            // Grab the normalized USD price of the collateral.
+            vars.normalizedCollateralPrice = oracle.getNormalizedPrice(collateral.symbol());
+
+            // Calculate the USD value of the collateral amount;
+            vars.collateralValueUsd = vars.normalizedCollateralAmount.mul(vars.normalizedCollateralPrice);
+
+            // Calculate the USD value of the weighted collateral by dividing the USD value of the collateral amount
+            // by the collateralization ratio.
+            vars.collateralizationRatio = fintroller.getCollateralizationRatio(collateral);
+            vars.weightedCollateralValueUsd = vars.collateralValueUsd.div(vars.collateralizationRatio);
+
+            // Add the previously calculated USD value of the weighted collateral to the totals.
+            vars.totalWeightedCollateralValueUsd += vars.weightedCollateralValueUsd;
+        }
+
+        // Load into memory for faster iteration.
+        IHToken[] memory bondList = vaults[account].bondList;
+        vars.bondListLength = bondList.length;
+
+        // Sum up all debts.
+        for (uint256 i = 0; i < vars.bondListLength; i++) {
+            IHToken bond = bondList[i];
+
+            if (bondModify != bond) {
+                vars.debtAmount = vaults[account].debtAmounts[bond];
+            } else {
+                vars.debtAmount = debtAmountModify;
+            }
+
+            // Grab the normalized USD price of the underlying.
+            vars.normalizedUnderlyingPrice = oracle.getNormalizedPrice(bond.underlying().symbol());
+
+            // Calculate the USD value of the collateral amount;
+            vars.debtValueUsd = vars.debtAmount.mul(vars.normalizedUnderlyingPrice);
+
+            // Add the previously calculated USD value to the totals.
+            vars.totalDebtValueUsd += vars.debtValueUsd;
+        }
+
+        // Excess liquidity when there is more weighted collateral than debt, and shortfall liquidity when there is
+        // less weighted collateral than debt.
+        unchecked {
+            if (vars.totalWeightedCollateralValueUsd > vars.totalDebtValueUsd) {
+                excessLiquidity = vars.totalWeightedCollateralValueUsd - vars.totalDebtValueUsd;
+            } else {
+                shortfallLiquidity = vars.totalDebtValueUsd - vars.totalWeightedCollateralValueUsd;
+            }
+        }
+    }
+
+    /// PUBLIC NON-CONSTANT FUNCTIONS ///
+
+    // @inheritdoc IHToken
+    function borrow(IHToken bond, uint256 borrowAmount) public override nonReentrant {
+        // Checks: bond not matured.
+        require(bond.isMatured() == false, "BOND_MATURED");
+
+        // Checks: the zero edge case.
+        require(borrowAmount > 0, "BORROW_ZERO");
+
+        // Checks: the Fintroller allows this action to be performed.
+        require(fintroller.getBorrowAllowed(bond), "BORROW_NOT_ALLOWED");
+
+        // Checks: debt ceiling.
+        uint256 hypotheticalTotalSupply = bond.totalSupply() + borrowAmount;
+        uint256 bondDebtCeiling = fintroller.getDebtCeiling(bond);
+        require(hypotheticalTotalSupply <= bondDebtCeiling, "BORROW_DEBT_CEILING_OVERFLOW");
+
+        // Add the borrow amount to the borrower account's current debt.
+        uint256 newDebtAmount = vaults[msg.sender].debtAmounts[bond] + borrowAmount;
+
+        if (vaults[msg.sender].debtAmounts[bond] == 0) {
+            // Checks: below max bonds limit.
+            unchecked {
+                uint256 bondListLength = vaults[msg.sender].bondList.length;
+                require(bondListLength + 1 <= fintroller.maxBonds(), "BORROW_MAX_BONDS");
+            }
+            // Effects: add the bond to the redundant list.
+            vaults[msg.sender].bondList.push(bond);
+        }
+
+        // Checks: the hypothetical account liquidity is okay.
+        (, uint256 hypotheticalShortfallLiquidity) =
+            getHypotheticalAccountLiquidity(msg.sender, IErc20(address(0x00)), 0, bond, newDebtAmount);
+        require(hypotheticalShortfallLiquidity == 0, "INSUFFICIENT_LIQUIDITY");
+
+        // Effects: increase the debt.
+        vaults[msg.sender].debtAmounts[bond] = newDebtAmount;
+
+        // Interactions: print the new hTokens into existence.
+        bond.mint(msg.sender, borrowAmount);
+
+        // Emit a Borrow event.
+        emit Borrow(bond, msg.sender, borrowAmount);
+    }
+
+    /// @inheritdoc IBalanceSheet
+    function depositCollateral(IErc20 collateral, uint256 depositAmount) external override {
+        // Checks: the zero edge case.
+        require(depositAmount > 0, "DEPOSIT_COLLATERAL_ZERO");
+
+        // Checks: the Fintroller allows this action to be performed.
+        require(fintroller.getDepositCollateralAllowed(collateral), "DEPOSIT_COLLATERAL_NOT_ALLOWED");
+
+        // Effects: add the collateral to the redundant list.
+        if (vaults[msg.sender].collateralAmounts[collateral] == 0) {
+            vaults[msg.sender].collateralList.push(collateral);
+        }
+
+        // Effects: increase the collateral amount.
+        vaults[msg.sender].collateralAmounts[collateral] += depositAmount;
+
+        // Interactions: perform the Erc20 transfer.
+        collateral.safeTransferFrom(msg.sender, address(this), depositAmount);
+
+        // Emit a DepositCollateral event.
+        emit DepositCollateral(collateral, msg.sender, depositAmount);
+    }
+
+    /// @inheritdoc IBalanceSheet
+    function liquidateBorrow(
+        IHToken bond,
         address borrower,
-        uint256 lockedCollateral,
-        uint256 debt
-    ) public view override returns (uint256) {
-        // If the vault is not open, a hypothetical collateralization ratio cannot be calculated.
-        require(vaults[hToken][borrower].isOpen, "VAULT_NOT_OPEN");
+        uint256 repayAmount,
+        IErc20 collateral
+    ) external override nonReentrant {
+        // Checks: caller not the borrower.
+        require(msg.sender != borrower, "LIQUIDATE_BORROW_SELF");
 
-        // Avoid the zero edge cases.
-        if (lockedCollateral == 0) {
-            return 0;
-        }
-        require(debt > 0, "GET_HYPOTHETICAL_COLLATERALIZATION_RATIO_DEBT_ZERO");
+        // Checks: the Fintroller allows this action to be performed.
+        require(fintroller.getLiquidateBorrowAllowed(bond), "LIQUIDATE_BORROW_NOT_ALLOWED");
 
-        // Grab the normalized USD price of the collateral.
-        IChainlinkOperator oracle = fintroller.oracle();
-        uint256 normalizedCollateralPrice = oracle.getNormalizedPrice(hToken.collateral().symbol());
-
-        // Grab the normalized USD price of the underlying.
-        uint256 normalizedUnderlyingPrice = oracle.getNormalizedPrice(hToken.underlying().symbol());
-
-        // Normalize the collateral amount.
-        uint256 collateralPrecisionScalar = hToken.collateralPrecisionScalar();
-        uint256 normalizedLockedCollateral;
-        if (collateralPrecisionScalar != 1) {
-            normalizedLockedCollateral = lockedCollateral * collateralPrecisionScalar;
-        } else {
-            normalizedLockedCollateral = lockedCollateral;
+        // After maturation, any vault can be liquidated, irrespective of account liquidity.
+        if (bond.isMatured() == false) {
+            // Checks: the borrower has a shortfall of liquidity.
+            (, uint256 shortfallLiquidity) = getCurrentAccountLiquidity(borrower);
+            require(shortfallLiquidity == 0, "ACCOUNT_NOT_UNDERWATER");
         }
 
-        // Calculate the USD value of the collateral.
-        uint256 lockedCollateralValueUsd = normalizedLockedCollateral.mul(normalizedCollateralPrice);
+        // Checks: there is enough collateral.
+        uint256 clutchableCollateralAmount = getClutchableCollateralAmount(bond, repayAmount, collateral);
+        require(
+            vaults[borrower].collateralAmounts[collateral] >= clutchableCollateralAmount,
+            "LIQUIDATE_BORROW_COLLATERAL_UNDERFLOW"
+        );
 
-        // Calculate the USD value of the debt.
-        uint256 debtValueUsd = debt.mul(normalizedUnderlyingPrice);
+        // Effects & Interactions: repay the borrower's debt.
+        repayBorrowInternal(bond, msg.sender, borrower, repayAmount);
 
-        // Calculate the collateralization ratio by dividing the USD value of the hypothetical locked collateral by
-        // the USD value of the debt.
-        uint256 hypotheticalCollateralizationRatio = lockedCollateralValueUsd.div(debtValueUsd);
+        // Calculate the new collateral amount.
+        uint256 newCollateralAmount;
+        unchecked { newCollateralAmount = vaults[borrower].collateralAmounts[collateral] - clutchableCollateralAmount; }
 
-        return hypotheticalCollateralizationRatio;
+        // Interactions: clutch the collateral.
+        collateral.safeTransfer(msg.sender, clutchableCollateralAmount);
+
+        // Emit a LiquidateBorrow event.
+        emit LiquidateBorrow(bond, msg.sender, borrower, repayAmount, collateral, clutchableCollateralAmount);
     }
 
     /// @inheritdoc IBalanceSheet
-    function getVault(IHToken hToken, address borrower) external view override returns (Vault memory) {
-        return vaults[hToken][borrower];
+    function repayBorrow(IHToken bond, uint256 repayAmount) external override nonReentrant {
+        repayBorrowInternal(bond, msg.sender, msg.sender, repayAmount);
     }
 
     /// @inheritdoc IBalanceSheet
-    function getVaultDebt(IHToken hToken, address borrower) external view override returns (uint256) {
-        return vaults[hToken][borrower].debt;
+    function repayBorrowBehalf(
+        IHToken bond,
+        address borrower,
+        uint256 repayAmount
+    ) external override nonReentrant {
+        repayBorrowInternal(bond, msg.sender, borrower, repayAmount);
     }
 
     /// @inheritdoc IBalanceSheet
-    function getVaultLockedCollateral(IHToken hToken, address borrower) external view override returns (uint256) {
-        return vaults[hToken][borrower].lockedCollateral;
+    function setOracle(IChainlinkOperator newOracle) external override onlyAdmin {
+        require(address(newOracle) != address(0x00), "SET_ORACLE_ZERO_ADDRESS");
+        address oldOracle = address(oracle);
+        oracle = newOracle;
+        emit SetOracle(admin, oldOracle, address(newOracle));
     }
 
     /// @inheritdoc IBalanceSheet
-    function isAccountUnderwater(IHToken hToken, address borrower) external view override returns (bool) {
-        Vault memory vault = vaults[hToken][borrower];
-        if (!vault.isOpen || vault.debt == 0) {
-            return false;
+    function withdrawCollateral(IErc20 collateral, uint256 withdrawAmount) external override nonReentrant {
+        // Checks: the zero edge case.
+        require(withdrawAmount > 0, "WITHDRAW_COLLATERAL_ZERO");
+
+        // Checks: there is enough collateral.
+        require(vaults[msg.sender].collateralAmounts[collateral] >= withdrawAmount, "WITHDRAW_COLLATERAL_UNDERFLOW");
+
+        // Calculate the new collateral amount.
+        uint256 newCollateralAmount;
+        unchecked { newCollateralAmount = vaults[msg.sender].collateralAmounts[collateral] - withdrawAmount; }
+
+        // Checks: the hypothetical account liquidity is okay.
+        if (vaults[msg.sender].bondList.length > 0) {
+            (, uint256 hypotheticalShortfallLiquidity) =
+                getHypotheticalAccountLiquidity(msg.sender, collateral, newCollateralAmount, IHToken(address(0x00)), 0);
+            require(hypotheticalShortfallLiquidity == 0, "INSUFFICIENT_LIQUIDITY");
         }
-        uint256 currentCollateralizationRatio = getCurrentCollateralizationRatio(hToken, borrower);
-        uint256 thresholdCollateralizationRatio = fintroller.getBondCollateralizationRatio(hToken);
-        return currentCollateralizationRatio < thresholdCollateralizationRatio;
+
+        // Effects: decrease the collateral amount.
+        vaults[msg.sender].collateralAmounts[collateral] = newCollateralAmount;
+
+        // Effects: delete the collateral from the redundant list.
+        if (newCollateralAmount == 0) {
+            removeCollateralFromList(msg.sender, collateral);
+        }
+
+        // Interactions: perform the Erc20 transfer.
+        collateral.safeTransfer(msg.sender, withdrawAmount);
+
+        // Emit a WithdrawCollateral event.
+        emit WithdrawCollateral(collateral, msg.sender, withdrawAmount);
     }
 
-    /// @inheritdoc IBalanceSheet
-    function isVaultOpen(IHToken hToken, address borrower) external view override returns (bool) {
-        return vaults[hToken][borrower].isOpen;
+    /// INTERNAL NON-CONSTANT FUNCTIONS ///
+
+    /// @dev Removes the bond from the redundant bond list.
+    function removeBondFromList(address account, IHToken bond) internal {
+        // Load into memory for faster iteration.
+        IHToken[] memory memoryBondList = vaults[account].bondList;
+        uint256 length = memoryBondList.length;
+
+        // Find the index where the bond is stored at.
+        uint256 bondIndex = length;
+        for (uint256 i = 0; i < length; i++) {
+            if (memoryBondList[i] == bond) {
+                bondIndex = i;
+                break;
+            }
+        }
+
+        // We must have found the bond in the list or the redundant data structure is broken.
+        assert(bondIndex < length);
+
+        // Copy last item in list to location of item to be removed, reduce length by 1.
+        IHToken[] storage storedBondList = vaults[msg.sender].bondList;
+        storedBondList[bondIndex] = storedBondList[length - 1];
+        storedBondList.pop();
+    }
+
+    /// @dev Removes the collateral from the redundant collateral list.
+    function removeCollateralFromList(address account, IErc20 collateral) internal {
+        // Load into memory for faster iteration.
+        IErc20[] memory memoryCollateralList = vaults[account].collateralList;
+        uint256 length = memoryCollateralList.length;
+
+        // Find the index where the collateral is stored at.
+        uint256 collateralIndex = length;
+        for (uint256 i = 0; i < length; i++) {
+            if (memoryCollateralList[i] == collateral) {
+                collateralIndex = i;
+                break;
+            }
+        }
+
+        // We must have found the collateral in the list or the redundant data structure is broken.
+        assert(collateralIndex < length);
+
+        // Copy last item in list to location of item to be removed, reduce length by 1.
+        IErc20[] storage storedCollateralList = vaults[msg.sender].collateralList;
+        storedCollateralList[collateralIndex] = storedCollateralList[length - 1];
+        storedCollateralList.pop();
+    }
+
+    /// @dev See the documentation for the public functions that call this internal function.
+    function repayBorrowInternal(
+        IHToken bond,
+        address payer,
+        address borrower,
+        uint256 repayAmount
+    ) internal {
+        // Checks: the zero edge case.
+        require(repayAmount > 0, "REPAY_BORROW_ZERO");
+
+        // Checks: the Fintroller allows this action to be performed.
+        require(fintroller.getRepayBorrowAllowed(bond), "REPAY_BORROW_NOT_ALLOWED");
+
+        // Checks: borrower has debt.
+        uint256 debtAmount = vaults[borrower].debtAmounts[bond];
+        require(debtAmount >= repayAmount, "REPAY_BORROW_INSUFFICIENT_DEBT");
+
+        // Checks: the payer has enough hTokens.
+        require(bond.balanceOf(payer) >= repayAmount, "REPAY_BORROW_INSUFFICIENT_BALANCE");
+
+        // Effects: decrease the debt.
+        uint256 newDebtAmount;
+        unchecked {
+            newDebtAmount = vaults[borrower].debtAmounts[bond] - repayAmount;
+            vaults[borrower].debtAmounts[bond] = newDebtAmount;
+        }
+
+        // Effects: delete the bond from the redundant list.
+        if (newDebtAmount == 0) {
+            removeBondFromList(borrower, bond);
+        }
+
+        // Interactions: burn the hTokens.
+        bond.burn(payer, repayAmount);
+
+        // Emit a RepayBorrow event.
+        emit RepayBorrow(bond, payer, borrower, repayAmount, newDebtAmount);
     }
 }

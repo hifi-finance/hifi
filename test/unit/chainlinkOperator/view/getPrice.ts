@@ -2,9 +2,8 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { COLLATERAL_SYMBOL } from "../../../../helpers/constants";
+import { WBTC_PRICE, WBTC_SYMBOL } from "../../../../helpers/constants";
 import { ChainlinkOperatorErrors } from "../../../../helpers/errors";
-import { price } from "../../../../helpers/numbers";
 
 export default function shouldBehaveLikeGetPrice(): void {
   context("when the feed is not set", function () {
@@ -17,29 +16,27 @@ export default function shouldBehaveLikeGetPrice(): void {
     beforeEach(async function () {
       await this.contracts.oracle
         .connect(this.signers.admin)
-        .setFeed(this.stubs.collateral.address, this.stubs.collateralPriceFeed.address);
+        .setFeed(this.mocks.wbtc.address, this.mocks.wbtcPriceFeed.address);
     });
 
     context("when the price is zero", function () {
       beforeEach(async function () {
-        await this.stubs.collateralPriceFeed.mock.latestRoundData.returns(Zero, Zero, Zero, Zero, Zero);
+        await this.mocks.wbtcPriceFeed.mock.latestRoundData.returns(Zero, Zero, Zero, Zero, Zero);
       });
 
       it("reverts", async function () {
-        await expect(this.contracts.oracle.getPrice(COLLATERAL_SYMBOL)).to.be.revertedWith(
-          ChainlinkOperatorErrors.PriceZero,
-        );
+        await expect(this.contracts.oracle.getPrice(WBTC_SYMBOL)).to.be.revertedWith(ChainlinkOperatorErrors.PriceZero);
       });
     });
 
     context("when the price is not zero", function () {
       beforeEach(async function () {
-        await this.stubs.collateralPriceFeed.mock.latestRoundData.returns(Zero, price("100"), Zero, Zero, Zero);
+        await this.mocks.wbtcPriceFeed.mock.latestRoundData.returns(Zero, WBTC_PRICE, Zero, Zero, Zero);
       });
 
       it("retrieves the price", async function () {
-        const contractPrice: BigNumber = await this.contracts.oracle.getPrice(COLLATERAL_SYMBOL);
-        expect(contractPrice).to.equal(price("100"));
+        const contractPrice: BigNumber = await this.contracts.oracle.getPrice(WBTC_SYMBOL);
+        expect(contractPrice).to.equal(WBTC_PRICE);
       });
     });
   });

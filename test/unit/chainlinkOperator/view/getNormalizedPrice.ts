@@ -1,12 +1,11 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
-import fp from "evm-fp";
 
-import { COLLATERAL_SYMBOL, MAX_INT256 } from "../../../../helpers/constants";
+import { MAX_INT256, NORMALIZED_WBTC_PRICE, WBTC_SYMBOL } from "../../../../helpers/constants";
 import { ChainlinkOperatorErrors } from "../../../../helpers/errors";
 
-export default function shouldBehaveLikegetNormalizedPrice(): void {
+export default function shouldBehaveLikeGetNormalizedPrice(): void {
   context("when the feed is not set", function () {
     it("reverts", async function () {
       await expect(this.contracts.oracle.getNormalizedPrice("FOO")).to.be.revertedWith(
@@ -19,23 +18,23 @@ export default function shouldBehaveLikegetNormalizedPrice(): void {
     beforeEach(async function () {
       await this.contracts.oracle
         .connect(this.signers.admin)
-        .setFeed(this.stubs.collateral.address, this.stubs.collateralPriceFeed.address);
+        .setFeed(this.mocks.wbtc.address, this.mocks.wbtcPriceFeed.address);
     });
 
     context("when the multiplication overflows uint256", function () {
       beforeEach(async function () {
-        await this.stubs.collateralPriceFeed.mock.latestRoundData.returns(Zero, MAX_INT256, Zero, Zero, Zero);
+        await this.mocks.wbtcPriceFeed.mock.latestRoundData.returns(Zero, MAX_INT256, Zero, Zero, Zero);
       });
 
       it("reverts", async function () {
-        await expect(this.contracts.oracle.getNormalizedPrice(COLLATERAL_SYMBOL)).to.be.reverted;
+        await expect(this.contracts.oracle.getNormalizedPrice(WBTC_SYMBOL)).to.be.reverted;
       });
     });
 
     context("when the multiplication does not overflow uint256", function () {
       it("retrieves the normalized price", async function () {
-        const normalizedPrice: BigNumber = await this.contracts.oracle.getNormalizedPrice(COLLATERAL_SYMBOL);
-        expect(normalizedPrice).to.equal(fp("100"));
+        const normalizedPrice: BigNumber = await this.contracts.oracle.getNormalizedPrice(WBTC_SYMBOL);
+        expect(normalizedPrice).to.equal(NORMALIZED_WBTC_PRICE);
       });
     });
   });
