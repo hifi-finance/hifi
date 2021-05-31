@@ -229,10 +229,10 @@ contract BalanceSheet is
 
         // Grab the normalized USD price of the underlying.
         IChainlinkOperator oracle = fintroller.oracle();
-        uint256 normalizedUnderlyingPrice = oracle.getAdjustedPrice(hToken.underlying().symbol());
+        uint256 normalizedUnderlyingPrice = oracle.getNormalizedPrice(hToken.underlying().symbol());
 
         // Grab the normalized USD price of the collateral.
-        uint256 normalizedCollateralPrice = oracle.getAdjustedPrice(hToken.collateral().symbol());
+        uint256 normalizedCollateralPrice = oracle.getNormalizedPrice(hToken.collateral().symbol());
 
         // Calculate the top part of the equation.
         uint256 numerator = repayAmount.mul(liquidationIncentive.mul(normalizedUnderlyingPrice));
@@ -276,10 +276,10 @@ contract BalanceSheet is
 
         // Grab the normalized USD price of the collateral.
         IChainlinkOperator oracle = fintroller.oracle();
-        uint256 normalizedCollateralPrice = oracle.getAdjustedPrice(hToken.collateral().symbol());
+        uint256 normalizedCollateralPrice = oracle.getNormalizedPrice(hToken.collateral().symbol());
 
         // Grab the normalized USD price of the underlying.
-        uint256 normalizedUnderlyingPrice = oracle.getAdjustedPrice(hToken.underlying().symbol());
+        uint256 normalizedUnderlyingPrice = oracle.getNormalizedPrice(hToken.underlying().symbol());
 
         // Normalize the collateral amount.
         uint256 collateralPrecisionScalar = hToken.collateralPrecisionScalar();

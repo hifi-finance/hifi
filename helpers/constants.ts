@@ -19,14 +19,16 @@ export const GAS_LIMIT_HARDHAT: BigNumber = bn("1e8");
 export const GAS_LIMIT_COVERAGE: BigNumber = bn("5e8");
 export const H_TOKEN_DECIMALS: BigNumber = bn("18");
 export const H_TOKEN_EXPIRATION_TIME: BigNumber = now().add(daysInSeconds(90));
-export const H_TOKEN_NAME: string = "Hifi USDC (2022-03-31)";
-export const H_TOKEN_SYMBOL: string = "hUSDC22Jun";
+export const H_TOKEN_EXPIRATION_DATE = new Date(H_TOKEN_EXPIRATION_TIME.toNumber() * 1000);
+export const H_TOKEN_EXPIRATION_DATE_FULL = H_TOKEN_EXPIRATION_DATE.toISOString().slice(0, 10);
+export const H_TOKEN_EXPIRATION_DATE_SHORT =
+  H_TOKEN_EXPIRATION_DATE.toLocaleString("default", { year: "2-digit" }).toUpperCase() +
+  H_TOKEN_EXPIRATION_DATE.toLocaleString("default", { month: "short" }).toUpperCase();
+export const H_TOKEN_NAME: string = "Hifi USDC (" + H_TOKEN_EXPIRATION_DATE_FULL + ")";
+export const H_TOKEN_SYMBOL: string = "hUSDC" + H_TOKEN_EXPIRATION_DATE_SHORT;
 export const MAX_INT256: BigNumber = bn(
   "57896044618658097711785492504343953926634992332820282019728792003956564819967",
 );
-export const TOKEN_WITH_6_DECIMALS_PRECISION_SCALAR: BigNumber = bn("1e12");
-export const TOKEN_WITH_8_DECIMALS_PRECISION_SCALAR: BigNumber = bn("1e10");
-export const TOKEN_WITH_18_DECIMALS_PRECISION_SCALAR: BigNumber = bn("1");
 export const UNDERLYING_DECIMALS: BigNumber = bn("6");
 export const UNDERLYING_NAME: string = "USD Coin";
 export const UNDERLYING_SYMBOL: string = "USDC";
