@@ -1,17 +1,17 @@
 import shouldBehaveLikeDeleteFeed from "./effects/deleteFeed";
 import shouldBehaveLikeSetFeed from "./effects/setFeed";
-import shouldBehaveLikeGetAdjustedPrice from "./view/getAdjustedPrice";
+import shouldBehaveLikegetNormalizedPrice from "./view/getNormalizedPrice";
 import shouldBehaveLikeGetFeed from "./view/getFeed";
 import shouldBehaveLikeGetPrice from "./view/getPrice";
 
 export function shouldBehaveLikeChainlinkOperator(): void {
   describe("View Functions", function () {
-    describe("getAdjustedPrice", function () {
-      shouldBehaveLikeGetAdjustedPrice();
-    });
-
     describe("getFeed", function () {
       shouldBehaveLikeGetFeed();
+    });
+
+    describe("getNormalizedPrice", function () {
+      shouldBehaveLikegetNormalizedPrice();
     });
 
     describe("getPrice", function () {

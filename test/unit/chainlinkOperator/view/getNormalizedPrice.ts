@@ -6,10 +6,10 @@ import fp from "evm-fp";
 import { COLLATERAL_SYMBOL, MAX_INT256 } from "../../../../helpers/constants";
 import { ChainlinkOperatorErrors } from "../../../../helpers/errors";
 
-export default function shouldBehaveLikeGetAdjustedPrice(): void {
+export default function shouldBehaveLikegetNormalizedPrice(): void {
   context("when the feed is not set", function () {
     it("reverts", async function () {
-      await expect(this.contracts.oracle.getAdjustedPrice("FOO")).to.be.revertedWith(
+      await expect(this.contracts.oracle.getNormalizedPrice("FOO")).to.be.revertedWith(
         ChainlinkOperatorErrors.FeedNotSet,
       );
     });
@@ -28,14 +28,14 @@ export default function shouldBehaveLikeGetAdjustedPrice(): void {
       });
 
       it("reverts", async function () {
-        await expect(this.contracts.oracle.getAdjustedPrice(COLLATERAL_SYMBOL)).to.be.reverted;
+        await expect(this.contracts.oracle.getNormalizedPrice(COLLATERAL_SYMBOL)).to.be.reverted;
       });
     });
 
     context("when the multiplication does not overflow uint256", function () {
-      it("retrieves the adjusted price", async function () {
-        const adjustedPrice: BigNumber = await this.contracts.oracle.getAdjustedPrice(COLLATERAL_SYMBOL);
-        expect(adjustedPrice).to.equal(fp("100"));
+      it("retrieves the normalized price", async function () {
+        const normalizedPrice: BigNumber = await this.contracts.oracle.getNormalizedPrice(COLLATERAL_SYMBOL);
+        expect(normalizedPrice).to.equal(fp("100"));
       });
     });
   });

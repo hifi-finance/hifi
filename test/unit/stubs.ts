@@ -31,8 +31,8 @@ export async function deployStubBalanceSheet(deployer: Signer): Promise<MockCont
 export async function deployStubChainlinkOperator(deployer: Signer): Promise<MockContract> {
   const chainlinkOperatorArtifact: Artifact = await hre.artifacts.readArtifact("ChainlinkOperator");
   const chainlinkOperator: MockContract = await deployStubContract(deployer, chainlinkOperatorArtifact.abi);
-  await chainlinkOperator.mock.getAdjustedPrice.withArgs(COLLATERAL_SYMBOL).returns(price("100"));
-  await chainlinkOperator.mock.getAdjustedPrice.withArgs(UNDERLYING_SYMBOL).returns(price("1"));
+  await chainlinkOperator.mock.getNormalizedPrice.withArgs(COLLATERAL_SYMBOL).returns(price("100"));
+  await chainlinkOperator.mock.getNormalizedPrice.withArgs(UNDERLYING_SYMBOL).returns(price("1"));
   return chainlinkOperator;
 }
 

@@ -65,7 +65,7 @@ export default function shouldBehaveLikeIsAccountUnderwater(): void {
 
       context("when the user is dangerously collateralized", function () {
         beforeEach(async function () {
-          await this.stubs.oracle.mock.getAdjustedPrice.withArgs(COLLATERAL_SYMBOL).returns(price("12"));
+          await this.stubs.oracle.mock.getNormalizedPrice.withArgs(COLLATERAL_SYMBOL).returns(price("12"));
         });
 
         // The price of 1 WETH is $12 so the new collateralization ratio becomes 120%.
