@@ -1,4 +1,4 @@
-import { baseContext } from "../contexts";
+import { baseContext } from "../shared/contexts";
 import { unitTestHifiPool } from "./hifiPool/HifiPool";
 import { unitTestYieldSpace } from "./yieldSpace/YieldSpace";
 

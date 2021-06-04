@@ -9,7 +9,7 @@ import { bn } from "../../../../helpers/numbers";
 export default function shouldBehaveLikeGetVirtualFyTokenReserves(): void {
   context("when there is no fyToken in the pool", function () {
     beforeEach(async function () {
-      await this.stubs.fyToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(bn("0"));
+      await this.mocks.fyToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(bn("0"));
     });
 
     const testSets = [[bn("1"), fp("100"), fp("1729"), [fp(MAX_UD60x18)]]];
@@ -33,7 +33,7 @@ export default function shouldBehaveLikeGetVirtualFyTokenReserves(): void {
       forEach(testSets).it(
         "takes %e and %e and reverts",
         async function (fyTokenBalance: BigNumber, totalSupply: BigNumber) {
-          await this.stubs.fyToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(fyTokenBalance);
+          await this.mocks.fyToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(fyTokenBalance);
           await this.contracts.hifiPool.__godMode_setTotalSupply(totalSupply);
           await expect(this.contracts.hifiPool.getVirtualFyTokenReserves()).to.be.revertedWith(
             "HifiPool: virtual fyToken reserves overflow",
@@ -56,7 +56,7 @@ export default function shouldBehaveLikeGetVirtualFyTokenReserves(): void {
       forEach(testSets).it(
         "takes %e and %e returns the correct virtual fyToken reserves",
         async function (fyTokenBalance: BigNumber, totalSupply: BigNumber) {
-          await this.stubs.fyToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(fyTokenBalance);
+          await this.mocks.fyToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(fyTokenBalance);
           await this.contracts.hifiPool.__godMode_setTotalSupply(totalSupply);
           const result: BigNumber = await this.contracts.hifiPool.getVirtualFyTokenReserves();
           const expected = fyTokenBalance.add(totalSupply);

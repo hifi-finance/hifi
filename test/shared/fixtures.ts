@@ -1,5 +1,5 @@
 import { Signer } from "@ethersproject/abstract-signer";
-import { MockContract as StubContract } from "ethereum-waffle";
+import { MockContract } from "ethereum-waffle";
 import hre from "hardhat";
 import { Artifact } from "hardhat/types";
 
@@ -13,7 +13,7 @@ import {
 import { bn } from "../../helpers/numbers";
 import { GodModeHifiPool } from "../../typechain/GodModeHifiPool";
 import { YieldSpaceMock } from "../../typechain/YieldSpaceMock";
-import { deployStubErc20, deployStubFyToken } from "./stubs";
+import { deployMockErc20, deployMockFyToken } from "./mocks";
 
 const { deployContract } = hre.waffle;
 
@@ -29,21 +29,21 @@ export async function unitFixtureYieldSpace(signers: Signer[]): Promise<YieldSpa
 }
 
 type HifiPoolFixtureReturnType = {
-  fyToken: StubContract;
+  fyToken: MockContract;
   hifiPool: GodModeHifiPool;
-  underlying: StubContract;
+  underlying: MockContract;
 };
 
 export async function unitFixtureHifiPool(signers: Signer[]): Promise<HifiPoolFixtureReturnType> {
   const deployer: Signer = signers[0];
 
-  const fyToken: StubContract = await deployStubFyToken(
+  const fyToken: MockContract = await deployMockFyToken(
     deployer,
     FY_TOKEN_NAME,
     FY_TOKEN_SYMBOL,
     FY_TOKEN_EXPIRATION_TIME,
   );
-  const underlying: StubContract = await deployStubErc20(deployer, "USD Coin", "USDC", bn("6"));
+  const underlying: MockContract = await deployMockErc20(deployer, "USD Coin", "USDC", bn("6"));
 
   const hifiPoolArtifact: Artifact = await hre.artifacts.readArtifact("GodModeHifiPool");
   const hifiPool = <GodModeHifiPool>(

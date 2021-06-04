@@ -27,7 +27,7 @@ export default function shouldBehaveLikeMint(): void {
       ];
 
       forEach(testSets).it("takes %e and mints the LP tokens", async function (underlyingOffered: string) {
-        await this.stubs.underlying.mock.transferFrom
+        await this.mocks.underlying.mock.transferFrom
           .withArgs(this.signers.alice.address, this.contracts.hifiPool.address, usdc(underlyingOffered))
           .returns(true);
 
@@ -53,7 +53,7 @@ export default function shouldBehaveLikeMint(): void {
       const initialUnderlyingDeposit: BigNumber = usdc("100");
 
       beforeEach(async function () {
-        await this.stubs.underlying.mock.balanceOf
+        await this.mocks.underlying.mock.balanceOf
           .withArgs(this.contracts.hifiPool.address)
           .returns(initialUnderlyingDeposit);
         await this.contracts.hifiPool.connect(this.signers.alice).__godMode_mint(initialLpTokenSupply);
@@ -71,7 +71,7 @@ export default function shouldBehaveLikeMint(): void {
         forEach(testSets).it(
           "takes %e and %e and reverts",
           async function (fyTokenBalance: BigNumber, underlyingOffered: BigNumber) {
-            await this.stubs.fyToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(fyTokenBalance);
+            await this.mocks.fyToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(fyTokenBalance);
             await expect(this.contracts.hifiPool.connect(this.signers.alice).mint(underlyingOffered)).to.be.reverted;
           },
         );
@@ -80,7 +80,7 @@ export default function shouldBehaveLikeMint(): void {
       context("when there is no phantom overflow", function () {
         context("when there are no fyToken reserves", function () {
           beforeEach(async function () {
-            await this.stubs.fyToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(bn("0"));
+            await this.mocks.fyToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(bn("0"));
           });
 
           const testSets = [
@@ -99,8 +99,8 @@ export default function shouldBehaveLikeMint(): void {
               .mul(fp(underlyingOffered))
               .div(initialNormalizedUnderlyingDeposit);
 
-            // Stub the necessary methods.
-            await this.stubs.underlying.mock.transferFrom
+            // Mock the necessary methods.
+            await this.mocks.underlying.mock.transferFrom
               .withArgs(this.signers.alice.address, this.contracts.hifiPool.address, underlyingAmount)
               .returns(true);
 
@@ -120,7 +120,7 @@ export default function shouldBehaveLikeMint(): void {
         context("when there are fyToken reserves", function () {
           const initialFyTokenReserves: BigNumber = fp("100");
           beforeEach(async function () {
-            await this.stubs.fyToken.mock.balanceOf
+            await this.mocks.fyToken.mock.balanceOf
               .withArgs(this.contracts.hifiPool.address)
               .returns(initialFyTokenReserves);
           });
@@ -141,11 +141,11 @@ export default function shouldBehaveLikeMint(): void {
               .div(initialNormalizedUnderlyingDeposit);
             const fyTokenRequired: BigNumber = initialFyTokenReserves.mul(poolTokensMinted).div(initialLpTokenSupply);
 
-            // Stub the necessary methods.
-            await this.stubs.underlying.mock.transferFrom
+            // Mock the necessary methods.
+            await this.mocks.underlying.mock.transferFrom
               .withArgs(this.signers.alice.address, this.contracts.hifiPool.address, underlyingAmount)
               .returns(true);
-            await this.stubs.fyToken.mock.transferFrom
+            await this.mocks.fyToken.mock.transferFrom
               .withArgs(this.signers.alice.address, this.contracts.hifiPool.address, fyTokenRequired)
               .returns(true);
 

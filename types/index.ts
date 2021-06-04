@@ -1,5 +1,5 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
-import { MockContract as StubContract } from "ethereum-waffle";
+import { MockContract } from "ethereum-waffle";
 
 import { GodModeHifiPool } from "../typechain/GodModeHifiPool";
 import { YieldSpaceMock } from "../typechain/YieldSpaceMock";
@@ -14,7 +14,7 @@ export interface Signers {
   alice: SignerWithAddress;
 }
 
-export interface Stubs {
-  fyToken: StubContract;
-  underlying: StubContract;
+export interface Mocks {
+  fyToken: MockContract;
+  underlying: MockContract;
 }

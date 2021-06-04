@@ -1,4 +1,4 @@
-import { unitFixtureHifiPool } from "../fixtures";
+import { unitFixtureHifiPool } from "../../shared/fixtures";
 import { shouldBehaveLikeHifiPool } from "./HifiPool.behavior";
 
 export function unitTestHifiPool(): void {
@@ -6,8 +6,8 @@ export function unitTestHifiPool(): void {
     beforeEach(async function () {
       const { fyToken, hifiPool, underlying } = await this.loadFixture(unitFixtureHifiPool);
       this.contracts.hifiPool = hifiPool;
-      this.stubs.fyToken = fyToken;
-      this.stubs.underlying = underlying;
+      this.mocks.fyToken = fyToken;
+      this.mocks.underlying = underlying;
     });
 
     shouldBehaveLikeHifiPool();

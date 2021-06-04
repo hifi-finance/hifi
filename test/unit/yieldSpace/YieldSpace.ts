@@ -1,4 +1,4 @@
-import { unitFixtureYieldSpace } from "../fixtures";
+import { unitFixtureYieldSpace } from "../../shared/fixtures";
 import { shouldBehaveLikeYieldSpace } from "./YieldSpace.behavior";
 
 export function unitTestYieldSpace(): void {
