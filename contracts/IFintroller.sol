@@ -114,7 +114,7 @@ interface IFintroller is IAdmin {
 
     /// CONSTANT FUNCTIONS ///
 
-    /// @notice Reads the Bond struct instance associated to the given address.
+    /// @notice Returns the Bond struct instance associated to the given address.
     /// @dev It is not an error to provide an invalid address.
     /// @param bond The address of the bond contract.
     /// @return The bond object.
@@ -126,19 +126,19 @@ interface IFintroller is IAdmin {
     /// @return bool true = allowed, false = not allowed.
     function getBorrowAllowed(IHToken bond) external view returns (bool);
 
-    /// @notice Reads the Collateral struct instance associated to the given address.
+    /// @notice Returns the Collateral struct instance associated to the given address.
     /// @dev It is not an error to provide an invalid address.
     /// @param collateral The address of the collateral contract.
     /// @return The collateral object.
     function getCollateral(IErc20 collateral) external view returns (Collateral memory);
 
-    /// @notice Reads the collateralization ratio of the given collateral.
+    /// @notice Returns the collateralization ratio of the given collateral.
     /// @dev It is not an error to provide an invalid address.
     /// @param collateral The address of the collateral contract.
     /// @return The collateralization ratio, or zero if an invalid address was provided.
     function getCollateralizationRatio(IErc20 collateral) external view returns (uint256);
 
-    /// @notice Reads the debt ceiling of the given bond.
+    /// @notice Returns the debt ceiling of the given bond.
     /// @dev It is not an error to provide an invalid address.
     /// @param bond The address of the bond contract.
     /// @return The debt ceiling as a uint256, or zero if an invalid address was provided.
@@ -150,7 +150,7 @@ interface IFintroller is IAdmin {
     /// @return bool true = allowed, false = not allowed.
     function getDepositCollateralAllowed(IErc20 collateral) external view returns (bool);
 
-    /// @notice Reads the liquidation incentive of the given collateral.
+    /// @notice Returns the liquidation incentive of the given collateral.
     /// @dev It is not an error to provide an invalid address.
     /// @param collateral The address of the collateral contract.
     /// @return The liquidation incentive, or zero if an invalid address was provided.
@@ -182,7 +182,7 @@ interface IFintroller is IAdmin {
     /// @param bond The bond to make the check against.
     /// @return bool true = listed, otherwise not.
 
-    /// @notice Reads the maximum number of bond markets a single account can participate in.
+    /// @notice Returns the maximum number of bond markets a single account can enter.
     function maxBonds() external view returns (uint256);
 
     /// NON-CONSTANT FUNCTIONS ///
@@ -291,7 +291,7 @@ interface IFintroller is IAdmin {
     /// @param state The new state to put in storage.
     function setLiquidateBorrowAllowed(IHToken bond, bool state) external;
 
-    /// @notice Sets max bonds value, which controls how many bond markets can be entered.
+    /// @notice Sets max bonds value, which controls how many bond markets a single account can enter.
     ///
     /// @dev Emits a {SetMaxBonds} event.
     ///

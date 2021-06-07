@@ -1,11 +1,11 @@
+import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
-import { BigNumber } from "ethers";
 
-import { bn } from "../../../../helpers/numbers";
+import { DEFAULT_MAX_BONDS } from "../../../../helpers/constants";
 import { AdminErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeSetMaxBonds(): void {
-  const newMaxBonds: BigNumber = bn("10");
+  const newMaxBonds: BigNumber = DEFAULT_MAX_BONDS.add(1);
 
   context("when the caller is not the admin", function () {
     it("reverts", async function () {

@@ -13,11 +13,11 @@ import {
 const SCALE = fp("1");
 const HALF_SCALE = fp("0.5");
 
-export function div(x: BigNumber, y: BigNumber): BigNumber {
+export function prbDiv(x: BigNumber, y: BigNumber): BigNumber {
   return x.mul(SCALE).div(y);
 }
 
-export function mul(x: BigNumber, y: BigNumber): BigNumber {
+export function prbMul(x: BigNumber, y: BigNumber): BigNumber {
   const doubleScaledProduct = x.mul(y);
   let doubleScaledProductWithHalfScale: BigNumber;
   if (doubleScaledProduct.isNegative()) {
@@ -64,12 +64,12 @@ export function weighWbtc(
   collateralizationRatio: BigNumber = WBTC_COLLATERALIZATION_RATIO,
 ): BigNumber {
   const normalizedWbtcAmount: BigNumber = wbtcAmount.mul(WBTC_PRECISION_SCALAR);
-  return div(mul(normalizedWbtcAmount, NORMALIZED_WBTC_PRICE), collateralizationRatio);
+  return prbDiv(prbMul(normalizedWbtcAmount, NORMALIZED_WBTC_PRICE), collateralizationRatio);
 }
 
 export function weighWeth(
   wethAmount: BigNumber,
   collateralizationRatio: BigNumber = WETH_COLLATERALIZATION_RATIO,
 ): BigNumber {
-  return div(mul(wethAmount, NORMALIZED_WETH_PRICE), collateralizationRatio);
+  return prbDiv(prbMul(wethAmount, NORMALIZED_WETH_PRICE), collateralizationRatio);
 }

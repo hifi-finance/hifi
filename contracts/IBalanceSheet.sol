@@ -25,43 +25,43 @@ interface IBalanceSheet is IAdmin {
     /// EVENTS ///
 
     /// @notice Emitted when a borrow is made.
-    /// @param bond The address of the bond contract.
     /// @param account The address of the borrower.
+    /// @param bond The address of the bond contract.
     /// @param borrowAmount The amount of hTokens borrowed.
-    event Borrow(IHToken bond, address indexed account, uint256 borrowAmount);
+    event Borrow(address indexed account, IHToken indexed bond, uint256 borrowAmount);
 
     /// @notice Emitted when collateral is deposited.
-    /// @param collateral The related collateral.
     /// @param account The address of the borrower.
+    /// @param collateral The related collateral.
     /// @param collateralAmount The amount of deposited collateral.
-    event DepositCollateral(IErc20 indexed collateral, address indexed account, uint256 collateralAmount);
+    event DepositCollateral(address indexed account, IErc20 indexed collateral, uint256 collateralAmount);
 
     /// @notice Emitted when a borrow is liquidated.
-    /// @param bond The address of the bond contract.
     /// @param liquidator The address of the liquidator.
     /// @param borrower The address of the borrower.
+    /// @param bond The address of the bond contract.
     /// @param repayAmount The amount of repaid funds.
     /// @param collateral The address of the collateral contract.
-    /// @param clutchedCollateralAmount The amount of clutched collateral.
+    /// @param seizedCollateralAmount The amount of seized collateral.
     event LiquidateBorrow(
-        IHToken indexed bond,
         address indexed liquidator,
         address indexed borrower,
+        IHToken indexed bond,
         uint256 repayAmount,
         IErc20 collateral,
-        uint256 clutchedCollateralAmount
+        uint256 seizedCollateralAmount
     );
 
     /// @notice Emitted when a borrow is repaid.
-    /// @param bond The address of the bond contract.
     /// @param payer The address of the payer.
     /// @param borrower The address of the borrower.
+    /// @param bond The address of the bond contract.
     /// @param repayAmount The amount of repaid funds.
     /// @param newDebtAmount The amount of the new debt.
     event RepayBorrow(
-        IHToken indexed bond,
         address indexed payer,
         address indexed borrower,
+        IHToken indexed bond,
         uint256 repayAmount,
         uint256 newDebtAmount
     );
@@ -73,47 +73,45 @@ interface IBalanceSheet is IAdmin {
     event SetOracle(address indexed admin, address oldOracle, address newOracle);
 
     /// @notice Emitted when collateral is withdrawn.
-    /// @param collateral The related collateral.
     /// @param account The address of the borrower.
+    /// @param collateral The related collateral.
     /// @param collateralAmount The amount of withdrawn collateral.
-    event WithdrawCollateral(IErc20 indexed collateral, address indexed account, uint256 collateralAmount);
+    event WithdrawCollateral(address indexed account, IErc20 indexed collateral, uint256 collateralAmount);
 
     /// CONSTANT FUNCTIONS ///
 
     /// @notice The unique Fintroller associated with this contract.
     function fintroller() external view returns (IFintroller);
 
-    /// @notice Reads the bonds the given account has borrowed in.
-
+    /// @notice Returns the list of bond markets the given account entered.
     /// @dev It is not an error to provide an invalid address.
-    /// @param account The account to make the query gainst.
-    /// @return The list of bonds the account has borrowed in.
+    /// @param account The borrower account to make the query against.
     function getBondList(address account) external view returns (IHToken[] memory);
 
-    /// @notice Reads the collateral the given account has deposited.
-    /// @dev It is not an error to provide an invalid address.
-    /// @param account The account to make the query gainst.
-    /// @return The list of collaterals the account has deposited.
-    function getCollateralList(address account) external view returns (IErc20[] memory);
-
-    /// @notice Calculates the amount of collateral that can be clutched when liquidating a borrow. Note that this
+    /// @notice Calculates the amount of collateral that can be seized when liquidating a borrow. Note that this
     /// is for informational purposes only, it doesn't tell anything about whether the user can be liquidated.
-    ///
-    /// @dev NoteThe formula applied:
-    /// clutchedCollateral = repayAmount * liquidationIncentive * underlyingPriceUsd / collateralPriceUsd
-    ///
-    /// Requirements:
-    /// - The amount to repay cannot be zero.
-    ///
+    /// @dev The formula applied:
+    /// seizableCollateralAmount = repayAmount * liquidationIncentive * underlyingPriceUsd / collateralPriceUsd
     /// @param bond The bond to make the query against.
     /// @param repayAmount The amount of hTokens to repay.
     /// @param collateral The collateral to make the query against.
-    /// @return clutchableCollateralAmount The amount of clutchable collateral.
-    function getClutchableCollateralAmount(
+    /// @return seizableCollateralAmount The amount of seizable collateral.
+    function getSeizableCollateralAmount(
         IHToken bond,
         uint256 repayAmount,
         IErc20 collateral
-    ) external view returns (uint256 clutchableCollateralAmount);
+    ) external view returns (uint256 seizableCollateralAmount);
+
+    /// @notice Returns the amount of collateral deposited by the given account for the given collateral type.
+    /// @dev It is not an error to provide an invalid address.
+    /// @param account The borrower account to make the query against.
+    /// @param collateral The collateral to make the query against.
+    function getCollateralAmount(address account, IErc20 collateral) external view returns (uint256 collateralAmount);
+
+    /// @notice Returns the list of collaterals the given account deposited.
+    /// @dev It is not an error to provide an invalid address.
+    /// @param account The borrower account to make the query against.
+    function getCollateralList(address account) external view returns (IErc20[] memory);
 
     /// @notice Calculates the current account liquidity.
     /// @param account The account to make the query against.
@@ -123,6 +121,12 @@ interface IBalanceSheet is IAdmin {
         external
         view
         returns (uint256 excessLiquidity, uint256 shortfallLiquidity);
+
+    /// @notice Returns the amount of debt accrued by the given account in the given bond market.
+    /// @dev It is not an error to provide an invalid address.
+    /// @param account The borrower account to make the query against.
+    /// @param bond The bond to make the query against.
+    function getDebtAmount(address account, IHToken bond) external view returns (uint256 debtAmount);
 
     /// @notice Calculates the account liquidity given a modified collateral and debt amount, at the current prices
     /// provided by the oracle.
@@ -160,9 +164,9 @@ interface IBalanceSheet is IAdmin {
     ///
     /// Requirements:
     ///
-    /// - Must be called prior to bond maturation.
-    /// - The amount to borrow cannot be zero.
     /// - The Fintroller must allow this action to be performed.
+    /// - The expiration time of the bond must be in the future.
+    /// - The amount to borrow cannot be zero.
     /// - The new length of the bond list must be below the max bonds limit.
     /// - The new total amount of debt cannot exceed the debt ceiling.
     /// - The caller must not end up having a shortfall of liquidity.
@@ -195,15 +199,15 @@ interface IBalanceSheet is IAdmin {
     /// - The caller cannot be the same with the borrower.
     /// - The Fintroller must allow this action to be performed.
     /// - The borrower must have a shortfall of liquidity if the bond didn't mature.
-    /// - The amount of clutched collateral cannot be more than what the borrower has in the vault.
+    /// - The amount of seized collateral cannot be more than what the borrower has in the vault.
     ///
     /// @param bond The address of the bond contract.
     /// @param borrower The account to liquidate.
     /// @param repayAmount The amount of hTokens to repay.
     /// @param collateral The address of the collateral contract.
     function liquidateBorrow(
-        IHToken bond,
         address borrower,
+        IHToken bond,
         uint256 repayAmount,
         IErc20 collateral
     ) external;
@@ -231,12 +235,12 @@ interface IBalanceSheet is IAdmin {
     /// - Same as the `repayBorrow` function, but here `borrower` is the account that must have at least
     /// `repayAmount` hTokens to repay the borrow.
     ///
-    /// @param bond The address of the bond contract.
     /// @param borrower The borrower account for which to repay the borrow.
+    /// @param bond The address of the bond contract
     /// @param repayAmount The amount of hTokens to repay.
     function repayBorrowBehalf(
-        IHToken bond,
         address borrower,
+        IHToken bond,
         uint256 repayAmount
     ) external;
 

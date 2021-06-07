@@ -10,16 +10,16 @@ export enum BalanceSheetErrors {
   BorrowZero = "BORROW_ZERO",
   DepositCollateralNotAllowed = "DEPOSIT_COLLATERAL_NOT_ALLOWED",
   DepositCollateralZero = "DEPOSIT_COLLATERAL_ZERO",
-  GetClutchableCollateralZero = "GET_CLUTCHABLE_COLLATERAL_ZERO",
-  InsufficientLiquidity = "INSUFFICIENT_LIQUIDITY",
   LiquidateBorrowNotAllowed = "LIQUIDATE_BORROW_NOT_ALLOWED",
   LiquidateBorrowSelf = "LIQUIDATE_BORROW_SELF",
   LiquidateBorrowZero = "LIQUIDATE_BORROW_ZERO",
+  LiquidityShortfall = "LIQUIDITY_SHORTFALL",
   RepayBorrowInsufficientBalance = "REPAY_BORROW_INSUFFICIENT_BALANCE",
   RepayBorrowInsufficientDebt = "REPAY_BORROW_INSUFFICIENT_DEBT",
   RepayBorrowNotAllowed = "REPAY_BORROW_NOT_ALLOWED",
   RepayBorrowZero = "REPAY_BORROW_ZERO",
   SetOracleZeroAddress = "SET_ORACLE_ZERO_ADDRESS",
+  WithdrawCollateralUnderflow = "WITHDRAW_COLLATERAL_UNDERFLOW",
   WithdrawCollateralZero = "WITHDRAW_COLLATERAL_ZERO",
 }
 

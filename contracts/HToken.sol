@@ -34,6 +34,8 @@ contract HToken is
     /// @inheritdoc IHToken
     uint256 public override underlyingPrecisionScalar;
 
+    /// CONSTRUCTOR ///
+
     /// @notice The hToken always has 18 decimals.
     /// @param name_ Erc20 name of this token.
     /// @param symbol_ Erc20 symbol of this token.

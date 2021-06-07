@@ -31,7 +31,7 @@ contract BalanceSheet is
     /// @dev Borrower vaults.
     mapping(address => Vault) internal vaults;
 
-    /// MODIFIERS ///
+    /// CONSTRUCTOR ///
 
     /// @param fintroller_ The address of the Fintroller contract.
     constructor(IFintroller fintroller_, IChainlinkOperator oracle_) Admin() {
@@ -50,19 +50,26 @@ contract BalanceSheet is
     }
 
     /// @inheritdoc IBalanceSheet
+    function getCollateralAmount(address account, IErc20 collateral)
+        external
+        view
+        override
+        returns (uint256 collateralAmount)
+    {
+        return vaults[account].collateralAmounts[collateral];
+    }
+
+    /// @inheritdoc IBalanceSheet
     function getCollateralList(address account) external view override returns (IErc20[] memory) {
         return vaults[account].collateralList;
     }
 
     /// @inheritdoc IBalanceSheet
-    function getClutchableCollateralAmount(
+    function getSeizableCollateralAmount(
         IHToken bond,
         uint256 repayAmount,
         IErc20 collateral
-    ) public view override returns (uint256 clutchableCollateralAmount) {
-        // Avoid the zero edge cases.
-        require(repayAmount > 0, "GET_CLUTCHABLE_COLLATERAL_ZERO");
-
+    ) public view override returns (uint256 seizableCollateralAmount) {
         // When the liquidation incentive is zero, the end result would be zero anyways.
         uint256 liquidationIncentive = fintroller.getLiquidationIncentive(collateral);
         if (liquidationIncentive == 0) {
@@ -78,15 +85,15 @@ contract BalanceSheet is
         // Calculate the top part of the equation.
         uint256 numerator = repayAmount.mul(liquidationIncentive.mul(normalizedUnderlyingPrice));
 
-        // Calculate the normalized clutched collateral amount.
-        uint256 normalizedClutchableCollateralAmount = numerator.div(normalizedCollateralPrice);
+        // Calculate the normalized seizable collateral amount.
+        uint256 normalizedSeizableCollateralAmount = numerator.div(normalizedCollateralPrice);
 
         // Denormalize the collateral amount.
         uint256 collateralPrecisionScalar = 10**(18 - collateral.decimals());
         if (collateralPrecisionScalar != 1) {
-            clutchableCollateralAmount = normalizedClutchableCollateralAmount / collateralPrecisionScalar;
+            seizableCollateralAmount = normalizedSeizableCollateralAmount / collateralPrecisionScalar;
         } else {
-            clutchableCollateralAmount = normalizedClutchableCollateralAmount;
+            seizableCollateralAmount = normalizedSeizableCollateralAmount;
         }
     }
 
@@ -98,6 +105,11 @@ contract BalanceSheet is
         returns (uint256 excessLiquidity, uint256 shortfallLiquidity)
     {
         return getHypotheticalAccountLiquidity(account, IErc20(address(0x00)), 0, IHToken(address(0x00)), 0);
+    }
+
+    /// @inheritdoc IBalanceSheet
+    function getDebtAmount(address account, IHToken bond) external view override returns (uint256 debtAmount) {
+        return vaults[account].debtAmounts[bond];
     }
 
     struct HypotheticalAccountLiquidityLocalVars {
@@ -203,14 +215,14 @@ contract BalanceSheet is
 
     // @inheritdoc IHToken
     function borrow(IHToken bond, uint256 borrowAmount) public override nonReentrant {
+        // Checks: the Fintroller allows this action to be performed.
+        require(fintroller.getBorrowAllowed(bond), "BORROW_NOT_ALLOWED");
+
         // Checks: bond not matured.
         require(bond.isMatured() == false, "BOND_MATURED");
 
         // Checks: the zero edge case.
         require(borrowAmount > 0, "BORROW_ZERO");
-
-        // Checks: the Fintroller allows this action to be performed.
-        require(fintroller.getBorrowAllowed(bond), "BORROW_NOT_ALLOWED");
 
         // Checks: debt ceiling.
         uint256 hypotheticalTotalSupply = bond.totalSupply() + borrowAmount;
@@ -220,20 +232,20 @@ contract BalanceSheet is
         // Add the borrow amount to the borrower account's current debt.
         uint256 newDebtAmount = vaults[msg.sender].debtAmounts[bond] + borrowAmount;
 
+        // Effects: add the bond to the redundant list if it hasn't been added already.
         if (vaults[msg.sender].debtAmounts[bond] == 0) {
             // Checks: below max bonds limit.
             unchecked {
                 uint256 bondListLength = vaults[msg.sender].bondList.length;
                 require(bondListLength + 1 <= fintroller.maxBonds(), "BORROW_MAX_BONDS");
             }
-            // Effects: add the bond to the redundant list.
             vaults[msg.sender].bondList.push(bond);
         }
 
         // Checks: the hypothetical account liquidity is okay.
         (, uint256 hypotheticalShortfallLiquidity) =
             getHypotheticalAccountLiquidity(msg.sender, IErc20(address(0x00)), 0, bond, newDebtAmount);
-        require(hypotheticalShortfallLiquidity == 0, "INSUFFICIENT_LIQUIDITY");
+        require(hypotheticalShortfallLiquidity == 0, "LIQUIDITY_SHORTFALL");
 
         // Effects: increase the debt.
         vaults[msg.sender].debtAmounts[bond] = newDebtAmount;
@@ -242,18 +254,18 @@ contract BalanceSheet is
         bond.mint(msg.sender, borrowAmount);
 
         // Emit a Borrow event.
-        emit Borrow(bond, msg.sender, borrowAmount);
+        emit Borrow(msg.sender, bond, borrowAmount);
     }
 
     /// @inheritdoc IBalanceSheet
     function depositCollateral(IErc20 collateral, uint256 depositAmount) external override {
-        // Checks: the zero edge case.
-        require(depositAmount > 0, "DEPOSIT_COLLATERAL_ZERO");
-
         // Checks: the Fintroller allows this action to be performed.
         require(fintroller.getDepositCollateralAllowed(collateral), "DEPOSIT_COLLATERAL_NOT_ALLOWED");
 
-        // Effects: add the collateral to the redundant list.
+        // Checks: the zero edge case.
+        require(depositAmount > 0, "DEPOSIT_COLLATERAL_ZERO");
+
+        // Effects: add the collateral to the redundant list, if this is the first time collateral is added.
         if (vaults[msg.sender].collateralAmounts[collateral] == 0) {
             vaults[msg.sender].collateralList.push(collateral);
         }
@@ -265,13 +277,13 @@ contract BalanceSheet is
         collateral.safeTransferFrom(msg.sender, address(this), depositAmount);
 
         // Emit a DepositCollateral event.
-        emit DepositCollateral(collateral, msg.sender, depositAmount);
+        emit DepositCollateral(msg.sender, collateral, depositAmount);
     }
 
     /// @inheritdoc IBalanceSheet
     function liquidateBorrow(
-        IHToken bond,
         address borrower,
+        IHToken bond,
         uint256 repayAmount,
         IErc20 collateral
     ) external override nonReentrant {
@@ -289,9 +301,9 @@ contract BalanceSheet is
         }
 
         // Checks: there is enough collateral.
-        uint256 clutchableCollateralAmount = getClutchableCollateralAmount(bond, repayAmount, collateral);
+        uint256 seizableCollateralAmount = getSeizableCollateralAmount(bond, repayAmount, collateral);
         require(
-            vaults[borrower].collateralAmounts[collateral] >= clutchableCollateralAmount,
+            vaults[borrower].collateralAmounts[collateral] >= seizableCollateralAmount,
             "LIQUIDATE_BORROW_COLLATERAL_UNDERFLOW"
         );
 
@@ -300,13 +312,13 @@ contract BalanceSheet is
 
         // Calculate the new collateral amount.
         uint256 newCollateralAmount;
-        unchecked { newCollateralAmount = vaults[borrower].collateralAmounts[collateral] - clutchableCollateralAmount; }
+        unchecked { newCollateralAmount = vaults[borrower].collateralAmounts[collateral] - seizableCollateralAmount; }
 
-        // Interactions: clutch the collateral.
-        collateral.safeTransfer(msg.sender, clutchableCollateralAmount);
+        // Interactions: seize the collateral.
+        collateral.safeTransfer(msg.sender, seizableCollateralAmount);
 
         // Emit a LiquidateBorrow event.
-        emit LiquidateBorrow(bond, msg.sender, borrower, repayAmount, collateral, clutchableCollateralAmount);
+        emit LiquidateBorrow(msg.sender, borrower, bond, repayAmount, collateral, seizableCollateralAmount);
     }
 
     /// @inheritdoc IBalanceSheet
@@ -316,8 +328,8 @@ contract BalanceSheet is
 
     /// @inheritdoc IBalanceSheet
     function repayBorrowBehalf(
-        IHToken bond,
         address borrower,
+        IHToken bond,
         uint256 repayAmount
     ) external override nonReentrant {
         repayBorrowInternal(bond, msg.sender, borrower, repayAmount);
@@ -347,13 +359,13 @@ contract BalanceSheet is
         if (vaults[msg.sender].bondList.length > 0) {
             (, uint256 hypotheticalShortfallLiquidity) =
                 getHypotheticalAccountLiquidity(msg.sender, collateral, newCollateralAmount, IHToken(address(0x00)), 0);
-            require(hypotheticalShortfallLiquidity == 0, "INSUFFICIENT_LIQUIDITY");
+            require(hypotheticalShortfallLiquidity == 0, "LIQUIDITY_SHORTFALL");
         }
 
         // Effects: decrease the collateral amount.
         vaults[msg.sender].collateralAmounts[collateral] = newCollateralAmount;
 
-        // Effects: delete the collateral from the redundant list.
+        // Effects: delete the collateral from the redundant list, if the resultant amount of collateral is zero.
         if (newCollateralAmount == 0) {
             removeCollateralFromList(msg.sender, collateral);
         }
@@ -362,7 +374,7 @@ contract BalanceSheet is
         collateral.safeTransfer(msg.sender, withdrawAmount);
 
         // Emit a WithdrawCollateral event.
-        emit WithdrawCollateral(collateral, msg.sender, withdrawAmount);
+        emit WithdrawCollateral(msg.sender, collateral, withdrawAmount);
     }
 
     /// INTERNAL NON-CONSTANT FUNCTIONS ///
@@ -442,7 +454,7 @@ contract BalanceSheet is
             vaults[borrower].debtAmounts[bond] = newDebtAmount;
         }
 
-        // Effects: delete the bond from the redundant list.
+        // Effects: delete the bond from the redundant list, if the resultant amount of debt is zero.
         if (newDebtAmount == 0) {
             removeBondFromList(borrower, bond);
         }
@@ -451,6 +463,6 @@ contract BalanceSheet is
         bond.burn(payer, repayAmount);
 
         // Emit a RepayBorrow event.
-        emit RepayBorrow(bond, payer, borrower, repayAmount, newDebtAmount);
+        emit RepayBorrow(borrower, payer, bond, repayAmount, newDebtAmount);
     }
 }

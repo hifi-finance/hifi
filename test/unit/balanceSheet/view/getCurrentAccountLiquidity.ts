@@ -21,7 +21,7 @@ export default function shouldBehaveLikeGetCurrentAccountLiquidity(): void {
     const wethAmount: BigNumber = weth("10");
 
     beforeEach(async function () {
-      // Mocks the necessary methods.
+      // Mock the necessary methods.
       await this.mocks.fintroller.mock.getCollateralizationRatio
         .withArgs(this.mocks.wbtc.address)
         .returns(WBTC_COLLATERALIZATION_RATIO);

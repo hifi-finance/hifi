@@ -14,6 +14,7 @@ export const COLLATERALIZATION_RATIO_UPPER_BOUND: BigNumber = fp("100.00");
 
 export const DEFAULT_COLLATERALIZATION_RATIO: BigNumber = fp("1.50");
 export const DEFAULT_LIQUIDATION_INCENTIVE: BigNumber = fp("1.10");
+export const DEFAULT_MAX_BONDS: BigNumber = bn("10");
 
 export const GAS_LIMIT_HARDHAT: BigNumber = bn("1e8");
 export const GAS_LIMIT_COVERAGE: BigNumber = bn("5e8");

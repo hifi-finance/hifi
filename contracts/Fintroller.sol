@@ -13,10 +13,12 @@ contract Fintroller is
     Admin, /// one dependency
     IFintroller /// one dependency
 {
-    /// STORAGE ///
+    /// PUBLIC STORAGE ///
 
     /// @inheritdoc IFintroller
     uint256 public override maxBonds;
+
+    /// INTERNAL STORAGE ///
 
     /// @dev The threshold below which the collateralization ratio cannot be set, equivalent to 100%.
     uint256 internal constant COLLATERALIZATION_RATIO_LOWER_BOUND = 1.0e18;
@@ -30,6 +32,9 @@ contract Fintroller is
     /// @dev The default liquidation incentive set when a new bond is listed, equivalent to 110%.
     uint256 internal constant DEFAULT_LIQUIDATION_INCENTIVE = 1.1e18;
 
+    /// @dev The default maximum number of bond markets a single account can enter.
+    uint256 internal constant DEFAULT_MAX_BONDS = 10;
+
     /// @dev The threshold below which the liquidation incentive cannot be set, equivalent to 100%.
     uint256 internal constant LIQUIDATION_INCENTIVE_LOWER_BOUND = 1.0e18;
 
@@ -41,6 +46,12 @@ contract Fintroller is
 
     /// @notice Maps IErc20s to Collateral structs.
     mapping(IErc20 => Collateral) internal collaterals;
+
+    /// CONSTRUCTOR ///
+
+    constructor() Admin() {
+        maxBonds = DEFAULT_MAX_BONDS;
+    }
 
     /// PUBLIC CONSTANT FUNCTIONS ///
 
