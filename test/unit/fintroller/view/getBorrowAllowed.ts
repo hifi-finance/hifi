@@ -1,6 +1,6 @@
 import { expect } from "chai";
 
-import { GenericErrors } from "../../../../helpers/errors";
+import { GenericErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeGetBorrowAllowed(): void {
   context("when the bond is not listed", function () {

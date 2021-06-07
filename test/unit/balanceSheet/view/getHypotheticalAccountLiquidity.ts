@@ -5,40 +5,8 @@ import fp from "evm-fp";
 import forEach from "mocha-each";
 
 import { WBTC_COLLATERALIZATION_RATIO, WETH_COLLATERALIZATION_RATIO } from "../../../../helpers/constants";
-import { weighWbtc, weighWeth } from "../../../../helpers/math";
 import { wbtc, weth } from "../../../../helpers/numbers";
-
-const wbtcAmount: BigNumber = wbtc("1");
-
-export function getHypotheticalAccountLiquidity(
-  collateralAmounts: BigNumber[],
-  debtAmounts: BigNumber[],
-): { excessLiquidity: BigNumber; shortfallLiquidity: BigNumber } {
-  // Sum up the weighted collateral values in USD.
-  let totalWeightedCollateralValueUsd: BigNumber = Zero;
-  totalWeightedCollateralValueUsd = totalWeightedCollateralValueUsd.add(weighWbtc(collateralAmounts[0]));
-  totalWeightedCollateralValueUsd = totalWeightedCollateralValueUsd.add(weighWeth(collateralAmounts[1]));
-
-  // Sum up all debts. It is assumed that the underlying is USDC and its price is $1.
-  let totalDebtValueUsd: BigNumber = Zero;
-  for (const debtAmount of debtAmounts) {
-    totalDebtValueUsd = totalDebtValueUsd.add(debtAmount);
-  }
-
-  // Excess liquidity when there is more weighted collateral than debt, and shortfall liquidity when there is less
-  // weighted collateral than debt.
-  if (totalWeightedCollateralValueUsd.gt(totalDebtValueUsd)) {
-    return {
-      excessLiquidity: totalWeightedCollateralValueUsd.sub(totalDebtValueUsd),
-      shortfallLiquidity: Zero,
-    };
-  } else {
-    return {
-      excessLiquidity: Zero,
-      shortfallLiquidity: totalDebtValueUsd.sub(totalWeightedCollateralValueUsd),
-    };
-  }
-}
+import { getHypotheticalAccountLiquidity } from "../../../shared/mirrors";
 
 export default function shouldBehaveLikeGetHypotheticalAccountLiquidity(): void {
   context("when no deposit was made", function () {
@@ -61,6 +29,7 @@ export default function shouldBehaveLikeGetHypotheticalAccountLiquidity(): void 
   });
 
   context("when two deposits were made", function () {
+    const wbtcAmount: BigNumber = wbtc("1");
     const wethAmount: BigNumber = weth("10");
 
     beforeEach(async function () {
@@ -101,26 +70,26 @@ export default function shouldBehaveLikeGetHypotheticalAccountLiquidity(): void 
         "takes (%e,%e) and returns the correct values",
         async function (collateralAmountModify: BigNumber, debtAmountModify: BigNumber) {
           let collateralModify: string;
-          let localWethAmount: BigNumber;
+          let chosenWethAmount: BigNumber;
           if (collateralAmountModify.isZero()) {
             collateralModify = AddressZero;
-            localWethAmount = wethAmount;
+            chosenWethAmount = wethAmount;
           } else {
             collateralModify = this.mocks.weth.address;
-            localWethAmount = collateralAmountModify;
+            chosenWethAmount = collateralAmountModify;
           }
 
           let bondModify: string;
-          let debtAmount: BigNumber;
+          let chosenDebtAmount: BigNumber;
           if (debtAmountModify.isZero()) {
             bondModify = AddressZero;
-            debtAmount = Zero;
+            chosenDebtAmount = Zero;
           } else {
             await this.contracts.balanceSheet.__godMode_setBondList(this.signers.borrower.address, [
               this.mocks.hTokens[1].address,
             ]);
             bondModify = this.mocks.hTokens[1].address;
-            debtAmount = debtAmountModify;
+            chosenDebtAmount = debtAmountModify;
           }
 
           const result = await this.contracts.balanceSheet.getHypotheticalAccountLiquidity(
@@ -130,7 +99,7 @@ export default function shouldBehaveLikeGetHypotheticalAccountLiquidity(): void 
             bondModify,
             debtAmountModify,
           );
-          const expected = getHypotheticalAccountLiquidity([wbtcAmount, localWethAmount], [debtAmount]);
+          const expected = getHypotheticalAccountLiquidity([wbtcAmount, chosenWethAmount], [chosenDebtAmount]);
           expect(result.excessLiquidity).to.equal(expected.excessLiquidity);
           expect(result.shortfallLiquidity).to.equal(expected.shortfallLiquidity);
         },
@@ -168,23 +137,23 @@ export default function shouldBehaveLikeGetHypotheticalAccountLiquidity(): void 
         "takes (%e,%e) and returns the correct values",
         async function (collateralAmountModify: BigNumber, debtAmountModify: BigNumber) {
           let collateralModify: string;
-          let localWethAmount: BigNumber;
+          let chosenWethAmount: BigNumber;
           if (collateralAmountModify.isZero()) {
             collateralModify = AddressZero;
-            localWethAmount = wethAmount;
+            chosenWethAmount = wethAmount;
           } else {
             collateralModify = this.mocks.weth.address;
-            localWethAmount = collateralAmountModify;
+            chosenWethAmount = collateralAmountModify;
           }
 
           let bondModify: string;
-          let localDebtAmount: BigNumber;
+          let chosenDebtAmount: BigNumber;
           if (debtAmountModify.isZero()) {
             bondModify = AddressZero;
-            localDebtAmount = debtAmounts[1];
+            chosenDebtAmount = debtAmounts[1];
           } else {
             bondModify = this.mocks.hTokens[1].address;
-            localDebtAmount = debtAmountModify;
+            chosenDebtAmount = debtAmountModify;
           }
 
           const result = await this.contracts.balanceSheet.getHypotheticalAccountLiquidity(
@@ -195,8 +164,8 @@ export default function shouldBehaveLikeGetHypotheticalAccountLiquidity(): void 
             debtAmountModify,
           );
           const expected = getHypotheticalAccountLiquidity(
-            [wbtcAmount, localWethAmount],
-            [debtAmounts[0], localDebtAmount],
+            [wbtcAmount, chosenWethAmount],
+            [debtAmounts[0], chosenDebtAmount],
           );
 
           expect(result.excessLiquidity).to.equal(expected.excessLiquidity);

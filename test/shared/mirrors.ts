@@ -1,4 +1,5 @@
 import { BigNumber } from "@ethersproject/bignumber";
+import { Zero } from "@ethersproject/constants";
 import fp from "evm-fp";
 
 import {
@@ -7,7 +8,7 @@ import {
   WBTC_COLLATERALIZATION_RATIO,
   WBTC_PRECISION_SCALAR,
   WETH_COLLATERALIZATION_RATIO,
-} from "./constants";
+} from "../../helpers/constants";
 
 const SCALE = fp("1");
 const HALF_SCALE = fp("0.5");
@@ -26,6 +27,36 @@ export function mul(x: BigNumber, y: BigNumber): BigNumber {
   }
   const result: BigNumber = doubleScaledProductWithHalfScale.div(SCALE);
   return result;
+}
+
+export function getHypotheticalAccountLiquidity(
+  collateralAmounts: BigNumber[],
+  debtAmounts: BigNumber[],
+): { excessLiquidity: BigNumber; shortfallLiquidity: BigNumber } {
+  // Sum up the weighted collateral values in USD.
+  let totalWeightedCollateralValueUsd: BigNumber = Zero;
+  totalWeightedCollateralValueUsd = totalWeightedCollateralValueUsd.add(weighWbtc(collateralAmounts[0]));
+  totalWeightedCollateralValueUsd = totalWeightedCollateralValueUsd.add(weighWeth(collateralAmounts[1]));
+
+  // Sum up all debts. It is assumed that the underlying is USDC and its price is $1.
+  let totalDebtValueUsd: BigNumber = Zero;
+  for (const debtAmount of debtAmounts) {
+    totalDebtValueUsd = totalDebtValueUsd.add(debtAmount);
+  }
+
+  // Excess liquidity when there is more weighted collateral than debt, and shortfall liquidity when there is less
+  // weighted collateral than debt.
+  if (totalWeightedCollateralValueUsd.gt(totalDebtValueUsd)) {
+    return {
+      excessLiquidity: totalWeightedCollateralValueUsd.sub(totalDebtValueUsd),
+      shortfallLiquidity: Zero,
+    };
+  } else {
+    return {
+      excessLiquidity: Zero,
+      shortfallLiquidity: totalDebtValueUsd.sub(totalWeightedCollateralValueUsd),
+    };
+  }
 }
 
 export function weighWbtc(

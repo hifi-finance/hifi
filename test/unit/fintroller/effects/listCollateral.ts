@@ -1,8 +1,8 @@
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { AdminErrors, FintrollerErrors } from "../../../../helpers/errors";
 import { bn } from "../../../../helpers/numbers";
+import { AdminErrors, FintrollerErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeListCollateral(): void {
   context("when the caller is not the admin", function () {

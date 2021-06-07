@@ -1,8 +1,8 @@
 import { expect } from "chai";
 
 import { WBTC_SYMBOL } from "../../../../helpers/constants";
-import { AdminErrors, ChainlinkOperatorErrors } from "../../../../helpers/errors";
 import { bn } from "../../../../helpers/numbers";
+import { AdminErrors, ChainlinkOperatorErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeSetFeed(): void {
   context("when the caller is not the admin", function () {

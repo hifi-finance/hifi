@@ -8,8 +8,8 @@ import {
   COLLATERALIZATION_RATIO_UPPER_BOUND,
   DEFAULT_COLLATERALIZATION_RATIO,
 } from "../../../../helpers/constants";
-import { AdminErrors, FintrollerErrors, GenericErrors } from "../../../../helpers/errors";
 import { bn } from "../../../../helpers/numbers";
+import { AdminErrors, FintrollerErrors, GenericErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeSetCollateralizationRatio(): void {
   const newCollateralizationRatio: BigNumber = fp("1.75");

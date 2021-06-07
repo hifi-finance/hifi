@@ -2,7 +2,7 @@ import { AddressZero } from "@ethersproject/constants";
 import { expect } from "chai";
 import { MockContract } from "ethereum-waffle";
 
-import { AdminErrors } from "../../../../helpers/errors";
+import { AdminErrors } from "../../../shared/errors";
 import { deployMockBalanceSheet } from "../../../shared/mocks";
 
 export default function shouldBehaveLikeSetBalanceSheet(): void {

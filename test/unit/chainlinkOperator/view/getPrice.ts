@@ -3,7 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { WBTC_PRICE, WBTC_SYMBOL } from "../../../../helpers/constants";
-import { ChainlinkOperatorErrors } from "../../../../helpers/errors";
+import { ChainlinkOperatorErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeGetPrice(): void {
   context("when the feed is not set", function () {

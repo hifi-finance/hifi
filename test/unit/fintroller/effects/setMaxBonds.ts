@@ -1,8 +1,8 @@
 import { expect } from "chai";
 import { BigNumber } from "ethers";
 
-import { AdminErrors } from "../../../../helpers/errors";
 import { bn } from "../../../../helpers/numbers";
+import { AdminErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeSetMaxBonds(): void {
   const newMaxBonds: BigNumber = bn("10");

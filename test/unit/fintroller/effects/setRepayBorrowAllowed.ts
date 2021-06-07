@@ -1,6 +1,6 @@
 import { expect } from "chai";
 
-import { AdminErrors, GenericErrors } from "../../../../helpers/errors";
+import { AdminErrors, GenericErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeSetRepayBorrowAllowed(): void {
   context("when the caller is not the admin", function () {

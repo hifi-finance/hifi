@@ -1,6 +1,6 @@
 import { expect } from "chai";
 
-import { AdminErrors } from "../../../../helpers/errors";
+import { AdminErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeListBond(): void {
   context("when the caller is not the admin", function () {

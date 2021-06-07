@@ -3,11 +3,11 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { H_TOKEN_EXPIRATION_TIMES } from "../../../../helpers/constants";
-import { HTokenErrors } from "../../../../helpers/errors";
 import { bn } from "../../../../helpers/numbers";
 import { now } from "../../../../helpers/time";
 import { HToken } from "../../../../typechain/HToken";
 import { deployHToken } from "../../../shared/deployers";
+import { HTokenErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeConstructor(): void {
   context("when the underlying has zero decimals", function () {

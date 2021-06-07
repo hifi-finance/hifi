@@ -1,12 +1,10 @@
 // eslint-disable @typescript-eslint/no-explicit-any
 import { Signer } from "@ethersproject/abstract-signer";
-import { BigNumber } from "@ethersproject/bignumber";
 import { Wallet } from "@ethersproject/wallet";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 import { ethers, waffle } from "hardhat";
 
 import { Contracts, Mocks, Signers } from "../../types/index";
-import { increaseTime } from "./jsonRpc";
 
 const { createFixtureLoader } = waffle;
 
@@ -31,27 +29,5 @@ export function baseContext(description: string, hooks: () => void): void {
     });
 
     hooks();
-  });
-}
-
-/// Takes a snapshot of the EVM and reverts to it after the provided Mocha hooks are executed.
-///
-/// WARNING: an excessive use of this function may slow down testing.
-/// WARNING2: this is a child snapshot within the parent snapshot handled by Waffle.
-export function contextForTimeDependentTests(description: string, timestamp: BigNumber, hooks: () => void): void {
-  describe(description, function () {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let snapshot: any;
-
-    beforeEach(async function () {
-      snapshot = await waffle.provider.send("evm_snapshot", []);
-      await increaseTime(timestamp);
-    });
-
-    hooks();
-
-    afterEach(async function () {
-      await waffle.provider.send("evm_revert", [snapshot]);
-    });
   });
 }

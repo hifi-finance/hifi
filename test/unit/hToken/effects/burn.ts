@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 import fp from "evm-fp";
 
-import { HTokenErrors } from "../../../../helpers/errors";
+import { HTokenErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeBurn(): void {
   const burnAmount: BigNumber = fp("100");

@@ -3,7 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 import fp from "evm-fp";
 
-import { AdminErrors, FintrollerErrors, GenericErrors } from "../../../../helpers/errors";
+import { AdminErrors, FintrollerErrors, GenericErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeSetDebtCeiling(): void {
   const newDebtCeiling: BigNumber = fp("100");

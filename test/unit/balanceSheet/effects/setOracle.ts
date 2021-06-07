@@ -2,7 +2,7 @@ import { MockContract } from "@ethereum-waffle/mock-contract";
 import { AddressZero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { AdminErrors, BalanceSheetErrors } from "../../../../helpers/errors";
+import { AdminErrors, BalanceSheetErrors } from "../../../shared/errors";
 import { deployMockChainlinkOperator } from "../../../shared/mocks";
 
 export default function shouldBehaveLikeSetOracle(): void {

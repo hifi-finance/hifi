@@ -1,6 +1,6 @@
 import { expect } from "chai";
 
-import { GenericErrors } from "../../../../helpers/errors";
+import { GenericErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeGetDepositCollateralAllowed(): void {
   context("when the collateral is not listed", function () {
