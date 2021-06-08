@@ -26,7 +26,7 @@ export default function shouldBehaveLikeGetSeizableCollateralAmount(): void {
     });
 
     it("returns zero", async function () {
-      const repayAmount: BigNumber = fp("5000");
+      const repayAmount: BigNumber = fp("15000");
       const seizableCollateralAmount: BigNumber = await this.contracts.balanceSheet.getSeizableCollateralAmount(
         this.mocks.hTokens[0].address,
         repayAmount,
@@ -56,7 +56,7 @@ export default function shouldBehaveLikeGetSeizableCollateralAmount(): void {
     });
 
     context("when the repay amount is not zero", function () {
-      const repayAmount: BigNumber = fp("10000");
+      const repayAmount: BigNumber = fp("15000");
 
       context("when the collateral has 18 decimals", function () {
         const collateralDecimals: BigNumber = bn("18");

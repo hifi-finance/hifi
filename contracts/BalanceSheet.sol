@@ -1,6 +1,8 @@
 /// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.0;
 
+import "hardhat/console.sol";
+
 import "@paulrberg/contracts/access/Admin.sol";
 import "@paulrberg/contracts/math/PRBMathUD60x18.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
@@ -308,7 +310,7 @@ contract BalanceSheet is
         );
 
         // Effects & Interactions: repay the borrower's debt.
-        repayBorrowInternal(bond, msg.sender, borrower, repayAmount);
+        repayBorrowInternal(msg.sender, borrower, bond, repayAmount);
 
         // Calculate the new collateral amount.
         uint256 newCollateralAmount;
@@ -323,7 +325,7 @@ contract BalanceSheet is
 
     /// @inheritdoc IBalanceSheet
     function repayBorrow(IHToken bond, uint256 repayAmount) external override nonReentrant {
-        repayBorrowInternal(bond, msg.sender, msg.sender, repayAmount);
+        repayBorrowInternal(msg.sender, msg.sender, bond, repayAmount);
     }
 
     /// @inheritdoc IBalanceSheet
@@ -332,7 +334,7 @@ contract BalanceSheet is
         IHToken bond,
         uint256 repayAmount
     ) external override nonReentrant {
-        repayBorrowInternal(bond, msg.sender, borrower, repayAmount);
+        repayBorrowInternal(msg.sender, borrower, bond, repayAmount);
     }
 
     /// @inheritdoc IBalanceSheet
@@ -398,7 +400,7 @@ contract BalanceSheet is
         assert(bondIndex < length);
 
         // Copy last item in list to location of item to be removed, reduce length by 1.
-        IHToken[] storage storedBondList = vaults[msg.sender].bondList;
+        IHToken[] storage storedBondList = vaults[account].bondList;
         storedBondList[bondIndex] = storedBondList[length - 1];
         storedBondList.pop();
     }
@@ -422,23 +424,23 @@ contract BalanceSheet is
         assert(collateralIndex < length);
 
         // Copy last item in list to location of item to be removed, reduce length by 1.
-        IErc20[] storage storedCollateralList = vaults[msg.sender].collateralList;
+        IErc20[] storage storedCollateralList = vaults[account].collateralList;
         storedCollateralList[collateralIndex] = storedCollateralList[length - 1];
         storedCollateralList.pop();
     }
 
     /// @dev See the documentation for the public functions that call this internal function.
     function repayBorrowInternal(
-        IHToken bond,
         address payer,
         address borrower,
+        IHToken bond,
         uint256 repayAmount
     ) internal {
-        // Checks: the zero edge case.
-        require(repayAmount > 0, "REPAY_BORROW_ZERO");
-
         // Checks: the Fintroller allows this action to be performed.
         require(fintroller.getRepayBorrowAllowed(bond), "REPAY_BORROW_NOT_ALLOWED");
+
+        // Checks: the zero edge case.
+        require(repayAmount > 0, "REPAY_BORROW_ZERO");
 
         // Checks: borrower has debt.
         uint256 debtAmount = vaults[borrower].debtAmounts[bond];

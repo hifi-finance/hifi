@@ -114,7 +114,7 @@ export default function shouldBehaveLikeBorrow(): void {
               await this.mocks.fintroller.mock.maxBonds.returns(maxBonds);
             });
 
-            context("when the borrow runs into a liquidity shortfall", function () {
+            context("when the caller runs into a liquidity shortfall", function () {
               context("when the caller did not deposit collateral", function () {
                 it("reverts", async function () {
                   await expect(
@@ -154,7 +154,7 @@ export default function shouldBehaveLikeBorrow(): void {
               });
             });
 
-            context("when the borrow does not run into a liquidity shortfall", function () {
+            context("when the caller does not run into a liquidity shortfall", function () {
               beforeEach(async function () {
                 // Mock the necessary methods.
                 await this.mocks.fintroller.mock.getCollateralizationRatio
