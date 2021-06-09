@@ -1,21 +1,19 @@
-import shouldBehaveLikeClutchCollateral from "./effects/clutchCollateral";
-import shouldBehaveLikeDecreaseVaultDebt from "./effects/decreaseVaultDebt";
+import shouldBehaveLikeBorrow from "./effects/borrow";
 import shouldBehaveLikeDepositCollateral from "./effects/depositCollateral";
-import shouldBehaveLikeFreeCollateral from "./effects/freeCollateral";
-import shouldBehaveLikeIncreaseVaultDebt from "./effects/increaseVaultDebt";
-import shouldBehaveLikeLockCollateral from "./effects/lockCollateral";
-import shouldBehaveLikeOpenVault from "./effects/openVault";
+import shouldBehaveLikeLiquidateBorrow from "./effects/liquidateBorrow";
+import shouldBehaveLikeRepayBorrow from "./effects/repayBorrow";
+import shouldBehaveLikeRepayBorrowBehalf from "./effects/repayBorrowBehalf";
+import shouldBehaveLikeSetOracle from "./effects/setOracle";
 import shouldBehaveLikeWithdrawCollateral from "./effects/withdrawCollateral";
 import shouldBehaveLikeFintrollerGetter from "./view/fintroller";
-import shouldBehaveLikeGetClutchableCollateral from "./view/getClutchableCollateral";
-import shouldBehaveLikeGetCurrentCollateralizationRatio from "./view/getCurrentCollateralizationRatio";
-import shouldBehaveLikeGetHypotheticalCollateralizationRatio from "./view/getHypotheticalCollateralizationRatio";
-import shouldBehaveLikeGetVault from "./view/getVault";
-import shouldBehaveLikeGetVaultDebt from "./view/getVaultDebt";
-import shouldBehaveLikeGetVaultLockedCollateral from "./view/getVaultLockedCollateral";
-import shouldBehaveLikeIsAccountUnderwater from "./view/isAccountUnderwater";
-import shouldBehaveLikeIsBalanceSheetGetter from "./view/isBalanceSheet";
-import shouldBehaveLikeIsVaultOpenGetter from "./view/isVaultOpen";
+import shouldBehaveLikeGetBondList from "./view/getBondList";
+import shouldBehaveLikeGetCollateralAmount from "./view/getCollateralAmount";
+import shouldBehaveLikeGetCollateralList from "./view/getCollateralList";
+import shouldBehaveLikeGetCurrentAccountLiquidity from "./view/getCurrentAccountLiquidity";
+import shouldBehaveLikeGetDebtAmount from "./view/getDebtAmount";
+import shouldBehaveLikeGetHypotheticalAccountLiquidity from "./view/getHypotheticalAccountLiquidity";
+import shouldBehaveLikeGetSeizableCollateralAmount from "./view/getSeizableCollateralAmount";
+import shouldBehaveLikeOracleGetter from "./view/oracle";
 
 export function shouldBehaveLikeBalanceSheet(): void {
   describe("View Functions", function () {
@@ -23,70 +21,62 @@ export function shouldBehaveLikeBalanceSheet(): void {
       shouldBehaveLikeFintrollerGetter();
     });
 
-    describe("getClutchableCollateral", function () {
-      shouldBehaveLikeGetClutchableCollateral();
+    describe("getBondList", function () {
+      shouldBehaveLikeGetBondList();
     });
 
-    describe("getCurrentCollateralizationRatio", function () {
-      shouldBehaveLikeGetCurrentCollateralizationRatio();
+    describe("getCollateralAmount", function () {
+      shouldBehaveLikeGetCollateralAmount();
     });
 
-    describe("getHypotheticalCollateralizationRatio", function () {
-      shouldBehaveLikeGetHypotheticalCollateralizationRatio();
+    describe("getCollateralList", function () {
+      shouldBehaveLikeGetCollateralList();
     });
 
-    describe("getVault", function () {
-      shouldBehaveLikeGetVault();
+    describe("getCurrentAccountLiquidity", function () {
+      shouldBehaveLikeGetCurrentAccountLiquidity();
     });
 
-    describe("getVaultDebt", function () {
-      shouldBehaveLikeGetVaultDebt();
+    describe("getDebtAmount", function () {
+      shouldBehaveLikeGetDebtAmount();
     });
 
-    describe("getVaultLockedCollateral", function () {
-      shouldBehaveLikeGetVaultLockedCollateral();
+    describe("getHypotheticalAccountLiquidity", function () {
+      shouldBehaveLikeGetHypotheticalAccountLiquidity();
     });
 
-    describe("isAccountUnderwater", function () {
-      shouldBehaveLikeIsAccountUnderwater();
+    describe("getSeizableCollateralAmount", function () {
+      shouldBehaveLikeGetSeizableCollateralAmount();
     });
 
-    describe("isBalanceSheet", function () {
-      shouldBehaveLikeIsBalanceSheetGetter();
-    });
-
-    describe("isVaultOpen", function () {
-      shouldBehaveLikeIsVaultOpenGetter();
+    describe("oracle", function () {
+      shouldBehaveLikeOracleGetter();
     });
   });
 
   describe("Effects Functions", function () {
-    describe("clutchCollateral", function () {
-      shouldBehaveLikeClutchCollateral();
-    });
-
-    describe("decreaseVaultDebt", function () {
-      shouldBehaveLikeDecreaseVaultDebt();
+    describe("borrow", function () {
+      shouldBehaveLikeBorrow();
     });
 
     describe("depositCollateral", function () {
       shouldBehaveLikeDepositCollateral();
     });
 
-    describe("freeCollateral", function () {
-      shouldBehaveLikeFreeCollateral();
+    describe("liquidateBorrow", function () {
+      shouldBehaveLikeLiquidateBorrow();
     });
 
-    describe("increaseVaultDebt", function () {
-      shouldBehaveLikeIncreaseVaultDebt();
+    describe("repayBorrow", function () {
+      shouldBehaveLikeRepayBorrow();
     });
 
-    describe("lockCollateral", function () {
-      shouldBehaveLikeLockCollateral();
+    describe("repayBorrowBehalf", function () {
+      shouldBehaveLikeRepayBorrowBehalf();
     });
 
-    describe("openVault", function () {
-      shouldBehaveLikeOpenVault();
+    describe("setOracle", function () {
+      shouldBehaveLikeSetOracle();
     });
 
     describe("withdrawCollateral", function () {

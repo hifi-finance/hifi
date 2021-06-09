@@ -1,8 +1,8 @@
 import { expect } from "chai";
 
-import { COLLATERAL_SYMBOL } from "../../../../helpers/constants";
-import { AdminErrors, ChainlinkOperatorErrors } from "../../../../helpers/errors";
+import { WBTC_SYMBOL } from "../../../../helpers/constants";
 import { bn } from "../../../../helpers/numbers";
+import { AdminErrors, ChainlinkOperatorErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeSetFeed(): void {
   context("when the caller is not the admin", function () {
@@ -10,7 +10,7 @@ export default function shouldBehaveLikeSetFeed(): void {
       await expect(
         this.contracts.oracle
           .connect(this.signers.raider)
-          .setFeed(this.stubs.collateral.address, this.stubs.collateralPriceFeed.address),
+          .setFeed(this.mocks.wbtc.address, this.mocks.wbtcPriceFeed.address),
       ).to.be.revertedWith(AdminErrors.NotAdmin);
     });
   });
@@ -18,14 +18,14 @@ export default function shouldBehaveLikeSetFeed(): void {
   context("when the caller is the admin", function () {
     context("when the feed does not have 8 decimals", function () {
       beforeEach(async function () {
-        await this.stubs.collateralPriceFeed.mock.decimals.returns(bn("6"));
+        await this.mocks.wbtcPriceFeed.mock.decimals.returns(bn("6"));
       });
 
       it("reverts", async function () {
         await expect(
           this.contracts.oracle
             .connect(this.signers.admin)
-            .setFeed(this.stubs.collateral.address, this.stubs.collateralPriceFeed.address),
+            .setFeed(this.mocks.wbtc.address, this.mocks.wbtcPriceFeed.address),
         ).to.be.revertedWith(ChainlinkOperatorErrors.FeedIncorrectDecimals);
       });
     });
@@ -34,10 +34,10 @@ export default function shouldBehaveLikeSetFeed(): void {
       it("sets the feed", async function () {
         await this.contracts.oracle
           .connect(this.signers.admin)
-          .setFeed(this.stubs.collateral.address, this.stubs.collateralPriceFeed.address);
-        const feed = await this.contracts.oracle.getFeed(COLLATERAL_SYMBOL);
-        expect(feed[0]).to.equal(this.stubs.collateral.address); // asset
-        expect(feed[1]).to.equal(this.stubs.collateralPriceFeed.address); // id
+          .setFeed(this.mocks.wbtc.address, this.mocks.wbtcPriceFeed.address);
+        const feed = await this.contracts.oracle.getFeed(WBTC_SYMBOL);
+        expect(feed[0]).to.equal(this.mocks.wbtc.address); // asset
+        expect(feed[1]).to.equal(this.mocks.wbtcPriceFeed.address); // id
         expect(feed[2]).to.equal(true); // isSet
       });
 
@@ -45,10 +45,10 @@ export default function shouldBehaveLikeSetFeed(): void {
         await expect(
           this.contracts.oracle
             .connect(this.signers.admin)
-            .setFeed(this.stubs.collateral.address, this.stubs.collateralPriceFeed.address),
+            .setFeed(this.mocks.wbtc.address, this.mocks.wbtcPriceFeed.address),
         )
           .to.emit(this.contracts.oracle, "SetFeed")
-          .withArgs(this.stubs.collateral.address, this.stubs.collateralPriceFeed.address);
+          .withArgs(this.mocks.wbtc.address, this.mocks.wbtcPriceFeed.address);
       });
     });
   });

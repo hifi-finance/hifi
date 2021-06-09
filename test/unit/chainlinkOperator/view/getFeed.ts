@@ -1,7 +1,7 @@
 import { AddressZero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { COLLATERAL_SYMBOL } from "../../../../helpers/constants";
+import { WBTC_SYMBOL } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeGetFeed(): void {
   context("when the feed is not set", function () {
@@ -17,13 +17,13 @@ export default function shouldBehaveLikeGetFeed(): void {
     beforeEach(async function () {
       await this.contracts.oracle
         .connect(this.signers.admin)
-        .setFeed(this.stubs.collateral.address, this.stubs.collateralPriceFeed.address);
+        .setFeed(this.mocks.wbtc.address, this.mocks.wbtcPriceFeed.address);
     });
 
     it("retrieves the storage properties of the feed", async function () {
-      const feed = await this.contracts.oracle.getFeed(COLLATERAL_SYMBOL);
-      expect(feed[0]).to.equal(this.stubs.collateral.address); // asset
-      expect(feed[1]).to.equal(this.stubs.collateralPriceFeed.address); // id
+      const feed = await this.contracts.oracle.getFeed(WBTC_SYMBOL);
+      expect(feed[0]).to.equal(this.mocks.wbtc.address); // asset
+      expect(feed[1]).to.equal(this.mocks.wbtcPriceFeed.address); // id
       expect(feed[2]).to.equal(true); // isSet
     });
   });

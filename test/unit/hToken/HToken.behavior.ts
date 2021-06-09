@@ -1,18 +1,10 @@
 import shouldBehaveLikeConstructor from "./constructor";
-import shouldBehaveLikeBorrow from "./effects/borrow";
 import shouldBehaveLikeBurn from "./effects/burn";
-import shouldBehaveLikeLiquidateBorrow from "./effects/liquidateBorrow";
 import shouldBehaveLikeMint from "./effects/mint";
-import shouldBehaveLikeRepayBorrow from "./effects/repayBorrow";
-import shouldBehaveLikeRepayBorrowBehalf from "./effects/repayBorrowBehalf";
-import shouldBehaveLikeSetFintroller from "./effects/setFintroller";
+import shouldBehaveLikeSetBalanceSheet from "./effects/setBalanceSheet";
 import shouldBehaveLikeBalanceSheetGetter from "./view/balanceSheet";
-import shouldBehaveLikeCollateralGetter from "./view/collateral";
-import shouldBehaveLikeCollateralPrecisionScalarGetter from "./view/collateralPrecisionScalar";
 import shouldBehaveLikeExpirationTimeGetter from "./view/expirationTime";
-import shouldBehaveLikeFintrollerGetter from "./view/fintroller";
-import shouldBehaveLikeIsHTokenGetter from "./view/isHToken";
-import shouldBehaveLikeRedemptionPoolGetter from "./view/redemptionPool";
+import shouldBehaveLikeIsMatured from "./view/isMatured";
 import shouldBehaveLikeUnderlyingGetter from "./view/underlying";
 import shouldBehaveLikeUnderlyingPrecisionScalarGetter from "./view/underlyingPrecisionScalar";
 
@@ -26,28 +18,12 @@ export function shouldBehaveLikeHToken(): void {
       shouldBehaveLikeBalanceSheetGetter();
     });
 
-    describe("collateral", function () {
-      shouldBehaveLikeCollateralGetter();
-    });
-
-    describe("collateralPrecisionScalar", function () {
-      shouldBehaveLikeCollateralPrecisionScalarGetter();
-    });
-
     describe("expirationTime", function () {
       shouldBehaveLikeExpirationTimeGetter();
     });
 
-    describe("fintroller", function () {
-      shouldBehaveLikeFintrollerGetter();
-    });
-
-    describe("isHToken", function () {
-      shouldBehaveLikeIsHTokenGetter();
-    });
-
-    describe("redemptionPool", function () {
-      shouldBehaveLikeRedemptionPoolGetter();
+    describe("isMatured", function () {
+      shouldBehaveLikeIsMatured();
     });
 
     describe("underlying", function () {
@@ -60,32 +36,16 @@ export function shouldBehaveLikeHToken(): void {
   });
 
   describe("Effects Functions", function () {
-    describe("borrow", function () {
-      shouldBehaveLikeBorrow();
-    });
-
     describe("burn", function () {
       shouldBehaveLikeBurn();
-    });
-
-    describe("liquidateBorrow", function () {
-      shouldBehaveLikeLiquidateBorrow();
     });
 
     describe("mint", function () {
       shouldBehaveLikeMint();
     });
 
-    describe("repayBorrow", function () {
-      shouldBehaveLikeRepayBorrow();
-    });
-
-    describe("repayBorrowBehalf", function () {
-      shouldBehaveLikeRepayBorrowBehalf();
-    });
-
-    describe("setFintroller", function () {
-      shouldBehaveLikeSetFintroller();
+    describe("setBalanceSheet", function () {
+      shouldBehaveLikeSetBalanceSheet();
     });
   });
 }

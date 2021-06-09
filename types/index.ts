@@ -1,4 +1,3 @@
-import { BigNumber } from "@ethersproject/bignumber";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 import { MockContract } from "ethereum-waffle";
 
@@ -7,22 +6,32 @@ import { Erc20Mintable } from "../typechain/Erc20Mintable";
 import { Fintroller } from "../typechain/Fintroller";
 import { GodModeBalanceSheet } from "../typechain/GodModeBalanceSheet";
 import { GodModeHToken } from "../typechain/GodModeHToken";
-import { GodModeRedemptionPool } from "../typechain/GodModeRedemptionPool";
-import { HToken } from "../typechain/HToken";
 import { SimplePriceFeed } from "../typechain/SimplePriceFeed";
+import { StablecoinPriceFeed } from "../typechain/StablecoinPriceFeed";
 
 export interface Contracts {
   balanceSheet: GodModeBalanceSheet;
-  collateral: Erc20Mintable;
-  collateralPriceFeed: SimplePriceFeed;
   fintroller: Fintroller;
-  hToken: GodModeHToken | HToken;
+  hTokens: GodModeHToken[];
   oracle: ChainlinkOperator;
-  redemptionPool: GodModeRedemptionPool;
-  underlying: Erc20Mintable;
-  underlyingPriceFeed: SimplePriceFeed;
+  usdc: Erc20Mintable;
+  usdcPriceFeed: StablecoinPriceFeed;
+  wbtc: Erc20Mintable;
+  wbtcPriceFeed: SimplePriceFeed;
 }
 
+export interface Mocks {
+  balanceSheet: MockContract;
+  fintroller: MockContract;
+  hTokens: MockContract[];
+  oracle: MockContract;
+  usdc: MockContract;
+  usdcPriceFeed: MockContract;
+  wbtc: MockContract;
+  wbtcPriceFeed: MockContract;
+  weth: MockContract;
+  wethPriceFeed: MockContract;
+}
 export interface Signers {
   admin: SignerWithAddress;
   borrower: SignerWithAddress;
@@ -30,23 +39,4 @@ export interface Signers {
   liquidator: SignerWithAddress;
   maker: SignerWithAddress;
   raider: SignerWithAddress;
-}
-
-export interface Stubs {
-  balanceSheet: MockContract;
-  collateral: MockContract;
-  collateralPriceFeed: MockContract;
-  fintroller: MockContract;
-  hToken: MockContract;
-  oracle: MockContract;
-  redemptionPool: MockContract;
-  underlying: MockContract;
-  underlyingPriceFeed: MockContract;
-}
-
-export interface Vault {
-  0: BigNumber; // debt
-  1: BigNumber; // freeCollateral
-  2: BigNumber; // lockedCollateral
-  3: boolean; // isOpen
 }

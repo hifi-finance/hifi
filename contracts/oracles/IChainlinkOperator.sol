@@ -8,7 +8,7 @@ import "../external/chainlink/IAggregatorV3.sol";
 
 /// @title IChainlinkOperator
 /// @author Hifi
-/// @notice Interface for the ChainlinkOperator contract
+/// @notice Manages USD-quoted Chainlink price feeds.
 interface IChainlinkOperator {
     /// STRUCTS ///
 
@@ -44,9 +44,9 @@ interface IChainlinkOperator {
     /// @param symbol The Erc20 symbol of the asset to delete the feed for.
     function deleteFeed(string memory symbol) external;
 
-    /// @notice Sets a Chainlink price feed. It is not an error to set a feed twice.
+    /// @notice Sets a Chainlink price feed.
     ///
-    /// @dev Emits a {SetFeed} event.
+    /// @dev It is not an error to set a feed twice. Emits a {SetFeed} event.
     ///
     /// Requirements:
     ///

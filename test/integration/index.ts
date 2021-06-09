@@ -1,8 +1,8 @@
-import { baseContext } from "../contexts";
+import { baseContext } from "../shared/contexts";
+import { integrationTestBalanceSheet } from "./balanceSheet/BalanceSheet";
 import { integrationTestHToken } from "./hToken/HToken";
-import { integrationTestRedemptionPool } from "./redemptionPool/RedemptionPool";
 
 baseContext("Integration Tests", function () {
+  integrationTestBalanceSheet();
   integrationTestHToken();
-  integrationTestRedemptionPool();
 });

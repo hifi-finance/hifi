@@ -8,12 +8,11 @@ import "./IChainlinkOperator.sol";
 
 /// @title ChainlinkOperator
 /// @author Hifi
-/// @notice Manages USD-quoted Chainlink price feeds.
 contract ChainlinkOperator is
     IChainlinkOperator, /// no dependency
     Admin /// one dependency
 {
-    /// STORAGE PROPERTIES ///
+    /// STORAGE ///
 
     /// @dev Mapping between Erc20 symbols and Feed structs.
     mapping(string => Feed) internal feeds;
@@ -81,7 +80,7 @@ contract ChainlinkOperator is
 
         // Checks: price precision.
         uint8 decimals = feed.decimals();
-        require(decimals == pricePrecision, "FEED_INCORRECT_DECIMALS");
+        require(decimals == pricePrecision, "FEED_DECIMALS_MISMATCH");
 
         // Effects: put the feed into storage.
         feeds[symbol] = Feed({ asset: asset, id: feed, isSet: true });

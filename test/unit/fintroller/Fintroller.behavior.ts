@@ -1,27 +1,25 @@
 import shouldBehaveLikeListBond from "./effects/listBond";
-import shouldBehaveLikeSetBondCollateralizationRatio from "./effects/setBondCollateralizationRatio";
-import shouldBehaveLikeSetBondDebtCeiling from "./effects/setBondDebtCeiling";
-import shouldBehaveLikeSetBondLiquidationIncentive from "./effects/setBondLiquidationIncentive";
+import shouldBehaveLikeListCollateral from "./effects/listCollateral";
 import shouldBehaveLikeSetBorrowAllowed from "./effects/setBorrowAllowed";
+import shouldBehaveLikeSetCollateralizationRatio from "./effects/setCollateralizationRatio";
+import shouldBehaveLikeSetDebtCeiling from "./effects/setDebtCeiling";
 import shouldBehaveLikeSetDepositCollateralAllowed from "./effects/setDepositCollateralAllowed";
 import shouldBehaveLikeSetLiquidateBorrowAllowed from "./effects/setLiquidateBorrowAllowed";
-import shouldBehaveLikeSetOracle from "./effects/setOracle";
-import shouldBehaveLikeSetRedeemHTokensAllowed from "./effects/setRedeemHTokensAllowed";
+import shouldBehaveLikeSetLiquidationIncentive from "./effects/setLiquidationIncentive";
+import shouldBehaveLikeSetMaxBonds from "./effects/setMaxBonds";
 import shouldBehaveLikeSetRepayBorrowAllowed from "./effects/setRepayBorrowAllowed";
-import shouldBehaveLikeSetSupplyUnderlyingAllowed from "./effects/setSupplyUnderlyingAllowed";
 import shouldBehaveLikeGetBond from "./view/getBond";
-import shouldBehaveLikeGetBondCollateralizationRatio from "./view/getBondCollateralizationRatio";
-import shouldBehaveLikeGetBondDebtCeiling from "./view/getBondDebtCeiling";
-import shouldBehaveLikeGetBondLiquidationIncentive from "./view/getBondLiquidationIncentive";
 import shouldBehaveLikeGetBorrowAllowed from "./view/getBorrowAllowed";
+import shouldBehaveLikeGetCollateral from "./view/getCollateral";
+import shouldBehaveLikeGetCollateralizationRatio from "./view/getCollateralizationRatio";
+import shouldBehaveLikeGetDebtCeiling from "./view/getDebtCeiling";
 import shouldBehaveLikeGetDepositCollateralAllowed from "./view/getDepositCollateralAllowed";
 import shouldBehaveLikeGetLiquidateBorrowAllowed from "./view/getLiquidateBorrowAllowed";
-import shouldBehaveLikeGetRedeemHTokensAllowed from "./view/getRedeemHTokensAllowed";
+import shouldBehaveLikeGetLiquidationIncentive from "./view/getLiquidationIncentive";
 import shouldBehaveLikeGetRepayBorrowAllowed from "./view/getRepayBorrowAllowed";
-import shouldBehaveLikeGetSupplyUnderlyingAllowed from "./view/getSupplyUnderlyingAllowed";
 import shouldBehaveLikeIsBondListed from "./view/isBondListed";
-import shouldBehaveLikeIsFintrollerGetter from "./view/isFintroller";
-import shouldBehaveLikeOracleGetter from "./view/oracle";
+import shouldBehaveLikeIsCollateralListed from "./view/isCollateralListed";
+import shouldBehaveLikeMaxBonds from "./view/maxBonds";
 
 export function shouldBehaveLikeFintroller(): void {
   describe("View Functions", function () {
@@ -29,20 +27,20 @@ export function shouldBehaveLikeFintroller(): void {
       shouldBehaveLikeGetBond();
     });
 
-    describe("getBondCollateralizationRatio", function () {
-      shouldBehaveLikeGetBondCollateralizationRatio();
-    });
-
-    describe("getBondDebtCeiling", function () {
-      shouldBehaveLikeGetBondDebtCeiling();
-    });
-
-    describe("getBondLiquidationIncentive", function () {
-      shouldBehaveLikeGetBondLiquidationIncentive();
-    });
-
     describe("getBorrowAllowed", function () {
       shouldBehaveLikeGetBorrowAllowed();
+    });
+
+    describe("getCollateral", function () {
+      shouldBehaveLikeGetCollateral();
+    });
+
+    describe("getCollateralizationRatio", function () {
+      shouldBehaveLikeGetCollateralizationRatio();
+    });
+
+    describe("getDebtCeiling", function () {
+      shouldBehaveLikeGetDebtCeiling();
     });
 
     describe("getDepositCollateralAllowed", function () {
@@ -53,28 +51,24 @@ export function shouldBehaveLikeFintroller(): void {
       shouldBehaveLikeGetLiquidateBorrowAllowed();
     });
 
-    describe("getRedeemHTokensAllowed", function () {
-      shouldBehaveLikeGetRedeemHTokensAllowed();
+    describe("getLiquidationIncentive", function () {
+      shouldBehaveLikeGetLiquidationIncentive();
     });
 
     describe("getRepayBorrowAllowed", function () {
       shouldBehaveLikeGetRepayBorrowAllowed();
     });
 
-    describe("getSupplyUnderlyingAllowed", function () {
-      shouldBehaveLikeGetSupplyUnderlyingAllowed();
-    });
-
     describe("isBondListed", function () {
       shouldBehaveLikeIsBondListed();
     });
 
-    describe("isFintroller", function () {
-      shouldBehaveLikeIsFintrollerGetter();
+    describe("isCollateralListed", function () {
+      shouldBehaveLikeIsCollateralListed();
     });
 
-    describe("oracle", function () {
-      shouldBehaveLikeOracleGetter();
+    describe("maxBonds", function () {
+      shouldBehaveLikeMaxBonds();
     });
   });
 
@@ -83,16 +77,20 @@ export function shouldBehaveLikeFintroller(): void {
       shouldBehaveLikeListBond();
     });
 
-    describe("setBondCollateralizationRatio", function () {
-      shouldBehaveLikeSetBondCollateralizationRatio();
-    });
-
-    describe("setBondDebtCeiling", function () {
-      shouldBehaveLikeSetBondDebtCeiling();
+    describe("listCollateral", function () {
+      shouldBehaveLikeListCollateral();
     });
 
     describe("setBorrowAllowed", function () {
       shouldBehaveLikeSetBorrowAllowed();
+    });
+
+    describe("setCollateralizationRatio", function () {
+      shouldBehaveLikeSetCollateralizationRatio();
+    });
+
+    describe("setDebtCeiling", function () {
+      shouldBehaveLikeSetDebtCeiling();
     });
 
     describe("setDepositCollateralAllowed", function () {
@@ -103,24 +101,16 @@ export function shouldBehaveLikeFintroller(): void {
       shouldBehaveLikeSetLiquidateBorrowAllowed();
     });
 
-    describe("setBondLiquidationIncentive", function () {
-      shouldBehaveLikeSetBondLiquidationIncentive();
+    describe("setLiquidationIncentive", function () {
+      shouldBehaveLikeSetLiquidationIncentive();
     });
 
-    describe("setOracle", function () {
-      shouldBehaveLikeSetOracle();
-    });
-
-    describe("setRedeemHTokensAllowed", function () {
-      shouldBehaveLikeSetRedeemHTokensAllowed();
+    describe("setMaxBonds", function () {
+      shouldBehaveLikeSetMaxBonds();
     });
 
     describe("setRepayBorrowAllowed", function () {
       shouldBehaveLikeSetRepayBorrowAllowed();
-    });
-
-    describe("setSupplyUnderlyingAllowed", function () {
-      shouldBehaveLikeSetSupplyUnderlyingAllowed();
     });
   });
 }

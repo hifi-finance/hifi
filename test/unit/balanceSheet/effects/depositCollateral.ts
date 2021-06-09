@@ -1,138 +1,112 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
-import fp from "evm-fp";
 
-import { FINTROLLER_DEFAULT_COLLATERALIZATION_RATIO } from "../../../../helpers/constants";
-import { BalanceSheetErrors, GenericErrors } from "../../../../helpers/errors";
+import { wbtc } from "../../../../helpers/numbers";
+import { BalanceSheetErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeDepositCollateral(): void {
-  const collateralAmount: BigNumber = fp("10");
-  const zeroCollateralAmount: BigNumber = Zero;
+  context("when the fintroller does not allow collateral deposits", function () {
+    beforeEach(async function () {
+      await this.mocks.fintroller.mock.getDepositCollateralAllowed.withArgs(this.mocks.wbtc.address).returns(false);
+    });
 
-  context("when the vault is not open", function () {
     it("reverts", async function () {
+      const depositAmount: BigNumber = Zero;
       await expect(
         this.contracts.balanceSheet
           .connect(this.signers.borrower)
-          .depositCollateral(this.stubs.hToken.address, collateralAmount),
-      ).to.be.revertedWith(GenericErrors.VaultNotOpen);
+          .depositCollateral(this.mocks.wbtc.address, depositAmount),
+      ).to.be.revertedWith(BalanceSheetErrors.DepositCollateralNotAllowed);
     });
   });
 
-  context("when the vault is open", function () {
+  context("when the fintroller allows collateral deposits", function () {
     beforeEach(async function () {
-      await this.stubs.fintroller.mock.isBondListed.withArgs(this.stubs.hToken.address).returns(true);
-      await this.contracts.balanceSheet.connect(this.signers.borrower).openVault(this.stubs.hToken.address);
+      await this.mocks.fintroller.mock.getDepositCollateralAllowed.withArgs(this.mocks.wbtc.address).returns(true);
     });
 
     context("when the amount to deposit is zero", function () {
       it("reverts", async function () {
+        const depositAmount: BigNumber = Zero;
         await expect(
           this.contracts.balanceSheet
             .connect(this.signers.borrower)
-            .depositCollateral(this.stubs.hToken.address, zeroCollateralAmount),
+            .depositCollateral(this.mocks.wbtc.address, depositAmount),
         ).to.be.revertedWith(BalanceSheetErrors.DepositCollateralZero);
       });
     });
 
     context("when the amount to deposit is not zero", function () {
-      context("when the bond is not listed", function () {
+      const depositAmounts: BigNumber[] = [wbtc("1"), wbtc("0.5")];
+
+      context("when it is the first collateral deposit of the user", function () {
         beforeEach(async function () {
-          await this.stubs.fintroller.mock.getDepositCollateralAllowed
-            .withArgs(this.stubs.hToken.address)
-            .revertsWithReason(GenericErrors.BondNotListed);
+          // Mock the necessary methods.
+          await this.mocks.wbtc.mock.transferFrom
+            .withArgs(this.signers.borrower.address, this.contracts.balanceSheet.address, depositAmounts[0])
+            .returns(true);
         });
 
-        it("reverts", async function () {
-          await expect(
-            this.contracts.balanceSheet
-              .connect(this.signers.borrower)
-              .depositCollateral(this.stubs.hToken.address, collateralAmount),
-          ).to.be.revertedWith(GenericErrors.BondNotListed);
+        it("makes the collateral deposit", async function () {
+          await this.contracts.balanceSheet
+            .connect(this.signers.borrower)
+            .depositCollateral(this.mocks.wbtc.address, depositAmounts[0]);
+
+          const collateralList: string[] = await this.contracts.balanceSheet.getCollateralList(
+            this.signers.borrower.address,
+          );
+          expect(collateralList).to.have.same.members([this.mocks.wbtc.address]);
+
+          const collateralAmount: BigNumber = await this.contracts.balanceSheet.getCollateralAmount(
+            this.signers.borrower.address,
+            this.mocks.wbtc.address,
+          );
+          expect(collateralAmount).to.equal(depositAmounts[0]);
         });
       });
 
-      context("when the bond is listed", function () {
+      context("when it is the second collateral deposit of the user", function () {
         beforeEach(async function () {
-          await this.stubs.fintroller.mock.getBondCollateralizationRatio
-            .withArgs(this.stubs.hToken.address)
-            .returns(FINTROLLER_DEFAULT_COLLATERALIZATION_RATIO);
+          // Mock the necessary methods.
+          await this.mocks.wbtc.mock.transferFrom
+            .withArgs(this.signers.borrower.address, this.contracts.balanceSheet.address, depositAmounts[0])
+            .returns(true);
+          await this.mocks.wbtc.mock.transferFrom
+            .withArgs(this.signers.borrower.address, this.contracts.balanceSheet.address, depositAmounts[1])
+            .returns(true);
+
+          // Make the first collateral deposit.
+          await this.contracts.balanceSheet
+            .connect(this.signers.borrower)
+            .depositCollateral(this.mocks.wbtc.address, depositAmounts[0]);
         });
 
-        context("when the fintroller does not allow deposit collateral", function () {
-          beforeEach(async function () {
-            await this.stubs.fintroller.mock.getDepositCollateralAllowed
-              .withArgs(this.stubs.hToken.address)
-              .returns(false);
-          });
+        it("makes the collateral deposit", async function () {
+          await this.contracts.balanceSheet
+            .connect(this.signers.borrower)
+            .depositCollateral(this.mocks.wbtc.address, depositAmounts[1]);
 
-          it("reverts", async function () {
-            await expect(
-              this.contracts.balanceSheet
-                .connect(this.signers.borrower)
-                .depositCollateral(this.stubs.hToken.address, collateralAmount),
-            ).to.be.revertedWith(BalanceSheetErrors.DepositCollateralNotAllowed);
-          });
+          const collateralList: string[] = await this.contracts.balanceSheet.getCollateralList(
+            this.signers.borrower.address,
+          );
+          expect(collateralList).to.have.same.members([this.mocks.wbtc.address]);
+
+          const collateralAmount: BigNumber = await this.contracts.balanceSheet.getCollateralAmount(
+            this.signers.borrower.address,
+            this.mocks.wbtc.address,
+          );
+          expect(collateralAmount).to.equal(depositAmounts[0].add(depositAmounts[1]));
         });
 
-        context("when the fintroller allows deposit collateral", function () {
-          beforeEach(async function () {
-            await this.stubs.fintroller.mock.getDepositCollateralAllowed
-              .withArgs(this.stubs.hToken.address)
-              .returns(true);
-          });
-
-          context("when the call to transfer the collateral does not succeed", function () {
-            beforeEach(async function () {
-              await this.stubs.collateral.mock.transferFrom
-                .withArgs(this.signers.borrower.address, this.contracts.balanceSheet.address, collateralAmount)
-                .returns(false);
-            });
-
-            it("reverts", async function () {
-              await expect(
-                this.contracts.balanceSheet
-                  .connect(this.signers.borrower)
-                  .depositCollateral(this.stubs.hToken.address, collateralAmount),
-              ).to.be.reverted;
-            });
-          });
-
-          context("when the call to transfer the collateral succeeds", function () {
-            beforeEach(async function () {
-              await this.stubs.collateral.mock.transferFrom
-                .withArgs(this.signers.borrower.address, this.contracts.balanceSheet.address, collateralAmount)
-                .returns(true);
-            });
-
-            it("makes the collateral deposit", async function () {
-              const oldVault = await this.contracts.balanceSheet.getVault(
-                this.stubs.hToken.address,
-                this.signers.borrower.address,
-              );
-              const oldFreeCollateral: BigNumber = oldVault[1];
-              await this.contracts.balanceSheet
-                .connect(this.signers.borrower)
-                .depositCollateral(this.stubs.hToken.address, collateralAmount);
-              const newVault = await this.contracts.balanceSheet.getVault(
-                this.stubs.hToken.address,
-                this.signers.borrower.address,
-              );
-              const newFreeCollateral: BigNumber = newVault[1];
-              expect(oldFreeCollateral).to.equal(newFreeCollateral.sub(collateralAmount));
-            });
-
-            it("emits a DepositCollateral event", async function () {
-              await expect(
-                this.contracts.balanceSheet
-                  .connect(this.signers.borrower)
-                  .depositCollateral(this.stubs.hToken.address, collateralAmount),
-              )
-                .to.emit(this.contracts.balanceSheet, "DepositCollateral")
-                .withArgs(this.stubs.hToken.address, this.signers.borrower.address, collateralAmount);
-            });
-          });
+        it("emits a DepositCollateral event", async function () {
+          await expect(
+            this.contracts.balanceSheet
+              .connect(this.signers.borrower)
+              .depositCollateral(this.mocks.wbtc.address, depositAmounts[1]),
+          )
+            .to.emit(this.contracts.balanceSheet, "DepositCollateral")
+            .withArgs(this.signers.borrower.address, this.mocks.wbtc.address, depositAmounts[1]);
         });
       });
     });

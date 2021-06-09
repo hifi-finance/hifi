@@ -2,279 +2,271 @@
 pragma solidity >=0.8.0;
 
 import "@paulrberg/contracts/access/IAdmin.sol";
+import "@paulrberg/contracts/token/erc20/IErc20.sol";
 
-import "./IHToken.sol";
+import "./oracles/IChainlinkOperator.sol";
 import "./IFintroller.sol";
+import "./IHToken.sol";
 
 /// @title IBalanceSheet
 /// @author Hifi
-/// @notice Interface for the BalanceSheet contract
-interface IBalanceSheet is
-    IAdmin /// one dependency
-{
+/// @notice Manages the collaterals and the debts for all users.
+interface IBalanceSheet is IAdmin {
     /// STRUCTS ///
 
     /// @notice Structure of a vault.
-    /// @param debt The current debt of the account.
-    /// @param freeCollateral The current amount of free collateral.
-    /// @param lockedCollateral The current amount of locked collateral.
-    /// @param isOpen True if the vault is open.
     struct Vault {
-        uint256 debt;
-        uint256 freeCollateral;
-        uint256 lockedCollateral;
-        bool isOpen;
+        IHToken[] bondList;
+        mapping(IErc20 => uint256) collateralAmounts;
+        IErc20[] collateralList;
+        mapping(IHToken => uint256) debtAmounts;
     }
 
     /// EVENTS ///
 
-    /// @notice Emitted when collateral is clutched.
-    /// @param hToken The related HToken.
-    /// @param liquidator The address of the liquidator.
-    /// @param borrower The address of the liquidated borrower.
-    /// @param collateralAmount The amount of clutched collateral.
-    event ClutchCollateral(
-        IHToken indexed hToken,
-        address indexed liquidator,
-        address indexed borrower,
-        uint256 collateralAmount
-    );
-
-    /// @notice Emitted when the default of a vault is decreased.
-    /// @param hToken The related HToken.
-    /// @param borrower The address of the borrower.
-    /// @param oldDebt The amount of the old debt.
-    /// @param newDebt The amount of the new debt.
-    event DecreaseVaultDebt(IHToken indexed hToken, address indexed borrower, uint256 oldDebt, uint256 newDebt);
+    /// @notice Emitted when a borrow is made.
+    /// @param account The address of the borrower.
+    /// @param bond The address of the bond contract.
+    /// @param borrowAmount The amount of hTokens borrowed.
+    event Borrow(address indexed account, IHToken indexed bond, uint256 borrowAmount);
 
     /// @notice Emitted when collateral is deposited.
-    /// @param hToken The related HToken.
-    /// @param borrower The address of the borrower.
+    /// @param account The address of the borrower.
+    /// @param collateral The related collateral.
     /// @param collateralAmount The amount of deposited collateral.
-    event DepositCollateral(IHToken indexed hToken, address indexed borrower, uint256 collateralAmount);
+    event DepositCollateral(address indexed account, IErc20 indexed collateral, uint256 collateralAmount);
 
-    /// @notice Emitted when collateral is freed.
-    /// @param hToken The related HToken.
+    /// @notice Emitted when a borrow is liquidated.
+    /// @param liquidator The address of the liquidator.
     /// @param borrower The address of the borrower.
-    /// @param collateralAmount The amount of freed collateral.
-    event FreeCollateral(IHToken indexed hToken, address indexed borrower, uint256 collateralAmount);
+    /// @param bond The address of the bond contract.
+    /// @param repayAmount The amount of repaid funds.
+    /// @param collateral The address of the collateral contract.
+    /// @param seizedCollateralAmount The amount of seized collateral.
+    event LiquidateBorrow(
+        address indexed liquidator,
+        address indexed borrower,
+        IHToken indexed bond,
+        uint256 repayAmount,
+        IErc20 collateral,
+        uint256 seizedCollateralAmount
+    );
 
-    /// @notice Emitted when collateral is locked
-    /// @param hToken The related HToken.
+    /// @notice Emitted when a borrow is repaid.
+    /// @param payer The address of the payer.
     /// @param borrower The address of the borrower.
-    /// @param collateralAmount The amount of locked collateral.
-    event LockCollateral(IHToken indexed hToken, address indexed borrower, uint256 collateralAmount);
+    /// @param bond The address of the bond contract.
+    /// @param repayAmount The amount of repaid funds.
+    /// @param newDebtAmount The amount of the new debt.
+    event RepayBorrow(
+        address indexed payer,
+        address indexed borrower,
+        IHToken indexed bond,
+        uint256 repayAmount,
+        uint256 newDebtAmount
+    );
 
-    /// @notice Emitted when a vault is opened.
-    /// @param hToken The related HToken.
-    /// @param borrower The address of the borrower.
-    event OpenVault(IHToken indexed hToken, address indexed borrower);
-
-    /// @notice Emitted when the debt of a vault is increased.
-    /// @param hToken The related HToken.
-    /// @param borrower The address of the borrower.
-    /// @param oldDebt The amount of the old debt.
-    /// @param newDebt The amount of the new debt.
-    event IncreaseVaultDebt(IHToken indexed hToken, address indexed borrower, uint256 oldDebt, uint256 newDebt);
+    /// @notice Emitted when a new oracle is set.
+    /// @param admin The address of the admin.
+    /// @param oldOracle The address of the old oracle.
+    /// @param newOracle The address of the new oracle.
+    event SetOracle(address indexed admin, address oldOracle, address newOracle);
 
     /// @notice Emitted when collateral is withdrawn.
-    /// @param hToken The related HToken.
-    /// @param borrower The address of the borrower.
+    /// @param account The address of the borrower.
+    /// @param collateral The related collateral.
     /// @param collateralAmount The amount of withdrawn collateral.
-    event WithdrawCollateral(IHToken indexed hToken, address indexed borrower, uint256 collateralAmount);
-
-    /// NON-CONSTANT FUNCTIONS ///
-
-    /// @notice Transfers the collateral from the borrower's vault to the liquidator account.
-    ///
-    /// @dev Emits a {ClutchCollateral} event.
-    ///
-    /// Requirements:
-    ///
-    /// - Can only be called by the hToken.
-    /// - There must be enough collateral in the borrower's vault.
-    ///
-    /// @param hToken The address of the hToken contract.
-    /// @param liquidator The account who repays the borrower's debt and receives the collateral.
-    /// @param borrower The account who fell underwater and is liquidated.
-    /// @param collateralAmount The amount of collateral to clutch, specified in the collateral's decimal system.
-    function clutchCollateral(
-        IHToken hToken,
-        address liquidator,
-        address borrower,
-        uint256 collateralAmount
-    ) external;
-
-    /// @notice Decreases the debt accrued by the borrower account.
-    ///
-    /// @dev Emits an {DecreaseVaultDebt} event.
-    ///
-    /// Requirements:
-    /// - Can only be called by the hToken.
-    ///
-    /// @param hToken The address of the hToken contract.
-    /// @param borrower The borrower account for which to decrease the debt.
-    /// @param subtractedDebt The amount by which to decrease the debt of the borrower account.
-    function decreaseVaultDebt(
-        IHToken hToken,
-        address borrower,
-        uint256 subtractedDebt
-    ) external;
-
-    /// @notice Deposits collateral into the account's vault.
-    ///
-    /// @dev Emits a {DepositCollateral} event.
-    ///
-    /// Requirements:
-    ///
-    /// - The vault must be open.
-    /// - The amount to deposit cannot be zero.
-    /// - The Fintroller must allow this action to be performed.
-    /// - The caller must have allowed this contract to spend `collateralAmount` tokens.
-    ///
-    /// @param hToken The address of the hToken contract.
-    /// @param collateralAmount The amount of collateral to deposit.
-    function depositCollateral(IHToken hToken, uint256 collateralAmount) external;
-
-    /// @notice Frees a portion or all of the locked collateral.
-    /// @dev Emits a {FreeCollateral} event.
-    ///
-    /// Requirements:
-    ///
-    /// - The vault must be open.
-    /// - The amount to free cannot be zero.
-    /// - There must be enough locked collateral.
-    /// - The borrower account cannot fall below the collateralization ratio.
-    ///
-    /// @param hToken The address of the hToken contract.
-    /// @param collateralAmount The amount of locked collateral to free.
-    function freeCollateral(IHToken hToken, uint256 collateralAmount) external;
-
-    /// @notice Increases the debt accrued by the borrower account.
-    ///
-    /// @dev Emits an {IncreaseVaultDebt} event.
-    ///
-    /// Requirements:
-    /// - Can only be called by the hToken.
-    ///
-    /// @param hToken The address of the hToken contract.
-    /// @param borrower The borrower account for which to increase the debt.
-    /// @param addedDebt The amount by which to increase the debt of the borrower account.
-    function increaseVaultDebt(
-        IHToken hToken,
-        address borrower,
-        uint256 addedDebt
-    ) external;
-
-    /// @notice Locks a portion or all of the free collateral to make it eligible for borrowing.
-    /// @dev Emits a {LockCollateral} event.
-    ///
-    /// Requirements:
-    ///
-    /// - The vault must be open.
-    /// - The amount to lock cannot be zero.
-    /// - There must be enough free collateral.
-    ///
-    /// @param hToken The address of the hToken contract.
-    /// @param collateralAmount The amount of free collateral to lock.
-    function lockCollateral(IHToken hToken, uint256 collateralAmount) external;
-
-    /// @notice Opens a Vault for the caller.
-    /// @dev Emits an {OpenVault} event.
-    ///
-    /// Requirements:
-    ///
-    /// - The bond must be listed.
-    /// - The vault cannot be already open.
-    /// - The hToken must pass the inspection.
-    ///
-    /// @param hToken The address of the hToken contract for which to open the vault.
-    function openVault(IHToken hToken) external;
-
-    /// @notice Withdraws a portion or all of the free collateral.
-    ///
-    /// @dev Emits a {WithdrawCollateral} event.
-    ///
-    /// Requirements:
-    ///
-    /// - The vault must be open.
-    /// - The amount to withdraw cannot be zero.
-    /// - There must be enough free collateral in the vault.
-    ///
-    /// @param hToken The address of the hToken contract.
-    /// @param collateralAmount The amount of collateral to withdraw.
-    function withdrawCollateral(IHToken hToken, uint256 collateralAmount) external;
+    event WithdrawCollateral(address indexed account, IErc20 indexed collateral, uint256 collateralAmount);
 
     /// CONSTANT FUNCTIONS ///
 
     /// @notice The unique Fintroller associated with this contract.
     function fintroller() external view returns (IFintroller);
 
-    /// @notice Determines the amount of collateral that can be clutched when liquidating a borrow.
-    ///
+    /// @notice Returns the list of bond markets the given account entered.
+    /// @dev It is not an error to provide an invalid address.
+    /// @param account The borrower account to make the query against.
+    function getBondList(address account) external view returns (IHToken[] memory);
+
+    /// @notice Calculates the amount of collateral that can be seized when liquidating a borrow. Note that this
+    /// is for informational purposes only, it doesn't tell anything about whether the user can be liquidated.
     /// @dev The formula applied:
-    /// clutchedCollateral = repayAmount * liquidationIncentive * underlyingPriceUsd / collateralPriceUsd
-    ///
-    /// Requirements:
-    /// - `repayAmount` must be non-zero.
-    ///
-    /// @param hToken The hToken to make the query against.
+    /// seizableCollateralAmount = repayAmount * liquidationIncentive * underlyingPriceUsd / collateralPriceUsd
+    /// @param bond The bond to make the query against.
     /// @param repayAmount The amount of hTokens to repay.
-    /// @return The amount of clutchable collateral as uint256, specified in the collateral's decimal system.
-    function getClutchableCollateral(IHToken hToken, uint256 repayAmount) external view returns (uint256);
+    /// @param collateral The collateral to make the query against.
+    /// @return seizableCollateralAmount The amount of seizable collateral.
+    function getSeizableCollateralAmount(
+        IHToken bond,
+        uint256 repayAmount,
+        IErc20 collateral
+    ) external view returns (uint256 seizableCollateralAmount);
 
-    /// @notice Determines the current collateralization ratio for the given borrower account.
-    /// @param hToken The hToken to make the query against.
-    /// @param borrower The borrower account to make the query against.
-    /// @return A quotient if locked collateral is non-zero, otherwise zero.
-    function getCurrentCollateralizationRatio(IHToken hToken, address borrower) external view returns (uint256);
+    /// @notice Returns the amount of collateral deposited by the given account for the given collateral type.
+    /// @dev It is not an error to provide an invalid address.
+    /// @param account The borrower account to make the query against.
+    /// @param collateral The collateral to make the query against.
+    function getCollateralAmount(address account, IErc20 collateral) external view returns (uint256 collateralAmount);
 
-    /// @notice Determines the hypothetical collateralization ratio for the given locked
-    /// collateral and debt, at the current prices provided by the oracle.
+    /// @notice Returns the list of collaterals the given account deposited.
+    /// @dev It is not an error to provide an invalid address.
+    /// @param account The borrower account to make the query against.
+    function getCollateralList(address account) external view returns (IErc20[] memory);
+
+    /// @notice Calculates the current account liquidity.
+    /// @param account The account to make the query against.
+    /// @return excessLiquidity account liquidity in excess of collateral requirements.
+    /// @return shortfallLiquidity account shortfall below collateral requirements
+    function getCurrentAccountLiquidity(address account)
+        external
+        view
+        returns (uint256 excessLiquidity, uint256 shortfallLiquidity);
+
+    /// @notice Returns the amount of debt accrued by the given account in the given bond market.
+    /// @dev It is not an error to provide an invalid address.
+    /// @param account The borrower account to make the query against.
+    /// @param bond The bond to make the query against.
+    function getDebtAmount(address account, IHToken bond) external view returns (uint256 debtAmount);
+
+    /// @notice Calculates the account liquidity given a modified collateral and debt amount, at the current prices
+    /// provided by the oracle.
     ///
-    /// @dev The formula applied: collateralizationRatio = lockedCollateralValueUsd / debtValueUsd
+    /// @dev Works by summing up each collateral amount multiplied by the USD value of each unit and divided by its
+    /// respective collateralization ratio, then dividing the sum by the total amount of debt drawn by the user.
+    ///
+    /// Caveats:
+    /// - This function expects that the "collateralList" and the "bondList" are each modified in advance to include
+    /// the collateral and bond due to be modified.
+    ///
+    /// @param account The account to make the query against.
+    /// @param collateralModify The collateral to make the check against.
+    /// @param collateralAmountModify The hypothetical normalized amount of collateral.
+    /// @param bondModify The bond to make the hypothetical check against.
+    /// @param debtAmountModify The hypothetical amount of debt.
+    /// @return excessLiquidity hypothetical account liquidity in excess of collateral requirements.
+    /// @return shortfallLiquidity hypothetical account shortfall below collateral requirements
+    function getHypotheticalAccountLiquidity(
+        address account,
+        IErc20 collateralModify,
+        uint256 collateralAmountModify,
+        IHToken bondModify,
+        uint256 debtAmountModify
+    ) external view returns (uint256 excessLiquidity, uint256 shortfallLiquidity);
+
+    /// @notice The contract that provides price data.
+    function oracle() external view returns (IChainlinkOperator);
+
+    /// NON-CONSTANT FUNCTIONS ///
+
+    /// @notice Increases the debt of the caller and mints new hTokens.
+    ///
+    /// @dev Emits a {Borrow} event.
     ///
     /// Requirements:
     ///
-    /// - The vault must be open.
-    /// - `debt` must be non-zero.
-    /// - The oracle prices must be non-zero.
+    /// - The Fintroller must allow this action to be performed.
+    /// - The expiration time of the bond must be in the future.
+    /// - The amount to borrow cannot be zero.
+    /// - The new length of the bond list must be below the max bonds limit.
+    /// - The new total amount of debt cannot exceed the debt ceiling.
+    /// - The caller must not end up having a shortfall of liquidity.
     ///
-    /// @param hToken The hToken for which to make the query against.
-    /// @param borrower The borrower account for which to make the query against.
-    /// @param lockedCollateral The hypothetical locked collateral.
-    /// @param debt The hypothetical debt.
-    /// @return The hypothetical collateralization ratio as a percentage if locked collateral is non-zero,
-    /// otherwise zero.
-    function getHypotheticalCollateralizationRatio(
-        IHToken hToken,
+    /// @param bond The address of the bond contract.
+    /// @param borrowAmount The amount of hTokens to borrow and print into existence.
+    function borrow(IHToken bond, uint256 borrowAmount) external;
+
+    /// @notice Deposits collateral in the caller's account.
+    ///
+    /// @dev Emits a {DepositCollateral} event.
+    ///
+    /// Requirements:
+    ///
+    /// - The amount to deposit cannot be zero.
+    /// - The Fintroller must allow this action to be performed.
+    /// - The caller must have allowed this contract to spend `collateralAmount` tokens.
+    ///
+    /// @param collateral The address of the collateral contract.
+    /// @param depositAmount The amount of collateral to deposit.
+    function depositCollateral(IErc20 collateral, uint256 depositAmount) external;
+
+    /// @notice Repays the debt of the borrower and rewards the caller with a surplus of collateral.
+    ///
+    /// @dev Emits a {LiquidateBorrow} event.
+    ///
+    /// Requirements:
+    ///
+    /// - All from "repayBorrow".
+    /// - The caller cannot be the same with the borrower.
+    /// - The Fintroller must allow this action to be performed.
+    /// - The borrower must have a shortfall of liquidity if the bond didn't mature.
+    /// - The amount of seized collateral cannot be more than what the borrower has in the vault.
+    ///
+    /// @param bond The address of the bond contract.
+    /// @param borrower The account to liquidate.
+    /// @param repayAmount The amount of hTokens to repay.
+    /// @param collateral The address of the collateral contract.
+    function liquidateBorrow(
         address borrower,
-        uint256 lockedCollateral,
-        uint256 debt
-    ) external view returns (uint256);
+        IHToken bond,
+        uint256 repayAmount,
+        IErc20 collateral
+    ) external;
 
-    /// @notice Reads the storage properties of the vault.
-    /// @return The vault object.
-    function getVault(IHToken hToken, address borrower) external view returns (Vault memory);
+    /// @notice Erases the borrower's debt and takes the hTokens out of circulation.
+    ///
+    /// @dev Emits a {RepayBorrow} event.
+    ///
+    /// Requirements:
+    ///
+    /// - The amount to repay cannot be zero.
+    /// - The Fintroller must allow this action to be performed.
+    /// - The caller must have at least `repayAmount` hTokens.
+    /// - The caller must have at least `repayAmount` debt.
+    ///
+    /// @param bond The address of the bond contract.
+    /// @param repayAmount The amount of hTokens to repay.
+    function repayBorrow(IHToken bond, uint256 repayAmount) external;
 
-    /// @notice Reads the debt held by the given account.
-    /// @return The debt held by the borrower, as an uint256.
-    function getVaultDebt(IHToken hToken, address borrower) external view returns (uint256);
+    /// @notice Erases the borrower's debt and takes the hTokens out of circulation.
+    ///
+    /// @dev Emits a {RepayBorrow} event.
+    ///
+    /// Requirements:
+    /// - Same as the `repayBorrow` function, but here `borrower` is the account that must have at least
+    /// `repayAmount` hTokens to repay the borrow.
+    ///
+    /// @param borrower The borrower account for which to repay the borrow.
+    /// @param bond The address of the bond contract
+    /// @param repayAmount The amount of hTokens to repay.
+    function repayBorrowBehalf(
+        address borrower,
+        IHToken bond,
+        uint256 repayAmount
+    ) external;
 
-    /// @notice Reads the amount of collateral that the given borrower account locked in the vault.
-    /// @return The collateral locked in the vault by the borrower, as an uint256.
-    function getVaultLockedCollateral(IHToken hToken, address borrower) external view returns (uint256);
+    /// @notice Updates the oracle contract's address saved in storage.
+    ///
+    /// @dev Emits a {SetOracle} event.
+    ///
+    /// Requirements:
+    ///
+    /// - The caller must be the admin.
+    /// - The new address cannot be the zero address.
+    ///
+    /// @param newOracle The new oracle contract.
+    function setOracle(IChainlinkOperator newOracle) external;
 
-    /// @notice Checks whether the borrower account can be liquidated or not.
-    /// @param hToken The hToken for which to make the query against.
-    /// @param borrower The borrower account for which to make the query against.
-    /// @return bool true = is underwater, otherwise not.
-    function isAccountUnderwater(IHToken hToken, address borrower) external view returns (bool);
-
-    /// @notice Indicator that this is a BalanceSheet contract, for inspection.
-    function isBalanceSheet() external view returns (bool);
-
-    /// @notice Checks whether the borrower account has a vault opened for a particular hToken.
-    /// @return bool true = vault open, otherwise not.
-    function isVaultOpen(IHToken hToken, address borrower) external view returns (bool);
+    /// @notice Withdraws a portion or all of the collateral.
+    ///
+    /// @dev Emits a {WithdrawCollateral} event.
+    ///
+    /// Requirements:
+    ///
+    /// - The amount to withdraw cannot be zero.
+    /// - There must be enough collateral in the vault.
+    /// - The caller's account cannot fall below the collateralization ratio.
+    ///
+    /// @param collateral The address of the collateral contract.
+    /// @param withdrawAmount The amount of collateral to withdraw.
+    function withdrawCollateral(IErc20 collateral, uint256 withdrawAmount) external;
 }

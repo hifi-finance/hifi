@@ -3,36 +3,35 @@ pragma solidity >=0.8.0;
 
 import "./BaseInvariants.sol";
 import "../Fintroller.sol";
-import "../IHToken.sol";
 
-contract HTokenLike {
-    bool public constant isHToken = true;
+contract CollateralLike {
+    uint256 public constant totalSupply = 100e18;
 }
 
 contract FintrollerInvariants is
     BaseInvariants, /// no dependency
-    Fintroller /// five dependencies
+    Fintroller /// four dependencies
 {
-    IHToken private hToken;
+    IErc20 private collateral;
 
     constructor() Fintroller() {
-        HTokenLike hTokenLike = new HTokenLike();
-        hToken = IHToken(address(hTokenLike));
+        CollateralLike collateralLike = new CollateralLike();
+        collateral = IErc20(address(collateralLike));
     }
 
-    function echidna_bond_collateralization_ratio() external view returns (bool) {
-        if (bonds[hToken].isListed == false) {
+    function echidna_collateralization_ratio() external view returns (bool) {
+        if (collaterals[collateral].isListed == false) {
             return true;
         } else {
             return
-                bonds[hToken].collateralizationRatio >= collateralizationRatioLowerBound &&
-                bonds[hToken].collateralizationRatio <= collateralizationRatioUpperBound;
+                collaterals[collateral].collateralizationRatio >= COLLATERALIZATION_RATIO_LOWER_BOUND &&
+                collaterals[collateral].collateralizationRatio <= COLLATERALIZATION_RATIO_UPPER_BOUND;
         }
     }
 
     function echidna_liquidation_incentive() external view returns (bool) {
         return
-            bonds[hToken].liquidationIncentive >= liquidationIncentiveLowerBound &&
-            bonds[hToken].liquidationIncentive <= liquidationIncentiveUpperBound;
+            collaterals[collateral].liquidationIncentive >= LIQUIDATION_INCENTIVE_LOWER_BOUND &&
+            collaterals[collateral].liquidationIncentive <= LIQUIDATION_INCENTIVE_UPPER_BOUND;
     }
 }
