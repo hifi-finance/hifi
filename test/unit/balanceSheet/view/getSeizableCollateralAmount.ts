@@ -3,21 +3,9 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 import fp from "evm-fp";
 
-import {
-  DEFAULT_LIQUIDATION_INCENTIVE,
-  NORMALIZED_USDC_PRICE,
-  NORMALIZED_WBTC_PRICE,
-} from "../../../../helpers/constants";
-import { bn, precisionScalarForDecimals } from "../../../../helpers/numbers";
-import { prbDiv, prbMul } from "../../../shared/mirrors";
-
-function getSeizableCollateralAmount(repayAmount: BigNumber, collateralDecimals: BigNumber): BigNumber {
-  const numerator: BigNumber = prbMul(prbMul(repayAmount, DEFAULT_LIQUIDATION_INCENTIVE), NORMALIZED_USDC_PRICE);
-  const normalizedSeizableCollateralAmount: BigNumber = prbDiv(numerator, NORMALIZED_WBTC_PRICE);
-  const precisionScalar: BigNumber = precisionScalarForDecimals(collateralDecimals);
-  const seizableCollateralAmount: BigNumber = normalizedSeizableCollateralAmount.div(precisionScalar);
-  return seizableCollateralAmount;
-}
+import { DEFAULT_LIQUIDATION_INCENTIVE, NORMALIZED_WBTC_PRICE } from "../../../../helpers/constants";
+import { bn } from "../../../../helpers/numbers";
+import { getSeizableCollateralAmount } from "../../../shared/mirrors";
 
 export default function shouldBehaveLikeGetSeizableCollateralAmount(): void {
   context("when the liquidation incentive is zero", function () {
@@ -71,7 +59,9 @@ export default function shouldBehaveLikeGetSeizableCollateralAmount(): void {
             repayAmount,
             this.mocks.wbtc.address,
           );
-          expect(seizableCollateralAmount).to.equal(getSeizableCollateralAmount(repayAmount, collateralDecimals));
+          expect(seizableCollateralAmount).to.equal(
+            getSeizableCollateralAmount(repayAmount, NORMALIZED_WBTC_PRICE, collateralDecimals),
+          );
         });
       });
 
@@ -88,7 +78,9 @@ export default function shouldBehaveLikeGetSeizableCollateralAmount(): void {
             repayAmount,
             this.mocks.wbtc.address,
           );
-          expect(seizableCollateralAmount).to.equal(getSeizableCollateralAmount(repayAmount, collateralDecimals));
+          expect(seizableCollateralAmount).to.equal(
+            getSeizableCollateralAmount(repayAmount, NORMALIZED_WBTC_PRICE, collateralDecimals),
+          );
         });
       });
     });

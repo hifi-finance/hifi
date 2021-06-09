@@ -249,7 +249,7 @@ contract BalanceSheet is
             getHypotheticalAccountLiquidity(msg.sender, IErc20(address(0x00)), 0, bond, newDebtAmount);
         require(hypotheticalShortfallLiquidity == 0, "LIQUIDITY_SHORTFALL");
 
-        // Effects: increase the debt.
+        // Effects: increase the amount of debt in the vault.
         vaults[msg.sender].debtAmounts[bond] = newDebtAmount;
 
         // Interactions: print the new hTokens into existence.
@@ -272,7 +272,7 @@ contract BalanceSheet is
             vaults[msg.sender].collateralList.push(collateral);
         }
 
-        // Effects: increase the collateral amount.
+        // Effects: increase the amount of collateral in the vault.
         vaults[msg.sender].collateralAmounts[collateral] += depositAmount;
 
         // Interactions: perform the Erc20 transfer.
@@ -299,7 +299,7 @@ contract BalanceSheet is
         if (bond.isMatured() == false) {
             // Checks: the borrower has a shortfall of liquidity.
             (, uint256 shortfallLiquidity) = getCurrentAccountLiquidity(borrower);
-            require(shortfallLiquidity == 0, "ACCOUNT_NOT_UNDERWATER");
+            require(shortfallLiquidity > 0, "LIQUIDATE_BORROW_NO_LIQUIDITY_SHORTFALL");
         }
 
         // Checks: there is enough collateral.
@@ -315,6 +315,14 @@ contract BalanceSheet is
         // Calculate the new collateral amount.
         uint256 newCollateralAmount;
         unchecked { newCollateralAmount = vaults[borrower].collateralAmounts[collateral] - seizableCollateralAmount; }
+
+        // Effects: decrease the amount of collateral in the vault.
+        vaults[borrower].collateralAmounts[collateral] = newCollateralAmount;
+
+        // Effects: delete the collateral from the redundant list, if the resultant amount of collateral is zero.
+        if (newCollateralAmount == 0) {
+            removeCollateralFromList(borrower, collateral);
+        }
 
         // Interactions: seize the collateral.
         collateral.safeTransfer(msg.sender, seizableCollateralAmount);
@@ -364,7 +372,7 @@ contract BalanceSheet is
             require(hypotheticalShortfallLiquidity == 0, "LIQUIDITY_SHORTFALL");
         }
 
-        // Effects: decrease the collateral amount.
+        // Effects: decrease the amount of collateral in the vault.
         vaults[msg.sender].collateralAmounts[collateral] = newCollateralAmount;
 
         // Effects: delete the collateral from the redundant list, if the resultant amount of collateral is zero.
@@ -449,7 +457,7 @@ contract BalanceSheet is
         // Checks: the payer has enough hTokens.
         require(bond.balanceOf(payer) >= repayAmount, "REPAY_BORROW_INSUFFICIENT_BALANCE");
 
-        // Effects: decrease the debt.
+        // Effects: decrease the amount of debt in the vault.
         uint256 newDebtAmount;
         unchecked {
             newDebtAmount = vaults[borrower].debtAmounts[bond] - repayAmount;

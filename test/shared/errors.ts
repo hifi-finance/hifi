@@ -3,14 +3,15 @@ export enum AdminErrors {
 }
 
 export enum BalanceSheetErrors {
-  AccountNotUnderwater = "ACCOUNT_NOT_UNDERWATER",
   BorrowDebtCeilingOverflow = "BORROW_DEBT_CEILING_OVERFLOW",
   BorrowMaxBounds = "BORROW_MAX_BONDS",
   BorrowNotAllowed = "BORROW_NOT_ALLOWED",
   BorrowZero = "BORROW_ZERO",
   DepositCollateralNotAllowed = "DEPOSIT_COLLATERAL_NOT_ALLOWED",
   DepositCollateralZero = "DEPOSIT_COLLATERAL_ZERO",
+  LiquidateBorrowCollateralUnderflow = "LIQUIDATE_BORROW_COLLATERAL_UNDERFLOW",
   LiquidateBorrowNotAllowed = "LIQUIDATE_BORROW_NOT_ALLOWED",
+  LiquidateBorrowNoLiquidityShortfall = "LIQUIDATE_BORROW_NO_LIQUIDITY_SHORTFALL",
   LiquidateBorrowSelf = "LIQUIDATE_BORROW_SELF",
   LiquidateBorrowZero = "LIQUIDATE_BORROW_ZERO",
   LiquidityShortfall = "LIQUIDITY_SHORTFALL",

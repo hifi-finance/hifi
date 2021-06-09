@@ -1,5 +1,6 @@
 import shouldBehaveLikeBorrow from "./effects/borrow";
 import shouldBehaveLikeDepositCollateral from "./effects/depositCollateral";
+import shouldBehaveLikeLiquidateBorrow from "./effects/liquidateBorrow";
 import shouldBehaveLikeRepayBorrow from "./effects/repayBorrow";
 import shouldBehaveLikeRepayBorrowBehalf from "./effects/repayBorrowBehalf";
 import shouldBehaveLikeSetOracle from "./effects/setOracle";
@@ -60,6 +61,10 @@ export function shouldBehaveLikeBalanceSheet(): void {
 
     describe("depositCollateral", function () {
       shouldBehaveLikeDepositCollateral();
+    });
+
+    describe("liquidateBorrow", function () {
+      shouldBehaveLikeLiquidateBorrow();
     });
 
     describe("repayBorrow", function () {

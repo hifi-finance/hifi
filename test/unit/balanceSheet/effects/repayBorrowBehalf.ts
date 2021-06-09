@@ -23,7 +23,7 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
   });
 
   context("when the borrower owes a debt", function () {
-    const borrowAmount: BigNumber = repayAmount;
+    const debtAmount: BigNumber = repayAmount;
 
     beforeEach(async function () {
       await this.contracts.balanceSheet.__godMode_setBondList(this.signers.borrower.address, [
@@ -32,7 +32,7 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
       await this.contracts.balanceSheet.__godMode_setDebtAmount(
         this.signers.borrower.address,
         this.mocks.hTokens[0].address,
-        borrowAmount,
+        debtAmount,
       );
     });
 
@@ -53,7 +53,7 @@ export default function shouldBehaveLikeRepayBorrowBehalf(): void {
 
     context("when the caller has enough hTokens", function () {
       beforeEach(async function () {
-        const hTokenBalance: BigNumber = borrowAmount;
+        const hTokenBalance: BigNumber = debtAmount;
         await this.mocks.hTokens[0].mock.balanceOf.withArgs(this.signers.maker.address).returns(hTokenBalance);
 
         const burnAmount: BigNumber = repayAmount;

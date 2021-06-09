@@ -3,12 +3,15 @@ import { Zero } from "@ethersproject/constants";
 import fp from "evm-fp";
 
 import {
+  DEFAULT_LIQUIDATION_INCENTIVE,
+  NORMALIZED_USDC_PRICE,
   NORMALIZED_WBTC_PRICE,
   NORMALIZED_WETH_PRICE,
   WBTC_COLLATERALIZATION_RATIO,
   WBTC_PRECISION_SCALAR,
   WETH_COLLATERALIZATION_RATIO,
 } from "../../helpers/constants";
+import { precisionScalarForDecimals } from "../../helpers/numbers";
 
 const SCALE = fp("1");
 const HALF_SCALE = fp("0.5");
@@ -57,6 +60,19 @@ export function getHypotheticalAccountLiquidity(
       shortfallLiquidity: totalDebtValueUsd.sub(totalWeightedCollateralValueUsd),
     };
   }
+}
+
+export function getSeizableCollateralAmount(
+  repayAmount: BigNumber,
+  wbtcPrice: BigNumber,
+  collateralDecimals: BigNumber = BigNumber.from(8),
+  liquidationIncentive: BigNumber = DEFAULT_LIQUIDATION_INCENTIVE,
+): BigNumber {
+  const numerator: BigNumber = prbMul(prbMul(repayAmount, liquidationIncentive), NORMALIZED_USDC_PRICE);
+  const normalizedSeizableCollateralAmount: BigNumber = prbDiv(numerator, wbtcPrice);
+  const precisionScalar: BigNumber = precisionScalarForDecimals(collateralDecimals);
+  const seizableCollateralAmount: BigNumber = normalizedSeizableCollateralAmount.div(precisionScalar);
+  return seizableCollateralAmount;
 }
 
 export function weighWbtc(
