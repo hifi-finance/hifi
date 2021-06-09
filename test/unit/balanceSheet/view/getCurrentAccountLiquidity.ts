@@ -17,8 +17,8 @@ export default function shouldBehaveLikeGetCurrentAccountLiquidity(): void {
   });
 
   context("when two deposits were made", function () {
-    const wbtcAmount: BigNumber = wbtc("1");
-    const wethAmount: BigNumber = weth("10");
+    const wbtcDepositAmount: BigNumber = wbtc("1");
+    const wethDepositAmount: BigNumber = weth("10");
 
     beforeEach(async function () {
       // Mock the necessary methods.
@@ -37,19 +37,19 @@ export default function shouldBehaveLikeGetCurrentAccountLiquidity(): void {
       await this.contracts.balanceSheet.__godMode_setCollateralAmount(
         this.signers.borrower.address,
         this.mocks.wbtc.address,
-        wbtcAmount,
+        wbtcDepositAmount,
       );
       await this.contracts.balanceSheet.__godMode_setCollateralAmount(
         this.signers.borrower.address,
         this.mocks.weth.address,
-        wethAmount,
+        wethDepositAmount,
       );
     });
 
     context("when no borrow was made", function () {
       it("returns the correct values", async function () {
         const result = await this.contracts.balanceSheet.getCurrentAccountLiquidity(this.signers.borrower.address);
-        const expected = getHypotheticalAccountLiquidity([wbtcAmount, wethAmount], []);
+        const expected = getHypotheticalAccountLiquidity([wbtcDepositAmount, wethDepositAmount], []);
         expect(result.excessLiquidity).to.equal(expected.excessLiquidity);
         expect(result.shortfallLiquidity).to.equal(expected.shortfallLiquidity);
       });
@@ -77,7 +77,7 @@ export default function shouldBehaveLikeGetCurrentAccountLiquidity(): void {
 
       it("returns the correct values", async function () {
         const result = await this.contracts.balanceSheet.getCurrentAccountLiquidity(this.signers.borrower.address);
-        const expected = getHypotheticalAccountLiquidity([wbtcAmount, wethAmount], debtAmounts);
+        const expected = getHypotheticalAccountLiquidity([wbtcDepositAmount, wethDepositAmount], debtAmounts);
         expect(result.excessLiquidity).to.equal(expected.excessLiquidity);
         expect(result.shortfallLiquidity).to.equal(expected.shortfallLiquidity);
       });

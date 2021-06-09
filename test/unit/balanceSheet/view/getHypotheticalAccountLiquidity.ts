@@ -29,8 +29,8 @@ export default function shouldBehaveLikeGetHypotheticalAccountLiquidity(): void 
   });
 
   context("when two deposits were made", function () {
-    const wbtcAmount: BigNumber = wbtc("1");
-    const wethAmount: BigNumber = weth("10");
+    const wbtcDepositAmount: BigNumber = wbtc("1");
+    const wethDepositAmount: BigNumber = weth("10");
 
     beforeEach(async function () {
       // Mock the necessary methods.
@@ -49,12 +49,12 @@ export default function shouldBehaveLikeGetHypotheticalAccountLiquidity(): void 
       await this.contracts.balanceSheet.__godMode_setCollateralAmount(
         this.signers.borrower.address,
         this.mocks.wbtc.address,
-        wbtcAmount,
+        wbtcDepositAmount,
       );
       await this.contracts.balanceSheet.__godMode_setCollateralAmount(
         this.signers.borrower.address,
         this.mocks.weth.address,
-        wethAmount,
+        wethDepositAmount,
       );
     });
 
@@ -70,13 +70,13 @@ export default function shouldBehaveLikeGetHypotheticalAccountLiquidity(): void 
         "takes (%e,%e) and returns the correct values",
         async function (collateralAmountModify: BigNumber, debtAmountModify: BigNumber) {
           let collateralModify: string;
-          let chosenWethAmount: BigNumber;
+          let chosenWethDepositAmount: BigNumber;
           if (collateralAmountModify.isZero()) {
             collateralModify = AddressZero;
-            chosenWethAmount = wethAmount;
+            chosenWethDepositAmount = wethDepositAmount;
           } else {
             collateralModify = this.mocks.weth.address;
-            chosenWethAmount = collateralAmountModify;
+            chosenWethDepositAmount = collateralAmountModify;
           }
 
           let bondModify: string;
@@ -99,7 +99,10 @@ export default function shouldBehaveLikeGetHypotheticalAccountLiquidity(): void 
             bondModify,
             debtAmountModify,
           );
-          const expected = getHypotheticalAccountLiquidity([wbtcAmount, chosenWethAmount], [chosenDebtAmount]);
+          const expected = getHypotheticalAccountLiquidity(
+            [wbtcDepositAmount, chosenWethDepositAmount],
+            [chosenDebtAmount],
+          );
           expect(result.excessLiquidity).to.equal(expected.excessLiquidity);
           expect(result.shortfallLiquidity).to.equal(expected.shortfallLiquidity);
         },
@@ -137,13 +140,13 @@ export default function shouldBehaveLikeGetHypotheticalAccountLiquidity(): void 
         "takes (%e,%e) and returns the correct values",
         async function (collateralAmountModify: BigNumber, debtAmountModify: BigNumber) {
           let collateralModify: string;
-          let chosenWethAmount: BigNumber;
+          let chosenWethDepositAmount: BigNumber;
           if (collateralAmountModify.isZero()) {
             collateralModify = AddressZero;
-            chosenWethAmount = wethAmount;
+            chosenWethDepositAmount = wethDepositAmount;
           } else {
             collateralModify = this.mocks.weth.address;
-            chosenWethAmount = collateralAmountModify;
+            chosenWethDepositAmount = collateralAmountModify;
           }
 
           let bondModify: string;
@@ -164,7 +167,7 @@ export default function shouldBehaveLikeGetHypotheticalAccountLiquidity(): void 
             debtAmountModify,
           );
           const expected = getHypotheticalAccountLiquidity(
-            [wbtcAmount, chosenWethAmount],
+            [wbtcDepositAmount, chosenWethDepositAmount],
             [debtAmounts[0], chosenDebtAmount],
           );
 

@@ -13,10 +13,21 @@ import {
   WETH_SYMBOL,
 } from "../../helpers/constants";
 import { ChainlinkOperator } from "../../typechain/ChainlinkOperator";
+import { Erc20Mintable } from "../../typechain/Erc20Mintable";
 import { Fintroller } from "../../typechain/Fintroller";
 import { GodModeBalanceSheet } from "../../typechain/GodModeBalanceSheet";
 import { GodModeHToken } from "../../typechain/GodModeHToken";
-import { deployChainlinkOperator, deployFintroller, deployGodModeBalanceSheet, deployGodModeHToken } from "./deployers";
+import { SimplePriceFeed } from "../../typechain/SimplePriceFeed";
+import {
+  deployChainlinkOperator,
+  deployFintroller,
+  deployGodModeBalanceSheet,
+  deployGodModeHToken,
+  deployUsdc,
+  deployUsdcPriceFeed,
+  deployWbtc,
+  deployWbtcPriceFeed,
+} from "./deployers";
 import {
   deployMockBalanceSheet,
   deployMockChainlinkOperator,
@@ -27,6 +38,56 @@ import {
   deployMockWbtc,
   deployMockWeth,
 } from "./mocks";
+
+type IntegrationFixtureReturnType = {
+  balanceSheet: GodModeBalanceSheet;
+  fintroller: Fintroller;
+  hTokens: GodModeHToken[];
+  oracle: ChainlinkOperator;
+  usdc: Erc20Mintable;
+  usdcPriceFeed: SimplePriceFeed;
+  wbtc: Erc20Mintable;
+  wbtcPriceFeed: SimplePriceFeed;
+};
+
+export async function integrationFixture(signers: Signer[]): Promise<IntegrationFixtureReturnType> {
+  const deployer: Signer = signers[0];
+
+  const usdc: Erc20Mintable = await deployUsdc(deployer);
+  const usdcPriceFeed: SimplePriceFeed = await deployUsdcPriceFeed(deployer);
+
+  const wbtc: Erc20Mintable = await deployWbtc(deployer);
+  const wbtcPriceFeed: SimplePriceFeed = await deployWbtcPriceFeed(deployer);
+
+  const oracle: ChainlinkOperator = await deployChainlinkOperator(deployer);
+  await oracle.setFeed(usdc.address, usdcPriceFeed.address);
+  await oracle.setFeed(wbtc.address, wbtcPriceFeed.address);
+
+  const fintroller: Fintroller = await deployFintroller(deployer);
+  const balanceSheet: GodModeBalanceSheet = await deployGodModeBalanceSheet(
+    deployer,
+    fintroller.address,
+    oracle.address,
+  );
+  await balanceSheet.connect(deployer).setOracle(oracle.address);
+  const hToken: GodModeHToken = await deployGodModeHToken(
+    deployer,
+    H_TOKEN_EXPIRATION_TIMES[0],
+    balanceSheet.address,
+    usdc.address,
+  );
+
+  return {
+    balanceSheet,
+    fintroller,
+    hTokens: [hToken],
+    oracle,
+    usdc,
+    usdcPriceFeed,
+    wbtc,
+    wbtcPriceFeed,
+  };
+}
 
 type UnitFixtureBalanceSheetReturnType = {
   balanceSheet: GodModeBalanceSheet;

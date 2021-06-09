@@ -106,8 +106,8 @@ export default function shouldBehaveLikeBorrow(): void {
           });
 
           context("when the borrow does not exceed the max bonds", function () {
-            const wbtcAmount: BigNumber = wbtc("1");
-            const wethAmount: BigNumber = weth("10");
+            const wbtcDepositAmount: BigNumber = wbtc("1");
+            const wethDepositAmount: BigNumber = weth("10");
 
             beforeEach(async function () {
               const maxBonds: BigNumber = DEFAULT_MAX_BONDS;
@@ -139,7 +139,7 @@ export default function shouldBehaveLikeBorrow(): void {
                   await this.contracts.balanceSheet.__godMode_setCollateralAmount(
                     this.signers.borrower.address,
                     this.mocks.wbtc.address,
-                    wbtcAmount,
+                    wbtcDepositAmount,
                   );
                 });
 
@@ -172,12 +172,12 @@ export default function shouldBehaveLikeBorrow(): void {
                 await this.contracts.balanceSheet.__godMode_setCollateralAmount(
                   this.signers.borrower.address,
                   this.mocks.wbtc.address,
-                  wbtcAmount,
+                  wbtcDepositAmount,
                 );
                 await this.contracts.balanceSheet.__godMode_setCollateralAmount(
                   this.signers.borrower.address,
                   this.mocks.weth.address,
-                  wethAmount,
+                  wethDepositAmount,
                 );
               });
 

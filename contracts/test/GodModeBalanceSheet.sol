@@ -16,6 +16,14 @@ contract GodModeBalanceSheet is BalanceSheet {
         // solhint-disable-previous-line no-empty-blocks
     }
 
+    function __godMode_burnHTokens(IHToken bond, uint256 burnAmount) external {
+        bond.burn(msg.sender, burnAmount);
+    }
+
+    function __godMode_mintHTokens(IHToken bond, uint256 mintAmount) external {
+        bond.mint(msg.sender, mintAmount);
+    }
+
     function __godMode_setBondList(address account, IHToken[] memory bondList) external {
         vaults[account].bondList = bondList;
     }

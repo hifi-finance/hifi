@@ -76,16 +76,16 @@ export function getSeizableCollateralAmount(
 }
 
 export function weighWbtc(
-  wbtcAmount: BigNumber,
+  wbtcDepositAmount: BigNumber,
   collateralizationRatio: BigNumber = WBTC_COLLATERALIZATION_RATIO,
 ): BigNumber {
-  const normalizedWbtcAmount: BigNumber = wbtcAmount.mul(WBTC_PRECISION_SCALAR);
+  const normalizedWbtcAmount: BigNumber = wbtcDepositAmount.mul(WBTC_PRECISION_SCALAR);
   return prbDiv(prbMul(normalizedWbtcAmount, NORMALIZED_WBTC_PRICE), collateralizationRatio);
 }
 
 export function weighWeth(
-  wethAmount: BigNumber,
+  wethDepositAmount: BigNumber,
   collateralizationRatio: BigNumber = WETH_COLLATERALIZATION_RATIO,
 ): BigNumber {
-  return prbDiv(prbMul(wethAmount, NORMALIZED_WETH_PRICE), collateralizationRatio);
+  return prbDiv(prbMul(wethDepositAmount, NORMALIZED_WETH_PRICE), collateralizationRatio);
 }

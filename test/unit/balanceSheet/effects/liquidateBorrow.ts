@@ -16,7 +16,7 @@ import { getSeizableCollateralAmount } from "../../../shared/mirrors";
 export default function shouldBehaveLikeLiquidateBorrow(): void {
   const lowWbtcPrice: BigNumber = fp("29999");
   const repayAmount: BigNumber = fp("15000");
-  const wbtcAmount: BigNumber = wbtc("1");
+  const wbtcDepositAmount: BigNumber = wbtc("1");
 
   const debtAmount = repayAmount;
   const seizedWbtcAmount: BigNumber = getSeizableCollateralAmount(repayAmount, lowWbtcPrice);
@@ -112,7 +112,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
             await this.contracts.balanceSheet.__godMode_setCollateralAmount(
               this.signers.borrower.address,
               this.mocks.wbtc.address,
-              wbtcAmount,
+              wbtcDepositAmount,
             );
 
             // Make the borrow.
@@ -129,7 +129,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
             await this.mocks.oracle.mock.getNormalizedPrice.withArgs(WBTC_SYMBOL).returns(lowWbtcPrice);
           });
 
-          it("liquidates the borrow", async function () {
+          it("makes the borrow liquidation", async function () {
             await this.contracts.balanceSheet
               .connect(this.signers.liquidator)
               .liquidateBorrow(
@@ -148,7 +148,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
               this.signers.borrower.address,
               this.mocks.wbtc.address,
             );
-            expect(collateralAmount).to.be.equal(wbtcAmount.sub(seizedWbtcAmount));
+            expect(collateralAmount).to.be.equal(wbtcDepositAmount.sub(seizedWbtcAmount));
           });
         });
       });
@@ -169,7 +169,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
           await this.contracts.balanceSheet.__godMode_setCollateralAmount(
             this.signers.borrower.address,
             this.mocks.wbtc.address,
-            wbtcAmount,
+            wbtcDepositAmount,
           );
 
           // Make the borrow.
@@ -281,7 +281,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
                   .returns(true);
               });
 
-              it("liquidates the borrower", async function () {
+              it("makes the borrow liquidation", async function () {
                 await this.contracts.balanceSheet
                   .connect(this.signers.liquidator)
                   .liquidateBorrow(
@@ -300,7 +300,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
                   this.signers.borrower.address,
                   this.mocks.wbtc.address,
                 );
-                expect(collateralAmount).to.be.equal(wbtcAmount.sub(seizedWbtcAmount));
+                expect(collateralAmount).to.be.equal(wbtcDepositAmount.sub(seizedWbtcAmount));
               });
 
               it("emits a LiquidateBorrow event", async function () {
