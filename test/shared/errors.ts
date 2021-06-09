@@ -13,7 +13,6 @@ export enum BalanceSheetErrors {
   LiquidateBorrowNotAllowed = "LIQUIDATE_BORROW_NOT_ALLOWED",
   LiquidateBorrowNoLiquidityShortfall = "LIQUIDATE_BORROW_NO_LIQUIDITY_SHORTFALL",
   LiquidateBorrowSelf = "LIQUIDATE_BORROW_SELF",
-  LiquidateBorrowZero = "LIQUIDATE_BORROW_ZERO",
   LiquidityShortfall = "LIQUIDITY_SHORTFALL",
   RepayBorrowInsufficientBalance = "REPAY_BORROW_INSUFFICIENT_BALANCE",
   RepayBorrowInsufficientDebt = "REPAY_BORROW_INSUFFICIENT_DEBT",
@@ -27,7 +26,6 @@ export enum BalanceSheetErrors {
 export enum ChainlinkOperatorErrors {
   FeedIncorrectDecimals = "FEED_DECIMALS_MISMATCH",
   FeedNotSet = "FEED_NOT_SET",
-  FeedSet = "FEED_SET",
   PriceZero = "PRICE_ZERO",
 }
 
@@ -45,9 +43,7 @@ export enum FintrollerErrors {
 export enum GenericErrors {
   BondMatured = "BOND_MATURED",
   BondNotListed = "BOND_NOT_LISTED",
-  BondNotMatured = "BOND_NOT_MATURED",
   CollateralNotListed = "COLLATERAL_NOT_LISTED",
-  NotInitialized = "NOT_INITALIZED",
 }
 
 export enum HTokenErrors {

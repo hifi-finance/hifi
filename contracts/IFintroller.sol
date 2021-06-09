@@ -189,7 +189,7 @@ interface IFintroller is IAdmin {
 
     /// @notice Marks the bond as listed in this registry.
     ///
-    /// @dev Emits a {ListBond} event. It is not an error to list a bond twice.
+    /// @dev It is not an error to list a bond twice. Emits a {ListBond} event.
     ///
     /// Requirements:
     /// - The caller must be the admin.
