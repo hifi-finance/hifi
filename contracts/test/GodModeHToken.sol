@@ -2,7 +2,7 @@
 // solhint-disable func-name-mixedcase
 pragma solidity >=0.8.0;
 
-import "../HToken.sol";
+import "../core/hToken/HToken.sol";
 
 /// @title GodModeHToken
 /// @author Hifi

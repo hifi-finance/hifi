@@ -7,9 +7,9 @@ import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/utils/ReentrancyGuard.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 
-import "./IFintrollerV1.sol";
-import "./IBalanceSheetV1.sol";
-import "./SBalanceSheetV1.sol";
+import "../fintroller/IFintrollerV1.sol";
+import "../balanceSheet/IBalanceSheetV1.sol";
+import "../balanceSheet/SBalanceSheetV1.sol";
 
 /// @title BalanceSheetV1
 /// @author Hifi

@@ -4,8 +4,8 @@ pragma solidity >=0.8.0;
 import "@paulrberg/contracts/access/IAdmin.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 
-import "./SFintrollerV1.sol";
-import "./IHToken.sol";
+import "../fintroller/SFintrollerV1.sol";
+import "../hToken/IHToken.sol";
 
 /// @notice IFintrollerV1
 /// @author Hifi

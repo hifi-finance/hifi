@@ -6,7 +6,7 @@ import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/IErc20Permit.sol";
 import "@paulrberg/contracts/token/erc20/IErc20Recover.sol";
 
-import "./IBalanceSheetV1.sol";
+import "../balanceSheet/IBalanceSheetV1.sol";
 
 /// @title IHToken
 /// @author Hifi

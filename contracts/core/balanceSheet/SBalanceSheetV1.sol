@@ -4,10 +4,10 @@ pragma solidity >=0.8.0;
 import "@paulrberg/contracts/access/IAdmin.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 
-import "./oracles/IChainlinkOperator.sol";
-import "./IBalanceSheetV1.sol";
-import "./IFintrollerV1.sol";
-import "./IHToken.sol";
+import "../balanceSheet/IBalanceSheetV1.sol";
+import "../fintroller/IFintrollerV1.sol";
+import "../hToken/IHToken.sol";
+import "../../oracles/IChainlinkOperator.sol";
 
 /// @title SBalanceSheetV1
 /// @author Hifi

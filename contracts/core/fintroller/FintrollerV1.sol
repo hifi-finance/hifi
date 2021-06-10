@@ -6,7 +6,7 @@ import "@paulrberg/contracts/token/erc20/IErc20.sol";
 
 import "./IFintrollerV1.sol";
 import "./SFintrollerV1.sol";
-import "./IHToken.sol";
+import "../hToken/IHToken.sol";
 
 /// @notice FintrollerV1
 /// @author Hifi

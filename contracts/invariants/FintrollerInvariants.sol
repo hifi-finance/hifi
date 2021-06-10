@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import "./BaseInvariants.sol";
-import "../FintrollerV1.sol";
+import "../core/fintroller/FintrollerV1.sol";
 
 contract CollateralLike {
     uint256 public constant totalSupply = 100e18;

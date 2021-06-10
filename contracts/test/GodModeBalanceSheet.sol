@@ -3,9 +3,9 @@ pragma solidity >=0.8.0;
 
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 
-import "../BalanceSheetV1.sol";
-import "../IFintrollerV1.sol";
-import "../IHToken.sol";
+import "../core/balanceSheet/BalanceSheetV1.sol";
+import "../core/fintroller/IFintrollerV1.sol";
+import "../core/hToken/IHToken.sol";
 import "../oracles/IChainlinkOperator.sol";
 
 /// @title GodModeBalanceSheet
