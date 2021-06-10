@@ -7,34 +7,26 @@ import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/utils/ReentrancyGuard.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 
-import "./IFintroller.sol";
-import "./IBalanceSheet.sol";
+import "./IFintrollerV1.sol";
+import "./IBalanceSheetV1.sol";
+import "./SBalanceSheetV1.sol";
 
-/// @title BalanceSheet
+/// @title BalanceSheetV1
 /// @author Hifi
-contract BalanceSheet is
-    ReentrancyGuard, /// no dependency
+/// @dev Due to the upgradeability pattern, we have to inherit from the storage contract last.
+contract BalanceSheetV1 is
+    ReentrancyGuard, // no dependency
     Admin, // one dependency
-    IBalanceSheet /// one dependency
+    IBalanceSheetV1, // one dependency
+    SBalanceSheetV1 // no dependency
 {
     using PRBMathUD60x18 for uint256;
     using SafeErc20 for IErc20;
 
-    /// STORAGE ///
-
-    /// @inheritdoc IBalanceSheet
-    IFintroller public override fintroller;
-
-    /// @inheritdoc IBalanceSheet
-    IChainlinkOperator public override oracle;
-
-    /// @dev Borrower vaults.
-    mapping(address => Vault) internal vaults;
-
     /// CONSTRUCTOR ///
 
     /// @param fintroller_ The address of the Fintroller contract.
-    constructor(IFintroller fintroller_, IChainlinkOperator oracle_) Admin() {
+    constructor(IFintrollerV1 fintroller_, IChainlinkOperator oracle_) Admin() {
         // Set the Fintroller contract.
         fintroller = fintroller_;
 
@@ -44,12 +36,12 @@ contract BalanceSheet is
 
     /// PUBLIC CONSTANT FUNCTIONS ///
 
-    /// @inheritdoc IBalanceSheet
+    /// @inheritdoc IBalanceSheetV1
     function getBondList(address account) external view override returns (IHToken[] memory) {
         return vaults[account].bondList;
     }
 
-    /// @inheritdoc IBalanceSheet
+    /// @inheritdoc IBalanceSheetV1
     function getCollateralAmount(address account, IErc20 collateral)
         external
         view
@@ -59,12 +51,12 @@ contract BalanceSheet is
         return vaults[account].collateralAmounts[collateral];
     }
 
-    /// @inheritdoc IBalanceSheet
+    /// @inheritdoc IBalanceSheetV1
     function getCollateralList(address account) external view override returns (IErc20[] memory) {
         return vaults[account].collateralList;
     }
 
-    /// @inheritdoc IBalanceSheet
+    /// @inheritdoc IBalanceSheetV1
     function getSeizableCollateralAmount(
         IHToken bond,
         uint256 repayAmount,
@@ -97,7 +89,7 @@ contract BalanceSheet is
         }
     }
 
-    /// @inheritdoc IBalanceSheet
+    /// @inheritdoc IBalanceSheetV1
     function getCurrentAccountLiquidity(address account)
         public
         view
@@ -107,7 +99,7 @@ contract BalanceSheet is
         return getHypotheticalAccountLiquidity(account, IErc20(address(0x00)), 0, IHToken(address(0x00)), 0);
     }
 
-    /// @inheritdoc IBalanceSheet
+    /// @inheritdoc IBalanceSheetV1
     function getDebtAmount(address account, IHToken bond) external view override returns (uint256 debtAmount) {
         return vaults[account].debtAmounts[bond];
     }
@@ -129,7 +121,7 @@ contract BalanceSheet is
         uint256 weightedCollateralValueUsd;
     }
 
-    /// @inheritdoc IBalanceSheet
+    /// @inheritdoc IBalanceSheetV1
     function getHypotheticalAccountLiquidity(
         address account,
         IErc20 collateralModify,
@@ -237,7 +229,7 @@ contract BalanceSheet is
             // Checks: below max bonds limit.
             unchecked {
                 uint256 bondListLength = vaults[msg.sender].bondList.length;
-                require(bondListLength + 1 <= fintroller.maxBonds(), "BORROW_MAX_BONDS");
+                require(bondListLength + 1 <= SFintrollerV1(address(fintroller)).maxBonds(), "BORROW_MAX_BONDS");
             }
             vaults[msg.sender].bondList.push(bond);
         }
@@ -257,7 +249,7 @@ contract BalanceSheet is
         emit Borrow(msg.sender, bond, borrowAmount);
     }
 
-    /// @inheritdoc IBalanceSheet
+    /// @inheritdoc IBalanceSheetV1
     function depositCollateral(IErc20 collateral, uint256 depositAmount) external override {
         // Checks: the Fintroller allows this action to be performed.
         require(fintroller.getDepositCollateralAllowed(collateral), "DEPOSIT_COLLATERAL_NOT_ALLOWED");
@@ -280,7 +272,7 @@ contract BalanceSheet is
         emit DepositCollateral(msg.sender, collateral, depositAmount);
     }
 
-    /// @inheritdoc IBalanceSheet
+    /// @inheritdoc IBalanceSheetV1
     function liquidateBorrow(
         address borrower,
         IHToken bond,
@@ -329,12 +321,12 @@ contract BalanceSheet is
         emit LiquidateBorrow(msg.sender, borrower, bond, repayAmount, collateral, seizableCollateralAmount);
     }
 
-    /// @inheritdoc IBalanceSheet
+    /// @inheritdoc IBalanceSheetV1
     function repayBorrow(IHToken bond, uint256 repayAmount) external override nonReentrant {
         repayBorrowInternal(msg.sender, msg.sender, bond, repayAmount);
     }
 
-    /// @inheritdoc IBalanceSheet
+    /// @inheritdoc IBalanceSheetV1
     function repayBorrowBehalf(
         address borrower,
         IHToken bond,
@@ -343,7 +335,7 @@ contract BalanceSheet is
         repayBorrowInternal(msg.sender, borrower, bond, repayAmount);
     }
 
-    /// @inheritdoc IBalanceSheet
+    /// @inheritdoc IBalanceSheetV1
     function setOracle(IChainlinkOperator newOracle) external override onlyAdmin {
         require(address(newOracle) != address(0x00), "SET_ORACLE_ZERO_ADDRESS");
         address oldOracle = address(oracle);
@@ -351,7 +343,7 @@ contract BalanceSheet is
         emit SetOracle(admin, oldOracle, address(newOracle));
     }
 
-    /// @inheritdoc IBalanceSheet
+    /// @inheritdoc IBalanceSheetV1
     function withdrawCollateral(IErc20 collateral, uint256 withdrawAmount) external override nonReentrant {
         // Checks: the zero edge case.
         require(withdrawAmount > 0, "WITHDRAW_COLLATERAL_ZERO");

@@ -7,23 +7,23 @@ import "@paulrberg/contracts/token/erc20/Erc20Permit.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Recover.sol";
 import "@paulrberg/contracts/utils/ReentrancyGuard.sol";
 
-import "./IBalanceSheet.sol";
+import "./IBalanceSheetV1.sol";
 import "./IHToken.sol";
 
 /// @title HToken
 /// @author Hifi
 contract HToken is
-    ReentrancyGuard, /// no dependency
-    Admin, /// one dependency
-    Erc20, /// one dependency
-    Erc20Permit, /// four dependencies
-    IHToken, /// five dependencies
-    Erc20Recover /// five dependencies
+    ReentrancyGuard, // no dependency
+    Admin, // one dependency
+    Erc20, // one dependency
+    Erc20Permit, // four dependencies
+    IHToken, // five dependencies
+    Erc20Recover // five dependencies
 {
     /// STORAGE ///
 
     /// @inheritdoc IHToken
-    IBalanceSheet public override balanceSheet;
+    IBalanceSheetV1 public override balanceSheet;
 
     /// @inheritdoc IHToken
     uint256 public override expirationTime;
@@ -46,7 +46,7 @@ contract HToken is
         string memory name_,
         string memory symbol_,
         uint256 expirationTime_,
-        IBalanceSheet balanceSheet_,
+        IBalanceSheetV1 balanceSheet_,
         IErc20 underlying_
     ) Erc20Permit(name_, symbol_, 18) Admin() {
         // Set the unix expiration time.
@@ -106,9 +106,9 @@ contract HToken is
     }
 
     /// @inheritdoc IHToken
-    function _setBalanceSheet(IBalanceSheet newBalanceSheet) external override onlyAdmin {
+    function _setBalanceSheet(IBalanceSheetV1 newBalanceSheet) external override onlyAdmin {
         // Effects: update storage.
-        IBalanceSheet oldBalanceSheet = balanceSheet;
+        IBalanceSheetV1 oldBalanceSheet = balanceSheet;
         balanceSheet = newBalanceSheet;
 
         emit SetBalanceSheet(admin, oldBalanceSheet, newBalanceSheet);

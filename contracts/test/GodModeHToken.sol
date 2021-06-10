@@ -12,7 +12,7 @@ contract GodModeHToken is HToken {
         string memory name_,
         string memory symbol_,
         uint256 expirationTime_,
-        IBalanceSheet balanceSheet_,
+        IBalanceSheetV1 balanceSheet_,
         IErc20 underlying_
     ) HToken(name_, symbol_, expirationTime_, balanceSheet_, underlying_) {
         // solhint-disable-previous-line no-empty-blocks

@@ -14,7 +14,7 @@ import {
 } from "../../helpers/constants";
 import { ChainlinkOperator } from "../../typechain/ChainlinkOperator";
 import { Erc20Mintable } from "../../typechain/Erc20Mintable";
-import { Fintroller } from "../../typechain/Fintroller";
+import { FintrollerV1 } from "../../typechain/FintrollerV1";
 import { GodModeBalanceSheet } from "../../typechain/GodModeBalanceSheet";
 import { GodModeHToken } from "../../typechain/GodModeHToken";
 import { SimplePriceFeed } from "../../typechain/SimplePriceFeed";
@@ -41,7 +41,7 @@ import {
 
 type IntegrationFixtureReturnType = {
   balanceSheet: GodModeBalanceSheet;
-  fintroller: Fintroller;
+  fintroller: FintrollerV1;
   hTokens: GodModeHToken[];
   oracle: ChainlinkOperator;
   usdc: Erc20Mintable;
@@ -63,7 +63,7 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
   await oracle.setFeed(usdc.address, usdcPriceFeed.address);
   await oracle.setFeed(wbtc.address, wbtcPriceFeed.address);
 
-  const fintroller: Fintroller = await deployFintroller(deployer);
+  const fintroller: FintrollerV1 = await deployFintroller(deployer);
   const balanceSheet: GodModeBalanceSheet = await deployGodModeBalanceSheet(
     deployer,
     fintroller.address,
@@ -152,14 +152,14 @@ export async function unitFixtureChainlinkOperator(signers: Signer[]): Promise<U
 }
 
 type UnitFixtureFintrollerReturnType = {
-  fintroller: Fintroller;
+  fintroller: FintrollerV1;
   hTokens: MockContract[];
   wbtc: MockContract;
 };
 
 export async function unitFixtureFintroller(signers: Signer[]): Promise<UnitFixtureFintrollerReturnType> {
   const deployer: Signer = signers[0];
-  const fintroller: Fintroller = await deployFintroller(deployer);
+  const fintroller: FintrollerV1 = await deployFintroller(deployer);
   const hToken: MockContract = await deployMockHToken(deployer, H_TOKEN_EXPIRATION_TIMES[0]);
   const wbtc: MockContract = await deployMockWbtc(deployer);
   return { fintroller, hTokens: [hToken], wbtc };

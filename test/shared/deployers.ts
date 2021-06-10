@@ -17,7 +17,7 @@ import { getDeployContractOverrides } from "../../helpers/env";
 import { price } from "../../helpers/numbers";
 import { ChainlinkOperator } from "../../typechain/ChainlinkOperator";
 import { Erc20Mintable } from "../../typechain/Erc20Mintable";
-import { Fintroller } from "../../typechain/Fintroller";
+import { FintrollerV1 } from "../../typechain/FintrollerV1";
 import { GodModeBalanceSheet } from "../../typechain/GodModeBalanceSheet";
 import { GodModeHToken } from "../../typechain/GodModeHToken";
 import { HToken } from "../../typechain/HToken";
@@ -34,10 +34,10 @@ export async function deployChainlinkOperator(deployer: Signer): Promise<Chainli
   return chainlinkOperator;
 }
 
-export async function deployFintroller(deployer: Signer): Promise<Fintroller> {
-  const fintrollerArtifact: Artifact = await hre.artifacts.readArtifact("Fintroller");
-  const fintroller: Fintroller = <Fintroller>await deployContract(deployer, fintrollerArtifact, [], overrides);
-  return fintroller;
+export async function deployFintroller(deployer: Signer): Promise<FintrollerV1> {
+  const fintrollerV1Artifact: Artifact = await hre.artifacts.readArtifact("FintrollerV1");
+  const fintrollerV1: FintrollerV1 = <FintrollerV1>await deployContract(deployer, fintrollerV1Artifact, [], overrides);
+  return fintrollerV1;
 }
 
 export async function deployHToken(

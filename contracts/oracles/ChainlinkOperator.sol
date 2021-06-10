@@ -9,8 +9,8 @@ import "./IChainlinkOperator.sol";
 /// @title ChainlinkOperator
 /// @author Hifi
 contract ChainlinkOperator is
-    IChainlinkOperator, /// no dependency
-    Admin /// one dependency
+    IChainlinkOperator, // no dependency
+    Admin // one dependency
 {
     /// STORAGE ///
 

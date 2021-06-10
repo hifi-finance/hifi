@@ -2,19 +2,19 @@
 pragma solidity >=0.8.0;
 
 import "./BaseInvariants.sol";
-import "../Fintroller.sol";
+import "../FintrollerV1.sol";
 
 contract CollateralLike {
     uint256 public constant totalSupply = 100e18;
 }
 
 contract FintrollerInvariants is
-    BaseInvariants, /// no dependency
-    Fintroller /// four dependencies
+    BaseInvariants, // no dependency
+    FintrollerV1 // four dependencies
 {
     IErc20 private collateral;
 
-    constructor() Fintroller() {
+    constructor() FintrollerV1() {
         CollateralLike collateralLike = new CollateralLike();
         collateral = IErc20(address(collateralLike));
     }

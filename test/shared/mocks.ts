@@ -23,9 +23,9 @@ import { getHTokenName, getHTokenSymbol } from "../../helpers/contracts";
 const { deployMockContract } = hre.waffle;
 
 export async function deployMockBalanceSheet(deployer: Signer): Promise<MockContract> {
-  const balanceSheetArtifact: Artifact = await hre.artifacts.readArtifact("BalanceSheet");
-  const balanceSheet: MockContract = await deployMockContract(deployer, balanceSheetArtifact.abi);
-  return balanceSheet;
+  const balanceSheetV1Artifact: Artifact = await hre.artifacts.readArtifact("BalanceSheetV1");
+  const balanceSheetV1: MockContract = await deployMockContract(deployer, balanceSheetV1Artifact.abi);
+  return balanceSheetV1;
 }
 
 export async function deployMockChainlinkOperator(deployer: Signer): Promise<MockContract> {
@@ -50,9 +50,9 @@ export async function deployMockErc20(
 }
 
 export async function deployMockFintroller(deployer: Signer): Promise<MockContract> {
-  const fintrollerArtifact: Artifact = await hre.artifacts.readArtifact("Fintroller");
-  const fintroller: MockContract = await deployMockContract(deployer, fintrollerArtifact.abi);
-  return fintroller;
+  const fintrollerV1Artifact: Artifact = await hre.artifacts.readArtifact("FintrollerV1");
+  const fintrollerV1: MockContract = await deployMockContract(deployer, fintrollerV1Artifact.abi);
+  return fintrollerV1;
 }
 
 export async function deployMockHToken(deployer: Signer, expirationTime: BigNumber): Promise<MockContract> {

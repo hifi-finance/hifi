@@ -3,16 +3,16 @@ pragma solidity >=0.8.0;
 
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 
-import "../BalanceSheet.sol";
-import "../IFintroller.sol";
+import "../BalanceSheetV1.sol";
+import "../IFintrollerV1.sol";
 import "../IHToken.sol";
 import "../oracles/IChainlinkOperator.sol";
 
 /// @title GodModeBalanceSheet
 /// @author Hifi
 /// @dev Strictly for test purposes. Do not use in production.
-contract GodModeBalanceSheet is BalanceSheet {
-    constructor(IFintroller fintroller_, IChainlinkOperator oracle_) BalanceSheet(fintroller_, oracle_) {
+contract GodModeBalanceSheet is BalanceSheetV1 {
+    constructor(IFintrollerV1 fintroller_, IChainlinkOperator oracle_) BalanceSheetV1(fintroller_, oracle_) {
         // solhint-disable-previous-line no-empty-blocks
     }
 

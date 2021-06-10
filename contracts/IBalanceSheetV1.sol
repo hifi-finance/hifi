@@ -5,23 +5,14 @@ import "@paulrberg/contracts/access/IAdmin.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 
 import "./oracles/IChainlinkOperator.sol";
-import "./IFintroller.sol";
+import "./IFintrollerV1.sol";
 import "./IHToken.sol";
+import "./SBalanceSheetV1.sol";
 
-/// @title IBalanceSheet
+/// @title IBalanceSheetV1
 /// @author Hifi
 /// @notice Manages the collaterals and the debts for all users.
-interface IBalanceSheet is IAdmin {
-    /// STRUCTS ///
-
-    /// @notice Structure of a vault.
-    struct Vault {
-        IHToken[] bondList;
-        mapping(IErc20 => uint256) collateralAmounts;
-        IErc20[] collateralList;
-        mapping(IHToken => uint256) debtAmounts;
-    }
-
+interface IBalanceSheetV1 is IAdmin {
     /// EVENTS ///
 
     /// @notice Emitted when a borrow is made.
@@ -79,9 +70,6 @@ interface IBalanceSheet is IAdmin {
     event WithdrawCollateral(address indexed account, IErc20 indexed collateral, uint256 collateralAmount);
 
     /// CONSTANT FUNCTIONS ///
-
-    /// @notice The unique Fintroller associated with this contract.
-    function fintroller() external view returns (IFintroller);
 
     /// @notice Returns the list of bond markets the given account entered.
     /// @dev It is not an error to provide an invalid address.
@@ -152,9 +140,6 @@ interface IBalanceSheet is IAdmin {
         IHToken bondModify,
         uint256 debtAmountModify
     ) external view returns (uint256 excessLiquidity, uint256 shortfallLiquidity);
-
-    /// @notice The contract that provides price data.
-    function oracle() external view returns (IChainlinkOperator);
 
     /// NON-CONSTANT FUNCTIONS ///
 

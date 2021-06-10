@@ -4,30 +4,13 @@ pragma solidity >=0.8.0;
 import "@paulrberg/contracts/access/IAdmin.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 
+import "./SFintrollerV1.sol";
 import "./IHToken.sol";
 
-/// @notice IFintroller
+/// @notice IFintrollerV1
 /// @author Hifi
 /// @notice Controls the financial permissions and risk parameters for the Hifi protocol.
-interface IFintroller is IAdmin {
-    /// STRUCTS ///
-    struct Bond {
-        uint256 debtCeiling;
-        bool isBorrowAllowed;
-        bool isLiquidateBorrowAllowed;
-        bool isListed;
-        bool isRedeemHTokenAllowed;
-        bool isRepayBorrowAllowed;
-        bool isSupplyUnderlyingAllowed;
-    }
-
-    struct Collateral {
-        uint256 collateralizationRatio;
-        uint256 liquidationIncentive;
-        bool isDepositCollateralAllowed;
-        bool isListed;
-    }
-
+interface IFintrollerV1 is IAdmin {
     /// EVENTS ///
 
     /// @notice Emitted when a new bond is listed.
@@ -118,7 +101,7 @@ interface IFintroller is IAdmin {
     /// @dev It is not an error to provide an invalid address.
     /// @param bond The address of the bond contract.
     /// @return The bond object.
-    function getBond(IHToken bond) external view returns (Bond memory);
+    function getBond(IHToken bond) external view returns (SFintrollerV1.Bond memory);
 
     /// @notice Checks if the account should be allowed to borrow hTokens.
     /// @dev The bond must be listed.
@@ -130,7 +113,7 @@ interface IFintroller is IAdmin {
     /// @dev It is not an error to provide an invalid address.
     /// @param collateral The address of the collateral contract.
     /// @return The collateral object.
-    function getCollateral(IErc20 collateral) external view returns (Collateral memory);
+    function getCollateral(IErc20 collateral) external view returns (SFintrollerV1.Collateral memory);
 
     /// @notice Returns the collateralization ratio of the given collateral.
     /// @dev It is not an error to provide an invalid address.
@@ -177,13 +160,6 @@ interface IFintroller is IAdmin {
     /// @param collateral The collateral to make the check against.
     /// @return bool true = listed, otherwise not.
     function isCollateralListed(IErc20 collateral) external view returns (bool);
-
-    /// @notice Checks if collateral deposits are allowed.
-    /// @param bond The bond to make the check against.
-    /// @return bool true = listed, otherwise not.
-
-    /// @notice Returns the maximum number of bond markets a single account can enter.
-    function maxBonds() external view returns (uint256);
 
     /// NON-CONSTANT FUNCTIONS ///
 

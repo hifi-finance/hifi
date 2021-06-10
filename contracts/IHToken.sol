@@ -6,16 +6,15 @@ import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/IErc20Permit.sol";
 import "@paulrberg/contracts/token/erc20/IErc20Recover.sol";
 
-import "./IBalanceSheet.sol";
-import "./IFintroller.sol";
+import "./IBalanceSheetV1.sol";
 
 /// @title IHToken
 /// @author Hifi
 /// @notice Zero-coupon bond that tracks an Erc20 underlying asset.
 interface IHToken is
-    IAdmin, /// no dependency
-    IErc20Permit, /// one dependency
-    IErc20Recover /// one dependency
+    IAdmin, // no dependency
+    IErc20Permit, // one dependency
+    IErc20Recover // one dependency
 {
     /// EVENTS ///
 
@@ -33,13 +32,13 @@ interface IHToken is
     /// @param admin The address of the admin.
     /// @param oldBalanceSheet The address of the old BalanceSheet.
     /// @param newBalanceSheet The address of the new BalanceSheet.
-    event SetBalanceSheet(address indexed admin, IBalanceSheet oldBalanceSheet, IBalanceSheet newBalanceSheet);
+    event SetBalanceSheet(address indexed admin, IBalanceSheetV1 oldBalanceSheet, IBalanceSheetV1 newBalanceSheet);
 
     /// PUBLIC CONSTANT FUNCTIONS ///
 
     /// @notice The unique BalanceSheet associated with this HToken.
     /// @return The BalanceSheet contract.
-    function balanceSheet() external view returns (IBalanceSheet);
+    function balanceSheet() external view returns (IBalanceSheetV1);
 
     /// @notice Unix timestamp in seconds for when this HToken expires.
     function expirationTime() external view returns (uint256);
@@ -90,5 +89,5 @@ interface IHToken is
     /// - The caller must be the admin.
     ///
     /// @param newBalanceSheet The address of the new BalanceSheet contract.
-    function _setBalanceSheet(IBalanceSheet newBalanceSheet) external;
+    function _setBalanceSheet(IBalanceSheetV1 newBalanceSheet) external;
 }
