@@ -1,6 +1,7 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { BigNumber } from "@ethersproject/bignumber";
-import hre from "hardhat";
+import { ContractFactory } from "@ethersproject/contracts";
+import { artifacts, ethers, upgrades, waffle } from "hardhat";
 import { Artifact } from "hardhat/types";
 
 import {
@@ -23,20 +24,21 @@ import { GodModeHToken } from "../../typechain/GodModeHToken";
 import { HToken } from "../../typechain/HToken";
 import { SimplePriceFeed } from "../../typechain/SimplePriceFeed";
 
-const { deployContract } = hre.waffle;
+const { deployContract } = waffle;
 const overrides = getDeployContractOverrides();
 
 export async function deployChainlinkOperator(deployer: Signer): Promise<ChainlinkOperator> {
-  const chainlinkOperatorArtifact: Artifact = await hre.artifacts.readArtifact("ChainlinkOperator");
+  const chainlinkOperatorArtifact: Artifact = await artifacts.readArtifact("ChainlinkOperator");
   const chainlinkOperator: ChainlinkOperator = <ChainlinkOperator>(
     await deployContract(deployer, chainlinkOperatorArtifact, [], overrides)
   );
   return chainlinkOperator;
 }
 
-export async function deployFintroller(deployer: Signer): Promise<FintrollerV1> {
-  const fintrollerV1Artifact: Artifact = await hre.artifacts.readArtifact("FintrollerV1");
-  const fintrollerV1: FintrollerV1 = <FintrollerV1>await deployContract(deployer, fintrollerV1Artifact, [], overrides);
+export async function deployFintroller(): Promise<FintrollerV1> {
+  const fintrollerV1Factory: ContractFactory = await ethers.getContractFactory("FintrollerV1");
+  const fintrollerV1: FintrollerV1 = <FintrollerV1>await upgrades.deployProxy(fintrollerV1Factory);
+  await fintrollerV1.deployed();
   return fintrollerV1;
 }
 
@@ -46,7 +48,7 @@ export async function deployHToken(
   balanceSheetAddress: string,
   underlyingAddress: string,
 ): Promise<HToken> {
-  const hTokenArtifact: Artifact = await hre.artifacts.readArtifact("HToken");
+  const hTokenArtifact: Artifact = await artifacts.readArtifact("HToken");
   const hToken: HToken = <HToken>(
     await deployContract(
       deployer,
@@ -69,7 +71,7 @@ export async function deployGodModeBalanceSheet(
   fintrollerAddress: string,
   oracleAddress: string,
 ): Promise<GodModeBalanceSheet> {
-  const godModeBalanceSheetArtifact: Artifact = await hre.artifacts.readArtifact("GodModeBalanceSheet");
+  const godModeBalanceSheetArtifact: Artifact = await artifacts.readArtifact("GodModeBalanceSheet");
   const balanceSheet: GodModeBalanceSheet = <GodModeBalanceSheet>(
     await deployContract(deployer, godModeBalanceSheetArtifact, [fintrollerAddress, oracleAddress], overrides)
   );
@@ -82,7 +84,7 @@ export async function deployGodModeHToken(
   balanceSheetAddress: string,
   underlyingAddress: string,
 ): Promise<GodModeHToken> {
-  const godModeHTokenArtifact: Artifact = await hre.artifacts.readArtifact("GodModeHToken");
+  const godModeHTokenArtifact: Artifact = await artifacts.readArtifact("GodModeHToken");
   const hToken: GodModeHToken = <GodModeHToken>(
     await deployContract(
       deployer,
@@ -105,7 +107,7 @@ export async function deploySimplePriceFeed(
   description: string,
   price: BigNumber,
 ): Promise<SimplePriceFeed> {
-  const simplePriceFeedArtifact: Artifact = await hre.artifacts.readArtifact("SimplePriceFeed");
+  const simplePriceFeedArtifact: Artifact = await artifacts.readArtifact("SimplePriceFeed");
   const simplePriceFeed: SimplePriceFeed = <SimplePriceFeed>(
     await deployContract(deployer, simplePriceFeedArtifact, [description], overrides)
   );
@@ -114,7 +116,7 @@ export async function deploySimplePriceFeed(
 }
 
 export async function deployUsdc(deployer: Signer): Promise<Erc20Mintable> {
-  const erc20MintableArtifact: Artifact = await hre.artifacts.readArtifact("Erc20Mintable");
+  const erc20MintableArtifact: Artifact = await artifacts.readArtifact("Erc20Mintable");
   const usdc: Erc20Mintable = <Erc20Mintable>(
     await deployContract(deployer, erc20MintableArtifact, [USDC_NAME, USDC_SYMBOL, USDC_DECIMALS], overrides)
   );
@@ -122,7 +124,7 @@ export async function deployUsdc(deployer: Signer): Promise<Erc20Mintable> {
 }
 
 export async function deployUsdcPriceFeed(deployer: Signer): Promise<SimplePriceFeed> {
-  const simplePriceFeedArtifact: Artifact = await hre.artifacts.readArtifact("SimplePriceFeed");
+  const simplePriceFeedArtifact: Artifact = await artifacts.readArtifact("SimplePriceFeed");
   const usdcPriceFeed: SimplePriceFeed = <SimplePriceFeed>(
     await deployContract(deployer, simplePriceFeedArtifact, ["USDC/USD"], overrides)
   );
@@ -131,7 +133,7 @@ export async function deployUsdcPriceFeed(deployer: Signer): Promise<SimplePrice
 }
 
 export async function deployWbtc(deployer: Signer): Promise<Erc20Mintable> {
-  const erc20MintableArtifact: Artifact = await hre.artifacts.readArtifact("Erc20Mintable");
+  const erc20MintableArtifact: Artifact = await artifacts.readArtifact("Erc20Mintable");
   const usdc: Erc20Mintable = <Erc20Mintable>(
     await deployContract(deployer, erc20MintableArtifact, [WBTC_NAME, WBTC_SYMBOL, WBTC_DECIMALS], overrides)
   );
@@ -139,7 +141,7 @@ export async function deployWbtc(deployer: Signer): Promise<Erc20Mintable> {
 }
 
 export async function deployWbtcPriceFeed(deployer: Signer): Promise<SimplePriceFeed> {
-  const simplePriceFeedArtifact: Artifact = await hre.artifacts.readArtifact("SimplePriceFeed");
+  const simplePriceFeedArtifact: Artifact = await artifacts.readArtifact("SimplePriceFeed");
   const wbtcPriceFeed: SimplePriceFeed = <SimplePriceFeed>(
     await deployContract(deployer, simplePriceFeedArtifact, ["WBTC/USD"], overrides)
   );

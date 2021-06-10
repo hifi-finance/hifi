@@ -1,7 +1,7 @@
-/// SPDX-License-Identifier: LGPL-3.0-or-later
+// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.0;
 
-import "@paulrberg/contracts/access/Admin.sol";
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@paulrberg/contracts/math/PRBMathUD60x18.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/utils/ReentrancyGuard.sol";
@@ -10,23 +10,28 @@ import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 import "../fintroller/IFintrollerV1.sol";
 import "../balanceSheet/IBalanceSheetV1.sol";
 import "../balanceSheet/SBalanceSheetV1.sol";
+import "../../access/AdminUpgradeable.sol";
 
 /// @title BalanceSheetV1
 /// @author Hifi
 /// @dev Due to the upgradeability pattern, we have to inherit from the storage contract last.
 contract BalanceSheetV1 is
+    Initializable, // no dependency
     ReentrancyGuard, // no dependency
-    Admin, // one dependency
     IBalanceSheetV1, // one dependency
+    AdminUpgradeable, // two dependencies
     SBalanceSheetV1 // no dependency
 {
     using PRBMathUD60x18 for uint256;
     using SafeErc20 for IErc20;
 
-    /// CONSTRUCTOR ///
+    /// INITIALIZER ///
 
     /// @param fintroller_ The address of the Fintroller contract.
-    constructor(IFintrollerV1 fintroller_, IChainlinkOperator oracle_) Admin() {
+    function initialize(IFintrollerV1 fintroller_, IChainlinkOperator oracle_) public initializer {
+        // Initialize the admin.
+        AdminUpgradeable.initialize();
+
         // Set the Fintroller contract.
         fintroller = fintroller_;
 
@@ -96,7 +101,7 @@ contract BalanceSheetV1 is
         override
         returns (uint256 excessLiquidity, uint256 shortfallLiquidity)
     {
-        return getHypotheticalAccountLiquidity(account, IErc20(address(0x00)), 0, IHToken(address(0x00)), 0);
+        return getHypotheticalAccountLiquidity(account, IErc20(address(0)), 0, IHToken(address(0)), 0);
     }
 
     /// @inheritdoc IBalanceSheetV1
@@ -236,7 +241,7 @@ contract BalanceSheetV1 is
 
         // Checks: the hypothetical account liquidity is okay.
         (, uint256 hypotheticalShortfallLiquidity) =
-            getHypotheticalAccountLiquidity(msg.sender, IErc20(address(0x00)), 0, bond, newDebtAmount);
+            getHypotheticalAccountLiquidity(msg.sender, IErc20(address(0)), 0, bond, newDebtAmount);
         require(hypotheticalShortfallLiquidity == 0, "LIQUIDITY_SHORTFALL");
 
         // Effects: increase the amount of debt in the vault.
@@ -337,7 +342,7 @@ contract BalanceSheetV1 is
 
     /// @inheritdoc IBalanceSheetV1
     function setOracle(IChainlinkOperator newOracle) external override onlyAdmin {
-        require(address(newOracle) != address(0x00), "SET_ORACLE_ZERO_ADDRESS");
+        require(address(newOracle) != address(0), "SET_ORACLE_ZERO_ADDRESS");
         address oldOracle = address(oracle);
         oracle = newOracle;
         emit SetOracle(admin, oldOracle, address(newOracle));
@@ -358,7 +363,7 @@ contract BalanceSheetV1 is
         // Checks: the hypothetical account liquidity is okay.
         if (vaults[msg.sender].bondList.length > 0) {
             (, uint256 hypotheticalShortfallLiquidity) =
-                getHypotheticalAccountLiquidity(msg.sender, collateral, newCollateralAmount, IHToken(address(0x00)), 0);
+                getHypotheticalAccountLiquidity(msg.sender, collateral, newCollateralAmount, IHToken(address(0)), 0);
             require(hypotheticalShortfallLiquidity == 0, "LIQUIDITY_SHORTFALL");
         }
 

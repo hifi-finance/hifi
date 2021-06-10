@@ -1,16 +1,16 @@
-/// SPDX-License-Identifier: LGPL-3.0-or-later
+// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.0;
 
-import "@paulrberg/contracts/access/IAdmin.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 
 import "../fintroller/SFintrollerV1.sol";
 import "../hToken/IHToken.sol";
+import "../../access/AdminUpgradeable.sol";
 
 /// @notice IFintrollerV1
 /// @author Hifi
 /// @notice Controls the financial permissions and risk parameters for the Hifi protocol.
-interface IFintrollerV1 is IAdmin {
+interface IFintrollerV1 is IAdminUpgradeable {
     /// EVENTS ///
 
     /// @notice Emitted when a new bond is listed.

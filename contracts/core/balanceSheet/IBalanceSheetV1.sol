@@ -1,18 +1,18 @@
-/// SPDX-License-Identifier: LGPL-3.0-or-later
+// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.0;
 
-import "@paulrberg/contracts/access/IAdmin.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 
 import "../balanceSheet/SBalanceSheetV1.sol";
 import "../fintroller/IFintrollerV1.sol";
 import "../hToken/IHToken.sol";
+import "../../access/IAdminUpgradeable.sol";
 import "../../oracles/IChainlinkOperator.sol";
 
 /// @title IBalanceSheetV1
 /// @author Hifi
 /// @notice Manages the collaterals and the debts for all users.
-interface IBalanceSheetV1 is IAdmin {
+interface IBalanceSheetV1 is IAdminUpgradeable {
     /// EVENTS ///
 
     /// @notice Emitted when a borrow is made.

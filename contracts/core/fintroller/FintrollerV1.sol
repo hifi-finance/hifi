@@ -1,24 +1,31 @@
-/// SPDX-License-Identifier: LGPL-3.0-or-later
+// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.0;
 
+import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@paulrberg/contracts/access/Admin.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 
 import "./IFintrollerV1.sol";
 import "./SFintrollerV1.sol";
 import "../hToken/IHToken.sol";
+import "../../access/AdminUpgradeable.sol";
 
 /// @notice FintrollerV1
 /// @author Hifi
 /// @dev Due to the upgradeability pattern, we have to inherit from the storage contract last.
 contract FintrollerV1 is
-    Admin, // one dependency
+    Initializable, // no dependency
+    AdminUpgradeable, // one dependency
     IFintrollerV1, // one dependency
     SFintrollerV1 // no dependency
 {
-    /// CONSTRUCTOR ///
+    /// INITIALIZER ///
 
-    constructor() Admin() {
+    function initialize() public override initializer {
+        // Initialize the admin.
+        super.initialize();
+
+        // Set the max bonds limit.
         maxBonds = DEFAULT_MAX_BONDS;
     }
 

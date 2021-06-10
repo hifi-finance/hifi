@@ -1,4 +1,4 @@
-/// SPDX-License-Identifier: LGPL-3.0-or-later
+// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.0;
 
 import "@paulrberg/contracts/access/Admin.sol";
@@ -59,7 +59,7 @@ contract ChainlinkOperator is
         return price;
     }
 
-    /// NON-CONSTANT FUNCTIONS ///
+    /// PUBLIC NON-CONSTANT FUNCTIONS ///
 
     /// @inheritdoc IChainlinkOperator
     function deleteFeed(string memory symbol) external override onlyAdmin {

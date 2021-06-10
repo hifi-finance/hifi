@@ -1,9 +1,9 @@
 import { Contract, ContractFactory } from "@ethersproject/contracts";
-import { ethers } from "hardhat";
+import { ethers, upgrades } from "hardhat";
 
 async function main(): Promise<void> {
-  const fintrollerFactory: ContractFactory = await ethers.getContractFactory("Fintroller");
-  const fintroller: Contract = await fintrollerFactory.deploy();
+  const fintrollerV1Factory: ContractFactory = await ethers.getContractFactory("FintrollerV1");
+  const fintroller: Contract = await upgrades.deployProxy(fintrollerV1Factory);
   await fintroller.deployed();
   console.log("Fintroller deployed to: ", fintroller.address);
 }

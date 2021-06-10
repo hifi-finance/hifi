@@ -1,4 +1,4 @@
-/// SPDX-License-Identifier: LGPL-3.0-or-later
+// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.0;
 
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
@@ -12,8 +12,8 @@ import "../oracles/IChainlinkOperator.sol";
 /// @author Hifi
 /// @dev Strictly for test purposes. Do not use in production.
 contract GodModeBalanceSheet is BalanceSheetV1 {
-    constructor(IFintrollerV1 fintroller_, IChainlinkOperator oracle_) BalanceSheetV1(fintroller_, oracle_) {
-        // solhint-disable-previous-line no-empty-blocks
+    constructor(IFintrollerV1 fintroller_, IChainlinkOperator oracle_) {
+        BalanceSheetV1.initialize(fintroller_, oracle_);
     }
 
     function __godMode_burnHTokens(IHToken bond, uint256 burnAmount) external {
