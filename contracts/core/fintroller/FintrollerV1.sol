@@ -2,28 +2,28 @@
 pragma solidity >=0.8.0;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@paulrberg/contracts/access/Admin.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 
 import "./IFintrollerV1.sol";
 import "./SFintrollerV1.sol";
 import "../hToken/IHToken.sol";
-import "../../access/AdminUpgradeable.sol";
+import "../../access/OwnableUpgradeable.sol";
 
 /// @notice FintrollerV1
 /// @author Hifi
 /// @dev Due to the upgradeability pattern, we have to inherit from the storage contract last.
 contract FintrollerV1 is
     Initializable, // no dependency
-    AdminUpgradeable, // one dependency
+    OwnableUpgradeable, // one dependency
     IFintrollerV1, // one dependency
     SFintrollerV1 // no dependency
 {
     /// INITIALIZER ///
 
-    function initialize() public override initializer {
-        // Initialize the admin.
-        super.initialize();
+    /// @notice The upgradeability variant of the contract constructor.
+    function initialize() public initializer {
+        // Initialize the owner.
+        OwnableUpgradeable.__OwnableUpgradeable__init();
 
         // Set the max bonds limit.
         maxBonds = DEFAULT_MAX_BONDS;
@@ -95,7 +95,7 @@ contract FintrollerV1 is
     /// PUBLIC NON-CONSTANT FUNCTIONS ///
 
     /// @inheritdoc IFintrollerV1
-    function listBond(IHToken bond) external override onlyAdmin {
+    function listBond(IHToken bond) external override onlyOwner {
         bonds[bond] = Bond({
             debtCeiling: 0,
             isBorrowAllowed: true,
@@ -105,11 +105,11 @@ contract FintrollerV1 is
             isRepayBorrowAllowed: true,
             isSupplyUnderlyingAllowed: true
         });
-        emit ListBond(admin, bond);
+        emit ListBond(owner, bond);
     }
 
     /// @inheritdoc IFintrollerV1
-    function listCollateral(IErc20 collateral) external override onlyAdmin {
+    function listCollateral(IErc20 collateral) external override onlyOwner {
         // Checks: decimals are between the expected bounds.
         uint256 decimals = collateral.decimals();
         require(decimals > 0, "LIST_COLLATERAL_DECIMALS_ZERO");
@@ -123,21 +123,21 @@ contract FintrollerV1 is
             liquidationIncentive: DEFAULT_LIQUIDATION_INCENTIVE
         });
 
-        emit ListCollateral(admin, collateral);
+        emit ListCollateral(owner, collateral);
     }
 
     /// @inheritdoc IFintrollerV1
-    function setBorrowAllowed(IHToken bond, bool state) external override onlyAdmin {
+    function setBorrowAllowed(IHToken bond, bool state) external override onlyOwner {
         require(bonds[bond].isListed, "BOND_NOT_LISTED");
         bonds[bond].isBorrowAllowed = state;
-        emit SetBorrowAllowed(admin, bond, state);
+        emit SetBorrowAllowed(owner, bond, state);
     }
 
     /// @inheritdoc IFintrollerV1
     function setCollateralizationRatio(IErc20 collateral, uint256 newCollateralizationRatio)
         external
         override
-        onlyAdmin
+        onlyOwner
     {
         // Checks: bond is listed.
         require(collaterals[collateral].isListed, "COLLATERAL_NOT_LISTED");
@@ -156,11 +156,11 @@ contract FintrollerV1 is
         uint256 oldCollateralizationRatio = collaterals[collateral].collateralizationRatio;
         collaterals[collateral].collateralizationRatio = newCollateralizationRatio;
 
-        emit SetCollateralizationRatio(admin, collateral, oldCollateralizationRatio, newCollateralizationRatio);
+        emit SetCollateralizationRatio(owner, collateral, oldCollateralizationRatio, newCollateralizationRatio);
     }
 
     /// @inheritdoc IFintrollerV1
-    function setDebtCeiling(IHToken bond, uint256 newDebtCeiling) external override onlyAdmin {
+    function setDebtCeiling(IHToken bond, uint256 newDebtCeiling) external override onlyOwner {
         // Checks: bond is listed.
         require(bonds[bond].isListed, "BOND_NOT_LISTED");
 
@@ -175,25 +175,25 @@ contract FintrollerV1 is
         uint256 oldDebtCeiling = bonds[bond].debtCeiling;
         bonds[bond].debtCeiling = newDebtCeiling;
 
-        emit SetDebtCeiling(admin, bond, oldDebtCeiling, newDebtCeiling);
+        emit SetDebtCeiling(owner, bond, oldDebtCeiling, newDebtCeiling);
     }
 
     /// @inheritdoc IFintrollerV1
-    function setDepositCollateralAllowed(IErc20 collateral, bool state) external override onlyAdmin {
+    function setDepositCollateralAllowed(IErc20 collateral, bool state) external override onlyOwner {
         require(collaterals[collateral].isListed, "COLLATERAL_NOT_LISTED");
         collaterals[collateral].isDepositCollateralAllowed = state;
-        emit SetDepositCollateralAllowed(admin, collateral, state);
+        emit SetDepositCollateralAllowed(owner, collateral, state);
     }
 
     /// @inheritdoc IFintrollerV1
-    function setLiquidateBorrowAllowed(IHToken bond, bool state) external override onlyAdmin {
+    function setLiquidateBorrowAllowed(IHToken bond, bool state) external override onlyOwner {
         require(bonds[bond].isListed, "BOND_NOT_LISTED");
         bonds[bond].isLiquidateBorrowAllowed = state;
-        emit SetLiquidateBorrowAllowed(admin, bond, state);
+        emit SetLiquidateBorrowAllowed(owner, bond, state);
     }
 
     /// @inheritdoc IFintrollerV1
-    function setLiquidationIncentive(IErc20 collateral, uint256 newLiquidationIncentive) external override onlyAdmin {
+    function setLiquidationIncentive(IErc20 collateral, uint256 newLiquidationIncentive) external override onlyOwner {
         // Checks: bond is listed.
         require(collaterals[collateral].isListed, "COLLATERAL_NOT_LISTED");
 
@@ -205,20 +205,20 @@ contract FintrollerV1 is
         uint256 oldLiquidationIncentive = collaterals[collateral].liquidationIncentive;
         collaterals[collateral].liquidationIncentive = newLiquidationIncentive;
 
-        emit SetLiquidationIncentive(admin, collateral, oldLiquidationIncentive, newLiquidationIncentive);
+        emit SetLiquidationIncentive(owner, collateral, oldLiquidationIncentive, newLiquidationIncentive);
     }
 
     /// @inheritdoc IFintrollerV1
-    function setMaxBonds(uint256 newMaxBonds) external override onlyAdmin {
+    function setMaxBonds(uint256 newMaxBonds) external override onlyOwner {
         uint256 oldMaxBonds = maxBonds;
         maxBonds = newMaxBonds;
-        emit SetMaxBonds(admin, oldMaxBonds, newMaxBonds);
+        emit SetMaxBonds(owner, oldMaxBonds, newMaxBonds);
     }
 
     /// @inheritdoc IFintrollerV1
-    function setRepayBorrowAllowed(IHToken bond, bool state) external override onlyAdmin {
+    function setRepayBorrowAllowed(IHToken bond, bool state) external override onlyOwner {
         require(bonds[bond].isListed, "BOND_NOT_LISTED");
         bonds[bond].isRepayBorrowAllowed = state;
-        emit SetRepayBorrowAllowed(admin, bond, state);
+        emit SetRepayBorrowAllowed(owner, bond, state);
     }
 }

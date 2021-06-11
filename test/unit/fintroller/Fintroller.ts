@@ -2,7 +2,7 @@ import { unitFixtureFintroller } from "../../shared/fixtures";
 import { shouldBehaveLikeFintroller } from "./Fintroller.behavior";
 
 export function unitTestFintroller(): void {
-  describe.only("Fintroller", function () {
+  describe("Fintroller", function () {
     beforeEach(async function () {
       const { fintroller, hTokens, wbtc } = await this.loadFixture(unitFixtureFintroller);
       this.contracts.fintroller = fintroller;

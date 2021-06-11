@@ -5,95 +5,95 @@ import "@paulrberg/contracts/token/erc20/IErc20.sol";
 
 import "../fintroller/SFintrollerV1.sol";
 import "../hToken/IHToken.sol";
-import "../../access/AdminUpgradeable.sol";
+import "../../access/OwnableUpgradeable.sol";
 
 /// @notice IFintrollerV1
 /// @author Hifi
 /// @notice Controls the financial permissions and risk parameters for the Hifi protocol.
-interface IFintrollerV1 is IAdminUpgradeable {
+interface IFintrollerV1 is IOwnableUpgradeable {
     /// EVENTS ///
 
     /// @notice Emitted when a new bond is listed.
-    /// @param admin The address of the admin.
+    /// @param owner The address of the owner.
     /// @param bond The newly listed bond.
-    event ListBond(address indexed admin, IHToken indexed bond);
+    event ListBond(address indexed owner, IHToken indexed bond);
 
     /// @notice Emitted when a new collateral is listed.
-    /// @param admin The address of the admin.
+    /// @param owner The address of the owner.
     /// @param collateral The newly listed collateral.
-    event ListCollateral(address indexed admin, IErc20 indexed collateral);
+    event ListCollateral(address indexed owner, IErc20 indexed collateral);
 
     /// @notice Emitted when the borrow permission is updated.
-    /// @param admin The address of the admin.
+    /// @param owner The address of the owner.
     /// @param bond The related HToken.
     /// @param state True if borrowing is allowed.
-    event SetBorrowAllowed(address indexed admin, IHToken indexed bond, bool state);
+    event SetBorrowAllowed(address indexed owner, IHToken indexed bond, bool state);
 
     /// @notice Emitted when the bond collateralization ratio is updated.
-    /// @param admin The address of the admin.
+    /// @param owner The address of the owner.
     /// @param collateral The related HToken.
     /// @param oldCollateralizationRatio The old collateralization ratio.
     /// @param newCollateralizationRatio the new collateralization ratio.
     event SetCollateralizationRatio(
-        address indexed admin,
+        address indexed owner,
         IErc20 indexed collateral,
         uint256 oldCollateralizationRatio,
         uint256 newCollateralizationRatio
     );
 
     /// @notice Emitted when the bond debt ceiling is set.
-    /// @param admin The address of the admin.
+    /// @param owner The address of the owner.
     /// @param bond The related HToken.
     /// @param oldDebtCeiling The old debt ceiling.
     /// @param newDebtCeiling The new debt ceiling.
-    event SetDebtCeiling(address indexed admin, IHToken indexed bond, uint256 oldDebtCeiling, uint256 newDebtCeiling);
+    event SetDebtCeiling(address indexed owner, IHToken indexed bond, uint256 oldDebtCeiling, uint256 newDebtCeiling);
 
     /// @notice Emitted when the deposit collateral permission is updated.
-    /// @param admin The address of the admin.
+    /// @param owner The address of the owner.
     /// @param state True if depositing collateral is allowed.
-    event SetDepositCollateralAllowed(address indexed admin, IErc20 indexed collateral, bool state);
+    event SetDepositCollateralAllowed(address indexed owner, IErc20 indexed collateral, bool state);
 
     /// @notice Emitted when the liquidate borrow permission is updated.
-    /// @param admin The address of the admin.
+    /// @param owner The address of the owner.
     /// @param bond The related HToken.
     /// @param state True if liquidating borrow is allowed.
-    event SetLiquidateBorrowAllowed(address indexed admin, IHToken indexed bond, bool state);
+    event SetLiquidateBorrowAllowed(address indexed owner, IHToken indexed bond, bool state);
 
     /// @notice Emitted when the collateral liquidation incentive is set.
-    /// @param admin The address of the admin.
+    /// @param owner The address of the owner.
     /// @param collateral The related collateral.
     /// @param oldLiquidationIncentive The old liquidation incentive.
     /// @param newLiquidationIncentive The new liquidation incentive.
     event SetLiquidationIncentive(
-        address indexed admin,
+        address indexed owner,
         IErc20 collateral,
         uint256 oldLiquidationIncentive,
         uint256 newLiquidationIncentive
     );
 
     /// @notice Emitted when a new max bonds value is set.
-    /// @param admin The address indexed admin.
+    /// @param owner The address indexed owner.
     /// @param oldMaxBonds The address of the old max bonds value.
     /// @param newMaxBonds The address of the new max bonds value.
-    event SetMaxBonds(address indexed admin, uint256 oldMaxBonds, uint256 newMaxBonds);
+    event SetMaxBonds(address indexed owner, uint256 oldMaxBonds, uint256 newMaxBonds);
 
     /// @notice Emitted when the redeem hTokens permission is updated.
-    /// @param admin The address of the admin.
+    /// @param owner The address of the owner.
     /// @param bond The related HToken.
     /// @param state True if redeeming hTokens is allowed.
-    event SetRedeemHTokensAllowed(address indexed admin, IHToken indexed bond, bool state);
+    event SetRedeemHTokensAllowed(address indexed owner, IHToken indexed bond, bool state);
 
     /// @notice Emitted when the repay borrow permission is updated.
-    /// @param admin The address of the admin.
+    /// @param owner The address of the owner.
     /// @param bond The related HToken.
     /// @param state True if repaying borrow is allowed.
-    event SetRepayBorrowAllowed(address indexed admin, IHToken indexed bond, bool state);
+    event SetRepayBorrowAllowed(address indexed owner, IHToken indexed bond, bool state);
 
     /// @notice Emitted when the supply underlying permission is set.
-    /// @param admin The address of the admin.
+    /// @param owner The address of the owner.
     /// @param bond The related HToken.
     /// @param state True if supplying underlying is allowed.
-    event SetSupplyUnderlyingAllowed(address indexed admin, IHToken indexed bond, bool state);
+    event SetSupplyUnderlyingAllowed(address indexed owner, IHToken indexed bond, bool state);
 
     /// CONSTANT FUNCTIONS ///
 
@@ -168,7 +168,7 @@ interface IFintrollerV1 is IAdminUpgradeable {
     /// @dev It is not an error to list a bond twice. Emits a {ListBond} event.
     ///
     /// Requirements:
-    /// - The caller must be the admin.
+    /// - The caller must be the owner.
     ///
     /// @param bond The hToken contract to list.
     function listBond(IHToken bond) external;
@@ -179,7 +179,7 @@ interface IFintrollerV1 is IAdminUpgradeable {
     ///
     /// Requirements:
     ///
-    /// - The caller must be the admin.
+    /// - The caller must be the owner.
     /// - The collateral must have between 1 and 18 decimals.
     ///
     /// @param collateral The collateral contract to list.
@@ -191,7 +191,7 @@ interface IFintrollerV1 is IAdminUpgradeable {
     ///
     /// Requirements:
     ///
-    /// - The caller must be the admin.
+    /// - The caller must be the owner.
     /// - The bond must be listed.
     ///
     /// @param bond The bond to update the permission for.
@@ -204,7 +204,7 @@ interface IFintrollerV1 is IAdminUpgradeable {
     ///
     /// Requirements:
     ///
-    /// - The caller must be the admin.
+    /// - The caller must be the owner.
     /// - The collateral must be listed.
     /// - The new collateralization ratio cannot be higher than the maximum collateralization ratio.
     /// - The new collateralization ratio cannot be lower than the minimum collateralization ratio.
@@ -218,7 +218,7 @@ interface IFintrollerV1 is IAdminUpgradeable {
     /// @dev Emits a {SetDepositCollateralAllowed} event.
     ///
     /// Requirements:
-    /// - The caller must be the admin.
+    /// - The caller must be the owner.
     ///
     /// @param collateral The collateral to update the permission for.
     /// @param state The new state to put in storage.
@@ -230,7 +230,7 @@ interface IFintrollerV1 is IAdminUpgradeable {
     ///
     /// Requirements:
     ///
-    /// - The caller must be the admin.
+    /// - The caller must be the owner.
     /// - The bond must be listed.
     /// - The debt ceiling cannot be zero.
     /// - The debt ceiling cannot fall below the current total supply of hTokens.
@@ -245,7 +245,7 @@ interface IFintrollerV1 is IAdminUpgradeable {
     ///
     /// Requirements:
     ///
-    /// - The caller must be the admin.
+    /// - The caller must be the owner.
     /// - The collateral must be listed.
     /// - The new liquidation incentive cannot be higher than the maximum liquidation incentive.
     /// - The new liquidation incentive cannot be lower than the minimum liquidation incentive.
@@ -260,7 +260,7 @@ interface IFintrollerV1 is IAdminUpgradeable {
     ///
     /// Requirements:
     ///
-    /// - The caller must be the admin.
+    /// - The caller must be the owner.
     /// - The bond must be listed.
     ///
     /// @param bond The hToken contract to update the permission for.
@@ -272,7 +272,7 @@ interface IFintrollerV1 is IAdminUpgradeable {
     /// @dev Emits a {SetMaxBonds} event.
     ///
     /// Requirements:
-    /// - The caller must be the admin.
+    /// - The caller must be the owner.
     ///
     /// @param newMaxBonds New max bonds value.
     function setMaxBonds(uint256 newMaxBonds) external;
@@ -283,7 +283,7 @@ interface IFintrollerV1 is IAdminUpgradeable {
     ///
     /// Requirements:
     ///
-    /// - The caller must be the admin.
+    /// - The caller must be the owner.
     /// - The bond must be listed.
     ///
     /// @param bond The hToken contract to update the permission for.

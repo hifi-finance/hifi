@@ -2,42 +2,42 @@ import { MockContract } from "@ethereum-waffle/mock-contract";
 import { AddressZero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { AdminErrors, BalanceSheetErrors } from "../../../shared/errors";
+import { BalanceSheetErrors, OwnableErrors } from "../../../shared/errors";
 import { deployMockChainlinkOperator } from "../../../shared/mocks";
 
 export default function shouldBehaveLikeSetOracle(): void {
-  context("when the caller is not the admin", function () {
+  context("when the caller is not the owner", function () {
     it("reverts", async function () {
       await expect(this.contracts.balanceSheet.connect(this.signers.raider).setOracle(AddressZero)).to.be.revertedWith(
-        AdminErrors.NotAdmin,
+        OwnableErrors.NotOwner,
       );
     });
   });
 
-  context("when the caller is the admin", function () {
+  context("when the caller is the owner", function () {
     context("when oracle address is not the zero address", function () {
       let newOracle: MockContract;
 
       beforeEach(async function () {
-        newOracle = await deployMockChainlinkOperator(this.signers.admin);
+        newOracle = await deployMockChainlinkOperator(this.signers.owner);
       });
 
       it("sets the new oracle", async function () {
-        await this.contracts.balanceSheet.connect(this.signers.admin).setOracle(newOracle.address);
+        await this.contracts.balanceSheet.connect(this.signers.owner).setOracle(newOracle.address);
         const oracle: string = await this.contracts.balanceSheet.oracle();
         expect(oracle).to.equal(newOracle.address);
       });
 
       it("emits a SetOracle event", async function () {
-        await expect(this.contracts.balanceSheet.connect(this.signers.admin).setOracle(newOracle.address))
+        await expect(this.contracts.balanceSheet.connect(this.signers.owner).setOracle(newOracle.address))
           .to.emit(this.contracts.balanceSheet, "SetOracle")
-          .withArgs(this.signers.admin.address, this.mocks.oracle.address, newOracle.address);
+          .withArgs(this.signers.owner.address, this.mocks.oracle.address, newOracle.address);
       });
     });
 
     context("when the oracle address is the zero address", function () {
       it("reverts", async function () {
-        await expect(this.contracts.balanceSheet.connect(this.signers.admin).setOracle(AddressZero)).to.be.revertedWith(
+        await expect(this.contracts.balanceSheet.connect(this.signers.owner).setOracle(AddressZero)).to.be.revertedWith(
           BalanceSheetErrors.SetOracleZeroAddress,
         );
       });

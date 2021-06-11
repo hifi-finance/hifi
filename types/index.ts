@@ -1,4 +1,3 @@
-import { Contract } from "@ethersproject/contracts";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 import { MockContract } from "ethereum-waffle";
 
@@ -34,7 +33,7 @@ export interface Mocks {
   wethPriceFeed: MockContract;
 }
 export interface Signers {
-  admin: SignerWithAddress;
+  owner: SignerWithAddress;
   borrower: SignerWithAddress;
   lender: SignerWithAddress;
   liquidator: SignerWithAddress;

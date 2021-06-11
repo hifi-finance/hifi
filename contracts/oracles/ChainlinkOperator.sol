@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.0;
 
-import "@paulrberg/contracts/access/Admin.sol";
+import "@paulrberg/contracts/access/Ownable.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 
 import "./IChainlinkOperator.sol";
@@ -10,7 +10,7 @@ import "./IChainlinkOperator.sol";
 /// @author Hifi
 contract ChainlinkOperator is
     IChainlinkOperator, // no dependency
-    Admin // one dependency
+    Ownable // one dependency
 {
     /// STORAGE ///
 
@@ -23,7 +23,7 @@ contract ChainlinkOperator is
     /// @inheritdoc IChainlinkOperator
     uint256 public constant override pricePrecisionScalar = 1.0e10;
 
-    constructor() Admin() {
+    constructor() Ownable() {
         // solhint-disable-previous-line no-empty-blocks
     }
 
@@ -62,7 +62,7 @@ contract ChainlinkOperator is
     /// PUBLIC NON-CONSTANT FUNCTIONS ///
 
     /// @inheritdoc IChainlinkOperator
-    function deleteFeed(string memory symbol) external override onlyAdmin {
+    function deleteFeed(string memory symbol) external override onlyOwner {
         // Checks
         require(feeds[symbol].isSet, "FEED_NOT_SET");
 
@@ -75,7 +75,7 @@ contract ChainlinkOperator is
     }
 
     /// @inheritdoc IChainlinkOperator
-    function setFeed(IErc20 asset, IAggregatorV3 feed) external override onlyAdmin {
+    function setFeed(IErc20 asset, IAggregatorV3 feed) external override onlyOwner {
         string memory symbol = asset.symbol();
 
         // Checks: price precision.

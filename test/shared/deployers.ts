@@ -67,13 +67,12 @@ export async function deployHToken(
 }
 
 export async function deployGodModeBalanceSheet(
-  deployer: Signer,
   fintrollerAddress: string,
   oracleAddress: string,
 ): Promise<GodModeBalanceSheet> {
-  const godModeBalanceSheetArtifact: Artifact = await artifacts.readArtifact("GodModeBalanceSheet");
+  const godModeBalanceSheetFactory: ContractFactory = await ethers.getContractFactory("GodModeBalanceSheet");
   const balanceSheet: GodModeBalanceSheet = <GodModeBalanceSheet>(
-    await deployContract(deployer, godModeBalanceSheetArtifact, [fintrollerAddress, oracleAddress], overrides)
+    await upgrades.deployProxy(godModeBalanceSheetFactory, [fintrollerAddress, oracleAddress])
   );
   return balanceSheet;
 }

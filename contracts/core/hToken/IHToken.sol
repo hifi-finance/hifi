@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.0;
 
-import "@paulrberg/contracts/access/IAdmin.sol";
+import "@paulrberg/contracts/access/IOwnable.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/IErc20Permit.sol";
 import "@paulrberg/contracts/token/erc20/IErc20Recover.sol";
@@ -12,7 +12,7 @@ import "../balanceSheet/IBalanceSheetV1.sol";
 /// @author Hifi
 /// @notice Zero-coupon bond that tracks an Erc20 underlying asset.
 interface IHToken is
-    IAdmin, // no dependency
+    IOwnable, // no dependency
     IErc20Permit, // one dependency
     IErc20Recover // one dependency
 {
@@ -29,10 +29,10 @@ interface IHToken is
     event Mint(address indexed beneficiary, uint256 mintAmount);
 
     /// @notice Emitted when the BalanceSheet is set.
-    /// @param admin The address of the admin.
+    /// @param owner The address of the owner.
     /// @param oldBalanceSheet The address of the old BalanceSheet.
     /// @param newBalanceSheet The address of the new BalanceSheet.
-    event SetBalanceSheet(address indexed admin, IBalanceSheetV1 oldBalanceSheet, IBalanceSheetV1 newBalanceSheet);
+    event SetBalanceSheet(address indexed owner, IBalanceSheetV1 oldBalanceSheet, IBalanceSheetV1 newBalanceSheet);
 
     /// PUBLIC CONSTANT FUNCTIONS ///
 
@@ -86,7 +86,7 @@ interface IHToken is
     /// @dev Throws a {SetBalanceSheet} event.
     ///
     /// Requirements:
-    /// - The caller must be the admin.
+    /// - The caller must be the owner.
     ///
     /// @param newBalanceSheet The address of the new BalanceSheet contract.
     function _setBalanceSheet(IBalanceSheetV1 newBalanceSheet) external;

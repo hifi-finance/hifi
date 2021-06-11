@@ -1,5 +1,5 @@
-export enum AdminErrors {
-  NotAdmin = "NOT_ADMIN",
+export enum OwnableErrors {
+  NotOwner = "NOT_OWNER",
 }
 
 export enum BalanceSheetErrors {

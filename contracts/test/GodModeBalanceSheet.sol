@@ -4,18 +4,12 @@ pragma solidity >=0.8.0;
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 
 import "../core/balanceSheet/BalanceSheetV1.sol";
-import "../core/fintroller/IFintrollerV1.sol";
 import "../core/hToken/IHToken.sol";
-import "../oracles/IChainlinkOperator.sol";
 
 /// @title GodModeBalanceSheet
 /// @author Hifi
 /// @dev Strictly for test purposes. Do not use in production.
 contract GodModeBalanceSheet is BalanceSheetV1 {
-    constructor(IFintrollerV1 fintroller_, IChainlinkOperator oracle_) {
-        BalanceSheetV1.initialize(fintroller_, oracle_);
-    }
-
     function __godMode_burnHTokens(IHToken bond, uint256 burnAmount) external {
         bond.burn(msg.sender, burnAmount);
     }

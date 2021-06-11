@@ -2,7 +2,7 @@
 pragma solidity >=0.8.0;
 
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
-import "@paulrberg/contracts/access/IAdmin.sol";
+import "@paulrberg/contracts/access/IOwnable.sol";
 
 import "../external/chainlink/IAggregatorV3.sol";
 
@@ -38,7 +38,7 @@ interface IChainlinkOperator {
     ///
     /// Requirements:
     ///
-    /// - The caller must be the admin.
+    /// - The caller must be the owner.
     /// - The feed must have been previously set.
     ///
     /// @param symbol The Erc20 symbol of the asset to delete the feed for.
@@ -50,7 +50,7 @@ interface IChainlinkOperator {
     ///
     /// Requirements:
     ///
-    /// - The caller must be the admin.
+    /// - The caller must be the owner.
     /// - The number of decimals of the feed must be 8.
     ///
     /// @param asset The address of the Erc20 contract for which to get the price.

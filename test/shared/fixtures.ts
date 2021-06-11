@@ -64,11 +64,7 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
   await oracle.setFeed(wbtc.address, wbtcPriceFeed.address);
 
   const fintroller: FintrollerV1 = await deployFintroller();
-  const balanceSheet: GodModeBalanceSheet = await deployGodModeBalanceSheet(
-    deployer,
-    fintroller.address,
-    oracle.address,
-  );
+  const balanceSheet: GodModeBalanceSheet = await deployGodModeBalanceSheet(fintroller.address, oracle.address);
   await balanceSheet.connect(deployer).setOracle(oracle.address);
   const hToken: GodModeHToken = await deployGodModeHToken(
     deployer,
@@ -120,12 +116,7 @@ export async function unitFixtureBalanceSheet(signers: Signer[]): Promise<UnitFi
   await oracle.mock.getNormalizedPrice.withArgs(WBTC_SYMBOL).returns(NORMALIZED_WBTC_PRICE);
   await oracle.mock.getNormalizedPrice.withArgs(WETH_SYMBOL).returns(NORMALIZED_WETH_PRICE);
 
-  const balanceSheet: GodModeBalanceSheet = await deployGodModeBalanceSheet(
-    deployer,
-    fintroller.address,
-    oracle.address,
-  );
-
+  const balanceSheet: GodModeBalanceSheet = await deployGodModeBalanceSheet(fintroller.address, oracle.address);
   return {
     balanceSheet,
     fintroller,

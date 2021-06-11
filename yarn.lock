@@ -928,8 +928,7 @@ __metadata:
     "@nomiclabs/hardhat-waffle": ^2.0.1
     "@openzeppelin/contracts-upgradeable": ^4.1.0
     "@openzeppelin/hardhat-upgrades": ^1.8.2
-    "@openzeppelin/upgrades-core": ^1.7.6
-    "@paulrberg/contracts": ^3.0.0
+    "@paulrberg/contracts": ^3.1.0
     "@typechain/ethers-v5": ^7.0.0
     "@typechain/hardhat": ^2.0.1
     "@types/chai": ^4.2.18
@@ -1056,7 +1055,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openzeppelin/upgrades-core@npm:^1.7.3, @openzeppelin/upgrades-core@npm:^1.7.6":
+"@openzeppelin/upgrades-core@npm:^1.7.3":
   version: 1.7.6
   resolution: "@openzeppelin/upgrades-core@npm:1.7.6"
   dependencies:
@@ -1072,14 +1071,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@paulrberg/contracts@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@paulrberg/contracts@npm:3.0.0"
+"@paulrberg/contracts@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@paulrberg/contracts@npm:3.1.0"
   dependencies:
     prb-math: ^1.1.0
   peerDependencies:
     prb-math: ^1.1.0
-  checksum: edd1d41d319357026d258b89da1da9a82d513e9e6707f26c17f0b6d0ed7da614e96ddf5a1913c2b5f330a97707d0dafaf1f3fb93f093cd67fd15e80604026fde
+  checksum: 2852227f0aa9432f3f6189a284bfeb1d49c943e99aa7964a7449a70cb78351000093ef4b9a482a8e9df9b6879cbf884e3f588965dac5ee3e2a1307bc5635bba1
   languageName: node
   linkType: hard
 

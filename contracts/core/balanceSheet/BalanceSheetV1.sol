@@ -4,22 +4,20 @@ pragma solidity >=0.8.0;
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@paulrberg/contracts/math/PRBMathUD60x18.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
-import "@paulrberg/contracts/utils/ReentrancyGuard.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 
 import "../fintroller/IFintrollerV1.sol";
 import "../balanceSheet/IBalanceSheetV1.sol";
 import "../balanceSheet/SBalanceSheetV1.sol";
-import "../../access/AdminUpgradeable.sol";
+import "../../access/OwnableUpgradeable.sol";
 
 /// @title BalanceSheetV1
 /// @author Hifi
 /// @dev Due to the upgradeability pattern, we have to inherit from the storage contract last.
 contract BalanceSheetV1 is
     Initializable, // no dependency
-    ReentrancyGuard, // no dependency
     IBalanceSheetV1, // one dependency
-    AdminUpgradeable, // two dependencies
+    OwnableUpgradeable, // two dependencies
     SBalanceSheetV1 // no dependency
 {
     using PRBMathUD60x18 for uint256;
@@ -27,10 +25,12 @@ contract BalanceSheetV1 is
 
     /// INITIALIZER ///
 
+    /// @notice The upgradeability variant of the contract constructor.
     /// @param fintroller_ The address of the Fintroller contract.
+    /// @param oracle_ The address of the oracle contract.
     function initialize(IFintrollerV1 fintroller_, IChainlinkOperator oracle_) public initializer {
-        // Initialize the admin.
-        AdminUpgradeable.initialize();
+        // Initialize the owner.
+        OwnableUpgradeable.__OwnableUpgradeable__init();
 
         // Set the Fintroller contract.
         fintroller = fintroller_;
@@ -211,7 +211,7 @@ contract BalanceSheetV1 is
     /// PUBLIC NON-CONSTANT FUNCTIONS ///
 
     // @inheritdoc IHToken
-    function borrow(IHToken bond, uint256 borrowAmount) public override nonReentrant {
+    function borrow(IHToken bond, uint256 borrowAmount) public override {
         // Checks: the Fintroller allows this action to be performed.
         require(fintroller.getBorrowAllowed(bond), "BORROW_NOT_ALLOWED");
 
@@ -283,7 +283,7 @@ contract BalanceSheetV1 is
         IHToken bond,
         uint256 repayAmount,
         IErc20 collateral
-    ) external override nonReentrant {
+    ) external override {
         // Checks: caller not the borrower.
         require(msg.sender != borrower, "LIQUIDATE_BORROW_SELF");
 
@@ -327,7 +327,7 @@ contract BalanceSheetV1 is
     }
 
     /// @inheritdoc IBalanceSheetV1
-    function repayBorrow(IHToken bond, uint256 repayAmount) external override nonReentrant {
+    function repayBorrow(IHToken bond, uint256 repayAmount) external override {
         repayBorrowInternal(msg.sender, msg.sender, bond, repayAmount);
     }
 
@@ -336,20 +336,20 @@ contract BalanceSheetV1 is
         address borrower,
         IHToken bond,
         uint256 repayAmount
-    ) external override nonReentrant {
+    ) external override {
         repayBorrowInternal(msg.sender, borrower, bond, repayAmount);
     }
 
     /// @inheritdoc IBalanceSheetV1
-    function setOracle(IChainlinkOperator newOracle) external override onlyAdmin {
+    function setOracle(IChainlinkOperator newOracle) external override onlyOwner {
         require(address(newOracle) != address(0), "SET_ORACLE_ZERO_ADDRESS");
         address oldOracle = address(oracle);
         oracle = newOracle;
-        emit SetOracle(admin, oldOracle, address(newOracle));
+        emit SetOracle(owner, oldOracle, address(newOracle));
     }
 
     /// @inheritdoc IBalanceSheetV1
-    function withdrawCollateral(IErc20 collateral, uint256 withdrawAmount) external override nonReentrant {
+    function withdrawCollateral(IErc20 collateral, uint256 withdrawAmount) external override {
         // Checks: the zero edge case.
         require(withdrawAmount > 0, "WITHDRAW_COLLATERAL_ZERO");
 

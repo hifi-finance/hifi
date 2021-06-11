@@ -1,11 +1,10 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.0;
 
-import "@paulrberg/contracts/access/Admin.sol";
+import "@paulrberg/contracts/access/Ownable.sol";
 import "@paulrberg/contracts/token/erc20/Erc20.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Permit.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Recover.sol";
-import "@paulrberg/contracts/utils/ReentrancyGuard.sol";
 
 import "../balanceSheet/IBalanceSheetV1.sol";
 import "../hToken/IHToken.sol";
@@ -13,8 +12,7 @@ import "../hToken/IHToken.sol";
 /// @title HToken
 /// @author Hifi
 contract HToken is
-    ReentrancyGuard, // no dependency
-    Admin, // one dependency
+    Ownable, // one dependency
     Erc20, // one dependency
     Erc20Permit, // four dependencies
     IHToken, // five dependencies
@@ -48,7 +46,7 @@ contract HToken is
         uint256 expirationTime_,
         IBalanceSheetV1 balanceSheet_,
         IErc20 underlying_
-    ) Erc20Permit(name_, symbol_, 18) Admin() {
+    ) Erc20Permit(name_, symbol_, 18) Ownable() {
         // Set the unix expiration time.
         require(expirationTime_ > block.timestamp, "HTOKEN_CONSTRUCTOR_EXPIRATION_TIME_PAST");
         expirationTime = expirationTime_;
@@ -74,7 +72,7 @@ contract HToken is
     /// PUBLIC NON-CONSTANT FUNCTIONS ///
 
     /// @inheritdoc IHToken
-    function burn(address holder, uint256 burnAmount) external override nonReentrant {
+    function burn(address holder, uint256 burnAmount) external override {
         // Checks: the caller is the BalanceSheet.
         require(msg.sender == address(balanceSheet), "BURN_NOT_AUTHORIZED");
 
@@ -90,7 +88,7 @@ contract HToken is
     }
 
     /// @inheritdoc IHToken
-    function mint(address beneficiary, uint256 mintAmount) external override nonReentrant {
+    function mint(address beneficiary, uint256 mintAmount) external override {
         // Checks: the caller is the BalanceSheet.
         require(msg.sender == address(balanceSheet), "MINT_NOT_AUTHORIZED");
 
@@ -106,11 +104,11 @@ contract HToken is
     }
 
     /// @inheritdoc IHToken
-    function _setBalanceSheet(IBalanceSheetV1 newBalanceSheet) external override onlyAdmin {
+    function _setBalanceSheet(IBalanceSheetV1 newBalanceSheet) external override onlyOwner {
         // Effects: update storage.
         IBalanceSheetV1 oldBalanceSheet = balanceSheet;
         balanceSheet = newBalanceSheet;
 
-        emit SetBalanceSheet(admin, oldBalanceSheet, newBalanceSheet);
+        emit SetBalanceSheet(owner, oldBalanceSheet, newBalanceSheet);
     }
 }

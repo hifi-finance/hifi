@@ -17,7 +17,7 @@ export default function shouldBehaveLikeGetNormalizedPrice(): void {
   context("when the feed is set", function () {
     beforeEach(async function () {
       await this.contracts.oracle
-        .connect(this.signers.admin)
+        .connect(this.signers.owner)
         .setFeed(this.mocks.wbtc.address, this.mocks.wbtcPriceFeed.address);
     });
 

@@ -9,29 +9,29 @@ import {
   DEFAULT_COLLATERALIZATION_RATIO,
 } from "../../../../helpers/constants";
 import { bn } from "../../../../helpers/numbers";
-import { AdminErrors, FintrollerErrors, GenericErrors } from "../../../shared/errors";
+import { FintrollerErrors, GenericErrors, OwnableErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeSetCollateralizationRatio(): void {
   const newCollateralizationRatio: BigNumber = fp("1.75");
   const overflowCollateralizationRatio: BigNumber = COLLATERALIZATION_RATIO_UPPER_BOUND.add(bn("1"));
   const underflowCollateralizationRatio: BigNumber = COLLATERALIZATION_RATIO_LOWER_BOUND.sub(bn("1"));
 
-  context("when the caller is not the admin", function () {
+  context("when the caller is not the owner", function () {
     it("reverts", async function () {
       await expect(
         this.contracts.fintroller
           .connect(this.signers.raider)
           .setCollateralizationRatio(this.mocks.wbtc.address, newCollateralizationRatio),
-      ).to.be.revertedWith(AdminErrors.NotAdmin);
+      ).to.be.revertedWith(OwnableErrors.NotOwner);
     });
   });
 
-  context("when the caller is the admin", function () {
+  context("when the caller is the owner", function () {
     context("when the collateral is not listed", function () {
       it("reverts", async function () {
         await expect(
           this.contracts.fintroller
-            .connect(this.signers.admin)
+            .connect(this.signers.owner)
             .setCollateralizationRatio(this.mocks.wbtc.address, newCollateralizationRatio),
         ).to.be.revertedWith(GenericErrors.CollateralNotListed);
       });
@@ -39,7 +39,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
 
     context("when the collateral is listed", function () {
       beforeEach(async function () {
-        await this.contracts.fintroller.connect(this.signers.admin).listCollateral(this.mocks.wbtc.address);
+        await this.contracts.fintroller.connect(this.signers.owner).listCollateral(this.mocks.wbtc.address);
       });
 
       context("when the collateralization ratio is not valid", function () {
@@ -47,7 +47,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
           it("reverts", async function () {
             await expect(
               this.contracts.fintroller
-                .connect(this.signers.admin)
+                .connect(this.signers.owner)
                 .setCollateralizationRatio(this.mocks.wbtc.address, overflowCollateralizationRatio),
             ).to.be.revertedWith(FintrollerErrors.SetCollateralizationRatioUpperBound);
           });
@@ -57,7 +57,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
           it("reverts", async function () {
             await expect(
               this.contracts.fintroller
-                .connect(this.signers.admin)
+                .connect(this.signers.owner)
                 .setCollateralizationRatio(this.mocks.wbtc.address, underflowCollateralizationRatio),
             ).to.be.revertedWith(FintrollerErrors.SetCollateralizationRatioLowerBound);
           });
@@ -67,7 +67,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
           it("reverts", async function () {
             await expect(
               this.contracts.fintroller
-                .connect(this.signers.admin)
+                .connect(this.signers.owner)
                 .setCollateralizationRatio(this.mocks.wbtc.address, Zero),
             ).to.be.revertedWith(FintrollerErrors.SetCollateralizationRatioLowerBound);
           });
@@ -77,7 +77,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
       context("when the collateralization ratio is valid", function () {
         it("sets the new collateralization ratio", async function () {
           await this.contracts.fintroller
-            .connect(this.signers.admin)
+            .connect(this.signers.owner)
             .setCollateralizationRatio(this.mocks.wbtc.address, newCollateralizationRatio);
           const contractCollateralizationRatio: BigNumber = await this.contracts.fintroller.getCollateralizationRatio(
             this.mocks.wbtc.address,
@@ -88,12 +88,12 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
         it("emits a SetBondCollateralizationRatio event", async function () {
           await expect(
             this.contracts.fintroller
-              .connect(this.signers.admin)
+              .connect(this.signers.owner)
               .setCollateralizationRatio(this.mocks.wbtc.address, newCollateralizationRatio),
           )
             .to.emit(this.contracts.fintroller, "SetCollateralizationRatio")
             .withArgs(
-              this.signers.admin.address,
+              this.signers.owner.address,
               this.mocks.wbtc.address,
               DEFAULT_COLLATERALIZATION_RATIO,
               newCollateralizationRatio,
