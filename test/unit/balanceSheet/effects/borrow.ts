@@ -12,7 +12,7 @@ import { wbtc, weth } from "../../../../helpers/numbers";
 import { BalanceSheetErrors, GenericErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeBorrow(): void {
-  context("when the fintroller does not allow borrows", function () {
+  context("when the Fintroller does not allow borrows", function () {
     beforeEach(async function () {
       await this.mocks.fintroller.mock.getBorrowAllowed.withArgs(this.mocks.hTokens[0].address).returns(false);
     });
@@ -25,7 +25,7 @@ export default function shouldBehaveLikeBorrow(): void {
     });
   });
 
-  context("when the fintroller allows borrows", function () {
+  context("when the Fintroller allows borrows", function () {
     beforeEach(async function () {
       await this.mocks.fintroller.mock.getBorrowAllowed.withArgs(this.mocks.hTokens[0].address).returns(true);
     });

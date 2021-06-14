@@ -1,4 +1,4 @@
-import shouldBehaveLikeConstructor from "./constructor";
+import shouldBehaveLikeConstructor from "./deployment/constructor";
 import shouldBehaveLikeBurn from "./effects/burn";
 import shouldBehaveLikeMint from "./effects/mint";
 import shouldBehaveLikeSetBalanceSheet from "./effects/setBalanceSheet";
@@ -9,7 +9,7 @@ import shouldBehaveLikeUnderlyingGetter from "./view/underlying";
 import shouldBehaveLikeUnderlyingPrecisionScalarGetter from "./view/underlyingPrecisionScalar";
 
 export function shouldBehaveLikeHToken(): void {
-  describe("Constructor", function () {
+  describe("Deployment", function () {
     shouldBehaveLikeConstructor();
   });
 

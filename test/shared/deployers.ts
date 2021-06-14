@@ -1,6 +1,5 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { BigNumber } from "@ethersproject/bignumber";
-import { ContractFactory } from "@ethersproject/contracts";
 import { artifacts, ethers, upgrades, waffle } from "hardhat";
 import { Artifact } from "hardhat/types";
 
@@ -16,6 +15,7 @@ import {
 import { getHTokenName, getHTokenSymbol } from "../../helpers/contracts";
 import { getDeployContractOverrides } from "../../helpers/env";
 import { price } from "../../helpers/numbers";
+import { FintrollerV1__factory, GodModeBalanceSheet__factory } from "../../typechain";
 import { ChainlinkOperator } from "../../typechain/ChainlinkOperator";
 import { Erc20Mintable } from "../../typechain/Erc20Mintable";
 import { FintrollerV1 } from "../../typechain/FintrollerV1";
@@ -35,8 +35,8 @@ export async function deployChainlinkOperator(deployer: Signer): Promise<Chainli
   return chainlinkOperator;
 }
 
-export async function deployFintroller(): Promise<FintrollerV1> {
-  const fintrollerV1Factory: ContractFactory = await ethers.getContractFactory("FintrollerV1");
+export async function deployFintrollerV1(): Promise<FintrollerV1> {
+  const fintrollerV1Factory: FintrollerV1__factory = await ethers.getContractFactory("FintrollerV1");
   const fintrollerV1: FintrollerV1 = <FintrollerV1>await upgrades.deployProxy(fintrollerV1Factory);
   await fintrollerV1.deployed();
   return fintrollerV1;
@@ -70,7 +70,9 @@ export async function deployGodModeBalanceSheet(
   fintrollerAddress: string,
   oracleAddress: string,
 ): Promise<GodModeBalanceSheet> {
-  const godModeBalanceSheetFactory: ContractFactory = await ethers.getContractFactory("GodModeBalanceSheet");
+  const godModeBalanceSheetFactory: GodModeBalanceSheet__factory = await ethers.getContractFactory(
+    "GodModeBalanceSheet",
+  );
   const balanceSheet: GodModeBalanceSheet = <GodModeBalanceSheet>(
     await upgrades.deployProxy(godModeBalanceSheetFactory, [fintrollerAddress, oracleAddress])
   );

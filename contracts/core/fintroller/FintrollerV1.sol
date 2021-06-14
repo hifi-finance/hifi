@@ -14,7 +14,7 @@ import "../../access/OwnableUpgradeable.sol";
 /// @dev Due to the upgradeability pattern, we have to inherit from the storage contract last.
 contract FintrollerV1 is
     Initializable, // no dependency
-    OwnableUpgradeable, // one dependency
+    OwnableUpgradeable, // two dependencies
     IFintrollerV1, // one dependency
     SFintrollerV1 // no dependency
 {

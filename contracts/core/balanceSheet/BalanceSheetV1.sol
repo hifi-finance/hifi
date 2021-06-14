@@ -16,8 +16,8 @@ import "../../access/OwnableUpgradeable.sol";
 /// @dev Due to the upgradeability pattern, we have to inherit from the storage contract last.
 contract BalanceSheetV1 is
     Initializable, // no dependency
-    IBalanceSheetV1, // one dependency
     OwnableUpgradeable, // two dependencies
+    IBalanceSheetV1, // one dependency
     SBalanceSheetV1 // no dependency
 {
     using PRBMathUD60x18 for uint256;

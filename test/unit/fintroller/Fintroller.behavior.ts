@@ -1,3 +1,4 @@
+import shouldBehaveLikeUpgradeableProxy from "./deployment/proxy";
 import shouldBehaveLikeListBond from "./effects/listBond";
 import shouldBehaveLikeListCollateral from "./effects/listCollateral";
 import shouldBehaveLikeSetBorrowAllowed from "./effects/setBorrowAllowed";
@@ -22,6 +23,10 @@ import shouldBehaveLikeIsCollateralListed from "./view/isCollateralListed";
 import shouldBehaveLikeMaxBonds from "./view/maxBonds";
 
 export function shouldBehaveLikeFintroller(): void {
+  describe("Deployment", function () {
+    shouldBehaveLikeUpgradeableProxy();
+  });
+
   describe("View Functions", function () {
     describe("getBond", function () {
       shouldBehaveLikeGetBond();

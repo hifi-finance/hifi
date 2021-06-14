@@ -20,7 +20,7 @@ import { GodModeHToken } from "../../typechain/GodModeHToken";
 import { SimplePriceFeed } from "../../typechain/SimplePriceFeed";
 import {
   deployChainlinkOperator,
-  deployFintroller,
+  deployFintrollerV1,
   deployGodModeBalanceSheet,
   deployGodModeHToken,
   deployUsdc,
@@ -63,7 +63,7 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
   await oracle.setFeed(usdc.address, usdcPriceFeed.address);
   await oracle.setFeed(wbtc.address, wbtcPriceFeed.address);
 
-  const fintroller: FintrollerV1 = await deployFintroller();
+  const fintroller: FintrollerV1 = await deployFintrollerV1();
   const balanceSheet: GodModeBalanceSheet = await deployGodModeBalanceSheet(fintroller.address, oracle.address);
   await balanceSheet.connect(deployer).setOracle(oracle.address);
   const hToken: GodModeHToken = await deployGodModeHToken(
@@ -150,7 +150,7 @@ type UnitFixtureFintrollerReturnType = {
 
 export async function unitFixtureFintroller(signers: Signer[]): Promise<UnitFixtureFintrollerReturnType> {
   const deployer: Signer = signers[0];
-  const fintroller: FintrollerV1 = await deployFintroller();
+  const fintroller: FintrollerV1 = await deployFintrollerV1();
   const hToken: MockContract = await deployMockHToken(deployer, H_TOKEN_EXPIRATION_TIMES[0]);
   const wbtc: MockContract = await deployMockWbtc(deployer);
   return { fintroller, hTokens: [hToken], wbtc };
