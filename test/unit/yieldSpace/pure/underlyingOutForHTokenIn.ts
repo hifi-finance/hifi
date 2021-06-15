@@ -37,33 +37,29 @@ export default function shouldBehaveLikeUnderlyingOutForHTokenIn(): void {
 
   context("when not too much hToken in", function () {
     context("when the call to fromUint reverts", function () {
-      context("when the call to fromUint reverts", function () {
-        const testSets = [
-          [fp(MAX_UD60x18).sub(fp("10")), fp("120"), fp("10"), bn(secondsInYears(1))],
-          [fp(MAX_UD60x18).div(fp(SCALE)).sub(fp("10")), fp("120"), fp("10"), bn(secondsInYears(1))],
-          [fp("100"), fp(MAX_UD60x18), fp("10"), bn(secondsInYears(1))],
-          [fp("100"), fp(MAX_UD60x18).div(fp(SCALE)), fp("10"), bn(secondsInYears(1))],
-        ];
+      const testSets = [
+        [fp(MAX_UD60x18).sub(fp("10")), fp("120"), fp("10"), bn(secondsInYears(1))],
+        [fp("100"), fp(MAX_UD60x18), fp("10"), bn(secondsInYears(1))],
+      ];
 
-        forEach(testSets).it(
-          "takes (%e, %e, %e, %e) and reverts",
-          async function (
-            hTokenReserves: BigNumber,
-            normalizedUnderlyingReserves: BigNumber,
-            hTokenIn: BigNumber,
-            timeToMaturity: BigNumber,
-          ) {
-            await expect(
-              this.contracts.yieldSpace.doUnderlyingOutForHTokenIn(
-                hTokenReserves,
-                normalizedUnderlyingReserves,
-                hTokenIn,
-                timeToMaturity,
-              ),
-            ).to.be.revertedWith("Transaction reverted without a reason");
-          },
-        );
-      });
+      forEach(testSets).it(
+        "takes (%e, %e, %e, %e) and reverts",
+        async function (
+          hTokenReserves: BigNumber,
+          normalizedUnderlyingReserves: BigNumber,
+          hTokenIn: BigNumber,
+          timeToMaturity: BigNumber,
+        ) {
+          await expect(
+            this.contracts.yieldSpace.doUnderlyingOutForHTokenIn(
+              hTokenReserves,
+              normalizedUnderlyingReserves,
+              hTokenIn,
+              timeToMaturity,
+            ),
+          ).to.be.revertedWith("Transaction reverted without a reason");
+        },
+      );
     });
 
     context("when the call to fromUint does not revert", function () {

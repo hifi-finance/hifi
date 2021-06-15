@@ -39,9 +39,7 @@ export default function shouldBehaveLikeUnderlyingInForHTokenOut(): void {
     context("when the call to fromUint reverts", function () {
       const testSets = [
         [fp(MAX_UD60x18), fp("100"), fp("10"), secondsInYears(1)],
-        [fp(MAX_UD60x18).div(fp(SCALE)), fp("100"), fp("10"), secondsInYears(1)],
         [fp("120"), fp(MAX_UD60x18), fp("10"), secondsInYears(1)],
-        [fp("120"), fp(MAX_UD60x18).div(fp(SCALE)), fp("10"), secondsInYears(1)],
       ];
 
       forEach(testSets).it(
