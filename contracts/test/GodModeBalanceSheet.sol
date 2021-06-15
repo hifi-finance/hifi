@@ -1,21 +1,15 @@
-/// SPDX-License-Identifier: LGPL-3.0-or-later
+// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.0;
 
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 
-import "../BalanceSheet.sol";
-import "../IFintroller.sol";
-import "../IHToken.sol";
-import "../oracles/IChainlinkOperator.sol";
+import "../core/balanceSheet/BalanceSheetV1.sol";
+import "../core/hToken/IHToken.sol";
 
 /// @title GodModeBalanceSheet
 /// @author Hifi
 /// @dev Strictly for test purposes. Do not use in production.
-contract GodModeBalanceSheet is BalanceSheet {
-    constructor(IFintroller fintroller_, IChainlinkOperator oracle_) BalanceSheet(fintroller_, oracle_) {
-        // solhint-disable-previous-line no-empty-blocks
-    }
-
+contract GodModeBalanceSheet is BalanceSheetV1 {
     function __godMode_burnHTokens(IHToken bond, uint256 burnAmount) external {
         bond.burn(msg.sender, burnAmount);
     }

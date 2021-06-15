@@ -1,8 +1,8 @@
-/// SPDX-License-Identifier: LGPL-3.0-or-later
+// SPDX-License-Identifier: LGPL-3.0-or-later
 // solhint-disable func-name-mixedcase
 pragma solidity >=0.8.0;
 
-import "../HToken.sol";
+import "../core/hToken/HToken.sol";
 
 /// @title GodModeHToken
 /// @author Hifi
@@ -12,7 +12,7 @@ contract GodModeHToken is HToken {
         string memory name_,
         string memory symbol_,
         uint256 expirationTime_,
-        IBalanceSheet balanceSheet_,
+        IBalanceSheetV1 balanceSheet_,
         IErc20 underlying_
     ) HToken(name_, symbol_, expirationTime_, balanceSheet_, underlying_) {
         // solhint-disable-previous-line no-empty-blocks

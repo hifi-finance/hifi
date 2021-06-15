@@ -37,7 +37,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
   });
 
   context("when the caller is not the borrower", function () {
-    context("when the fintroller does not allow borrow liquidations", function () {
+    context("when the Fintroller does not allow borrow liquidations", function () {
       beforeEach(async function () {
         await this.mocks.fintroller.mock.getLiquidateBorrowAllowed
           .withArgs(this.mocks.hTokens[0].address)
@@ -58,7 +58,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
       });
     });
 
-    context("when the fintroller allows borrow liquidations", function () {
+    context("when the Fintroller allows borrow liquidations", function () {
       beforeEach(async function () {
         await this.mocks.fintroller.mock.getLiquidateBorrowAllowed
           .withArgs(this.mocks.hTokens[0].address)

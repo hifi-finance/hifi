@@ -6,7 +6,7 @@ import { wbtc } from "../../../../helpers/numbers";
 import { BalanceSheetErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeDepositCollateral(): void {
-  context("when the fintroller does not allow collateral deposits", function () {
+  context("when the Fintroller does not allow collateral deposits", function () {
     beforeEach(async function () {
       await this.mocks.fintroller.mock.getDepositCollateralAllowed.withArgs(this.mocks.wbtc.address).returns(false);
     });
@@ -21,7 +21,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
     });
   });
 
-  context("when the fintroller allows collateral deposits", function () {
+  context("when the Fintroller allows collateral deposits", function () {
     beforeEach(async function () {
       await this.mocks.fintroller.mock.getDepositCollateralAllowed.withArgs(this.mocks.wbtc.address).returns(true);
     });

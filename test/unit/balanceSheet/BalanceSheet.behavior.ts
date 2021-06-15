@@ -1,3 +1,4 @@
+import shouldBehaveLikeUpgradeableProxy from "./deployment/proxy";
 import shouldBehaveLikeBorrow from "./effects/borrow";
 import shouldBehaveLikeDepositCollateral from "./effects/depositCollateral";
 import shouldBehaveLikeLiquidateBorrow from "./effects/liquidateBorrow";
@@ -16,6 +17,10 @@ import shouldBehaveLikeGetSeizableCollateralAmount from "./view/getSeizableColla
 import shouldBehaveLikeOracleGetter from "./view/oracle";
 
 export function shouldBehaveLikeBalanceSheet(): void {
+  describe("Deployment", function () {
+    shouldBehaveLikeUpgradeableProxy();
+  });
+
   describe("View Functions", function () {
     describe("fintroller", function () {
       shouldBehaveLikeFintrollerGetter();

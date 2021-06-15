@@ -285,6 +285,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@cto.af/textdecoder@npm:^0.0.0":
+  version: 0.0.0
+  resolution: "@cto.af/textdecoder@npm:0.0.0"
+  checksum: 142ee0a5ecd41dba1405973bbdcb4e1e18cb21051364e7ac56d66b50597057b7bf00ec25d7da908ace73902b1d39cf3221f5f6b76d85b0aebbbb229f32af1f8b
+  languageName: node
+  linkType: hard
+
 "@ensdomains/ens@npm:^0.4.4":
   version: 0.4.5
   resolution: "@ensdomains/ens@npm:0.4.5"
@@ -919,7 +926,9 @@ __metadata:
     "@ethersproject/units": ^5.2.0
     "@nomiclabs/hardhat-ethers": ^2.0.2
     "@nomiclabs/hardhat-waffle": ^2.0.1
-    "@paulrberg/contracts": ^3.0.0
+    "@openzeppelin/contracts-upgradeable": ^4.1.0
+    "@openzeppelin/hardhat-upgrades": ^1.8.2
+    "@paulrberg/contracts": ^3.1.0
     "@typechain/ethers-v5": ^7.0.0
     "@typechain/hardhat": ^2.0.1
     "@types/chai": ^4.2.18
@@ -1025,14 +1034,51 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@paulrberg/contracts@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@paulrberg/contracts@npm:3.0.0"
+"@openzeppelin/contracts-upgradeable@npm:^4.1.0":
+  version: 4.1.0
+  resolution: "@openzeppelin/contracts-upgradeable@npm:4.1.0"
+  checksum: 11a0273025d73ffddaf3407c20bd0463019f4d3f98b0e9a57b9dc316860ceb642481e48699e72439189d2cb0bd17613c5472e54fe44e276cf74d7dd475f367b3
+  languageName: node
+  linkType: hard
+
+"@openzeppelin/hardhat-upgrades@npm:^1.8.2":
+  version: 1.8.2
+  resolution: "@openzeppelin/hardhat-upgrades@npm:1.8.2"
+  dependencies:
+    "@openzeppelin/upgrades-core": ^1.7.3
+  peerDependencies:
+    "@nomiclabs/hardhat-ethers": ^2.0.0
+    hardhat: ^2.0.2
+  bin:
+    migrate-oz-cli-project: dist/scripts/migrate-oz-cli-project.js
+  checksum: e0bcb23a98d81f27859403f93ac5c2ef252284171771b2ea6f7b960618c091cca703bf7cc46ebddaebf73b89d850aad89d0cc9345e05563a301e5c7147b2604c
+  languageName: node
+  linkType: hard
+
+"@openzeppelin/upgrades-core@npm:^1.7.3":
+  version: 1.7.6
+  resolution: "@openzeppelin/upgrades-core@npm:1.7.6"
+  dependencies:
+    bn.js: ^5.1.2
+    cbor: ^7.0.0
+    chalk: ^4.1.0
+    compare-versions: ^3.6.0
+    debug: ^4.1.1
+    ethereumjs-util: ^7.0.3
+    proper-lockfile: ^4.1.1
+    solidity-ast: ^0.4.15
+  checksum: 957fe4a426caa36b81076b066e97e991a131d755671480cfdac64d15593ee5e3491ef03020cd627c6b71cd62a624a9a1463ae7345e8e52095b70f237b39ce3ed
+  languageName: node
+  linkType: hard
+
+"@paulrberg/contracts@npm:^3.1.0":
+  version: 3.1.0
+  resolution: "@paulrberg/contracts@npm:3.1.0"
   dependencies:
     prb-math: ^1.1.0
   peerDependencies:
     prb-math: ^1.1.0
-  checksum: edd1d41d319357026d258b89da1da9a82d513e9e6707f26c17f0b6d0ed7da614e96ddf5a1913c2b5f330a97707d0dafaf1f3fb93f093cd67fd15e80604026fde
+  checksum: 2852227f0aa9432f3f6189a284bfeb1d49c943e99aa7964a7449a70cb78351000093ef4b9a482a8e9df9b6879cbf884e3f588965dac5ee3e2a1307bc5635bba1
   languageName: node
   linkType: hard
 
@@ -3524,6 +3570,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"cbor@npm:^7.0.0":
+  version: 7.0.5
+  resolution: "cbor@npm:7.0.5"
+  dependencies:
+    "@cto.af/textdecoder": ^0.0.0
+    nofilter: ^2.0.3
+  peerDependencies:
+    bignumber.js: ^9.0.1
+  peerDependenciesMeta:
+    bignumber.js:
+      optional: true
+  checksum: e9c4f36ad912cbf2ad53db39058c7b7a6e34c340f98ef34f7ceea14ec01aacb3c633b1410e332cd4ec1d544f4460aed4c50165e04cddda1b23ccd29eea858e78
+  languageName: node
+  linkType: hard
+
 "chai@npm:^4.3.4":
   version: 4.3.4
   resolution: "chai@npm:4.3.4"
@@ -3977,6 +4038,13 @@ __metadata:
     array-ify: ^1.0.0
     dot-prop: ^5.1.0
   checksum: 825690b828f028acf270578cd4d9ea0751987b474095cd47093a29ac087a21e5de2db86b83cc0cecb935dfca952ba8bbcd7ead240fe6b3b7ecb1a66a8b109d28
+  languageName: node
+  linkType: hard
+
+"compare-versions@npm:^3.6.0":
+  version: 3.6.0
+  resolution: "compare-versions@npm:3.6.0"
+  checksum: 09525264502bda1f6667ad2429eaf5520b543d997e79e7a94b66a5896df8921cdc3a97140dfff75af6c9ba1859c872de1921c3cf8a6c48ed807bbf9f582cf093
   languageName: node
   linkType: hard
 
@@ -5748,7 +5816,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ethereumjs-util@npm:^7.0.10, ethereumjs-util@npm:^7.0.2, ethereumjs-util@npm:^7.0.7, ethereumjs-util@npm:^7.0.9":
+"ethereumjs-util@npm:^7.0.10, ethereumjs-util@npm:^7.0.2, ethereumjs-util@npm:^7.0.3, ethereumjs-util@npm:^7.0.7, ethereumjs-util@npm:^7.0.9":
   version: 7.0.10
   resolution: "ethereumjs-util@npm:7.0.10"
   dependencies:
@@ -7136,7 +7204,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"graceful-fs@npm:^4.1.11, graceful-fs@npm:^4.1.15, graceful-fs@npm:^4.1.2, graceful-fs@npm:^4.1.6, graceful-fs@npm:^4.1.9, graceful-fs@npm:^4.2.0, graceful-fs@npm:^4.2.6":
+"graceful-fs@npm:^4.1.11, graceful-fs@npm:^4.1.15, graceful-fs@npm:^4.1.2, graceful-fs@npm:^4.1.6, graceful-fs@npm:^4.1.9, graceful-fs@npm:^4.2.0, graceful-fs@npm:^4.2.4, graceful-fs@npm:^4.2.6":
   version: 4.2.6
   resolution: "graceful-fs@npm:4.2.6"
   checksum: 84d39c7756892553da990a9db7e45f844b3309b37b5a00174cbb4748476f2250c54f24594d4d252f64f085c65c2fdac7c809419bf6d55f0e6e42eb07ac0f5bf2
@@ -10173,6 +10241,15 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
+"nofilter@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "nofilter@npm:2.0.3"
+  dependencies:
+    "@cto.af/textdecoder": ^0.0.0
+  checksum: a39b197bd827dff349f50ed51232bda4689abb4ea8321e9a7ff152a304b633ee70422d018aa65a53a95632176e5177cb2fa0b32b69a0910782699f7f0076bdb7
+  languageName: node
+  linkType: hard
+
 "nopt@npm:3.x":
   version: 3.0.6
   resolution: "nopt@npm:3.0.6"
@@ -11135,6 +11212,17 @@ fsevents@~2.3.1:
   dependencies:
     asap: ~2.0.6
   checksum: ec94008d8a673c276dbc7722c215f583026b8d2588fb83f40e69908c553801eac7fbe3034c9bca853d5c422af20826abdfb9391b982a888868d9c88281dc59fb
+  languageName: node
+  linkType: hard
+
+"proper-lockfile@npm:^4.1.1":
+  version: 4.1.2
+  resolution: "proper-lockfile@npm:4.1.2"
+  dependencies:
+    graceful-fs: ^4.2.4
+    retry: ^0.12.0
+    signal-exit: ^3.0.2
+  checksum: a89fe12b3ed2a1413731cfa3b705b94f2411354cce660a2120cc0bd9337cef3710c41f73b88bc4f13eca8efa6530883645dea8e077b32d519d067f0f11271c34
   languageName: node
   linkType: hard
 
@@ -12616,6 +12704,13 @@ resolve@1.1.x:
   bin:
     solhint: solhint.js
   checksum: 716305f7b4c1b0174c5ce3296a6a7d18ca7caa4974a2ebe6796fa7742d9568cb648fbaf4887000f77d956efe46a881ad96478621f4ff2a8cc943292f52986b82
+  languageName: node
+  linkType: hard
+
+"solidity-ast@npm:^0.4.15":
+  version: 0.4.25
+  resolution: "solidity-ast@npm:0.4.25"
+  checksum: 22484316bb08b35d943c764cf34028502aa7c39eaf76b3c9282de2720814a1525e2dee9c16843a401f28c95702708f985c0f0faabbad8ad3f719ad4745d7566b
   languageName: node
   linkType: hard
 

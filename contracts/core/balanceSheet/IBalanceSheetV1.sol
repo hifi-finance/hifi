@@ -1,27 +1,18 @@
-/// SPDX-License-Identifier: LGPL-3.0-or-later
+// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.0;
 
-import "@paulrberg/contracts/access/IAdmin.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 
-import "./oracles/IChainlinkOperator.sol";
-import "./IFintroller.sol";
-import "./IHToken.sol";
+import "../balanceSheet/SBalanceSheetV1.sol";
+import "../fintroller/IFintrollerV1.sol";
+import "../hToken/IHToken.sol";
+import "../../access/IOwnableUpgradeable.sol";
+import "../../oracles/IChainlinkOperator.sol";
 
-/// @title IBalanceSheet
+/// @title IBalanceSheetV1
 /// @author Hifi
 /// @notice Manages the collaterals and the debts for all users.
-interface IBalanceSheet is IAdmin {
-    /// STRUCTS ///
-
-    /// @notice Structure of a vault.
-    struct Vault {
-        IHToken[] bondList;
-        mapping(IErc20 => uint256) collateralAmounts;
-        IErc20[] collateralList;
-        mapping(IHToken => uint256) debtAmounts;
-    }
-
+interface IBalanceSheetV1 is IOwnableUpgradeable {
     /// EVENTS ///
 
     /// @notice Emitted when a borrow is made.
@@ -67,10 +58,10 @@ interface IBalanceSheet is IAdmin {
     );
 
     /// @notice Emitted when a new oracle is set.
-    /// @param admin The address of the admin.
+    /// @param owner The address of the owner.
     /// @param oldOracle The address of the old oracle.
     /// @param newOracle The address of the new oracle.
-    event SetOracle(address indexed admin, address oldOracle, address newOracle);
+    event SetOracle(address indexed owner, address oldOracle, address newOracle);
 
     /// @notice Emitted when collateral is withdrawn.
     /// @param account The address of the borrower.
@@ -79,9 +70,6 @@ interface IBalanceSheet is IAdmin {
     event WithdrawCollateral(address indexed account, IErc20 indexed collateral, uint256 collateralAmount);
 
     /// CONSTANT FUNCTIONS ///
-
-    /// @notice The unique Fintroller associated with this contract.
-    function fintroller() external view returns (IFintroller);
 
     /// @notice Returns the list of bond markets the given account entered.
     /// @dev It is not an error to provide an invalid address.
@@ -152,9 +140,6 @@ interface IBalanceSheet is IAdmin {
         IHToken bondModify,
         uint256 debtAmountModify
     ) external view returns (uint256 excessLiquidity, uint256 shortfallLiquidity);
-
-    /// @notice The contract that provides price data.
-    function oracle() external view returns (IChainlinkOperator);
 
     /// NON-CONSTANT FUNCTIONS ///
 
@@ -250,7 +235,7 @@ interface IBalanceSheet is IAdmin {
     ///
     /// Requirements:
     ///
-    /// - The caller must be the admin.
+    /// - The caller must be the owner.
     /// - The new address cannot be the zero address.
     ///
     /// @param newOracle The new oracle contract.

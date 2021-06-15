@@ -2,20 +2,20 @@ import { expect } from "chai";
 
 import { WBTC_SYMBOL } from "../../../../helpers/constants";
 import { bn } from "../../../../helpers/numbers";
-import { AdminErrors, ChainlinkOperatorErrors } from "../../../shared/errors";
+import { ChainlinkOperatorErrors, OwnableErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeSetFeed(): void {
-  context("when the caller is not the admin", function () {
+  context("when the caller is not the owner", function () {
     it("reverts", async function () {
       await expect(
         this.contracts.oracle
           .connect(this.signers.raider)
           .setFeed(this.mocks.wbtc.address, this.mocks.wbtcPriceFeed.address),
-      ).to.be.revertedWith(AdminErrors.NotAdmin);
+      ).to.be.revertedWith(OwnableErrors.NotOwner);
     });
   });
 
-  context("when the caller is the admin", function () {
+  context("when the caller is the owner", function () {
     context("when the feed does not have 8 decimals", function () {
       beforeEach(async function () {
         await this.mocks.wbtcPriceFeed.mock.decimals.returns(bn("6"));
@@ -24,7 +24,7 @@ export default function shouldBehaveLikeSetFeed(): void {
       it("reverts", async function () {
         await expect(
           this.contracts.oracle
-            .connect(this.signers.admin)
+            .connect(this.signers.owner)
             .setFeed(this.mocks.wbtc.address, this.mocks.wbtcPriceFeed.address),
         ).to.be.revertedWith(ChainlinkOperatorErrors.FeedIncorrectDecimals);
       });
@@ -33,7 +33,7 @@ export default function shouldBehaveLikeSetFeed(): void {
     context("when the feed has 8 decimals", function () {
       it("sets the feed", async function () {
         await this.contracts.oracle
-          .connect(this.signers.admin)
+          .connect(this.signers.owner)
           .setFeed(this.mocks.wbtc.address, this.mocks.wbtcPriceFeed.address);
         const feed = await this.contracts.oracle.getFeed(WBTC_SYMBOL);
         expect(feed[0]).to.equal(this.mocks.wbtc.address); // asset
@@ -44,7 +44,7 @@ export default function shouldBehaveLikeSetFeed(): void {
       it("emits a SetFeed event", async function () {
         await expect(
           this.contracts.oracle
-            .connect(this.signers.admin)
+            .connect(this.signers.owner)
             .setFeed(this.mocks.wbtc.address, this.mocks.wbtcPriceFeed.address),
         )
           .to.emit(this.contracts.oracle, "SetFeed")

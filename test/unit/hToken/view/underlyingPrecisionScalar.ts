@@ -14,7 +14,7 @@ export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void 
 
     it("retrieves 1", async function () {
       const hToken: HToken = await deployHToken(
-        this.signers.admin,
+        this.signers.owner,
         H_TOKEN_EXPIRATION_TIMES[0],
         this.mocks.balanceSheet.address,
         this.mocks.usdc.address,
@@ -31,7 +31,7 @@ export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void 
 
     it("retrieves 1.0e10", async function () {
       const hToken: HToken = await deployHToken(
-        this.signers.admin,
+        this.signers.owner,
         H_TOKEN_EXPIRATION_TIMES[0],
         this.mocks.balanceSheet.address,
         this.mocks.usdc.address,
@@ -48,7 +48,7 @@ export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void 
 
     it("retrieves 1", async function () {
       const hToken: HToken = await deployHToken(
-        this.signers.admin,
+        this.signers.owner,
         H_TOKEN_EXPIRATION_TIMES[0],
         this.mocks.balanceSheet.address,
         this.mocks.usdc.address,

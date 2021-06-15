@@ -3,7 +3,7 @@ import { MockContract } from "ethereum-waffle";
 
 import { ChainlinkOperator } from "../typechain/ChainlinkOperator";
 import { Erc20Mintable } from "../typechain/Erc20Mintable";
-import { Fintroller } from "../typechain/Fintroller";
+import { FintrollerV1 } from "../typechain/FintrollerV1";
 import { GodModeBalanceSheet } from "../typechain/GodModeBalanceSheet";
 import { GodModeHToken } from "../typechain/GodModeHToken";
 import { SimplePriceFeed } from "../typechain/SimplePriceFeed";
@@ -11,7 +11,7 @@ import { StablecoinPriceFeed } from "../typechain/StablecoinPriceFeed";
 
 export interface Contracts {
   balanceSheet: GodModeBalanceSheet;
-  fintroller: Fintroller;
+  fintroller: FintrollerV1;
   hTokens: GodModeHToken[];
   oracle: ChainlinkOperator;
   usdc: Erc20Mintable;
@@ -33,7 +33,7 @@ export interface Mocks {
   wethPriceFeed: MockContract;
 }
 export interface Signers {
-  admin: SignerWithAddress;
+  owner: SignerWithAddress;
   borrower: SignerWithAddress;
   lender: SignerWithAddress;
   liquidator: SignerWithAddress;

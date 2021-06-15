@@ -1,4 +1,5 @@
 import "@nomiclabs/hardhat-waffle";
+import "@openzeppelin/hardhat-upgrades";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
 import "solidity-coverage";
@@ -11,6 +12,7 @@ import { config as dotenvConfig } from "dotenv";
 import { HardhatUserConfig, NetworkUserConfig } from "hardhat/types";
 
 import { GAS_LIMIT_HARDHAT } from "./helpers/constants";
+import { getEnvVar } from "./helpers/env";
 
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
@@ -24,19 +26,8 @@ const chainIds = {
 };
 
 // Ensure that we have the environment variables we need.
-let mnemonic: string;
-if (!process.env.MNEMONIC) {
-  throw new Error("Please set your MNEMONIC in a .env file");
-} else {
-  mnemonic = process.env.MNEMONIC;
-}
-
-let infuraApiKey: string;
-if (!process.env.INFURA_API_KEY) {
-  throw new Error("Please set your INFURA_API_KEY in a .env file");
-} else {
-  infuraApiKey = process.env.INFURA_API_KEY;
-}
+const infuraApiKey: string = getEnvVar("INFURA_API_KEY");
+const mnemonic: string = getEnvVar("MNEMONIC");
 
 function createTestnetConfig(network: keyof typeof chainIds): NetworkUserConfig {
   const url: string = "https://" + network + ".infura.io/v3/" + infuraApiKey;
@@ -86,7 +77,7 @@ const config: HardhatUserConfig = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 999999,
+        runs: 800,
       },
     },
   },

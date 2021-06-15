@@ -6,7 +6,7 @@ import fp from "evm-fp";
 import { BalanceSheetErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeRepayBorrow(): void {
-  context("when the fintroller does not allow borrow repays", function () {
+  context("when the Fintroller does not allow borrow repays", function () {
     beforeEach(async function () {
       await this.mocks.fintroller.mock.getRepayBorrowAllowed.withArgs(this.mocks.hTokens[0].address).returns(false);
     });
@@ -21,7 +21,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
     });
   });
 
-  context("when the fintroller allows borrow repays", function () {
+  context("when the Fintroller allows borrow repays", function () {
     beforeEach(async function () {
       await this.mocks.fintroller.mock.getRepayBorrowAllowed.withArgs(this.mocks.hTokens[0].address).returns(true);
     });

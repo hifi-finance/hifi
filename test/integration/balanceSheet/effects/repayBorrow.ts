@@ -12,22 +12,22 @@ export default function shouldBehaveLikeRepayBorrow(): void {
 
   beforeEach(async function () {
     // List the collateral in the Fintroller.
-    await this.contracts.fintroller.connect(this.signers.admin).listCollateral(this.contracts.wbtc.address);
+    await this.contracts.fintroller.connect(this.signers.owner).listCollateral(this.contracts.wbtc.address);
 
     // List the bond in the Fintroller.
-    await this.contracts.fintroller.connect(this.signers.admin).listBond(this.contracts.hTokens[0].address);
+    await this.contracts.fintroller.connect(this.signers.owner).listBond(this.contracts.hTokens[0].address);
 
     // Allow borrows and borrow repays.
     await this.contracts.fintroller
-      .connect(this.signers.admin)
+      .connect(this.signers.owner)
       .setBorrowAllowed(this.contracts.hTokens[0].address, true);
     await this.contracts.fintroller
-      .connect(this.signers.admin)
+      .connect(this.signers.owner)
       .setRepayBorrowAllowed(this.contracts.hTokens[0].address, true);
 
     // Set the debt ceiling.
     await this.contracts.fintroller
-      .connect(this.signers.admin)
+      .connect(this.signers.owner)
       .setDebtCeiling(this.contracts.hTokens[0].address, debtCeiling);
 
     // Mint 1 WBTC and approve the BalanceSheet to spend it.

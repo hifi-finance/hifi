@@ -6,10 +6,8 @@ import { getEnvVar } from "../../helpers/env";
 const name: string = getEnvVar("H_TOKEN_NAME");
 const symbol: string = getEnvVar("H_TOKEN_SYMBOL");
 const expirationTime: string = getEnvVar("H_TOKEN_EXPIRATION_TIME");
-const fintrollerAddress: string = getEnvVar("FINTROLLER_ADDRESS");
 const balanceSheetAddress: string = getEnvVar("BALANCE_SHEET_ADDRESS");
 const underlyingAddress: string = getEnvVar("UNDERLYING_ADDRESS");
-const collateralAddress: string = getEnvVar("COLLATERAL_ADDRESS");
 
 async function main(): Promise<void> {
   const hTokenFactory: ContractFactory = await ethers.getContractFactory("HToken");
@@ -17,10 +15,8 @@ async function main(): Promise<void> {
     name,
     symbol,
     expirationTime,
-    fintrollerAddress,
     balanceSheetAddress,
     underlyingAddress,
-    collateralAddress,
   );
   await hToken.deployed();
   console.log("HToken deployed to: ", hToken.address);
