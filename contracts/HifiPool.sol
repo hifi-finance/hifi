@@ -285,7 +285,6 @@ contract HifiPool is
         underlying.safeTransfer(to, underlyingOut);
         hToken.transferFrom(msg.sender, address(this), hTokenIn);
 
-        // TODO: check if `hTokenIn` is not min uint256
         emit Trade(maturity, msg.sender, to, toInt256(underlyingOut), -toInt256(hTokenIn));
     }
 
@@ -300,7 +299,6 @@ contract HifiPool is
         underlying.safeTransferFrom(msg.sender, address(this), underlyingIn);
         hToken.transfer(to, hTokenOut);
 
-        // TODO: check if `underlyingIn` is not min uint256
         emit Trade(maturity, msg.sender, to, -toInt256(underlyingIn), toInt256(hTokenOut));
     }
 
