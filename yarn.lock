@@ -883,7 +883,7 @@ __metadata:
     "@ethersproject/wallet": ^5.1.0
     "@nomiclabs/hardhat-ethers": ^2.0.2
     "@nomiclabs/hardhat-waffle": ^2.0.1
-    "@paulrberg/contracts": latest
+    "@paulrberg/contracts": ^3.2.0
     "@typechain/ethers-v5": ^7.0.0
     "@typechain/hardhat": ^2.0.1
     "@types/chai": ^4.2.18
@@ -988,14 +988,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@paulrberg/contracts@npm:latest":
-  version: 3.0.0
-  resolution: "@paulrberg/contracts@npm:3.0.0"
+"@paulrberg/contracts@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "@paulrberg/contracts@npm:3.2.0"
   dependencies:
-    prb-math: ^1.1.0
+    prb-math: ^2.0.0
   peerDependencies:
-    prb-math: ^1.1.0
-  checksum: edd1d41d319357026d258b89da1da9a82d513e9e6707f26c17f0b6d0ed7da614e96ddf5a1913c2b5f330a97707d0dafaf1f3fb93f093cd67fd15e80604026fde
+    prb-math: ^2.0.0
+  checksum: 2f31bfe27446d0c2f05f485c46453850d98a3569155eb9d001781e5001c3ebda8bf0b3b6ae2ce305421d0d1460b8a04296772342026e48f59ff061164421fd9b
   languageName: node
   linkType: hard
 
@@ -10447,13 +10447,6 @@ fsevents@~2.3.1:
   version: 2.1.0
   resolution: "postinstall-postinstall@npm:2.1.0"
   checksum: e637f608f504ead45a2cc457db40cc70aab392d19504db5d7d55a84c0d04024d6d36393e066f001cdf0c8a634b2866c41df40fc964b3e88fc1c1672efde5c6be
-  languageName: node
-  linkType: hard
-
-"prb-math@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "prb-math@npm:1.1.0"
-  checksum: 8470a19cab9faafbb0f35974132df8f4915b84486ea63ba10bde22ce9c8f3755064370ffb5a288923e7c3c11f4db40d4a475e46fec6e9d88d64401070855e01d
   languageName: node
   linkType: hard
 

@@ -64,13 +64,7 @@ export default function shouldBehaveLikeHTokenInForUnderlyingOut(): void {
 
     context("when the call to fromUint does not revert", function () {
       context("when the call to pow reverts", function () {
-        const testSets = [
-          // The first number is ~2^128.000001068119317841, whose binary logarithm multiplied by the largest exponent
-          // possible, which is ~0.999999991655317899, yields a little bit over 128e18 in Solidity.  This is the first
-          // value which causes the internal call to the "exp2" function to revert.
-          [bn("340282618853809846161851223089384341454"), fp("110"), fp("10"), bn("1")],
-          [fp(MAX_UD60x18).div(fp(SCALE)).sub(1), fp("110"), fp("10"), bn("1")],
-        ];
+        const testSets = [[fp(MAX_UD60x18).div(fp(SCALE)), fp("110"), fp("10"), bn("1")]];
 
         forEach(testSets).it(
           "takes (%e, %e, %e, %e) and reverts",
