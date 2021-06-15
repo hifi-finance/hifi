@@ -5,6 +5,7 @@ import "@paulrberg/contracts/access/Ownable.sol";
 import "@paulrberg/contracts/token/erc20/Erc20.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Permit.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Recover.sol";
+import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 
 import "../balanceSheet/IBalanceSheetV1.sol";
 import "../hToken/IHToken.sol";
@@ -18,6 +19,8 @@ contract HToken is
     IHToken, // five dependencies
     Erc20Recover // five dependencies
 {
+    using SafeErc20 for IErc20;
+
     /// STORAGE ///
 
     /// @inheritdoc IHToken
@@ -25,6 +28,9 @@ contract HToken is
 
     /// @inheritdoc IHToken
     uint256 public override expirationTime;
+
+    /// @inheritdoc IHToken
+    uint256 public override totalUnderlyingSupply;
 
     /// @inheritdoc IHToken
     IErc20 public override underlying;
@@ -48,7 +54,7 @@ contract HToken is
         IErc20 underlying_
     ) Erc20Permit(name_, symbol_, 18) Ownable() {
         // Set the unix expiration time.
-        require(expirationTime_ > block.timestamp, "HTOKEN_CONSTRUCTOR_EXPIRATION_TIME_PAST");
+        require(expirationTime_ > block.timestamp, "CONSTRUCTOR_EXPIRATION_TIME_PAST");
         expirationTime = expirationTime_;
 
         // Set the BalanceSheet contract.
@@ -56,8 +62,8 @@ contract HToken is
 
         // Set the underlying contract and calculate the decimal scalar offsets.
         uint256 underlyingDecimals = underlying_.decimals();
-        require(underlyingDecimals > 0, "HTOKEN_CONSTRUCTOR_UNDERLYING_DECIMALS_ZERO");
-        require(underlyingDecimals <= 18, "HTOKEN_CONSTRUCTOR_UNDERLYING_DECIMALS_OVERFLOW");
+        require(underlyingDecimals > 0, "CONSTRUCTOR_UNDERLYING_DECIMALS_ZERO");
+        require(underlyingDecimals <= 18, "CONSTRUCTOR_UNDERLYING_DECIMALS_OVERFLOW");
         underlyingPrecisionScalar = 10**(18 - underlyingDecimals);
         underlying = underlying_;
     }
@@ -101,6 +107,59 @@ contract HToken is
         // Emit a Mint and a Transfer event.
         emit Mint(beneficiary, mintAmount);
         emit Transfer(address(this), beneficiary, mintAmount);
+    }
+
+    /// @inheritdoc IHToken
+    function redeem(uint256 hTokenAmount) external override {
+        // Checks: the zero edge case.
+        require(hTokenAmount > 0, "REDEEM_ZERO");
+
+        // Denormalize the hToken amount to the underlying decimals.
+        uint256 underlyingAmount;
+        if (underlyingPrecisionScalar != 1) {
+            unchecked { underlyingAmount = hTokenAmount / underlyingPrecisionScalar; }
+        } else {
+            underlyingAmount = hTokenAmount;
+        }
+
+        // Checks: there is enough liquidity.
+        require(underlyingAmount <= totalUnderlyingSupply, "REDEEM_INSUFFICIENT_LIQUIDITY");
+
+        // Effects: decrease the remaining supply of underlying.
+        totalUnderlyingSupply -= underlyingAmount;
+
+        // Interactions: burn the hTokens.
+        burnInternal(msg.sender, hTokenAmount);
+
+        // Interactions: perform the Erc20 transfer.
+        underlying.safeTransfer(msg.sender, underlyingAmount);
+
+        emit Redeem(msg.sender, hTokenAmount, underlyingAmount);
+    }
+
+    /// @inheritdoc IHToken
+    function supplyUnderlying(uint256 underlyingSupplyAmount) external override {
+        // Checks: the zero edge case.
+        require(underlyingSupplyAmount > 0, "SUPPLY_UNDERLYING_ZERO");
+
+        // Effects: update storage.
+        totalUnderlyingSupply += underlyingSupplyAmount;
+
+        // Normalize the underlying amount to 18 decimals.
+        uint256 hTokenAmount;
+        if (underlyingPrecisionScalar != 1) {
+            hTokenAmount = underlyingSupplyAmount * underlyingPrecisionScalar;
+        } else {
+            hTokenAmount = underlyingSupplyAmount;
+        }
+
+        // Effeects: mint the hTokens.
+        mintInternal(msg.sender, hTokenAmount);
+
+        // Interactions: perform the Erc20 transfer.
+        underlying.safeTransferFrom(msg.sender, address(this), underlyingSupplyAmount);
+
+        emit SupplyUnderlying(msg.sender, underlyingSupplyAmount, hTokenAmount);
     }
 
     /// @inheritdoc IHToken

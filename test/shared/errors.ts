@@ -49,9 +49,12 @@ export enum GenericErrors {
 export enum HTokenErrors {
   BurnNotAuthorized = "BURN_NOT_AUTHORIZED",
   BurnZero = "BURN_ZERO",
-  ConstructorExpirationTimePast = "HTOKEN_CONSTRUCTOR_EXPIRATION_TIME_PAST",
-  ConstructorUnderlyingDecimalsOverflow = "HTOKEN_CONSTRUCTOR_UNDERLYING_DECIMALS_OVERFLOW",
-  ConstructorUnderlyingDecimalsZero = "HTOKEN_CONSTRUCTOR_UNDERLYING_DECIMALS_ZERO",
+  ConstructorExpirationTimePast = "CONSTRUCTOR_EXPIRATION_TIME_PAST",
+  ConstructorUnderlyingDecimalsOverflow = "CONSTRUCTOR_UNDERLYING_DECIMALS_OVERFLOW",
+  ConstructorUnderlyingDecimalsZero = "CONSTRUCTOR_UNDERLYING_DECIMALS_ZERO",
   MintNotAuthorized = "MINT_NOT_AUTHORIZED",
   MintZero = "MINT_ZERO",
+  RedeemInsufficientLiquidity = "REDEEM_INSUFFICIENT_LIQUIDITY",
+  RedeemZero = "REDEEM_ZERO",
+  SupplyUnderlyingZero = "SUPPLY_UNDERLYING_ZERO",
 }

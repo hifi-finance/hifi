@@ -25,4 +25,12 @@ contract GodModeHToken is HToken {
     function __godMode_setExpirationTime(uint256 newExpirationTime) external {
         expirationTime = newExpirationTime;
     }
+
+    function __godMode_setTotalUnderlyingSupply(uint256 newTotalUnderlyingSupply) external {
+        totalUnderlyingSupply = newTotalUnderlyingSupply;
+    }
+
+    function __godMode_setUnderlyingPrecisionScalar(uint256 newUnderlyingPrecisionScalar) external {
+        underlyingPrecisionScalar = newUnderlyingPrecisionScalar;
+    }
 }

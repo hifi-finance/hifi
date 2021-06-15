@@ -88,7 +88,7 @@ contract BalanceSheetV1 is
         // Denormalize the collateral amount.
         uint256 collateralPrecisionScalar = 10**(18 - collateral.decimals());
         if (collateralPrecisionScalar != 1) {
-            seizableCollateralAmount = normalizedSeizableCollateralAmount / collateralPrecisionScalar;
+            unchecked { seizableCollateralAmount = normalizedSeizableCollateralAmount / collateralPrecisionScalar; }
         } else {
             seizableCollateralAmount = normalizedSeizableCollateralAmount;
         }
