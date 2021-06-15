@@ -20,7 +20,7 @@ export default function shouldBehaveLikeBurn(): void {
     context("when the total supply is 0", function () {
       it("reverts", async function () {
         await this.mocks.underlying.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(bn("0"));
-        await this.mocks.fyToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(bn("0"));
+        await this.mocks.hToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(bn("0"));
         const poolTokensBurned: BigNumber = fp("100");
         await expect(this.contracts.hifiPool.burn(poolTokensBurned)).to.be.reverted;
       });
@@ -37,23 +37,23 @@ export default function shouldBehaveLikeBurn(): void {
         const testSets = [
           // Makes "poolTokensBurned * normalizedUnderlyingReserves" overflow.
           [fp("0"), fp("1157920892373161954235709850086879078532.699846656405640395")],
-          // Makes "poolTokensBurned * fyTokenReserves" overflow.
+          // Makes "poolTokensBurned * hTokenReserves" overflow.
           [fp("1157920892373161954235709850086879078532.699846656405640395"), fp("100")],
         ];
 
         forEach(testSets).it(
           "takes %e and %e and reverts",
-          async function (fyTokenBalance: BigNumber, poolTokensBurned: BigNumber) {
-            await this.mocks.fyToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(fyTokenBalance);
+          async function (hTokenBalance: BigNumber, poolTokensBurned: BigNumber) {
+            await this.mocks.hToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(hTokenBalance);
             await expect(this.contracts.hifiPool.connect(this.signers.alice).burn(poolTokensBurned)).to.be.reverted;
           },
         );
       });
 
       context("when there is no phantom overflow", function () {
-        context("when there are no fyToken reserves", function () {
+        context("when there are no hToken reserves", function () {
           beforeEach(async function () {
-            await this.mocks.fyToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(bn("0"));
+            await this.mocks.hToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(bn("0"));
           });
 
           const testSets = [
@@ -78,7 +78,7 @@ export default function shouldBehaveLikeBurn(): void {
               .mul(normalizedUnderlyingReserves)
               .div(lpTokenAmount)
               .div(UNDERLYING_PRECISION_SCALAR);
-            const fyTokenReturned: BigNumber = bn("0");
+            const hTokenReturned: BigNumber = bn("0");
 
             // Mock the necessary methods.
             await this.mocks.underlying.mock.balanceOf
@@ -95,18 +95,18 @@ export default function shouldBehaveLikeBurn(): void {
                 FY_TOKEN_EXPIRATION_TIME,
                 this.signers.alice.address,
                 underlyingReturned,
-                fyTokenReturned,
+                hTokenReturned,
                 poolTokensBurnedBn,
               );
           });
         });
 
-        context("when there are fyToken reserves", function () {
-          const initialFyTokenReserves: BigNumber = fp("100");
+        context("when there are hToken reserves", function () {
+          const initialHTokenReserves: BigNumber = fp("100");
           beforeEach(async function () {
-            await this.mocks.fyToken.mock.balanceOf
+            await this.mocks.hToken.mock.balanceOf
               .withArgs(this.contracts.hifiPool.address)
-              .returns(initialFyTokenReserves);
+              .returns(initialHTokenReserves);
           });
 
           const testSets = [
@@ -131,7 +131,7 @@ export default function shouldBehaveLikeBurn(): void {
               .mul(normalizedUnderlyingReserves)
               .div(lpTokenAmount)
               .div(UNDERLYING_PRECISION_SCALAR);
-            const fyTokenReturned = lpTokenAmount.mul(initialFyTokenReserves).div(lpTokenSupply);
+            const hTokenReturned = lpTokenAmount.mul(initialHTokenReserves).div(lpTokenSupply);
 
             // Mock the necessary methods.
             await this.mocks.underlying.mock.balanceOf
@@ -140,7 +140,7 @@ export default function shouldBehaveLikeBurn(): void {
             await this.mocks.underlying.mock.transfer
               .withArgs(this.signers.alice.address, underlyingReturned)
               .returns(true);
-            await this.mocks.fyToken.mock.transfer.withArgs(this.signers.alice.address, fyTokenReturned).returns(true);
+            await this.mocks.hToken.mock.transfer.withArgs(this.signers.alice.address, hTokenReturned).returns(true);
 
             // Burn
             await expect(this.contracts.hifiPool.connect(this.signers.alice).burn(poolTokensBurnedBn))
@@ -149,7 +149,7 @@ export default function shouldBehaveLikeBurn(): void {
                 FY_TOKEN_EXPIRATION_TIME,
                 this.signers.alice.address,
                 underlyingReturned,
-                fyTokenReturned,
+                hTokenReturned,
                 poolTokensBurnedBn,
               );
           });

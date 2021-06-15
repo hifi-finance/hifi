@@ -13,7 +13,7 @@ async function deployHifiPool(this: Mocha.Context): Promise<Contract> {
   return deployContract(this.signers.admin, hifiPoolArtifact, [
     HIFI_POOL_NAME,
     HIFI_POOL_SYMBOL,
-    this.mocks.fyToken.address,
+    this.mocks.hToken.address,
     this.mocks.underlying.address,
   ]);
 }

@@ -15,6 +15,6 @@ export interface Signers {
 }
 
 export interface Mocks {
-  fyToken: MockContract;
+  hToken: MockContract;
   underlying: MockContract;
 }

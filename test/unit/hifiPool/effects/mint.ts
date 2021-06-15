@@ -32,7 +32,7 @@ export default function shouldBehaveLikeMint(): void {
           .returns(true);
 
         const underlyingAmount: BigNumber = usdc(underlyingOffered);
-        const fyTokenRequired: BigNumber = bn("0");
+        const hTokenRequired: BigNumber = bn("0");
         const poolTokensMinted: BigNumber = fp(underlyingOffered);
 
         await expect(this.contracts.hifiPool.connect(this.signers.alice).mint(usdc(underlyingOffered)))
@@ -41,7 +41,7 @@ export default function shouldBehaveLikeMint(): void {
             FY_TOKEN_EXPIRATION_TIME,
             this.signers.alice.address,
             underlyingAmount,
-            fyTokenRequired,
+            hTokenRequired,
             poolTokensMinted,
           );
       });
@@ -64,23 +64,23 @@ export default function shouldBehaveLikeMint(): void {
         const testSets = [
           // Makes "supply * normalizedUnderlyingOffered" overflow.
           [bn("0"), usdc("1157920892373161954235709850086879078532.699847")],
-          // Makes "fyTokenReserves * poolTokensMinted" overflow.
+          // Makes "hTokenReserves * poolTokensMinted" overflow.
           [fp("1157920892373161954235709850086879078532.699846656405640395"), usdc("100")],
         ];
 
         forEach(testSets).it(
           "takes %e and %e and reverts",
-          async function (fyTokenBalance: BigNumber, underlyingOffered: BigNumber) {
-            await this.mocks.fyToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(fyTokenBalance);
+          async function (hTokenBalance: BigNumber, underlyingOffered: BigNumber) {
+            await this.mocks.hToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(hTokenBalance);
             await expect(this.contracts.hifiPool.connect(this.signers.alice).mint(underlyingOffered)).to.be.reverted;
           },
         );
       });
 
       context("when there is no phantom overflow", function () {
-        context("when there are no fyToken reserves", function () {
+        context("when there are no hToken reserves", function () {
           beforeEach(async function () {
-            await this.mocks.fyToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(bn("0"));
+            await this.mocks.hToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(bn("0"));
           });
 
           const testSets = [
@@ -94,7 +94,7 @@ export default function shouldBehaveLikeMint(): void {
           forEach(testSets).it("takes %e and mints the LP tokens", async function (underlyingOffered: string) {
             // Calculate the arguments emitted in the event.
             const underlyingAmount: BigNumber = usdc(underlyingOffered);
-            const fyTokenRequired: BigNumber = bn("0");
+            const hTokenRequired: BigNumber = bn("0");
             const poolTokensMinted: BigNumber = initialLpTokenSupply
               .mul(fp(underlyingOffered))
               .div(initialNormalizedUnderlyingDeposit);
@@ -111,18 +111,18 @@ export default function shouldBehaveLikeMint(): void {
                 FY_TOKEN_EXPIRATION_TIME,
                 this.signers.alice.address,
                 underlyingAmount,
-                fyTokenRequired,
+                hTokenRequired,
                 poolTokensMinted,
               );
           });
         });
 
-        context("when there are fyToken reserves", function () {
-          const initialFyTokenReserves: BigNumber = fp("100");
+        context("when there are hToken reserves", function () {
+          const initialHTokenReserves: BigNumber = fp("100");
           beforeEach(async function () {
-            await this.mocks.fyToken.mock.balanceOf
+            await this.mocks.hToken.mock.balanceOf
               .withArgs(this.contracts.hifiPool.address)
-              .returns(initialFyTokenReserves);
+              .returns(initialHTokenReserves);
           });
 
           const testSets = [
@@ -139,14 +139,14 @@ export default function shouldBehaveLikeMint(): void {
             const poolTokensMinted: BigNumber = initialLpTokenSupply
               .mul(fp(underlyingOffered))
               .div(initialNormalizedUnderlyingDeposit);
-            const fyTokenRequired: BigNumber = initialFyTokenReserves.mul(poolTokensMinted).div(initialLpTokenSupply);
+            const hTokenRequired: BigNumber = initialHTokenReserves.mul(poolTokensMinted).div(initialLpTokenSupply);
 
             // Mock the necessary methods.
             await this.mocks.underlying.mock.transferFrom
               .withArgs(this.signers.alice.address, this.contracts.hifiPool.address, underlyingAmount)
               .returns(true);
-            await this.mocks.fyToken.mock.transferFrom
-              .withArgs(this.signers.alice.address, this.contracts.hifiPool.address, fyTokenRequired)
+            await this.mocks.hToken.mock.transferFrom
+              .withArgs(this.signers.alice.address, this.contracts.hifiPool.address, hTokenRequired)
               .returns(true);
 
             // Mint
@@ -156,7 +156,7 @@ export default function shouldBehaveLikeMint(): void {
                 FY_TOKEN_EXPIRATION_TIME,
                 this.signers.alice.address,
                 underlyingAmount,
-                fyTokenRequired,
+                hTokenRequired,
                 poolTokensMinted,
               );
           });

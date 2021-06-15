@@ -6,22 +6,22 @@ import forEach from "mocha-each";
 import { MAX_UD60x18 } from "../../../../helpers/constants";
 import { bn } from "../../../../helpers/numbers";
 
-export default function shouldBehaveLikeGetVirtualFyTokenReserves(): void {
-  context("when there is no fyToken in the pool", function () {
+export default function shouldBehaveLikeGetVirtualHTokenReserves(): void {
+  context("when there is no hToken in the pool", function () {
     beforeEach(async function () {
-      await this.mocks.fyToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(bn("0"));
+      await this.mocks.hToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(bn("0"));
     });
 
     const testSets = [[bn("1"), fp("100"), fp("1729"), [fp(MAX_UD60x18)]]];
 
     forEach(testSets).it("returns the total supply", async function (totalSupply: BigNumber) {
       await this.contracts.hifiPool.__godMode_setTotalSupply(totalSupply);
-      const result: BigNumber = await this.contracts.hifiPool.getVirtualFyTokenReserves();
+      const result: BigNumber = await this.contracts.hifiPool.getVirtualHTokenReserves();
       expect(totalSupply).to.equal(result);
     });
   });
 
-  context("when there is fyToken in the pool", function () {
+  context("when there is hToken in the pool", function () {
     context("when the addition overflows", function () {
       const testSets = [
         [bn("1"), fp(MAX_UD60x18)],
@@ -32,11 +32,11 @@ export default function shouldBehaveLikeGetVirtualFyTokenReserves(): void {
 
       forEach(testSets).it(
         "takes %e and %e and reverts",
-        async function (fyTokenBalance: BigNumber, totalSupply: BigNumber) {
-          await this.mocks.fyToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(fyTokenBalance);
+        async function (hTokenBalance: BigNumber, totalSupply: BigNumber) {
+          await this.mocks.hToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(hTokenBalance);
           await this.contracts.hifiPool.__godMode_setTotalSupply(totalSupply);
-          await expect(this.contracts.hifiPool.getVirtualFyTokenReserves()).to.be.revertedWith(
-            "HifiPool: virtual fyToken reserves overflow",
+          await expect(this.contracts.hifiPool.getVirtualHTokenReserves()).to.be.revertedWith(
+            "HifiPool: virtual hToken reserves overflow",
           );
         },
       );
@@ -54,12 +54,12 @@ export default function shouldBehaveLikeGetVirtualFyTokenReserves(): void {
       ];
 
       forEach(testSets).it(
-        "takes %e and %e returns the correct virtual fyToken reserves",
-        async function (fyTokenBalance: BigNumber, totalSupply: BigNumber) {
-          await this.mocks.fyToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(fyTokenBalance);
+        "takes %e and %e returns the correct virtual hToken reserves",
+        async function (hTokenBalance: BigNumber, totalSupply: BigNumber) {
+          await this.mocks.hToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(hTokenBalance);
           await this.contracts.hifiPool.__godMode_setTotalSupply(totalSupply);
-          const result: BigNumber = await this.contracts.hifiPool.getVirtualFyTokenReserves();
-          const expected = fyTokenBalance.add(totalSupply);
+          const result: BigNumber = await this.contracts.hifiPool.getVirtualHTokenReserves();
+          const expected = hTokenBalance.add(totalSupply);
           expect(expected).to.equal(result);
         },
       );

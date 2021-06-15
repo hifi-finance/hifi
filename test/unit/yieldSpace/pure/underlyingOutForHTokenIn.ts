@@ -8,8 +8,8 @@ import { getYieldExponent, outForIn } from "../../../../helpers/math";
 import { bn } from "../../../../helpers/numbers";
 import { secondsInDays, secondsInYears } from "../../../../helpers/time";
 
-export default function shouldBehaveLikeUnderlyingOutForFyTokenIn(): void {
-  context("when too much fyToken in", function () {
+export default function shouldBehaveLikeUnderlyingOutForHTokenIn(): void {
+  context("when too much hToken in", function () {
     const testSets = [
       [fp(MAX_UD60x18), fp("100"), fp("1e-18"), bn(secondsInYears(1))],
       [fp(MAX_UD60x18).div(2), fp("100"), fp(MAX_UD60x18).div(2).add(2), bn(secondsInYears(1))],
@@ -18,24 +18,24 @@ export default function shouldBehaveLikeUnderlyingOutForFyTokenIn(): void {
     forEach(testSets).it(
       "takes %e and reverts",
       async function (
-        fyTokenReserves: BigNumber,
+        hTokenReserves: BigNumber,
         normalizedUnderlyingReserves: BigNumber,
-        fyTokenIn: BigNumber,
+        hTokenIn: BigNumber,
         timeToMaturity: BigNumber,
       ) {
         await expect(
-          this.contracts.yieldSpace.doUnderlyingOutForFyTokenIn(
-            fyTokenReserves,
+          this.contracts.yieldSpace.doUnderlyingOutForHTokenIn(
+            hTokenReserves,
             normalizedUnderlyingReserves,
-            fyTokenIn,
+            hTokenIn,
             timeToMaturity,
           ),
-        ).to.be.revertedWith("YieldSpace: too much fyToken in");
+        ).to.be.revertedWith("YieldSpace: too much hToken in");
       },
     );
   });
 
-  context("when not too much fyToken in", function () {
+  context("when not too much hToken in", function () {
     context("when the call to fromUint reverts", function () {
       context("when the call to fromUint reverts", function () {
         const testSets = [
@@ -48,16 +48,16 @@ export default function shouldBehaveLikeUnderlyingOutForFyTokenIn(): void {
         forEach(testSets).it(
           "takes (%e, %e, %e, %e) and reverts",
           async function (
-            fyTokenReserves: BigNumber,
+            hTokenReserves: BigNumber,
             normalizedUnderlyingReserves: BigNumber,
-            fyTokenIn: BigNumber,
+            hTokenIn: BigNumber,
             timeToMaturity: BigNumber,
           ) {
             await expect(
-              this.contracts.yieldSpace.doUnderlyingOutForFyTokenIn(
-                fyTokenReserves,
+              this.contracts.yieldSpace.doUnderlyingOutForHTokenIn(
+                hTokenReserves,
                 normalizedUnderlyingReserves,
-                fyTokenIn,
+                hTokenIn,
                 timeToMaturity,
               ),
             ).to.be.revertedWith("Transaction reverted without a reason");
@@ -79,16 +79,16 @@ export default function shouldBehaveLikeUnderlyingOutForFyTokenIn(): void {
         forEach(testSets).it(
           "takes (%e, %e, %e, %e) and reverts",
           async function (
-            fyTokenReserves: BigNumber,
+            hTokenReserves: BigNumber,
             normalizedUnderlyingReserves: BigNumber,
-            fyTokenIn: BigNumber,
+            hTokenIn: BigNumber,
             timeToMaturity: BigNumber,
           ) {
             await expect(
-              this.contracts.yieldSpace.doUnderlyingOutForFyTokenIn(
-                fyTokenReserves,
+              this.contracts.yieldSpace.doUnderlyingOutForHTokenIn(
+                hTokenReserves,
                 normalizedUnderlyingReserves,
-                fyTokenIn,
+                hTokenIn,
                 timeToMaturity,
               ),
             ).to.be.revertedWith("Transaction reverted without a reason");
@@ -97,7 +97,7 @@ export default function shouldBehaveLikeUnderlyingOutForFyTokenIn(): void {
       });
 
       context("when the call to pow does not revert", function () {
-        context("when there are insufficient fyToken reserves", function () {
+        context("when there are insufficient hToken reserves", function () {
           const testSets = [
             [fp("120"), fp("100"), fp("220.000000000000000001"), bn(secondsInDays(30))],
             [fp("2607"), fp("3799"), fp("6407"), bn(secondsInDays(30))],
@@ -106,24 +106,24 @@ export default function shouldBehaveLikeUnderlyingOutForFyTokenIn(): void {
           forEach(testSets).it(
             "takes (%e, %e, %e, %e) and reverts",
             async function (
-              fyTokenReserves: BigNumber,
+              hTokenReserves: BigNumber,
               normalizedUnderlyingReserves: BigNumber,
-              fyTokenIn: BigNumber,
+              hTokenIn: BigNumber,
               timeToMaturity: BigNumber,
             ) {
               await expect(
-                this.contracts.yieldSpace.doUnderlyingOutForFyTokenIn(
-                  fyTokenReserves,
+                this.contracts.yieldSpace.doUnderlyingOutForHTokenIn(
+                  hTokenReserves,
                   normalizedUnderlyingReserves,
-                  fyTokenIn,
+                  hTokenIn,
                   timeToMaturity,
                 ),
-              ).to.be.revertedWith("YieldSpace: insufficient fyToken reserves");
+              ).to.be.revertedWith("YieldSpace: insufficient hToken reserves");
             },
           );
         });
 
-        context("when there are sufficient fyToken reserves", function () {
+        context("when there are sufficient hToken reserves", function () {
           const testSets = [
             ["0", "0", "0", "0"],
             ["1", "1", "1", "1"],
@@ -138,21 +138,21 @@ export default function shouldBehaveLikeUnderlyingOutForFyTokenIn(): void {
           forEach(testSets).it(
             "takes (%e, %e, %e, %e) and returns the correct value",
             async function (
-              fyTokenReserves: string,
+              hTokenReserves: string,
               normalizedUnderlyingReserves: string,
-              fyTokenIn: string,
+              hTokenIn: string,
               timeToMaturity: string,
             ) {
-              const result: BigNumber = await this.contracts.yieldSpace.doUnderlyingOutForFyTokenIn(
-                fp(fyTokenReserves),
+              const result: BigNumber = await this.contracts.yieldSpace.doUnderlyingOutForHTokenIn(
+                fp(hTokenReserves),
                 fp(normalizedUnderlyingReserves),
-                fp(fyTokenIn),
+                fp(hTokenIn),
                 bn(timeToMaturity),
               );
 
               const exponent: string = getYieldExponent(timeToMaturity, G2);
               const expected: BigNumber = fp(
-                outForIn(fyTokenReserves, normalizedUnderlyingReserves, fyTokenIn, exponent),
+                outForIn(hTokenReserves, normalizedUnderlyingReserves, hTokenIn, exponent),
               );
 
               const delta: BigNumber = expected.sub(result).abs();

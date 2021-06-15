@@ -13,7 +13,7 @@ import {
 import { bn } from "../../helpers/numbers";
 import { GodModeHifiPool } from "../../typechain/GodModeHifiPool";
 import { YieldSpaceMock } from "../../typechain/YieldSpaceMock";
-import { deployMockErc20, deployMockFyToken } from "./mocks";
+import { deployMockErc20, deployMockHToken } from "./mocks";
 
 const { deployContract } = hre.waffle;
 
@@ -29,7 +29,7 @@ export async function unitFixtureYieldSpace(signers: Signer[]): Promise<YieldSpa
 }
 
 type HifiPoolFixtureReturnType = {
-  fyToken: MockContract;
+  hToken: MockContract;
   hifiPool: GodModeHifiPool;
   underlying: MockContract;
 };
@@ -37,7 +37,7 @@ type HifiPoolFixtureReturnType = {
 export async function unitFixtureHifiPool(signers: Signer[]): Promise<HifiPoolFixtureReturnType> {
   const deployer: Signer = signers[0];
 
-  const fyToken: MockContract = await deployMockFyToken(
+  const hToken: MockContract = await deployMockHToken(
     deployer,
     FY_TOKEN_NAME,
     FY_TOKEN_SYMBOL,
@@ -50,9 +50,9 @@ export async function unitFixtureHifiPool(signers: Signer[]): Promise<HifiPoolFi
     await deployContract(deployer, hifiPoolArtifact, [
       HIFI_POOL_NAME,
       HIFI_POOL_SYMBOL,
-      fyToken.address,
+      hToken.address,
       underlying.address,
     ])
   );
-  return { fyToken, hifiPool, underlying };
+  return { hToken, hifiPool, underlying };
 }

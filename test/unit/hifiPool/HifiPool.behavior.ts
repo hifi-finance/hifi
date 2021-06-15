@@ -2,7 +2,7 @@ import shouldBehaveLikeHifiPoolConstructor from "./constructor";
 import shouldBehaveLikeBurn from "./effects/burn";
 import shouldBehaveLikeMint from "./effects/mint";
 import shouldBehaveLikeGetNormalizedUnderlyingReserves from "./view/getNormalizedUnderlyingReserves";
-import shouldBehaveLikeGetVirtualFyTokenReserves from "./view/getVirtualFyTokenReserves";
+import shouldBehaveLikeGetVirtualHTokenReserves from "./view/getVirtualHTokenReserves";
 
 export function shouldBehaveLikeHifiPool(): void {
   describe("Constructor", function () {
@@ -24,8 +24,8 @@ export function shouldBehaveLikeHifiPool(): void {
       shouldBehaveLikeGetNormalizedUnderlyingReserves();
     });
 
-    describe("getVirtualFyTokenReserves", function () {
-      shouldBehaveLikeGetVirtualFyTokenReserves();
+    describe("getVirtualHTokenReserves", function () {
+      shouldBehaveLikeGetVirtualHTokenReserves();
     });
   });
 }

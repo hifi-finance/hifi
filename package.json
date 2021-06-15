@@ -1,6 +1,6 @@
 {
   "name": "@hifi/amm",
-  "description": "Dedicated AMM for market-making fyTokens",
+  "description": "Dedicated AMM for market-making hTokens",
   "version": "1.0.0",
   "author": {
     "name": "Hifi",

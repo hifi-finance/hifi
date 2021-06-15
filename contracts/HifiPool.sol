@@ -9,7 +9,7 @@ import "@paulrberg/contracts/token/erc20/Erc20Permit.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 
 import "./IHifiPool.sol";
-import "./external/hifi/FyTokenLike.sol";
+import "./external/hifi/HTokenLike.sol";
 import "./math/YieldSpace.sol";
 
 contract HifiPool is
@@ -23,7 +23,7 @@ contract HifiPool is
     uint256 public override maturity;
 
     /// @inheritdoc IHifiPool
-    FyTokenLike public override fyToken;
+    HTokenLike public override hToken;
 
     /// @inheritdoc IHifiPool
     IErc20 public override underlying;
@@ -41,17 +41,16 @@ contract HifiPool is
     /// @dev The HifiPool LP token always has 18 decimals.
     /// @param name_ Erc20 name of this token.
     /// @param symbol_ Erc20 symbol of this token.
-    /// @param fyToken_ The contract address of the fyToken.
+    /// @param hToken_ The contract address of the hToken.
     /// @param underlying_ The contract address of the underlying.
     constructor(
         string memory name_,
         string memory symbol_,
-        FyTokenLike fyToken_,
+        HTokenLike hToken_,
         IErc20 underlying_
     ) Erc20Permit(name_, symbol_, 18) {
-        // Save the fyToken contract address in storage and sanity check it.
-        fyToken = fyToken_;
-        fyToken.isFyToken();
+        // Save the hToken contract address in storage and sanity check it.
+        hToken = hToken_;
 
         // Calculate the precision scalar and save the underlying contract address in storage.
         uint256 underlyingDecimals = underlying_.decimals();
@@ -60,33 +59,33 @@ contract HifiPool is
         underlyingPrecisionScalar = 10**(18 - underlyingDecimals);
         underlying = underlying_;
 
-        // Save the fyToken maturity time in storage.
-        maturity = fyToken_.expirationTime();
+        // Save the hToken maturity time in storage.
+        maturity = hToken_.expirationTime();
     }
 
     /// CONSTANT FUNCTIONS ///
 
     /// @inheritdoc IHifiPool
-    function getQuoteForBuyingFyToken(uint256 fyTokenOut)
+    function getQuoteForBuyingHToken(uint256 hTokenOut)
         public
         view
         override
         isBeforeMaturity
         returns (uint256 underlyingIn)
     {
-        uint256 virtualFyTokenReserves = getVirtualFyTokenReserves();
+        uint256 virtualHTokenReserves = getVirtualHTokenReserves();
         uint256 normalizedUnderlyingReserves = getNormalizedUnderlyingReserves();
         uint256 normalizedUnderlyingIn;
         unchecked {
-            normalizedUnderlyingIn = YieldSpace.underlyingInForFyTokenOut(
-                virtualFyTokenReserves,
+            normalizedUnderlyingIn = YieldSpace.underlyingInForHTokenOut(
+                virtualHTokenReserves,
                 normalizedUnderlyingReserves,
-                fyTokenOut,
+                hTokenOut,
                 maturity - block.timestamp
             );
             require(
-                virtualFyTokenReserves - fyTokenOut >= normalizedUnderlyingReserves + normalizedUnderlyingIn,
-                "HifiPool: too low fyToken reserves"
+                virtualHTokenReserves - hTokenOut >= normalizedUnderlyingReserves + normalizedUnderlyingIn,
+                "HifiPool: too low hToken reserves"
             );
         }
         underlyingIn = denormalize(normalizedUnderlyingIn);
@@ -98,12 +97,12 @@ contract HifiPool is
         view
         override
         isBeforeMaturity
-        returns (uint256 fyTokenIn)
+        returns (uint256 hTokenIn)
     {
         unchecked {
-            fyTokenIn = YieldSpace.fyTokenInForUnderlyingOut(
+            hTokenIn = YieldSpace.hTokenInForUnderlyingOut(
                 getNormalizedUnderlyingReserves(),
-                getVirtualFyTokenReserves(),
+                getVirtualHTokenReserves(),
                 normalize(underlyingOut),
                 maturity - block.timestamp
             );
@@ -111,7 +110,7 @@ contract HifiPool is
     }
 
     /// @inheritdoc IHifiPool
-    function getQuoteForSellingFyToken(uint256 fyTokenIn)
+    function getQuoteForSellingHToken(uint256 hTokenIn)
         public
         view
         override
@@ -120,10 +119,10 @@ contract HifiPool is
     {
         unchecked {
             uint256 normalizedUnderlyingOut =
-                YieldSpace.underlyingOutForFyTokenIn(
-                    getVirtualFyTokenReserves(),
+                YieldSpace.underlyingOutForHTokenIn(
+                    getVirtualHTokenReserves(),
                     getNormalizedUnderlyingReserves(),
-                    fyTokenIn,
+                    hTokenIn,
                     maturity - block.timestamp
                 );
             underlyingOut = denormalize(normalizedUnderlyingOut);
@@ -136,21 +135,21 @@ contract HifiPool is
         view
         override
         isBeforeMaturity
-        returns (uint256 fyTokenOut)
+        returns (uint256 hTokenOut)
     {
         uint256 normalizedUnderlyingReserves = getNormalizedUnderlyingReserves();
-        uint256 virtualFyTokenReserves = getVirtualFyTokenReserves();
+        uint256 virtualHTokenReserves = getVirtualHTokenReserves();
         uint256 normalizedUnderlyingIn = normalize(underlyingIn);
         unchecked {
-            fyTokenOut = YieldSpace.fyTokenOutForUnderlyingIn(
+            hTokenOut = YieldSpace.hTokenOutForUnderlyingIn(
                 normalizedUnderlyingReserves,
-                virtualFyTokenReserves,
+                virtualHTokenReserves,
                 normalizedUnderlyingIn,
                 maturity - block.timestamp
             );
             require(
-                virtualFyTokenReserves - fyTokenOut >= normalizedUnderlyingReserves + normalizedUnderlyingIn,
-                "HifiPool: too low fyToken reserves"
+                virtualHTokenReserves - hTokenOut >= normalizedUnderlyingReserves + normalizedUnderlyingIn,
+                "HifiPool: too low hToken reserves"
             );
         }
     }
@@ -161,11 +160,11 @@ contract HifiPool is
     }
 
     /// @inheritdoc IHifiPool
-    function getVirtualFyTokenReserves() public view override returns (uint256 virtualFyTokenReserves) {
+    function getVirtualHTokenReserves() public view override returns (uint256 virtualHTokenReserves) {
         unchecked {
-            uint256 fyTokenBalance = fyToken.balanceOf(address(this));
-            virtualFyTokenReserves = fyTokenBalance + totalSupply;
-            require(virtualFyTokenReserves >= fyTokenBalance, "HifiPool: virtual fyToken reserves overflow");
+            uint256 hTokenBalance = hToken.balanceOf(address(this));
+            virtualHTokenReserves = hTokenBalance + totalSupply;
+            require(virtualHTokenReserves >= hTokenBalance, "HifiPool: virtual hToken reserves overflow");
         }
     }
 
@@ -175,7 +174,7 @@ contract HifiPool is
     function burn(uint256 poolTokensBurned)
         external
         override
-        returns (uint256 underlyingReturned, uint256 fyTokenReturned)
+        returns (uint256 underlyingReturned, uint256 hTokenReturned)
     {
         // Checks: avoid the zero edge case.
         require(poolTokensBurned > 0, "HifiPool: cannot burn zero tokens");
@@ -186,10 +185,10 @@ contract HifiPool is
         // This block avoids the stack too deep error.
         {
             // Use the actual reserves rather than the virtual reserves.
-            uint256 fyTokenReserves = fyToken.balanceOf(address(this));
+            uint256 hTokenReserves = hToken.balanceOf(address(this));
             uint256 normalizedUnderlyingReturned = (poolTokensBurned * normalizedUnderlyingReserves) / supply;
             underlyingReturned = denormalize(normalizedUnderlyingReturned);
-            fyTokenReturned = (poolTokensBurned * fyTokenReserves) / supply;
+            hTokenReturned = (poolTokensBurned * hTokenReserves) / supply;
         }
 
         // Effects
@@ -197,39 +196,39 @@ contract HifiPool is
 
         // Interactions
         underlying.safeTransfer(msg.sender, underlyingReturned);
-        if (fyTokenReturned > 0) {
-            fyToken.transfer(msg.sender, fyTokenReturned);
+        if (hTokenReturned > 0) {
+            hToken.transfer(msg.sender, hTokenReturned);
         }
 
-        emit RemoveLiquidity(maturity, msg.sender, underlyingReturned, fyTokenReturned, poolTokensBurned);
+        emit RemoveLiquidity(maturity, msg.sender, underlyingReturned, hTokenReturned, poolTokensBurned);
     }
 
     /// @inheritdoc IHifiPool
-    function buyFyToken(address to, uint256 fyTokenOut) external override returns (uint256 underlyingIn) {
+    function buyHToken(address to, uint256 hTokenOut) external override returns (uint256 underlyingIn) {
         // Checks: avoid the zero edge case.
-        require(fyTokenOut > 0, "HifiPool: cannot buy with zero fyToken");
+        require(hTokenOut > 0, "HifiPool: cannot buy with zero hToken");
 
-        underlyingIn = getQuoteForBuyingFyToken(fyTokenOut);
+        underlyingIn = getQuoteForBuyingHToken(hTokenOut);
 
         // Interactions
         underlying.safeTransferFrom(msg.sender, address(this), underlyingIn);
-        fyToken.transfer(to, fyTokenOut);
+        hToken.transfer(to, hTokenOut);
 
-        emit Trade(maturity, msg.sender, to, -toInt256(underlyingIn), toInt256(fyTokenOut));
+        emit Trade(maturity, msg.sender, to, -toInt256(underlyingIn), toInt256(hTokenOut));
     }
 
     /// @inheritdoc IHifiPool
-    function buyUnderlying(address to, uint256 underlyingOut) external override returns (uint256 fyTokenIn) {
+    function buyUnderlying(address to, uint256 underlyingOut) external override returns (uint256 hTokenIn) {
         // Checks: avoid the zero edge case.
         require(underlyingOut > 0, "HifiPool: cannot buy with zero underlying");
 
-        fyTokenIn = getQuoteForBuyingUnderlying(underlyingOut);
+        hTokenIn = getQuoteForBuyingUnderlying(underlyingOut);
 
         // Interactions
         underlying.safeTransfer(to, underlyingOut);
-        fyToken.transferFrom(msg.sender, address(this), fyTokenIn);
+        hToken.transferFrom(msg.sender, address(this), hTokenIn);
 
-        emit Trade(maturity, msg.sender, to, toInt256(underlyingOut), -toInt256(fyTokenIn));
+        emit Trade(maturity, msg.sender, to, toInt256(underlyingOut), -toInt256(hTokenIn));
     }
 
     /// @inheritdoc IHifiPool
@@ -254,55 +253,55 @@ contract HifiPool is
         }
 
         // We need to use the actual reserves rather than the virtual reserves here.
-        uint256 fyTokenReserves = fyToken.balanceOf(address(this));
+        uint256 hTokenReserves = hToken.balanceOf(address(this));
         poolTokensMinted = (supply * normalizedUnderlyingOffered) / getNormalizedUnderlyingReserves();
-        uint256 fyTokenRequired = (fyTokenReserves * poolTokensMinted) / supply;
+        uint256 hTokenRequired = (hTokenReserves * poolTokensMinted) / supply;
 
         // Effects
         mintInternal(msg.sender, poolTokensMinted);
 
         // Interactions
         underlying.safeTransferFrom(msg.sender, address(this), underlyingOffered);
-        if (fyTokenRequired > 0) {
-            fyToken.transferFrom(msg.sender, address(this), fyTokenRequired);
+        if (hTokenRequired > 0) {
+            hToken.transferFrom(msg.sender, address(this), hTokenRequired);
         }
 
-        emit AddLiquidity(maturity, msg.sender, underlyingOffered, fyTokenRequired, poolTokensMinted);
+        emit AddLiquidity(maturity, msg.sender, underlyingOffered, hTokenRequired, poolTokensMinted);
     }
 
     /// @inheritdoc IHifiPool
-    function sellFyToken(address to, uint256 fyTokenIn)
+    function sellHToken(address to, uint256 hTokenIn)
         external
         override
         isBeforeMaturity
         returns (uint256 underlyingOut)
     {
         // Checks: avoid the zero edge case.
-        require(fyTokenIn > 0, "HifiPool: cannot sell zero fyToken");
+        require(hTokenIn > 0, "HifiPool: cannot sell zero hToken");
 
-        underlyingOut = getQuoteForSellingFyToken(fyTokenIn);
+        underlyingOut = getQuoteForSellingHToken(hTokenIn);
 
         // Interactions
         underlying.safeTransfer(to, underlyingOut);
-        fyToken.transferFrom(msg.sender, address(this), fyTokenIn);
+        hToken.transferFrom(msg.sender, address(this), hTokenIn);
 
-        // TODO: check if `fyTokenIn` is not min uint256
-        emit Trade(maturity, msg.sender, to, toInt256(underlyingOut), -toInt256(fyTokenIn));
+        // TODO: check if `hTokenIn` is not min uint256
+        emit Trade(maturity, msg.sender, to, toInt256(underlyingOut), -toInt256(hTokenIn));
     }
 
     /// @inheritdoc IHifiPool
-    function sellUnderlying(address to, uint256 underlyingIn) external override returns (uint256 fyTokenOut) {
+    function sellUnderlying(address to, uint256 underlyingIn) external override returns (uint256 hTokenOut) {
         // Checks: avoid the zero edge case.
         require(underlyingIn > 0, "HifiPool: cannot sell zero underlying");
 
-        fyTokenOut = getQuoteForSellingUnderlying(underlyingIn);
+        hTokenOut = getQuoteForSellingUnderlying(underlyingIn);
 
         // Interactions
         underlying.safeTransferFrom(msg.sender, address(this), underlyingIn);
-        fyToken.transfer(to, fyTokenOut);
+        hToken.transfer(to, hTokenOut);
 
         // TODO: check if `underlyingIn` is not min uint256
-        emit Trade(maturity, msg.sender, to, -toInt256(underlyingIn), toInt256(fyTokenOut));
+        emit Trade(maturity, msg.sender, to, -toInt256(underlyingIn), toInt256(hTokenOut));
     }
 
     /// CONSTANT INTERNAL FUNCTIONS ///

@@ -8,21 +8,20 @@ import { bn } from "../../helpers/numbers";
 
 const { deployMockContract } = hre.waffle;
 
-export async function deployMockFyToken(
+export async function deployMockHToken(
   deployer: Signer,
   name: string,
   symbol: string,
   expirationTime: BigNumber,
 ): Promise<MockContract> {
-  const fyTokenArtifact: Artifact = await hre.artifacts.readArtifact("FyToken");
-  const fyToken: MockContract = await deployMockContract(deployer, fyTokenArtifact.abi);
-  await fyToken.mock.name.returns(name);
-  await fyToken.mock.symbol.returns(symbol);
-  await fyToken.mock.decimals.returns(bn("18"));
-  await fyToken.mock.totalSupply.returns(bn("0"));
-  await fyToken.mock.expirationTime.returns(expirationTime);
-  await fyToken.mock.isFyToken.returns(true);
-  return fyToken;
+  const hTokenArtifact: Artifact = await hre.artifacts.readArtifact("HToken");
+  const hToken: MockContract = await deployMockContract(deployer, hTokenArtifact.abi);
+  await hToken.mock.name.returns(name);
+  await hToken.mock.symbol.returns(symbol);
+  await hToken.mock.decimals.returns(bn("18"));
+  await hToken.mock.totalSupply.returns(bn("0"));
+  await hToken.mock.expirationTime.returns(expirationTime);
+  return hToken;
 }
 
 export async function deployMockErc20(

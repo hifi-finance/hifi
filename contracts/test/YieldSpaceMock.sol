@@ -6,29 +6,29 @@ import "../math/YieldSpace.sol";
 contract YieldSpaceMock {
     using PRBMathUD60x18 for uint256;
 
-    function doFyTokenInForUnderlyingOut(
+    function doHTokenInForUnderlyingOut(
         uint256 normalizedUnderlyingReserves,
-        uint256 fyTokenReserves,
+        uint256 hTokenReserves,
         uint256 normalizedUnderlyingOut,
         uint256 timeToMaturity
-    ) external pure returns (uint256 fyTokenIn) {
-        fyTokenIn = YieldSpace.fyTokenInForUnderlyingOut(
+    ) external pure returns (uint256 hTokenIn) {
+        hTokenIn = YieldSpace.hTokenInForUnderlyingOut(
             normalizedUnderlyingReserves,
-            fyTokenReserves,
+            hTokenReserves,
             normalizedUnderlyingOut,
             timeToMaturity
         );
     }
 
-    function doFyTokenOutForUnderlyingIn(
+    function doHTokenOutForUnderlyingIn(
         uint256 normalizedUnderlyingReserves,
-        uint256 fyTokenReserves,
+        uint256 hTokenReserves,
         uint256 normalizedUnderlyingIn,
         uint256 timeToMaturity
-    ) external pure returns (uint256 fyTokenOut) {
-        fyTokenOut = YieldSpace.fyTokenOutForUnderlyingIn(
+    ) external pure returns (uint256 hTokenOut) {
+        hTokenOut = YieldSpace.hTokenOutForUnderlyingIn(
             normalizedUnderlyingReserves,
-            fyTokenReserves,
+            hTokenReserves,
             normalizedUnderlyingIn,
             timeToMaturity
         );
@@ -38,30 +38,30 @@ contract YieldSpaceMock {
         a = YieldSpace.getYieldExponent(timeToMaturity, g);
     }
 
-    function doUnderlyingInForFyTokenOut(
-        uint256 fyTokenReserves,
+    function doUnderlyingInForHTokenOut(
+        uint256 hTokenReserves,
         uint256 normalizedUnderlyingReserves,
-        uint256 fyTokenOut,
+        uint256 hTokenOut,
         uint256 timeToMaturity
     ) external pure returns (uint256 normalizedUnderlyingIn) {
-        normalizedUnderlyingIn = YieldSpace.underlyingInForFyTokenOut(
-            fyTokenReserves,
+        normalizedUnderlyingIn = YieldSpace.underlyingInForHTokenOut(
+            hTokenReserves,
             normalizedUnderlyingReserves,
-            fyTokenOut,
+            hTokenOut,
             timeToMaturity
         );
     }
 
-    function doUnderlyingOutForFyTokenIn(
-        uint256 fyTokenReserves,
+    function doUnderlyingOutForHTokenIn(
+        uint256 hTokenReserves,
         uint256 normalizedUnderlyingReserves,
-        uint256 fyTokenIn,
+        uint256 hTokenIn,
         uint256 timeToMaturity
     ) external pure returns (uint256 normalizedUnderlyingOut) {
-        normalizedUnderlyingOut = YieldSpace.underlyingOutForFyTokenIn(
-            fyTokenReserves,
+        normalizedUnderlyingOut = YieldSpace.underlyingOutForHTokenIn(
+            hTokenReserves,
             normalizedUnderlyingReserves,
-            fyTokenIn,
+            hTokenIn,
             timeToMaturity
         );
     }

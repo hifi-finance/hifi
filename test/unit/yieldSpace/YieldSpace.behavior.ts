@@ -1,29 +1,29 @@
-import shouldBehaveLikeFyTokenInForUnderlyingOut from "./pure/fyTokenInForUnderlyingOut";
-import shouldBehaveLikeFyTokenOutForUnderlyingIn from "./pure/fyTokenOutForUnderlyingIn";
+import shouldBehaveLikeHTokenInForUnderlyingOut from "./pure/hTokenInForUnderlyingOut";
+import shouldBehaveLikeHTokenOutForUnderlyingIn from "./pure/hTokenOutForUnderlyingIn";
 import shouldBehaveLikeGetYieldExponent from "./pure/getYieldExponent";
-import shouldBehaveLikeUnderlyingInForFyTokenOut from "./pure/underlyingInForFyTokenOut";
-import shouldBehaveLikeUnderlyingOutForFyTokenIn from "./pure/underlyingOutForFyTokenIn";
+import shouldBehaveLikeUnderlyingInForHTokenOut from "./pure/underlyingInForHTokenOut";
+import shouldBehaveLikeUnderlyingOutForHTokenIn from "./pure/underlyingOutForHTokenIn";
 
 export function shouldBehaveLikeYieldSpace(): void {
   describe("YieldSpaceMock", function () {
-    describe("fyTokenInForUnderlyingOut", function () {
-      shouldBehaveLikeFyTokenInForUnderlyingOut();
+    describe("hTokenInForUnderlyingOut", function () {
+      shouldBehaveLikeHTokenInForUnderlyingOut();
     });
 
-    describe("fyTokenOutForUnderlyingIn", function () {
-      shouldBehaveLikeFyTokenOutForUnderlyingIn();
+    describe("hTokenOutForUnderlyingIn", function () {
+      shouldBehaveLikeHTokenOutForUnderlyingIn();
     });
 
     describe("getYieldExponent", function () {
       shouldBehaveLikeGetYieldExponent();
     });
 
-    describe("underlyingInForFyTokenOut", function () {
-      shouldBehaveLikeUnderlyingInForFyTokenOut();
+    describe("underlyingInForHTokenOut", function () {
+      shouldBehaveLikeUnderlyingInForHTokenOut();
     });
 
-    describe("underlyingOutForFyTokenIn", function () {
-      shouldBehaveLikeUnderlyingOutForFyTokenIn();
+    describe("underlyingOutForHTokenIn", function () {
+      shouldBehaveLikeUnderlyingOutForHTokenIn();
     });
   });
 }
