@@ -17,9 +17,9 @@ import { getDeployContractOverrides } from "../../helpers/env";
 import { price } from "../../helpers/numbers";
 import { FintrollerV1__factory, GodModeBalanceSheet__factory } from "../../typechain";
 import { ChainlinkOperator } from "../../typechain/ChainlinkOperator";
-import { Erc20Mintable } from "../../typechain/Erc20Mintable";
 import { FintrollerV1 } from "../../typechain/FintrollerV1";
 import { GodModeBalanceSheet } from "../../typechain/GodModeBalanceSheet";
+import { GodModeErc20 } from "../../typechain/GodModeErc20";
 import { GodModeHToken } from "../../typechain/GodModeHToken";
 import { HToken } from "../../typechain/HToken";
 import { SimplePriceFeed } from "../../typechain/SimplePriceFeed";
@@ -116,10 +116,10 @@ export async function deploySimplePriceFeed(
   return simplePriceFeed;
 }
 
-export async function deployUsdc(deployer: Signer): Promise<Erc20Mintable> {
-  const erc20MintableArtifact: Artifact = await artifacts.readArtifact("Erc20Mintable");
-  const usdc: Erc20Mintable = <Erc20Mintable>(
-    await deployContract(deployer, erc20MintableArtifact, [USDC_NAME, USDC_SYMBOL, USDC_DECIMALS], overrides)
+export async function deployUsdc(deployer: Signer): Promise<GodModeErc20> {
+  const godModeErc20Artifact: Artifact = await artifacts.readArtifact("GodModeErc20");
+  const usdc: GodModeErc20 = <GodModeErc20>(
+    await deployContract(deployer, godModeErc20Artifact, [USDC_NAME, USDC_SYMBOL, USDC_DECIMALS], overrides)
   );
   return usdc;
 }
@@ -133,10 +133,10 @@ export async function deployUsdcPriceFeed(deployer: Signer): Promise<SimplePrice
   return usdcPriceFeed;
 }
 
-export async function deployWbtc(deployer: Signer): Promise<Erc20Mintable> {
-  const erc20MintableArtifact: Artifact = await artifacts.readArtifact("Erc20Mintable");
-  const usdc: Erc20Mintable = <Erc20Mintable>(
-    await deployContract(deployer, erc20MintableArtifact, [WBTC_NAME, WBTC_SYMBOL, WBTC_DECIMALS], overrides)
+export async function deployWbtc(deployer: Signer): Promise<GodModeErc20> {
+  const godModeErc20Artifact: Artifact = await artifacts.readArtifact("GodModeErc20");
+  const usdc: GodModeErc20 = <GodModeErc20>(
+    await deployContract(deployer, godModeErc20Artifact, [WBTC_NAME, WBTC_SYMBOL, WBTC_DECIMALS], overrides)
   );
   return usdc;
 }

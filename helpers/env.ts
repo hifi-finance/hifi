@@ -1,6 +1,6 @@
 import { TransactionRequest } from "@ethersproject/providers";
 
-import { GAS_LIMIT_HARDHAT, GAS_LIMIT_COVERAGE } from "./constants";
+import { GAS_LIMIT_COVERAGE, GAS_LIMIT_HARDHAT } from "./constants";
 
 export function getDeployContractOverrides(): TransactionRequest {
   return {

@@ -14,8 +14,8 @@ import {
 } from "../../helpers/constants";
 import { FintrollerV1 } from "../../typechain";
 import { ChainlinkOperator } from "../../typechain/ChainlinkOperator";
-import { Erc20Mintable } from "../../typechain/Erc20Mintable";
 import { GodModeBalanceSheet } from "../../typechain/GodModeBalanceSheet";
+import { GodModeErc20 } from "../../typechain/GodModeErc20";
 import { GodModeHToken } from "../../typechain/GodModeHToken";
 import { SimplePriceFeed } from "../../typechain/SimplePriceFeed";
 import {
@@ -44,19 +44,19 @@ type IntegrationFixtureReturnType = {
   fintroller: FintrollerV1;
   hTokens: GodModeHToken[];
   oracle: ChainlinkOperator;
-  usdc: Erc20Mintable;
+  usdc: GodModeErc20;
   usdcPriceFeed: SimplePriceFeed;
-  wbtc: Erc20Mintable;
+  wbtc: GodModeErc20;
   wbtcPriceFeed: SimplePriceFeed;
 };
 
 export async function integrationFixture(signers: Signer[]): Promise<IntegrationFixtureReturnType> {
   const deployer: Signer = signers[0];
 
-  const usdc: Erc20Mintable = await deployUsdc(deployer);
+  const usdc: GodModeErc20 = await deployUsdc(deployer);
   const usdcPriceFeed: SimplePriceFeed = await deployUsdcPriceFeed(deployer);
 
-  const wbtc: Erc20Mintable = await deployWbtc(deployer);
+  const wbtc: GodModeErc20 = await deployWbtc(deployer);
   const wbtcPriceFeed: SimplePriceFeed = await deployWbtcPriceFeed(deployer);
 
   const oracle: ChainlinkOperator = await deployChainlinkOperator(deployer);

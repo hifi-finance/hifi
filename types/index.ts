@@ -2,9 +2,9 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-wit
 import { MockContract } from "ethereum-waffle";
 
 import { ChainlinkOperator } from "../typechain/ChainlinkOperator";
-import { Erc20Mintable } from "../typechain/Erc20Mintable";
 import { FintrollerV1 } from "../typechain/FintrollerV1";
 import { GodModeBalanceSheet } from "../typechain/GodModeBalanceSheet";
+import { GodModeErc20 } from "../typechain/GodModeErc20";
 import { GodModeHToken } from "../typechain/GodModeHToken";
 import { SimplePriceFeed } from "../typechain/SimplePriceFeed";
 import { StablecoinPriceFeed } from "../typechain/StablecoinPriceFeed";
@@ -14,9 +14,9 @@ export interface Contracts {
   fintroller: FintrollerV1;
   hTokens: GodModeHToken[];
   oracle: ChainlinkOperator;
-  usdc: Erc20Mintable;
+  usdc: GodModeErc20;
   usdcPriceFeed: StablecoinPriceFeed;
-  wbtc: Erc20Mintable;
+  wbtc: GodModeErc20;
   wbtcPriceFeed: SimplePriceFeed;
 }
 
