@@ -21,7 +21,7 @@ contract HToken is
 {
     using SafeErc20 for IErc20;
 
-    /// STORAGE ///
+    /// PUBLIC STORAGE ///
 
     /// @inheritdoc IHToken
     IBalanceSheetV1 public override balanceSheet;

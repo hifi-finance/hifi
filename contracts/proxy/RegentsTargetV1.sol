@@ -16,9 +16,8 @@ contract RegentsTargetV1 is
     IRegentsTargetV1 /// no dependency
 {
     using SafeErc20 for IErc20;
-    using SafeErc20 for IHToken;
 
-    /// STORAGE PROPERTIES ///
+    /// PUBLIC STORAGE ///
 
     /// @inheritdoc IRegentsTargetV1
     address public constant override EXCHANGE_PROXY_ADDRESS = 0x3E66B66Fd1d0b02fDa6C811Da9E0547970DB2f21;
@@ -26,7 +25,7 @@ contract RegentsTargetV1 is
     /// @inheritdoc IRegentsTargetV1
     address public constant override WETH_ADDRESS = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
 
-    /// NON-CONSTANT FUNCTIONS ///
+    /// PUBLIC NON-CONSTANT FUNCTIONS ///
 
     /// @inheritdoc IRegentsTargetV1
     function borrow(
@@ -35,7 +34,7 @@ contract RegentsTargetV1 is
         uint256 borrowAmount
     ) public override {
         balanceSheet.borrow(hToken, borrowAmount);
-        hToken.safeTransfer(msg.sender, borrowAmount);
+        hToken.transfer(msg.sender, borrowAmount);
     }
 
     /// @inheritdoc IRegentsTargetV1
@@ -131,7 +130,7 @@ contract RegentsTargetV1 is
         IErc20 underlying = hToken.underlying();
 
         // Transfer the hTokens to the DSProxy.
-        hToken.safeTransferFrom(msg.sender, address(this), hTokenAmount);
+        hToken.transferFrom(msg.sender, address(this), hTokenAmount);
 
         // Redeem the hTokens.
         uint256 preUnderlyingBalance = underlying.balanceOf(address(this));
@@ -152,7 +151,7 @@ contract RegentsTargetV1 is
         uint256 repayAmount
     ) public override {
         // Transfer the hTokens to the DSProxy.
-        hToken.safeTransferFrom(msg.sender, address(this), repayAmount);
+        hToken.transferFrom(msg.sender, address(this), repayAmount);
 
         // Repay the borrow.
         balanceSheet.repayBorrow(hToken, repayAmount);
@@ -215,7 +214,7 @@ contract RegentsTargetV1 is
         uint256 hTokenAmount = postHTokenBalance - preHTokenBalance;
 
         // The hTokens are now in the DSProxy, so we relay them to the end user.
-        hToken.safeTransfer(msg.sender, hTokenAmount);
+        hToken.transfer(msg.sender, hTokenAmount);
     }
 
     /// @inheritdoc IRegentsTargetV1
@@ -260,7 +259,7 @@ contract RegentsTargetV1 is
     }
 
     /// @inheritdoc IRegentsTargetV1
-    function wrapEthAndDepositAndBorrow(
+    function wrapEthAndDepositAndBorrowAndSellHTokens(
         IBalanceSheetV1 balanceSheet,
         IHToken hToken,
         uint256 borrowAmount,
@@ -271,7 +270,8 @@ contract RegentsTargetV1 is
         borrowAndSellHTokens(balanceSheet, hToken, borrowAmount, underlyingAmount);
     }
 
-    /// INTERNAL FUNCTIONS ///
+    /// INTERNAL NON-CONSTANT FUNCTIONS ///
+
     /// @dev See the documentation for the public functions that call this internal function.
     function depositCollateralInternal(
         IBalanceSheetV1 balanceSheet,

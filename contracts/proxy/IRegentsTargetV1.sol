@@ -22,6 +22,16 @@ interface IRegentsTargetV1 {
         uint256 underlyingAmount
     );
 
+    /// CONSTANT FUNCTIONS ///
+
+    /// @notice The contract that enables trading on the Balancer Exchange.
+    /// @dev This is the mainnet version of the Exchange Proxy. Change it with the testnet version when needed.
+    function EXCHANGE_PROXY_ADDRESS() external view returns (address);
+
+    /// @notice The contract that enables wrapping ETH into ERC-20 form.
+    /// @dev This is the mainnet version of WETH. Change it with the testnet version when needed.
+    function WETH_ADDRESS() external view returns (address);
+
     /// NON-CONSTANT FUNCTIONS ///
 
     /// @notice Borrows hTokens.
@@ -34,7 +44,7 @@ interface IRegentsTargetV1 {
         uint256 borrowAmount
     ) external;
 
-    /// @notice Borrows hTokens and sells them on Balancer in exchange for underlying.
+    /// @notice Borrows hTokens and sells them on the AMM in exchange for underlying.
     ///
     /// @dev Emits a {BorrowAndSellHTokens} event.
     ///
@@ -65,20 +75,6 @@ interface IRegentsTargetV1 {
         uint256 collateralAmount
     ) external;
 
-    // /// @notice Deposits and locks collateral into the BalanceSheet contract.
-    // ///
-    // /// @dev Requirements:
-    // /// - The caller must have allowed the DSProxy to spend `collateralAmount` tokens.
-    // ///
-    // /// @param balanceSheet The address of the BalanceSheet contract.
-    // /// @param hToken The address of the HToken contract.
-    // /// @param collateralAmount The amount of collateral to deposit and lock.
-    // function depositAndLockCollateral(
-    //     IBalanceSheetV1 balanceSheet,
-    //     IHToken hToken,
-    //     uint256 collateralAmount
-    // ) external;
-
     /// @notice Deposits collateral into the vault via the BalanceSheet contract
     /// and borrows hTokens.
     ///
@@ -90,7 +86,7 @@ interface IRegentsTargetV1 {
     /// @param balanceSheet The address of the BalanceSheet contract.
     /// @param collateral The address of the collateral contract.
     /// @param hToken The address of the HToken contract.
-    /// @param collateralAmount The amount of collateral to deposit and lock.
+    /// @param collateralAmount The amount of collateral to deposit.
     /// @param borrowAmount The amount of hTokens to borrow.
     function depositAndBorrow(
         IBalanceSheetV1 balanceSheet,
@@ -100,8 +96,8 @@ interface IRegentsTargetV1 {
         uint256 borrowAmount
     ) external payable;
 
-    /// @notice Deposits into the vault via the BalanceSheet contract, borrows hTokens
-    /// and sells them on Balancer in exchange for underlying.
+    /// @notice Deposits collateral into the vault, borrows hTokens /// and sells them on the AMM
+    /// in exchange for underlying.
     ///
     /// @dev This is a payable function so it can receive ETH transfers.
     ///
@@ -111,7 +107,7 @@ interface IRegentsTargetV1 {
     /// @param balanceSheet The address of the BalanceSheet contract.
     /// @param collateral The address of the collateral contract.
     /// @param hToken The address of the HToken contract.
-    /// @param collateralAmount The amount of collateral to deposit and lock.
+    /// @param collateralAmount The amount of collateral to deposit.
     /// @param borrowAmount The amount of hTokens to borrow.
     /// @param underlyingAmount The amount of underlying to sell hTokens for.
     function depositAndBorrowAndSellHTokens(
@@ -167,8 +163,7 @@ interface IRegentsTargetV1 {
     /// @param underlyingAmount The amount of underlying to supply.
     function supplyUnderlying(IHToken hToken, uint256 underlyingAmount) external;
 
-    /// @notice Supplies the underlying to the HToken contract, mints hTokens
-    /// and repays the borrow.
+    /// @notice Supplies the underlying to the HToken contract, mints hTokens and repays the borrow.
     ///
     /// @dev Requirements:
     /// - The caller must have allowed the DSProxy to spend `underlyingAmount` tokens.
@@ -182,7 +177,7 @@ interface IRegentsTargetV1 {
         uint256 underlyingAmount
     ) external;
 
-    /// @notice Withdraws collateral from the vault in the BalanceSheet contract.
+    /// @notice Withdraws collateral from the vault.
     /// @param balanceSheet The address of the BalanceSheet contract.
     /// @param collateral The address of the collateral contract.
     /// @param withdrawAmount The amount of collateral to withdraw.
@@ -200,8 +195,7 @@ interface IRegentsTargetV1 {
     /// @param hToken The address of the HToken contract.
     function wrapEthAndDepositCollateral(IBalanceSheetV1 balanceSheet, IHToken hToken) external payable;
 
-    /// @notice Wraps ETH into WETH, deposits and locks collateral into the vault in the BalanceSheet
-    /// contracts and borrows hTokens.
+    /// @notice Wraps ETH into WETH, deposits collateral into the vault, borrows hTokens and finally sell them.
     ///
     /// @dev This is a payable function so it can receive ETH transfers.
     ///
@@ -209,20 +203,10 @@ interface IRegentsTargetV1 {
     /// @param hToken The address of the HToken contract.
     /// @param borrowAmount The amount of hTokens to borrow.
     /// @param underlyingAmount The amount of underlying to sell hTokens for.
-    function wrapEthAndDepositAndBorrow(
+    function wrapEthAndDepositAndBorrowAndSellHTokens(
         IBalanceSheetV1 balanceSheet,
         IHToken hToken,
         uint256 borrowAmount,
         uint256 underlyingAmount
     ) external payable;
-
-    /// CONSTANT FUNCTIONS ///
-
-    /// @notice The contract that enables trading on the Balancer Exchange.
-    /// @dev This is the mainnet version of the Exchange Proxy. Change it with the testnet version when needed.
-    function EXCHANGE_PROXY_ADDRESS() external view returns (address);
-
-    /// @notice The contract that enables wrapping ETH into ERC-20 form.
-    /// @dev This is the mainnet version of WETH. Change it with the testnet version when needed.
-    function WETH_ADDRESS() external view returns (address);
 }

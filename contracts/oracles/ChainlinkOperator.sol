@@ -12,7 +12,7 @@ contract ChainlinkOperator is
     IChainlinkOperator, // no dependency
     Ownable // one dependency
 {
-    /// STORAGE ///
+    /// PUBLIC STORAGE ///
 
     /// @dev Mapping between Erc20 symbols and Feed structs.
     mapping(string => Feed) internal feeds;
