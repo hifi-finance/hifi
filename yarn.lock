@@ -928,7 +928,7 @@ __metadata:
     "@nomiclabs/hardhat-waffle": ^2.0.1
     "@openzeppelin/contracts-upgradeable": ^4.1.0
     "@openzeppelin/hardhat-upgrades": ^1.8.2
-    "@paulrberg/contracts": ^3.1.0
+    "@paulrberg/contracts": ^3.2.0
     "@typechain/ethers-v5": ^7.0.0
     "@typechain/hardhat": ^2.0.1
     "@types/chai": ^4.2.18
@@ -1071,14 +1071,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@paulrberg/contracts@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "@paulrberg/contracts@npm:3.1.0"
+"@paulrberg/contracts@npm:^3.2.0":
+  version: 3.2.0
+  resolution: "@paulrberg/contracts@npm:3.2.0"
   dependencies:
-    prb-math: ^1.1.0
+    prb-math: ^2.0.0
   peerDependencies:
-    prb-math: ^1.1.0
-  checksum: 2852227f0aa9432f3f6189a284bfeb1d49c943e99aa7964a7449a70cb78351000093ef4b9a482a8e9df9b6879cbf884e3f588965dac5ee3e2a1307bc5635bba1
+    prb-math: ^2.0.0
+  checksum: 2f31bfe27446d0c2f05f485c46453850d98a3569155eb9d001781e5001c3ebda8bf0b3b6ae2ce305421d0d1460b8a04296772342026e48f59ff061164421fd9b
   languageName: node
   linkType: hard
 
@@ -11057,10 +11057,10 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"prb-math@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "prb-math@npm:1.1.0"
-  checksum: 8470a19cab9faafbb0f35974132df8f4915b84486ea63ba10bde22ce9c8f3755064370ffb5a288923e7c3c11f4db40d4a475e46fec6e9d88d64401070855e01d
+"prb-math@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "prb-math@npm:2.0.0"
+  checksum: 09d7426b428880b4fa1393b457feb261d6fbb84765abcec6d8ab31d989be47886af2f093aba75c3783389f9198bd5fba9492cec7b77a770435c61c93bd4d6234
   languageName: node
   linkType: hard
 
