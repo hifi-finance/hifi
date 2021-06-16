@@ -21,7 +21,7 @@ abstract contract SBalanceSheetV1 {
         mapping(IHToken => uint256) debtAmounts;
     }
 
-    /// STORAGE ///
+    /// PUBLIC STORAGE ///
 
     /// @notice The Fintroller contract associated with this contract.
     IFintrollerV1 public fintroller;
