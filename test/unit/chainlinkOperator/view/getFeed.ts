@@ -16,7 +16,7 @@ export default function shouldBehaveLikeGetFeed(): void {
   context("when the feed is set", function () {
     beforeEach(async function () {
       await this.contracts.oracle
-        .connect(this.signers.owner)
+        .connect(this.signers.admin)
         .setFeed(this.mocks.wbtc.address, this.mocks.wbtcPriceFeed.address);
     });
 

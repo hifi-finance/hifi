@@ -19,25 +19,25 @@ export default function shouldBehaveLikeSetOracle(): void {
       let newOracle: MockContract;
 
       beforeEach(async function () {
-        newOracle = await deployMockChainlinkOperator(this.signers.owner);
+        newOracle = await deployMockChainlinkOperator(this.signers.admin);
       });
 
       it("sets the new oracle", async function () {
-        await this.contracts.balanceSheet.connect(this.signers.owner).setOracle(newOracle.address);
+        await this.contracts.balanceSheet.connect(this.signers.admin).setOracle(newOracle.address);
         const oracle: string = await this.contracts.balanceSheet.oracle();
         expect(oracle).to.equal(newOracle.address);
       });
 
       it("emits a SetOracle event", async function () {
-        await expect(this.contracts.balanceSheet.connect(this.signers.owner).setOracle(newOracle.address))
+        await expect(this.contracts.balanceSheet.connect(this.signers.admin).setOracle(newOracle.address))
           .to.emit(this.contracts.balanceSheet, "SetOracle")
-          .withArgs(this.signers.owner.address, this.mocks.oracle.address, newOracle.address);
+          .withArgs(this.signers.admin.address, this.mocks.oracle.address, newOracle.address);
       });
     });
 
     context("when the oracle address is the zero address", function () {
       it("reverts", async function () {
-        await expect(this.contracts.balanceSheet.connect(this.signers.owner).setOracle(AddressZero)).to.be.revertedWith(
+        await expect(this.contracts.balanceSheet.connect(this.signers.admin).setOracle(AddressZero)).to.be.revertedWith(
           BalanceSheetErrors.SetOracleZeroAddress,
         );
       });

@@ -23,35 +23,35 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
 
   beforeEach(async function () {
     // List the collateral in the Fintroller.
-    await this.contracts.fintroller.connect(this.signers.owner).listCollateral(this.contracts.wbtc.address);
+    await this.contracts.fintroller.connect(this.signers.admin).listCollateral(this.contracts.wbtc.address);
 
     // List the bond in the Fintroller.
-    await this.contracts.fintroller.connect(this.signers.owner).listBond(this.contracts.hTokens[0].address);
+    await this.contracts.fintroller.connect(this.signers.admin).listBond(this.contracts.hTokens[0].address);
 
     // Allow borrows and borrow repays and borrow liquidations.
     await this.contracts.fintroller
-      .connect(this.signers.owner)
+      .connect(this.signers.admin)
       .setBorrowAllowed(this.contracts.hTokens[0].address, true);
     await this.contracts.fintroller
-      .connect(this.signers.owner)
+      .connect(this.signers.admin)
       .setRepayBorrowAllowed(this.contracts.hTokens[0].address, true);
     await this.contracts.fintroller
-      .connect(this.signers.owner)
+      .connect(this.signers.admin)
       .setLiquidateBorrowAllowed(this.contracts.hTokens[0].address, true);
 
     // Set the debt ceiling.
     await this.contracts.fintroller
-      .connect(this.signers.owner)
+      .connect(this.signers.admin)
       .setDebtCeiling(this.contracts.hTokens[0].address, debtCeiling);
 
     // Set the collateralization ratio.
     await this.contracts.fintroller
-      .connect(this.signers.owner)
+      .connect(this.signers.admin)
       .setCollateralizationRatio(this.contracts.wbtc.address, WBTC_COLLATERALIZATION_RATIO);
 
     // Set the liquidation incentive.
     await this.contracts.fintroller
-      .connect(this.signers.owner)
+      .connect(this.signers.admin)
       .setLiquidationIncentive(this.contracts.wbtc.address, DEFAULT_LIQUIDATION_INCENTIVE);
 
     // Mint 1 WBTC and approve the BalanceSheet to spend it.

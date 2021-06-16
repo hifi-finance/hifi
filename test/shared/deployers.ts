@@ -15,7 +15,12 @@ import {
 import { getHTokenName, getHTokenSymbol } from "../../helpers/contracts";
 import { getDeployContractOverrides } from "../../helpers/env";
 import { price } from "../../helpers/numbers";
-import { FintrollerV1__factory, GodModeBalanceSheet__factory } from "../../typechain";
+import {
+  FintrollerV1__factory,
+  GodModeBalanceSheet__factory,
+  OwnableUpgradeable,
+  OwnableUpgradeable__factory,
+} from "../../typechain";
 import { ChainlinkOperator } from "../../typechain/ChainlinkOperator";
 import { FintrollerV1 } from "../../typechain/FintrollerV1";
 import { GodModeBalanceSheet } from "../../typechain/GodModeBalanceSheet";
@@ -101,6 +106,15 @@ export async function deployGodModeHToken(
     )
   );
   return hToken;
+}
+
+export async function deployOwnableUpgradeable(): Promise<OwnableUpgradeable> {
+  const ownableUpgradeableFactory: OwnableUpgradeable__factory = await ethers.getContractFactory("OwnableUpgradeable");
+  const ownableUpgradeable: OwnableUpgradeable = <OwnableUpgradeable>(
+    await upgrades.deployProxy(ownableUpgradeableFactory)
+  );
+  await ownableUpgradeable.deployed();
+  return ownableUpgradeable;
 }
 
 export async function deploySimplePriceFeed(

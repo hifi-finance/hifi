@@ -11,19 +11,19 @@ export default function shouldBehaveLikeBorrow(): void {
 
   beforeEach(async function () {
     // List the collateral in the Fintroller.
-    await this.contracts.fintroller.connect(this.signers.owner).listCollateral(this.contracts.wbtc.address);
+    await this.contracts.fintroller.connect(this.signers.admin).listCollateral(this.contracts.wbtc.address);
 
     // List the bond in the Fintroller.
-    await this.contracts.fintroller.connect(this.signers.owner).listBond(this.contracts.hTokens[0].address);
+    await this.contracts.fintroller.connect(this.signers.admin).listBond(this.contracts.hTokens[0].address);
 
     // Allow borrows.
     await this.contracts.fintroller
-      .connect(this.signers.owner)
+      .connect(this.signers.admin)
       .setBorrowAllowed(this.contracts.hTokens[0].address, true);
 
     // Set the debt ceiling.
     await this.contracts.fintroller
-      .connect(this.signers.owner)
+      .connect(this.signers.admin)
       .setDebtCeiling(this.contracts.hTokens[0].address, debtCeiling);
 
     // Mint 1 WBTC and approve the BalanceSheet to spend it.

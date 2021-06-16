@@ -6,6 +6,7 @@ import { FintrollerV1 } from "../typechain/FintrollerV1";
 import { GodModeBalanceSheet } from "../typechain/GodModeBalanceSheet";
 import { GodModeErc20 } from "../typechain/GodModeErc20";
 import { GodModeHToken } from "../typechain/GodModeHToken";
+import { OwnableUpgradeable } from "../typechain/OwnableUpgradeable";
 import { SimplePriceFeed } from "../typechain/SimplePriceFeed";
 import { StablecoinPriceFeed } from "../typechain/StablecoinPriceFeed";
 
@@ -14,6 +15,7 @@ export interface Contracts {
   fintroller: FintrollerV1;
   hTokens: GodModeHToken[];
   oracle: ChainlinkOperator;
+  ownableUpgradeable: OwnableUpgradeable;
   usdc: GodModeErc20;
   usdcPriceFeed: StablecoinPriceFeed;
   wbtc: GodModeErc20;
@@ -33,7 +35,7 @@ export interface Mocks {
   wethPriceFeed: MockContract;
 }
 export interface Signers {
-  owner: SignerWithAddress;
+  admin: SignerWithAddress;
   borrower: SignerWithAddress;
   lender: SignerWithAddress;
   liquidator: SignerWithAddress;

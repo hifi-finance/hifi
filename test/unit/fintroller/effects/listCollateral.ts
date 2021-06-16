@@ -22,7 +22,7 @@ export default function shouldBehaveLikeListCollateral(): void {
 
         it("reverts", async function () {
           await expect(
-            this.contracts.fintroller.connect(this.signers.owner).listCollateral(this.mocks.wbtc.address),
+            this.contracts.fintroller.connect(this.signers.admin).listCollateral(this.mocks.wbtc.address),
           ).to.be.revertedWith(FintrollerErrors.ListCollateralDecimalsZero);
         });
       });
@@ -34,7 +34,7 @@ export default function shouldBehaveLikeListCollateral(): void {
 
         it("reverts", async function () {
           await expect(
-            this.contracts.fintroller.connect(this.signers.owner).listCollateral(this.mocks.wbtc.address),
+            this.contracts.fintroller.connect(this.signers.admin).listCollateral(this.mocks.wbtc.address),
           ).to.be.revertedWith(FintrollerErrors.ListCollateralDecimalsOverflow);
         });
       });
@@ -42,15 +42,15 @@ export default function shouldBehaveLikeListCollateral(): void {
 
     context("when the number of decimals is not out of bounds", function () {
       it("lists the collateral", async function () {
-        await this.contracts.fintroller.connect(this.signers.owner).listCollateral(this.mocks.wbtc.address);
+        await this.contracts.fintroller.connect(this.signers.admin).listCollateral(this.mocks.wbtc.address);
         const collateral = await this.contracts.fintroller.getCollateral(this.mocks.wbtc.address);
         expect(collateral.isListed).to.equal(true);
       });
 
       it("emits a ListCollateral event", async function () {
-        await expect(this.contracts.fintroller.connect(this.signers.owner).listCollateral(this.mocks.wbtc.address))
+        await expect(this.contracts.fintroller.connect(this.signers.admin).listCollateral(this.mocks.wbtc.address))
           .to.emit(this.contracts.fintroller, "ListCollateral")
-          .withArgs(this.signers.owner.address, this.mocks.wbtc.address);
+          .withArgs(this.signers.admin.address, this.mocks.wbtc.address);
       });
     });
   });

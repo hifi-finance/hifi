@@ -18,11 +18,11 @@ export default function shouldBehaveLikeSetBalanceSheet(): void {
     let newBalanceSheet: MockContract;
 
     beforeEach(async function () {
-      newBalanceSheet = await deployMockBalanceSheet(this.signers.owner);
+      newBalanceSheet = await deployMockBalanceSheet(this.signers.admin);
     });
 
     it("sets the new BalanceSheet", async function () {
-      await this.contracts.hTokens[0].connect(this.signers.owner)._setBalanceSheet(newBalanceSheet.address);
+      await this.contracts.hTokens[0].connect(this.signers.admin)._setBalanceSheet(newBalanceSheet.address);
       const newBalanceSheetAddress: string = await this.contracts.hTokens[0].balanceSheet();
       expect(newBalanceSheet.address).to.equal(newBalanceSheetAddress);
     });

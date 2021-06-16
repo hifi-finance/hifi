@@ -31,7 +31,7 @@ export default function shouldBehaveLikeSetLiquidationIncentive(): void {
       it("reverts", async function () {
         await expect(
           this.contracts.fintroller
-            .connect(this.signers.owner)
+            .connect(this.signers.admin)
             .setLiquidationIncentive(this.mocks.wbtc.address, newLiquidationIncentive),
         ).to.be.revertedWith(GenericErrors.CollateralNotListed);
       });
@@ -39,7 +39,7 @@ export default function shouldBehaveLikeSetLiquidationIncentive(): void {
 
     context("when the collateral is listed", function () {
       beforeEach(async function () {
-        await this.contracts.fintroller.connect(this.signers.owner).listCollateral(this.mocks.wbtc.address);
+        await this.contracts.fintroller.connect(this.signers.admin).listCollateral(this.mocks.wbtc.address);
       });
 
       context("when the liquidation incentive is not valid", function () {
@@ -47,7 +47,7 @@ export default function shouldBehaveLikeSetLiquidationIncentive(): void {
           it("reverts", async function () {
             await expect(
               this.contracts.fintroller
-                .connect(this.signers.owner)
+                .connect(this.signers.admin)
                 .setLiquidationIncentive(this.mocks.wbtc.address, Zero),
             ).to.be.revertedWith(FintrollerErrors.SetLiquidationIncentiveLowerBound);
           });
@@ -57,7 +57,7 @@ export default function shouldBehaveLikeSetLiquidationIncentive(): void {
           it("reverts", async function () {
             await expect(
               this.contracts.fintroller
-                .connect(this.signers.owner)
+                .connect(this.signers.admin)
                 .setLiquidationIncentive(this.mocks.wbtc.address, overflowLiquidationIncentive),
             ).to.be.revertedWith(FintrollerErrors.SetLiquidationIncentiveUpperBound);
           });
@@ -67,7 +67,7 @@ export default function shouldBehaveLikeSetLiquidationIncentive(): void {
           it("reverts", async function () {
             await expect(
               this.contracts.fintroller
-                .connect(this.signers.owner)
+                .connect(this.signers.admin)
                 .setLiquidationIncentive(this.mocks.wbtc.address, underflowLiquidationIncentive),
             ).to.be.revertedWith(FintrollerErrors.SetLiquidationIncentiveLowerBound);
           });
@@ -77,7 +77,7 @@ export default function shouldBehaveLikeSetLiquidationIncentive(): void {
       context("when the liquidation incentive is valid", function () {
         it("sets the new liquidation incentive", async function () {
           await this.contracts.fintroller
-            .connect(this.signers.owner)
+            .connect(this.signers.admin)
             .setLiquidationIncentive(this.mocks.wbtc.address, newLiquidationIncentive);
           const liquidationIncentive: BigNumber = await this.contracts.fintroller.getLiquidationIncentive(
             this.mocks.wbtc.address,
@@ -88,12 +88,12 @@ export default function shouldBehaveLikeSetLiquidationIncentive(): void {
         it("emits a SetLiquidationIncentive event", async function () {
           await expect(
             this.contracts.fintroller
-              .connect(this.signers.owner)
+              .connect(this.signers.admin)
               .setLiquidationIncentive(this.mocks.wbtc.address, newLiquidationIncentive),
           )
             .to.emit(this.contracts.fintroller, "SetLiquidationIncentive")
             .withArgs(
-              this.signers.owner.address,
+              this.signers.admin.address,
               this.mocks.wbtc.address,
               DEFAULT_LIQUIDATION_INCENTIVE,
               newLiquidationIncentive,

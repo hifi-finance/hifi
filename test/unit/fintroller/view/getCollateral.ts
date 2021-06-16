@@ -16,7 +16,7 @@ export default function shouldBehaveLikeGetCollateral(): void {
 
   context("when the collateral is listed", function () {
     beforeEach(async function () {
-      await this.contracts.fintroller.connect(this.signers.owner).listCollateral(this.mocks.wbtc.address);
+      await this.contracts.fintroller.connect(this.signers.admin).listCollateral(this.mocks.wbtc.address);
     });
 
     it("retrieves the default values after listing", async function () {

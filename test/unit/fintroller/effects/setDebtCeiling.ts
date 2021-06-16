@@ -23,7 +23,7 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
       it("reverts", async function () {
         await expect(
           this.contracts.fintroller
-            .connect(this.signers.owner)
+            .connect(this.signers.admin)
             .setDebtCeiling(this.mocks.hTokens[0].address, newDebtCeiling),
         ).to.be.revertedWith(GenericErrors.BondNotListed);
       });
@@ -31,13 +31,13 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
 
     context("when the bond is listed", function () {
       beforeEach(async function () {
-        await this.contracts.fintroller.connect(this.signers.owner).listBond(this.mocks.hTokens[0].address);
+        await this.contracts.fintroller.connect(this.signers.admin).listBond(this.mocks.hTokens[0].address);
       });
 
       context("when the debt ceiling is zero", function () {
         it("reverts", async function () {
           await expect(
-            this.contracts.fintroller.connect(this.signers.owner).setDebtCeiling(this.mocks.hTokens[0].address, Zero),
+            this.contracts.fintroller.connect(this.signers.admin).setDebtCeiling(this.mocks.hTokens[0].address, Zero),
           ).to.be.revertedWith(FintrollerErrors.SetDebtCeilingZero);
         });
       });
@@ -51,7 +51,7 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
           it("reverts", async function () {
             await expect(
               this.contracts.fintroller
-                .connect(this.signers.owner)
+                .connect(this.signers.admin)
                 .setDebtCeiling(this.mocks.hTokens[0].address, newDebtCeiling),
             ).to.be.revertedWith(FintrollerErrors.SetDebtCeilingUnderflow);
           });
@@ -64,7 +64,7 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
 
           it("sets the new debt ceiling", async function () {
             await this.contracts.fintroller
-              .connect(this.signers.owner)
+              .connect(this.signers.admin)
               .setDebtCeiling(this.mocks.hTokens[0].address, newDebtCeiling);
             const contractDebtCeiling: BigNumber = await this.contracts.fintroller.getDebtCeiling(
               this.mocks.hTokens[0].address,
@@ -75,11 +75,11 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
           it("emits a SetDebtCeiling event", async function () {
             await expect(
               this.contracts.fintroller
-                .connect(this.signers.owner)
+                .connect(this.signers.admin)
                 .setDebtCeiling(this.mocks.hTokens[0].address, newDebtCeiling),
             )
               .to.emit(this.contracts.fintroller, "SetDebtCeiling")
-              .withArgs(this.signers.owner.address, this.mocks.hTokens[0].address, Zero, newDebtCeiling);
+              .withArgs(this.signers.admin.address, this.mocks.hTokens[0].address, Zero, newDebtCeiling);
           });
         });
       });

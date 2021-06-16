@@ -12,17 +12,19 @@ import {
   WBTC_SYMBOL,
   WETH_SYMBOL,
 } from "../../helpers/constants";
-import { FintrollerV1 } from "../../typechain";
 import { ChainlinkOperator } from "../../typechain/ChainlinkOperator";
+import { FintrollerV1 } from "../../typechain/FintrollerV1";
 import { GodModeBalanceSheet } from "../../typechain/GodModeBalanceSheet";
 import { GodModeErc20 } from "../../typechain/GodModeErc20";
 import { GodModeHToken } from "../../typechain/GodModeHToken";
+import { OwnableUpgradeable } from "../../typechain/OwnableUpgradeable";
 import { SimplePriceFeed } from "../../typechain/SimplePriceFeed";
 import {
   deployChainlinkOperator,
   deployFintrollerV1,
   deployGodModeBalanceSheet,
   deployGodModeHToken,
+  deployOwnableUpgradeable,
   deployUsdc,
   deployUsdcPriceFeed,
   deployWbtc,
@@ -179,4 +181,13 @@ export async function unitFixtureHToken(signers: Signer[]): Promise<UnitFixtureH
   );
 
   return { balanceSheet, oracle, hTokens: [hToken], usdc };
+}
+
+type UnitFixtureOwnableUpgradeable = {
+  ownableUpgradeable: OwnableUpgradeable;
+};
+
+export async function unitFixtureOwnableUpgradeable(): Promise<UnitFixtureOwnableUpgradeable> {
+  const ownableUpgradeable: OwnableUpgradeable = await deployOwnableUpgradeable();
+  return { ownableUpgradeable };
 }

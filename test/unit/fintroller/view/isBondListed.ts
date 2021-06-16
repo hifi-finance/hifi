@@ -10,7 +10,7 @@ export default function shouldBehaveLikeIsBondListed(): void {
 
   context("when the vault is listed", function () {
     beforeEach(async function () {
-      await this.contracts.fintroller.connect(this.signers.owner).listBond(this.mocks.hTokens[0].address);
+      await this.contracts.fintroller.connect(this.signers.admin).listBond(this.mocks.hTokens[0].address);
     });
 
     it("retrieves true", async function () {

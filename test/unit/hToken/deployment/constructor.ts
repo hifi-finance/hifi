@@ -17,7 +17,7 @@ export default function shouldBehaveLikeConstructor(): void {
 
     it("reverts", async function () {
       const deployHTokenPromise: Promise<HToken> = deployHToken(
-        this.signers.owner,
+        this.signers.admin,
         H_TOKEN_EXPIRATION_TIMES[0],
         this.mocks.balanceSheet.address,
         this.mocks.usdc.address,
@@ -33,7 +33,7 @@ export default function shouldBehaveLikeConstructor(): void {
 
     it("reverts", async function () {
       const deployHTokenPromise: Promise<HToken> = deployHToken(
-        this.signers.owner,
+        this.signers.admin,
         H_TOKEN_EXPIRATION_TIMES[0],
         this.mocks.balanceSheet.address,
         this.mocks.usdc.address,
@@ -46,7 +46,7 @@ export default function shouldBehaveLikeConstructor(): void {
     it("reverts", async function () {
       const nowMinusOneHour: BigNumber = now().sub(3600);
       const deployHTokenPromise: Promise<HToken> = deployHToken(
-        this.signers.owner,
+        this.signers.admin,
         nowMinusOneHour,
         this.mocks.balanceSheet.address,
         this.mocks.usdc.address,
