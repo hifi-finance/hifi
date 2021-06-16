@@ -3,7 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 import fp from "evm-fp";
 
-import { bn, precisionScalarForDecimals, usdc } from "../../../../helpers/numbers";
+import { USDC, bn, hUSDC, precisionScalarForDecimals } from "../../../../helpers/numbers";
 import { HTokenErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeSupplyUnderlying(): void {
@@ -17,8 +17,8 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
   });
 
   context("when the amount of underlying to supply is not zero", function () {
-    const underlyingAmount: BigNumber = usdc("100");
-    const hTokenAmount: BigNumber = fp("100");
+    const underlyingAmount: BigNumber = USDC("100");
+    const hTokenAmount: BigNumber = hUSDC("100");
 
     context("when the underlying has 18 decimals", function () {
       const localUnderlyingAmount: BigNumber = fp("100", 18);

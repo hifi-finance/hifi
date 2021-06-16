@@ -1,11 +1,11 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
-import fp from "evm-fp";
 
+import { hUSDC } from "../../../../helpers/numbers";
 import { HTokenErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeBurn(): void {
-  const burnAmount: BigNumber = fp("100");
+  const burnAmount: BigNumber = hUSDC("100");
 
   context("when the caller is not the HToken contract", function () {
     it("reverts", async function () {

@@ -1,10 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
-import fp from "evm-fp";
 
 import { DEFAULT_LIQUIDATION_INCENTIVE, NORMALIZED_WBTC_PRICE } from "../../../../helpers/constants";
-import { bn } from "../../../../helpers/numbers";
+import { bn, hUSDC } from "../../../../helpers/numbers";
 import { getSeizableCollateralAmount } from "../../../shared/mirrors";
 
 export default function shouldBehaveLikeGetSeizableCollateralAmount(): void {
@@ -14,7 +13,7 @@ export default function shouldBehaveLikeGetSeizableCollateralAmount(): void {
     });
 
     it("returns zero", async function () {
-      const repayAmount: BigNumber = fp("15000");
+      const repayAmount: BigNumber = hUSDC("15000");
       const seizableCollateralAmount: BigNumber = await this.contracts.balanceSheet.getSeizableCollateralAmount(
         this.mocks.hTokens[0].address,
         repayAmount,
@@ -33,7 +32,7 @@ export default function shouldBehaveLikeGetSeizableCollateralAmount(): void {
 
     context("when the repay amount is zero", function () {
       it("returns zero", async function () {
-        const repayAmount: BigNumber = fp("0");
+        const repayAmount: BigNumber = hUSDC("0");
         const seizableCollateralAmount: BigNumber = await this.contracts.balanceSheet.getSeizableCollateralAmount(
           this.mocks.hTokens[0].address,
           repayAmount,
@@ -44,7 +43,7 @@ export default function shouldBehaveLikeGetSeizableCollateralAmount(): void {
     });
 
     context("when the repay amount is not zero", function () {
-      const repayAmount: BigNumber = fp("15000");
+      const repayAmount: BigNumber = hUSDC("15000");
 
       context("when the collateral has 18 decimals", function () {
         const collateralDecimals: BigNumber = bn("18");

@@ -1,13 +1,12 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
-import fp from "evm-fp";
 
-import { wbtc } from "../../../../helpers/numbers";
+import { WBTC, hUSDC } from "../../../../helpers/numbers";
 
 export default function shouldBehaveLikeBorrow(): void {
-  const borrowAmount: BigNumber = fp("15000");
-  const debtCeiling: BigNumber = fp("1e6");
-  const wbtcDepositAmount: BigNumber = wbtc("1");
+  const borrowAmount: BigNumber = hUSDC("15000");
+  const debtCeiling: BigNumber = hUSDC("1e6");
+  const wbtcDepositAmount: BigNumber = WBTC("1");
 
   beforeEach(async function () {
     // List the collateral in the Fintroller.

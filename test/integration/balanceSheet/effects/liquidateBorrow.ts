@@ -8,14 +8,14 @@ import {
   WBTC_COLLATERALIZATION_RATIO,
   WBTC_SYMBOL,
 } from "../../../../helpers/constants";
-import { price, wbtc } from "../../../../helpers/numbers";
+import { WBTC, hUSDC, price } from "../../../../helpers/numbers";
 import { getSeizableCollateralAmount } from "../../../shared/mirrors";
 
 export default function shouldBehaveLikeLiquidateBorrow(): void {
-  const debtCeiling: BigNumber = fp("1e6");
-  const borrowAmount: BigNumber = fp("15000");
+  const debtCeiling: BigNumber = hUSDC("1e6");
+  const borrowAmount: BigNumber = hUSDC("15000");
   const lowWbtcPrice: BigNumber = price("29999");
-  const wbtcDepositAmount: BigNumber = wbtc("1");
+  const wbtcDepositAmount: BigNumber = WBTC("1");
 
   const repayAmount: BigNumber = borrowAmount;
   const normalizedLowWbtcPrice: BigNumber = fp("29999");

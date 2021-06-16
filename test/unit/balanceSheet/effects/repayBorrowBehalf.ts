@@ -1,12 +1,12 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
-import fp from "evm-fp";
 
+import { hUSDC } from "../../../../helpers/numbers";
 import { BalanceSheetErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeRepayBorrowBehalf(): void {
-  const repayAmount: BigNumber = fp("15000");
+  const repayAmount: BigNumber = hUSDC("15000");
 
   beforeEach(async function () {
     await this.mocks.fintroller.mock.getRepayBorrowAllowed.withArgs(this.mocks.hTokens[0].address).returns(true);

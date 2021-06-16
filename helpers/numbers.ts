@@ -10,13 +10,13 @@ export function bn(x: string): BigNumber {
   return BigNumber.from(xs);
 }
 
+export function hUSDC(x: string): BigNumber {
+  return fp(x, 18);
+}
+
 // The precision used in the prices reported by Chainlink is 8 decimals.
 export function price(x: string): BigNumber {
   return fp(x, 8);
-}
-
-export function usdc(x: string): BigNumber {
-  return fp(x, 6);
 }
 
 export function precisionScalarForDecimals(n: BigNumber): BigNumber {
@@ -29,10 +29,14 @@ export function precisionScalarForDecimals(n: BigNumber): BigNumber {
   return bn(`1e${18 - n.toNumber()}`);
 }
 
-export function wbtc(x: string): BigNumber {
+export function USDC(x: string): BigNumber {
+  return fp(x, 6);
+}
+
+export function WBTC(x: string): BigNumber {
   return fp(x, 8);
 }
 
-export function weth(x: string): BigNumber {
+export function WETH(x: string): BigNumber {
   return fp(x, 18);
 }

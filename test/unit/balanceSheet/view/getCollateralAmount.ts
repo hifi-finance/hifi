@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { wbtc } from "../../../../helpers/numbers";
+import { WBTC } from "../../../../helpers/numbers";
 
 export default function shouldBehaveLikeGetCollateralAmount(): void {
   context("when the caller did not deposit collateral", function () {
@@ -16,7 +16,7 @@ export default function shouldBehaveLikeGetCollateralAmount(): void {
   });
 
   context("when the caller deposited collateral", function () {
-    const depositAmount: BigNumber = wbtc("1");
+    const depositAmount: BigNumber = WBTC("1");
 
     beforeEach(async function () {
       await this.contracts.balanceSheet.__godMode_setCollateralAmount(

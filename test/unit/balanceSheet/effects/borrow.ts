@@ -1,14 +1,13 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
-import fp from "evm-fp";
 
 import {
   DEFAULT_MAX_BONDS,
   WBTC_COLLATERALIZATION_RATIO,
   WETH_COLLATERALIZATION_RATIO,
 } from "../../../../helpers/constants";
-import { wbtc, weth } from "../../../../helpers/numbers";
+import { WBTC, WETH, hUSDC } from "../../../../helpers/numbers";
 import { BalanceSheetErrors, GenericErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeBorrow(): void {
@@ -62,7 +61,7 @@ export default function shouldBehaveLikeBorrow(): void {
       });
 
       context("when the amount to borrow is not zero", function () {
-        const borrowAmounts: BigNumber[] = [fp("15000"), fp("20000")];
+        const borrowAmounts: BigNumber[] = [hUSDC("15000"), hUSDC("20000")];
 
         context("when the borrow overflows the debt ceiling", function () {
           beforeEach(async function () {
@@ -82,7 +81,7 @@ export default function shouldBehaveLikeBorrow(): void {
         });
 
         context("when the borrow does not overflow the debt ceiling", function () {
-          const debtCeiling = fp("1e9");
+          const debtCeiling: BigNumber = hUSDC("1e9");
 
           beforeEach(async function () {
             await this.mocks.fintroller.mock.getDebtCeiling
@@ -106,8 +105,8 @@ export default function shouldBehaveLikeBorrow(): void {
           });
 
           context("when the borrow does not exceed the max bonds", function () {
-            const wbtcDepositAmount: BigNumber = wbtc("1");
-            const wethDepositAmount: BigNumber = weth("10");
+            const wbtcDepositAmount: BigNumber = WBTC("1");
+            const wethDepositAmount: BigNumber = WETH("10");
 
             beforeEach(async function () {
               const maxBonds: BigNumber = DEFAULT_MAX_BONDS;

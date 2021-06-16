@@ -1,10 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
-import fp from "evm-fp";
 
 import { WBTC_COLLATERALIZATION_RATIO, WETH_COLLATERALIZATION_RATIO } from "../../../../helpers/constants";
-import { wbtc } from "../../../../helpers/numbers";
+import { WBTC, hUSDC } from "../../../../helpers/numbers";
 import { BalanceSheetErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeWithdrawCollateral(): void {
@@ -20,7 +19,7 @@ export default function shouldBehaveLikeWithdrawCollateral(): void {
   });
 
   context("when the amount to withdraw is not zero", function () {
-    const fullWithdrawAmount: BigNumber = wbtc("1");
+    const fullWithdrawAmount: BigNumber = WBTC("1");
 
     context("when the caller did not deposit collateral", function () {
       it("reverts", async function () {
@@ -54,7 +53,7 @@ export default function shouldBehaveLikeWithdrawCollateral(): void {
       });
 
       context("when the caller made a borrow", function () {
-        const borrowAmount: BigNumber = fp("15000");
+        const borrowAmount: BigNumber = hUSDC("15000");
 
         beforeEach(async function () {
           await this.contracts.balanceSheet.__godMode_setBondList(this.signers.borrower.address, [
@@ -78,7 +77,7 @@ export default function shouldBehaveLikeWithdrawCollateral(): void {
         });
 
         context("when the caller does not run into a liquidity shortfall", function () {
-          const smallWithdrawAmount = wbtc("0.01");
+          const smallWithdrawAmount = WBTC("0.01");
 
           beforeEach(async function () {
             await this.mocks.wbtc.mock.transfer
@@ -132,7 +131,7 @@ export default function shouldBehaveLikeWithdrawCollateral(): void {
         });
 
         context("when the withdrawal is partial", function () {
-          const partialWithdrawAmount = wbtc("0.75");
+          const partialWithdrawAmount = WBTC("0.75");
 
           beforeEach(async function () {
             await this.mocks.wbtc.mock.transfer

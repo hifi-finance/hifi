@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { wbtc } from "../../../../helpers/numbers";
+import { WBTC } from "../../../../helpers/numbers";
 import { BalanceSheetErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeDepositCollateral(): void {
@@ -38,7 +38,7 @@ export default function shouldBehaveLikeDepositCollateral(): void {
     });
 
     context("when the amount to deposit is not zero", function () {
-      const depositAmounts: BigNumber[] = [wbtc("1"), wbtc("0.5")];
+      const depositAmounts: BigNumber[] = [WBTC("1"), WBTC("0.5")];
 
       context("when it is the first collateral deposit of the user", function () {
         beforeEach(async function () {

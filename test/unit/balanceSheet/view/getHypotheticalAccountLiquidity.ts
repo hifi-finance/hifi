@@ -1,11 +1,10 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { AddressZero, Zero } from "@ethersproject/constants";
 import { expect } from "chai";
-import fp from "evm-fp";
 import forEach from "mocha-each";
 
 import { WBTC_COLLATERALIZATION_RATIO, WETH_COLLATERALIZATION_RATIO } from "../../../../helpers/constants";
-import { wbtc, weth } from "../../../../helpers/numbers";
+import { WBTC, WETH, hUSDC } from "../../../../helpers/numbers";
 import { getHypotheticalAccountLiquidity } from "../../../shared/mirrors";
 
 export default function shouldBehaveLikeGetHypotheticalAccountLiquidity(): void {
@@ -29,8 +28,8 @@ export default function shouldBehaveLikeGetHypotheticalAccountLiquidity(): void 
   });
 
   context("when two deposits were made", function () {
-    const wbtcDepositAmount: BigNumber = wbtc("1");
-    const wethDepositAmount: BigNumber = weth("10");
+    const wbtcDepositAmount: BigNumber = WBTC("1");
+    const wethDepositAmount: BigNumber = WETH("10");
 
     beforeEach(async function () {
       // Mock the necessary methods.
@@ -61,9 +60,9 @@ export default function shouldBehaveLikeGetHypotheticalAccountLiquidity(): void 
     context("when no borrow was made", function () {
       const testSets = [
         [Zero, Zero], // No hypothetical collateral deposit or borrow.
-        [weth("5"), Zero], // Hypothetical collateral deposit, but no hypothetical borrow.
-        [Zero, fp("70000")], // No hypothetical collateral deposit, but a hypothetical borrow.
-        [weth("5"), fp("70000")], // Both a hypothetical collateral deposit and a borrow.
+        [WETH("5"), Zero], // Hypothetical collateral deposit, but no hypothetical borrow.
+        [Zero, hUSDC("70000")], // No hypothetical collateral deposit, but a hypothetical borrow.
+        [WETH("5"), hUSDC("70000")], // Both a hypothetical collateral deposit and a borrow.
       ];
 
       forEach(testSets).it(
@@ -110,7 +109,7 @@ export default function shouldBehaveLikeGetHypotheticalAccountLiquidity(): void 
     });
 
     context("when two borrows were made", function () {
-      const debtAmounts: BigNumber[] = [fp("15000"), fp("20000")];
+      const debtAmounts: BigNumber[] = [hUSDC("15000"), hUSDC("20000")];
 
       beforeEach(async function () {
         await this.contracts.balanceSheet.__godMode_setBondList(this.signers.borrower.address, [
@@ -131,9 +130,9 @@ export default function shouldBehaveLikeGetHypotheticalAccountLiquidity(): void 
 
       const testSets = [
         [Zero, Zero], // No hypothetical collateral deposit or borrow.
-        [weth("5"), Zero], // Hypothetical collateral deposit, but no hypothetical borrow.
-        [Zero, fp("70000")], // No hypothetical collateral deposit, but a hypothetical borrow.
-        [weth("5"), fp("70000")], // Both a hypothetical collateral deposit and a borrow.
+        [WETH("5"), Zero], // Hypothetical collateral deposit, but no hypothetical borrow.
+        [Zero, hUSDC("70000")], // No hypothetical collateral deposit, but a hypothetical borrow.
+        [WETH("5"), hUSDC("70000")], // Both a hypothetical collateral deposit and a borrow.
       ];
 
       forEach(testSets).it(

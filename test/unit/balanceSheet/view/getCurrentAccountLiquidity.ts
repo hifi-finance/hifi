@@ -1,10 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
-import fp from "evm-fp";
 
 import { WBTC_COLLATERALIZATION_RATIO, WETH_COLLATERALIZATION_RATIO } from "../../../../helpers/constants";
-import { wbtc, weth } from "../../../../helpers/numbers";
+import { WBTC, WETH, hUSDC } from "../../../../helpers/numbers";
 import { getHypotheticalAccountLiquidity } from "../../../shared/mirrors";
 
 export default function shouldBehaveLikeGetCurrentAccountLiquidity(): void {
@@ -17,8 +16,8 @@ export default function shouldBehaveLikeGetCurrentAccountLiquidity(): void {
   });
 
   context("when two deposits were made", function () {
-    const wbtcDepositAmount: BigNumber = wbtc("1");
-    const wethDepositAmount: BigNumber = weth("10");
+    const wbtcDepositAmount: BigNumber = WBTC("1");
+    const wethDepositAmount: BigNumber = WETH("10");
 
     beforeEach(async function () {
       // Mock the necessary methods.
@@ -56,7 +55,7 @@ export default function shouldBehaveLikeGetCurrentAccountLiquidity(): void {
     });
 
     context("when two borrows were made", function () {
-      const debtAmounts: BigNumber[] = [fp("15000"), fp("20000")];
+      const debtAmounts: BigNumber[] = [hUSDC("15000"), hUSDC("20000")];
 
       beforeEach(async function () {
         await this.contracts.balanceSheet.__godMode_setBondList(this.signers.borrower.address, [

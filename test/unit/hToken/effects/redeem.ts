@@ -3,12 +3,12 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 import fp from "evm-fp";
 
-import { bn, precisionScalarForDecimals, usdc } from "../../../../helpers/numbers";
+import { USDC, bn, hUSDC, precisionScalarForDecimals } from "../../../../helpers/numbers";
 import { HTokenErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeRedeemHTokens(): void {
-  const underlyingAmount: BigNumber = usdc("100");
-  const hTokenAmount: BigNumber = fp("100");
+  const underlyingAmount: BigNumber = USDC("100");
+  const hTokenAmount: BigNumber = hUSDC("100");
 
   context("when the amount to redeemHTokens is zero", function () {
     it("reverts", async function () {
@@ -30,7 +30,7 @@ export default function shouldBehaveLikeRedeemHTokens(): void {
     context("when there is enough liquidity", function () {
       beforeEach(async function () {
         await this.contracts.hTokens[0].__godMode_mint(this.signers.maker.address, hTokenAmount);
-        const totalUnderlyingSupply: BigNumber = fp("1e7");
+        const totalUnderlyingSupply: BigNumber = fp("1e7", 18);
         await this.contracts.hTokens[0].__godMode_setTotalUnderlyingSupply(totalUnderlyingSupply);
       });
 

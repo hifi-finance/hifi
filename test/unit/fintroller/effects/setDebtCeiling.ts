@@ -1,12 +1,12 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
-import fp from "evm-fp";
 
+import { hUSDC } from "../../../../helpers/numbers";
 import { FintrollerErrors, GenericErrors, OwnableErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeSetDebtCeiling(): void {
-  const newDebtCeiling: BigNumber = fp("100");
+  const newDebtCeiling: BigNumber = hUSDC("100");
 
   context("when the caller is not the owner", function () {
     it("reverts", async function () {
@@ -45,7 +45,7 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
       context("when the debt ceiling is not zero", function () {
         context("when the debt ceiling is below the current debt", function () {
           beforeEach(async function () {
-            await this.mocks.hTokens[0].mock.totalSupply.returns(fp("1e7"));
+            await this.mocks.hTokens[0].mock.totalSupply.returns(hUSDC("1e7"));
           });
 
           it("reverts", async function () {

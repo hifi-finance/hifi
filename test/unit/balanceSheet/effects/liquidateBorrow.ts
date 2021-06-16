@@ -8,15 +8,15 @@ import {
   WBTC_COLLATERALIZATION_RATIO,
   WBTC_SYMBOL,
 } from "../../../../helpers/constants";
-import { wbtc } from "../../../../helpers/numbers";
+import { WBTC, hUSDC } from "../../../../helpers/numbers";
 import { BalanceSheetErrors } from "../../../shared/errors";
 import { prbMul } from "../../../shared/mirrors";
 import { getSeizableCollateralAmount } from "../../../shared/mirrors";
 
 export default function shouldBehaveLikeLiquidateBorrow(): void {
-  const lowWbtcPrice: BigNumber = fp("29999");
-  const repayAmount: BigNumber = fp("15000");
-  const wbtcDepositAmount: BigNumber = wbtc("1");
+  const lowWbtcPrice: BigNumber = hUSDC("29999");
+  const repayAmount: BigNumber = hUSDC("15000");
+  const wbtcDepositAmount: BigNumber = WBTC("1");
 
   const debtAmount = repayAmount;
   const seizedWbtcAmount: BigNumber = getSeizableCollateralAmount(repayAmount, lowWbtcPrice);

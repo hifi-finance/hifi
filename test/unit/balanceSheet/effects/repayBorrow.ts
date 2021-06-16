@@ -1,8 +1,8 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
-import fp from "evm-fp";
 
+import { hUSDC } from "../../../../helpers/numbers";
 import { BalanceSheetErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeRepayBorrow(): void {
@@ -38,7 +38,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
     });
 
     context("when the amount to repay is not zero", function () {
-      const fullRepayAmount: BigNumber = fp("15000");
+      const fullRepayAmount: BigNumber = hUSDC("15000");
 
       context("when the caller did not make a borrow", function () {
         it("reverts", async function () {
@@ -108,7 +108,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
           });
 
           context("when the repay is partial", function () {
-            const partialRepayAmount: BigNumber = fp("5000");
+            const partialRepayAmount: BigNumber = hUSDC("5000");
 
             beforeEach(async function () {
               const burnAmount: BigNumber = partialRepayAmount;
