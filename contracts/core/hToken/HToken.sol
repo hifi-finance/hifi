@@ -109,6 +109,9 @@ contract HToken is
 
     /// @inheritdoc IHToken
     function redeem(uint256 hTokenAmount) external override {
+        // Checks: before maturation.
+        require(isMatured(), "BOND_NOT_MATURED");
+
         // Checks: the zero edge case.
         require(hTokenAmount > 0, "REDEEM_ZERO");
 

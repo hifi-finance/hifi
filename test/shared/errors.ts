@@ -43,6 +43,7 @@ export enum FintrollerErrors {
 export enum GenericErrors {
   BondMatured = "BOND_MATURED",
   BondNotListed = "BOND_NOT_LISTED",
+  BondNotMatured = "BOND_NOT_MATURED",
   CollateralNotListed = "COLLATERAL_NOT_LISTED",
 }
 
