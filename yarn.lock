@@ -928,7 +928,7 @@ __metadata:
     "@nomiclabs/hardhat-waffle": ^2.0.1
     "@openzeppelin/contracts-upgradeable": ^4.1.0
     "@openzeppelin/hardhat-upgrades": ^1.8.2
-    "@paulrberg/contracts": ^3.2.0
+    "@paulrberg/contracts": ^3.2.1
     "@typechain/ethers-v5": ^7.0.0
     "@typechain/hardhat": ^2.0.1
     "@types/chai": ^4.2.18
@@ -958,6 +958,7 @@ __metadata:
     mocha: ^8.4.0
     mocha-each: ^2.0.1
     pinst: ^2.1.6
+    prb-math: ^2.0.1
     prettier: ^2.3.0
     prettier-plugin-solidity: ^1.0.0-beta.10
     shelljs: ^0.8.4
@@ -1071,14 +1072,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@paulrberg/contracts@npm:^3.2.0":
-  version: 3.2.0
-  resolution: "@paulrberg/contracts@npm:3.2.0"
+"@paulrberg/contracts@npm:^3.2.1":
+  version: 3.2.1
+  resolution: "@paulrberg/contracts@npm:3.2.1"
   dependencies:
     prb-math: ^2.0.0
   peerDependencies:
     prb-math: ^2.0.0
-  checksum: 2f31bfe27446d0c2f05f485c46453850d98a3569155eb9d001781e5001c3ebda8bf0b3b6ae2ce305421d0d1460b8a04296772342026e48f59ff061164421fd9b
+  checksum: cdacd82904eaa3783edcd25c88488caa1ba0425625ef3be87f6345960916fd66479e56e8fd79685e766fa618f99561f843a972da777f3d1e5bfded63b70a9e73
   languageName: node
   linkType: hard
 
@@ -11061,6 +11062,13 @@ fsevents@~2.3.1:
   version: 2.0.0
   resolution: "prb-math@npm:2.0.0"
   checksum: 09d7426b428880b4fa1393b457feb261d6fbb84765abcec6d8ab31d989be47886af2f093aba75c3783389f9198bd5fba9492cec7b77a770435c61c93bd4d6234
+  languageName: node
+  linkType: hard
+
+"prb-math@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "prb-math@npm:2.0.1"
+  checksum: 922754cd3888c9021161b1b4671232895b1f82d95a75eec5000d8389c011eac09fabf4b2a873a186ee54003f682872fea01605d6c35d229326c9149916c48660
   languageName: node
   linkType: hard
 
