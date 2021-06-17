@@ -12,9 +12,7 @@ import "../external/weth/WethInterface.sol";
 /// @author Hifi
 /// @notice Target contract with scripts for the Regents release of the protocol.
 /// @dev Meant to be used with a DSProxy contract via delegatecall.
-contract RegentsTargetV1 is
-    IRegentsTargetV1 /// no dependency
-{
+contract RegentsTargetV1 is IRegentsTargetV1 {
     using SafeErc20 for IErc20;
 
     /// PUBLIC STORAGE ///
