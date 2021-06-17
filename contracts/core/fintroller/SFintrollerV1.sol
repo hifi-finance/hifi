@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.0;
 
+import "@paulrberg/contracts/token/erc20/IErc20.sol";
+
 import "../hToken/IHToken.sol";
 
 /// @notice SFintrollerV1
