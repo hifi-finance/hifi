@@ -2,13 +2,13 @@
 pragma solidity >=0.8.0;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@paulrberg/contracts/math/PRBMathUD60x18.sol";
+import "prb-math/contracts/PRBMathUD60x18.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 
+import "./IBalanceSheetV1.sol";
+import "./SBalanceSheetV1.sol";
 import "../fintroller/IFintrollerV1.sol";
-import "../balanceSheet/IBalanceSheetV1.sol";
-import "../balanceSheet/SBalanceSheetV1.sol";
 import "../../access/OwnableUpgradeable.sol";
 
 /// @title BalanceSheetV1
