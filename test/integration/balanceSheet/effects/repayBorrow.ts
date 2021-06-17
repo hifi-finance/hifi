@@ -1,4 +1,5 @@
 import { BigNumber } from "@ethersproject/bignumber";
+import { AddressZero } from "@ethersproject/constants";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
@@ -81,6 +82,6 @@ export default function shouldBehaveLikeRepayBorrow(): void {
         .repayBorrow(this.contracts.hTokens[0].address, borrowAmount),
     )
       .to.emit(this.contracts.hTokens[0], "Transfer")
-      .withArgs(this.signers.borrower.address, this.contracts.hTokens[0].address, borrowAmount);
+      .withArgs(this.signers.borrower.address, AddressZero, borrowAmount);
   });
 }

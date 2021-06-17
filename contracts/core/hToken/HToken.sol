@@ -90,7 +90,6 @@ contract HToken is
 
         // Emit a Burn and a Transfer event.
         emit Burn(holder, burnAmount);
-        emit Transfer(holder, address(this), burnAmount);
     }
 
     /// @inheritdoc IHToken
@@ -104,9 +103,8 @@ contract HToken is
         // Effects: print the new hTokens into existence.
         mintInternal(beneficiary, mintAmount);
 
-        // Emit a Mint and a Transfer event.
+        // Emit a Mint event.
         emit Mint(beneficiary, mintAmount);
-        emit Transfer(address(this), beneficiary, mintAmount);
     }
 
     /// @inheritdoc IHToken
