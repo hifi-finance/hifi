@@ -7,8 +7,8 @@ import "@paulrberg/contracts/token/erc20/Erc20Permit.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Recover.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 
+import "./IHToken.sol";
 import "../balanceSheet/IBalanceSheetV1.sol";
-import "../hToken/IHToken.sol";
 
 /// @title HToken
 /// @author Hifi
