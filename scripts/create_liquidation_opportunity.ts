@@ -1,17 +1,13 @@
+import { BigNumber } from "@ethersproject/bignumber";
 import balanceSheetArtifact from "@hifi/protocol/artifacts/BalanceSheet.json";
 import fyTokenArtifact from "@hifi/protocol/artifacts/FyToken.json";
-import hre from "hardhat";
-import uniswapV2PairArtifact from "@uniswap/v2-core/build/UniswapV2Pair.json";
-
-import { Artifact } from "hardhat/types";
 import { BalanceSheet } from "@hifi/protocol/typechain/BalanceSheet";
-import { BigNumber } from "@ethersproject/bignumber";
 import { FyToken } from "@hifi/protocol/typechain/FyToken";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
+import uniswapV2PairArtifact from "@uniswap/v2-core/build/UniswapV2Pair.json";
+import hre from "hardhat";
+import { Artifact } from "hardhat/types";
 
-import { GodModeErc20 } from "../typechain/GodModeErc20";
-import { SimplePriceFeed } from "../typechain/SimplePriceFeed";
-import { UniswapV2Pair } from "../types/contracts/UniswapV2Pair";
 import { getEnvVar } from "../helpers/env";
 import {
   getPartialWbtcAmount,
@@ -19,7 +15,10 @@ import {
   getWholeOraclePrice,
   getWholeUsdcAmount,
   getWholeWbtcAmount,
-} from "../helpers/math";
+} from "../helpers/numbers";
+import { GodModeErc20 } from "../typechain/GodModeErc20";
+import { SimplePriceFeed } from "../typechain/SimplePriceFeed";
+import { UniswapV2Pair } from "../types/contracts/UniswapV2Pair";
 
 const fyUsdc10k: BigNumber = getWholeFyUsdcAmount(10000);
 const p12dot5k: BigNumber = getWholeOraclePrice(12500);

@@ -1,25 +1,25 @@
+import { Signer } from "@ethersproject/abstract-signer";
 import balanceSheetArtifact from "@hifi/protocol/artifacts/BalanceSheet.json";
 import chainlinkOperatorArtifact from "@hifi/protocol/artifacts/ChainlinkOperator.json";
 import fintrollerArtifact from "@hifi/protocol/artifacts/Fintroller.json";
 import fyTokenArtifact from "@hifi/protocol/artifacts/FyToken.json";
-import hre from "hardhat";
 import redemptionPoolArtifact from "@hifi/protocol/artifacts/RedemptionPool.json";
-import uniswapV2PairArtifact from "@uniswap/v2-core/build/UniswapV2Pair.json";
-
-import { Artifact } from "hardhat/types";
 import { BalanceSheet } from "@hifi/protocol/typechain/BalanceSheet";
-import { BigNumber } from "@ethersproject/bignumber";
 import { ChainlinkOperator } from "@hifi/protocol/typechain/ChainlinkOperator";
 import { Fintroller } from "@hifi/protocol/typechain/Fintroller";
 import { FyToken } from "@hifi/protocol/typechain/FyToken";
 import { RedemptionPool } from "@hifi/protocol/typechain/RedemptionPool";
-import { Signer } from "@ethersproject/abstract-signer";
+import uniswapV2PairArtifact from "@uniswap/v2-core/build/UniswapV2Pair.json";
+import hre from "hardhat";
+import { Artifact } from "hardhat/types";
 
+import { FY_TOKEN_EXPIRATION_TIME } from "../../helpers/constants";
+import { USDC_DECIMALS, USDC_NAME, USDC_SYMBOL, WBTC_DECIMALS, WBTC_NAME, WBTC_SYMBOL } from "../../helpers/constants";
+import { getFyTokenName, getFyTokenSymbol } from "../../helpers/contracts";
 import { GodModeErc20 } from "../../typechain/GodModeErc20";
 import { HifiFlashSwap } from "../../typechain/HifiFlashSwap";
 import { SimplePriceFeed } from "../../typechain/SimplePriceFeed";
 import { UniswapV2Pair } from "../../types/contracts/UniswapV2Pair";
-import { usdcConstants, wbtcConstants } from "../../helpers/constants";
 
 const { deployContract } = hre.waffle;
 
@@ -41,21 +41,13 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
 
   const godModeErc20Artifact: Artifact = await hre.artifacts.readArtifact("GodModeErc20");
   const wbtc: GodModeErc20 = <GodModeErc20>(
-    await deployContract(deployer, godModeErc20Artifact, [
-      wbtcConstants.name,
-      wbtcConstants.symbol,
-      wbtcConstants.decimals,
-    ])
+    await deployContract(deployer, godModeErc20Artifact, [WBTC_NAME, WBTC_SYMBOL, WBTC_DECIMALS])
   );
   const simplePriceFeedArtifact: Artifact = await hre.artifacts.readArtifact("SimplePriceFeed");
   const wbtcPriceFeed: SimplePriceFeed = <SimplePriceFeed>await deployContract(deployer, simplePriceFeedArtifact, []);
 
   const usdc: GodModeErc20 = <GodModeErc20>(
-    await deployContract(deployer, godModeErc20Artifact, [
-      usdcConstants.name,
-      usdcConstants.symbol,
-      usdcConstants.decimals,
-    ])
+    await deployContract(deployer, godModeErc20Artifact, [USDC_NAME, USDC_SYMBOL, USDC_DECIMALS])
   );
   const usdcPriceFeed: SimplePriceFeed = <SimplePriceFeed>await deployContract(deployer, simplePriceFeedArtifact, []);
 
@@ -70,15 +62,11 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
     await deployContract(deployer, balanceSheetArtifact, [fintroller.address])
   );
 
-  // TODO: generate these parameters dynamically.
-  const name: string = "hfyUSDC (2022-01-01)";
-  const symbol: string = "hfyUSDC-JAN22";
-  const expirationTime = BigNumber.from("1619816400");
   const fyToken: FyToken = <FyToken>(
     await deployContract(deployer, fyTokenArtifact, [
-      name,
-      symbol,
-      expirationTime,
+      getFyTokenName(FY_TOKEN_EXPIRATION_TIME),
+      getFyTokenSymbol(FY_TOKEN_EXPIRATION_TIME),
+      FY_TOKEN_EXPIRATION_TIME,
       fintroller.address,
       balanceSheet.address,
       usdc.address,

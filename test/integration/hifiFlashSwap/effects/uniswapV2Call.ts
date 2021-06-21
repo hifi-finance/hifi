@@ -1,17 +1,17 @@
+import { defaultAbiCoder } from "@ethersproject/abi";
 import { BigNumber, BigNumberish } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
-import { defaultAbiCoder } from "@ethersproject/abi";
 import { expect } from "chai";
 
-import { BalanceSheetErrors, GenericErrors, HifiFlashSwapErrors } from "../../../../helpers/errors";
+import { TEN } from "../../../../helpers/constants";
 import {
+  getPartialWbtcAmount,
   getWholeFyUsdcAmount,
   getWholeOraclePrice,
   getWholeUsdcAmount,
-  getPartialWbtcAmount,
   getWholeWbtcAmount,
-} from "../../../../helpers/math";
-import { ten } from "../../../../helpers/constants";
+} from "../../../../helpers/numbers";
+import { BalanceSheetErrors, GenericErrors, HifiFlashSwapErrors } from "../../../shared/errors";
 
 const fyUsdc10k: BigNumber = getWholeFyUsdcAmount(10000);
 const fyUsdc1m: BigNumber = getWholeFyUsdcAmount(1000000);
@@ -121,7 +121,7 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
         await this.contracts.fintroller.connect(this.signers.admin).listBond(this.contracts.fyToken.address);
 
         // Set the liquidation incentive to 110%.
-        const liquidationIncentiveMantissa: BigNumber = ten.pow(18).add(ten.pow(17));
+        const liquidationIncentiveMantissa: BigNumber = TEN.pow(18).add(TEN.pow(17));
         await this.contracts.fintroller
           .connect(this.signers.admin)
           .setLiquidationIncentive(liquidationIncentiveMantissa);

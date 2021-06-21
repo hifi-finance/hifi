@@ -1,9 +1,9 @@
 import { Signer } from "@ethersproject/abstract-signer";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 import { Wallet } from "@ethersproject/wallet";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 import { ethers, waffle } from "hardhat";
 
-import { Contracts, Signers } from "../types/index";
+import { Contracts, Signers } from "../../types/index";
 
 const { createFixtureLoader } = waffle;
 
@@ -20,7 +20,7 @@ export function baseContext(description: string, hooks: () => void): void {
       this.signers.raider = signers[3];
 
       // Get rid of this when https://github.com/nomiclabs/hardhat/issues/849 gets fixed.
-      this.loadFixture = createFixtureLoader((signers as Signer[]) as Wallet[]);
+      this.loadFixture = createFixtureLoader(signers as Signer[] as Wallet[]);
     });
 
     hooks();

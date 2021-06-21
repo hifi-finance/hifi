@@ -1,15 +1,18 @@
-import { config as dotenvConfig } from "dotenv";
-import { resolve } from "path";
-dotenvConfig({ path: resolve(__dirname, "./.env") });
+import "@nomiclabs/hardhat-waffle";
+import "@typechain/hardhat";
+import "solidity-coverage";
 
-import { HardhatUserConfig } from "hardhat/config";
-import { NetworkUserConfig } from "hardhat/types";
-import "./tasks/accounts";
 import "./tasks/clean";
 
-import "@nomiclabs/hardhat-waffle";
-import "hardhat-typechain";
-import "solidity-coverage";
+import { resolve } from "path";
+
+import { config as dotenvConfig } from "dotenv";
+import { HardhatUserConfig } from "hardhat/config";
+import { NetworkUserConfig } from "hardhat/types";
+
+import { getEnvVar } from "./helpers/env";
+
+dotenvConfig({ path: resolve(__dirname, "./.env") });
 
 const chainIds = {
   ganache: 1337,
@@ -21,20 +24,9 @@ const chainIds = {
   ropsten: 3,
 };
 
-// Ensure that we have all requisite environment variables.
-let mnemonic: string;
-if (!process.env.MNEMONIC) {
-  throw new Error("Please set your MNEMONIC in a .env file");
-} else {
-  mnemonic = process.env.MNEMONIC;
-}
-
-let infuraApiKey: string;
-if (!process.env.INFURA_API_KEY) {
-  throw new Error("Please set your INFURA_API_KEY in a .env file");
-} else {
-  infuraApiKey = process.env.INFURA_API_KEY;
-}
+// Ensure that we have the environment variables we need.
+const infuraApiKey: string = getEnvVar("INFURA_API_KEY");
+const mnemonic: string = getEnvVar("MNEMONIC");
 
 function createTestnetConfig(network: keyof typeof chainIds): NetworkUserConfig {
   const url: string = "https://" + network + ".infura.io/v3/" + infuraApiKey;
@@ -75,7 +67,7 @@ const config: HardhatUserConfig = {
     settings: {
       optimizer: {
         enabled: true,
-        runs: 200,
+        runs: 800,
       },
     },
   },

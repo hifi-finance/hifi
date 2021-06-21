@@ -2,11 +2,11 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { ethers, EventFilter, Signer, BigNumber, BigNumberish, PopulatedTransaction } from "ethers";
-import { Contract, ContractTransaction, Overrides, CallOverrides } from "@ethersproject/contracts";
+import { EventFragment, FunctionFragment, Result } from "@ethersproject/abi";
 import { BytesLike } from "@ethersproject/bytes";
+import { CallOverrides, Contract, ContractTransaction, Overrides } from "@ethersproject/contracts";
 import { Listener, Provider } from "@ethersproject/providers";
-import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
+import { BigNumber, BigNumberish, EventFilter, PopulatedTransaction, Signer, ethers } from "ethers";
 
 interface UniswapV2PairInterface extends ethers.utils.Interface {
   functions: {

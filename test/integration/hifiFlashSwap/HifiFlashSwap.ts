@@ -1,4 +1,4 @@
-import { integrationFixture } from "../fixtures";
+import { integrationFixture } from "../../shared/fixtures";
 import { shouldBehaveLikeHifiFlashSwap } from "./HifiFlashSwap.behavior";
 
 export function integrationTestHifiFlashSwap(): void {
