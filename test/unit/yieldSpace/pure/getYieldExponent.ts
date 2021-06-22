@@ -4,9 +4,9 @@ import fp from "evm-fp";
 import forEach from "mocha-each";
 
 import { CUTOFF_TTM, EPSILON, G1, G2, SCALE } from "../../../../helpers/constants";
-import { getYieldExponent } from "../../../../helpers/math";
 import { bn } from "../../../../helpers/numbers";
 import { secondsInDays, secondsInHours, secondsInYears } from "../../../../helpers/time";
+import { getYieldExponent } from "../../../shared/mirrors";
 
 export default function shouldBehaveLikeGetYieldExponent(): void {
   context("when too far from maturity", function () {

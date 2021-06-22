@@ -3,8 +3,8 @@ import { expect } from "chai";
 import fp from "evm-fp";
 import forEach from "mocha-each";
 
-import { FY_TOKEN_EXPIRATION_TIME, UNDERLYING_PRECISION_SCALAR } from "../../../../helpers/constants";
-import { bn, usdc } from "../../../../helpers/numbers";
+import { H_TOKEN_EXPIRATION_TIME, UNDERLYING_PRECISION_SCALAR } from "../../../../helpers/constants";
+import { USDC, bn, hUSDC } from "../../../../helpers/numbers";
 
 export default function shouldBehaveLikeBurn(): void {
   context("when the pool tokens returned are 0", function () {
@@ -29,16 +29,16 @@ export default function shouldBehaveLikeBurn(): void {
     context("when the total supply is not 0", function () {
       context("when there is phantom overflow", function () {
         beforeEach(async function () {
-          await this.mocks.underlying.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(usdc("100"));
+          await this.mocks.underlying.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(USDC("100"));
           await this.contracts.hifiPool.connect(this.signers.alice).__godMode_mint(fp("100"));
           await this.contracts.hifiPool.connect(this.signers.alice).__godMode_setTotalSupply(fp("100"));
         });
 
         const testSets = [
           // Makes "poolTokensBurned * normalizedUnderlyingReserves" overflow.
-          [fp("0"), fp("1157920892373161954235709850086879078532.699846656405640395")],
+          [hUSDC("0"), fp("1157920892373161954235709850086879078532.699846656405640395")],
           // Makes "poolTokensBurned * hTokenReserves" overflow.
-          [fp("1157920892373161954235709850086879078532.699846656405640395"), fp("100")],
+          [hUSDC("1157920892373161954235709850086879078532.699846656405640395"), fp("100")],
         ];
 
         forEach(testSets).it(
@@ -66,9 +66,9 @@ export default function shouldBehaveLikeBurn(): void {
 
           forEach(testSets).it("takes %e and burns the LP tokens", async function (poolTokensBurned: string) {
             // Mint
-            const lpTokenAmount: BigNumber = fp(poolTokensBurned);
+            const lpTokenMintAmount: BigNumber = fp(poolTokensBurned);
             const lpTokenSupply: BigNumber = fp(poolTokensBurned);
-            await this.contracts.hifiPool.connect(this.signers.alice).__godMode_mint(lpTokenAmount);
+            await this.contracts.hifiPool.connect(this.signers.alice).__godMode_mint(lpTokenMintAmount);
             await this.contracts.hifiPool.connect(this.signers.alice).__godMode_setTotalSupply(lpTokenSupply);
 
             // Calculate the arguments emitted in the event.
@@ -76,7 +76,7 @@ export default function shouldBehaveLikeBurn(): void {
             const normalizedUnderlyingReserves: BigNumber = fp(poolTokensBurned);
             const underlyingReturned: BigNumber = poolTokensBurnedBn
               .mul(normalizedUnderlyingReserves)
-              .div(lpTokenAmount)
+              .div(lpTokenMintAmount)
               .div(UNDERLYING_PRECISION_SCALAR);
             const hTokenReturned: BigNumber = bn("0");
 
@@ -92,7 +92,7 @@ export default function shouldBehaveLikeBurn(): void {
             await expect(this.contracts.hifiPool.connect(this.signers.alice).burn(poolTokensBurnedBn))
               .to.emit(this.contracts.hifiPool, "RemoveLiquidity")
               .withArgs(
-                FY_TOKEN_EXPIRATION_TIME,
+                H_TOKEN_EXPIRATION_TIME,
                 this.signers.alice.address,
                 underlyingReturned,
                 hTokenReturned,
@@ -103,6 +103,7 @@ export default function shouldBehaveLikeBurn(): void {
 
         context("when there are hToken reserves", function () {
           const initialHTokenReserves: BigNumber = fp("100");
+
           beforeEach(async function () {
             await this.mocks.hToken.mock.balanceOf
               .withArgs(this.contracts.hifiPool.address)
@@ -119,9 +120,9 @@ export default function shouldBehaveLikeBurn(): void {
 
           forEach(testSets).it("takes %e and burns the LP tokens", async function (poolTokensBurned: string) {
             // Mint
-            const lpTokenAmount: BigNumber = fp(poolTokensBurned);
+            const lpTokenMintAmount: BigNumber = fp(poolTokensBurned);
             const lpTokenSupply: BigNumber = fp(poolTokensBurned);
-            await this.contracts.hifiPool.connect(this.signers.alice).__godMode_mint(lpTokenAmount);
+            await this.contracts.hifiPool.connect(this.signers.alice).__godMode_mint(lpTokenMintAmount);
             await this.contracts.hifiPool.connect(this.signers.alice).__godMode_setTotalSupply(lpTokenSupply);
 
             // Calculate the arguments emitted in the event.
@@ -129,9 +130,9 @@ export default function shouldBehaveLikeBurn(): void {
             const normalizedUnderlyingReserves: BigNumber = fp(poolTokensBurned);
             const underlyingReturned: BigNumber = poolTokensBurnedBn
               .mul(normalizedUnderlyingReserves)
-              .div(lpTokenAmount)
+              .div(lpTokenMintAmount)
               .div(UNDERLYING_PRECISION_SCALAR);
-            const hTokenReturned = lpTokenAmount.mul(initialHTokenReserves).div(lpTokenSupply);
+            const hTokenReturned = lpTokenMintAmount.mul(initialHTokenReserves).div(lpTokenSupply);
 
             // Mock the necessary methods.
             await this.mocks.underlying.mock.balanceOf
@@ -146,7 +147,7 @@ export default function shouldBehaveLikeBurn(): void {
             await expect(this.contracts.hifiPool.connect(this.signers.alice).burn(poolTokensBurnedBn))
               .to.emit(this.contracts.hifiPool, "RemoveLiquidity")
               .withArgs(
-                FY_TOKEN_EXPIRATION_TIME,
+                H_TOKEN_EXPIRATION_TIME,
                 this.signers.alice.address,
                 underlyingReturned,
                 hTokenReturned,

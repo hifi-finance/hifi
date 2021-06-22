@@ -4,7 +4,7 @@ import fp from "evm-fp";
 import forEach from "mocha-each";
 
 import { MAX_UD60x18 } from "../../../../helpers/constants";
-import { bn } from "../../../../helpers/numbers";
+import { bn, hUSDC } from "../../../../helpers/numbers";
 
 export default function shouldBehaveLikeGetVirtualHTokenReserves(): void {
   context("when there is no hToken in the pool", function () {
@@ -24,10 +24,10 @@ export default function shouldBehaveLikeGetVirtualHTokenReserves(): void {
   context("when there is hToken in the pool", function () {
     context("when the addition overflows", function () {
       const testSets = [
-        [bn("1"), fp(MAX_UD60x18)],
-        [fp(MAX_UD60x18).div(2).add(2), fp(MAX_UD60x18).div(2)],
-        [fp(MAX_UD60x18), bn("1")],
-        [fp(MAX_UD60x18).div(2), fp(MAX_UD60x18).div(2).add(2)],
+        [hUSDC("1e-18"), hUSDC(MAX_UD60x18)],
+        [hUSDC(MAX_UD60x18).div(2).add(2), hUSDC(MAX_UD60x18).div(2)],
+        [hUSDC(MAX_UD60x18), hUSDC("1e-18")],
+        [hUSDC(MAX_UD60x18).div(2), hUSDC(MAX_UD60x18).div(2).add(2)],
       ];
 
       forEach(testSets).it(
@@ -44,13 +44,13 @@ export default function shouldBehaveLikeGetVirtualHTokenReserves(): void {
 
     context("when the addition does not overflow", function () {
       const testSets = [
-        [fp("100"), fp("1000")],
-        [fp("5606"), fp("46304.19")],
-        [fp("28094.892"), fp("89904.556")],
-        [fp("549846.799912"), fp("5159245.001")],
-        [fp("12e6"), fp("189e8")],
-        [fp("3.1415e15"), fp("27.18e18")],
-        [fp(MAX_UD60x18).sub(1), bn("1")],
+        [hUSDC("100"), hUSDC("1000")],
+        [hUSDC("5606"), hUSDC("46304.19")],
+        [hUSDC("28094.892"), hUSDC("89904.556")],
+        [hUSDC("549846.799912"), hUSDC("5159245.001")],
+        [hUSDC("12e6"), hUSDC("189e8")],
+        [hUSDC("3.1415e15"), hUSDC("27.18e18")],
+        [hUSDC(MAX_UD60x18).sub(1), hUSDC("1e-18")],
       ];
 
       forEach(testSets).it(

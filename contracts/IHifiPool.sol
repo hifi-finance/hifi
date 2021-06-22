@@ -1,10 +1,10 @@
-/// SPDX-License-Identifier: LGPL-3.0-or-later
+// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.0;
 
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "./external/hifi/HTokenLike.sol";
 
-/// @title HifiPoolInterface
+/// @title IHifiPool
 /// @author Hifi
 interface IHifiPool {
     /// EVENTS ///

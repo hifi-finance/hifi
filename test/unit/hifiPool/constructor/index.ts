@@ -18,7 +18,7 @@ async function deployHifiPool(this: Mocha.Context): Promise<Contract> {
   ]);
 }
 
-export default function shouldBehaveLikeHifiPoolConstructor(): void {
+export default function shouldBehaveLikeConstructor(): void {
   context("when the underlying has 0 decimals", function () {
     beforeEach(async function () {
       await this.mocks.underlying.mock.decimals.returns(bn("0"));

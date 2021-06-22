@@ -3,8 +3,8 @@ import { expect } from "chai";
 import fp from "evm-fp";
 import forEach from "mocha-each";
 
-import { FY_TOKEN_EXPIRATION_TIME, MAX_UD60x18 } from "../../../../helpers/constants";
-import { bn, usdc } from "../../../../helpers/numbers";
+import { H_TOKEN_EXPIRATION_TIME, MAX_UD60x18 } from "../../../../helpers/constants";
+import { bn, hUSDC, USDC } from "../../../../helpers/numbers";
 
 export default function shouldBehaveLikeMint(): void {
   context("when the underlying offered is 0", function () {
@@ -28,17 +28,17 @@ export default function shouldBehaveLikeMint(): void {
 
       forEach(testSets).it("takes %e and mints the LP tokens", async function (underlyingOffered: string) {
         await this.mocks.underlying.mock.transferFrom
-          .withArgs(this.signers.alice.address, this.contracts.hifiPool.address, usdc(underlyingOffered))
+          .withArgs(this.signers.alice.address, this.contracts.hifiPool.address, USDC(underlyingOffered))
           .returns(true);
 
-        const underlyingAmount: BigNumber = usdc(underlyingOffered);
+        const underlyingAmount: BigNumber = USDC(underlyingOffered);
         const hTokenRequired: BigNumber = bn("0");
         const poolTokensMinted: BigNumber = fp(underlyingOffered);
 
-        await expect(this.contracts.hifiPool.connect(this.signers.alice).mint(usdc(underlyingOffered)))
+        await expect(this.contracts.hifiPool.connect(this.signers.alice).mint(USDC(underlyingOffered)))
           .to.emit(this.contracts.hifiPool, "AddLiquidity")
           .withArgs(
-            FY_TOKEN_EXPIRATION_TIME,
+            H_TOKEN_EXPIRATION_TIME,
             this.signers.alice.address,
             underlyingAmount,
             hTokenRequired,
@@ -50,7 +50,7 @@ export default function shouldBehaveLikeMint(): void {
     context("when the total supply is not 0", function () {
       const initialNormalizedUnderlyingDeposit: BigNumber = fp("100");
       const initialLpTokenSupply: BigNumber = fp("100");
-      const initialUnderlyingDeposit: BigNumber = usdc("100");
+      const initialUnderlyingDeposit: BigNumber = USDC("100");
 
       beforeEach(async function () {
         await this.mocks.underlying.mock.balanceOf
@@ -63,9 +63,9 @@ export default function shouldBehaveLikeMint(): void {
       context("when there is phantom overflow", function () {
         const testSets = [
           // Makes "supply * normalizedUnderlyingOffered" overflow.
-          [bn("0"), usdc("1157920892373161954235709850086879078532.699847")],
+          [hUSDC("0"), USDC("1157920892373161954235709850086879078532.699847")],
           // Makes "hTokenReserves * poolTokensMinted" overflow.
-          [fp("1157920892373161954235709850086879078532.699846656405640395"), usdc("100")],
+          [hUSDC("1157920892373161954235709850086879078532.699846656405640395"), USDC("100")],
         ];
 
         forEach(testSets).it(
@@ -93,7 +93,7 @@ export default function shouldBehaveLikeMint(): void {
 
           forEach(testSets).it("takes %e and mints the LP tokens", async function (underlyingOffered: string) {
             // Calculate the arguments emitted in the event.
-            const underlyingAmount: BigNumber = usdc(underlyingOffered);
+            const underlyingAmount: BigNumber = USDC(underlyingOffered);
             const hTokenRequired: BigNumber = bn("0");
             const poolTokensMinted: BigNumber = initialLpTokenSupply
               .mul(fp(underlyingOffered))
@@ -105,10 +105,10 @@ export default function shouldBehaveLikeMint(): void {
               .returns(true);
 
             // Mint
-            await expect(this.contracts.hifiPool.connect(this.signers.alice).mint(usdc(underlyingOffered)))
+            await expect(this.contracts.hifiPool.connect(this.signers.alice).mint(USDC(underlyingOffered)))
               .to.emit(this.contracts.hifiPool, "AddLiquidity")
               .withArgs(
-                FY_TOKEN_EXPIRATION_TIME,
+                H_TOKEN_EXPIRATION_TIME,
                 this.signers.alice.address,
                 underlyingAmount,
                 hTokenRequired,
@@ -118,7 +118,7 @@ export default function shouldBehaveLikeMint(): void {
         });
 
         context("when there are hToken reserves", function () {
-          const initialHTokenReserves: BigNumber = fp("100");
+          const initialHTokenReserves: BigNumber = hUSDC("100");
           beforeEach(async function () {
             await this.mocks.hToken.mock.balanceOf
               .withArgs(this.contracts.hifiPool.address)
@@ -135,7 +135,7 @@ export default function shouldBehaveLikeMint(): void {
 
           forEach(testSets).it("takes %e and mints the LP tokens", async function (underlyingOffered: string) {
             // Calculate the arguments emitted in the event.
-            const underlyingAmount: BigNumber = usdc(underlyingOffered);
+            const underlyingAmount: BigNumber = USDC(underlyingOffered);
             const poolTokensMinted: BigNumber = initialLpTokenSupply
               .mul(fp(underlyingOffered))
               .div(initialNormalizedUnderlyingDeposit);
@@ -150,10 +150,10 @@ export default function shouldBehaveLikeMint(): void {
               .returns(true);
 
             // Mint
-            await expect(this.contracts.hifiPool.connect(this.signers.alice).mint(usdc(underlyingOffered)))
+            await expect(this.contracts.hifiPool.connect(this.signers.alice).mint(USDC(underlyingOffered)))
               .to.emit(this.contracts.hifiPool, "AddLiquidity")
               .withArgs(
-                FY_TOKEN_EXPIRATION_TIME,
+                H_TOKEN_EXPIRATION_TIME,
                 this.signers.alice.address,
                 underlyingAmount,
                 hTokenRequired,

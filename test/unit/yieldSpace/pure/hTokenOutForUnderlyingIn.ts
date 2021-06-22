@@ -4,15 +4,15 @@ import fp from "evm-fp";
 import forEach from "mocha-each";
 
 import { EPSILON, G1, MAX_UD60x18, SCALE } from "../../../../helpers/constants";
-import { getYieldExponent, outForIn } from "../../../../helpers/math";
-import { bn } from "../../../../helpers/numbers";
+import { bn, hUSDC } from "../../../../helpers/numbers";
 import { secondsInDays, secondsInYears } from "../../../../helpers/time";
+import { getYieldExponent, outForIn } from "../../../shared/mirrors";
 
 export default function shouldBehaveLikeHTokenOutForUnderlyingIn(): void {
   context("when too much underlying in", function () {
     const testSets = [
-      [fp(MAX_UD60x18), fp("100"), fp("1e-18"), bn(secondsInYears(1))],
-      [fp(MAX_UD60x18).div(2), fp("100"), fp(MAX_UD60x18).div(2).add(2), bn(secondsInYears(1))],
+      [fp(MAX_UD60x18), hUSDC("100"), fp("1e-18"), bn(secondsInYears(1))],
+      [fp(MAX_UD60x18).div(2), hUSDC("100"), fp(MAX_UD60x18).div(2).add(2), bn(secondsInYears(1))],
     ];
 
     forEach(testSets).it(
@@ -38,8 +38,8 @@ export default function shouldBehaveLikeHTokenOutForUnderlyingIn(): void {
   context("when not too much underlying in", function () {
     context("when the call to fromUint reverts", function () {
       const testSets = [
-        [fp(MAX_UD60x18).sub(fp("10")), fp("120"), fp("10"), bn(secondsInYears(1))],
-        [fp("100"), fp(MAX_UD60x18), fp("10"), bn(secondsInYears(1))],
+        [fp(MAX_UD60x18).sub(fp("10")), hUSDC("120"), fp("10"), bn(secondsInYears(1))],
+        [fp("100"), hUSDC(MAX_UD60x18), fp("10"), bn(secondsInYears(1))],
       ];
 
       forEach(testSets).it(
@@ -64,7 +64,7 @@ export default function shouldBehaveLikeHTokenOutForUnderlyingIn(): void {
 
     context("when the call to fromUint does not revert", function () {
       context("when the call to pow reverts", function () {
-        const testSets = [[fp(MAX_UD60x18).div(fp(SCALE)), fp("100"), fp("10"), bn("1")]];
+        const testSets = [[fp(MAX_UD60x18).div(fp(SCALE)), hUSDC("100"), fp("10"), bn("1")]];
 
         forEach(testSets).it(
           "takes (%e, %e, %e, %e) and reverts",
@@ -89,8 +89,8 @@ export default function shouldBehaveLikeHTokenOutForUnderlyingIn(): void {
       context("when the call to pow does not revert", function () {
         context("when there are insufficient underlying reserves", function () {
           const testSets = [
-            [fp("100"), fp("120"), fp("220.000000000000000001"), bn(secondsInDays(30))],
-            [fp("3799"), fp("2607"), fp("6407"), bn(secondsInDays(30))],
+            [fp("100"), hUSDC("120"), fp("220.000000000000000001"), bn(secondsInDays(30))],
+            [fp("3799"), hUSDC("2607"), fp("6407"), bn(secondsInDays(30))],
           ];
 
           forEach(testSets).it(
@@ -135,7 +135,7 @@ export default function shouldBehaveLikeHTokenOutForUnderlyingIn(): void {
             ) {
               const result: BigNumber = await this.contracts.yieldSpace.doHTokenOutForUnderlyingIn(
                 fp(normalizedUnderlyingReserves),
-                fp(hTokenReserves),
+                hUSDC(hTokenReserves),
                 fp(normalizedUnderlyingIn),
                 bn(timeToMaturity),
               );

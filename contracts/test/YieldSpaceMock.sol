@@ -3,6 +3,9 @@ pragma solidity >=0.8.0;
 
 import "../math/YieldSpace.sol";
 
+/// @title YieldSpaceMock
+/// @author Hifi
+/// @dev Strictly for test purposes. Do not use in production.
 contract YieldSpaceMock {
     using PRBMathUD60x18 for uint256;
 

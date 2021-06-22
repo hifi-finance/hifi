@@ -1,12 +1,12 @@
-import shouldBehaveLikeHifiPoolConstructor from "./constructor";
+import shouldBehaveLikeConstructor from "./constructor";
 import shouldBehaveLikeBurn from "./effects/burn";
 import shouldBehaveLikeMint from "./effects/mint";
 import shouldBehaveLikeGetNormalizedUnderlyingReserves from "./view/getNormalizedUnderlyingReserves";
 import shouldBehaveLikeGetVirtualHTokenReserves from "./view/getVirtualHTokenReserves";
 
 export function shouldBehaveLikeHifiPool(): void {
-  describe("Constructor", function () {
-    shouldBehaveLikeHifiPoolConstructor();
+  describe("Deployment", function () {
+    shouldBehaveLikeConstructor();
   });
 
   describe("Effects Functions", function () {

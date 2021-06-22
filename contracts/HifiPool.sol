@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.0;
 
-import "hardhat/console.sol";
-
 import "@paulrberg/contracts/token/erc20/Erc20.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Permit.sol";
@@ -12,6 +10,29 @@ import "./IHifiPool.sol";
 import "./external/hifi/HTokenLike.sol";
 import "./math/YieldSpace.sol";
 
+/// @notice Emitted when offerring zero underlying to mint lp tokens.
+error BurnZero();
+
+/// @notice Emitted when attempting to buy a zero amount of hTokens.
+error BuyHTokenZero();
+
+/// @notice Emitted when attempting to buy a zero amount of underlying.
+error BuyUnderlyingZero();
+
+/// @notice Emitted when offerring zero underlying to mint lp tokens.
+error MintZero();
+
+/// @notice Emitted when attempting to sell a zero amount of hToken.
+error SellHTokenZero();
+
+/// @notice Emitted when attempting to sell a zero amount of underlying.
+error SellUnderlyingZero();
+
+/// @notice Emitted when the resultant hToken reserves would be too low.
+error TooLowHTokenReserves(uint256 hTokenReserves, uint256 normalizedUnderlyingReserves);
+
+/// @title HifiPool
+/// @author Hifi
 contract HifiPool is
     IHifiPool, /// no dependency
     Erc20, /// one dependency
@@ -83,10 +104,9 @@ contract HifiPool is
                 hTokenOut,
                 maturity - block.timestamp
             );
-            require(
-                virtualHTokenReserves - hTokenOut >= normalizedUnderlyingReserves + normalizedUnderlyingIn,
-                "HifiPool: too low hToken reserves"
-            );
+            if (virtualHTokenReserves - hTokenOut < normalizedUnderlyingReserves + normalizedUnderlyingIn) {
+                revert TooLowHTokenReserves(virtualHTokenReserves, normalizedUnderlyingReserves);
+            }
         }
         underlyingIn = denormalize(normalizedUnderlyingIn);
     }
@@ -206,7 +226,9 @@ contract HifiPool is
     /// @inheritdoc IHifiPool
     function buyHToken(address to, uint256 hTokenOut) external override returns (uint256 underlyingIn) {
         // Checks: avoid the zero edge case.
-        require(hTokenOut > 0, "HifiPool: cannot buy with zero hToken");
+        if (hTokenOut == 0) {
+            revert BuyHTokenZero();
+        }
 
         underlyingIn = getQuoteForBuyingHToken(hTokenOut);
 
@@ -220,7 +242,9 @@ contract HifiPool is
     /// @inheritdoc IHifiPool
     function buyUnderlying(address to, uint256 underlyingOut) external override returns (uint256 hTokenIn) {
         // Checks: avoid the zero edge case.
-        require(underlyingOut > 0, "HifiPool: cannot buy with zero underlying");
+        if (underlyingOut == 0) {
+            revert BuyUnderlyingZero();
+        }
 
         hTokenIn = getQuoteForBuyingUnderlying(underlyingOut);
 
@@ -234,7 +258,9 @@ contract HifiPool is
     /// @inheritdoc IHifiPool
     function mint(uint256 underlyingOffered) external override returns (uint256 poolTokensMinted) {
         // Checks: avoid the zero edge case.
-        require(underlyingOffered > 0, "HifiPool: cannot offer zero underlying");
+        if (underlyingOffered == 0) {
+            revert MintZero();
+        }
 
         // Our native precision is 18 decimals so the underlying amount needs to be normalized.
         uint256 normalizedUnderlyingOffered = normalize(underlyingOffered);
@@ -277,7 +303,9 @@ contract HifiPool is
         returns (uint256 underlyingOut)
     {
         // Checks: avoid the zero edge case.
-        require(hTokenIn > 0, "HifiPool: cannot sell zero hToken");
+        if (hTokenIn == 0) {
+            revert SellHTokenZero();
+        }
 
         underlyingOut = getQuoteForSellingHToken(hTokenIn);
 
@@ -291,7 +319,9 @@ contract HifiPool is
     /// @inheritdoc IHifiPool
     function sellUnderlying(address to, uint256 underlyingIn) external override returns (uint256 hTokenOut) {
         // Checks: avoid the zero edge case.
-        require(underlyingIn > 0, "HifiPool: cannot sell zero underlying");
+        if (underlyingIn == 0) {
+            revert SellUnderlyingZero();
+        }
 
         hTokenOut = getQuoteForSellingUnderlying(underlyingIn);
 
