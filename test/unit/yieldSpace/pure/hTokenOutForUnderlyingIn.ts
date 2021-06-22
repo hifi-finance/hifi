@@ -141,7 +141,7 @@ export default function shouldBehaveLikeHTokenOutForUnderlyingIn(): void {
               );
 
               const exponent: string = getYieldExponent(timeToMaturity, G1);
-              const expected: BigNumber = fp(
+              const expected: BigNumber = hUSDC(
                 outForIn(normalizedUnderlyingReserves, hTokenReserves, normalizedUnderlyingIn, exponent),
               );
 

@@ -3,15 +3,15 @@ import { expect } from "chai";
 import fp from "evm-fp";
 import forEach from "mocha-each";
 
-import { H_TOKEN_EXPIRATION_TIME, MAX_UD60x18 } from "../../../../helpers/constants";
+import { H_TOKEN_MATURITY, MAX_UD60x18 } from "../../../../helpers/constants";
 import { USDC, bn, hUSDC } from "../../../../helpers/numbers";
-import { HifiPoolErrors } from "../../../shared/errors";
+import Errors from "../../../shared/errors";
 
 export default function shouldBehaveLikeMint(): void {
   context("when the underlying offered is 0", function () {
     it("reverts", async function () {
       const underlyingOffered: BigNumber = bn("0");
-      await expect(this.contracts.hifiPool.mint(underlyingOffered)).to.be.revertedWith(HifiPoolErrors.MintZero);
+      await expect(this.contracts.hifiPool.mint(underlyingOffered)).to.be.revertedWith(Errors.MintZero);
     });
   });
 
@@ -36,13 +36,7 @@ export default function shouldBehaveLikeMint(): void {
 
         await expect(this.contracts.hifiPool.connect(this.signers.alice).mint(USDC(underlyingOffered)))
           .to.emit(this.contracts.hifiPool, "AddLiquidity")
-          .withArgs(
-            H_TOKEN_EXPIRATION_TIME,
-            this.signers.alice.address,
-            underlyingAmount,
-            hTokenRequired,
-            poolTokensMinted,
-          );
+          .withArgs(H_TOKEN_MATURITY, this.signers.alice.address, underlyingAmount, hTokenRequired, poolTokensMinted);
       });
     });
 
@@ -107,7 +101,7 @@ export default function shouldBehaveLikeMint(): void {
             await expect(this.contracts.hifiPool.connect(this.signers.alice).mint(USDC(underlyingOffered)))
               .to.emit(this.contracts.hifiPool, "AddLiquidity")
               .withArgs(
-                H_TOKEN_EXPIRATION_TIME,
+                H_TOKEN_MATURITY,
                 this.signers.alice.address,
                 underlyingAmount,
                 hTokenRequired,
@@ -152,7 +146,7 @@ export default function shouldBehaveLikeMint(): void {
             await expect(this.contracts.hifiPool.connect(this.signers.alice).mint(USDC(underlyingOffered)))
               .to.emit(this.contracts.hifiPool, "AddLiquidity")
               .withArgs(
-                H_TOKEN_EXPIRATION_TIME,
+                H_TOKEN_MATURITY,
                 this.signers.alice.address,
                 underlyingAmount,
                 hTokenRequired,

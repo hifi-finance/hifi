@@ -2,27 +2,37 @@ import { BigNumber as MathjsBigNumber } from "mathjs";
 
 import { G1, G2, K } from "../../helpers/constants";
 import { mbn, pow } from "../../helpers/math";
-import { USDC } from "../../helpers/numbers";
 
 export function getQuoteForBuyingHToken(
-  virtualHTokenReserves: string,
+  hTokenReserves: string,
   underlyingReserves: string,
   hTokenOut: string,
   timeToMaturity: string,
 ): string {
   const exponent: string = getYieldExponent(timeToMaturity, G1);
-  return inForOut(virtualHTokenReserves, underlyingReserves, hTokenOut, exponent);
+  const underlyingIn: string = inForOut(hTokenReserves, underlyingReserves, hTokenOut, exponent);
+  return underlyingIn;
+}
+
+export function getQuoteForBuyingUnderlying(
+  underlyingReserves: string,
+  hTokenReserves: string,
+  underlyingOut: string,
+  timeToMaturity: string,
+): string {
+  const exponent: string = getYieldExponent(timeToMaturity, G2);
+  const hTokenIn: string = inForOut(underlyingReserves, hTokenReserves, underlyingOut, exponent);
+  return hTokenIn;
 }
 
 export function getQuoteForSellingHToken(
-  virtualHTokenReserves: string,
+  hTokenReserves: string,
   underlyingReserves: string,
   hTokenIn: string,
   timeToMaturity: string,
 ): string {
   const exponent: string = getYieldExponent(timeToMaturity, G2);
-  const normalizedUnderlyingIn: string = outForIn(virtualHTokenReserves, underlyingReserves, hTokenIn, exponent);
-  const underlyingIn: string = String(USDC(normalizedUnderlyingIn));
+  const underlyingIn: string = outForIn(hTokenReserves, underlyingReserves, hTokenIn, exponent);
   return underlyingIn;
 }
 

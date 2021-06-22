@@ -5,7 +5,7 @@ import { Artifact } from "hardhat/types";
 import {
   HIFI_POOL_NAME,
   HIFI_POOL_SYMBOL,
-  H_TOKEN_EXPIRATION_TIME,
+  H_TOKEN_MATURITY,
   H_TOKEN_NAME,
   H_TOKEN_SYMBOL,
   USDC_DECIMALS,
@@ -29,7 +29,7 @@ export async function deployUsdc(deployer: Signer): Promise<GodModeErc20> {
 export async function deployGodModeHToken(deployer: Signer): Promise<GodModeHToken> {
   const godModeHTokenArtifact: Artifact = await artifacts.readArtifact("GodModeHToken");
   const godModeHToken: GodModeHToken = <GodModeHToken>(
-    await deployContract(deployer, godModeHTokenArtifact, [H_TOKEN_NAME, H_TOKEN_SYMBOL, H_TOKEN_EXPIRATION_TIME])
+    await deployContract(deployer, godModeHTokenArtifact, [H_TOKEN_NAME, H_TOKEN_SYMBOL, H_TOKEN_MATURITY])
   );
   return godModeHToken;
 }

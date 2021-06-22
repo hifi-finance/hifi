@@ -1,35 +1,15 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.4;
 
 import "@paulrberg/contracts/token/erc20/Erc20.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Permit.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 
+import "./Errors.sol";
 import "./IHifiPool.sol";
 import "./external/hifi/HTokenLike.sol";
 import "./math/YieldSpace.sol";
-
-/// @notice Emitted when offerring zero underlying to mint lp tokens.
-error BurnZero();
-
-/// @notice Emitted when attempting to buy a zero amount of hTokens.
-error BuyHTokenZero();
-
-/// @notice Emitted when attempting to buy a zero amount of underlying.
-error BuyUnderlyingZero();
-
-/// @notice Emitted when offerring zero underlying to mint lp tokens.
-error MintZero();
-
-/// @notice Emitted when attempting to sell a zero amount of hToken.
-error SellHTokenZero();
-
-/// @notice Emitted when attempting to sell a zero amount of underlying.
-error SellUnderlyingZero();
-
-/// @notice Emitted when the resultant hToken reserves would be too low.
-error TooLowHTokenReserves(uint256 hTokenReserves, uint256 normalizedUnderlyingReserves);
 
 /// @title HifiPool
 /// @author Hifi
@@ -84,7 +64,7 @@ contract HifiPool is
         maturity = hToken_.expirationTime();
     }
 
-    /// CONSTANT FUNCTIONS ///
+    /// PUBLIC CONSTANT FUNCTIONS ///
 
     /// @inheritdoc IHifiPool
     function getQuoteForBuyingHToken(uint256 hTokenOut)
@@ -105,7 +85,7 @@ contract HifiPool is
                 maturity - block.timestamp
             );
             if (virtualHTokenReserves - hTokenOut < normalizedUnderlyingReserves + normalizedUnderlyingIn) {
-                revert TooLowHTokenReserves(virtualHTokenReserves, normalizedUnderlyingReserves);
+                revert BuyHTokenInsufficientResultantReserves(virtualHTokenReserves, normalizedUnderlyingReserves);
             }
         }
         underlyingIn = denormalize(normalizedUnderlyingIn);
@@ -187,7 +167,7 @@ contract HifiPool is
         }
     }
 
-    /// NON-CONSTANT EXTERNAL FUNCTIONS ///
+    /// PUBLIC NON-CONSTANT FUNCTIONS ///
 
     /// @inheritdoc IHifiPool
     function burn(uint256 poolTokensBurned)
@@ -333,7 +313,7 @@ contract HifiPool is
         emit Trade(maturity, msg.sender, to, -toInt256(underlyingIn), toInt256(hTokenOut));
     }
 
-    /// CONSTANT INTERNAL FUNCTIONS ///
+    /// INTERNAL CONSTANT FUNCTIONS ///
 
     /// @notice Downscales the normalized underlying amount to have its actual decimals of precision.
     /// @param normalizedUnderlyingAmount The underlying amount with 18 decimals of precision.

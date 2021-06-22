@@ -1,17 +1,19 @@
+import {} from "../../../shared/errors";
+
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 import fp from "evm-fp";
 import forEach from "mocha-each";
 
-import { H_TOKEN_EXPIRATION_TIME, UNDERLYING_PRECISION_SCALAR } from "../../../../helpers/constants";
+import { H_TOKEN_MATURITY, UNDERLYING_PRECISION_SCALAR } from "../../../../helpers/constants";
 import { USDC, bn, hUSDC } from "../../../../helpers/numbers";
-import { HifiPoolErrors } from "../../../shared/errors";
+import Errors from "../../../shared/errors";
 
 export default function shouldBehaveLikeBurn(): void {
   context("when the pool tokens returned are 0", function () {
     it("reverts", async function () {
       const poolTokensBurned: BigNumber = bn("0");
-      await expect(this.contracts.hifiPool.burn(poolTokensBurned)).to.be.revertedWith(HifiPoolErrors.BurnZero);
+      await expect(this.contracts.hifiPool.burn(poolTokensBurned)).to.be.revertedWith(Errors.BurnZero);
     });
   });
 
@@ -91,7 +93,7 @@ export default function shouldBehaveLikeBurn(): void {
             await expect(this.contracts.hifiPool.connect(this.signers.alice).burn(poolTokensBurnedBn))
               .to.emit(this.contracts.hifiPool, "RemoveLiquidity")
               .withArgs(
-                H_TOKEN_EXPIRATION_TIME,
+                H_TOKEN_MATURITY,
                 this.signers.alice.address,
                 underlyingReturned,
                 hTokenReturned,
@@ -146,7 +148,7 @@ export default function shouldBehaveLikeBurn(): void {
             await expect(this.contracts.hifiPool.connect(this.signers.alice).burn(poolTokensBurnedBn))
               .to.emit(this.contracts.hifiPool, "RemoveLiquidity")
               .withArgs(
-                H_TOKEN_EXPIRATION_TIME,
+                H_TOKEN_MATURITY,
                 this.signers.alice.address,
                 underlyingReturned,
                 hTokenReturned,

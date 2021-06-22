@@ -6,6 +6,7 @@ import forEach from "mocha-each";
 import { EPSILON, G2, MAX_UD60x18, SCALE } from "../../../../helpers/constants";
 import { bn, hUSDC } from "../../../../helpers/numbers";
 import { secondsInDays, secondsInYears } from "../../../../helpers/time";
+import Errors from "../../../shared/errors";
 import { getYieldExponent, outForIn } from "../../../shared/mirrors";
 
 export default function shouldBehaveLikeUnderlyingOutForHTokenIn(): void {
@@ -108,7 +109,7 @@ export default function shouldBehaveLikeUnderlyingOutForHTokenIn(): void {
                   hTokenIn,
                   timeToMaturity,
                 ),
-              ).to.be.revertedWith("YieldSpace: insufficient hToken reserves");
+              ).to.be.revertedWith(Errors.SellHTokenInsufficientResultantReserves);
             },
           );
         });

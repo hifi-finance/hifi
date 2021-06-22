@@ -6,6 +6,7 @@ import forEach from "mocha-each";
 import { EPSILON, G2, MAX_UD60x18, SCALE } from "../../../../helpers/constants";
 import { bn, hUSDC } from "../../../../helpers/numbers";
 import { secondsInDays, secondsInYears } from "../../../../helpers/time";
+import Errors from "../../../shared/errors";
 import { getYieldExponent, inForOut } from "../../../shared/mirrors";
 
 export default function shouldBehaveLikeHTokenInForUnderlyingOut(): void {
@@ -30,7 +31,7 @@ export default function shouldBehaveLikeHTokenInForUnderlyingOut(): void {
             normalizedUnderlyingOut,
             timeToMaturity,
           ),
-        ).to.be.revertedWith("YieldSpace: too much underlying out");
+        ).to.be.revertedWith(Errors.TooMuchUnderlyingOut);
       },
     );
   });
@@ -141,7 +142,7 @@ export default function shouldBehaveLikeHTokenInForUnderlyingOut(): void {
               );
 
               const exponent: string = getYieldExponent(timeToMaturity, G2);
-              const expected: BigNumber = fp(
+              const expected: BigNumber = hUSDC(
                 inForOut(normalizedUnderlyingReserves, hTokenReserves, normalizedUnderlyingOut, exponent),
               );
               const delta: BigNumber = expected.sub(result).abs();

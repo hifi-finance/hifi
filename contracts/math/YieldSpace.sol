@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.4;
 
 import "@paulrberg/contracts/math/PRBMathUD60x18.sol";
+
+import "../Errors.sol";
 
 /// @title YieldSpace
 /// @author Hifi
@@ -42,7 +44,9 @@ library YieldSpace {
     ) internal pure returns (uint256 hTokenIn) {
         uint256 exponent = getYieldExponent(timeToMaturity.fromUint(), G2);
         unchecked {
-            require(normalizedUnderlyingReserves >= normalizedUnderlyingOut, "YieldSpace: too much underlying out");
+            if (normalizedUnderlyingReserves < normalizedUnderlyingOut) {
+                revert TooMuchUnderlyingOut(normalizedUnderlyingReserves, normalizedUnderlyingOut);
+            }
             uint256 newNormalizedUnderlyingReserves = normalizedUnderlyingReserves - normalizedUnderlyingOut;
 
             // The addition can't overflow and the subtraction can't underflow.
@@ -188,7 +192,9 @@ library YieldSpace {
 
             // The third factor in the right-hand side of the equation.
             uint256 newHTokenReservesFactor = newHTokenReserves.fromUint().pow(exponent);
-            require(startingReservesFactor >= newHTokenReservesFactor, "YieldSpace: insufficient hToken reserves");
+            if (startingReservesFactor < newHTokenReservesFactor) {
+                revert SellHTokenInsufficientResultantReserves(startingReservesFactor, newHTokenReservesFactor);
+            }
 
             uint256 newNormalizedUnderlyingReserves = (startingReservesFactor - newHTokenReservesFactor)
             .pow(exponent.inv())

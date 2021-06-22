@@ -4,7 +4,7 @@ import hre from "hardhat";
 import { Artifact } from "hardhat/types";
 
 import {
-  H_TOKEN_EXPIRATION_TIME,
+  H_TOKEN_MATURITY,
   H_TOKEN_NAME,
   H_TOKEN_SYMBOL,
   USDC_DECIMALS,
@@ -22,7 +22,7 @@ export async function deployMockHToken(deployer: Signer): Promise<MockContract> 
   await hToken.mock.symbol.returns(H_TOKEN_SYMBOL);
   await hToken.mock.decimals.returns(bn("18"));
   await hToken.mock.totalSupply.returns(bn("0"));
-  await hToken.mock.expirationTime.returns(H_TOKEN_EXPIRATION_TIME);
+  await hToken.mock.expirationTime.returns(H_TOKEN_MATURITY);
   return hToken;
 }
 
