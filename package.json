@@ -15,6 +15,7 @@
     "prb-math": "^2.0.1"
   },
   "devDependencies": {
+    "@codechecks/client": "^0.1.10",
     "@commitlint/cli": "^12.1.4",
     "@commitlint/config-conventional": "^12.1.4",
     "@ethersproject/abi": "^5.3.1",
