@@ -50,9 +50,11 @@
     "husky": "^6.0.0",
     "import-sort-parser-typescript": "^6.0.0",
     "import-sort-style-module": "^6.0.0",
+    "lint-staged": "^11.0.0",
     "mathjs": "^9.4.2",
     "mocha": "^9.0.1",
     "mocha-each": "^2.0.1",
+    "pinst": "^2.0.0",
     "prettier": "^2.3.1",
     "prettier-plugin-solidity": "^1.0.0-beta.10",
     "shelljs": "^0.8.4",
@@ -68,14 +70,6 @@
     "/contracts"
   ],
   "homepage": "https://github.com/hifi-finance/hifi-amm#readme",
-  "keywords": [
-    "amm",
-    "blockchain",
-    "ethereum",
-    "hardhat",
-    "smart-contracts",
-    "solidity"
-  ],
   "importSort": {
     ".js, .jsx": {
       "parser": "babylon",
@@ -86,6 +80,15 @@
       "style": "module"
     }
   },
+  "keywords": [
+    "amm",
+    "blockchain",
+    "ethereum",
+    "hardhat",
+    "hifi",
+    "smart-contracts",
+    "solidity"
+  ],
   "license": "LGPL-3.0-or-later",
   "publishConfig": {
     "access": "public"
@@ -105,6 +108,9 @@
     "lint": "yarn run lint:sol && yarn run lint:ts && yarn run prettier:check",
     "lint:sol": "solhint --config ./.solhint.json --max-warnings 0 \"contracts/**/*.sol\"",
     "lint:ts": "eslint --config ./.eslintrc.yaml --ignore-path ./.eslintignore --ext .js,.ts .",
+    "postinstall": "husky install",
+    "postpublish": "pinst --enable",
+    "prepublishOnly": "pinst --disable",
     "prettier": "prettier --config .prettierrc --write \"**/*.{js,json,md,sol,ts}\"",
     "prettier:check": "prettier --check --config .prettierrc \"**/*.{js,json,md,sol,ts}\"",
     "test": "hardhat test",
