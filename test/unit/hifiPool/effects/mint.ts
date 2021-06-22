@@ -4,15 +4,14 @@ import fp from "evm-fp";
 import forEach from "mocha-each";
 
 import { H_TOKEN_EXPIRATION_TIME, MAX_UD60x18 } from "../../../../helpers/constants";
-import { bn, hUSDC, USDC } from "../../../../helpers/numbers";
+import { USDC, bn, hUSDC } from "../../../../helpers/numbers";
+import { HifiPoolErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeMint(): void {
   context("when the underlying offered is 0", function () {
     it("reverts", async function () {
       const underlyingOffered: BigNumber = bn("0");
-      await expect(this.contracts.hifiPool.mint(underlyingOffered)).to.be.revertedWith(
-        "HifiPool: cannot offer zero underlying",
-      );
+      await expect(this.contracts.hifiPool.mint(underlyingOffered)).to.be.revertedWith(HifiPoolErrors.MintZero);
     });
   });
 

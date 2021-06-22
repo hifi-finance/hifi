@@ -196,7 +196,9 @@ contract HifiPool is
         returns (uint256 underlyingReturned, uint256 hTokenReturned)
     {
         // Checks: avoid the zero edge case.
-        require(poolTokensBurned > 0, "HifiPool: cannot burn zero tokens");
+        if (poolTokensBurned == 0) {
+            revert BurnZero();
+        }
 
         uint256 supply = totalSupply;
         uint256 normalizedUnderlyingReserves = getNormalizedUnderlyingReserves();
