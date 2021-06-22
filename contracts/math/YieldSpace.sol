@@ -48,10 +48,9 @@ library YieldSpace {
             // The addition can't overflow and the subtraction can't underflow.
             //   1. The max value the "pow" function can yield is ~2^128 * 10^18.
             //   2. normalizedUnderlyingReserves >= newNormalizedUnderlyingReserves.
-            uint256 sum =
-                normalizedUnderlyingReserves.fromUint().pow(exponent) +
-                    hTokenReserves.fromUint().pow(exponent) -
-                    newNormalizedUnderlyingReserves.fromUint().pow(exponent);
+            uint256 sum = normalizedUnderlyingReserves.fromUint().pow(exponent) +
+                hTokenReserves.fromUint().pow(exponent) -
+                newNormalizedUnderlyingReserves.fromUint().pow(exponent);
 
             // In theory, "newHTokenReserves" should never become less than "hTokenReserves", because the inverse
             // of the exponent is supraunitary and so sum^(1/exponent) should produce a result bigger than
@@ -89,8 +88,8 @@ library YieldSpace {
 
             // The first two factors in the right-hand side of the equation. There is no need to guard against overflow
             // because the "pow" function yields a maximum of ~2^128 in fixed-point representation.
-            uint256 startingReservesFactor =
-                normalizedUnderlyingReserves.fromUint().pow(exponent) + hTokenReserves.fromUint().pow(exponent);
+            uint256 startingReservesFactor = normalizedUnderlyingReserves.fromUint().pow(exponent) +
+                hTokenReserves.fromUint().pow(exponent);
 
             // The third factor in the right-hand side of the equation.
             uint256 newNormalizedUnderlyingReservesFactor = newNormalizedUnderlyingReserves.fromUint().pow(exponent);
@@ -99,8 +98,9 @@ library YieldSpace {
                 "YieldSpace: insufficient underlying reserves"
             );
 
-            uint256 newHTokenReserves =
-                (startingReservesFactor - newNormalizedUnderlyingReservesFactor).pow(exponent.inv()).toUint();
+            uint256 newHTokenReserves = (startingReservesFactor - newNormalizedUnderlyingReservesFactor)
+            .pow(exponent.inv())
+            .toUint();
             require(hTokenReserves >= newHTokenReserves, "YieldSpace: lossy precision underflow");
             hTokenOut = hTokenReserves - newHTokenReserves;
         }
@@ -143,10 +143,9 @@ library YieldSpace {
             // The addition can't overflow and the subtraction can't underflow.
             //   1. The max value the "pow" function can yield is ~2^128 * 10^18.
             //   2. hTokenReserves >= newHTokenReserves.
-            uint256 sum =
-                hTokenReserves.fromUint().pow(exponent) +
-                    normalizedUnderlyingReserves.fromUint().pow(exponent) -
-                    newHTokenReserves.fromUint().pow(exponent);
+            uint256 sum = hTokenReserves.fromUint().pow(exponent) +
+                normalizedUnderlyingReserves.fromUint().pow(exponent) -
+                newHTokenReserves.fromUint().pow(exponent);
 
             // In theory, "newNormalizedUnderlyingReserves" should never become less than "normalizedUnderlyingReserves"
             // because the inverse of the exponent is supraunitary and so sum^(1/exponent) should produce a result
@@ -184,15 +183,16 @@ library YieldSpace {
 
             // The first two factors in the right-hand side of the equation. There is no need to guard against overflow
             // because the "pow" function yields a maximum of ~2^128 in fixed-point representation.
-            uint256 startingReservesFactor =
-                hTokenReserves.fromUint().pow(exponent) + normalizedUnderlyingReserves.fromUint().pow(exponent);
+            uint256 startingReservesFactor = hTokenReserves.fromUint().pow(exponent) +
+                normalizedUnderlyingReserves.fromUint().pow(exponent);
 
             // The third factor in the right-hand side of the equation.
             uint256 newHTokenReservesFactor = newHTokenReserves.fromUint().pow(exponent);
             require(startingReservesFactor >= newHTokenReservesFactor, "YieldSpace: insufficient hToken reserves");
 
-            uint256 newNormalizedUnderlyingReserves =
-                (startingReservesFactor - newHTokenReservesFactor).pow(exponent.inv()).toUint();
+            uint256 newNormalizedUnderlyingReserves = (startingReservesFactor - newHTokenReservesFactor)
+            .pow(exponent.inv())
+            .toUint();
             require(
                 normalizedUnderlyingReserves >= newNormalizedUnderlyingReserves,
                 "YieldSpace: lossy precision underflow"

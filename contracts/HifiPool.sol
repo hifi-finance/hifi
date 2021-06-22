@@ -138,13 +138,12 @@ contract HifiPool is
         returns (uint256 underlyingOut)
     {
         unchecked {
-            uint256 normalizedUnderlyingOut =
-                YieldSpace.underlyingOutForHTokenIn(
-                    getVirtualHTokenReserves(),
-                    getNormalizedUnderlyingReserves(),
-                    hTokenIn,
-                    maturity - block.timestamp
-                );
+            uint256 normalizedUnderlyingOut = YieldSpace.underlyingOutForHTokenIn(
+                getVirtualHTokenReserves(),
+                getNormalizedUnderlyingReserves(),
+                hTokenIn,
+                maturity - block.timestamp
+            );
             underlyingOut = denormalize(normalizedUnderlyingOut);
         }
     }
