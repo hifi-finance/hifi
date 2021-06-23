@@ -1,4 +1,5 @@
 enum Errors {
+  BondMatured = "BondMatured",
   BurnZero = "BurnZero",
   BuyHTokenInsufficientResultantReserves = "BuyHTokenInsufficientResultantReserves",
   BuyHTokenZero = "BuyHTokenZero",
