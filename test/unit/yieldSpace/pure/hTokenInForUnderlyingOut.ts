@@ -31,7 +31,7 @@ export default function shouldBehaveLikeHTokenInForUnderlyingOut(): void {
             normalizedUnderlyingOut,
             timeToMaturity,
           ),
-        ).to.be.revertedWith(Errors.TooMuchUnderlyingOut);
+        ).to.be.revertedWith(Errors.UnderlyingReservesUnderflow);
       },
     );
   });
@@ -109,7 +109,7 @@ export default function shouldBehaveLikeHTokenInForUnderlyingOut(): void {
                   normalizedUnderlyingOut,
                   timeToMaturity,
                 ),
-              ).to.be.revertedWith("YieldSpace: lossy precision underflow");
+              ).to.be.revertedWith(Errors.LossyPrecisionUnderflow);
             },
           );
         });

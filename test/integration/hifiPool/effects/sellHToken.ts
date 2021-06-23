@@ -44,7 +44,7 @@ export default function shouldBehaveLikeSellHToken(): void {
         const hTokenIn: BigNumber = hUSDC("10");
         await expect(
           this.contracts.hifiPool.connect(this.signers.alice).sellHToken(this.signers.alice.address, hTokenIn),
-        ).to.be.revertedWith(Errors.SellHTokenInsufficientResultantReserves);
+        ).to.be.revertedWith(Errors.UnderlyingOutForHTokenInReservesFactorsUnderflow);
       });
     });
 

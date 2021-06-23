@@ -6,6 +6,7 @@ import forEach from "mocha-each";
 import { CUTOFF_TTM, EPSILON, G1, G2, SCALE } from "../../../../helpers/constants";
 import { bn } from "../../../../helpers/numbers";
 import { secondsInDays, secondsInHours, secondsInYears } from "../../../../helpers/time";
+import Errors from "../../../shared/errors";
 import { getYieldExponent } from "../../../shared/mirrors";
 
 export default function shouldBehaveLikeGetYieldExponent(): void {
@@ -22,7 +23,7 @@ export default function shouldBehaveLikeGetYieldExponent(): void {
 
     forEach(testSets).it("takes %e and %e and reverts", async function (timeToMaturity: BigNumber, g: BigNumber) {
       await expect(this.contracts.yieldSpace.doGetYieldExponent(timeToMaturity, g)).to.be.revertedWith(
-        "YieldSpace: too far from maturity",
+        Errors.TooFarFromMaturity,
       );
     });
   });

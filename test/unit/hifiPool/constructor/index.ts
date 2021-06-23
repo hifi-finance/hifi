@@ -5,6 +5,7 @@ import { Artifact } from "hardhat/types";
 
 import { HIFI_POOL_NAME, HIFI_POOL_SYMBOL } from "../../../../helpers/constants";
 import { bn } from "../../../../helpers/numbers";
+import Errors from "../../../shared/errors";
 
 const { deployContract } = hre.waffle;
 
@@ -26,7 +27,7 @@ export default function shouldBehaveLikeConstructor(): void {
 
     it("reverts", async function () {
       const deployHifiPoolPromise: Promise<Contract> = deployHifiPool.call(this);
-      await expect(deployHifiPoolPromise).to.be.revertedWith("HifiPool: 0 decimals underlying");
+      await expect(deployHifiPoolPromise).to.be.revertedWith(Errors.HifiPoolConstructorUnderlyingDecimals);
     });
   });
 
@@ -37,7 +38,7 @@ export default function shouldBehaveLikeConstructor(): void {
 
     it("reverts", async function () {
       const deployHifiPoolPromise: Promise<Contract> = deployHifiPool.call(this);
-      await expect(deployHifiPoolPromise).to.be.revertedWith("HifiPool: >18 decimals underlying");
+      await expect(deployHifiPoolPromise).to.be.revertedWith(Errors.HifiPoolConstructorUnderlyingDecimals);
     });
   });
 }

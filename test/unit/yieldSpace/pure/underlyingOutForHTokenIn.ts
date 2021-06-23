@@ -31,7 +31,7 @@ export default function shouldBehaveLikeUnderlyingOutForHTokenIn(): void {
             hTokenIn,
             timeToMaturity,
           ),
-        ).to.be.revertedWith("YieldSpace: too much hToken in");
+        ).to.be.revertedWith(Errors.HTokenReservesOverflow);
       },
     );
   });
@@ -109,7 +109,7 @@ export default function shouldBehaveLikeUnderlyingOutForHTokenIn(): void {
                   hTokenIn,
                   timeToMaturity,
                 ),
-              ).to.be.revertedWith(Errors.SellHTokenInsufficientResultantReserves);
+              ).to.be.revertedWith(Errors.UnderlyingOutForHTokenInReservesFactorsUnderflow);
             },
           );
         });

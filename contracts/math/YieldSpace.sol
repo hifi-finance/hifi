@@ -45,7 +45,7 @@ library YieldSpace {
         uint256 exponent = getYieldExponent(timeToMaturity.fromUint(), G2);
         unchecked {
             if (normalizedUnderlyingReserves < normalizedUnderlyingOut) {
-                revert TooMuchUnderlyingOut(normalizedUnderlyingReserves, normalizedUnderlyingOut);
+                revert UnderlyingReservesUnderflow(normalizedUnderlyingReserves, normalizedUnderlyingOut);
             }
             uint256 newNormalizedUnderlyingReserves = normalizedUnderlyingReserves - normalizedUnderlyingOut;
 
@@ -64,7 +64,9 @@ library YieldSpace {
             // in certain circumstances. For instance, when underlying reserves and the hToken reserves
             // have very different magnitudes.
             uint256 newHTokenReserves = sum.pow(exponent.inv()).toUint();
-            require(newHTokenReserves >= hTokenReserves, "YieldSpace: lossy precision underflow");
+            if (newHTokenReserves < hTokenReserves) {
+                revert LossyPrecisionUnderflow(newHTokenReserves, hTokenReserves);
+            }
             hTokenIn = newHTokenReserves - hTokenReserves;
         }
     }
@@ -85,10 +87,9 @@ library YieldSpace {
         uint256 exponent = getYieldExponent(timeToMaturity.fromUint(), G1);
         unchecked {
             uint256 newNormalizedUnderlyingReserves = normalizedUnderlyingReserves + normalizedUnderlyingIn;
-            require(
-                newNormalizedUnderlyingReserves >= normalizedUnderlyingReserves,
-                "YieldSpace: too much underlying in"
-            );
+            if (normalizedUnderlyingReserves > newNormalizedUnderlyingReserves) {
+                revert UnderlyingReservesOverflow(normalizedUnderlyingReserves, normalizedUnderlyingIn);
+            }
 
             // The first two factors in the right-hand side of the equation. There is no need to guard against overflow
             // because the "pow" function yields a maximum of ~2^128 in fixed-point representation.
@@ -97,15 +98,19 @@ library YieldSpace {
 
             // The third factor in the right-hand side of the equation.
             uint256 newNormalizedUnderlyingReservesFactor = newNormalizedUnderlyingReserves.fromUint().pow(exponent);
-            require(
-                startingReservesFactor >= newNormalizedUnderlyingReservesFactor,
-                "YieldSpace: insufficient underlying reserves"
-            );
+            if (startingReservesFactor < newNormalizedUnderlyingReservesFactor) {
+                revert HTokenOutForUnderlyingInReservesFactorsUnderflow(
+                    startingReservesFactor,
+                    newNormalizedUnderlyingReservesFactor
+                );
+            }
 
             uint256 newHTokenReserves = (startingReservesFactor - newNormalizedUnderlyingReservesFactor)
             .pow(exponent.inv())
             .toUint();
-            require(hTokenReserves >= newHTokenReserves, "YieldSpace: lossy precision underflow");
+            if (hTokenReserves < newHTokenReserves) {
+                revert LossyPrecisionUnderflow(hTokenReserves, newHTokenReserves);
+            }
             hTokenOut = hTokenReserves - newHTokenReserves;
         }
     }
@@ -117,7 +122,9 @@ library YieldSpace {
     /// @param g The fee coefficient as an unsigned 60.18-decimal fixed-point number.
     /// @return exponent The yield exponent, as per the whitepaper, as an unsigned 60.18-decimal fixed-point number.
     function getYieldExponent(uint256 timeToMaturity, uint256 g) internal pure returns (uint256 exponent) {
-        require(timeToMaturity <= CUTOFF_TTM, "YieldSpace: too far from maturity");
+        if (timeToMaturity > CUTOFF_TTM) {
+            revert TooFarFromMaturity(timeToMaturity);
+        }
         unchecked {
             uint256 t = K.mul(timeToMaturity);
 
@@ -141,7 +148,9 @@ library YieldSpace {
     ) internal pure returns (uint256 normalizedUnderlyingIn) {
         uint256 exponent = getYieldExponent(timeToMaturity.fromUint(), G1);
         unchecked {
-            require(hTokenReserves >= hTokenOut, "YieldSpace: too much hToken out");
+            if (hTokenReserves < hTokenOut) {
+                revert HTokenReservesUnderflow(hTokenReserves, hTokenOut);
+            }
             uint256 newHTokenReserves = hTokenReserves - hTokenOut;
 
             // The addition can't overflow and the subtraction can't underflow.
@@ -159,10 +168,9 @@ library YieldSpace {
             // to be less than "normalizedUnderlyingReserves". For instance, when underlying reserves and the hToken
             // reserves have very different magnitudes.
             uint256 newNormalizedUnderlyingReserves = sum.pow(exponent.inv()).toUint();
-            require(
-                newNormalizedUnderlyingReserves >= normalizedUnderlyingReserves,
-                "YieldSpace: lossy precision underflow"
-            );
+            if (newNormalizedUnderlyingReserves < normalizedUnderlyingReserves) {
+                revert LossyPrecisionUnderflow(newNormalizedUnderlyingReserves, normalizedUnderlyingReserves);
+            }
             normalizedUnderlyingIn = newNormalizedUnderlyingReserves - normalizedUnderlyingReserves;
         }
     }
@@ -183,7 +191,9 @@ library YieldSpace {
         uint256 exponent = getYieldExponent(timeToMaturity.fromUint(), G2);
         unchecked {
             uint256 newHTokenReserves = hTokenReserves + hTokenIn;
-            require(newHTokenReserves >= hTokenReserves, "YieldSpace: too much hToken in");
+            if (newHTokenReserves < hTokenReserves) {
+                revert HTokenReservesOverflow(hTokenReserves, hTokenIn);
+            }
 
             // The first two factors in the right-hand side of the equation. There is no need to guard against overflow
             // because the "pow" function yields a maximum of ~2^128 in fixed-point representation.
@@ -193,16 +203,18 @@ library YieldSpace {
             // The third factor in the right-hand side of the equation.
             uint256 newHTokenReservesFactor = newHTokenReserves.fromUint().pow(exponent);
             if (startingReservesFactor < newHTokenReservesFactor) {
-                revert SellHTokenInsufficientResultantReserves(startingReservesFactor, newHTokenReservesFactor);
+                revert UnderlyingOutForHTokenInReservesFactorsUnderflow(
+                    startingReservesFactor,
+                    newHTokenReservesFactor
+                );
             }
 
             uint256 newNormalizedUnderlyingReserves = (startingReservesFactor - newHTokenReservesFactor)
             .pow(exponent.inv())
             .toUint();
-            require(
-                normalizedUnderlyingReserves >= newNormalizedUnderlyingReserves,
-                "YieldSpace: lossy precision underflow"
-            );
+            if (normalizedUnderlyingReserves < newNormalizedUnderlyingReserves) {
+                revert LossyPrecisionUnderflow(normalizedUnderlyingReserves, newNormalizedUnderlyingReserves);
+            }
             normalizedUnderlyingOut = normalizedUnderlyingReserves - newNormalizedUnderlyingReserves;
         }
     }

@@ -51,7 +51,7 @@ export default function shouldBehaveLikeBuyUnderlying(): void {
         const underlyingOut: BigNumber = USDC("10");
         await expect(
           this.contracts.hifiPool.connect(this.signers.alice).buyUnderlying(this.signers.alice.address, underlyingOut),
-        ).to.be.revertedWith(Errors.TooMuchUnderlyingOut);
+        ).to.be.revertedWith(Errors.UnderlyingReservesUnderflow);
       });
     });
 

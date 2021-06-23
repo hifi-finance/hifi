@@ -6,6 +6,7 @@ import forEach from "mocha-each";
 import { EPSILON, G1, MAX_UD60x18, SCALE } from "../../../../helpers/constants";
 import { bn, hUSDC } from "../../../../helpers/numbers";
 import { secondsInDays, secondsInYears } from "../../../../helpers/time";
+import Errors from "../../../shared/errors";
 import { getYieldExponent, outForIn } from "../../../shared/mirrors";
 
 export default function shouldBehaveLikeHTokenOutForUnderlyingIn(): void {
@@ -30,7 +31,7 @@ export default function shouldBehaveLikeHTokenOutForUnderlyingIn(): void {
             normalizedUnderlyingIn,
             timeToMaturity,
           ),
-        ).to.be.revertedWith("YieldSpace: too much underlying in");
+        ).to.be.revertedWith(Errors.UnderlyingReservesOverflow);
       },
     );
   });
@@ -108,7 +109,7 @@ export default function shouldBehaveLikeHTokenOutForUnderlyingIn(): void {
                   normalizedUnderlyingIn,
                   timeToMaturity,
                 ),
-              ).to.be.revertedWith("YieldSpace: insufficient underlying reserves");
+              ).to.be.revertedWith(Errors.HTokenOutForUnderlyingInReservesFactorsUnderflow);
             },
           );
         });

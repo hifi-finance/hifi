@@ -5,6 +5,7 @@ import forEach from "mocha-each";
 
 import { MAX_UD60x18 } from "../../../../helpers/constants";
 import { bn, hUSDC } from "../../../../helpers/numbers";
+import Errors from "../../../shared/errors";
 
 export default function shouldBehaveLikeGetVirtualHTokenReserves(): void {
   context("when there is no hToken in the pool", function () {
@@ -36,7 +37,7 @@ export default function shouldBehaveLikeGetVirtualHTokenReserves(): void {
           await this.mocks.hToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(hTokenBalance);
           await this.contracts.hifiPool.__godMode_setTotalSupply(totalSupply);
           await expect(this.contracts.hifiPool.getVirtualHTokenReserves()).to.be.revertedWith(
-            "HifiPool: virtual hToken reserves overflow",
+            Errors.VirtualHTokenReservesOverflow,
           );
         },
       );

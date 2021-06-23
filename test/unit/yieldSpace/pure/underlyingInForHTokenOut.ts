@@ -6,6 +6,7 @@ import forEach from "mocha-each";
 import { EPSILON, G1, MAX_UD60x18, SCALE } from "../../../../helpers/constants";
 import { bn, hUSDC } from "../../../../helpers/numbers";
 import { secondsInDays, secondsInYears } from "../../../../helpers/time";
+import Errors from "../../../shared/errors";
 import { getYieldExponent, inForOut } from "../../../shared/mirrors";
 
 export default function shouldBehaveLikeUnderlyingInForHTokenOut(): void {
@@ -30,7 +31,7 @@ export default function shouldBehaveLikeUnderlyingInForHTokenOut(): void {
             hTokenOut,
             timeToMaturity,
           ),
-        ).to.be.revertedWith("YieldSpace: too much hToken out");
+        ).to.be.revertedWith(Errors.HTokenReservesUnderflow);
       },
     );
   });
@@ -108,7 +109,7 @@ export default function shouldBehaveLikeUnderlyingInForHTokenOut(): void {
                   hTokenOut,
                   timeToMaturity,
                 ),
-              ).to.be.revertedWith("YieldSpace: lossy precision underflow");
+              ).to.be.revertedWith(Errors.LossyPrecisionUnderflow);
             },
           );
         });

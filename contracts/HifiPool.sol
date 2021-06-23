@@ -34,7 +34,9 @@ contract HifiPool is
 
     /// @dev Trading can only occur prior to maturity.
     modifier isBeforeMaturity() {
-        require(block.timestamp < maturity, "HifiPool: bond matured");
+        if (block.timestamp >= maturity) {
+            revert BondMatured();
+        }
         _;
     }
 
@@ -55,8 +57,9 @@ contract HifiPool is
 
         // Calculate the precision scalar and save the underlying contract address in storage.
         uint256 underlyingDecimals = underlying_.decimals();
-        require(underlyingDecimals > 0, "HifiPool: 0 decimals underlying");
-        require(underlyingDecimals <= 18, "HifiPool: >18 decimals underlying");
+        if (underlyingDecimals == 0 || underlyingDecimals > 18) {
+            revert HifiPoolConstructorUnderlyingDecimals(underlyingDecimals);
+        }
         underlyingPrecisionScalar = 10**(18 - underlyingDecimals);
         underlying = underlying_;
 
@@ -85,7 +88,12 @@ contract HifiPool is
                 maturity - block.timestamp
             );
             if (virtualHTokenReserves - hTokenOut < normalizedUnderlyingReserves + normalizedUnderlyingIn) {
-                revert BuyHTokenInsufficientResultantReserves(virtualHTokenReserves, normalizedUnderlyingReserves);
+                revert BuyHTokenInsufficientResultantReserves(
+                    virtualHTokenReserves,
+                    hTokenOut,
+                    normalizedUnderlyingReserves,
+                    normalizedUnderlyingIn
+                );
             }
         }
         underlyingIn = denormalize(normalizedUnderlyingIn);
@@ -146,10 +154,14 @@ contract HifiPool is
                 normalizedUnderlyingIn,
                 maturity - block.timestamp
             );
-            require(
-                virtualHTokenReserves - hTokenOut >= normalizedUnderlyingReserves + normalizedUnderlyingIn,
-                "HifiPool: too low hToken reserves"
-            );
+            if (virtualHTokenReserves - hTokenOut < normalizedUnderlyingReserves + normalizedUnderlyingIn) {
+                revert SellUnderlyingInsufficientResultantReserves(
+                    virtualHTokenReserves,
+                    hTokenOut,
+                    normalizedUnderlyingReserves,
+                    normalizedUnderlyingIn
+                );
+            }
         }
     }
 
@@ -163,7 +175,9 @@ contract HifiPool is
         unchecked {
             uint256 hTokenBalance = hToken.balanceOf(address(this));
             virtualHTokenReserves = hTokenBalance + totalSupply;
-            require(virtualHTokenReserves >= hTokenBalance, "HifiPool: virtual hToken reserves overflow");
+            if (virtualHTokenReserves < hTokenBalance) {
+                revert VirtualHTokenReservesOverflow(hTokenBalance, totalSupply);
+            }
         }
     }
 
@@ -277,12 +291,7 @@ contract HifiPool is
     }
 
     /// @inheritdoc IHifiPool
-    function sellHToken(address to, uint256 hTokenIn)
-        external
-        override
-        isBeforeMaturity
-        returns (uint256 underlyingOut)
-    {
+    function sellHToken(address to, uint256 hTokenIn) external override returns (uint256 underlyingOut) {
         // Checks: avoid the zero edge case.
         if (hTokenIn == 0) {
             revert SellHTokenZero();
@@ -337,7 +346,9 @@ contract HifiPool is
 
     /// @notice Safe cast from uint256 to int256
     function toInt256(uint256 x) internal pure returns (int256 result) {
-        require(x <= uint256(type(int256).max), "HifiPool: Cast overflow");
+        if (x > uint256(type(int256).max)) {
+            revert ToInt256CastOverflow(x);
+        }
         result = int256(x);
     }
 }
