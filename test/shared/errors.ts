@@ -11,6 +11,7 @@ enum Errors {
   MintZero = "MintZero",
   NegativeInterestRate = "NegativeInterestRate",
   SellHTokenZero = "SellHTokenZero",
+  SellUnderlyingZero = "SellUnderlyingZero",
   ToInt256CastOverflow = "ToInt256CastOverflow",
   TooFarFromMaturity = "TooFarFromMaturity",
   UnderlyingOutForHTokenInReservesFactorsUnderflow = "UnderlyingOutForHTokenInReservesFactorsUnderflow",

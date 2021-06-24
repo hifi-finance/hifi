@@ -11,7 +11,9 @@ export default function shouldBehaveLikeMint(): void {
   context("when the underlying offered is 0", function () {
     it("reverts", async function () {
       const underlyingOffered: BigNumber = bn("0");
-      await expect(this.contracts.hifiPool.mint(underlyingOffered)).to.be.revertedWith(Errors.MintZero);
+      await expect(this.contracts.hifiPool.connect(this.signers.alice).mint(underlyingOffered)).to.be.revertedWith(
+        Errors.MintZero,
+      );
     });
   });
 

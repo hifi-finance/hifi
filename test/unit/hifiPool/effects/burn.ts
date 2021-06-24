@@ -13,7 +13,9 @@ export default function shouldBehaveLikeBurn(): void {
   context("when the pool tokens returned are 0", function () {
     it("reverts", async function () {
       const poolTokensBurned: BigNumber = bn("0");
-      await expect(this.contracts.hifiPool.burn(poolTokensBurned)).to.be.revertedWith(Errors.BurnZero);
+      await expect(this.contracts.hifiPool.connect(this.signers.alice).burn(poolTokensBurned)).to.be.revertedWith(
+        Errors.BurnZero,
+      );
     });
   });
 
@@ -23,7 +25,7 @@ export default function shouldBehaveLikeBurn(): void {
         await this.mocks.underlying.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(bn("0"));
         await this.mocks.hToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(bn("0"));
         const poolTokensBurned: BigNumber = fp("100");
-        await expect(this.contracts.hifiPool.burn(poolTokensBurned)).to.be.reverted;
+        await expect(this.contracts.hifiPool.connect(this.signers.alice).burn(poolTokensBurned)).to.be.reverted;
       });
     });
 

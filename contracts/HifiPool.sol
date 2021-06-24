@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.4;
 
-import "hardhat/console.sol";
-
 import "@paulrberg/contracts/token/erc20/Erc20.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Permit.sol";
@@ -246,8 +244,8 @@ contract HifiPool is
         hTokenIn = getQuoteForBuyingUnderlying(underlyingOut);
 
         // Interactions
-        underlying.safeTransfer(to, underlyingOut);
         hToken.transferFrom(msg.sender, address(this), hTokenIn);
+        underlying.safeTransfer(to, underlyingOut);
 
         emit Trade(maturity, msg.sender, to, toInt256(underlyingOut), -toInt256(hTokenIn));
     }
@@ -302,8 +300,8 @@ contract HifiPool is
         underlyingOut = getQuoteForSellingHToken(hTokenIn);
 
         // Interactions
-        underlying.safeTransfer(to, underlyingOut);
         hToken.transferFrom(msg.sender, address(this), hTokenIn);
+        underlying.safeTransfer(to, underlyingOut);
 
         emit Trade(maturity, msg.sender, to, toInt256(underlyingOut), -toInt256(hTokenIn));
     }

@@ -36,6 +36,17 @@ export function getQuoteForSellingHToken(
   return underlyingIn;
 }
 
+export function getQuoteForSellingUnderlying(
+  underlyingReserves: string,
+  hTokenReserves: string,
+  underlyingIn: string,
+  timeToMaturity: string,
+): string {
+  const exponent: string = getYieldExponent(timeToMaturity, G1);
+  const hTokenOut: string = outForIn(underlyingReserves, hTokenReserves, underlyingIn, exponent);
+  return hTokenOut;
+}
+
 export function getYieldExponent(timeToMaturity: string, g: string): string {
   return mbn("1")
     .sub(mbn(K).mul(mbn(timeToMaturity)).mul(mbn(g)))

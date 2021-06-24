@@ -1,10 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
-import fp from "evm-fp";
 import forEach from "mocha-each";
 
-import { EPSILON, H_TOKEN_MATURITY, MAX_UD60x18, PI } from "../../../../helpers/constants";
-import { mbn } from "../../../../helpers/math";
+import { EPSILON, H_TOKEN_MATURITY } from "../../../../helpers/constants";
+import { add, div, sub } from "../../../../helpers/math";
 import { USDC, bn, hUSDC } from "../../../../helpers/numbers";
 import { getLatestBlockTimestamp } from "../../../../helpers/provider";
 import { now } from "../../../../helpers/time";
@@ -84,18 +83,6 @@ export default function shouldBehaveLikeBuyUnderlying(): void {
         const initialUnderlyingReserves: string = "100";
 
         beforeEach(async function () {
-          // Mint an infinite amount of hTokens and underlying.
-          await this.contracts.hToken.mint(this.signers.alice.address, fp(MAX_UD60x18));
-          await this.contracts.underlying.mint(this.signers.alice.address, fp(MAX_UD60x18));
-
-          // Approve the pool to spend an infinite amount of hTokens and underlying.
-          await this.contracts.hToken
-            .connect(this.signers.alice)
-            .approve(this.contracts.hifiPool.address, fp(MAX_UD60x18));
-          await this.contracts.underlying
-            .connect(this.signers.alice)
-            .approve(this.contracts.hifiPool.address, fp(MAX_UD60x18));
-
           // Initialize the pool
           await this.contracts.hifiPool.connect(this.signers.alice).mint(USDC(initialUnderlyingReserves));
         });
@@ -111,13 +98,10 @@ export default function shouldBehaveLikeBuyUnderlying(): void {
 
         context("when liquidity was provided twice or more times", function () {
           const extraUnderlyingReserves: string = "50";
-          const lpTokenSupply: string = String(mbn(initialUnderlyingReserves).add(mbn(extraUnderlyingReserves)));
+          const lpTokenSupply: string = add(initialUnderlyingReserves, extraUnderlyingReserves);
 
           beforeEach(async function () {
             // Add extra liquidity to the pool.
-            await this.contracts.underlying
-              .connect(this.signers.alice)
-              .approve(this.contracts.hifiPool.address, USDC(extraUnderlyingReserves));
             await this.contracts.hifiPool.connect(this.signers.alice).mint(USDC(extraUnderlyingReserves));
           });
 
@@ -143,21 +127,19 @@ export default function shouldBehaveLikeBuyUnderlying(): void {
 
               // Calculate the amounts necessary for the second trade tests.
               const virtualHTokenReservesBn: BigNumber = await this.contracts.hifiPool.getVirtualHTokenReserves();
-              virtualHTokenReserves = String(mbn(String(virtualHTokenReservesBn)).div("1e18"));
+              virtualHTokenReserves = div(String(virtualHTokenReservesBn), "1e18");
             });
 
             const testSets = [["2.141592"], ["9"], ["99"]];
 
             forEach(testSets).it("buys %e underlying with hTokens", async function (hTokenIn: string) {
-              const underlyingReserves: string = String(mbn(lpTokenSupply).sub(mbn(firstUnderlyingOut)));
+              const underlyingReserves: string = sub(lpTokenSupply, firstUnderlyingOut);
               await testBuyUnderlying.call(this, underlyingReserves, virtualHTokenReserves, hTokenIn);
             });
 
             forEach(testSets).it(
               "buys %e underlying with hTokens and emits a Trade event",
               async function (underlyingOut: string) {
-                // Test argument equality when Waffle adds "withNamedArgs" chai matcher.
-                // https://github.com/EthWorks/Waffle/issues/437
                 await expect(
                   this.contracts.hifiPool
                     .connect(this.signers.alice)
