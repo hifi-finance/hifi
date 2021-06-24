@@ -31,4 +31,8 @@ contract GodModeHifiPool is HifiPool {
     function __godMode_setTotalSupply(uint256 totalSupply_) external {
         totalSupply = totalSupply_;
     }
+
+    function __godMode_toInt256(uint256 x) external pure returns (int256 xs) {
+        xs = toInt256(x);
+    }
 }

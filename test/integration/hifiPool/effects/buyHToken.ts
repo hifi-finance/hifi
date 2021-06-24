@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 import forEach from "mocha-each";
 
-import { H_TOKEN_MATURITY, PI } from "../../../../helpers/constants";
+import { H_TOKEN_MATURITY } from "../../../../helpers/constants";
 import { add, div, sub } from "../../../../helpers/math";
 import { USDC, bn, hUSDC } from "../../../../helpers/numbers";
 import { getLatestBlockTimestamp } from "../../../../helpers/provider";
@@ -102,7 +102,7 @@ export default function shouldBehaveLikeBuyHToken(): void {
           const lpTokenSupply: string = initialUnderlyingReserves;
 
           context("when it is the first trade", function () {
-            const testSets = [[PI], ["10"], ["25"]];
+            const testSets = [["3.141592653589793238"], ["10"], ["25"]];
 
             forEach(testSets).it("buys %e hTokens with underlying", async function (hTokenOut: string) {
               const virtualHTokenReserves: string = add(lpTokenSupply, initialHTokenReserves);

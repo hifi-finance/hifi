@@ -1,6 +1,7 @@
 import shouldBehaveLikeConstructor from "./constructor";
 import shouldBehaveLikeBurn from "./effects/burn";
 import shouldBehaveLikeMint from "./effects/mint";
+import shouldBehaveLikeToInt256 from "./pure/toInt256";
 import shouldBehaveLikeGetNormalizedUnderlyingReserves from "./view/getNormalizedUnderlyingReserves";
 import shouldBehaveLikeGetVirtualHTokenReserves from "./view/getVirtualHTokenReserves";
 
@@ -9,13 +10,9 @@ export function shouldBehaveLikeHifiPool(): void {
     shouldBehaveLikeConstructor();
   });
 
-  describe("Effects Functions", function () {
-    describe("burn", function () {
-      shouldBehaveLikeBurn();
-    });
-
-    describe("mint", function () {
-      shouldBehaveLikeMint();
+  describe("Pure Functions", function () {
+    describe("toInt256", function () {
+      shouldBehaveLikeToInt256();
     });
   });
 
@@ -26,6 +23,16 @@ export function shouldBehaveLikeHifiPool(): void {
 
     describe("getVirtualHTokenReserves", function () {
       shouldBehaveLikeGetVirtualHTokenReserves();
+    });
+  });
+
+  describe("Effects Functions", function () {
+    describe("burn", function () {
+      shouldBehaveLikeBurn();
+    });
+
+    describe("mint", function () {
+      shouldBehaveLikeMint();
     });
   });
 }
