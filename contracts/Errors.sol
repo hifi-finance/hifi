@@ -4,14 +4,6 @@ pragma solidity >=0.8.4;
 /// @notice Emitted when the bond matured.
 error BondMatured();
 
-/// @notice Emitted when buying hTokens and the resultant hToken reserves would be too low.
-error BuyHTokenInsufficientResultantReserves(
-    uint256 virtualHTokenReserves,
-    uint256 hTokenOut,
-    uint256 normalizedUnderlyingReserves,
-    uint256 normalizedUnderlyingIn
-);
-
 /// @notice Emitted when attempting to buy a zero amount of hTokens.
 error BuyHTokenZero();
 
@@ -43,16 +35,17 @@ error HTokenReservesUnderflow(uint256 hTokenReserves, uint256 hTokenOut);
 /// should not exist.
 error LossyPrecisionUnderflow(uint256 minuend, uint256 subtrahend);
 
-/// @notice Emitted when attempting to sell a zero amount of hToken.
-error SellHTokenZero();
-
-/// @notice Emitted when selling underlying and resultant hToken reserves would be too low.
-error SellUnderlyingInsufficientResultantReserves(
+/// @notice Emitted when buying hTokens or selling underlying and the resultant hToken reserves would become
+/// smaller than the underlying reserves.
+error NegativeInterestRate(
     uint256 virtualHTokenReserves,
     uint256 hTokenOut,
     uint256 normalizedUnderlyingReserves,
     uint256 normalizedUnderlyingIn
 );
+
+/// @notice Emitted when attempting to sell a zero amount of hToken.
+error SellHTokenZero();
 
 /// @notice Emitted when attempting to sell a zero amount of underlying.
 error SellUnderlyingZero();

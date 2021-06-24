@@ -17,44 +17,56 @@ async function testSellHToken(
   underlyingReserves: string,
   hTokenIn: string,
 ): Promise<void> {
-  // Call the sellHToken function and calculate the delta in the underlying balance.
+  // Call the sellHToken function and calculate the delta in the token balances.
+  const preHTokenBalance: BigNumber = await this.contracts.hToken.balanceOf(this.signers.alice.address);
   const preUnderlyingBalance: BigNumber = await this.contracts.underlying.balanceOf(this.signers.alice.address);
   await this.contracts.hifiPool.connect(this.signers.alice).sellHToken(this.signers.alice.address, hUSDC(hTokenIn));
   const postUnderlyingBalance: BigNumber = await this.contracts.underlying.balanceOf(this.signers.alice.address);
-  const result: BigNumber = postUnderlyingBalance.sub(preUnderlyingBalance);
+
+  const postHTokenBalance: BigNumber = await this.contracts.hToken.balanceOf(this.signers.alice.address);
+  const actualUnderlyingOut: BigNumber = postUnderlyingBalance.sub(preUnderlyingBalance);
+  const actualHTokenIn: BigNumber = preHTokenBalance.sub(postHTokenBalance);
 
   // Calculate the expected value of the delta using the local mirror implementation.
   const timeToMaturity: string = String(H_TOKEN_MATURITY.sub(await getLatestBlockTimestamp()));
-  const expected: string = getQuoteForSellingHToken(hTokenReserves, underlyingReserves, hTokenIn, timeToMaturity);
-  expect(USDC(expected)).to.equal(result);
+  const expectedUnderlyingOut: string = getQuoteForSellingHToken(
+    hTokenReserves,
+    underlyingReserves,
+    hTokenIn,
+    timeToMaturity,
+  );
+
+  // Run the tests.
+  expect(hUSDC(hTokenIn)).to.equal(actualHTokenIn);
+  expect(USDC(expectedUnderlyingOut)).to.equal(actualUnderlyingOut);
 }
 
 export default function shouldBehaveLikeSellHToken(): void {
-  context("when the bond matured", function () {
-    beforeEach(async function () {
-      const oneHourAgo: BigNumber = now().sub(3600);
-      await this.contracts.hifiPool.connect(this.signers.alice).__godMode_setMaturity(oneHourAgo);
-    });
-
+  context("when the amount of hTokens to sell is zero", function () {
     it("reverts", async function () {
-      const hTokenIn: BigNumber = hUSDC("10");
+      const hTokenIn: BigNumber = bn("0");
       await expect(
         this.contracts.hifiPool.connect(this.signers.alice).sellHToken(this.signers.alice.address, hTokenIn),
-      ).to.be.revertedWith(Errors.BondMatured);
+      ).to.be.revertedWith(Errors.SellHTokenZero);
     });
   });
 
-  context("when the bond did not mature", function () {
-    context("when the amount of hTokens to sell is zero", function () {
+  context("when the amount of hTokens to sell is not zero", function () {
+    context("when the bond matured", function () {
+      beforeEach(async function () {
+        const oneHourAgo: BigNumber = now().sub(3600);
+        await this.contracts.hifiPool.connect(this.signers.alice).__godMode_setMaturity(oneHourAgo);
+      });
+
       it("reverts", async function () {
-        const hTokenIn: BigNumber = bn("0");
+        const hTokenIn: BigNumber = hUSDC("10");
         await expect(
           this.contracts.hifiPool.connect(this.signers.alice).sellHToken(this.signers.alice.address, hTokenIn),
-        ).to.be.revertedWith(Errors.SellHTokenZero);
+        ).to.be.revertedWith(Errors.BondMatured);
       });
     });
 
-    context("when the amount of hTokens to sell is not zero", function () {
+    context("when the bond did not mature", function () {
       context("when there is no underlying in the pool", function () {
         it("reverts", async function () {
           const hTokenIn: BigNumber = hUSDC("10");
@@ -109,8 +121,8 @@ export default function shouldBehaveLikeSellHToken(): void {
             const testSets = [[PI], ["10"], ["100"]];
 
             forEach(testSets).it("sells %e hTokens for underlying", async function (hTokenIn: string) {
+              const virtualHTokenReserves: string = lpTokenSupply;
               const underlyingReserves: string = lpTokenSupply;
-              const virtualHTokenReserves: string = underlyingReserves;
               await testSellHToken.call(this, virtualHTokenReserves, underlyingReserves, hTokenIn);
             });
           });
@@ -131,24 +143,27 @@ export default function shouldBehaveLikeSellHToken(): void {
                 await this.contracts.hifiPool.getNormalizedUnderlyingReserves(),
               );
               underlyingReserves = String(mbn(normalizedUnderlyingReserves).div("1e18"));
-              virtualHTokenReserves = String(mbn(lpTokenSupply).add(firstHTokenIn));
             });
 
             const testSets = [["2.141592653589793238"], ["9"], ["99"]];
 
             forEach(testSets).it("sells %e hTokens for underlying", async function (hTokenIn: string) {
+              virtualHTokenReserves = String(mbn(lpTokenSupply).add(firstHTokenIn));
               await testSellHToken.call(this, virtualHTokenReserves, underlyingReserves, hTokenIn);
             });
 
-            forEach(testSets).it("takes %e and emits a Trade event", async function (hTokenIn: string) {
-              // Test argument equality when Waffle adds "withNamedArgs" chai matcher.
-              // https://github.com/EthWorks/Waffle/issues/437
-              await expect(
-                this.contracts.hifiPool
-                  .connect(this.signers.alice)
-                  .sellHToken(this.signers.alice.address, hUSDC(hTokenIn)),
-              ).to.emit(this.contracts.hifiPool, "Trade");
-            });
+            forEach(testSets).it(
+              "sells %e hTokens for underlying and emits a Trade event",
+              async function (hTokenIn: string) {
+                // Test argument equality when Waffle adds "withNamedArgs" chai matcher.
+                // https://github.com/EthWorks/Waffle/issues/437
+                await expect(
+                  this.contracts.hifiPool
+                    .connect(this.signers.alice)
+                    .sellHToken(this.signers.alice.address, hUSDC(hTokenIn)),
+                ).to.emit(this.contracts.hifiPool, "Trade");
+              },
+            );
           });
         });
       });

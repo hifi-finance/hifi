@@ -17,24 +17,30 @@ async function testBuyUnderlying(
   hTokenReserves: string,
   underlyingOut: string,
 ): Promise<void> {
-  // Call the buyUnderlying function and calculate the delta in the hToken balance.
+  // Call the buyUnderlying function and calculate the delta in the token balances.
   const preHTokenBalance: BigNumber = await this.contracts.hToken.balanceOf(this.signers.alice.address);
+  const preUnderlyingBalance: BigNumber = await this.contracts.underlying.balanceOf(this.signers.alice.address);
   await this.contracts.hifiPool
     .connect(this.signers.alice)
     .buyUnderlying(this.signers.alice.address, USDC(underlyingOut));
   const postHTokenBalance: BigNumber = await this.contracts.hToken.balanceOf(this.signers.alice.address);
-  const result: BigNumber = preHTokenBalance.sub(postHTokenBalance);
+  const postUnderlyingBalance: BigNumber = await this.contracts.underlying.balanceOf(this.signers.alice.address);
+
+  const actualHTokenIn: BigNumber = preHTokenBalance.sub(postHTokenBalance);
+  const actualUnderlyingOut: BigNumber = postUnderlyingBalance.sub(preUnderlyingBalance);
 
   // Calculate the expected value of the delta using the local mirror implementation.
   const timeToMaturity: string = String(H_TOKEN_MATURITY.sub(await getLatestBlockTimestamp()));
-  const expected: string = getQuoteForBuyingUnderlying(
+  const expectedHTokenIn: string = getQuoteForBuyingUnderlying(
     underlyingReserves,
     hTokenReserves,
     underlyingOut,
     timeToMaturity,
   );
-  const delta: BigNumber = hUSDC(expected).sub(result).abs();
-  expect(delta).to.be.lte(EPSILON);
+
+  // Run the tests.
+  expect(hUSDC(expectedHTokenIn).sub(actualHTokenIn).abs()).to.be.lte(EPSILON);
+  expect(USDC(underlyingOut)).to.equal(actualUnderlyingOut);
 }
 
 export default function shouldBehaveLikeBuyUnderlying(): void {
@@ -105,9 +111,7 @@ export default function shouldBehaveLikeBuyUnderlying(): void {
 
         context("when liquidity was provided twice or more times", function () {
           const extraUnderlyingReserves: string = "50";
-          const totalUnderlyingReserves: string = String(
-            mbn(initialUnderlyingReserves).add(mbn(extraUnderlyingReserves)),
-          );
+          const lpTokenSupply: string = String(mbn(initialUnderlyingReserves).add(mbn(extraUnderlyingReserves)));
 
           beforeEach(async function () {
             // Add extra liquidity to the pool.
@@ -121,8 +125,9 @@ export default function shouldBehaveLikeBuyUnderlying(): void {
             const testSets = [["3.141592"], ["10"], ["100"]];
 
             forEach(testSets).it("buys %e underlying with hTokens", async function (underlyingOut: string) {
-              const virtualHTokenReserves: string = totalUnderlyingReserves;
-              await testBuyUnderlying.call(this, totalUnderlyingReserves, virtualHTokenReserves, underlyingOut);
+              const underlyingReserves: string = lpTokenSupply;
+              const virtualHTokenReserves: string = lpTokenSupply;
+              await testBuyUnderlying.call(this, underlyingReserves, virtualHTokenReserves, underlyingOut);
             });
           });
 
@@ -143,20 +148,23 @@ export default function shouldBehaveLikeBuyUnderlying(): void {
 
             const testSets = [["2.141592"], ["9"], ["99"]];
 
-            forEach(testSets).it("sells %e hTokens for underlying", async function (hTokenIn: string) {
-              const underlyingReserves: string = String(mbn(totalUnderlyingReserves).sub(mbn(firstUnderlyingOut)));
+            forEach(testSets).it("buys %e underlying with hTokens", async function (hTokenIn: string) {
+              const underlyingReserves: string = String(mbn(lpTokenSupply).sub(mbn(firstUnderlyingOut)));
               await testBuyUnderlying.call(this, underlyingReserves, virtualHTokenReserves, hTokenIn);
             });
 
-            forEach(testSets).it("takes %e and emits a Trade event", async function (underlyingOut: string) {
-              // Test argument equality when Waffle adds "withNamedArgs" chai matcher.
-              // https://github.com/EthWorks/Waffle/issues/437
-              await expect(
-                this.contracts.hifiPool
-                  .connect(this.signers.alice)
-                  .buyUnderlying(this.signers.alice.address, USDC(underlyingOut)),
-              ).to.emit(this.contracts.hifiPool, "Trade");
-            });
+            forEach(testSets).it(
+              "buys %e underlying with hTokens and emits a Trade event",
+              async function (underlyingOut: string) {
+                // Test argument equality when Waffle adds "withNamedArgs" chai matcher.
+                // https://github.com/EthWorks/Waffle/issues/437
+                await expect(
+                  this.contracts.hifiPool
+                    .connect(this.signers.alice)
+                    .buyUnderlying(this.signers.alice.address, USDC(underlyingOut)),
+                ).to.emit(this.contracts.hifiPool, "Trade");
+              },
+            );
           });
         });
       });

@@ -1,7 +1,6 @@
 enum Errors {
   BondMatured = "BondMatured",
   BurnZero = "BurnZero",
-  BuyHTokenInsufficientResultantReserves = "BuyHTokenInsufficientResultantReserves",
   BuyHTokenZero = "BuyHTokenZero",
   BuyUnderlyingZero = "BuyUnderlyingZero",
   HifiPoolConstructorUnderlyingDecimals = "HifiPoolConstructorUnderlyingDecimals",
@@ -10,6 +9,7 @@ enum Errors {
   HTokenReservesUnderflow = "HTokenReservesUnderflow",
   LossyPrecisionUnderflow = "LossyPrecisionUnderflow",
   MintZero = "MintZero",
+  NegativeInterestRate = "NegativeInterestRate",
   SellHTokenZero = "SellHTokenZero",
   ToInt256CastOverflow = "ToInt256CastOverflow",
   TooFarFromMaturity = "TooFarFromMaturity",

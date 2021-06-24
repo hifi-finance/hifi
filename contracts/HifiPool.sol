@@ -90,7 +90,7 @@ contract HifiPool is
                 maturity - block.timestamp
             );
             if (virtualHTokenReserves - hTokenOut < normalizedUnderlyingReserves + normalizedUnderlyingIn) {
-                revert BuyHTokenInsufficientResultantReserves(
+                revert NegativeInterestRate(
                     virtualHTokenReserves,
                     hTokenOut,
                     normalizedUnderlyingReserves,
@@ -157,7 +157,7 @@ contract HifiPool is
                 maturity - block.timestamp
             );
             if (virtualHTokenReserves - hTokenOut < normalizedUnderlyingReserves + normalizedUnderlyingIn) {
-                revert SellUnderlyingInsufficientResultantReserves(
+                revert NegativeInterestRate(
                     virtualHTokenReserves,
                     hTokenOut,
                     normalizedUnderlyingReserves,
