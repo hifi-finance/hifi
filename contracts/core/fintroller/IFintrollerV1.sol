@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.4;
 
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 
@@ -232,7 +232,6 @@ interface IFintrollerV1 is IOwnableUpgradeable {
     ///
     /// - The caller must be the owner.
     /// - The bond must be listed.
-    /// - The debt ceiling cannot be zero.
     /// - The debt ceiling cannot fall below the current total supply of hTokens.
     ///
     /// @param bond The bond to update the debt ceiling for.

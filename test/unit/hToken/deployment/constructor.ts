@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { H_TOKEN_EXPIRATION_TIMES } from "../../../../helpers/constants";
+import { H_TOKEN_MATURITIES } from "../../../../helpers/constants";
 import { bn } from "../../../../helpers/numbers";
 import { now } from "../../../../helpers/time";
 import { HToken } from "../../../../typechain/HToken";
@@ -18,11 +18,11 @@ export default function shouldBehaveLikeConstructor(): void {
     it("reverts", async function () {
       const deployHTokenPromise: Promise<HToken> = deployHToken(
         this.signers.admin,
-        H_TOKEN_EXPIRATION_TIMES[0],
+        H_TOKEN_MATURITIES[0],
         this.mocks.balanceSheet.address,
         this.mocks.usdc.address,
       );
-      await expect(deployHTokenPromise).to.be.revertedWith(HTokenErrors.ConstructorUnderlyingDecimalsZero);
+      await expect(deployHTokenPromise).to.be.revertedWith(HTokenErrors.UnderlyingDecimalsZero);
     });
   });
 
@@ -34,24 +34,24 @@ export default function shouldBehaveLikeConstructor(): void {
     it("reverts", async function () {
       const deployHTokenPromise: Promise<HToken> = deployHToken(
         this.signers.admin,
-        H_TOKEN_EXPIRATION_TIMES[0],
+        H_TOKEN_MATURITIES[0],
         this.mocks.balanceSheet.address,
         this.mocks.usdc.address,
       );
-      await expect(deployHTokenPromise).to.be.revertedWith(HTokenErrors.ConstructorUnderlyingDecimalsOverflow);
+      await expect(deployHTokenPromise).to.be.revertedWith(HTokenErrors.UnderlyingDecimalsOverflow);
     });
   });
 
-  context("when the expiration time is in the past", function () {
+  context("when the maturity is in the past", function () {
     it("reverts", async function () {
-      const nowMinusOneHour: BigNumber = now().sub(3600);
+      const oneHourAgo: BigNumber = now().sub(3600);
       const deployHTokenPromise: Promise<HToken> = deployHToken(
         this.signers.admin,
-        nowMinusOneHour,
+        oneHourAgo,
         this.mocks.balanceSheet.address,
         this.mocks.usdc.address,
       );
-      await expect(deployHTokenPromise).to.be.revertedWith(HTokenErrors.ConstructorExpirationTimePast);
+      await expect(deployHTokenPromise).to.be.revertedWith(HTokenErrors.MaturityPast);
     });
   });
 }

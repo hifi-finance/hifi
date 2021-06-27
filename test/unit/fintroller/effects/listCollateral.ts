@@ -2,14 +2,14 @@ import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
 import { bn } from "../../../../helpers/numbers";
-import { FintrollerErrors, OwnableErrors } from "../../../shared/errors";
+import { FintrollerErrors, OwnableUpgradeableErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeListCollateral(): void {
   context("when the caller is not the owner", function () {
     it("reverts", async function () {
       await expect(
         this.contracts.fintroller.connect(this.signers.raider).listCollateral(this.mocks.wbtc.address),
-      ).to.be.revertedWith(OwnableErrors.NotOwner);
+      ).to.be.revertedWith(OwnableUpgradeableErrors.NotOwner);
     });
   });
 
@@ -23,7 +23,7 @@ export default function shouldBehaveLikeListCollateral(): void {
         it("reverts", async function () {
           await expect(
             this.contracts.fintroller.connect(this.signers.admin).listCollateral(this.mocks.wbtc.address),
-          ).to.be.revertedWith(FintrollerErrors.ListCollateralDecimalsZero);
+          ).to.be.revertedWith(FintrollerErrors.CollateralDecimalsZero);
         });
       });
 
@@ -35,7 +35,7 @@ export default function shouldBehaveLikeListCollateral(): void {
         it("reverts", async function () {
           await expect(
             this.contracts.fintroller.connect(this.signers.admin).listCollateral(this.mocks.wbtc.address),
-          ).to.be.revertedWith(FintrollerErrors.ListCollateralDecimalsOverflow);
+          ).to.be.revertedWith(FintrollerErrors.CollateralDecimalsOverflow);
         });
       });
     });

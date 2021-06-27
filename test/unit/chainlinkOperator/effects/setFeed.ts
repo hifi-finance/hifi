@@ -26,7 +26,7 @@ export default function shouldBehaveLikeSetFeed(): void {
           this.contracts.oracle
             .connect(this.signers.admin)
             .setFeed(this.mocks.wbtc.address, this.mocks.wbtcPriceFeed.address),
-        ).to.be.revertedWith(ChainlinkOperatorErrors.FeedIncorrectDecimals);
+        ).to.be.revertedWith(ChainlinkOperatorErrors.DecimalsMismatch);
       });
     });
 

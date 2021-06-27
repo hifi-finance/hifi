@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 
-import { H_TOKEN_EXPIRATION_TIMES } from "../../../../helpers/constants";
+import { H_TOKEN_MATURITIES } from "../../../../helpers/constants";
 import { bn, precisionScalarForDecimals } from "../../../../helpers/numbers";
 import { HToken } from "../../../../typechain/HToken";
 import { deployHToken } from "../../../shared/deployers";
@@ -15,7 +15,7 @@ export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void 
     it("retrieves 1", async function () {
       const hToken: HToken = await deployHToken(
         this.signers.admin,
-        H_TOKEN_EXPIRATION_TIMES[0],
+        H_TOKEN_MATURITIES[0],
         this.mocks.balanceSheet.address,
         this.mocks.usdc.address,
       );
@@ -32,7 +32,7 @@ export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void 
     it("retrieves 1.0e10", async function () {
       const hToken: HToken = await deployHToken(
         this.signers.admin,
-        H_TOKEN_EXPIRATION_TIMES[0],
+        H_TOKEN_MATURITIES[0],
         this.mocks.balanceSheet.address,
         this.mocks.usdc.address,
       );
@@ -49,7 +49,7 @@ export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void 
     it("retrieves 1", async function () {
       const hToken: HToken = await deployHToken(
         this.signers.admin,
-        H_TOKEN_EXPIRATION_TIMES[0],
+        H_TOKEN_MATURITIES[0],
         this.mocks.balanceSheet.address,
         this.mocks.usdc.address,
       );

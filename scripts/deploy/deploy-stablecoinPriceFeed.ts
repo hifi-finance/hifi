@@ -1,8 +1,7 @@
-import { Contract } from "@ethersproject/contracts";
 import { ethers } from "hardhat";
 
 import { getEnvVar } from "../../helpers/env";
-import { StablecoinPriceFeed__factory } from "../../typechain";
+import { StablecoinPriceFeed, StablecoinPriceFeed__factory } from "../../typechain";
 
 const price: string = getEnvVar("STABLECOIN_PRICE");
 const description: string = getEnvVar("STABLECOIN_PRICE_FEED_DESCRIPTION");
@@ -11,7 +10,7 @@ async function main(): Promise<void> {
   const stablecoinPriceFeedFactory: StablecoinPriceFeed__factory = await ethers.getContractFactory(
     "StablecoinPriceFeed",
   );
-  const stablecoinPriceFeed: Contract = await stablecoinPriceFeedFactory.deploy(price, description);
+  const stablecoinPriceFeed: StablecoinPriceFeed = await stablecoinPriceFeedFactory.deploy(price, description);
   await stablecoinPriceFeed.deployed();
   console.log("StablecoinPriceFeed deployed to: ", stablecoinPriceFeed.address);
 }

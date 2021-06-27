@@ -4,24 +4,24 @@ import { expect } from "chai";
 
 import { USDC } from "../../../../helpers/numbers";
 
-export default function shouldBehaveLikeTotalUnderlyingSupplyGetter(): void {
+export default function shouldBehaveLikeTotalUnderlyingReserveGetter(): void {
   const underlyingAmount: BigNumber = USDC("100");
 
   context("when the underlying supply is zero", function () {
     it("retrieves zero", async function () {
-      const totalUnderlyingSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingSupply();
-      expect(totalUnderlyingSupply).to.equal(Zero);
+      const totalUnderlyingReserve: BigNumber = await this.contracts.hTokens[0].totalUnderlyingReserve();
+      expect(totalUnderlyingReserve).to.equal(Zero);
     });
   });
 
   context("when the total underlying supply is not zero", function () {
     beforeEach(async function () {
-      await this.contracts.hTokens[0].__godMode_setTotalUnderlyingSupply(underlyingAmount);
+      await this.contracts.hTokens[0].__godMode_setTotalUnderlyingReserve(underlyingAmount);
     });
 
     it("retrieves the correct amount", async function () {
-      const totalUnderlyingSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingSupply();
-      expect(totalUnderlyingSupply).to.equal(underlyingAmount);
+      const totalUnderlyingReserve: BigNumber = await this.contracts.hTokens[0].totalUnderlyingReserve();
+      expect(totalUnderlyingReserve).to.equal(underlyingAmount);
     });
   });
 }

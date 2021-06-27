@@ -55,11 +55,11 @@ export async function deployMockFintroller(deployer: Signer): Promise<MockContra
   return fintrollerV1;
 }
 
-export async function deployMockHToken(deployer: Signer, expirationTime: BigNumber): Promise<MockContract> {
+export async function deployMockHToken(deployer: Signer, maturity: BigNumber): Promise<MockContract> {
   const hTokenArtifact: Artifact = await hre.artifacts.readArtifact("HToken");
   const hToken: MockContract = await deployMockContract(deployer, hTokenArtifact.abi);
-  await hToken.mock.name.returns(getHTokenName(expirationTime));
-  await hToken.mock.symbol.returns(getHTokenSymbol(expirationTime));
+  await hToken.mock.name.returns(getHTokenName(maturity));
+  await hToken.mock.symbol.returns(getHTokenSymbol(maturity));
   await hToken.mock.decimals.returns(H_TOKEN_DECIMALS);
   await hToken.mock.totalSupply.returns(Zero);
   return hToken;

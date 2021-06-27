@@ -1,13 +1,13 @@
 import { expect } from "chai";
 
-import { OwnableErrors } from "../../../shared/errors";
+import { OwnableUpgradeableErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeListBond(): void {
   context("when the caller is not the owner", function () {
     it("reverts", async function () {
       await expect(
         this.contracts.fintroller.connect(this.signers.raider).listBond(this.mocks.hTokens[0].address),
-      ).to.be.revertedWith(OwnableErrors.NotOwner);
+      ).to.be.revertedWith(OwnableUpgradeableErrors.NotOwner);
     });
   });
 

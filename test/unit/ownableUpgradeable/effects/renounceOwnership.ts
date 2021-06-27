@@ -1,7 +1,7 @@
 import { AddressZero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-import { OwnableErrors } from "../../../shared/errors";
+import { OwnableUpgradeableErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeRenounceOwnership(): void {
   beforeEach(async function () {
@@ -12,7 +12,7 @@ export default function shouldBehaveLikeRenounceOwnership(): void {
     it("reverts", async function () {
       await expect(
         this.contracts.ownableUpgradeable.connect(this.signers.raider)._renounceOwnership(),
-      ).to.be.revertedWith(OwnableErrors.NotOwner);
+      ).to.be.revertedWith(OwnableUpgradeableErrors.NotOwner);
     });
   });
 

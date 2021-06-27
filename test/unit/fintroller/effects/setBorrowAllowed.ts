@@ -1,13 +1,13 @@
 import { expect } from "chai";
 
-import { GenericErrors, OwnableErrors } from "../../../shared/errors";
+import { FintrollerErrors, OwnableUpgradeableErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeSetBorrowAllowed(): void {
   context("when the caller is not the owner", function () {
     it("reverts", async function () {
       await expect(
         this.contracts.fintroller.connect(this.signers.raider).setBorrowAllowed(this.mocks.hTokens[0].address, true),
-      ).to.be.revertedWith(OwnableErrors.NotOwner);
+      ).to.be.revertedWith(OwnableUpgradeableErrors.NotOwner);
     });
   });
 
@@ -16,7 +16,7 @@ export default function shouldBehaveLikeSetBorrowAllowed(): void {
       it("rejects", async function () {
         await expect(
           this.contracts.fintroller.connect(this.signers.admin).setBorrowAllowed(this.mocks.hTokens[0].address, true),
-        ).to.be.revertedWith(GenericErrors.BondNotListed);
+        ).to.be.revertedWith(FintrollerErrors.BondNotListed);
       });
     });
 

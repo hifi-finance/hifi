@@ -3,8 +3,8 @@
   "plugins": ["prettier"],
   "rules": {
     "contract-name-camelcase": "off",
-    "code-complexity": ["error", 7],
-    "compiler-version": ["error", ">=0.8.0"],
+    "code-complexity": ["error", 8],
+    "compiler-version": ["error", ">=0.8.4"],
     "const-name-snakecase": "off",
     "constructor-syntax": "error",
     "func-name-mixedcase": "off",

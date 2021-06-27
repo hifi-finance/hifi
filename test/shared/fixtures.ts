@@ -2,7 +2,7 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { MockContract } from "ethereum-waffle";
 
 import {
-  H_TOKEN_EXPIRATION_TIMES,
+  H_TOKEN_MATURITIES,
   NORMALIZED_USDC_PRICE,
   NORMALIZED_WBTC_PRICE,
   NORMALIZED_WETH_PRICE,
@@ -70,7 +70,7 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
   await balanceSheet.connect(deployer).setOracle(oracle.address);
   const hToken: GodModeHToken = await deployGodModeHToken(
     deployer,
-    H_TOKEN_EXPIRATION_TIMES[0],
+    H_TOKEN_MATURITIES[0],
     balanceSheet.address,
     usdc.address,
   );
@@ -105,11 +105,11 @@ export async function unitFixtureBalanceSheet(signers: Signer[]): Promise<UnitFi
   const wbtc: MockContract = await deployMockWbtc(deployer);
   const weth: MockContract = await deployMockWeth(deployer);
 
-  const hToken1: MockContract = await deployMockHToken(deployer, H_TOKEN_EXPIRATION_TIMES[0]);
+  const hToken1: MockContract = await deployMockHToken(deployer, H_TOKEN_MATURITIES[0]);
   await hToken1.mock.underlying.returns(usdc.address);
   await hToken1.mock.underlyingPrecisionScalar.returns(USDC_PRECISION_SCALAR);
 
-  const hToken2: MockContract = await deployMockHToken(deployer, H_TOKEN_EXPIRATION_TIMES[1]);
+  const hToken2: MockContract = await deployMockHToken(deployer, H_TOKEN_MATURITIES[1]);
   await hToken2.mock.underlying.returns(usdc.address);
   await hToken2.mock.underlyingPrecisionScalar.returns(USDC_PRECISION_SCALAR);
 
@@ -153,7 +153,7 @@ type UnitFixtureFintrollerReturnType = {
 export async function unitFixtureFintroller(signers: Signer[]): Promise<UnitFixtureFintrollerReturnType> {
   const deployer: Signer = signers[0];
   const fintroller: FintrollerV1 = await deployFintrollerV1();
-  const hToken: MockContract = await deployMockHToken(deployer, H_TOKEN_EXPIRATION_TIMES[0]);
+  const hToken: MockContract = await deployMockHToken(deployer, H_TOKEN_MATURITIES[0]);
   const wbtc: MockContract = await deployMockWbtc(deployer);
   return { fintroller, hTokens: [hToken], wbtc };
 }
@@ -175,7 +175,7 @@ export async function unitFixtureHToken(signers: Signer[]): Promise<UnitFixtureH
   const usdc: MockContract = await deployMockUsdc(deployer);
   const hToken: GodModeHToken = await deployGodModeHToken(
     deployer,
-    H_TOKEN_EXPIRATION_TIMES[0],
+    H_TOKEN_MATURITIES[0],
     balanceSheet.address,
     usdc.address,
   );

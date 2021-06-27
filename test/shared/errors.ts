@@ -1,61 +1,59 @@
-export enum OwnableErrors {
-  NotOwner = "NOT_OWNER",
-}
-
 export enum BalanceSheetErrors {
-  BorrowDebtCeilingOverflow = "BORROW_DEBT_CEILING_OVERFLOW",
-  BorrowMaxBounds = "BORROW_MAX_BONDS",
-  BorrowNotAllowed = "BORROW_NOT_ALLOWED",
-  BorrowZero = "BORROW_ZERO",
-  DepositCollateralNotAllowed = "DEPOSIT_COLLATERAL_NOT_ALLOWED",
-  DepositCollateralZero = "DEPOSIT_COLLATERAL_ZERO",
-  LiquidateBorrowCollateralUnderflow = "LIQUIDATE_BORROW_COLLATERAL_UNDERFLOW",
-  LiquidateBorrowNotAllowed = "LIQUIDATE_BORROW_NOT_ALLOWED",
-  LiquidateBorrowNoLiquidityShortfall = "LIQUIDATE_BORROW_NO_LIQUIDITY_SHORTFALL",
-  LiquidateBorrowSelf = "LIQUIDATE_BORROW_SELF",
-  LiquidityShortfall = "LIQUIDITY_SHORTFALL",
-  RepayBorrowInsufficientBalance = "REPAY_BORROW_INSUFFICIENT_BALANCE",
-  RepayBorrowInsufficientDebt = "REPAY_BORROW_INSUFFICIENT_DEBT",
-  RepayBorrowNotAllowed = "REPAY_BORROW_NOT_ALLOWED",
-  RepayBorrowZero = "REPAY_BORROW_ZERO",
-  SetOracleZeroAddress = "SET_ORACLE_ZERO_ADDRESS",
-  WithdrawCollateralUnderflow = "WITHDRAW_COLLATERAL_UNDERFLOW",
-  WithdrawCollateralZero = "WITHDRAW_COLLATERAL_ZERO",
+  BondMatured = "BalanceSheet__BondMatured",
+  BorrowMaxBounds = "BalanceSheet__BorrowMaxBonds",
+  BorrowNotAllowed = "BalanceSheet__BorrowNotAllowed",
+  BorrowZero = "BalanceSheet__BorrowZero",
+  DebtCeilingOverflow = "BalanceSheet__DebtCeilingOverflow",
+  DepositCollateralNotAllowed = "BalanceSheet__DepositCollateralNotAllowed",
+  DepositCollateralZero = "BalanceSheet__DepositCollateralZero",
+  LiquidateBorrowInsufficientCollateral = "BalanceSheet__LiquidateBorrowInsufficientCollateral",
+  LiquidateBorrowNotAllowed = "BalanceSheet__LiquidateBorrowNotAllowed",
+  LiquidateBorrowSelf = "BalanceSheet__LiquidateBorrowSelf",
+  LiquidityShortfall = "BalanceSheet__LiquidityShortfall",
+  NoLiquidityShortfall = "BalanceSheet__NoLiquidityShortfall",
+  OracleZeroAddress = "BalanceSheet__OracleZeroAddress",
+  RepayBorrowInsufficientBalance = "BalanceSheet__RepayBorrowInsufficientBalance",
+  RepayBorrowInsufficientDebt = "BalanceSheet__RepayBorrowInsufficientDebt",
+  RepayBorrowNotAllowed = "BalanceSheet__RepayBorrowNotAllowed",
+  RepayBorrowZero = "BalanceSheet__RepayBorrowZero",
+  WithdrawCollateralUnderflow = "BalanceSheet__WithdrawCollateralUnderflow",
+  WithdrawCollateralZero = "BalanceSheet__WithdrawCollateralZero",
 }
 
 export enum ChainlinkOperatorErrors {
-  FeedIncorrectDecimals = "FEED_DECIMALS_MISMATCH",
-  FeedNotSet = "FEED_NOT_SET",
-  PriceZero = "PRICE_ZERO",
+  DecimalsMismatch = "ChainlinkOperator__DecimalsMismatch",
+  FeedNotSet = "ChainlinkOperator__FeedNotSet",
+  PriceZero = "ChainlinkOperator__PriceZero",
 }
 
 export enum FintrollerErrors {
-  ListCollateralDecimalsOverflow = "LIST_COLLATERAL_DECIMALS_OVERFLOW",
-  ListCollateralDecimalsZero = "LIST_COLLATERAL_DECIMALS_ZERO",
-  SetCollateralizationRatioLowerBound = "SET_COLLATERALIZATION_RATIO_LOWER_BOUND",
-  SetCollateralizationRatioUpperBound = "SET_COLLATERALIZATION_RATIO_UPPER_BOUND",
-  SetDebtCeilingUnderflow = "SET_DEBT_CEILING_UNDERFLOW",
-  SetDebtCeilingZero = "SET_DEBT_CEILING_ZERO",
-  SetLiquidationIncentiveLowerBound = "SET_LIQUIDATION_INCENTIVE_LOWER_BOUND",
-  SetLiquidationIncentiveUpperBound = "SET_LIQUIDATION_INCENTIVE_UPPER_BOUND",
-}
-
-export enum GenericErrors {
-  BondMatured = "BOND_MATURED",
-  BondNotListed = "BOND_NOT_LISTED",
-  BondNotMatured = "BOND_NOT_MATURED",
-  CollateralNotListed = "COLLATERAL_NOT_LISTED",
+  BondNotListed = "Fintroller__BondNotListed",
+  CollateralDecimalsOverflow = "Fintroller__CollateralDecimalsOverflow",
+  CollateralDecimalsZero = "Fintroller__CollateralDecimalsZero",
+  CollateralNotListed = "Fintroller__CollateralNotListed",
+  CollateralizationRatioOverflow = "Fintroller__CollateralizationRatioOverflow",
+  CollateralizationRatioUnderflow = "Fintroller__CollateralizationRatioUnderflow",
+  DebtCeilingUnderflow = "Fintroller__DebtCeilingUnderflow",
+  LiquidationIncentiveOverflow = "Fintroller__LiquidationIncentiveOverflow",
+  LiquidationIncentiveUnderflow = "Fintroller__LiquidationIncentiveUnderflow",
 }
 
 export enum HTokenErrors {
-  BurnNotAuthorized = "BURN_NOT_AUTHORIZED",
-  BurnZero = "BURN_ZERO",
-  ConstructorExpirationTimePast = "CONSTRUCTOR_EXPIRATION_TIME_PAST",
-  ConstructorUnderlyingDecimalsOverflow = "CONSTRUCTOR_UNDERLYING_DECIMALS_OVERFLOW",
-  ConstructorUnderlyingDecimalsZero = "CONSTRUCTOR_UNDERLYING_DECIMALS_ZERO",
-  MintNotAuthorized = "MINT_NOT_AUTHORIZED",
-  MintZero = "MINT_ZERO",
-  RedeemInsufficientLiquidity = "REDEEM_INSUFFICIENT_LIQUIDITY",
-  RedeemZero = "REDEEM_ZERO",
-  SupplyUnderlyingZero = "SUPPLY_UNDERLYING_ZERO",
+  BondNotMatured = "HToken__BondNotMatured",
+  BurnNotAuthorized = "HToken__BurnNotAuthorized",
+  MaturityPast = "HToken__MaturityPast",
+  MintNotAuthorized = "HToken__MintNotAuthorized",
+  RedeemInsufficientLiquidity = "HToken__RedeemInsufficientLiquidity",
+  RedeemZero = "HToken__RedeemZero",
+  SupplyUnderlyingZero = "HToken__SupplyUnderlyingZero",
+  UnderlyingDecimalsZero = "HToken__UnderlyingDecimalsZero",
+  UnderlyingDecimalsOverflow = "HToken__UnderlyingDecimalsOverflow",
+}
+
+export enum OwnableErrors {
+  NotOwner = "Ownable__NotOwner",
+}
+
+export enum OwnableUpgradeableErrors {
+  NotOwner = "OwnableUpgradeable__NotOwner",
 }

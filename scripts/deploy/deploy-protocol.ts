@@ -1,17 +1,22 @@
-import { Contract } from "@ethersproject/contracts";
 import { ethers, upgrades } from "hardhat";
 
 import { getEnvVar } from "../../helpers/env";
 import {
+  BalanceSheetV1,
   BalanceSheetV1__factory,
+  ChainlinkOperator,
   ChainlinkOperator__factory,
+  FintrollerV1,
   FintrollerV1__factory,
+  HToken,
   HToken__factory,
+  RegentsTargetV1,
   RegentsTargetV1__factory,
+  StablecoinPriceFeed,
   StablecoinPriceFeed__factory,
 } from "../../typechain";
 
-const hTokenExpirationTime: string = getEnvVar("H_TOKEN_EXPIRATION_TIME");
+const hTokenMaturity: string = getEnvVar("H_TOKEN_MATURITY");
 const hTokenName: string = getEnvVar("H_TOKEN_NAME");
 const hTokenSymbol: string = getEnvVar("H_TOKEN_SYMBOL");
 const stablecoinPrice: string = getEnvVar("STABLECOIN_PRICE");
@@ -21,31 +26,30 @@ const underlyingAddress: string = getEnvVar("UNDERLYING_ADDRESS");
 async function main(): Promise<void> {
   // Deploy Fintroller
   const fintrollerV1Factory: FintrollerV1__factory = await ethers.getContractFactory("FintrollerV1");
-  const fintrollerV1: Contract = await upgrades.deployProxy(fintrollerV1Factory);
+  const fintrollerV1: FintrollerV1 = <FintrollerV1>await upgrades.deployProxy(fintrollerV1Factory);
   await fintrollerV1.deployed();
   console.log("FintrollerV1 deployed to: ", fintrollerV1.address);
 
   // Deploy ChainlinkOperator
   const chainlinkOperatorFactory: ChainlinkOperator__factory = await ethers.getContractFactory("ChainlinkOperator");
-  const chainlinkOperator: Contract = await chainlinkOperatorFactory.deploy();
+  const chainlinkOperator: ChainlinkOperator = await chainlinkOperatorFactory.deploy();
   await chainlinkOperator.deployed();
   console.log("ChainlinkOperator deployed to: ", chainlinkOperator.address);
 
   // Deploy BalanceSheet
   const balanceSheetV1Factory: BalanceSheetV1__factory = await ethers.getContractFactory("BalanceSheetV1");
-  const balanceSheetV1: Contract = await upgrades.deployProxy(balanceSheetV1Factory, [
-    fintrollerV1.address,
-    chainlinkOperator.address,
-  ]);
+  const balanceSheetV1: BalanceSheetV1 = <BalanceSheetV1>(
+    await upgrades.deployProxy(balanceSheetV1Factory, [fintrollerV1.address, chainlinkOperator.address])
+  );
   await balanceSheetV1.deployed();
   console.log("BalanceSheetV1 deployed to: ", balanceSheetV1.address);
 
   // Deploy HToken
   const hTokenFactory: HToken__factory = await ethers.getContractFactory("HToken");
-  const hToken: Contract = await hTokenFactory.deploy(
+  const hToken: HToken = await hTokenFactory.deploy(
     hTokenName,
     hTokenSymbol,
-    hTokenExpirationTime,
+    hTokenMaturity,
     balanceSheetV1.address,
     underlyingAddress,
   );
@@ -56,7 +60,7 @@ async function main(): Promise<void> {
   const stablecoinPriceFeedFactory: StablecoinPriceFeed__factory = await ethers.getContractFactory(
     "StablecoinPriceFeed",
   );
-  const stablecoinPriceFeed: Contract = await stablecoinPriceFeedFactory.deploy(
+  const stablecoinPriceFeed: StablecoinPriceFeed = await stablecoinPriceFeedFactory.deploy(
     stablecoinPrice,
     stablecoinPriceFeedDescription,
   );
@@ -65,7 +69,7 @@ async function main(): Promise<void> {
 
   // Deploy RegentsTargetV1
   const regentsTargetV1Factory: RegentsTargetV1__factory = await ethers.getContractFactory("RegentsTargetV1");
-  const regentsTargetV1: Contract = await regentsTargetV1Factory.deploy();
+  const regentsTargetV1: RegentsTargetV1 = await regentsTargetV1Factory.deploy();
   await regentsTargetV1.deployed();
   console.log("RegentsTargetV1 deployed to: ", regentsTargetV1.address);
 }

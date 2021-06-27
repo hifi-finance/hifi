@@ -1,6 +1,6 @@
 import { expect } from "chai";
 
-import { GenericErrors, OwnableErrors } from "../../../shared/errors";
+import { FintrollerErrors, OwnableUpgradeableErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeSetRepayBorrowAllowed(): void {
   context("when the caller is not the owner", function () {
@@ -9,7 +9,7 @@ export default function shouldBehaveLikeSetRepayBorrowAllowed(): void {
         this.contracts.fintroller
           .connect(this.signers.raider)
           .setRepayBorrowAllowed(this.mocks.hTokens[0].address, true),
-      ).to.be.revertedWith(OwnableErrors.NotOwner);
+      ).to.be.revertedWith(OwnableUpgradeableErrors.NotOwner);
     });
   });
 
@@ -20,7 +20,7 @@ export default function shouldBehaveLikeSetRepayBorrowAllowed(): void {
           this.contracts.fintroller
             .connect(this.signers.admin)
             .setRepayBorrowAllowed(this.mocks.hTokens[0].address, true),
-        ).to.be.revertedWith(GenericErrors.BondNotListed);
+        ).to.be.revertedWith(FintrollerErrors.BondNotListed);
       });
     });
 

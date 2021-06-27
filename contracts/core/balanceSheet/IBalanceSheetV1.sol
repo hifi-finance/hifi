@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.4;
 
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 
@@ -149,7 +149,7 @@ interface IBalanceSheetV1 is IOwnableUpgradeable {
     /// Requirements:
     ///
     /// - The Fintroller must allow this action to be performed.
-    /// - The expiration time of the bond must be in the future.
+    /// - The maturity of the bond must be in the future.
     /// - The amount to borrow cannot be zero.
     /// - The new length of the bond list must be below the max bonds limit.
     /// - The new total amount of debt cannot exceed the debt ceiling.

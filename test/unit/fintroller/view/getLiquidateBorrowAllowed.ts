@@ -1,13 +1,13 @@
 import { expect } from "chai";
 
-import { GenericErrors } from "../../../shared/errors";
+import { FintrollerErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeGetLiquidateBorrowAllowed(): void {
   context("when the bond is not listed", function () {
     it("reverts", async function () {
       await expect(
         this.contracts.fintroller.getLiquidateBorrowAllowed(this.mocks.hTokens[0].address),
-      ).to.be.revertedWith(GenericErrors.BondNotListed);
+      ).to.be.revertedWith(FintrollerErrors.BondNotListed);
     });
   });
 

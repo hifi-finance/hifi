@@ -49,7 +49,7 @@ export async function deployFintrollerV1(): Promise<FintrollerV1> {
 
 export async function deployHToken(
   deployer: Signer,
-  expirationTime: BigNumber,
+  maturity: BigNumber,
   balanceSheetAddress: string,
   underlyingAddress: string,
 ): Promise<HToken> {
@@ -58,13 +58,7 @@ export async function deployHToken(
     await deployContract(
       deployer,
       hTokenArtifact,
-      [
-        getHTokenName(expirationTime),
-        getHTokenSymbol(expirationTime),
-        expirationTime,
-        balanceSheetAddress,
-        underlyingAddress,
-      ],
+      [getHTokenName(maturity), getHTokenSymbol(maturity), maturity, balanceSheetAddress, underlyingAddress],
       overrides,
     )
   );
@@ -86,7 +80,7 @@ export async function deployGodModeBalanceSheet(
 
 export async function deployGodModeHToken(
   deployer: Signer,
-  expirationTime: BigNumber,
+  maturity: BigNumber,
   balanceSheetAddress: string,
   underlyingAddress: string,
 ): Promise<GodModeHToken> {
@@ -95,13 +89,7 @@ export async function deployGodModeHToken(
     await deployContract(
       deployer,
       godModeHTokenArtifact,
-      [
-        getHTokenName(expirationTime),
-        getHTokenSymbol(expirationTime),
-        expirationTime,
-        balanceSheetAddress,
-        underlyingAddress,
-      ],
+      [getHTokenName(maturity), getHTokenSymbol(maturity), maturity, balanceSheetAddress, underlyingAddress],
       overrides,
     )
   );

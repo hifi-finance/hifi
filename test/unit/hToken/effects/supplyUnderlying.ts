@@ -31,9 +31,9 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
       });
 
       it("makes the underlying supply", async function () {
-        const oldUnderlyingTotalSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingSupply();
+        const oldUnderlyingTotalSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingReserve();
         await this.contracts.hTokens[0].connect(this.signers.maker).supplyUnderlying(localUnderlyingAmount);
-        const newUnderlyingTotalSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingSupply();
+        const newUnderlyingTotalSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingReserve();
         expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.sub(localUnderlyingAmount));
       });
     });
@@ -47,9 +47,9 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
       });
 
       it("makes the underlying supply", async function () {
-        const oldUnderlyingTotalSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingSupply();
+        const oldUnderlyingTotalSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingReserve();
         await this.contracts.hTokens[0].connect(this.signers.maker).supplyUnderlying(underlyingAmount);
-        const newUnderlyingTotalSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingSupply();
+        const newUnderlyingTotalSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingReserve();
         expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.sub(underlyingAmount));
       });
 

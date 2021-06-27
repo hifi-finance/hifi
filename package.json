@@ -11,24 +11,19 @@
     "url": "https://github.com/hifi-finance/hifi-protocol/issues"
   },
   "dependencies": {
-    "@paulrberg/contracts": "^3.2.1",
-    "prb-math": "^2.0.1"
+    "@paulrberg/contracts": "^3.4.0",
+    "prb-math": "^2.2.0"
   },
   "devDependencies": {
     "@codechecks/client": "^0.1.10",
     "@commitlint/cli": "^12.1.4",
     "@commitlint/config-conventional": "^12.1.4",
-    "@ethersproject/abi": "^5.3.1",
-    "@ethersproject/abstract-signer": "^5.3.0",
-    "@ethersproject/bignumber": "^5.3.0",
-    "@ethersproject/bytes": "^5.3.0",
-    "@ethersproject/constants": "^5.3.0",
-    "@ethersproject/contracts": "^5.3.0",
-    "@ethersproject/keccak256": "^5.3.0",
-    "@ethersproject/providers": "^5.3.1",
-    "@ethersproject/signing-key": "^5.3.0",
-    "@ethersproject/strings": "^5.3.0",
-    "@ethersproject/units": "^5.3.0",
+    "@ethersproject/abi": "^5.4.0",
+    "@ethersproject/abstract-signer": "^5.4.0",
+    "@ethersproject/bignumber": "^5.4.0",
+    "@ethersproject/bytes": "^5.4.0",
+    "@ethersproject/constants": "^5.4.0",
+    "@ethersproject/providers": "^5.4.0",
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
     "@openzeppelin/contracts-upgradeable": "^4.1.0",
@@ -39,7 +34,7 @@
     "@types/fs-extra": "^9.0.11",
     "@types/mocha": "^8.2.2",
     "@types/mocha-each": "^2.0.0",
-    "@types/node": "^15.12.4",
+    "@types/node": "^15.12.5",
     "@typescript-eslint/eslint-plugin": "^4.28.0",
     "@typescript-eslint/parser": "^4.28.0",
     "chai": "^4.3.4",
@@ -50,7 +45,7 @@
     "eslint": "^7.29.0",
     "eslint-config-prettier": "^8.3.0",
     "ethereum-waffle": "^3.4.0",
-    "ethers": "^5.3.1",
+    "ethers": "^5.4.0",
     "evm-fp": "^1.1.2",
     "fs-extra": "^10.0.0",
     "hardhat": "^2.4.1",
@@ -62,8 +57,8 @@
     "mocha": "^9.0.1",
     "mocha-each": "^2.0.1",
     "pinst": "^2.1.6",
-    "prettier": "^2.3.1",
-    "prettier-plugin-solidity": "^1.0.0-beta.10",
+    "prettier": "^2.3.2",
+    "prettier-plugin-solidity": "^1.0.0-beta.11",
     "shelljs": "^0.8.4",
     "shx": "^0.3.3",
     "solhint": "^3.3.6",
@@ -107,7 +102,9 @@
     "url": "https://github.com/hifi-finance/hifi-protocol"
   },
   "resolutions": {
-    "@ethersproject/wallet": "^5.2.0"
+    "@ethersproject/wallet": "^5.4.0",
+    "@solidity-parser/parser": "^0.13.2",
+    "ethers": "^5.4.0"
   },
   "scripts": {
     "clean": "hardhat clean",

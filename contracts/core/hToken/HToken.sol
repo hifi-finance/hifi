@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.4;
 
 import "@paulrberg/contracts/access/Ownable.sol";
 import "@paulrberg/contracts/token/erc20/Erc20.sol";
@@ -9,6 +9,33 @@ import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 
 import "./IHToken.sol";
 import "../balanceSheet/IBalanceSheetV1.sol";
+
+/// @notice Emitted when the bond did not mature.
+error HToken__BondNotMatured(uint256 maturity);
+
+/// @notice Emitted when burning hTokens and the caller is not the BalanceSheet contract.
+error HToken__BurnNotAuthorized(address caller);
+
+/// @notice Emitted when the maturity is in the past.
+error HToken__MaturityPast(uint256 maturity);
+
+/// @notice Emitted when minting hTokens and the caller is not the BalanceSheet contract.
+error HToken__MintNotAuthorized(address caller);
+
+/// @notice Emitted when redeeming more underlying that there is in the reserve.
+error HToken__RedeemInsufficientLiquidity(uint256 underlyingAmount, uint256 totalUnderlyingReserve);
+
+/// @notice Emitted when redeeming a zero amount of hTokens.
+error HToken__RedeemZero();
+
+/// @notice Emitted when supplying a zero amount of underlying.
+error HToken__SupplyUnderlyingZero();
+
+/// @notice Emitted when constructing the contract and the underlying has more than 18 decimals.
+error HToken__UnderlyingDecimalsOverflow(uint256 decimals);
+
+/// @notice Emitted when constructing the contract and the underlying has zero decimals.
+error HToken__UnderlyingDecimalsZero();
 
 /// @title HToken
 /// @author Hifi
@@ -27,10 +54,10 @@ contract HToken is
     IBalanceSheetV1 public override balanceSheet;
 
     /// @inheritdoc IHToken
-    uint256 public override expirationTime;
+    uint256 public override maturity;
 
     /// @inheritdoc IHToken
-    uint256 public override totalUnderlyingSupply;
+    uint256 public override totalUnderlyingReserve;
 
     /// @inheritdoc IHToken
     IErc20 public override underlying;
@@ -43,27 +70,33 @@ contract HToken is
     /// @notice The hToken always has 18 decimals.
     /// @param name_ Erc20 name of this token.
     /// @param symbol_ Erc20 symbol of this token.
-    /// @param expirationTime_ Unix timestamp in seconds for when this token expires.
+    /// @param maturity_ Unix timestamp in seconds for when this token matures.
     /// @param balanceSheet_ The address of the BalanceSheet contract.
     /// @param underlying_ The contract address of the underlying asset.
     constructor(
         string memory name_,
         string memory symbol_,
-        uint256 expirationTime_,
+        uint256 maturity_,
         IBalanceSheetV1 balanceSheet_,
         IErc20 underlying_
     ) Erc20Permit(name_, symbol_, 18) Ownable() {
-        // Set the unix expiration time.
-        require(expirationTime_ > block.timestamp, "CONSTRUCTOR_EXPIRATION_TIME_PAST");
-        expirationTime = expirationTime_;
+        // Set the maturity.
+        if (maturity_ <= block.timestamp) {
+            revert HToken__MaturityPast(maturity_);
+        }
+        maturity = maturity_;
 
         // Set the BalanceSheet contract.
         balanceSheet = balanceSheet_;
 
-        // Set the underlying contract and calculate the decimal scalar offsets.
+        // Set the underlying contract and calculate the precision scalars.
         uint256 underlyingDecimals = underlying_.decimals();
-        require(underlyingDecimals > 0, "CONSTRUCTOR_UNDERLYING_DECIMALS_ZERO");
-        require(underlyingDecimals <= 18, "CONSTRUCTOR_UNDERLYING_DECIMALS_OVERFLOW");
+        if (underlyingDecimals == 0) {
+            revert HToken__UnderlyingDecimalsZero();
+        }
+        if (underlyingDecimals > 18) {
+            revert HToken__UnderlyingDecimalsOverflow(underlyingDecimals);
+        }
         underlyingPrecisionScalar = 10**(18 - underlyingDecimals);
         underlying = underlying_;
     }
@@ -72,7 +105,7 @@ contract HToken is
 
     /// @inheritdoc IHToken
     function isMatured() public view override returns (bool) {
-        return block.timestamp >= expirationTime;
+        return block.timestamp >= maturity;
     }
 
     /// PUBLIC NON-CONSTANT FUNCTIONS ///
@@ -80,10 +113,9 @@ contract HToken is
     /// @inheritdoc IHToken
     function burn(address holder, uint256 burnAmount) external override {
         // Checks: the caller is the BalanceSheet.
-        require(msg.sender == address(balanceSheet), "BURN_NOT_AUTHORIZED");
-
-        // Checks: the zero edge case.
-        require(burnAmount > 0, "BURN_ZERO");
+        if (msg.sender != address(balanceSheet)) {
+            revert HToken__BurnNotAuthorized(msg.sender);
+        }
 
         // Effects: burns the hTokens.
         burnInternal(holder, burnAmount);
@@ -95,10 +127,9 @@ contract HToken is
     /// @inheritdoc IHToken
     function mint(address beneficiary, uint256 mintAmount) external override {
         // Checks: the caller is the BalanceSheet.
-        require(msg.sender == address(balanceSheet), "MINT_NOT_AUTHORIZED");
-
-        // Checks: the zero edge case.
-        require(mintAmount > 0, "MINT_ZERO");
+        if (msg.sender != address(balanceSheet)) {
+            revert HToken__MintNotAuthorized(msg.sender);
+        }
 
         // Effects: print the new hTokens into existence.
         mintInternal(beneficiary, mintAmount);
@@ -110,10 +141,14 @@ contract HToken is
     /// @inheritdoc IHToken
     function redeem(uint256 hTokenAmount) external override {
         // Checks: before maturation.
-        require(isMatured(), "BOND_NOT_MATURED");
+        if (!isMatured()) {
+            revert HToken__BondNotMatured(maturity);
+        }
 
         // Checks: the zero edge case.
-        require(hTokenAmount > 0, "REDEEM_ZERO");
+        if (hTokenAmount == 0) {
+            revert HToken__RedeemZero();
+        }
 
         // Denormalize the hToken amount to the underlying decimals.
         uint256 underlyingAmount;
@@ -124,10 +159,12 @@ contract HToken is
         }
 
         // Checks: there is enough liquidity.
-        require(underlyingAmount <= totalUnderlyingSupply, "REDEEM_INSUFFICIENT_LIQUIDITY");
+        if (underlyingAmount > totalUnderlyingReserve) {
+            revert HToken__RedeemInsufficientLiquidity(underlyingAmount, totalUnderlyingReserve);
+        }
 
         // Effects: decrease the remaining supply of underlying.
-        totalUnderlyingSupply -= underlyingAmount;
+        totalUnderlyingReserve -= underlyingAmount;
 
         // Interactions: burn the hTokens.
         burnInternal(msg.sender, hTokenAmount);
@@ -141,10 +178,12 @@ contract HToken is
     /// @inheritdoc IHToken
     function supplyUnderlying(uint256 underlyingSupplyAmount) external override {
         // Checks: the zero edge case.
-        require(underlyingSupplyAmount > 0, "SUPPLY_UNDERLYING_ZERO");
+        if (underlyingSupplyAmount == 0) {
+            revert HToken__SupplyUnderlyingZero();
+        }
 
         // Effects: update storage.
-        totalUnderlyingSupply += underlyingSupplyAmount;
+        totalUnderlyingReserve += underlyingSupplyAmount;
 
         // Normalize the underlying amount to 18 decimals.
         uint256 hTokenAmount;

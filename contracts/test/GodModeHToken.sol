@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 // solhint-disable func-name-mixedcase
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.4;
 
 import "../core/hToken/HToken.sol";
 
@@ -11,10 +11,10 @@ contract GodModeHToken is HToken {
     constructor(
         string memory name_,
         string memory symbol_,
-        uint256 expirationTime_,
+        uint256 maturity_,
         IBalanceSheetV1 balanceSheet_,
         IErc20 underlying_
-    ) HToken(name_, symbol_, expirationTime_, balanceSheet_, underlying_) {
+    ) HToken(name_, symbol_, maturity_, balanceSheet_, underlying_) {
         // solhint-disable-previous-line no-empty-blocks
     }
 
@@ -22,12 +22,12 @@ contract GodModeHToken is HToken {
         mintInternal(beneficiary, mintAmount);
     }
 
-    function __godMode_setExpirationTime(uint256 newExpirationTime) external {
-        expirationTime = newExpirationTime;
+    function __godMode_setMaturity(uint256 newMaturity) external {
+        maturity = newMaturity;
     }
 
-    function __godMode_setTotalUnderlyingSupply(uint256 newTotalUnderlyingSupply) external {
-        totalUnderlyingSupply = newTotalUnderlyingSupply;
+    function __godMode_setTotalUnderlyingReserve(uint256 newTotalUnderlyingReserve) external {
+        totalUnderlyingReserve = newTotalUnderlyingReserve;
     }
 
     function __godMode_setUnderlyingPrecisionScalar(uint256 newUnderlyingPrecisionScalar) external {

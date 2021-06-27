@@ -1,6 +1,6 @@
 import { expect } from "chai";
 
-import { OwnableErrors } from "../../../shared/errors";
+import { OwnableUpgradeableErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeTransferOwnership(): void {
   beforeEach(async function () {
@@ -12,7 +12,7 @@ export default function shouldBehaveLikeTransferOwnership(): void {
       const newOwner: string = this.signers.maker.address;
       await expect(
         this.contracts.ownableUpgradeable.connect(this.signers.raider)._transferOwnership(newOwner),
-      ).to.be.revertedWith(OwnableErrors.NotOwner);
+      ).to.be.revertedWith(OwnableUpgradeableErrors.NotOwner);
     });
   });
 

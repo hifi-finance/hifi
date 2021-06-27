@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.4;
 
 import "@paulrberg/contracts/access/IOwnable.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
@@ -52,15 +52,15 @@ interface IHToken is
     /// @return The BalanceSheet contract.
     function balanceSheet() external view returns (IBalanceSheetV1);
 
-    /// @notice Unix timestamp in seconds for when this HToken expires.
-    function expirationTime() external view returns (uint256);
-
     /// @notice Checks if the bond matured.
     /// @return bool true = bond matured, otherwise it didn't.
     function isMatured() external view returns (bool);
 
+    /// @notice Unix timestamp in seconds for when this HToken matures.
+    function maturity() external view returns (uint256);
+
     /// @notice The amount of underlying redeemable after maturation.
-    function totalUnderlyingSupply() external view returns (uint256);
+    function totalUnderlyingReserve() external view returns (uint256);
 
     /// @notice The Erc20 underlying, or target, asset for this HToken.
     function underlying() external view returns (IErc20);
@@ -75,9 +75,7 @@ interface IHToken is
     /// @dev Emits a {Burn} and a {Transfer} event.
     ///
     /// Requirements:
-    ///
     /// - Can only be called by the BalanceSheet contract.
-    /// - The amount to burn cannot be zero.
     ///
     /// @param holder The account whose hTokens to burn.
     /// @param burnAmount The amount of hTokens to burn.
@@ -88,9 +86,7 @@ interface IHToken is
     /// @dev Emits a {Mint} and a {Transfer} event.
     ///
     /// Requirements:
-    ///
     /// - Can only be called by the BalanceSheet contract.
-    /// - The amount to mint cannot be zero.
     ///
     /// @param beneficiary The account to mint the hTokens for.
     /// @param mintAmount The amount of hTokens to print into existence.

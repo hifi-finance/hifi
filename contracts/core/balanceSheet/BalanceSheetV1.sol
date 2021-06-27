@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
-pragma solidity >=0.8.0;
+pragma solidity >=0.8.4;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "prb-math/contracts/PRBMathUD60x18.sol";
@@ -10,6 +10,67 @@ import "./IBalanceSheetV1.sol";
 import "./SBalanceSheetV1.sol";
 import "../fintroller/IFintrollerV1.sol";
 import "../../access/OwnableUpgradeable.sol";
+
+/// @notice Emitted when the bond matured.
+error BalanceSheet__BondMatured(IHToken bond);
+
+/// @notice Emitted when the account exceeds the maximunm numbers of bonds permitted.
+error BalanceSheet__BorrowMaxBonds(IHToken bond, uint256 hypotheticalBondListLength, uint256 maxBonds);
+
+/// @notice Emitted when borrows are not allowed by the Fintroller contract.
+error BalanceSheet__BorrowNotAllowed(IHToken bond);
+
+/// @notice Emitted when borrowing a zero amount of hTokens.
+error BalanceSheet__BorrowZero();
+
+/// @notice Emitted when the hypothetical total supply of hTokens exceeds the debt ceiling.
+error BalanceSheet__DebtCeilingOverflow(uint256 hypotheticalTotalSupply, uint256 debtCeiling);
+
+/// @notice Emitted when collateral deposits are not allowed by the Fintroller contract.
+error BalanceSheet__DepositCollateralNotAllowed(IErc20 collateral);
+
+/// @notice Emitted when depositing a zero amount of collateral.
+error BalanceSheet__DepositCollateralZero();
+
+/// @notice Emitted when there is not enough collateral to seize.
+error BalanceSheet__LiquidateBorrowInsufficientCollateral(
+    address account,
+    uint256 vaultCollateralAmount,
+    uint256 seizableAmount
+);
+
+/// @notice Emitted when borrow liquidations are not allowed by the Fintroller contract.
+error BalanceSheet__LiquidateBorrowNotAllowed(IHToken bond);
+
+/// @notice Emitted when the borrower is liquidating themselves.
+error BalanceSheet__LiquidateBorrowSelf(address account);
+
+/// @notice Emitted when there is a liquidity shortfall.
+error BalanceSheet__LiquidityShortfall(address account, uint256 shortfallLiquidity);
+
+/// @notice Emitted when there is no liquidity shortfall.
+error BalanceSheet__NoLiquidityShortfall(address account);
+
+/// @notice Emitted when setting the oracle to the zero address.
+error BalanceSheet__OracleZeroAddress();
+
+/// @notice Emitted when the repayer does not have enough hTokens to repay the debt.
+error BalanceSheet__RepayBorrowInsufficientBalance(IHToken bond, uint256 repayAmount, uint256 hTokenBalance);
+
+/// @notice Emitted when repaying more debt than the borrower owes.
+error BalanceSheet__RepayBorrowInsufficientDebt(IHToken bond, uint256 repayAmount, uint256 debtAmount);
+
+/// @notice Emitted when borrow repays are not allowed by the Fintroller contract.
+error BalanceSheet__RepayBorrowNotAllowed(IHToken bond);
+
+/// @notice Emitted when repaying a borrow with a zero amount of hTokens.
+error BalanceSheet__RepayBorrowZero();
+
+/// @notice Emitted when withdrawing more collateral than there is in the vault.
+error BalanceSheet__WithdrawCollateralUnderflow(address account, uint256 vaultCollateralAmount, uint256 withdrawAmount);
+
+/// @notice Emitted when withdrawing a zero amount of collateral.
+error BalanceSheet__WithdrawCollateralZero();
 
 /// @title BalanceSheetV1
 /// @author Hifi
@@ -213,18 +274,26 @@ contract BalanceSheetV1 is
     // @inheritdoc IHToken
     function borrow(IHToken bond, uint256 borrowAmount) public override {
         // Checks: the Fintroller allows this action to be performed.
-        require(fintroller.getBorrowAllowed(bond), "BORROW_NOT_ALLOWED");
+        if (!fintroller.getBorrowAllowed(bond)) {
+            revert BalanceSheet__BorrowNotAllowed(bond);
+        }
 
         // Checks: bond not matured.
-        require(bond.isMatured() == false, "BOND_MATURED");
+        if (bond.isMatured()) {
+            revert BalanceSheet__BondMatured(bond);
+        }
 
         // Checks: the zero edge case.
-        require(borrowAmount > 0, "BORROW_ZERO");
+        if (borrowAmount == 0) {
+            revert BalanceSheet__BorrowZero();
+        }
 
         // Checks: debt ceiling.
         uint256 hypotheticalTotalSupply = bond.totalSupply() + borrowAmount;
-        uint256 bondDebtCeiling = fintroller.getDebtCeiling(bond);
-        require(hypotheticalTotalSupply <= bondDebtCeiling, "BORROW_DEBT_CEILING_OVERFLOW");
+        uint256 debtCeiling = fintroller.getDebtCeiling(bond);
+        if (hypotheticalTotalSupply > debtCeiling) {
+            revert BalanceSheet__DebtCeilingOverflow(hypotheticalTotalSupply, debtCeiling);
+        }
 
         // Add the borrow amount to the borrower account's current debt.
         uint256 newDebtAmount = vaults[msg.sender].debtAmounts[bond] + borrowAmount;
@@ -233,16 +302,21 @@ contract BalanceSheetV1 is
         if (vaults[msg.sender].debtAmounts[bond] == 0) {
             // Checks: below max bonds limit.
             unchecked {
-                uint256 bondListLength = vaults[msg.sender].bondList.length;
-                require(bondListLength + 1 <= SFintrollerV1(address(fintroller)).maxBonds(), "BORROW_MAX_BONDS");
+                uint256 hypotheticalBondListLength = vaults[msg.sender].bondList.length + 1;
+                uint256 maxBonds = SFintrollerV1(address(fintroller)).maxBonds();
+                if (hypotheticalBondListLength > maxBonds) {
+                    revert BalanceSheet__BorrowMaxBonds(bond, hypotheticalBondListLength, maxBonds);
+                }
             }
             vaults[msg.sender].bondList.push(bond);
         }
 
-        // Checks: the hypothetical account liquidity is okay.
+        // Checks: there is no liquidity shortfall.
         (, uint256 hypotheticalShortfallLiquidity) =
             getHypotheticalAccountLiquidity(msg.sender, IErc20(address(0)), 0, bond, newDebtAmount);
-        require(hypotheticalShortfallLiquidity == 0, "LIQUIDITY_SHORTFALL");
+        if (hypotheticalShortfallLiquidity > 0) {
+            revert BalanceSheet__LiquidityShortfall(msg.sender, hypotheticalShortfallLiquidity);
+        }
 
         // Effects: increase the amount of debt in the vault.
         vaults[msg.sender].debtAmounts[bond] = newDebtAmount;
@@ -257,10 +331,14 @@ contract BalanceSheetV1 is
     /// @inheritdoc IBalanceSheetV1
     function depositCollateral(IErc20 collateral, uint256 depositAmount) external override {
         // Checks: the Fintroller allows this action to be performed.
-        require(fintroller.getDepositCollateralAllowed(collateral), "DEPOSIT_COLLATERAL_NOT_ALLOWED");
+        if (!fintroller.getDepositCollateralAllowed(collateral)) {
+            revert BalanceSheet__DepositCollateralNotAllowed(collateral);
+        }
 
         // Checks: the zero edge case.
-        require(depositAmount > 0, "DEPOSIT_COLLATERAL_ZERO");
+        if (depositAmount == 0) {
+            revert BalanceSheet__DepositCollateralZero();
+        }
 
         // Effects: add the collateral to the redundant list, if this is the first time collateral is added.
         if (vaults[msg.sender].collateralAmounts[collateral] == 0) {
@@ -285,24 +363,34 @@ contract BalanceSheetV1 is
         IErc20 collateral
     ) external override {
         // Checks: caller not the borrower.
-        require(msg.sender != borrower, "LIQUIDATE_BORROW_SELF");
+        if (msg.sender == borrower) {
+            revert BalanceSheet__LiquidateBorrowSelf(borrower);
+        }
 
         // Checks: the Fintroller allows this action to be performed.
-        require(fintroller.getLiquidateBorrowAllowed(bond), "LIQUIDATE_BORROW_NOT_ALLOWED");
+        if (!fintroller.getLiquidateBorrowAllowed(bond)) {
+            revert BalanceSheet__LiquidateBorrowNotAllowed(bond);
+        }
 
         // After maturation, any vault can be liquidated, irrespective of account liquidity.
         if (bond.isMatured() == false) {
             // Checks: the borrower has a shortfall of liquidity.
             (, uint256 shortfallLiquidity) = getCurrentAccountLiquidity(borrower);
-            require(shortfallLiquidity > 0, "LIQUIDATE_BORROW_NO_LIQUIDITY_SHORTFALL");
+            if (shortfallLiquidity == 0) {
+                revert BalanceSheet__NoLiquidityShortfall(borrower);
+            }
         }
 
-        // Checks: there is enough collateral.
+        // Checks: there is enough collateral in the vault.
+        uint256 vaultCollateralAmount = vaults[borrower].collateralAmounts[collateral];
         uint256 seizableCollateralAmount = getSeizableCollateralAmount(bond, repayAmount, collateral);
-        require(
-            vaults[borrower].collateralAmounts[collateral] >= seizableCollateralAmount,
-            "LIQUIDATE_BORROW_COLLATERAL_UNDERFLOW"
-        );
+        if (vaultCollateralAmount < seizableCollateralAmount) {
+            revert BalanceSheet__LiquidateBorrowInsufficientCollateral(
+                borrower,
+                vaultCollateralAmount,
+                seizableCollateralAmount
+            );
+        }
 
         // Effects & Interactions: repay the borrower's debt.
         repayBorrowInternal(msg.sender, borrower, bond, repayAmount);
@@ -342,7 +430,9 @@ contract BalanceSheetV1 is
 
     /// @inheritdoc IBalanceSheetV1
     function setOracle(IChainlinkOperator newOracle) external override onlyOwner {
-        require(address(newOracle) != address(0), "SET_ORACLE_ZERO_ADDRESS");
+        if (address(newOracle) == address(0)) {
+            revert BalanceSheet__OracleZeroAddress();
+        }
         address oldOracle = address(oracle);
         oracle = newOracle;
         emit SetOracle(owner, oldOracle, address(newOracle));
@@ -351,20 +441,27 @@ contract BalanceSheetV1 is
     /// @inheritdoc IBalanceSheetV1
     function withdrawCollateral(IErc20 collateral, uint256 withdrawAmount) external override {
         // Checks: the zero edge case.
-        require(withdrawAmount > 0, "WITHDRAW_COLLATERAL_ZERO");
+        if (withdrawAmount == 0) {
+            revert BalanceSheet__WithdrawCollateralZero();
+        }
 
-        // Checks: there is enough collateral.
-        require(vaults[msg.sender].collateralAmounts[collateral] >= withdrawAmount, "WITHDRAW_COLLATERAL_UNDERFLOW");
+        // Checks: there is enough collateral in teh vault.
+        uint256 vaultCollateralAmount = vaults[msg.sender].collateralAmounts[collateral];
+        if (vaultCollateralAmount < withdrawAmount) {
+            revert BalanceSheet__WithdrawCollateralUnderflow(msg.sender, vaultCollateralAmount, withdrawAmount);
+        }
 
         // Calculate the new collateral amount.
         uint256 newCollateralAmount;
-        unchecked { newCollateralAmount = vaults[msg.sender].collateralAmounts[collateral] - withdrawAmount; }
+        unchecked { newCollateralAmount = vaultCollateralAmount - withdrawAmount; }
 
         // Checks: the hypothetical account liquidity is okay.
         if (vaults[msg.sender].bondList.length > 0) {
             (, uint256 hypotheticalShortfallLiquidity) =
                 getHypotheticalAccountLiquidity(msg.sender, collateral, newCollateralAmount, IHToken(address(0)), 0);
-            require(hypotheticalShortfallLiquidity == 0, "LIQUIDITY_SHORTFALL");
+            if (hypotheticalShortfallLiquidity > 0) {
+                revert BalanceSheet__LiquidityShortfall(msg.sender, hypotheticalShortfallLiquidity);
+            }
         }
 
         // Effects: decrease the amount of collateral in the vault.
@@ -440,17 +537,26 @@ contract BalanceSheetV1 is
         uint256 repayAmount
     ) internal {
         // Checks: the Fintroller allows this action to be performed.
-        require(fintroller.getRepayBorrowAllowed(bond), "REPAY_BORROW_NOT_ALLOWED");
+        if (!fintroller.getRepayBorrowAllowed(bond)) {
+            revert BalanceSheet__RepayBorrowNotAllowed(bond);
+        }
 
         // Checks: the zero edge case.
-        require(repayAmount > 0, "REPAY_BORROW_ZERO");
+        if (repayAmount == 0) {
+            revert BalanceSheet__RepayBorrowZero();
+        }
 
         // Checks: borrower has debt.
         uint256 debtAmount = vaults[borrower].debtAmounts[bond];
-        require(debtAmount >= repayAmount, "REPAY_BORROW_INSUFFICIENT_DEBT");
+        if (debtAmount < repayAmount) {
+            revert BalanceSheet__RepayBorrowInsufficientDebt(bond, repayAmount, debtAmount);
+        }
 
         // Checks: the payer has enough hTokens.
-        require(bond.balanceOf(payer) >= repayAmount, "REPAY_BORROW_INSUFFICIENT_BALANCE");
+        uint256 hTokenBalance = bond.balanceOf(payer);
+        if (hTokenBalance < repayAmount) {
+            revert BalanceSheet__RepayBorrowInsufficientBalance(bond, repayAmount, hTokenBalance);
+        }
 
         // Effects: decrease the amount of debt in the vault.
         uint256 newDebtAmount;

@@ -8,7 +8,7 @@ import {
   WETH_COLLATERALIZATION_RATIO,
 } from "../../../../helpers/constants";
 import { WBTC, WETH, hUSDC } from "../../../../helpers/numbers";
-import { BalanceSheetErrors, GenericErrors } from "../../../shared/errors";
+import { BalanceSheetErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeBorrow(): void {
   context("when the Fintroller does not allow borrows", function () {
@@ -40,7 +40,7 @@ export default function shouldBehaveLikeBorrow(): void {
           this.contracts.balanceSheet
             .connect(this.signers.borrower)
             .borrow(this.mocks.hTokens[0].address, borrowAmount),
-        ).to.be.revertedWith(GenericErrors.BondMatured);
+        ).to.be.revertedWith(BalanceSheetErrors.BondMatured);
       });
     });
 
@@ -76,7 +76,7 @@ export default function shouldBehaveLikeBorrow(): void {
               this.contracts.balanceSheet
                 .connect(this.signers.borrower)
                 .borrow(this.mocks.hTokens[0].address, borrowAmounts[0]),
-            ).to.be.revertedWith(BalanceSheetErrors.BorrowDebtCeilingOverflow);
+            ).to.be.revertedWith(BalanceSheetErrors.DebtCeilingOverflow);
           });
         });
 

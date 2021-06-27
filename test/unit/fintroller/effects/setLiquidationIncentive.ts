@@ -9,7 +9,7 @@ import {
   LIQUIDATION_INCENTIVE_UPPER_BOUND,
 } from "../../../../helpers/constants";
 import { bn } from "../../../../helpers/numbers";
-import { FintrollerErrors, GenericErrors, OwnableErrors } from "../../../shared/errors";
+import { FintrollerErrors, OwnableUpgradeableErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeSetLiquidationIncentive(): void {
   const newLiquidationIncentive: BigNumber = fp("1.20");
@@ -22,7 +22,7 @@ export default function shouldBehaveLikeSetLiquidationIncentive(): void {
         this.contracts.fintroller
           .connect(this.signers.raider)
           .setLiquidationIncentive(this.mocks.wbtc.address, newLiquidationIncentive),
-      ).to.be.revertedWith(OwnableErrors.NotOwner);
+      ).to.be.revertedWith(OwnableUpgradeableErrors.NotOwner);
     });
   });
 
@@ -33,7 +33,7 @@ export default function shouldBehaveLikeSetLiquidationIncentive(): void {
           this.contracts.fintroller
             .connect(this.signers.admin)
             .setLiquidationIncentive(this.mocks.wbtc.address, newLiquidationIncentive),
-        ).to.be.revertedWith(GenericErrors.CollateralNotListed);
+        ).to.be.revertedWith(FintrollerErrors.CollateralNotListed);
       });
     });
 
@@ -49,27 +49,27 @@ export default function shouldBehaveLikeSetLiquidationIncentive(): void {
               this.contracts.fintroller
                 .connect(this.signers.admin)
                 .setLiquidationIncentive(this.mocks.wbtc.address, Zero),
-            ).to.be.revertedWith(FintrollerErrors.SetLiquidationIncentiveLowerBound);
+            ).to.be.revertedWith(FintrollerErrors.LiquidationIncentiveUnderflow);
           });
         });
 
-        context("when the liquidation incentive is higher than 150%", function () {
+        context("when the liquidation incentive is above the upper bound", function () {
           it("reverts", async function () {
             await expect(
               this.contracts.fintroller
                 .connect(this.signers.admin)
                 .setLiquidationIncentive(this.mocks.wbtc.address, overflowLiquidationIncentive),
-            ).to.be.revertedWith(FintrollerErrors.SetLiquidationIncentiveUpperBound);
+            ).to.be.revertedWith(FintrollerErrors.LiquidationIncentiveOverflow);
           });
         });
 
-        context("when the liquidation incentive is lower than 100%", function () {
+        context("when the liquidation incentive is below the lower bound", function () {
           it("reverts", async function () {
             await expect(
               this.contracts.fintroller
                 .connect(this.signers.admin)
                 .setLiquidationIncentive(this.mocks.wbtc.address, underflowLiquidationIncentive),
-            ).to.be.revertedWith(FintrollerErrors.SetLiquidationIncentiveLowerBound);
+            ).to.be.revertedWith(FintrollerErrors.LiquidationIncentiveUnderflow);
           });
         });
       });

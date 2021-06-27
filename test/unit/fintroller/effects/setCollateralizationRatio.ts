@@ -9,7 +9,7 @@ import {
   DEFAULT_COLLATERALIZATION_RATIO,
 } from "../../../../helpers/constants";
 import { bn } from "../../../../helpers/numbers";
-import { FintrollerErrors, GenericErrors, OwnableErrors } from "../../../shared/errors";
+import { FintrollerErrors, OwnableUpgradeableErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeSetCollateralizationRatio(): void {
   const newCollateralizationRatio: BigNumber = fp("1.75");
@@ -22,7 +22,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
         this.contracts.fintroller
           .connect(this.signers.raider)
           .setCollateralizationRatio(this.mocks.wbtc.address, newCollateralizationRatio),
-      ).to.be.revertedWith(OwnableErrors.NotOwner);
+      ).to.be.revertedWith(OwnableUpgradeableErrors.NotOwner);
     });
   });
 
@@ -33,7 +33,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
           this.contracts.fintroller
             .connect(this.signers.admin)
             .setCollateralizationRatio(this.mocks.wbtc.address, newCollateralizationRatio),
-        ).to.be.revertedWith(GenericErrors.CollateralNotListed);
+        ).to.be.revertedWith(FintrollerErrors.CollateralNotListed);
       });
     });
 
@@ -43,33 +43,33 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
       });
 
       context("when the collateralization ratio is not valid", function () {
-        context("when the collateralization ratio is higher than 10,000%", function () {
-          it("reverts", async function () {
-            await expect(
-              this.contracts.fintroller
-                .connect(this.signers.admin)
-                .setCollateralizationRatio(this.mocks.wbtc.address, overflowCollateralizationRatio),
-            ).to.be.revertedWith(FintrollerErrors.SetCollateralizationRatioUpperBound);
-          });
-        });
-
-        context("when the collateralization ratio is lower than 100%", function () {
-          it("reverts", async function () {
-            await expect(
-              this.contracts.fintroller
-                .connect(this.signers.admin)
-                .setCollateralizationRatio(this.mocks.wbtc.address, underflowCollateralizationRatio),
-            ).to.be.revertedWith(FintrollerErrors.SetCollateralizationRatioLowerBound);
-          });
-        });
-
         context("when the collateralization ratio is zero", function () {
           it("reverts", async function () {
             await expect(
               this.contracts.fintroller
                 .connect(this.signers.admin)
                 .setCollateralizationRatio(this.mocks.wbtc.address, Zero),
-            ).to.be.revertedWith(FintrollerErrors.SetCollateralizationRatioLowerBound);
+            ).to.be.revertedWith(FintrollerErrors.CollateralizationRatioUnderflow);
+          });
+        });
+
+        context("when the collateralization ratio is above the upper bound", function () {
+          it("reverts", async function () {
+            await expect(
+              this.contracts.fintroller
+                .connect(this.signers.admin)
+                .setCollateralizationRatio(this.mocks.wbtc.address, overflowCollateralizationRatio),
+            ).to.be.revertedWith(FintrollerErrors.CollateralizationRatioOverflow);
+          });
+        });
+
+        context("when the collateralization ratio is below the lower bound", function () {
+          it("reverts", async function () {
+            await expect(
+              this.contracts.fintroller
+                .connect(this.signers.admin)
+                .setCollateralizationRatio(this.mocks.wbtc.address, underflowCollateralizationRatio),
+            ).to.be.revertedWith(FintrollerErrors.CollateralizationRatioUnderflow);
           });
         });
       });

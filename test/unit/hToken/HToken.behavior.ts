@@ -5,9 +5,9 @@ import shouldBehaveLikeRedeem from "./effects/redeem";
 import shouldBehaveLikeSetBalanceSheet from "./effects/setBalanceSheet";
 import shouldBehaveLikeSupplyUnderlying from "./effects/supplyUnderlying";
 import shouldBehaveLikeBalanceSheetGetter from "./view/balanceSheet";
-import shouldBehaveLikeExpirationTimeGetter from "./view/expirationTime";
 import shouldBehaveLikeIsMatured from "./view/isMatured";
-import shouldBehaveLikeTotalUnderlyingSupplyGetter from "./view/totalUnderlyingSupply";
+import shouldBehaveLikeMaturityGetter from "./view/maturity";
+import shouldBehaveLikeTotalUnderlyingReserveGetter from "./view/totalUnderlyingReserve";
 import shouldBehaveLikeUnderlyingGetter from "./view/underlying";
 import shouldBehaveLikeUnderlyingPrecisionScalarGetter from "./view/underlyingPrecisionScalar";
 
@@ -21,16 +21,16 @@ export function shouldBehaveLikeHToken(): void {
       shouldBehaveLikeBalanceSheetGetter();
     });
 
-    describe("expirationTime", function () {
-      shouldBehaveLikeExpirationTimeGetter();
-    });
-
     describe("isMatured", function () {
       shouldBehaveLikeIsMatured();
     });
 
-    describe("totalUnderlyingSupply", function () {
-      shouldBehaveLikeTotalUnderlyingSupplyGetter();
+    describe("maturity", function () {
+      shouldBehaveLikeMaturityGetter();
+    });
+
+    describe("totalUnderlyingReserve", function () {
+      shouldBehaveLikeTotalUnderlyingReserveGetter();
     });
 
     describe("underlying", function () {

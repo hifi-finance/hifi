@@ -20,7 +20,7 @@ export const GAS_LIMIT_HARDHAT: BigNumber = bn("1e8");
 export const GAS_LIMIT_COVERAGE: BigNumber = bn("5e8");
 
 export const H_TOKEN_DECIMALS: BigNumber = bn("18");
-export const H_TOKEN_EXPIRATION_TIMES: BigNumber[] = [now().add(secondsInDays(90)), now().add(secondsInYears(1))];
+export const H_TOKEN_MATURITIES: BigNumber[] = [now().add(secondsInDays(90)), now().add(secondsInYears(1))];
 
 export const LIQUIDATION_INCENTIVE_LOWER_BOUND: BigNumber = fp("1.00");
 export const LIQUIDATION_INCENTIVE_UPPER_BOUND: BigNumber = fp("1.50");

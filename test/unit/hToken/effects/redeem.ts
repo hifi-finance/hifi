@@ -5,16 +5,16 @@ import fp from "evm-fp";
 
 import { USDC, bn, hUSDC, precisionScalarForDecimals } from "../../../../helpers/numbers";
 import { now } from "../../../../helpers/time";
-import { GenericErrors, HTokenErrors } from "../../../shared/errors";
+import { HTokenErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeRedeemHTokens(): void {
+export default function shouldBehaveLikeRedeem(): void {
   const underlyingAmount: BigNumber = USDC("100");
   const hTokenAmount: BigNumber = hUSDC("100");
 
   context("when the bond did not mature", function () {
     it("reverts", async function () {
       await expect(this.contracts.hTokens[0].connect(this.signers.maker).redeem(Zero)).to.be.revertedWith(
-        GenericErrors.BondNotMatured,
+        HTokenErrors.BondNotMatured,
       );
     });
   });
@@ -22,7 +22,7 @@ export default function shouldBehaveLikeRedeemHTokens(): void {
   context("when the bond matured", function () {
     beforeEach(async function () {
       const oneHourAgo: BigNumber = now().sub(3600);
-      await this.contracts.hTokens[0].__godMode_setExpirationTime(oneHourAgo);
+      await this.contracts.hTokens[0].__godMode_setMaturity(oneHourAgo);
     });
 
     context("when the amount to redeem is zero", function () {
@@ -45,8 +45,8 @@ export default function shouldBehaveLikeRedeemHTokens(): void {
       context("when there is enough liquidity", function () {
         beforeEach(async function () {
           await this.contracts.hTokens[0].__godMode_mint(this.signers.maker.address, hTokenAmount);
-          const totalUnderlyingSupply: BigNumber = fp("1e7", 18);
-          await this.contracts.hTokens[0].__godMode_setTotalUnderlyingSupply(totalUnderlyingSupply);
+          const totalUnderlyingReserve: BigNumber = fp("1e7", 18);
+          await this.contracts.hTokens[0].__godMode_setTotalUnderlyingReserve(totalUnderlyingReserve);
         });
 
         context("when the underlying has 18 decimals", function () {
@@ -60,9 +60,9 @@ export default function shouldBehaveLikeRedeemHTokens(): void {
           });
 
           it("makes the redemption", async function () {
-            const oldUnderlyingTotalSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingSupply();
+            const oldUnderlyingTotalSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingReserve();
             await this.contracts.hTokens[0].connect(this.signers.maker).redeem(hTokenAmount);
-            const newUnderlyingTotalSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingSupply();
+            const newUnderlyingTotalSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingReserve();
             expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.add(localUnderlyingAmount));
           });
         });
@@ -74,9 +74,9 @@ export default function shouldBehaveLikeRedeemHTokens(): void {
           });
 
           it("makes the redemption", async function () {
-            const oldUnderlyingTotalSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingSupply();
+            const oldUnderlyingTotalSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingReserve();
             await this.contracts.hTokens[0].connect(this.signers.maker).redeem(hTokenAmount);
-            const newUnderlyingTotalSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingSupply();
+            const newUnderlyingTotalSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingReserve();
             expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.add(underlyingAmount));
           });
 

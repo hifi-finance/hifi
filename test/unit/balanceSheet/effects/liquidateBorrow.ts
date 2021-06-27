@@ -87,7 +87,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
                   repayAmount,
                   this.mocks.wbtc.address,
                 ),
-            ).to.be.revertedWith(BalanceSheetErrors.LiquidateBorrowNoLiquidityShortfall);
+            ).to.be.revertedWith(BalanceSheetErrors.NoLiquidityShortfall);
           });
         });
 
@@ -198,7 +198,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
                   repayAmount,
                   this.mocks.wbtc.address,
                 ),
-            ).to.be.revertedWith(BalanceSheetErrors.LiquidateBorrowCollateralUnderflow);
+            ).to.be.revertedWith(BalanceSheetErrors.LiquidateBorrowInsufficientCollateral);
           });
         });
 
