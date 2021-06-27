@@ -6,9 +6,8 @@ The built contract artifacts can be browsed via [unpkg.com](https://unpkg.com/br
 
 ## Developers
 
-Our contracts are written in Solidity and our tests in TypeScript.
-
-If you want to contribute, familiarity with Hardhat, Ethers, Waffle and TypeScript is requisite.
+The contracts are written in Solidity and the tests in TypeScript. If you want to contribute, familiarity with Hardhat,
+Ethers and Waffle is requisite.
 
 ### Pre Requisites
 
@@ -95,8 +94,7 @@ $ yarn clean
 - Dan Robinson and Allan Niemerg, for their work on [The Yield Protocol: On-Chain Lending With Interest Rate
   Discovery](https://research.paradigm.xyz/Yield.pdf), which shaped many of our protocol design choices.
 - Chainlink, for their [Price Feeds](https://docs.chain.link/docs/using-chainlink-reference-contracts).
-- Compound Finance, for their [Solidity math library](https://compound.finance/docs#protocol-math).
-- OpenZeppelin, for their [outstanding smart contract library](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/contracts).
+- OpenZeppelin, for their outstanding [upgradeable contracts library](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/contracts).
 
 ## Discussion
 

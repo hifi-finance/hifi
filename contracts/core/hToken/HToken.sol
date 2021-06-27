@@ -153,7 +153,9 @@ contract HToken is
         // Denormalize the hToken amount to the underlying decimals.
         uint256 underlyingAmount;
         if (underlyingPrecisionScalar != 1) {
-            unchecked { underlyingAmount = hTokenAmount / underlyingPrecisionScalar; }
+            unchecked {
+                underlyingAmount = hTokenAmount / underlyingPrecisionScalar;
+            }
         } else {
             underlyingAmount = hTokenAmount;
         }
