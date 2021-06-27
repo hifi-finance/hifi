@@ -6,16 +6,14 @@ import { Artifact } from "hardhat/types";
 
 const artifactsDir: string = path.join(__dirname, "..", "artifacts");
 const contracts: string[] = [
-  "BalanceSheet",
-  "BatterseaTargetV1",
+  "BalanceSheetV1",
   "ChainlinkOperator",
   "Erc20",
   "Erc20Permit",
-  "Fintroller",
+  "FintrollerV1",
   "HToken",
   "IAggregatorV3",
   "IBalanceSheetV1",
-  "IBatterseaTargetV1",
   "IChainlinkOperator",
   "IErc20",
   "IErc20Permit",

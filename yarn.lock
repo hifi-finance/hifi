@@ -1113,7 +1113,7 @@ __metadata:
     pinst: ^2.1.6
     prb-math: ^2.2.0
     prettier: ^2.3.2
-    prettier-plugin-solidity: ^1.0.0-beta.10
+    prettier-plugin-solidity: ^1.0.0-beta.11
     shelljs: ^0.8.4
     shx: ^0.3.3
     solhint: ^3.3.6
@@ -4924,13 +4924,6 @@ __metadata:
   dependencies:
     path-type: ^4.0.0
   checksum: 687fa3bd604f264042f325d9460e1298447fb32782f30cddc47cb302b742684d13e8ffce4c6f455e0ae92099d71e29f72387379c10b8fd3f6f1bf8992d7c0997
-  languageName: node
-  linkType: hard
-
-"dir-to-object@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "dir-to-object@npm:2.0.0"
-  checksum: 068d215ae05bd5d2f4b86ea2e05fa256c5d1793b8a5fc5da886c96924691195e9e7783accc9ea3c4be88a48149dddeaaa1caa99e03aeeecb51d8c9f2c7949f40
   languageName: node
   linkType: hard
 
@@ -11210,19 +11203,19 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"prettier-plugin-solidity@npm:^1.0.0-beta.10":
-  version: 1.0.0-beta.11
-  resolution: "prettier-plugin-solidity@npm:1.0.0-beta.11"
+"prettier-plugin-solidity@npm:^1.0.0-beta.11":
+  version: 1.0.0-beta.13
+  resolution: "prettier-plugin-solidity@npm:1.0.0-beta.13"
   dependencies:
-    "@solidity-parser/parser": ^0.13.0
-    dir-to-object: ^2.0.0
+    "@solidity-parser/parser": ^0.13.2
     emoji-regex: ^9.2.2
     escape-string-regexp: ^4.0.0
-    prettier: ^2.2.1
     semver: ^7.3.5
     solidity-comments-extractor: ^0.0.7
     string-width: ^4.2.2
-  checksum: ce46bdd1565e199da0b6113fd0dbb4c7f04da8c9dd3bae082573eef3f9bf53f64cf36ff991faa73c5788d3ff42098ed4051cdfa30858e8a8b2ce6fe701440f3e
+  peerDependencies:
+    prettier: ^2.3.0
+  checksum: 266ea99c0fdda1c7336767695df6c263c8166e81b418b382fc55d35a5faa54f4d2b6969a955f48134c9d127c112e2282f2c553d4dbec85796e0331ad973b3ea2
   languageName: node
   linkType: hard
 
@@ -11235,7 +11228,7 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"prettier@npm:^2.1.2, prettier@npm:^2.2.1":
+"prettier@npm:^2.1.2":
   version: 2.3.0
   resolution: "prettier@npm:2.3.0"
   bin:

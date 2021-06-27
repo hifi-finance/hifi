@@ -149,7 +149,9 @@ contract BalanceSheetV1 is
         // Denormalize the collateral amount.
         uint256 collateralPrecisionScalar = 10**(18 - collateral.decimals());
         if (collateralPrecisionScalar != 1) {
-            unchecked { seizableCollateralAmount = normalizedSeizableCollateralAmount / collateralPrecisionScalar; }
+            unchecked {
+                seizableCollateralAmount = normalizedSeizableCollateralAmount / collateralPrecisionScalar;
+            }
         } else {
             seizableCollateralAmount = normalizedSeizableCollateralAmount;
         }
@@ -312,8 +314,13 @@ contract BalanceSheetV1 is
         }
 
         // Checks: there is no liquidity shortfall.
-        (, uint256 hypotheticalShortfallLiquidity) =
-            getHypotheticalAccountLiquidity(msg.sender, IErc20(address(0)), 0, bond, newDebtAmount);
+        (, uint256 hypotheticalShortfallLiquidity) = getHypotheticalAccountLiquidity(
+            msg.sender,
+            IErc20(address(0)),
+            0,
+            bond,
+            newDebtAmount
+        );
         if (hypotheticalShortfallLiquidity > 0) {
             revert BalanceSheet__LiquidityShortfall(msg.sender, hypotheticalShortfallLiquidity);
         }
@@ -397,7 +404,9 @@ contract BalanceSheetV1 is
 
         // Calculate the new collateral amount.
         uint256 newCollateralAmount;
-        unchecked { newCollateralAmount = vaults[borrower].collateralAmounts[collateral] - seizableCollateralAmount; }
+        unchecked {
+            newCollateralAmount = vaults[borrower].collateralAmounts[collateral] - seizableCollateralAmount;
+        }
 
         // Effects: decrease the amount of collateral in the vault.
         vaults[borrower].collateralAmounts[collateral] = newCollateralAmount;
@@ -453,12 +462,19 @@ contract BalanceSheetV1 is
 
         // Calculate the new collateral amount.
         uint256 newCollateralAmount;
-        unchecked { newCollateralAmount = vaultCollateralAmount - withdrawAmount; }
+        unchecked {
+            newCollateralAmount = vaultCollateralAmount - withdrawAmount;
+        }
 
         // Checks: the hypothetical account liquidity is okay.
         if (vaults[msg.sender].bondList.length > 0) {
-            (, uint256 hypotheticalShortfallLiquidity) =
-                getHypotheticalAccountLiquidity(msg.sender, collateral, newCollateralAmount, IHToken(address(0)), 0);
+            (, uint256 hypotheticalShortfallLiquidity) = getHypotheticalAccountLiquidity(
+                msg.sender,
+                collateral,
+                newCollateralAmount,
+                IHToken(address(0)),
+                0
+            );
             if (hypotheticalShortfallLiquidity > 0) {
                 revert BalanceSheet__LiquidityShortfall(msg.sender, hypotheticalShortfallLiquidity);
             }

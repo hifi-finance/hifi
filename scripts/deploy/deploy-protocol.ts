@@ -10,8 +10,6 @@ import {
   FintrollerV1__factory,
   HToken,
   HToken__factory,
-  RegentsTargetV1,
-  RegentsTargetV1__factory,
   StablecoinPriceFeed,
   StablecoinPriceFeed__factory,
 } from "../../typechain";
@@ -66,12 +64,6 @@ async function main(): Promise<void> {
   );
   await stablecoinPriceFeed.deployed();
   console.log("StablecoinPriceFeed deployed to: ", stablecoinPriceFeed.address);
-
-  // Deploy RegentsTargetV1
-  const regentsTargetV1Factory: RegentsTargetV1__factory = await ethers.getContractFactory("RegentsTargetV1");
-  const regentsTargetV1: RegentsTargetV1 = await regentsTargetV1Factory.deploy();
-  await regentsTargetV1.deployed();
-  console.log("RegentsTargetV1 deployed to: ", regentsTargetV1.address);
 }
 
 main()

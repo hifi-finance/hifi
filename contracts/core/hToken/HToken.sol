@@ -89,7 +89,7 @@ contract HToken is
         // Set the BalanceSheet contract.
         balanceSheet = balanceSheet_;
 
-        // Set the underlying contract and calculate the precision scalars.
+        // Set the underlying contract and calculate the precision scalar.
         uint256 underlyingDecimals = underlying_.decimals();
         if (underlyingDecimals == 0) {
             revert HToken__UnderlyingDecimalsZero();

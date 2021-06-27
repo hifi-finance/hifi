@@ -17,5 +17,5 @@ module.exports = {
     default_balance_ether: 1000000,
     mnemonic: process.env.MNEMONIC,
   },
-  skipFiles: ["external", "invariants", "oracles/StablecoinPriceFeed.sol", "proxy", "test"],
+  skipFiles: ["external", "invariants", "oracles/StablecoinPriceFeed.sol", "test"],
 };
