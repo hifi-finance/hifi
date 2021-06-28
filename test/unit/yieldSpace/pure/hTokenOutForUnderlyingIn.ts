@@ -6,7 +6,7 @@ import forEach from "mocha-each";
 import { EPSILON, G1, MAX_UD60x18, SCALE } from "../../../../helpers/constants";
 import { bn, hUSDC } from "../../../../helpers/numbers";
 import { secondsInDays, secondsInYears } from "../../../../helpers/time";
-import Errors from "../../../shared/errors";
+import { PRBMathUD60x18Errors, YieldSpaceErrors } from "../../../shared/errors";
 import { getYieldExponent, outForIn } from "../../../shared/mirrors";
 
 export default function shouldBehaveLikeHTokenOutForUnderlyingIn(): void {
@@ -31,7 +31,7 @@ export default function shouldBehaveLikeHTokenOutForUnderlyingIn(): void {
             normalizedUnderlyingIn,
             timeToMaturity,
           ),
-        ).to.be.revertedWith(Errors.UnderlyingReservesOverflow);
+        ).to.be.revertedWith(YieldSpaceErrors.UnderlyingReservesOverflow);
       },
     );
   });
@@ -58,7 +58,7 @@ export default function shouldBehaveLikeHTokenOutForUnderlyingIn(): void {
               normalizedUnderlyingIn,
               timeToMaturity,
             ),
-          ).to.be.revertedWith("Transaction reverted without a reason");
+          ).to.be.revertedWith(PRBMathUD60x18Errors.FromUintOverflow);
         },
       );
     });
@@ -82,7 +82,7 @@ export default function shouldBehaveLikeHTokenOutForUnderlyingIn(): void {
                 normalizedUnderlyingIn,
                 timeToMaturity,
               ),
-            ).to.be.revertedWith("Transaction reverted without a reason");
+            ).to.be.revertedWith(PRBMathUD60x18Errors.Exp2InputTooBig);
           },
         );
       });
@@ -109,7 +109,7 @@ export default function shouldBehaveLikeHTokenOutForUnderlyingIn(): void {
                   normalizedUnderlyingIn,
                   timeToMaturity,
                 ),
-              ).to.be.revertedWith(Errors.HTokenOutForUnderlyingInReservesFactorsUnderflow);
+              ).to.be.revertedWith(YieldSpaceErrors.HTokenOutForUnderlyingInReservesFactorsUnderflow);
             },
           );
         });

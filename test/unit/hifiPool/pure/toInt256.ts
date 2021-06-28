@@ -4,13 +4,15 @@ import forEach from "mocha-each";
 
 import { MAX_INT256 } from "../../../../helpers/constants";
 import { bn } from "../../../../helpers/numbers";
-import Errors from "../../../shared/errors";
+import { HifiPoolErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeToInt256(): void {
   context("when x is bigger than max int256", function () {
     it("reverts", async function () {
       const x: BigNumber = bn(MAX_INT256).add(1);
-      await expect(this.contracts.hifiPool.__godMode_toInt256(x)).to.be.revertedWith(Errors.ToInt256CastOverflow);
+      await expect(this.contracts.hifiPool.__godMode_toInt256(x)).to.be.revertedWith(
+        HifiPoolErrors.ToInt256CastOverflow,
+      );
     });
   });
 

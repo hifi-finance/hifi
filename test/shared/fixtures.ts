@@ -20,9 +20,9 @@ type IntegrationFixtureFixtureReturnType = {
 
 export async function integrationFixtureHifiPool(signers: Signer[]): Promise<IntegrationFixtureFixtureReturnType> {
   const deployer: Signer = signers[0];
-  const hToken: GodModeHToken = await deployGodModeHToken(deployer);
   const underlying: GodModeErc20 = await deployUsdc(deployer);
-  const hifiPool: GodModeHifiPool = await deployHifiPool(deployer, hToken.address, underlying.address);
+  const hToken: GodModeHToken = await deployGodModeHToken(deployer, underlying.address);
+  const hifiPool: GodModeHifiPool = await deployHifiPool(deployer, hToken.address);
   return { hToken, hifiPool, underlying };
 }
 
@@ -34,9 +34,9 @@ type UnitFixtureHifiPoolReturnType = {
 
 export async function unitFixtureHifiPool(signers: Signer[]): Promise<UnitFixtureHifiPoolReturnType> {
   const deployer: Signer = signers[0];
-  const hToken: MockContract = await deployMockHToken(deployer);
   const underlying: MockContract = await deployMockUsdc(deployer);
-  const hifiPool: GodModeHifiPool = await deployHifiPool(deployer, hToken.address, underlying.address);
+  const hToken: MockContract = await deployMockHToken(deployer, underlying.address);
+  const hifiPool: GodModeHifiPool = await deployHifiPool(deployer, hToken.address);
   return { hToken, hifiPool, underlying };
 }
 

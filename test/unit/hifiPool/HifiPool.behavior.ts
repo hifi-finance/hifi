@@ -1,4 +1,3 @@
-import shouldBehaveLikeConstructor from "./constructor";
 import shouldBehaveLikeBurn from "./effects/burn";
 import shouldBehaveLikeMint from "./effects/mint";
 import shouldBehaveLikeToInt256 from "./pure/toInt256";
@@ -6,10 +5,6 @@ import shouldBehaveLikeGetNormalizedUnderlyingReserves from "./view/getNormalize
 import shouldBehaveLikeGetVirtualHTokenReserves from "./view/getVirtualHTokenReserves";
 
 export function shouldBehaveLikeHifiPool(): void {
-  describe("Deployment", function () {
-    shouldBehaveLikeConstructor();
-  });
-
   describe("Pure Functions", function () {
     describe("toInt256", function () {
       shouldBehaveLikeToInt256();

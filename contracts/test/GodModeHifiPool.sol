@@ -10,9 +10,8 @@ contract GodModeHifiPool is HifiPool {
     constructor(
         string memory name_,
         string memory symbol_,
-        HTokenLike hToken_,
-        IErc20 underlying_
-    ) HifiPool(name_, symbol_, hToken_, underlying_) {
+        IHToken hToken_
+    ) HifiPool(name_, symbol_, hToken_) {
         // solhint-disable-previous-line no-empty-blocks
     }
 

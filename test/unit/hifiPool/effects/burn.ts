@@ -7,14 +7,14 @@ import forEach from "mocha-each";
 
 import { H_TOKEN_MATURITY, UNDERLYING_PRECISION_SCALAR } from "../../../../helpers/constants";
 import { USDC, bn, hUSDC } from "../../../../helpers/numbers";
-import Errors from "../../../shared/errors";
+import { HifiPoolErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeBurn(): void {
   context("when the pool tokens returned are 0", function () {
     it("reverts", async function () {
       const poolTokensBurned: BigNumber = bn("0");
       await expect(this.contracts.hifiPool.connect(this.signers.alice).burn(poolTokensBurned)).to.be.revertedWith(
-        Errors.BurnZero,
+        HifiPoolErrors.BurnZero,
       );
     });
   });

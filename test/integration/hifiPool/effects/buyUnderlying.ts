@@ -7,7 +7,7 @@ import { add, div, sub } from "../../../../helpers/math";
 import { USDC, bn, hUSDC } from "../../../../helpers/numbers";
 import { getLatestBlockTimestamp } from "../../../../helpers/provider";
 import { now } from "../../../../helpers/time";
-import Errors from "../../../shared/errors";
+import { HifiPoolErrors, YieldSpaceErrors } from "../../../shared/errors";
 import { getQuoteForBuyingUnderlying } from "../../../shared/mirrors";
 
 async function testBuyUnderlying(
@@ -48,7 +48,7 @@ export default function shouldBehaveLikeBuyUnderlying(): void {
       const underlyingOut: BigNumber = bn("0");
       await expect(
         this.contracts.hifiPool.connect(this.signers.alice).buyUnderlying(this.signers.alice.address, underlyingOut),
-      ).to.be.revertedWith(Errors.BuyUnderlyingZero);
+      ).to.be.revertedWith(HifiPoolErrors.BuyUnderlyingZero);
     });
   });
 
@@ -63,7 +63,7 @@ export default function shouldBehaveLikeBuyUnderlying(): void {
         const underlyingOut: BigNumber = USDC("10");
         await expect(
           this.contracts.hifiPool.connect(this.signers.alice).buyUnderlying(this.signers.alice.address, underlyingOut),
-        ).to.be.revertedWith(Errors.BondMatured);
+        ).to.be.revertedWith(HifiPoolErrors.BondMatured);
       });
     });
 
@@ -75,7 +75,7 @@ export default function shouldBehaveLikeBuyUnderlying(): void {
             this.contracts.hifiPool
               .connect(this.signers.alice)
               .buyUnderlying(this.signers.alice.address, underlyingOut),
-          ).to.be.revertedWith(Errors.UnderlyingReservesUnderflow);
+          ).to.be.revertedWith(YieldSpaceErrors.UnderlyingReservesUnderflow);
         });
       });
 

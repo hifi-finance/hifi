@@ -7,7 +7,7 @@ import { add, div, sub } from "../../../../helpers/math";
 import { USDC, bn, hUSDC } from "../../../../helpers/numbers";
 import { getLatestBlockTimestamp } from "../../../../helpers/provider";
 import { now } from "../../../../helpers/time";
-import Errors from "../../../shared/errors";
+import { HifiPoolErrors, YieldSpaceErrors } from "../../../shared/errors";
 import { getQuoteForBuyingHToken } from "../../../shared/mirrors";
 
 async function testBuyHToken(
@@ -46,7 +46,7 @@ export default function shouldBehaveLikeBuyHToken(): void {
       const hTokenOut: BigNumber = bn("0");
       await expect(
         this.contracts.hifiPool.connect(this.signers.alice).buyHToken(this.signers.alice.address, hTokenOut),
-      ).to.be.revertedWith(Errors.BuyHTokenZero);
+      ).to.be.revertedWith(HifiPoolErrors.BuyHTokenZero);
     });
   });
 
@@ -61,7 +61,7 @@ export default function shouldBehaveLikeBuyHToken(): void {
         const hTokenOut: BigNumber = hUSDC("10");
         await expect(
           this.contracts.hifiPool.connect(this.signers.alice).buyHToken(this.signers.alice.address, hTokenOut),
-        ).to.be.revertedWith(Errors.BondMatured);
+        ).to.be.revertedWith(HifiPoolErrors.BondMatured);
       });
     });
 
@@ -71,7 +71,7 @@ export default function shouldBehaveLikeBuyHToken(): void {
           const hTokenOut: BigNumber = hUSDC("10");
           await expect(
             this.contracts.hifiPool.connect(this.signers.alice).buyHToken(this.signers.alice.address, hTokenOut),
-          ).to.be.revertedWith(Errors.HTokenReservesUnderflow);
+          ).to.be.revertedWith(YieldSpaceErrors.HTokenReservesUnderflow);
         });
       });
 
@@ -94,7 +94,7 @@ export default function shouldBehaveLikeBuyHToken(): void {
             const hTokenOut: BigNumber = hUSDC("100");
             await expect(
               this.contracts.hifiPool.connect(this.signers.alice).buyHToken(this.signers.alice.address, hTokenOut),
-            ).to.be.revertedWith(Errors.NegativeInterestRate);
+            ).to.be.revertedWith(HifiPoolErrors.NegativeInterestRate);
           });
         });
 

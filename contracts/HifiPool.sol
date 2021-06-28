@@ -1,22 +1,57 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.4;
 
+import "@hifi/protocol/contracts/core/hToken/IHToken.sol";
 import "@paulrberg/contracts/token/erc20/Erc20.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Permit.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 
-import "./Errors.sol";
 import "./IHifiPool.sol";
-import "./external/hifi/HTokenLike.sol";
 import "./math/YieldSpace.sol";
+
+/// @notice Emitted when the bond matured.
+error HifiPool__BondMatured();
+
+/// @notice Emitted when attempting to buy a zero amount of hTokens.
+error HifiPool__BuyHTokenZero();
+
+/// @notice Emitted when attempting to buy a zero amount of underlying.
+error HifiPool__BuyUnderlyingZero();
+
+/// @notice Emitted when offerring zero underlying to mint lp tokens.
+error HifiPool__BurnZero();
+
+/// @notice Emitted when offerring zero underlying to mint lp tokens.
+error HifiPool__MintZero();
+
+/// @notice Emitted when buying hTokens or selling underlying and the resultant hToken reserves would become
+/// smaller than the underlying reserves.
+error HifiPool__NegativeInterestRate(
+    uint256 virtualHTokenReserves,
+    uint256 hTokenOut,
+    uint256 normalizedUnderlyingReserves,
+    uint256 normalizedUnderlyingIn
+);
+
+/// @notice Emitted when attempting to sell a zero amount of hToken.
+error HifiPool__SellHTokenZero();
+
+/// @notice Emitted when attempting to sell a zero amount of underlying.
+error HifiPool__SellUnderlyingZero();
+
+/// @notice Emitted when trying to convert a uint256 number that doesn't fit within int256.
+error HifiPool__ToInt256CastOverflow(uint256 number);
+
+/// @notice Emitted when the hToken balance added to the total supply of LP tokens overflows uint256.
+error HifiPool__VirtualHTokenReservesOverflow(uint256 hTokenBalance, uint256 totalSupply);
 
 /// @title HifiPool
 /// @author Hifi
 contract HifiPool is
-    IHifiPool, /// no dependency
-    Erc20, /// one dependency
-    Erc20Permit /// four dependencies
+    IHifiPool, // no dependency
+    Erc20, // one dependency
+    Erc20Permit // four dependencies
 {
     using SafeErc20 for IErc20;
 
@@ -24,7 +59,7 @@ contract HifiPool is
     uint256 public override maturity;
 
     /// @inheritdoc IHifiPool
-    HTokenLike public override hToken;
+    IHToken public override hToken;
 
     /// @inheritdoc IHifiPool
     IErc20 public override underlying;
@@ -35,7 +70,7 @@ contract HifiPool is
     /// @dev Trading can only occur prior to maturity.
     modifier isBeforeMaturity() {
         if (block.timestamp >= maturity) {
-            revert BondMatured();
+            revert HifiPool__BondMatured();
         }
         _;
     }
@@ -45,26 +80,15 @@ contract HifiPool is
     /// @param name_ Erc20 name of this token.
     /// @param symbol_ Erc20 symbol of this token.
     /// @param hToken_ The contract address of the hToken.
-    /// @param underlying_ The contract address of the underlying.
     constructor(
         string memory name_,
         string memory symbol_,
-        HTokenLike hToken_,
-        IErc20 underlying_
+        IHToken hToken_
     ) Erc20Permit(name_, symbol_, 18) {
-        // Save the hToken contract address in storage and sanity check it.
         hToken = hToken_;
-
-        // Calculate the precision scalar and save the underlying contract address in storage.
-        uint256 underlyingDecimals = underlying_.decimals();
-        if (underlyingDecimals == 0 || underlyingDecimals > 18) {
-            revert HifiPoolConstructorUnderlyingDecimals(underlyingDecimals);
-        }
-        underlyingPrecisionScalar = 10**(18 - underlyingDecimals);
-        underlying = underlying_;
-
-        // Save the hToken maturity time in storage.
-        maturity = hToken_.expirationTime();
+        underlying = hToken.underlying();
+        underlyingPrecisionScalar = hToken.underlyingPrecisionScalar();
+        maturity = hToken_.maturity();
     }
 
     /// PUBLIC CONSTANT FUNCTIONS ///
@@ -88,7 +112,7 @@ contract HifiPool is
                 maturity - block.timestamp
             );
             if (virtualHTokenReserves - hTokenOut < normalizedUnderlyingReserves + normalizedUnderlyingIn) {
-                revert NegativeInterestRate(
+                revert HifiPool__NegativeInterestRate(
                     virtualHTokenReserves,
                     hTokenOut,
                     normalizedUnderlyingReserves,
@@ -155,7 +179,7 @@ contract HifiPool is
                 maturity - block.timestamp
             );
             if (virtualHTokenReserves - hTokenOut < normalizedUnderlyingReserves + normalizedUnderlyingIn) {
-                revert NegativeInterestRate(
+                revert HifiPool__NegativeInterestRate(
                     virtualHTokenReserves,
                     hTokenOut,
                     normalizedUnderlyingReserves,
@@ -176,7 +200,7 @@ contract HifiPool is
             uint256 hTokenBalance = hToken.balanceOf(address(this));
             virtualHTokenReserves = hTokenBalance + totalSupply;
             if (virtualHTokenReserves < hTokenBalance) {
-                revert VirtualHTokenReservesOverflow(hTokenBalance, totalSupply);
+                revert HifiPool__VirtualHTokenReservesOverflow(hTokenBalance, totalSupply);
             }
         }
     }
@@ -191,7 +215,7 @@ contract HifiPool is
     {
         // Checks: avoid the zero edge case.
         if (poolTokensBurned == 0) {
-            revert BurnZero();
+            revert HifiPool__BurnZero();
         }
 
         uint256 supply = totalSupply;
@@ -222,7 +246,7 @@ contract HifiPool is
     function buyHToken(address to, uint256 hTokenOut) external override returns (uint256 underlyingIn) {
         // Checks: avoid the zero edge case.
         if (hTokenOut == 0) {
-            revert BuyHTokenZero();
+            revert HifiPool__BuyHTokenZero();
         }
 
         underlyingIn = getQuoteForBuyingHToken(hTokenOut);
@@ -238,7 +262,7 @@ contract HifiPool is
     function buyUnderlying(address to, uint256 underlyingOut) external override returns (uint256 hTokenIn) {
         // Checks: avoid the zero edge case.
         if (underlyingOut == 0) {
-            revert BuyUnderlyingZero();
+            revert HifiPool__BuyUnderlyingZero();
         }
 
         hTokenIn = getQuoteForBuyingUnderlying(underlyingOut);
@@ -254,7 +278,7 @@ contract HifiPool is
     function mint(uint256 underlyingOffered) external override returns (uint256 poolTokensMinted) {
         // Checks: avoid the zero edge case.
         if (underlyingOffered == 0) {
-            revert MintZero();
+            revert HifiPool__MintZero();
         }
 
         // Our native precision is 18 decimals so the underlying amount needs to be normalized.
@@ -294,7 +318,7 @@ contract HifiPool is
     function sellHToken(address to, uint256 hTokenIn) external override returns (uint256 underlyingOut) {
         // Checks: avoid the zero edge case.
         if (hTokenIn == 0) {
-            revert SellHTokenZero();
+            revert HifiPool__SellHTokenZero();
         }
 
         underlyingOut = getQuoteForSellingHToken(hTokenIn);
@@ -310,7 +334,7 @@ contract HifiPool is
     function sellUnderlying(address to, uint256 underlyingIn) external override returns (uint256 hTokenOut) {
         // Checks: avoid the zero edge case.
         if (underlyingIn == 0) {
-            revert SellUnderlyingZero();
+            revert HifiPool__SellUnderlyingZero();
         }
 
         hTokenOut = getQuoteForSellingUnderlying(underlyingIn);
@@ -347,7 +371,7 @@ contract HifiPool is
     /// @notice Safe cast from uint256 to int256
     function toInt256(uint256 x) internal pure returns (int256 result) {
         if (x > uint256(type(int256).max)) {
-            revert ToInt256CastOverflow(x);
+            revert HifiPool__ToInt256CastOverflow(x);
         }
         result = int256(x);
     }

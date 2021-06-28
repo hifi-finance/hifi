@@ -7,7 +7,7 @@ import { add, div } from "../../../../helpers/math";
 import { USDC, bn, hUSDC } from "../../../../helpers/numbers";
 import { getLatestBlockTimestamp } from "../../../../helpers/provider";
 import { now } from "../../../../helpers/time";
-import Errors from "../../../shared/errors";
+import { HifiPoolErrors, YieldSpaceErrors } from "../../../shared/errors";
 import { getQuoteForSellingHToken } from "../../../shared/mirrors";
 
 async function testSellHToken(
@@ -46,7 +46,7 @@ export default function shouldBehaveLikeSellHToken(): void {
       const hTokenIn: BigNumber = bn("0");
       await expect(
         this.contracts.hifiPool.connect(this.signers.alice).sellHToken(this.signers.alice.address, hTokenIn),
-      ).to.be.revertedWith(Errors.SellHTokenZero);
+      ).to.be.revertedWith(HifiPoolErrors.SellHTokenZero);
     });
   });
 
@@ -61,7 +61,7 @@ export default function shouldBehaveLikeSellHToken(): void {
         const hTokenIn: BigNumber = hUSDC("10");
         await expect(
           this.contracts.hifiPool.connect(this.signers.alice).sellHToken(this.signers.alice.address, hTokenIn),
-        ).to.be.revertedWith(Errors.BondMatured);
+        ).to.be.revertedWith(HifiPoolErrors.BondMatured);
       });
     });
 
@@ -71,7 +71,7 @@ export default function shouldBehaveLikeSellHToken(): void {
           const hTokenIn: BigNumber = hUSDC("10");
           await expect(
             this.contracts.hifiPool.connect(this.signers.alice).sellHToken(this.signers.alice.address, hTokenIn),
-          ).to.be.revertedWith(Errors.UnderlyingOutForHTokenInReservesFactorsUnderflow);
+          ).to.be.revertedWith(YieldSpaceErrors.UnderlyingOutForHTokenInReservesFactorsUnderflow);
         });
       });
 

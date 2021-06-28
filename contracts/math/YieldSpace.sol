@@ -1,9 +1,38 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity >=0.8.4;
 
-import "@paulrberg/contracts/math/PRBMathUD60x18.sol";
+import "prb-math/contracts/PRBMathUD60x18.sol";
 
-import "../Errors.sol";
+/// @notice Emitted when selling underlying and the resultant hToken reserves would be too low.
+error YieldSpace__HTokenOutForUnderlyingInReservesFactorsUnderflow(
+    uint256 startingReservesFactor,
+    uint256 newNormalizedUnderlyingReservesFactor
+);
+
+/// @notice Emitted when the hToken reserves added to the hToken out overflows uint256.
+error YieldSpace__HTokenReservesOverflow(uint256 hTokenReserves, uint256 hTokenIn);
+
+/// @notice Emitted when there is not enough hTokens in the pool for how much should go out.
+error YieldSpace__HTokenReservesUnderflow(uint256 hTokenReserves, uint256 hTokenOut);
+
+/// @notice Emitted when the math calculations produce an underflow that in a pure mathematical sense
+/// should not exist.
+error YieldSpace__LossyPrecisionUnderflow(uint256 minuend, uint256 subtrahend);
+
+/// @notice Emitted when the time to maturity is beyond the cut-off point.
+error YieldSpace__TooFarFromMaturity(uint256 timeToMaturity);
+
+/// @notice Emitted when selling underlying and the resultant hToken reserves would be too low.
+error YieldSpace__UnderlyingOutForHTokenInReservesFactorsUnderflow(
+    uint256 startingReservesFactor,
+    uint256 newHTokenReservesFactor
+);
+
+/// @notice Emitted when the normalized underlying reserves added to the normalized underlying in overflows uint256.
+error YieldSpace__UnderlyingReservesOverflow(uint256 normalizedUnderlyingReserves, uint256 normalizedUnderlyingIn);
+
+/// @notice Emitted when there is not enough underlying in the pool for how much should go out.
+error YieldSpace__UnderlyingReservesUnderflow(uint256 normalizedUnderlyingReserves, uint256 normalizedUnderlyingOut);
 
 /// @title YieldSpace
 /// @author Hifi
@@ -45,7 +74,7 @@ library YieldSpace {
         uint256 exponent = getYieldExponent(timeToMaturity.fromUint(), G2);
         unchecked {
             if (normalizedUnderlyingReserves < normalizedUnderlyingOut) {
-                revert UnderlyingReservesUnderflow(normalizedUnderlyingReserves, normalizedUnderlyingOut);
+                revert YieldSpace__UnderlyingReservesUnderflow(normalizedUnderlyingReserves, normalizedUnderlyingOut);
             }
             uint256 newNormalizedUnderlyingReserves = normalizedUnderlyingReserves - normalizedUnderlyingOut;
 
@@ -65,7 +94,7 @@ library YieldSpace {
             // have very different magnitudes.
             uint256 newHTokenReserves = sum.pow(exponent.inv()).toUint();
             if (newHTokenReserves < hTokenReserves) {
-                revert LossyPrecisionUnderflow(newHTokenReserves, hTokenReserves);
+                revert YieldSpace__LossyPrecisionUnderflow(newHTokenReserves, hTokenReserves);
             }
             hTokenIn = newHTokenReserves - hTokenReserves;
         }
@@ -88,7 +117,7 @@ library YieldSpace {
         unchecked {
             uint256 newNormalizedUnderlyingReserves = normalizedUnderlyingReserves + normalizedUnderlyingIn;
             if (normalizedUnderlyingReserves > newNormalizedUnderlyingReserves) {
-                revert UnderlyingReservesOverflow(normalizedUnderlyingReserves, normalizedUnderlyingIn);
+                revert YieldSpace__UnderlyingReservesOverflow(normalizedUnderlyingReserves, normalizedUnderlyingIn);
             }
 
             // The first two factors in the right-hand side of the equation. There is no need to guard against overflow
@@ -99,7 +128,7 @@ library YieldSpace {
             // The third factor in the right-hand side of the equation.
             uint256 newNormalizedUnderlyingReservesFactor = newNormalizedUnderlyingReserves.fromUint().pow(exponent);
             if (startingReservesFactor < newNormalizedUnderlyingReservesFactor) {
-                revert HTokenOutForUnderlyingInReservesFactorsUnderflow(
+                revert YieldSpace__HTokenOutForUnderlyingInReservesFactorsUnderflow(
                     startingReservesFactor,
                     newNormalizedUnderlyingReservesFactor
                 );
@@ -109,7 +138,7 @@ library YieldSpace {
             .pow(exponent.inv())
             .toUint();
             if (hTokenReserves < newHTokenReserves) {
-                revert LossyPrecisionUnderflow(hTokenReserves, newHTokenReserves);
+                revert YieldSpace__LossyPrecisionUnderflow(hTokenReserves, newHTokenReserves);
             }
             hTokenOut = hTokenReserves - newHTokenReserves;
         }
@@ -123,7 +152,7 @@ library YieldSpace {
     /// @return exponent The yield exponent, as per the whitepaper, as an unsigned 60.18-decimal fixed-point number.
     function getYieldExponent(uint256 timeToMaturity, uint256 g) internal pure returns (uint256 exponent) {
         if (timeToMaturity > CUTOFF_TTM) {
-            revert TooFarFromMaturity(timeToMaturity);
+            revert YieldSpace__TooFarFromMaturity(timeToMaturity);
         }
         unchecked {
             uint256 t = K.mul(timeToMaturity);
@@ -149,7 +178,7 @@ library YieldSpace {
         uint256 exponent = getYieldExponent(timeToMaturity.fromUint(), G1);
         unchecked {
             if (hTokenReserves < hTokenOut) {
-                revert HTokenReservesUnderflow(hTokenReserves, hTokenOut);
+                revert YieldSpace__HTokenReservesUnderflow(hTokenReserves, hTokenOut);
             }
             uint256 newHTokenReserves = hTokenReserves - hTokenOut;
 
@@ -169,7 +198,10 @@ library YieldSpace {
             // reserves have very different magnitudes.
             uint256 newNormalizedUnderlyingReserves = sum.pow(exponent.inv()).toUint();
             if (newNormalizedUnderlyingReserves < normalizedUnderlyingReserves) {
-                revert LossyPrecisionUnderflow(newNormalizedUnderlyingReserves, normalizedUnderlyingReserves);
+                revert YieldSpace__LossyPrecisionUnderflow(
+                    newNormalizedUnderlyingReserves,
+                    normalizedUnderlyingReserves
+                );
             }
             normalizedUnderlyingIn = newNormalizedUnderlyingReserves - normalizedUnderlyingReserves;
         }
@@ -192,7 +224,7 @@ library YieldSpace {
         unchecked {
             uint256 newHTokenReserves = hTokenReserves + hTokenIn;
             if (newHTokenReserves < hTokenReserves) {
-                revert HTokenReservesOverflow(hTokenReserves, hTokenIn);
+                revert YieldSpace__HTokenReservesOverflow(hTokenReserves, hTokenIn);
             }
 
             // The first two factors in the right-hand side of the equation. There is no need to guard against overflow
@@ -203,7 +235,7 @@ library YieldSpace {
             // The third factor in the right-hand side of the equation.
             uint256 newHTokenReservesFactor = newHTokenReserves.fromUint().pow(exponent);
             if (startingReservesFactor < newHTokenReservesFactor) {
-                revert UnderlyingOutForHTokenInReservesFactorsUnderflow(
+                revert YieldSpace__UnderlyingOutForHTokenInReservesFactorsUnderflow(
                     startingReservesFactor,
                     newHTokenReservesFactor
                 );
@@ -213,7 +245,10 @@ library YieldSpace {
             .pow(exponent.inv())
             .toUint();
             if (normalizedUnderlyingReserves < newNormalizedUnderlyingReserves) {
-                revert LossyPrecisionUnderflow(normalizedUnderlyingReserves, newNormalizedUnderlyingReserves);
+                revert YieldSpace__LossyPrecisionUnderflow(
+                    normalizedUnderlyingReserves,
+                    newNormalizedUnderlyingReserves
+                );
             }
             normalizedUnderlyingOut = normalizedUnderlyingReserves - newNormalizedUnderlyingReserves;
         }

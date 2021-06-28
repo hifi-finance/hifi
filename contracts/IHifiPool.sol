@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.4;
 
+import "@hifi/protocol/contracts/core/hToken/IHToken.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
-import "./external/hifi/HTokenLike.sol";
 
 /// @title IHifiPool
 /// @author Hifi
@@ -82,7 +82,7 @@ interface IHifiPool {
     function maturity() external view returns (uint256);
 
     /// @notice The hToken traded in this pool.
-    function hToken() external view returns (HTokenLike);
+    function hToken() external view returns (IHToken);
 
     /// @notice The underlying token traded in this pool.
     function underlying() external view returns (IErc20);
