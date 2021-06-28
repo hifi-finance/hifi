@@ -14,6 +14,7 @@ coverage/
 crytic-export/
 dist/
 lib/
+multisol-*/
 node_modules/
 typechain/
 
