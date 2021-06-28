@@ -123,41 +123,6 @@ contract BalanceSheetV1 is
     }
 
     /// @inheritdoc IBalanceSheetV1
-    function getSeizableCollateralAmount(
-        IHToken bond,
-        uint256 repayAmount,
-        IErc20 collateral
-    ) public view override returns (uint256 seizableCollateralAmount) {
-        // When the liquidation incentive is zero, the end result would be zero anyways.
-        uint256 liquidationIncentive = fintroller.getLiquidationIncentive(collateral);
-        if (liquidationIncentive == 0) {
-            return 0;
-        }
-
-        // Grab the normalized USD price of the collateral.
-        uint256 normalizedCollateralPrice = oracle.getNormalizedPrice(collateral.symbol());
-
-        // Grab the normalized USD price of the underlying.
-        uint256 normalizedUnderlyingPrice = oracle.getNormalizedPrice(bond.underlying().symbol());
-
-        // Calculate the top part of the equation.
-        uint256 numerator = repayAmount.mul(liquidationIncentive.mul(normalizedUnderlyingPrice));
-
-        // Calculate the normalized seizable collateral amount.
-        uint256 normalizedSeizableCollateralAmount = numerator.div(normalizedCollateralPrice);
-
-        // Denormalize the collateral amount.
-        uint256 collateralPrecisionScalar = 10**(18 - collateral.decimals());
-        if (collateralPrecisionScalar != 1) {
-            unchecked {
-                seizableCollateralAmount = normalizedSeizableCollateralAmount / collateralPrecisionScalar;
-            }
-        } else {
-            seizableCollateralAmount = normalizedSeizableCollateralAmount;
-        }
-    }
-
-    /// @inheritdoc IBalanceSheetV1
     function getCurrentAccountLiquidity(address account)
         public
         view
@@ -268,6 +233,41 @@ contract BalanceSheetV1 is
             } else {
                 shortfallLiquidity = vars.totalDebtValueUsd - vars.totalWeightedCollateralValueUsd;
             }
+        }
+    }
+
+    /// @inheritdoc IBalanceSheetV1
+    function getSeizableCollateralAmount(
+        IHToken bond,
+        uint256 repayAmount,
+        IErc20 collateral
+    ) public view override returns (uint256 seizableCollateralAmount) {
+        // When the liquidation incentive is zero, the end result would be zero anyways.
+        uint256 liquidationIncentive = fintroller.getLiquidationIncentive(collateral);
+        if (liquidationIncentive == 0) {
+            return 0;
+        }
+
+        // Grab the normalized USD price of the collateral.
+        uint256 normalizedCollateralPrice = oracle.getNormalizedPrice(collateral.symbol());
+
+        // Grab the normalized USD price of the underlying.
+        uint256 normalizedUnderlyingPrice = oracle.getNormalizedPrice(bond.underlying().symbol());
+
+        // Calculate the top part of the equation.
+        uint256 numerator = repayAmount.mul(liquidationIncentive.mul(normalizedUnderlyingPrice));
+
+        // Calculate the normalized seizable collateral amount.
+        uint256 normalizedSeizableCollateralAmount = numerator.div(normalizedCollateralPrice);
+
+        // Denormalize the collateral amount.
+        uint256 collateralPrecisionScalar = 10**(18 - collateral.decimals());
+        if (collateralPrecisionScalar != 1) {
+            unchecked {
+                seizableCollateralAmount = normalizedSeizableCollateralAmount / collateralPrecisionScalar;
+            }
+        } else {
+            seizableCollateralAmount = normalizedSeizableCollateralAmount;
         }
     }
 

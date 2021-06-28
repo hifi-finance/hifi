@@ -75,20 +75,6 @@ interface IBalanceSheetV1 is IOwnableUpgradeable {
     /// @param account The borrower account to make the query against.
     function getBondList(address account) external view returns (IHToken[] memory);
 
-    /// @notice Calculates the amount of collateral that can be seized when liquidating a borrow. Note that this
-    /// is for informational purposes only, it doesn't tell anything about whether the user can be liquidated.
-    /// @dev The formula applied:
-    /// seizableCollateralAmount = repayAmount * liquidationIncentive * underlyingPriceUsd / collateralPriceUsd
-    /// @param bond The bond to make the query against.
-    /// @param repayAmount The amount of hTokens to repay.
-    /// @param collateral The collateral to make the query against.
-    /// @return seizableCollateralAmount The amount of seizable collateral.
-    function getSeizableCollateralAmount(
-        IHToken bond,
-        uint256 repayAmount,
-        IErc20 collateral
-    ) external view returns (uint256 seizableCollateralAmount);
-
     /// @notice Returns the amount of collateral deposited by the given account for the given collateral type.
     /// @dev It is not an error to provide an invalid address.
     /// @param account The borrower account to make the query against.
@@ -139,6 +125,20 @@ interface IBalanceSheetV1 is IOwnableUpgradeable {
         IHToken bondModify,
         uint256 debtAmountModify
     ) external view returns (uint256 excessLiquidity, uint256 shortfallLiquidity);
+
+    /// @notice Calculates the amount of collateral that can be seized when liquidating a borrow. Note that this
+    /// is for informational purposes only, it doesn't tell anything about whether the user can be liquidated.
+    /// @dev The formula applied:
+    /// seizableCollateralAmount = repayAmount * liquidationIncentive * underlyingPriceUsd / collateralPriceUsd
+    /// @param bond The bond to make the query against.
+    /// @param repayAmount The amount of hTokens to repay.
+    /// @param collateral The collateral to make the query against.
+    /// @return seizableCollateralAmount The amount of seizable collateral.
+    function getSeizableCollateralAmount(
+        IHToken bond,
+        uint256 repayAmount,
+        IErc20 collateral
+    ) external view returns (uint256 seizableCollateralAmount);
 
     /// NON-CONSTANT FUNCTIONS ///
 
