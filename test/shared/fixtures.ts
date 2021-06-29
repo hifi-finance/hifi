@@ -73,11 +73,7 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
 
   const hifiFlashUniswapV2Artifact: Artifact = await artifacts.readArtifact("HifiFlashUniswapV2");
   const hifiFlashUniswapV2: HifiFlashUniswapV2 = <HifiFlashUniswapV2>(
-    await deployContract(deployer, hifiFlashUniswapV2Artifact, [
-      balanceSheet.address,
-      usdc.address,
-      [uniswapV2Pair.address],
-    ])
+    await deployContract(deployer, hifiFlashUniswapV2Artifact, [balanceSheet.address, [uniswapV2Pair.address]])
   );
 
   return {

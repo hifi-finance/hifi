@@ -23,9 +23,9 @@ async function bumpPoolReserves(this: Mocha.Context, wbtcAmount: BigNumber, usdc
 }
 
 function encodeCallData(this: Mocha.Context): string {
-  const types = ["address", "address", "address", "uint256"];
+  const types = ["address", "address", "uint256"];
   const minProfit: string = String(WBTC("0.001"));
-  const values = [this.signers.borrower.address, this.contracts.hToken.address, this.contracts.wbtc.address, minProfit];
+  const values = [this.signers.borrower.address, this.contracts.hToken.address, minProfit];
   const data: string = defaultAbiCoder.encode(types, values);
   return data;
 }
@@ -74,11 +74,11 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
 
     context("when collateral is flash borrowed", function () {
       const wbtcAmount: BigNumber = WBTC("1");
+      const usdcAmount: BigNumber = USDC("20000");
 
       it("reverts", async function () {
-        const usdcAmount: BigNumber = USDC("20000");
         const to: string = this.contracts.hifiFlashUniswapV2.address;
-        const data: string = "0xcafe";
+        const data: string = encodeCallData.call(this);
         await expect(
           this.contracts.uniswapV2Pair.connect(this.signers.raider).swap(wbtcAmount, usdcAmount, to, data),
         ).to.be.revertedWith(HifiFlashUniswapV2Errors.FlashBorrowCollateral);
@@ -182,18 +182,19 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
               await reducePoolReserves.call(this, Zero, USDC("75e4"));
             });
 
-            it("flas swaps USDC via Uniswap V2 and makes a WBTC profit via Hifi", async function () {
+            it("flash swaps USDC via Uniswap V2 and makes a WBTC profit via Hifi", async function () {
               const repayHUsdcAmount: BigNumber = hUSDC("10000");
-              const clutchableWbtcAmount: BigNumber = await this.contracts.balanceSheet.getSeizableCollateralAmount(
+              const seizableWbtcAmount: BigNumber = await this.contracts.balanceSheet.getSeizableCollateralAmount(
                 this.contracts.hToken.address,
                 repayHUsdcAmount,
                 this.contracts.wbtc.address,
               );
-              const repayWbtcAmount: BigNumber = await this.contracts.hifiFlashUniswapV2.getRepayAmount(
+              const repayWbtcAmount: BigNumber = await this.contracts.hifiFlashUniswapV2.getRepayCollateralAmount(
                 this.contracts.uniswapV2Pair.address,
+                this.contracts.usdc.address,
                 usdcAmount,
               );
-              const expectedWbtcProfit = clutchableWbtcAmount.sub(repayWbtcAmount);
+              const expectedWbtcProfitAmount = seizableWbtcAmount.sub(repayWbtcAmount);
 
               const to: string = this.contracts.hifiFlashUniswapV2.address;
               const data: string = encodeCallData.call(this);
@@ -203,21 +204,24 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
                 .connect(this.signers.liquidator)
                 .swap(wbtcAmount, usdcAmount, to, data);
               const newWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
-              expect(oldWbtcBalance).to.equal(newWbtcBalance.sub(expectedWbtcProfit));
+              expect(oldWbtcBalance).to.equal(newWbtcBalance.sub(expectedWbtcProfitAmount));
             });
 
-            it("emits a FlashLiquidate event", async function () {
+            it("emits a FlashLiquidateBorrow event", async function () {
               const repayHUsdcAmount: BigNumber = hUSDC("10000");
-              const clutchableWbtcAmount: BigNumber = await this.contracts.balanceSheet.getSeizableCollateralAmount(
+              const seizableWbtcAmount: BigNumber = await this.contracts.balanceSheet.getSeizableCollateralAmount(
                 this.contracts.hToken.address,
                 repayHUsdcAmount,
                 this.contracts.wbtc.address,
               );
-              const repayWbtcAmount: BigNumber = await this.contracts.hifiFlashUniswapV2.getRepayAmount(
+
+              // TODO: calculate this manually.
+              const repayWbtcAmount: BigNumber = await this.contracts.hifiFlashUniswapV2.getRepayCollateralAmount(
                 this.contracts.uniswapV2Pair.address,
+                this.contracts.usdc.address,
                 usdcAmount,
               );
-              const expectedWbtcProfit = clutchableWbtcAmount.sub(repayWbtcAmount);
+              const expectedProfitWbtcAmount = seizableWbtcAmount.sub(repayWbtcAmount);
 
               const to: string = this.contracts.hifiFlashUniswapV2.address;
               const data: string = encodeCallData.call(this);
@@ -226,15 +230,14 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
                 .connect(this.signers.liquidator)
                 .swap(wbtcAmount, usdcAmount, to, data);
               await expect(contractCall)
-                .to.emit(this.contracts.hifiFlashUniswapV2, "FlashLiquidate")
+                .to.emit(this.contracts.hifiFlashUniswapV2, "FlashLiquidateBorrow")
                 .withArgs(
                   this.signers.liquidator.address,
                   this.signers.borrower.address,
                   this.contracts.hToken.address,
                   usdcAmount,
-                  repayHUsdcAmount,
-                  clutchableWbtcAmount,
-                  expectedWbtcProfit,
+                  seizableWbtcAmount,
+                  expectedProfitWbtcAmount,
                 );
             });
           });
