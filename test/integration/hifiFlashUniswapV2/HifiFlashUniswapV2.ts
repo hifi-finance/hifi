@@ -1,16 +1,15 @@
 import { integrationFixture } from "../../shared/fixtures";
-import { shouldBehaveLikeHifiFlashSwap } from "./HifiFlashSwap.behavior";
+import { shouldBehaveLikeHifiFlashUniswapV2 } from "./HifiFlashUniswapV2.behavior";
 
-export function integrationTestHifiFlashSwap(): void {
-  describe("HifiFlashSwap", function () {
+export function integrationTestHifiFlashUniswapV2(): void {
+  describe("HifiFlashUniswapV2", function () {
     beforeEach(async function () {
       const {
         balanceSheet,
         fintroller,
-        fyToken,
-        hifiFlashSwap,
+        hToken,
+        hifiFlashUniswapV2,
         oracle,
-        redemptionPool,
         usdc,
         usdcPriceFeed,
         uniswapV2Pair,
@@ -19,10 +18,9 @@ export function integrationTestHifiFlashSwap(): void {
       } = await this.loadFixture(integrationFixture);
       this.contracts.balanceSheet = balanceSheet;
       this.contracts.fintroller = fintroller;
-      this.contracts.fyToken = fyToken;
-      this.contracts.hifiFlashSwap = hifiFlashSwap;
+      this.contracts.hToken = hToken;
+      this.contracts.hifiFlashUniswapV2 = hifiFlashUniswapV2;
       this.contracts.oracle = oracle;
-      this.contracts.redemptionPool = redemptionPool;
       this.contracts.usdc = usdc;
       this.contracts.usdcPriceFeed = usdcPriceFeed;
       this.contracts.uniswapV2Pair = uniswapV2Pair;
@@ -30,6 +28,6 @@ export function integrationTestHifiFlashSwap(): void {
       this.contracts.wbtcPriceFeed = wbtcPriceFeed;
     });
 
-    shouldBehaveLikeHifiFlashSwap();
+    shouldBehaveLikeHifiFlashUniswapV2();
   });
 }

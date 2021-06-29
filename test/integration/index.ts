@@ -1,6 +1,6 @@
 import { baseContext } from "../shared/contexts";
-import { integrationTestHifiFlashSwap } from "./hifiFlashSwap/HifiFlashSwap";
+import { integrationTestHifiFlashUniswapV2 } from "./hifiFlashUniswapV2/HifiFlashUniswapV2";
 
 baseContext("Integration Tests", function () {
-  integrationTestHifiFlashSwap();
+  integrationTestHifiFlashUniswapV2();
 });

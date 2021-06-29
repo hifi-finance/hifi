@@ -1,34 +1,31 @@
 import { Signer } from "@ethersproject/abstract-signer";
-import balanceSheetArtifact from "@hifi/protocol/artifacts/BalanceSheet.json";
+import balanceSheetV1Artifact from "@hifi/protocol/artifacts/BalanceSheetV1.json";
 import chainlinkOperatorArtifact from "@hifi/protocol/artifacts/ChainlinkOperator.json";
-import fintrollerArtifact from "@hifi/protocol/artifacts/Fintroller.json";
-import fyTokenArtifact from "@hifi/protocol/artifacts/FyToken.json";
-import redemptionPoolArtifact from "@hifi/protocol/artifacts/RedemptionPool.json";
-import { BalanceSheet } from "@hifi/protocol/typechain/BalanceSheet";
+import fintrollerV1Artifact from "@hifi/protocol/artifacts/FintrollerV1.json";
+import hTokenArtifact from "@hifi/protocol/artifacts/HToken.json";
+import { BalanceSheetV1 } from "@hifi/protocol/typechain/BalanceSheetV1";
 import { ChainlinkOperator } from "@hifi/protocol/typechain/ChainlinkOperator";
-import { Fintroller } from "@hifi/protocol/typechain/Fintroller";
-import { FyToken } from "@hifi/protocol/typechain/FyToken";
-import { RedemptionPool } from "@hifi/protocol/typechain/RedemptionPool";
+import { FintrollerV1 } from "@hifi/protocol/typechain/FintrollerV1";
+import { HToken } from "@hifi/protocol/typechain/HToken";
 import uniswapV2PairArtifact from "@uniswap/v2-core/build/UniswapV2Pair.json";
-import hre from "hardhat";
+import { artifacts, waffle } from "hardhat";
 import { Artifact } from "hardhat/types";
 
-import { FY_TOKEN_EXPIRATION_TIME } from "../../helpers/constants";
+import { H_TOKEN_MATURITY } from "../../helpers/constants";
 import { USDC_DECIMALS, USDC_NAME, USDC_SYMBOL, WBTC_DECIMALS, WBTC_NAME, WBTC_SYMBOL } from "../../helpers/constants";
-import { getFyTokenName, getFyTokenSymbol } from "../../helpers/contracts";
+import { getHTokenName, getHTokenSymbol } from "../../helpers/contracts";
 import { GodModeErc20 } from "../../typechain/GodModeErc20";
-import { HifiFlashSwap } from "../../typechain/HifiFlashSwap";
+import { HifiFlashUniswapV2 } from "../../typechain/HifiFlashUniswapV2";
 import { SimplePriceFeed } from "../../typechain/SimplePriceFeed";
 import { UniswapV2Pair } from "../../types/contracts/UniswapV2Pair";
 
-const { deployContract } = hre.waffle;
+const { deployContract } = waffle;
 
 type IntegrationFixtureReturnType = {
-  balanceSheet: BalanceSheet;
-  fintroller: Fintroller;
-  fyToken: FyToken;
-  hifiFlashSwap: HifiFlashSwap;
-  redemptionPool: RedemptionPool;
+  balanceSheet: BalanceSheetV1;
+  fintroller: FintrollerV1;
+  hifiFlashUniswapV2: HifiFlashUniswapV2;
+  hToken: HToken;
   usdc: GodModeErc20;
   usdcPriceFeed: SimplePriceFeed;
   uniswapV2Pair: UniswapV2Pair;
@@ -39,11 +36,11 @@ type IntegrationFixtureReturnType = {
 export async function integrationFixture(signers: Signer[]): Promise<IntegrationFixtureReturnType> {
   const deployer: Signer = signers[0];
 
-  const godModeErc20Artifact: Artifact = await hre.artifacts.readArtifact("GodModeErc20");
+  const godModeErc20Artifact: Artifact = await artifacts.readArtifact("GodModeErc20");
   const wbtc: GodModeErc20 = <GodModeErc20>(
     await deployContract(deployer, godModeErc20Artifact, [WBTC_NAME, WBTC_SYMBOL, WBTC_DECIMALS])
   );
-  const simplePriceFeedArtifact: Artifact = await hre.artifacts.readArtifact("SimplePriceFeed");
+  const simplePriceFeedArtifact: Artifact = await artifacts.readArtifact("SimplePriceFeed");
   const wbtcPriceFeed: SimplePriceFeed = <SimplePriceFeed>await deployContract(deployer, simplePriceFeedArtifact, []);
 
   const usdc: GodModeErc20 = <GodModeErc20>(
@@ -55,44 +52,39 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
   await oracle.setFeed(wbtc.address, wbtcPriceFeed.address);
   await oracle.setFeed(usdc.address, usdcPriceFeed.address);
 
-  const fintroller: Fintroller = <Fintroller>await deployContract(deployer, fintrollerArtifact, []);
-  await fintroller.connect(deployer).setOracle(oracle.address);
+  const fintroller: FintrollerV1 = <FintrollerV1>await deployContract(deployer, fintrollerV1Artifact, []);
+  await fintroller.connect(deployer).initialize();
 
-  const balanceSheet: BalanceSheet = <BalanceSheet>(
-    await deployContract(deployer, balanceSheetArtifact, [fintroller.address])
-  );
+  const balanceSheet: BalanceSheetV1 = <BalanceSheetV1>await deployContract(deployer, balanceSheetV1Artifact, []);
+  await balanceSheet.connect(deployer).initialize(fintroller.address, oracle.address);
 
-  const fyToken: FyToken = <FyToken>(
-    await deployContract(deployer, fyTokenArtifact, [
-      getFyTokenName(FY_TOKEN_EXPIRATION_TIME),
-      getFyTokenSymbol(FY_TOKEN_EXPIRATION_TIME),
-      FY_TOKEN_EXPIRATION_TIME,
-      fintroller.address,
+  const hToken: HToken = <HToken>(
+    await deployContract(deployer, hTokenArtifact, [
+      getHTokenName(H_TOKEN_MATURITY),
+      getHTokenSymbol(H_TOKEN_MATURITY),
+      H_TOKEN_MATURITY,
       balanceSheet.address,
       usdc.address,
-      wbtc.address,
     ])
-  );
-
-  const redemptionPoolAddress = await fyToken.redemptionPool();
-  const redemptionPool = <RedemptionPool>(
-    new hre.ethers.Contract(redemptionPoolAddress, redemptionPoolArtifact.abi, hre.ethers.provider)
   );
 
   const uniswapV2Pair = <UniswapV2Pair>await deployContract(deployer, uniswapV2PairArtifact, []);
   await uniswapV2Pair.initialize(wbtc.address, usdc.address);
 
-  const hifiFlashSwapArtifact: Artifact = await hre.artifacts.readArtifact("HifiFlashSwap");
-  const hifiFlashSwap: HifiFlashSwap = <HifiFlashSwap>(
-    await deployContract(deployer, hifiFlashSwapArtifact, [balanceSheet.address, uniswapV2Pair.address])
+  const hifiFlashUniswapV2Artifact: Artifact = await artifacts.readArtifact("HifiFlashUniswapV2");
+  const hifiFlashUniswapV2: HifiFlashUniswapV2 = <HifiFlashUniswapV2>(
+    await deployContract(deployer, hifiFlashUniswapV2Artifact, [
+      balanceSheet.address,
+      usdc.address,
+      [uniswapV2Pair.address],
+    ])
   );
 
   return {
     balanceSheet,
     fintroller,
-    fyToken,
-    hifiFlashSwap,
-    redemptionPool,
+    hToken,
+    hifiFlashUniswapV2,
     usdc,
     usdcPriceFeed,
     uniswapV2Pair,

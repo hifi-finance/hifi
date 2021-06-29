@@ -1,13 +1,13 @@
-import { Contract, ContractFactory } from "@ethersproject/contracts";
 import { ethers } from "hardhat";
 
 import { getEnvVar } from "../../helpers/env";
+import { SimplePriceFeed, SimplePriceFeed__factory } from "../../typechain";
 
 const description: string = getEnvVar("SIMPLE_PRICE_FEED_DESCRIPTION");
 
 async function main(): Promise<void> {
-  const simplePriceFeedFactory: ContractFactory = await ethers.getContractFactory("SimplePriceFeed");
-  const simplePriceFeed: Contract = await simplePriceFeedFactory.deploy(description);
+  const simplePriceFeedFactory: SimplePriceFeed__factory = await ethers.getContractFactory("SimplePriceFeed");
+  const simplePriceFeed: SimplePriceFeed = await simplePriceFeedFactory.deploy(description);
   await simplePriceFeed.deployed();
 
   console.log("SimplePriceFeed deployed to: ", simplePriceFeed.address);

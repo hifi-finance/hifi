@@ -1,22 +1,20 @@
-import { BalanceSheet } from "@hifi/protocol/typechain/BalanceSheet";
+import { BalanceSheetV1 } from "@hifi/protocol/typechain/BalanceSheetV1";
 import { ChainlinkOperator } from "@hifi/protocol/typechain/ChainlinkOperator";
-import { Fintroller } from "@hifi/protocol/typechain/Fintroller";
-import { FyToken } from "@hifi/protocol/typechain/FyToken";
-import { RedemptionPool } from "@hifi/protocol/typechain/RedemptionPool";
+import { FintrollerV1 } from "@hifi/protocol/typechain/FintrollerV1";
+import { HToken } from "@hifi/protocol/typechain/HToken";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 
 import { GodModeErc20 } from "../typechain/GodModeErc20";
-import { HifiFlashSwap } from "../typechain/HifiFlashSwap";
+import { HifiFlashUniswapV2 } from "../typechain/HifiFlashUniswapV2";
 import { SimplePriceFeed } from "../typechain/SimplePriceFeed";
 import { UniswapV2Pair } from "./contracts/UniswapV2Pair";
 
 export interface Contracts {
-  balanceSheet: BalanceSheet;
-  fintroller: Fintroller;
-  fyToken: FyToken;
-  hifiFlashSwap: HifiFlashSwap;
+  balanceSheet: BalanceSheetV1;
+  fintroller: FintrollerV1;
+  hToken: HToken;
+  hifiFlashUniswapV2: HifiFlashUniswapV2;
   oracle: ChainlinkOperator;
-  redemptionPool: RedemptionPool;
   usdc: GodModeErc20;
   usdcPriceFeed: SimplePriceFeed;
   uniswapV2Pair: UniswapV2Pair;
