@@ -58,6 +58,7 @@
     "solhint": "^3.3.6",
     "solhint-plugin-prettier": "^0.0.5",
     "solidity-coverage": "^0.7.16",
+    "tempy": "^1.0.1",
     "ts-generator": "^0.1.1",
     "ts-node": "^10.0.0",
     "typechain": "^5.1.1",
@@ -68,6 +69,7 @@
     "/contracts",
     "/typechain"
   ],
+  "homepage": "https://github.com/hifi-finance/hifi-flash-swap#readme",
   "importSort": {
     ".js, .jsx": {
       "parser": "babylon",
@@ -88,19 +90,18 @@
     "solidity",
     "uniswap"
   ],
-  "homepage": "https://github.com/hifi-finance/hifi-flash-swap#readme",
   "license": "LGPL-3.0-or-later",
+  "peerDependencies": {
+    "@hifi/protocol": "^1.1.1",
+    "@paulrberg/contracts": "^3.4.0",
+    "@uniswap/v2-core": "1.0.1"
+  },
   "publishConfig": {
     "access": "public"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/hifi-finance/hifi-flash-swap"
-  },
-  "peerDependencies": {
-    "@hifi/protocol": "^1.1.1",
-    "@paulrberg/contracts": "^3.4.0",
-    "@uniswap/v2-core": "1.0.1"
   },
   "resolutions": {
     "@ethersproject/wallet": "^5.4.0",
@@ -116,8 +117,8 @@
     "lint:sol": "solhint --config ./.solhint.json --max-warnings 0 \"contracts/**/*.sol\"",
     "lint:ts": "eslint --config ./.eslintrc.yaml --ignore-path ./.eslintignore --ext .js,.ts .",
     "postinstall": "husky install",
-    "prepublishOnly": "pinst --disable",
     "postpublish": "pinst --enable",
+    "prepublishOnly": "pinst --disable",
     "prettier": "prettier --config .prettierrc --write \"**/*.{js,json,md,sol,ts}\"",
     "prettier:check": "prettier --check --config .prettierrc \"**/*.{js,json,md,sol,ts}\"",
     "test": "hardhat test",

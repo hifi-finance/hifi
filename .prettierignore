@@ -10,7 +10,6 @@ dist/
 lib/
 node_modules/
 typechain/
-types/contracts/
 
 # files
 LICENSE.md

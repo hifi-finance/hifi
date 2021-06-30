@@ -4,12 +4,10 @@
 .coverage_contracts/
 artifacts/
 build/
-cache/
 coverage/
 dist/
 lib/
 node_modules/
-types/contracts/
 typechain/
 
 # files
