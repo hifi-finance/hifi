@@ -3,6 +3,7 @@ import path from "path";
 import fsExtra from "fs-extra";
 import hre from "hardhat";
 import { Artifact } from "hardhat/types";
+import tempy from "tempy";
 
 const artifactsDir: string = path.join(__dirname, "..", "artifacts");
 const contracts: string[] = [
@@ -23,9 +24,9 @@ const contracts: string[] = [
   "OwnableUpgradeable",
   "StablecoinPriceFeed",
 ];
-const tempArtifactsDir: string = path.join(__dirname, "..", "artifacts-temp");
+const tempArtifactsDir: string = tempy.directory();
 const typeChainDir: string = path.join(__dirname, "..", "typechain");
-const tempTypeChainDir: string = path.join(__dirname, "..", "typechain-temp");
+const tempTypeChainDir: string = tempy.directory();
 
 async function writeArtifactToFile(contractName: string): Promise<void> {
   const artifact: Artifact = await hre.artifacts.readArtifact(contractName);
