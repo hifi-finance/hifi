@@ -980,6 +980,36 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hifi/amm@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@hifi/amm@npm:1.0.0"
+  dependencies:
+    "@hifi/protocol": ^1.1.1
+    "@paulrberg/contracts": ^3.4.0
+    prb-math: ^2.2.0
+  peerDependencies:
+    "@hifi/protocol": ^1.1.1
+    "@paulrberg/contracts": ^3.4.0
+    prb-math: ^2.2.0
+  checksum: 4f9708c89c6ffea2ab87a475739b097a7324bb7351573fa878b93c81c030064d6c3a1428699672f6fe8088c80c7cc34046709c382226ec8e3695aa8e5a739c62
+  languageName: node
+  linkType: hard
+
+"@hifi/protocol@npm:1.1.1, @hifi/protocol@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "@hifi/protocol@npm:1.1.1"
+  dependencies:
+    "@openzeppelin/contracts-upgradeable": ^4.1.0
+    "@paulrberg/contracts": ^3.4.0
+    prb-math: ^2.2.0
+  peerDependencies:
+    "@openzeppelin/contracts-upgradeable": ^4.1.0
+    "@paulrberg/contracts": ^3.4.0
+    prb-math: ^2.2.0
+  checksum: 3769a12cd0b4be53088b78d78d7de69573d047648717acc645b4372c9a3967b53d2368970f656dc18a21a73118d36a3d3aea7d31d236893e2f8da97a7d9262cb
+  languageName: node
+  linkType: hard
+
 "@nodelib/fs.scandir@npm:2.1.4":
   version: 2.1.4
   resolution: "@nodelib/fs.scandir@npm:2.1.4"
@@ -1042,6 +1072,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@openzeppelin/contracts-upgradeable@npm:^4.1.0":
+  version: 4.2.0
+  resolution: "@openzeppelin/contracts-upgradeable@npm:4.2.0"
+  checksum: 449b0b40f0bb452ad92fdcbfaec6ab84f6ce47d5023368227af1a4176cbf9cb88ec1975c05376524a21f97d935d64bb37fca9d2923e6b835af99d44278cef4f5
+  languageName: node
+  linkType: hard
+
+"@paulrberg/contracts@npm:^3.4.0":
+  version: 3.4.0
+  resolution: "@paulrberg/contracts@npm:3.4.0"
+  dependencies:
+    prb-math: ^2.2.0
+  peerDependencies:
+    prb-math: ^2.2.0
+  checksum: ffcf03835190fd9567f083cd04d1e9306f4cdcbacadef9b03c625a1a9b10979360c75c585d148ac0a120e4446fa0fd418f6745cb4132316431c345892367c8a5
+  languageName: node
+  linkType: hard
+
 "@paulrberg/solidity-template@workspace:.":
   version: 0.0.0-use.local
   resolution: "@paulrberg/solidity-template@workspace:."
@@ -1054,8 +1102,11 @@ __metadata:
     "@ethersproject/bignumber": ^5.4.0
     "@ethersproject/bytes": ^5.4.0
     "@ethersproject/providers": ^5.4.0
+    "@hifi/amm": ^1.0.0
+    "@hifi/protocol": 1.1.1
     "@nomiclabs/hardhat-ethers": ^2.0.2
     "@nomiclabs/hardhat-waffle": ^2.0.1
+    "@paulrberg/contracts": ^3.4.0
     "@typechain/ethers-v5": ^7.0.1
     "@typechain/hardhat": ^2.1.0
     "@types/chai": ^4.2.19
@@ -10925,6 +10976,13 @@ fsevents@~2.3.1:
   version: 2.1.0
   resolution: "postinstall-postinstall@npm:2.1.0"
   checksum: e637f608f504ead45a2cc457db40cc70aab392d19504db5d7d55a84c0d04024d6d36393e066f001cdf0c8a634b2866c41df40fc964b3e88fc1c1672efde5c6be
+  languageName: node
+  linkType: hard
+
+"prb-math@npm:^2.2.0":
+  version: 2.2.0
+  resolution: "prb-math@npm:2.2.0"
+  checksum: d5a23b82330eca92f32c18d25cef7e7efb1a7bb35d3fc9ae4e106e1c94919957d31c69e32064b8c353ee2565c1cca37d1973ba8d74733dcbc11ab971c5dfe651
   languageName: node
   linkType: hard
 

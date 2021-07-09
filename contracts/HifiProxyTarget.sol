@@ -3,29 +3,27 @@ pragma solidity >=0.8.4;
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 
-import "./IRegentsTargetV1.sol";
-import "../external/balancer/ExchangeProxyInterface.sol";
-import "../external/balancer/TokenInterface.sol";
-import "../external/weth/WethInterface.sol";
+import "./IHifiProxyTarget.sol";
+import "./external/weth/WethInterface.sol";
 
-/// @title RegentsTargetV1
+// import "../external/balancer/ExchangeProxyInterface.sol";
+// import "../external/balancer/TokenInterface.sol";
+
+/// @title HifiProxyTarget
 /// @author Hifi
 /// @notice Target contract with scripts for the Regents release of the protocol.
 /// @dev Meant to be used with a DSProxy contract via delegatecall.
-contract RegentsTargetV1 is IRegentsTargetV1 {
+contract HifiProxyTarget is IHifiProxyTarget {
     using SafeErc20 for IErc20;
 
     /// PUBLIC STORAGE ///
 
-    /// @inheritdoc IRegentsTargetV1
-    address public constant override EXCHANGE_PROXY_ADDRESS = 0x3E66B66Fd1d0b02fDa6C811Da9E0547970DB2f21;
-
-    /// @inheritdoc IRegentsTargetV1
+    /// @inheritdoc IHifiProxyTarget
     address public constant override WETH_ADDRESS = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2;
 
     /// PUBLIC NON-CONSTANT FUNCTIONS ///
 
-    /// @inheritdoc IRegentsTargetV1
+    /// @inheritdoc IHifiProxyTarget
     function borrow(
         IBalanceSheetV1 balanceSheet,
         IHToken hToken,
@@ -35,57 +33,54 @@ contract RegentsTargetV1 is IRegentsTargetV1 {
         hToken.transfer(msg.sender, borrowAmount);
     }
 
-    /// @inheritdoc IRegentsTargetV1
-    function borrowAndSellHTokens(
+    /// @inheritdoc IHifiProxyTarget
+    function borrowHTokensAndBuyUnderlying(
         IBalanceSheetV1 balanceSheet,
         IHToken hToken,
-        uint256 borrowAmount,
+        IHifiPool hifiPool,
         uint256 underlyingAmount
     ) public payable override {
-        IErc20 underlying = hToken.underlying();
+        // Get required hToken amount for buying exact underlying amount
+        uint256 borrowAmount = hifiPool.getQuoteForBuyingUnderlying(underlyingAmount);
 
         // Borrow the hTokens.
         balanceSheet.borrow(hToken, borrowAmount);
 
-        // Allow the Balancer contract to spend hTokens if allowance not enough.
-        uint256 allowance = hToken.allowance(address(this), EXCHANGE_PROXY_ADDRESS);
+        // Allow the HiFiPool contract to spend hTokens if allowance not enough.
+        uint256 allowance = hToken.allowance(address(this), address(hifiPool));
         if (allowance < borrowAmount) {
-            hToken.approve(EXCHANGE_PROXY_ADDRESS, type(uint256).max);
+            hToken.approve(address(hifiPool), type(uint256).max);
         }
 
-        // Prepare the parameters for calling Balancer.
-        TokenInterface tokenIn = TokenInterface(address(hToken));
-        TokenInterface tokenOut = TokenInterface(address(underlying));
-        uint256 totalAmountOut = underlyingAmount;
-        uint256 maxTotalAmountIn = borrowAmount;
-        uint256 nPools = 1;
+        // Finally, bought the exact underlying and send it to the end user.
+        hifiPool.buyUnderlying(msg.sender, underlyingAmount);
 
-        // Recall that Balancer reverts when the swap is not successful.
-        uint256 totalAmountIn =
-            ExchangeProxyInterface(EXCHANGE_PROXY_ADDRESS).smartSwapExactOut(
-                tokenIn,
-                tokenOut,
-                totalAmountOut,
-                maxTotalAmountIn,
-                nPools
-            );
-
-        // When we get a better price than the worst that we assumed we would, not all hTokens are sold.
-        uint256 hTokenDelta = borrowAmount - totalAmountIn;
-
-        // If the hToken delta is non-zero, we use it to partially repay the borrow.
-        // Note: this is not gas-efficient.
-        if (hTokenDelta > 0) {
-            balanceSheet.repayBorrow(hToken, hTokenDelta);
-        }
-
-        // Finally, transfer the recently bought underlying to the end user.
-        underlying.safeTransfer(msg.sender, underlyingAmount);
-
-        emit BorrowAndSellHTokens(msg.sender, borrowAmount, hTokenDelta, underlyingAmount);
+        emit BorrowHTokensAndBuyUnderlying(msg.sender, borrowAmount, underlyingAmount);
     }
 
-    /// @inheritdoc IRegentsTargetV1
+    /// @inheritdoc IHifiProxyTarget
+    function borrowAndSellHTokens(
+        IBalanceSheetV1 balanceSheet,
+        IHToken hToken,
+        IHifiPool hifiPool,
+        uint256 borrowAmount
+    ) public payable override {
+        // Borrow the hTokens.
+        balanceSheet.borrow(hToken, borrowAmount);
+
+        // Allow the HiFiPool contract to spend hTokens if allowance not enough.
+        uint256 allowance = hToken.allowance(address(this), address(hifiPool));
+        if (allowance < borrowAmount) {
+            hToken.approve(address(hifiPool), type(uint256).max);
+        }
+
+        // Finally, bought the max underlying for exact borrowed amount of hToken and send it to the end user.
+        uint256 underlyingAmount = hifiPool.sellHToken(msg.sender, borrowAmount);
+
+        emit BorrowAndSellHTokens(msg.sender, borrowAmount, underlyingAmount);
+    }
+
+    /// @inheritdoc IHifiProxyTarget
     function depositCollateral(
         IBalanceSheetV1 balanceSheet,
         IErc20 collateral,
@@ -98,7 +93,7 @@ contract RegentsTargetV1 is IRegentsTargetV1 {
         depositCollateralInternal(balanceSheet, collateral, collateralAmount);
     }
 
-    /// @inheritdoc IRegentsTargetV1
+    /// @inheritdoc IHifiProxyTarget
     function depositAndBorrow(
         IBalanceSheetV1 balanceSheet,
         IErc20 collateral,
@@ -110,20 +105,20 @@ contract RegentsTargetV1 is IRegentsTargetV1 {
         borrow(balanceSheet, hToken, borrowAmount);
     }
 
-    /// @inheritdoc IRegentsTargetV1
+    /// @inheritdoc IHifiProxyTarget
     function depositAndBorrowAndSellHTokens(
         IBalanceSheetV1 balanceSheet,
         IErc20 collateral,
         IHToken hToken,
+        IHifiPool hifiPool,
         uint256 collateralAmount,
-        uint256 borrowAmount,
-        uint256 underlyingAmount
+        uint256 borrowAmount
     ) external payable override {
         depositCollateral(balanceSheet, collateral, collateralAmount);
-        borrowAndSellHTokens(balanceSheet, hToken, borrowAmount, underlyingAmount);
+        borrowAndSellHTokens(balanceSheet, hToken, hifiPool, borrowAmount);
     }
 
-    /// @inheritdoc IRegentsTargetV1
+    /// @inheritdoc IHifiProxyTarget
     function redeem(IHToken hToken, uint256 hTokenAmount) public override {
         IErc20 underlying = hToken.underlying();
 
@@ -142,7 +137,7 @@ contract RegentsTargetV1 is IRegentsTargetV1 {
         underlying.safeTransfer(msg.sender, underlyingAmount);
     }
 
-    /// @inheritdoc IRegentsTargetV1
+    /// @inheritdoc IHifiProxyTarget
     function repayBorrow(
         IBalanceSheetV1 balanceSheet,
         IHToken hToken,
@@ -155,54 +150,59 @@ contract RegentsTargetV1 is IRegentsTargetV1 {
         balanceSheet.repayBorrow(hToken, repayAmount);
     }
 
-    /// @inheritdoc IRegentsTargetV1
+    /// @inheritdoc IHifiProxyTarget
+    function buyHtokenAndRepayBorrow(
+        IBalanceSheetV1 balanceSheet,
+        IHToken hToken,
+        IHifiPool hifiPool,
+        uint256 repayAmount
+    ) external override {
+        IErc20 underlying = hToken.underlying();
+
+        uint256 underlyingAmount = hifiPool.getQuoteForBuyingHToken(repayAmount);
+
+        // Transfer the underlying to the DSProxy.
+        underlying.safeTransferFrom(msg.sender, address(this), underlyingAmount);
+
+        // Allow the HiFiPool contract to spend underlying if allowance not enough.
+        uint256 allowance = underlying.allowance(address(this), address(hifiPool));
+        if (allowance < underlyingAmount) {
+            underlying.approve(address(hifiPool), type(uint256).max);
+        }
+
+        // Buys hToken with underlying.
+        hifiPool.buyHToken(address(this), repayAmount);
+
+        // Use the recently bought hTokens to repay the borrow.
+        balanceSheet.repayBorrow(hToken, repayAmount);
+    }
+
+    /// @inheritdoc IHifiProxyTarget
     function sellUnderlyingAndRepayBorrow(
         IBalanceSheetV1 balanceSheet,
         IHToken hToken,
-        uint256 underlyingAmount,
-        uint256 repayAmount
+        IHifiPool hifiPool,
+        uint256 underlyingAmount
     ) external override {
         IErc20 underlying = hToken.underlying();
 
         // Transfer the underlying to the DSProxy.
         underlying.safeTransferFrom(msg.sender, address(this), underlyingAmount);
 
-        // Allow the Balancer contract to spend underlying if allowance not enough.
-        uint256 allowance = underlying.allowance(address(this), EXCHANGE_PROXY_ADDRESS);
+        // Allow the HiFiPool contract to spend underlying if allowance not enough.
+        uint256 allowance = underlying.allowance(address(this), address(hifiPool));
         if (allowance < underlyingAmount) {
-            underlying.approve(EXCHANGE_PROXY_ADDRESS, type(uint256).max);
+            underlying.approve(address(hifiPool), type(uint256).max);
         }
 
-        // Prepare the parameters for calling Balancer.
-        TokenInterface tokenIn = TokenInterface(address(underlying));
-        TokenInterface tokenOut = TokenInterface(address(hToken));
-        uint256 totalAmountOut = repayAmount;
-        uint256 maxTotalAmountIn = underlyingAmount;
-        uint256 nPools = 1;
-
-        // Recall that Balancer reverts when the swap is not successful.
-        uint256 totalAmountIn =
-            ExchangeProxyInterface(EXCHANGE_PROXY_ADDRESS).smartSwapExactOut(
-                tokenIn,
-                tokenOut,
-                totalAmountOut,
-                maxTotalAmountIn,
-                nPools
-            );
+        // Sell underlyingAmount of underlying token for max hToken.
+        uint256 hTokenOut = hifiPool.sellUnderlying(address(this), underlyingAmount);
 
         // Use the recently bought hTokens to repay the borrow.
-        balanceSheet.repayBorrow(hToken, repayAmount);
-
-        // When we get a better price than the worst that we assumed we would, not all underlying is sold.
-        uint256 underlyingDelta = underlyingAmount - totalAmountIn;
-
-        // If the underlying delta is non-zero, send it back to the user.
-        if (underlyingDelta > 0) {
-            underlying.safeTransfer(msg.sender, underlyingDelta);
-        }
+        balanceSheet.repayBorrow(hToken, hTokenOut);
     }
 
-    /// @inheritdoc IRegentsTargetV1
+    /// @inheritdoc IHifiProxyTarget
     function supplyUnderlying(IHToken hToken, uint256 underlyingAmount) public override {
         uint256 preHTokenBalance = hToken.balanceOf(address(this));
         supplyUnderlyingInternal(hToken, underlyingAmount);
@@ -215,7 +215,7 @@ contract RegentsTargetV1 is IRegentsTargetV1 {
         hToken.transfer(msg.sender, hTokenAmount);
     }
 
-    /// @inheritdoc IRegentsTargetV1
+    /// @inheritdoc IHifiProxyTarget
     function supplyUnderlyingAndRepayBorrow(
         IBalanceSheetV1 balanceSheet,
         IHToken hToken,
@@ -232,7 +232,7 @@ contract RegentsTargetV1 is IRegentsTargetV1 {
         balanceSheet.repayBorrow(hToken, hTokenAmount);
     }
 
-    /// @inheritdoc IRegentsTargetV1
+    /// @inheritdoc IHifiProxyTarget
     function withdrawCollateral(
         IBalanceSheetV1 balanceSheet,
         IErc20 collateral,
@@ -245,7 +245,7 @@ contract RegentsTargetV1 is IRegentsTargetV1 {
         collateral.safeTransfer(msg.sender, withdrawAmount);
     }
 
-    /// @inheritdoc IRegentsTargetV1
+    /// @inheritdoc IHifiProxyTarget
     function wrapEthAndDepositCollateral(IBalanceSheetV1 balanceSheet, IHToken hToken) public payable override {
         uint256 collateralAmount = msg.value;
 
@@ -256,16 +256,16 @@ contract RegentsTargetV1 is IRegentsTargetV1 {
         depositCollateralInternal(balanceSheet, hToken, collateralAmount);
     }
 
-    /// @inheritdoc IRegentsTargetV1
+    /// @inheritdoc IHifiProxyTarget
     function wrapEthAndDepositAndBorrowAndSellHTokens(
         IBalanceSheetV1 balanceSheet,
         IHToken hToken,
-        uint256 borrowAmount,
-        uint256 underlyingAmount
+        IHifiPool hifiPool,
+        uint256 borrowAmount
     ) external payable override {
         wrapEthAndDepositCollateral(balanceSheet, hToken);
 
-        borrowAndSellHTokens(balanceSheet, hToken, borrowAmount, underlyingAmount);
+        borrowAndSellHTokens(balanceSheet, hToken, hifiPool, borrowAmount);
     }
 
     /// INTERNAL NON-CONSTANT FUNCTIONS ///

@@ -83,5 +83,10 @@
     "prettier:check": "prettier --check --config ./.prettierrc \"**/*.{js,json,md,sol,ts}\"",
     "test": "hardhat test",
     "typechain": "hardhat typechain"
+  },
+  "dependencies": {
+    "@hifi/amm": "^1.0.0",
+    "@hifi/protocol": "1.1.1",
+    "@paulrberg/contracts": "^3.4.0"
   }
 }

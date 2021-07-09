@@ -1,32 +1,31 @@
 /// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.4;
 
-import "../core/balanceSheet/IBalanceSheetV1.sol";
-import "../core/hToken/IHToken.sol";
+import "@hifi/protocol/contracts/core/balanceSheet/IBalanceSheetV1.sol";
+import "@hifi/protocol/contracts/core/hToken/IHToken.sol";
+import "@hifi/amm/contracts/IHifiPool.sol";
 
-/// @title IRegentsTargetV1
+/// @title IHifiProxyTarget
 /// @author Hifi
-/// @notice Interface for the BatterseaTargetV1 contract
-interface IRegentsTargetV1 {
+/// @notice Interface for the HifiProxyTarget contract
+interface IHifiProxyTarget {
     /// EVENTS
 
-    /// @notice Emitted when hTokens are borrowed and sold.
+    /// @notice Emitted when exact amount of hTokens are borrowed and sold for required amount of underlying.
     /// @param borrower The address of the borrower.
     /// @param borrowAmount The amount of borrow funds.
-    /// @param hTokenDelta The hToken delta.
     /// @param underlyingAmount The amount of underlying tokens.
-    event BorrowAndSellHTokens(
-        address indexed borrower,
-        uint256 borrowAmount,
-        uint256 hTokenDelta,
-        uint256 underlyingAmount
-    );
+
+    event BorrowAndSellHTokens(address indexed borrower, uint256 borrowAmount, uint256 underlyingAmount);
+
+    /// @notice Emitted when required amount of hTokens are borrowed and sold for exact amount of underlying.
+    /// @param borrower The address of the borrower.
+    /// @param borrowAmount The amount of borrow funds.
+    /// @param underlyingAmount The amount of underlying tokens.
+
+    event BorrowHTokensAndBuyUnderlying(address indexed borrower, uint256 borrowAmount, uint256 underlyingAmount);
 
     /// CONSTANT FUNCTIONS ///
-
-    /// @notice The contract that enables trading on the Balancer Exchange.
-    /// @dev This is the mainnet version of the Exchange Proxy. Change it with the testnet version when needed.
-    function EXCHANGE_PROXY_ADDRESS() external view returns (address);
 
     /// @notice The contract that enables wrapping ETH into ERC-20 form.
     /// @dev This is the mainnet version of WETH. Change it with the testnet version when needed.
@@ -44,7 +43,7 @@ interface IRegentsTargetV1 {
         uint256 borrowAmount
     ) external;
 
-    /// @notice Borrows hTokens and sells them on the AMM in exchange for underlying.
+    /// @notice Borrows exact hTokens and sells them on the AMM in exchange for required underlying.
     ///
     /// @dev Emits a {BorrowAndSellHTokens} event.
     ///
@@ -52,12 +51,29 @@ interface IRegentsTargetV1 {
     ///
     /// @param balanceSheet The address of the BalanceSheet contract.
     /// @param hToken The address of the HToken contract.
-    /// @param borrowAmount The amount of hTokens to borrow.
-    /// @param underlyingAmount The amount of underlying to sell hTokens for.
+    /// @param hifiPool The amount of hTokens to borrow.
+    /// @param borrowAmount The amount of hToken to borrow to sell for required amount of underlying.
     function borrowAndSellHTokens(
         IBalanceSheetV1 balanceSheet,
         IHToken hToken,
-        uint256 borrowAmount,
+        IHifiPool hifiPool,
+        uint256 borrowAmount
+    ) external payable;
+
+    /// @notice Borrows required hTokens and sells them on the AMM in exchange for exact underlying.
+    ///
+    /// @dev Emits a {BorrowHTokensAndBuyUnderlying} event.
+    ///
+    /// This is a payable function so it can receive ETH transfers.
+    ///
+    /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param hToken The address of the HToken contract.
+    /// @param hifiPool The amount of hTokens to borrow.
+    /// @param underlyingAmount The exact amount of underlying to buy in exchange for required hTokens.
+    function borrowHTokensAndBuyUnderlying(
+        IBalanceSheetV1 balanceSheet,
+        IHToken hToken,
+        IHifiPool hifiPool,
         uint256 underlyingAmount
     ) external payable;
 
@@ -96,7 +112,7 @@ interface IRegentsTargetV1 {
         uint256 borrowAmount
     ) external payable;
 
-    /// @notice Deposits collateral into the vault, borrows hTokens /// and sells them on the AMM
+    /// @notice Deposits collateral into the vault, borrows hTokens and sells them on the AMM
     /// in exchange for underlying.
     ///
     /// @dev This is a payable function so it can receive ETH transfers.
@@ -107,15 +123,15 @@ interface IRegentsTargetV1 {
     /// @param balanceSheet The address of the BalanceSheet contract.
     /// @param collateral The address of the collateral contract.
     /// @param hToken The address of the HToken contract.
+    /// @param hifiPool The address of the HiFiPool contract.
     /// @param collateralAmount The amount of collateral to deposit.
-    /// @param borrowAmount The amount of hTokens to borrow.
     /// @param underlyingAmount The amount of underlying to sell hTokens for.
     function depositAndBorrowAndSellHTokens(
         IBalanceSheetV1 balanceSheet,
         IErc20 collateral,
         IHToken hToken,
+        IHifiPool hifiPool,
         uint256 collateralAmount,
-        uint256 borrowAmount,
         uint256 underlyingAmount
     ) external payable;
 
@@ -142,19 +158,38 @@ interface IRegentsTargetV1 {
         uint256 repayAmount
     ) external;
 
-    /// @notice Market sells underlying and repays the borrows via the HToken contract.
+    /// @notice Market sells underlyingAmount of underlying and repays the required hTokenOut amount of
+    /// hTokens via the HToken contract.
     ///
     /// @dev Requirements:
     /// - The caller must have allowed the DSProxy to spend `underlyingAmount` tokens.
     ///
     /// @param balanceSheet The address of the BalanceSheet contract.
     /// @param hToken The address of the HToken contract.
-    /// @param underlyingAmount The amount of underlying to sell.
-    /// @param repayAmount The amount of hTokens to repay.
+    /// @param hifiPool The address of the hifi pool contract.
+    /// @param underlyingAmount The exact amount of underlying that call wants to see to repay required hTokenOut.
     function sellUnderlyingAndRepayBorrow(
         IBalanceSheetV1 balanceSheet,
         IHToken hToken,
-        uint256 underlyingAmount,
+        IHifiPool hifiPool,
+        uint256 underlyingAmount
+    ) external;
+
+    /// @notice Market calculate and sells lowest amout of underlying to repay the repayAmount of
+    /// hTokens via the HToken contract.
+    ///
+    /// @dev Requirements:
+    /// - The caller must have allowed the DSProxy to spend underlying tokens.
+    ///
+    /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param hToken The address of the HToken contract.
+    /// @param hifiPool The address of the hifi pool contract.
+    /// @param repayAmount The exact amount of hToken amount that call wants to repay
+    /// for lowest amount unederlying token.
+    function buyHtokenAndRepayBorrow(
+        IBalanceSheetV1 balanceSheet,
+        IHToken hToken,
+        IHifiPool hifiPool,
         uint256 repayAmount
     ) external;
 
@@ -201,12 +236,12 @@ interface IRegentsTargetV1 {
     ///
     /// @param balanceSheet The address of the BalanceSheet contract.
     /// @param hToken The address of the HToken contract.
-    /// @param borrowAmount The amount of hTokens to borrow.
+    /// @param hifiPool  The address of the hifi pool contract.
     /// @param underlyingAmount The amount of underlying to sell hTokens for.
     function wrapEthAndDepositAndBorrowAndSellHTokens(
         IBalanceSheetV1 balanceSheet,
         IHToken hToken,
-        uint256 borrowAmount,
+        IHifiPool hifiPool,
         uint256 underlyingAmount
     ) external payable;
 }
