@@ -77,6 +77,50 @@ interface IHifiProxyTarget {
         uint256 underlyingAmount
     ) external payable;
 
+    /// @notice Burn liquidity tokens in exchange for underlying tokens and hTokens.
+    ///
+    /// @dev Requirements:
+    /// - The caller must have allowed the DSProxy to spend `poolTokens` tokens.
+    ///
+    /// @param hifiPool The address of the hifi pool contract.
+    /// @param poolTokens Amount of liquidity tokens to burn.
+    function burn(IHifiPool hifiPool, uint256 poolTokens) external;
+
+    /// @notice Buys hToken with underlying.
+    ///
+    /// Requirements:
+    /// - The caller must have allowed DSProxy to spend `underlyingIn` tokens.
+    ///
+    /// @param hifiPool The address of the hifi pool contract.
+    /// @param hTokenAmount The amount of hToken caller wants to buy.
+    function buyHToken(IHifiPool hifiPool, uint256 hTokenAmount) external;
+
+    /// @notice Market sells required amount of underlying to buy hToken, and repay the `repayAmount` of
+    /// hTokens via the HToken contract.
+    ///
+    /// @dev Requirements:
+    /// - The caller must have allowed the DSProxy to spend `underlyingIn` of underlying tokens.
+    ///
+    /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param hifiPool The address of the hifi pool contract.
+    /// @param repayAmount The exact amount of hToken amount that call wants to repay
+    /// for lowest amount unederlying token.
+    function buyHtokenAndRepayBorrow(
+        IBalanceSheetV1 balanceSheet,
+        IHifiPool hifiPool,
+        uint256 repayAmount
+    ) external;
+
+    /// @notice Buys underlying with hToken.
+    ///
+    /// Requirements:
+    /// - The caller must have allowed DSProxy to spend `hTokenIn` tokens.
+    ///
+    /// @param hifiPool The address of the hifi pool contract.
+    /// @param underlyingAmount The amount of underlying caller wants to buy.
+
+    function buyUnderlying(IHifiPool hifiPool, uint256 underlyingAmount) external;
+
     /// @notice Deposits collateral into the BalanceSheet contract.
     ///
     /// @dev Requirements:
@@ -135,6 +179,20 @@ interface IHifiProxyTarget {
         uint256 borrowAmount
     ) external payable;
 
+    /// @notice Mints liquidity tokens in exchange for adding underlying tokens and hTokens.
+    ///
+    /// Requirements:
+    /// - The caller must have allowed the DSProxy to spend `underlyingAmount` and `hTokenRequired` tokens.
+    ///
+    /// @param hifiPool The address of the HiFiPool contract.
+    /// @param underlyingAmount Amount of underlying tokens offered to invest.
+    /// @param hTokenRequired Amount of hToken required to invest.
+    function mint(
+        IHifiPool hifiPool,
+        uint256 underlyingAmount,
+        uint256 hTokenRequired
+    ) external;
+
     /// @notice Redeems hTokens in exchange for underlying tokens.
     ///
     /// @dev Requirements:
@@ -158,6 +216,24 @@ interface IHifiProxyTarget {
         uint256 repayAmount
     ) external;
 
+    /// @notice Sells hToken for underlying.
+    ///
+    /// Requirements:
+    /// - The caller must have allowed DSProxy to spend `hTokenAmount` tokens.
+    ///
+    /// @param hifiPool The address of the HiFiPool contract.
+    /// @param hTokenAmount The amount of hToken amount to sell for underlying.
+    function sellHToken(IHifiPool hifiPool, uint256 hTokenAmount) external;
+
+    /// @notice Sells underlying for hToken.
+    ///
+    /// Requirements:
+    /// - The caller must have allowed DSProxy to spend `underlyingAmount` tokens.
+    ///
+    /// @param hifiPool The address of the HiFiPool contract.
+    /// @param underlyingAmount The amount of underlying amount to sell for hToken.
+    function sellUnderlying(IHifiPool hifiPool, uint256 underlyingAmount) external;
+
     /// @notice Market sells `underlyingAmount` of underlying and repays the `hTokenOut` amount of
     /// hTokens via the HToken contract.
     ///
@@ -173,24 +249,6 @@ interface IHifiProxyTarget {
         IHToken hToken,
         IHifiPool hifiPool,
         uint256 underlyingAmount
-    ) external;
-
-    /// @notice Market sells required amount of underlying to buy hToken, and repay the `repayAmount` of
-    /// hTokens via the HToken contract.
-    ///
-    /// @dev Requirements:
-    /// - The caller must have allowed the DSProxy to spend `underlyingIn` of underlying tokens.
-    ///
-    /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param hToken The address of the HToken contract.
-    /// @param hifiPool The address of the hifi pool contract.
-    /// @param repayAmount The exact amount of hToken amount that call wants to repay
-    /// for lowest amount unederlying token.
-    function buyHtokenAndRepayBorrow(
-        IBalanceSheetV1 balanceSheet,
-        IHToken hToken,
-        IHifiPool hifiPool,
-        uint256 repayAmount
     ) external;
 
     /// @notice Supplies the underlying to the HToken contract and mints hTokens.
