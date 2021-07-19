@@ -61,10 +61,10 @@ contract HifiProxyTarget is IHifiProxyTarget {
         }
 
         // add liquidity to pool
-        uint256 poolTokensMinted = hifiPool.mint(underlyingAmount);
+        uint256 poolTokens = hifiPool.mint(underlyingAmount);
 
         // The liquidity tokens are now in the DSProxy, so we relay it to the end user.
-        hifiPool.transfer(msg.sender, poolTokensMinted);
+        hifiPool.transfer(msg.sender, poolTokens);
     }
 
     /// @inheritdoc IHifiProxyTarget
@@ -118,23 +118,62 @@ contract HifiProxyTarget is IHifiProxyTarget {
     function burn(IHifiPool hifiPool, uint256 poolTokens) public override {
         IErc20 underlying = hifiPool.underlying();
         IHToken hToken = hifiPool.hToken();
-
-        // Transfer the liquidity tokens to the DSProxy.
-        hifiPool.transferFrom(msg.sender, address(this), poolTokens);
-
-        // Allow the HiFiPool contract to spend iquidity tokens if allowance not enough.
-        uint256 allowance = hifiPool.allowance(address(this), address(hifiPool));
-        if (allowance < poolTokens) {
-            hifiPool.approve(address(hifiPool), type(uint256).max);
-        }
-
         uint256 underlyingReturned;
         uint256 hTokenReturned;
-        (underlyingReturned, hTokenReturned) = hifiPool.burn(poolTokens);
+        (underlyingReturned, hTokenReturned) = burnInternal(hifiPool, poolTokens);
 
         // The underlying and htoken is now in the DSProxy, so we relay it to the end user.
         underlying.safeTransfer(msg.sender, underlyingReturned);
         hToken.transfer(msg.sender, hTokenReturned);
+    }
+
+    /// @inheritdoc IHifiProxyTarget
+    function burnAndSellHTokens(IHifiPool hifiPool, uint256 poolTokens) public override {
+        IErc20 underlying = hifiPool.underlying();
+        IHToken hToken = hifiPool.hToken();
+
+        uint256 underlyingReturned;
+        uint256 hTokenReturned;
+
+        (underlyingReturned, hTokenReturned) = burnInternal(hifiPool, poolTokens);
+
+        // The underlying and htoken is now in the DSProxy, so we relay underlying to the end user.
+        underlying.safeTransfer(msg.sender, underlyingReturned);
+
+        // Allow the HiFiPool contract to spend hToken if allowance not enough.
+        uint256 hTokenAllowance = hToken.allowance(address(this), address(hifiPool));
+        if (hTokenAllowance < hTokenReturned) {
+            hToken.approve(address(hifiPool), type(uint256).max);
+        }
+        // Sell hTokens for underlying and return it to user.
+        hifiPool.sellHToken(msg.sender, hTokenReturned);
+    }
+
+    /// @inheritdoc IHifiProxyTarget
+    function burnAndSellUnderlyingAndRepayBorrow(
+        IBalanceSheetV1 balanceSheet,
+        IHifiPool hifiPool,
+        uint256 poolTokens
+    ) public override {
+        IErc20 underlying = hifiPool.underlying();
+        IHToken hToken = hifiPool.hToken();
+
+        uint256 underlyingReturned;
+        uint256 hTokenReturned;
+
+        (underlyingReturned, hTokenReturned) = burnInternal(hifiPool, poolTokens);
+
+        // Allow the HiFiPool contract to spend underlying if allowance not enough.
+        uint256 hTokenAllowance = underlying.allowance(address(this), address(hifiPool));
+        if (hTokenAllowance < underlyingReturned) {
+            underlying.approve(address(hifiPool), type(uint256).max);
+        }
+        uint256 hTokenOut;
+        hTokenOut = hifiPool.sellUnderlying(address(this), underlyingReturned);
+
+        uint256 totalHtokensToRepay = hTokenOut + hTokenReturned;
+        // Use the recently bought hTokens to repay the borrow.
+        balanceSheet.repayBorrow(hToken, totalHtokensToRepay);
     }
 
     /// @inheritdoc IHifiProxyTarget
@@ -169,13 +208,13 @@ contract HifiProxyTarget is IHifiProxyTarget {
         hifiPool.buyHToken(address(this), hTokenAmount);
 
         // Amount of underlying token offered to provide liquidity.
-        uint256 underlyingOffered = underlyingAmount - underlyingIn;
+        uint256 offeredUnderlying = underlyingAmount - underlyingIn;
 
         // add liquidity to pool
-        uint256 poolTokensMinted = hifiPool.mint(underlyingOffered);
+        uint256 poolTokens = hifiPool.mint(offeredUnderlying);
 
         // The liquidity tokens are now in the DSProxy, so we relay it to the end user.
-        hifiPool.transfer(msg.sender, poolTokensMinted);
+        hifiPool.transfer(msg.sender, poolTokens);
     }
 
     /// @inheritdoc IHifiProxyTarget
@@ -234,10 +273,10 @@ contract HifiProxyTarget is IHifiProxyTarget {
 
         // add liquidity to pool.
         // This contract should have required hToken to provide liquidity after buying underlyingAmount underlying.
-        uint256 poolTokensMinted = hifiPool.mint(underlyingAmount);
+        uint256 poolTokens = hifiPool.mint(underlyingAmount);
 
         // The liquidity tokens are now in the DSProxy, so we relay it to the end user.
-        hifiPool.transfer(msg.sender, poolTokensMinted);
+        hifiPool.transfer(msg.sender, poolTokens);
     }
 
     /// @inheritdoc IHifiProxyTarget
@@ -305,10 +344,10 @@ contract HifiProxyTarget is IHifiProxyTarget {
         }
 
         // add liquidity to pool
-        uint256 poolTokensMinted = hifiPool.mint(underlyingAmount);
+        uint256 poolTokens = hifiPool.mint(underlyingAmount);
 
         // The liquidity tokens are now in the DSProxy, so we relay it to the end user.
-        hifiPool.transfer(msg.sender, poolTokensMinted);
+        hifiPool.transfer(msg.sender, poolTokens);
     }
 
     /// @inheritdoc IHifiProxyTarget
@@ -463,6 +502,24 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// INTERNAL NON-CONSTANT FUNCTIONS ///
+
+    function burnInternal(IHifiPool hifiPool, uint256 poolTokens)
+        internal
+        returns (uint256 underlyingReturned, uint256 hTokenReturned)
+    {
+        // Transfer the liquidity tokens to the DSProxy.
+        hifiPool.transferFrom(msg.sender, address(this), poolTokens);
+
+        // Allow the HiFiPool contract to spend iquidity tokens if allowance not enough.
+        uint256 allowance = hifiPool.allowance(address(this), address(hifiPool));
+        if (allowance < poolTokens) {
+            hifiPool.approve(address(hifiPool), type(uint256).max);
+        }
+
+        // Burn pool tokens
+        (underlyingReturned, hTokenReturned) = hifiPool.burn(poolTokens);
+    }
+
     /// @dev See the documentation for the public functions that call this internal function.
     function buyHTokenInternal(IHifiPool hifiPool, uint256 hTokenAmount) internal {
         IErc20 underlying = hifiPool.underlying();

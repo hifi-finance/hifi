@@ -102,6 +102,31 @@ interface IHifiProxyTarget {
     /// @param poolTokens Amount of liquidity tokens to burn.
     function burn(IHifiPool hifiPool, uint256 poolTokens) external;
 
+    /// @notice Burn liquidity tokens in exchange for underlying tokens and hTokens, then
+    /// sell all hTokens for underlying
+    ///
+    /// @dev Requirements:
+    /// - The caller must have allowed the DSProxy to spend `poolTokens` tokens.
+    ///
+    /// @param hifiPool The address of the hifi pool contract.
+    /// @param poolTokens Amount of liquidity tokens to burn.
+    function burnAndSellHTokens(IHifiPool hifiPool, uint256 poolTokens) external;
+
+    /// @notice Burn liquidity tokens in exchange for underlying tokens and hTokens, then
+    /// sell all underlying for hTokens and repay borrow.
+    ///
+    /// @dev Requirements:
+    /// - The caller must have allowed the DSProxy to spend `poolTokens` tokens.
+    ///
+    /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param hifiPool The address of the hifi pool contract.
+    /// @param poolTokens Amount of liquidity tokens to burn.
+    function burnAndSellUnderlyingAndRepayBorrow(
+        IBalanceSheetV1 balanceSheet,
+        IHifiPool hifiPool,
+        uint256 poolTokens
+    ) external;
+
     /// @notice Buys hToken with underlying.
     ///
     /// Requirements:
@@ -154,7 +179,7 @@ interface IHifiProxyTarget {
     /// @notice Buy underlying and mints liquidity tokens in exchange for adding underlying tokens and hTokens.
     ///
     /// Requirements:
-    /// - The caller must have allowed DSProxy to spend `hTokenIn` plus `hTokenRequired` amount of HTokens to buy
+    /// - The caller must have allowed DSProxy to spend `hTokenIn` plus `hTokenRequired` amount of hTokens to buy
     ///   `underlyingAmount` of underlying token and provide liquidity.
     ///
     /// @param hifiPool The amount of hTokens to borrow.
