@@ -87,6 +87,7 @@
   "dependencies": {
     "@hifi/amm": "^1.0.0",
     "@hifi/protocol": "1.1.1",
-    "@paulrberg/contracts": "^3.4.0"
+    "@paulrberg/contracts": "^3.4.0",
+    "prb-math": "^2.2.0"
   }
 }

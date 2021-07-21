@@ -31,6 +31,19 @@ interface IHifiProxyTarget {
     /// @dev This is the mainnet version of WETH. Change it with the testnet version when needed.
     function WETH_ADDRESS() external view returns (address);
 
+    /// @notice Quotes how much underlying would be required to buy `hTokenOut` hToken.
+    ///
+    /// @dev Requirements:
+    /// - Cannot be called after maturity.
+    ///
+    /// @param hifiPool The address of the hifi pool contract.
+    /// @param underlyingAmount Hypothetical amount of underlying amount required by mint.
+    /// @return hTokenAmount Hypothetical amount of hTokens required by mint.
+    function gethTokenRequiredForMint(IHifiPool hifiPool, uint256 underlyingAmount)
+        external
+        view
+        returns (uint256 hTokenAmount);
+
     /// NON-CONSTANT FUNCTIONS ///
 
     /// @notice Borrows hTokens.
@@ -49,14 +62,16 @@ interface IHifiProxyTarget {
     /// - The caller must have allowed the DSProxy to spend `underlyingAmount` tokens.
     ///
     /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param hifiPool The amount of hTokens to borrow.
+    /// @param hifiPool The address of the hifi pool contract.
     /// @param borrowAmount The amount of hTokens to borrow and required to provide liquidity.
     /// @param underlyingAmount The amount of underlying tokens to invest.
+    /// @param slippageTolerance The percent of slippage in underlying price that user is willing to tolerate.
     function borrowAndPool(
         IBalanceSheetV1 balanceSheet,
         IHifiPool hifiPool,
         uint256 borrowAmount,
-        uint256 underlyingAmount
+        uint256 underlyingAmount,
+        uint256 slippageTolerance
     ) external;
 
     /// @notice Borrows exact hTokens and sells them on the AMM in exchange for highest amount of underlying.
@@ -67,13 +82,17 @@ interface IHifiProxyTarget {
     ///
     /// @param balanceSheet The address of the BalanceSheet contract.
     /// @param hToken The address of the HToken contract.
-    /// @param hifiPool The amount of hTokens to borrow.
-    /// @param borrowAmount The amount of hToken to borrow to sell for underlying.
+    /// @param hifiPool The address of the hifi pool contract.
+    /// @param borrowAmount The exact amount of hToken to borrow and sell for underlying.
+    /// @param underlyingAmount The amount of underlying to buy in exchange for exact hTokens.
+    /// @param slippageTolerance The percent of slippage in underlying price that user is willing to tolerate.
     function borrowAndSellHTokens(
         IBalanceSheetV1 balanceSheet,
         IHToken hToken,
         IHifiPool hifiPool,
-        uint256 borrowAmount
+        uint256 borrowAmount,
+        uint256 underlyingAmount,
+        uint256 slippageTolerance
     ) external payable;
 
     /// @notice Borrows required hTokens and sells them on the AMM in exchange for exact underlying.
@@ -84,13 +103,17 @@ interface IHifiProxyTarget {
     ///
     /// @param balanceSheet The address of the BalanceSheet contract.
     /// @param hToken The address of the HToken contract.
-    /// @param hifiPool The amount of hTokens to borrow.
+    /// @param hifiPool  The address of the hifi pool contract.
+    /// @param borrowAmount The amount of hToken to borrow to buy exact underlying.
     /// @param underlyingAmount The exact amount of underlying to buy in exchange for required hTokens.
+    /// @param slippageTolerance The percent of slippage in borrowAmount price that user is willing to tolerate
     function borrowHTokensAndBuyUnderlying(
         IBalanceSheetV1 balanceSheet,
         IHToken hToken,
         IHifiPool hifiPool,
-        uint256 underlyingAmount
+        uint256 borrowAmount,
+        uint256 underlyingAmount,
+        uint256 slippageTolerance
     ) external payable;
 
     /// @notice Burn liquidity tokens in exchange for underlying tokens and hTokens.
@@ -134,20 +157,28 @@ interface IHifiProxyTarget {
     ///
     /// @param hifiPool The address of the hifi pool contract.
     /// @param hTokenAmount The amount of hToken caller wants to buy.
-    function buyHToken(IHifiPool hifiPool, uint256 hTokenAmount) external;
+    /// @param underlyingAmount The amount of underlying that will be taken from the caller's account.
+    /// @param slippageTolerance The percent of slippage in underlyingAmount price that user is willing to tolerate
+
+    function buyHToken(
+        IHifiPool hifiPool,
+        uint256 hTokenAmount,
+        uint256 underlyingAmount,
+        uint256 slippageTolerance
+    ) external;
 
     /// @notice Buy hTokens and mints liquidity tokens in exchange for adding underlying tokens and hTokens.
     ///
     /// Requirements:
-    /// - The caller must have allowed DSProxy to spend `underlyingAmount` amount of underlying token.
+    /// - The caller must have allowed DSProxy to spend underlying tokens required to buyHTokens and invest in pool.
     ///
     /// @param hifiPool The amount of hTokens to borrow.
-    /// @param hTokenAmount The amount of hTokens to buy and required to provide liquidity.
-    /// @param underlyingAmount The sum of amount of underlying tokens required to buy hTokens and invest in pool.
+    /// @param underlyingAmount The amount of underlying tokens required to invest in pool.
+    /// @param slippageTolerance The sum of amount of underlying tokens required to buy hTokens and invest in pool.
     function buyHTokenAndPool(
         IHifiPool hifiPool,
-        uint256 hTokenAmount,
-        uint256 underlyingAmount
+        uint256 underlyingAmount,
+        uint256 slippageTolerance
     ) external;
 
     /// @notice Market sells required amount of underlying to buy hToken, and repay the `repayAmount` of
@@ -158,12 +189,17 @@ interface IHifiProxyTarget {
     ///
     /// @param balanceSheet The address of the BalanceSheet contract.
     /// @param hifiPool The address of the hifi pool contract.
-    /// @param repayAmount The exact amount of hToken amount that call wants to repay
+    /// @param hTokenAmount The exact amount of hTokens to repay.
+    /// @param underlyingAmount The amount of underlying that will be taken from the caller's account.
+    /// @param slippageTolerance The percent of slippage in underlyingAmount price that user is willing to tolerate
+
     /// for lowest amount unederlying token.
     function buyHtokenAndRepayBorrow(
         IBalanceSheetV1 balanceSheet,
         IHifiPool hifiPool,
-        uint256 repayAmount
+        uint256 hTokenAmount,
+        uint256 underlyingAmount,
+        uint256 slippageTolerance
     ) external;
 
     /// @notice Buys underlying with hToken.
@@ -172,9 +208,16 @@ interface IHifiProxyTarget {
     /// - The caller must have allowed DSProxy to spend `hTokenIn` tokens.
     ///
     /// @param hifiPool The address of the hifi pool contract.
+    /// @param hTokenAmount The amount of hToken that will be taken from the caller's account.
     /// @param underlyingAmount The amount of underlying caller wants to buy.
+    /// @param slippageTolerance The percent of slippage in hToken price that user is willing to tolerate
 
-    function buyUnderlying(IHifiPool hifiPool, uint256 underlyingAmount) external;
+    function buyUnderlying(
+        IHifiPool hifiPool,
+        uint256 hTokenAmount,
+        uint256 underlyingAmount,
+        uint256 slippageTolerance
+    ) external;
 
     /// @notice Buy underlying and mints liquidity tokens in exchange for adding underlying tokens and hTokens.
     ///
@@ -182,13 +225,13 @@ interface IHifiProxyTarget {
     /// - The caller must have allowed DSProxy to spend `hTokenIn` plus `hTokenRequired` amount of hTokens to buy
     ///   `underlyingAmount` of underlying token and provide liquidity.
     ///
-    /// @param hifiPool The amount of hTokens to borrow.
-    /// @param hTokenAmount The sum of amount of hTokens to buy underlying and required to provide liquidity.
-    /// @param underlyingAmount The amount of underlying tokens to buy and invest.
+    /// @param hifiPool The address of the hifi pool contract.
+    /// @param underlyingAmount The amount of underlying to invest.
+    /// @param slippageTolerance The amount of underlying tokens to buy and invest.
     function buyUnderlyingAndPool(
         IHifiPool hifiPool,
-        uint256 hTokenAmount,
-        uint256 underlyingAmount
+        uint256 underlyingAmount,
+        uint256 slippageTolerance
     ) external;
 
     /// @notice Deposits collateral into the BalanceSheet contract.
@@ -240,13 +283,17 @@ interface IHifiProxyTarget {
     /// @param hifiPool The address of the HiFiPool contract.
     /// @param collateralAmount The amount of collateral to deposit.
     /// @param borrowAmount The amount of hToken to borrow to sell for underlying.
+    /// @param underlyingAmount The amount of underlying to buy in exchange for exact hTokens.
+    /// @param slippageTolerance The percent of slippage in underlying price that user is willing to tolerate
     function depositAndBorrowAndSellHTokens(
         IBalanceSheetV1 balanceSheet,
         IErc20 collateral,
         IHToken hToken,
         IHifiPool hifiPool,
         uint256 collateralAmount,
-        uint256 borrowAmount
+        uint256 borrowAmount,
+        uint256 underlyingAmount,
+        uint256 slippageTolerance
     ) external payable;
 
     /// @notice Mints liquidity tokens in exchange for adding underlying tokens and hTokens.
@@ -257,10 +304,12 @@ interface IHifiProxyTarget {
     /// @param hifiPool The address of the HiFiPool contract.
     /// @param underlyingAmount Amount of underlying tokens offered to invest.
     /// @param hTokenRequired Amount of hToken required to invest.
+    /// @param slippageTolerance The acceptable percent of slippage.
     function mint(
         IHifiPool hifiPool,
         uint256 underlyingAmount,
-        uint256 hTokenRequired
+        uint256 hTokenRequired,
+        uint256 slippageTolerance
     ) external;
 
     /// @notice Redeems hTokens in exchange for underlying tokens.
@@ -292,8 +341,15 @@ interface IHifiProxyTarget {
     /// - The caller must have allowed DSProxy to spend `hTokenAmount` tokens.
     ///
     /// @param hifiPool The address of the HiFiPool contract.
-    /// @param hTokenAmount The amount of hToken amount to sell for underlying.
-    function sellHToken(IHifiPool hifiPool, uint256 hTokenAmount) external;
+    /// @param hTokenAmount The amount of hToken to sell for underlying.
+    /// @param underlyingAmount The amount of underlying that will be transferred to the user account.
+    /// @param slippageTolerance The percent of slippage in underlying price that user is willing to tolerate
+    function sellHToken(
+        IHifiPool hifiPool,
+        uint256 hTokenAmount,
+        uint256 underlyingAmount,
+        uint256 slippageTolerance
+    ) external;
 
     /// @notice Sells underlying for hToken.
     ///
@@ -301,8 +357,15 @@ interface IHifiProxyTarget {
     /// - The caller must have allowed DSProxy to spend `underlyingAmount` tokens.
     ///
     /// @param hifiPool The address of the HiFiPool contract.
+    /// @param hTokenAmount The amount of hTokenOut that will be transferred to the user.
     /// @param underlyingAmount The amount of underlying amount to sell for hToken.
-    function sellUnderlying(IHifiPool hifiPool, uint256 underlyingAmount) external;
+    /// @param slippageTolerance The percent of slippage in hToken price that user is willing to tolerate
+    function sellUnderlying(
+        IHifiPool hifiPool,
+        uint256 hTokenAmount,
+        uint256 underlyingAmount,
+        uint256 slippageTolerance
+    ) external;
 
     /// @notice Market sells `underlyingAmount` of underlying and repays the `hTokenOut` amount of
     /// hTokens via the HToken contract.
@@ -311,14 +374,17 @@ interface IHifiProxyTarget {
     /// - The caller must have allowed the DSProxy to spend `underlyingAmount` tokens.
     ///
     /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param hToken The address of the HToken contract.
     /// @param hifiPool The address of the hifi pool contract.
+    /// @param hTokenAmount  The amount of hTokens to repay.
     /// @param underlyingAmount The exact amount of underlying that call wants to sell to repay hTokenOut.
+    /// @param slippageTolerance The percent of slippage in hToken price that user is willing to tolerate
+
     function sellUnderlyingAndRepayBorrow(
         IBalanceSheetV1 balanceSheet,
-        IHToken hToken,
         IHifiPool hifiPool,
-        uint256 underlyingAmount
+        uint256 hTokenAmount,
+        uint256 underlyingAmount,
+        uint256 slippageTolerance
     ) external;
 
     /// @notice Supplies the underlying to the HToken contract and mints hTokens.
@@ -363,13 +429,15 @@ interface IHifiProxyTarget {
     /// @dev This is a payable function so it can receive ETH transfers.
     ///
     /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param hToken The address of the HToken contract.
     /// @param hifiPool  The address of the hifi pool contract.
-    /// @param underlyingAmount The amount of underlying to sell hTokens for.
+    /// @param borrowAmount The exact amount of hToken to borrow and sell for underlying.
+    /// @param underlyingAmount The amount of underlying that will be transferred to user.
+    /// @param slippageTolerance The percent of slippage in underlying price that user is willing to tolerate
     function wrapEthAndDepositAndBorrowAndSellHTokens(
         IBalanceSheetV1 balanceSheet,
-        IHToken hToken,
         IHifiPool hifiPool,
-        uint256 underlyingAmount
+        uint256 borrowAmount,
+        uint256 underlyingAmount,
+        uint256 slippageTolerance
     ) external payable;
 }
