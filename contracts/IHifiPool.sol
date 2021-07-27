@@ -78,6 +78,17 @@ interface IHifiPool {
     /// @dev Adds the Erc20 hToken balance to the total supply of pool tokens.
     function getVirtualHTokenReserves() external view returns (uint256 virtualHTokenReserves);
 
+    /// @notice Quotes how much hToken would be required by mint function for `underlyingOffered` underlying.
+    /// and Quotes how much  pool Tokens  would be obtained.
+    ///
+    /// @param underlyingOffered Amount of underlying tokens invested.
+    /// @return hTokenRequired Hypothetical amount of hTokens required by mint.
+    /// @return poolTokensMinted The amount of liquidity tokens to mint.
+    function getRequiredHTokenAndReturnedPoolTokenQuoteForMint(uint256 underlyingOffered)
+        external
+        view
+        returns (uint256 hTokenRequired, uint256 poolTokensMinted);
+
     /// @notice The unix timestamp at which the hToken expires.
     function maturity() external view returns (uint256);
 
