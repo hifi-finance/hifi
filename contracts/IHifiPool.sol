@@ -53,6 +53,16 @@ interface IHifiPool {
     /// @return hTokenIn Hypothetical amount of hToken required.
     function getQuoteForBuyingUnderlying(uint256 underlyingOut) external view returns (uint256 hTokenIn);
 
+    /// @notice Quotes how much hToken would be required and how much lp tokens would be issued for a given amount of
+    /// underlying invested.
+    /// @param underlyingOffered Amount of underlying tokens invested.
+    /// @return hTokenRequired Hypothetical amount of hTokens required to mint new lp tokens.
+    /// @return poolTokensMinted The amount of lp tokens to mint.
+    function getMintParams(uint256 underlyingOffered)
+        external
+        view
+        returns (uint256 hTokenRequired, uint256 poolTokensMinted);
+
     /// @notice Quotes how much underlying would be obtained by selling `hTokenIn` hToken.
     ///
     /// @dev Requirements:
@@ -77,17 +87,6 @@ interface IHifiPool {
     /// @notice Retrieves the "" hToken reserves, as explained in the whitepaper.
     /// @dev Adds the Erc20 hToken balance to the total supply of pool tokens.
     function getVirtualHTokenReserves() external view returns (uint256 virtualHTokenReserves);
-
-    /// @notice Quotes how much hToken would be required by mint function for `underlyingOffered` underlying.
-    /// and Quotes how much  pool Tokens  would be obtained.
-    ///
-    /// @param underlyingOffered Amount of underlying tokens invested.
-    /// @return hTokenRequired Hypothetical amount of hTokens required by mint.
-    /// @return poolTokensMinted The amount of liquidity tokens to mint.
-    function getRequiredHTokenAndReturnedPoolTokenQuoteForMint(uint256 underlyingOffered)
-        external
-        view
-        returns (uint256 hTokenRequired, uint256 poolTokensMinted);
 
     /// @notice The unix timestamp at which the hToken expires.
     function maturity() external view returns (uint256);
