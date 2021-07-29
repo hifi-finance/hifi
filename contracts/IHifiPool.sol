@@ -3,10 +3,11 @@ pragma solidity >=0.8.4;
 
 import "@hifi/protocol/contracts/core/hToken/IHToken.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
+import "@paulrberg/contracts/token/erc20/IErc20Permit.sol";
 
 /// @title IHifiPool
 /// @author Hifi
-interface IHifiPool {
+interface IHifiPool is IErc20Permit {
     /// EVENTS ///
 
     event AddLiquidity(
