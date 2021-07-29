@@ -142,6 +142,28 @@ contract HifiPool is
     }
 
     /// @inheritdoc IHifiPool
+    function getMintParams(uint256 underlyingOffered)
+        public
+        view
+        override
+        returns (uint256 hTokenRequired, uint256 poolTokensMinted)
+    {
+        // Our native precision is 18 decimals so the underlying amount needs to be normalized.
+        uint256 normalizedUnderlyingOffered = normalize(underlyingOffered);
+        uint256 supply = totalSupply;
+
+        // When there are no LP tokens in existence, only underlying needs to be provided.
+        if (supply == 0) {
+            return (0, normalizedUnderlyingOffered);
+        }
+
+        // We need to use the actual reserves rather than the virtual reserves here.
+        uint256 hTokenReserves = hToken.balanceOf(address(this));
+        poolTokensMinted = (supply * normalizedUnderlyingOffered) / getNormalizedUnderlyingReserves();
+        hTokenRequired = (hTokenReserves * poolTokensMinted) / supply;
+    }
+
+    /// @inheritdoc IHifiPool
     function getQuoteForSellingHToken(uint256 hTokenIn)
         public
         view
@@ -281,26 +303,8 @@ contract HifiPool is
             revert HifiPool__MintZero();
         }
 
-        // Our native precision is 18 decimals so the underlying amount needs to be normalized.
-        uint256 normalizedUnderlyingOffered = normalize(underlyingOffered);
-
-        // When there are no LP tokens in existence, only underlying needs to be provided.
-        uint256 supply = totalSupply;
-        if (supply == 0) {
-            // Effects
-            mintInternal(msg.sender, normalizedUnderlyingOffered);
-
-            // Interactions
-            underlying.safeTransferFrom(msg.sender, address(this), underlyingOffered);
-
-            emit AddLiquidity(maturity, msg.sender, underlyingOffered, 0, normalizedUnderlyingOffered);
-            return normalizedUnderlyingOffered;
-        }
-
-        // We need to use the actual reserves rather than the virtual reserves here.
-        uint256 hTokenReserves = hToken.balanceOf(address(this));
-        poolTokensMinted = (supply * normalizedUnderlyingOffered) / getNormalizedUnderlyingReserves();
-        uint256 hTokenRequired = (hTokenReserves * poolTokensMinted) / supply;
+        uint256 hTokenRequired;
+        (hTokenRequired, poolTokensMinted) = getMintParams(underlyingOffered);
 
         // Effects
         mintInternal(msg.sender, poolTokensMinted);
