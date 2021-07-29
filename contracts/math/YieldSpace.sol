@@ -90,7 +90,7 @@ library YieldSpace {
             // "hTokenReserves" - that is, in a purely mathematical sense. In practice though, due to the "pow"
             // function having lossy precision, specifically that it produces results slightly smaller than what
             // they should be, it is possible for "newHTokenReserves" to be less than "hTokenReserves" in
-            // in certain circumstances. For instance, when underlying reserves and the hToken reserves
+            // in certain circumstances. For example, this happens when underlying reserves and hToken reserves
             // have very different magnitudes.
             uint256 newHTokenReserves = sum.pow(exponent.inv()).toUint();
             if (newHTokenReserves < hTokenReserves) {
@@ -193,9 +193,9 @@ library YieldSpace {
             // because the inverse of the exponent is supraunitary and so sum^(1/exponent) should produce a result
             // bigger than "normalizedUnderlyingReserves" - that is, in a purely mathematical sense. In practice though,
             // due to the "pow" function having lossy precision, specifically that it produces results slightly smaller
-            // than what they should be, it is possible in certain  circumstances for "newNormalizedUnderlyingReserves
-            // to be less than "normalizedUnderlyingReserves". For instance, when underlying reserves and the hToken
-            // reserves have very different magnitudes.
+            // than what they should be, it is possible in certain  circumstances for "newNormalizedUnderlyingReserves"
+            // to be less than "normalizedUnderlyingReserves". For example, this happens when underlying reserves and
+            // the hToken reserves have very different magnitudes.
             uint256 newNormalizedUnderlyingReserves = sum.pow(exponent.inv()).toUint();
             if (newNormalizedUnderlyingReserves < normalizedUnderlyingReserves) {
                 revert YieldSpace__LossyPrecisionUnderflow(
