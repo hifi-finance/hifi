@@ -1,12 +1,12 @@
 import { ethers } from "hardhat";
 
-import { HiFiProxyTarget, HiFiProxyTarget__factory } from "../../typechain";
+import { HifiProxyTarget, HifiProxyTarget__factory } from "../../typechain";
 
 async function main(): Promise<void> {
-  const hiFiProxyTargetFactory: HiFiProxyTarget__factory = await ethers.getContractFactory("RegentsTargetV1");
-  const hiFiProxyTarget: HiFiProxyTarget = await hiFiProxyTargetFactory.deploy();
-  await hiFiProxyTarget.deployed();
-  console.log("HiFiProxyTarget deployed to: ", hiFiProxyTarget.address);
+  const hifiProxyTargetFactory: HifiProxyTarget__factory = await ethers.getContractFactory("HifiProxyTarget");
+  const hifiProxyTarget: HifiProxyTarget = await hifiProxyTargetFactory.deploy();
+  await hifiProxyTarget.deployed();
+  console.log("HiFiProxyTarget deployed to: ", hifiProxyTarget.address);
 }
 
 main()
