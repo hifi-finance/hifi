@@ -819,9 +819,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hifi/amm@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "@hifi/amm@npm:1.1.0"
+"@hifi/amm@npm:1.1.1":
+  version: 1.1.1
+  resolution: "@hifi/amm@npm:1.1.1"
   dependencies:
     "@hifi/protocol": ^1.1.1
     "@paulrberg/contracts": ^3.4.0
@@ -830,7 +830,7 @@ __metadata:
     "@hifi/protocol": ^1.1.1
     "@paulrberg/contracts": ^3.4.0
     prb-math: ^2.2.0
-  checksum: 3818f3dc9e6bea6c8f645e9fee79a5a525e4c4a03391eba9472d20bce99619d5799beb00fdde0a58e76e7ac7fb2d51f323ca9306cb9adff2702f3bf59c56f641
+  checksum: f1fccba307cbdd157b9d84cbde53db97eb308c813ca51b85664742e1b68d60767d79f07a8484baf2e4556f60d6ae8894f5c9186ed9c6fb467ccb2cec1ca7f5d4
   languageName: node
   linkType: hard
 
@@ -858,9 +858,9 @@ __metadata:
     "@ethersproject/abi": ^5.4.0
     "@ethersproject/bytes": ^5.4.0
     "@ethersproject/providers": ^5.4.0
-    "@hifi/amm": ^1.1.0
+    "@hifi/amm": 1.1.1
     "@hifi/protocol": 1.1.1
-    "@paulrberg/contracts": ^3.4.0
+    "@paulrberg/contracts": 3.4.0
     "@typechain/ethers-v5": ^7.0.1
     "@typechain/hardhat": ^2.1.0
     "@types/node": ^15.12.5
@@ -931,7 +931,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@paulrberg/contracts@npm:^3.4.0":
+"@paulrberg/contracts@npm:3.4.0, @paulrberg/contracts@npm:^3.4.0":
   version: 3.4.0
   resolution: "@paulrberg/contracts@npm:3.4.0"
   dependencies:

@@ -8,9 +8,9 @@
     "url": "https://hifi.finance"
   },
   "dependencies": {
-    "@hifi/amm": "^1.1.0",
-    "@hifi/protocol": "1.1.1",
-    "@paulrberg/contracts": "^3.4.0"
+    "@hifi/amm": "1.1.2",
+    "@hifi/protocol": "1.1.2",
+    "@paulrberg/contracts": "3.4.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^12.1.4",
@@ -53,7 +53,14 @@
     "solidity"
   ],
   "license": "LGPL-3.0-or-later",
-  "private": true,
+  "peerDependencies": {
+    "@hifi/amm": "1.1.2",
+    "@hifi/protocol": "1.1.2",
+    "@paulrberg/contracts": "3.4.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "resolutions": {
     "@ethersproject/abi": "^5.4.0",
     "@solidity-parser/parser": "^0.13.2",
@@ -70,6 +77,8 @@
     "lint:sol": "solhint --config ./.solhint.json --max-warnings 0 \"contracts/**/*.sol\"",
     "lint:ts": "eslint --config ./.eslintrc.yaml --ignore-path ./.eslintignore --ext .js,.ts .",
     "postinstall": "husky install",
+    "postpublish": "pinst --enable",
+    "prepublishOnly": "pinst --disable",
     "prettier": "prettier --config ./.prettierrc --write \"**/*.{js,json,md,sol,ts}\"",
     "prettier:check": "prettier --check --config ./.prettierrc \"**/*.{js,json,md,sol,ts}\"",
     "test": "hardhat test",
