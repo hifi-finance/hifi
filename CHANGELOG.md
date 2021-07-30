@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.1] - 2021-07-30
+
+### Changed
+
+- Improve NatSpec comments in `IHifiPool.sol`.
+
 ## [1.1.0] - 2021-07-29
 
 ### Added
@@ -23,4 +29,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - First release of the package.
 
+[1.1.1]: https://github.com/hifi-finance/hifi-amm/releases/tag/v1.1.1
+[1.1.0]: https://github.com/hifi-finance/hifi-amm/releases/tag/v1.1.0
 [1.0.0]: https://github.com/hifi-finance/hifi-amm/releases/tag/v1.0.0

@@ -54,7 +54,7 @@ interface IHifiPool is IErc20Permit {
     /// @return hTokenIn Hypothetical amount of hToken required.
     function getQuoteForBuyingUnderlying(uint256 underlyingOut) external view returns (uint256 hTokenIn);
 
-    /// @notice Quotes how much hToken would be required and how much lp tokens would be issued for a given amount of
+    /// @notice Quotes how much hToken would be required and how many lp tokens would be issued for a given amount of
     /// underlying invested.
     /// @param underlyingOffered Amount of underlying tokens invested.
     /// @return hTokenRequired Hypothetical amount of hTokens required to mint new lp tokens.
@@ -108,9 +108,7 @@ interface IHifiPool is IErc20Permit {
     /// @dev Emits a {RemoveLiquidity} event.
     ///
     /// Requirements:
-    ///
     /// - The amount to burn cannot be zero.
-    /// - The caller must have allowed this contract to spend `poolTokensBurned`.
     ///
     /// @param poolTokensBurned Amount of liquidity tokens to burn.
     /// @return underlyingReturned The amount of reserve underlying retrieved.
@@ -124,7 +122,7 @@ interface IHifiPool is IErc20Permit {
     /// Requirements:
     /// - All from "getQuoteForBuyingHToken".
     /// - The caller must have allowed this contract to spend `underlyingIn` tokens.
-    /// - The caller must have at least `underlyingIn` underlying in their account.
+    /// - The caller must have at least `underlyingIn` in their account.
     ///
     /// @param to Account that receives the hToken being bought.
     /// @param hTokenOut Amount of hToken being bought that will be transferred to the `to` account.
@@ -136,7 +134,7 @@ interface IHifiPool is IErc20Permit {
     /// Requirements:
     /// - All from "getQuoteForBuyingUnderlying".
     /// - The caller must have allowed this contract to spend `hTokenIn` tokens.
-    /// - The caller must have at least `hTokenIn` hToken in their account.
+    /// - The caller must have at least `hTokenIn` in their account.
     ///
     /// @param to Account that receives the underlying being bought.
     /// @param underlyingOut Amount of underlying being bought that will be transferred to the `to` account.
@@ -162,7 +160,7 @@ interface IHifiPool is IErc20Permit {
     /// Requirements:
     /// - All from "getQuoteForSellingHToken".
     /// - The caller must have allowed this contract to spend `hTokenIn` tokens.
-    /// - The caller must have at least `underlyingIn` hToken in their account.
+    /// - The caller must have at least `hTokenIn` in their account.
     ///
     /// @param to Account that receives the underlying being bought.
     /// @param hTokenIn Amount of underlying being sold that is taken from the caller's account.
@@ -176,7 +174,7 @@ interface IHifiPool is IErc20Permit {
     /// Requirements:
     /// - All from "getQuoteForSellingUnderlying".
     /// - The caller must have allowed this contract to spend `underlyingIn` tokens.
-    /// - The caller must have at least `underlyingIn` underlying in their account.
+    /// - The caller must have at least `underlyingIn` in their account.
     ///
     /// @param to Account that receives the hToken being bought.
     /// @param underlyingIn Amount of underlying being sold that is taken from the caller's account.
