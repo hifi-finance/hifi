@@ -1,17 +1,24 @@
 /// SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.4;
+
+import "@hifi/amm/contracts/IHifiPool.sol";
+import "@hifi/protocol/contracts/core/balanceSheet/IBalanceSheetV1.sol";
+import "@hifi/protocol/contracts/core/hToken/IHToken.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 
 import "./IHifiProxyTarget.sol";
-import "./external/weth/WethInterface.sol";
+import "./external/WethInterface.sol";
 
-/// @notice Emitted when the slippage is more that expected slippage tolerance.
-error HifiProxyTarget__ExceedExpectedSlippageTolerance(uint256 slippage);
+/// @notice Emitted when the slippage of an LP event is higher than what the user is willing to tolerate.
+error HifiProxyTarget__AddLiquiditySlippageTooHigh(uint256 expectedHTokenRequired, uint256 actualHTokenRequired);
+
+/// @notice Emitted when the slippage of a trade is higher than what the user is willing to tolerate.
+error HifiProxyTarget__TradeSlippageTooHigh(uint256 expectedAmount, uint256 actualAmount);
 
 /// @title HifiProxyTarget
 /// @author Hifi
-/// @notice Target contract with scripts for the Regents release of the protocol.
+/// @notice DSProxy target contract with scripts for the Hifi protocol.
 /// @dev Meant to be used with a DSProxy contract via delegatecall.
 contract HifiProxyTarget is IHifiProxyTarget {
     using SafeErc20 for IErc20;
@@ -21,316 +28,285 @@ contract HifiProxyTarget is IHifiProxyTarget {
     /// @inheritdoc IHifiProxyTarget
     address public constant override WETH_ADDRESS = 0xDf032Bc4B9dC2782Bb09352007D4C57B75160B15;
 
-    /// CONSTANT FUNCTIONS ///
-    function gethTokenRequiredForMint(IHifiPool hifiPool, uint256 underlyingAmount)
-        public
-        view
-        override
-        returns (uint256 hTokenAmount)
-    {
-        IHToken hToken = hifiPool.hToken();
-        // Calculate the amount of hToken required.
-        // We need to use the actual reserves rather than the virtual reserves here.
-        uint256 hTokenReserves = hToken.balanceOf(address(hifiPool));
-        uint256 normalizedUnderlyingOffered = normalize(hifiPool, underlyingAmount);
-        uint256 supply = hifiPool.totalSupply();
-        uint256 poolTokensMint = (supply * normalizedUnderlyingOffered) / hifiPool.getNormalizedUnderlyingReserves();
-        hTokenAmount = (hTokenReserves * poolTokensMint) / supply;
-    }
-
     /// PUBLIC NON-CONSTANT FUNCTIONS ///
 
     /// @inheritdoc IHifiProxyTarget
-    function borrow(
+    function addLiquidity(
+        IHifiPool hifiPool,
+        uint256 underlyingOffered,
+        uint256 maxHTokenRequired
+    ) external override {
+        // Ensure that we are within the user's slippage tolerance.
+        (uint256 hTokenRequired, ) = hifiPool.getMintParams(underlyingOffered);
+        if (hTokenRequired > maxHTokenRequired) {
+            revert HifiProxyTarget__AddLiquiditySlippageTooHigh(maxHTokenRequired, hTokenRequired);
+        }
+
+        // Transfer the underlying to the DSProxy.
+        IErc20 underlying = hifiPool.underlying();
+        underlying.safeTransferFrom(msg.sender, address(this), underlyingOffered);
+
+        // Allow the HifiPool contract to spend underlying from the DSProxy.
+        approveSpender(underlying, address(hifiPool), underlyingOffered);
+
+        // Transfer the hTokens to the DSProxy.
+        IHToken hToken = hifiPool.hToken();
+        hToken.transferFrom(msg.sender, address(this), hTokenRequired);
+
+        // Allow the HifiPool contract to spend hTokens from the DSProxy.
+        approveSpender(hToken, address(hifiPool), hTokenRequired);
+
+        // Add liquidity to the AMM.
+        uint256 poolTokensMinted = hifiPool.mint(underlyingOffered);
+
+        // The LP tokens are now in the DSProxy, so we relay them to the end user.
+        hifiPool.transfer(msg.sender, poolTokensMinted);
+    }
+
+    /// @inheritdoc IHifiProxyTarget
+    function borrowHToken(
         IBalanceSheetV1 balanceSheet,
         IHToken hToken,
         uint256 borrowAmount
     ) public override {
         balanceSheet.borrow(hToken, borrowAmount);
+
+        // The hTokens are now in the DSProxy, so we relay them to the end user.
         hToken.transfer(msg.sender, borrowAmount);
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function borrowAndPool(
+    function borrowHTokenAndAddLiquidity(
         IBalanceSheetV1 balanceSheet,
         IHifiPool hifiPool,
-        uint256 borrowAmount,
-        uint256 underlyingAmount
+        uint256 maxBorrowAmount,
+        uint256 underlyingOffered
     ) external override {
-        IHToken hToken = hifiPool.hToken();
-        IErc20 underlying = hifiPool.underlying();
-
-        // Calculate the amount of hToken required.
-        uint256 hTokenAmount = gethTokenRequiredForMint(hifiPool, underlyingAmount);
-
-        if (hTokenAmount > borrowAmount) {
-            revert HifiProxyTarget__ExceedExpectedSlippageTolerance(hTokenAmount);
+        // Ensure that we are within the user's slippage tolerance.
+        (uint256 hTokenRequired, ) = hifiPool.getMintParams(underlyingOffered);
+        if (hTokenRequired > maxBorrowAmount) {
+            revert HifiProxyTarget__AddLiquiditySlippageTooHigh(maxBorrowAmount, hTokenRequired);
         }
-        // borrow hToken.
-        balanceSheet.borrow(hToken, borrowAmount);
+
+        // Borrow hToken.
+        IHToken hToken = hifiPool.hToken();
+        balanceSheet.borrow(hToken, hTokenRequired);
 
         // Transfer the underlying to the DSProxy.
-        underlying.safeTransferFrom(msg.sender, address(this), underlyingAmount);
+        IErc20 underlying = hifiPool.underlying();
+        underlying.safeTransferFrom(msg.sender, address(this), underlyingOffered);
 
-        // Allow the HiFiPool contract to spend underlying if allowance not enough.
-        uint256 allowance = underlying.allowance(address(this), address(hifiPool));
-        if (allowance < underlyingAmount) {
-            underlying.approve(address(hifiPool), type(uint256).max);
-        }
+        // Allow the HifiPool contract to spend underlying from the DSProxy.
+        approveSpender(underlying, address(hifiPool), underlyingOffered);
 
-        // Allow the HiFiPool contract to spend hToken if allowance not enough.
-        uint256 hTokenAllowance = hToken.allowance(address(this), address(hifiPool));
-        if (hTokenAllowance < borrowAmount) {
-            hToken.approve(address(hifiPool), type(uint256).max);
-        }
+        // Allow the HifiPool contract to spend hTokens from the DSProxy.
+        approveSpender(hToken, address(hifiPool), hTokenRequired);
 
-        // add liquidity to pool
-        uint256 poolTokens = hifiPool.mint(underlyingAmount);
+        // Add liquidity to pool.
+        uint256 poolTokensMinted = hifiPool.mint(underlyingOffered);
 
-        // The liquidity tokens are now in the DSProxy, so we relay it to the end user.
-        hifiPool.transfer(msg.sender, poolTokens);
+        // The LP tokens are now in the DSProxy, so we relay them to the end user.
+        hifiPool.transfer(msg.sender, poolTokensMinted);
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function borrowHTokensAndBuyUnderlying(
+    function borrowHTokenAndBuyUnderlying(
         IBalanceSheetV1 balanceSheet,
         IHifiPool hifiPool,
-        uint256 borrowAmount,
-        uint256 underlyingAmount
-    ) public payable override {
-        IHToken hToken = hifiPool.hToken();
-
-        // Get required hToken amount for buying exact underlying amount
-        uint256 borrowAmountIn = hifiPool.getQuoteForBuyingUnderlying(underlyingAmount);
-
-        // If required amount to borrow is more than max borrow amount that user wanted to borrow, revert tx.
-        if (borrowAmountIn > borrowAmount) {
-            revert HifiProxyTarget__ExceedExpectedSlippageTolerance(borrowAmountIn);
+        uint256 maxBorrowAmount,
+        uint256 underlyingOut
+    ) external override {
+        // Ensure that we are within the user's slippage tolerance.
+        uint256 hTokenIn = hifiPool.getQuoteForBuyingUnderlying(underlyingOut);
+        if (hTokenIn > maxBorrowAmount) {
+            revert HifiProxyTarget__TradeSlippageTooHigh(maxBorrowAmount, hTokenIn);
         }
+
         // Borrow the hTokens.
-        balanceSheet.borrow(hToken, borrowAmountIn);
+        IHToken hToken = hifiPool.hToken();
+        balanceSheet.borrow(hToken, hTokenIn);
 
-        // Allow the HiFiPool contract to spend hTokens if allowance not enough.
-        uint256 allowance = hToken.allowance(address(this), address(hifiPool));
-        if (allowance < borrowAmountIn) {
-            hToken.approve(address(hifiPool), type(uint256).max);
-        }
+        // Allow the HifiPool contract to spend hTokens from the DSProxy.
+        approveSpender(hToken, address(hifiPool), hTokenIn);
 
-        // Finally, bought the exact underlying and send it to the end user.
-        hifiPool.buyUnderlying(msg.sender, underlyingAmount);
+        // Buy underlying and relay it to the end user.
+        hifiPool.buyUnderlying(msg.sender, underlyingOut);
 
-        emit BorrowHTokensAndBuyUnderlying(msg.sender, borrowAmountIn, underlyingAmount);
+        emit BorrowHTokenAndBuyUnderlying(msg.sender, hTokenIn, underlyingOut);
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function borrowAndSellHTokens(
+    function borrowHTokenAndSellHToken(
         IBalanceSheetV1 balanceSheet,
         IHifiPool hifiPool,
         uint256 borrowAmount,
-        uint256 underlyingAmount
-    ) public payable override {
-        IHToken hToken = hifiPool.hToken();
+        uint256 minUnderlyingOut
+    ) public override {
+        // Ensure that we are within the user's slippage tolerance.
+        uint256 underlyingOut = hifiPool.getQuoteForSellingHToken(borrowAmount);
+        if (underlyingOut < minUnderlyingOut) {
+            revert HifiProxyTarget__TradeSlippageTooHigh(minUnderlyingOut, underlyingOut);
+        }
 
-        // Borrow the exact hTokens.
+        // Borrow the hTokens.
+        IHToken hToken = hifiPool.hToken();
         balanceSheet.borrow(hToken, borrowAmount);
 
-        // Allow the HiFiPool contract to spend hTokens if allowance not enough.
-        uint256 allowance = hToken.allowance(address(this), address(hifiPool));
-        if (allowance < borrowAmount) {
-            hToken.approve(address(hifiPool), type(uint256).max);
-        }
+        // Allow the HifiPool contract to spend hTokens from the DSProxy.
+        approveSpender(hToken, address(hifiPool), borrowAmount);
 
-        // Get quote for selling HTokens
-        uint256 underlyingAmountOut = hifiPool.getQuoteForSellingHToken(borrowAmount);
-
-        if (underlyingAmountOut < underlyingAmount) {
-            revert HifiProxyTarget__ExceedExpectedSlippageTolerance(underlyingAmountOut);
-        }
-        // Finally, bought the max underlying for exact borrowed amount of hToken and send it to the end user.
+        // Sell the hTokens and relay the underlying to the end user.
         hifiPool.sellHToken(msg.sender, borrowAmount);
 
-        emit BorrowAndSellHTokens(msg.sender, borrowAmount, underlyingAmountOut);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
-    function burn(IHifiPool hifiPool, uint256 poolTokens) public override {
-        IErc20 underlying = hifiPool.underlying();
-        IHToken hToken = hifiPool.hToken();
-        uint256 underlyingReturned;
-        uint256 hTokenReturned;
-        (underlyingReturned, hTokenReturned) = burnInternal(hifiPool, poolTokens);
-
-        // The underlying and htoken is now in the DSProxy, so we relay it to the end user.
-        underlying.safeTransfer(msg.sender, underlyingReturned);
-        hToken.transfer(msg.sender, hTokenReturned);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
-    function burnAndSellHTokens(IHifiPool hifiPool, uint256 poolTokens) public override {
-        IErc20 underlying = hifiPool.underlying();
-        IHToken hToken = hifiPool.hToken();
-
-        uint256 underlyingReturned;
-        uint256 hTokenReturned;
-
-        (underlyingReturned, hTokenReturned) = burnInternal(hifiPool, poolTokens);
-
-        // The underlying and htoken is now in the DSProxy, so we relay underlying to the end user.
-        underlying.safeTransfer(msg.sender, underlyingReturned);
-
-        // Allow the HiFiPool contract to spend hToken if allowance not enough.
-        uint256 hTokenAllowance = hToken.allowance(address(this), address(hifiPool));
-        if (hTokenAllowance < hTokenReturned) {
-            hToken.approve(address(hifiPool), type(uint256).max);
-        }
-        // The underlying is now in the DSProxy, so we relay it to the end user.
-        underlying.safeTransfer(msg.sender, underlyingReturned);
-        // Sell hTokens for underlying and return it to user.
-        hifiPool.sellHToken(msg.sender, hTokenReturned);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
-    function burnAndSellUnderlyingAndRepayBorrow(
-        IBalanceSheetV1 balanceSheet,
-        IHifiPool hifiPool,
-        uint256 poolTokens
-    ) public override {
-        IErc20 underlying = hifiPool.underlying();
-        IHToken hToken = hifiPool.hToken();
-
-        uint256 underlyingReturned;
-        uint256 hTokenReturned;
-
-        (underlyingReturned, hTokenReturned) = burnInternal(hifiPool, poolTokens);
-
-        // Allow the HiFiPool contract to spend underlying if allowance not enough.
-        uint256 underlyingAllowance = underlying.allowance(address(this), address(hifiPool));
-        if (underlyingAllowance < underlyingReturned) {
-            underlying.approve(address(hifiPool), type(uint256).max);
-        }
-
-        uint256 hTokenOut = hifiPool.sellUnderlying(address(this), underlyingReturned);
-
-        uint256 totalHtokensToRepay = hTokenOut + hTokenReturned;
-        // Use the recently bought hTokens to repay the borrow.
-        balanceSheet.repayBorrow(hToken, totalHtokensToRepay);
+        emit BorrowHTokenAndSellHToken(msg.sender, borrowAmount, underlyingOut);
     }
 
     /// @inheritdoc IHifiProxyTarget
     function buyHToken(
         IHifiPool hifiPool,
-        uint256 hTokenAmount,
-        uint256 underlyingAmount
-    ) public override {
-        IHToken hToken = hifiPool.hToken();
-        buyHTokenInternal(hifiPool, hTokenAmount, underlyingAmount);
-        // The htoken is now in the DSProxy, so we relay it to the end user.
-        hToken.transfer(msg.sender, hTokenAmount);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
-    function buyHTokenAndPool(
-        IHifiPool hifiPool,
-        uint256 underlyingAmount,
-        uint256 underlyingAmountToInvest
-    ) public override {
-        IErc20 underlying = hifiPool.underlying();
-        IErc20 hToken = hifiPool.hToken();
-
-        // Calculate the amount of hToken required.
-        uint256 hTokenAmountRequired = gethTokenRequiredForMint(hifiPool, underlyingAmountToInvest);
-        uint256 underlyingIn = hifiPool.getQuoteForBuyingHToken(hTokenAmountRequired);
-        if (underlyingIn > underlyingAmount) {
-            revert HifiProxyTarget__ExceedExpectedSlippageTolerance(underlyingIn);
+        uint256 hTokenOut,
+        uint256 maxUnderlyingIn
+    ) external override {
+        // Ensure that we are within the user's slippage tolerance.
+        uint256 underlyingIn = hifiPool.getQuoteForBuyingHToken(hTokenOut);
+        if (underlyingIn > maxUnderlyingIn) {
+            revert HifiProxyTarget__TradeSlippageTooHigh(maxUnderlyingIn, underlyingIn);
         }
-        buyHTokenInternal(hifiPool, hTokenAmountRequired, underlyingIn);
 
         // Transfer the underlying to the DSProxy.
-        underlying.safeTransferFrom(msg.sender, address(this), underlyingAmountToInvest);
+        IErc20 underlying = hifiPool.underlying();
+        underlying.safeTransferFrom(msg.sender, address(this), underlyingIn);
 
-        // Allow the HiFiPool contract to spend underlying if allowance not enough.
-        uint256 allowance = underlying.allowance(address(this), address(hifiPool));
-        if (allowance < underlyingAmountToInvest) {
-            underlying.approve(address(hifiPool), type(uint256).max);
-        }
+        // Allow the HifiPool contract to spend underlying from the DSProxy.
+        approveSpender(underlying, address(hifiPool), underlyingIn);
 
-        // Allow the HiFiPool contract to spend hToken if allowance not enough.
-        uint256 hTokenAllowance = hToken.allowance(address(this), address(hifiPool));
-        if (hTokenAllowance < hTokenAmountRequired) {
-            hToken.approve(address(hifiPool), type(uint256).max);
-        }
-
-        // add liquidity to pool
-        uint256 poolTokens = hifiPool.mint(underlyingAmountToInvest);
-
-        // The liquidity tokens are now in the DSProxy, so we relay it to the end user.
-        hifiPool.transfer(msg.sender, poolTokens);
+        // Buy the hTokens and relay them to the end user.
+        hifiPool.buyHToken(msg.sender, hTokenOut);
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function buyHtokenAndRepayBorrow(
-        IBalanceSheetV1 balanceSheet,
+    function buyHTokenAndAddLiquidity(
         IHifiPool hifiPool,
-        uint256 hTokenAmount,
-        uint256 underlyingAmount
+        uint256 maxUnderlyingIn,
+        uint256 underlyingOffered
     ) external override {
-        IHToken hToken = hifiPool.hToken();
-        buyHTokenInternal(hifiPool, hTokenAmount, underlyingAmount);
+        // Ensure that we are within the user's slippage tolerance.
+        (uint256 hTokenRequired, ) = hifiPool.getMintParams(underlyingOffered);
+        uint256 underlyingIn = hifiPool.getQuoteForBuyingHToken(hTokenRequired);
+        if (underlyingIn > maxUnderlyingIn) {
+            revert HifiProxyTarget__TradeSlippageTooHigh(maxUnderlyingIn, underlyingIn);
+        }
+
+        // Transfer the underlying to the DSProxy. We transfer the sum of `underlyingIn` and `underlyingOffered` to
+        // avoid making two Erc20 transfers.
+        IErc20 underlying = hifiPool.underlying();
+        uint256 totalUnderlyingAmount = underlyingIn + underlyingOffered;
+        underlying.safeTransferFrom(msg.sender, address(this), totalUnderlyingAmount);
+
+        // Allow the HifiPool contract to spend underlying from the DSProxy.
+        approveSpender(underlying, address(hifiPool), totalUnderlyingAmount);
+
+        // Buy the hTokens.
+        hifiPool.buyHToken(address(this), hTokenRequired);
+
+        // Allow the HifiPool contract to spend hTokens from the DSProxy.
+        approveSpender(hifiPool.hToken(), address(hifiPool), hTokenRequired);
+
+        // Add liquidity to the AMM.
+        uint256 poolTokensMinted = hifiPool.mint(underlyingOffered);
+
+        // The LP tokens are now in the DSProxy, so we relay them to the end user.
+        hifiPool.transfer(msg.sender, poolTokensMinted);
+    }
+
+    /// @inheritdoc IHifiProxyTarget
+    function buyHTokenAndRepayBorrow(
+        IHifiPool hifiPool,
+        IBalanceSheetV1 balanceSheet,
+        uint256 maxUnderlyingIn,
+        uint256 repayAmount
+    ) external override {
+        // Ensure that we are within the user's slippage tolerance.
+        uint256 underlyingIn = hifiPool.getQuoteForBuyingHToken(repayAmount);
+        if (underlyingIn > maxUnderlyingIn) {
+            revert HifiProxyTarget__TradeSlippageTooHigh(maxUnderlyingIn, underlyingIn);
+        }
+
+        // Transfer the underlying to the DSProxy.
+        IErc20 underlying = hifiPool.underlying();
+        underlying.safeTransferFrom(msg.sender, address(this), underlyingIn);
+
+        // Allow the HifiPool contract to spend underlying from the DSProxy.
+        approveSpender(underlying, address(hifiPool), underlyingIn);
+
+        // Buy the hTokens.
+        hifiPool.buyHToken(address(this), repayAmount);
+
         // Use the recently bought hTokens to repay the borrow.
-        balanceSheet.repayBorrow(hToken, hTokenAmount);
+        balanceSheet.repayBorrow(hifiPool.hToken(), repayAmount);
     }
 
     /// @inheritdoc IHifiProxyTarget
     function buyUnderlying(
         IHifiPool hifiPool,
-        uint256 hTokenAmount,
-        uint256 underlyingAmount
-    ) public override {
-        IErc20 underlying = hifiPool.underlying();
-        uint256 underlyingReturned = buyUnderlyingInternal(hifiPool, hTokenAmount, underlyingAmount);
-        underlying.safeTransfer(msg.sender, underlyingReturned);
+        uint256 underlyingOut,
+        uint256 maxHTokenIn
+    ) external override {
+        // Ensure that we are within the user's slippage tolerance.
+        uint256 hTokenIn = hifiPool.getQuoteForBuyingUnderlying(underlyingOut);
+        if (hTokenIn > maxHTokenIn) {
+            revert HifiProxyTarget__TradeSlippageTooHigh(maxHTokenIn, hTokenIn);
+        }
+
+        // Transfer the hTokens to the DSProxy.
+        IErc20 hToken = hifiPool.hToken();
+        hToken.transferFrom(msg.sender, address(this), hTokenIn);
+
+        // Allow the HifiPool contract to spend underlying from the DSProxy.
+        approveSpender(hToken, address(hifiPool), hTokenIn);
+
+        // Buy the underlying and relay it to the end user.
+        hifiPool.buyUnderlying(msg.sender, underlyingOut);
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function buyUnderlyingAndPool(
+    function buyUnderlyingAndAddLiquidity(
         IHifiPool hifiPool,
-        uint256 hTokenAmount,
-        uint256 underlyingAmountToInvest
-    ) public override {
-        IErc20 hToken = hifiPool.hToken();
+        uint256 maxHTokenIn,
+        uint256 maxHTokenRequired,
+        uint256 underlyingOffered
+    ) external override {
+        // Ensure that we are within the user's slippage tolerance.
+        uint256 hTokenIn = hifiPool.getQuoteForBuyingUnderlying(underlyingOffered);
+        if (hTokenIn > maxHTokenIn) {
+            revert HifiProxyTarget__TradeSlippageTooHigh(maxHTokenIn, hTokenIn);
+        }
+        (uint256 hTokenRequired, ) = hifiPool.getMintParams(underlyingOffered);
+        if (hTokenRequired > maxHTokenRequired) {
+            revert HifiProxyTarget__AddLiquiditySlippageTooHigh(maxHTokenRequired, hTokenRequired);
+        }
+
+        // Transfer the hTokens to the DSProxy. We're transferring the sum of `hTokenIn` and `hTokenRequired` to
+        // avoid making two Erc20 transfers.
+        IHToken hToken = hifiPool.hToken();
+        uint256 totalHTokenAmount = hTokenIn + hTokenRequired;
+        hToken.transferFrom(msg.sender, address(this), totalHTokenAmount);
+
+        // Allow the HifiPool contract to spend hTokens from the DSProxy.
+        approveSpender(hToken, address(hifiPool), totalHTokenAmount);
+
+        // Buy the underlying.
+        hifiPool.buyUnderlying(address(this), underlyingOffered);
+
+        // Allow the HifiPool contract to spend underlying from the DSProxy.
         IErc20 underlying = hifiPool.underlying();
+        approveSpender(underlying, address(hifiPool), underlyingOffered);
 
-        // Get amount of hTokens required to buy underlying amount to invest.
-        uint256 hTokenIn = hifiPool.getQuoteForBuyingUnderlying(underlyingAmountToInvest);
-        // Get amount of hTokens to required to invest.
-        uint256 hTokenToInvest = gethTokenRequiredForMint(hifiPool, underlyingAmountToInvest);
+        // Add liquidity to the AMM.
+        uint256 poolTokensMinted = hifiPool.mint(underlyingOffered);
 
-        // If total hToken amount required to buy underlying and invest is greater that max hTokenAmount, revert tx
-        uint256 totalHTokenAmount = hTokenIn + hTokenToInvest;
-        if (totalHTokenAmount > hTokenAmount) {
-            revert HifiProxyTarget__ExceedExpectedSlippageTolerance(totalHTokenAmount);
-        }
-        buyUnderlyingInternal(hifiPool, hTokenIn, underlyingAmountToInvest);
-
-        // Transfer the hToken to the DSProxy.
-        hToken.transferFrom(msg.sender, address(this), hTokenToInvest);
-
-        // Allow the HiFiPool contract to spend underlying if allowance not enough.
-        uint256 allowance = underlying.allowance(address(this), address(hifiPool));
-        if (allowance < underlyingAmountToInvest) {
-            underlying.approve(address(hifiPool), type(uint256).max);
-        }
-
-        // Allow the HiFiPool contract to spend hToken if allowance not enough.
-        uint256 hTokenAllowance = hToken.allowance(address(this), address(hifiPool));
-        if (hTokenAllowance < hTokenToInvest) {
-            hToken.approve(address(hifiPool), type(uint256).max);
-        }
-        // add liquidity to pool.
-        uint256 poolTokens = hifiPool.mint(underlyingAmountToInvest);
-
-        // The liquidity tokens are now in the DSProxy, so we relay it to the end user.
-        hifiPool.transfer(msg.sender, poolTokens);
+        // The LP tokens are now in the DSProxy, so we relay them to the end user.
+        hifiPool.transfer(msg.sender, poolTokensMinted);
     }
 
     /// @inheritdoc IHifiProxyTarget
@@ -347,86 +323,139 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function depositAndBorrow(
+    function depositCollateralAndBorrowHToken(
         IBalanceSheetV1 balanceSheet,
         IErc20 collateral,
         IHToken hToken,
         uint256 collateralAmount,
         uint256 borrowAmount
-    ) public payable override {
+    ) external override {
         depositCollateral(balanceSheet, collateral, collateralAmount);
-        borrow(balanceSheet, hToken, borrowAmount);
+        borrowHToken(balanceSheet, hToken, borrowAmount);
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function depositAndBorrowAndSellHTokens(
+    function depositCollateralAndBorrowHTokenAndSellHToken(
         IBalanceSheetV1 balanceSheet,
         IErc20 collateral,
         IHifiPool hifiPool,
         uint256 collateralAmount,
         uint256 borrowAmount,
-        uint256 underlyingAmount
-    ) external payable override {
+        uint256 minUnderlyingOut
+    ) external override {
         depositCollateral(balanceSheet, collateral, collateralAmount);
-        borrowAndSellHTokens(balanceSheet, hifiPool, borrowAmount, underlyingAmount);
+        borrowHTokenAndSellHToken(balanceSheet, hifiPool, borrowAmount, minUnderlyingOut);
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function mint(
-        IHifiPool hifiPool,
-        uint256 underlyingAmount,
-        uint256 hTokenRequired
-    ) public override {
-        IErc20 underlying = hifiPool.underlying();
-        IHToken hToken = hifiPool.hToken();
-
-        // Calculate the amount of hToken required.
-        uint256 hTokenAmount = gethTokenRequiredForMint(hifiPool, underlyingAmount);
-
-        if (hTokenAmount > hTokenRequired) {
-            revert HifiProxyTarget__ExceedExpectedSlippageTolerance(hTokenRequired);
-        }
-        // Transfer the underlying to the DSProxy.
-        underlying.safeTransferFrom(msg.sender, address(this), underlyingAmount);
-
-        // Allow the HiFiPool contract to spend underlying if allowance not enough.
-        uint256 allowance = underlying.allowance(address(this), address(hifiPool));
-        if (allowance < underlyingAmount) {
-            underlying.approve(address(hifiPool), type(uint256).max);
-        }
-        // Transfer the hTokens to the DSProxy.
-        hToken.transferFrom(msg.sender, address(this), hTokenAmount);
-
-        // Allow the HiFiPool contract to spend hToken if allowance not enough.
-        uint256 hTokenAllowance = hToken.allowance(address(this), address(hifiPool));
-        if (hTokenAllowance < hTokenAmount) {
-            hToken.approve(address(hifiPool), type(uint256).max);
-        }
-
-        // add liquidity to pool
-        uint256 poolTokens = hifiPool.mint(underlyingAmount);
-
-        // The liquidity tokens are now in the DSProxy, so we relay it to the end user.
-        hifiPool.transfer(msg.sender, poolTokens);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
-    function redeem(IHToken hToken, uint256 hTokenAmount) public override {
-        IErc20 underlying = hToken.underlying();
-
+    function redeemHToken(IHToken hToken, uint256 hTokenAmount) external override {
         // Transfer the hTokens to the DSProxy.
         hToken.transferFrom(msg.sender, address(this), hTokenAmount);
 
         // Redeem the hTokens.
+        IErc20 underlying = hToken.underlying();
         uint256 preUnderlyingBalance = underlying.balanceOf(address(this));
         hToken.redeem(hTokenAmount);
 
-        // Calculate how many underlying have been redeemed.
-        uint256 postUnderlyigBalance = underlying.balanceOf(address(this));
-        uint256 underlyingAmount = postUnderlyigBalance - preUnderlyingBalance;
+        unchecked {
+            // Calculate how much underlying was redeemed.
+            uint256 postUnderlyigBalance = underlying.balanceOf(address(this));
+            uint256 underlyingAmount = postUnderlyigBalance - preUnderlyingBalance;
+
+            // The underlying is now in the DSProxy, so we relay it to the end user.
+            underlying.safeTransfer(msg.sender, underlyingAmount);
+        }
+    }
+
+    /// @inheritdoc IHifiProxyTarget
+    function removeLiquidity(IHifiPool hifiPool, uint256 poolTokensBurned) external override {
+        // Transfer the LP tokens to the DSProxy.
+        hifiPool.transferFrom(msg.sender, address(this), poolTokensBurned);
+
+        // Burn the LP tokens.
+        (uint256 underlyingReturned, uint256 hTokenReturned) = hifiPool.burn(poolTokensBurned);
+
+        // The underlying and the hTokens are now in the DSProxy, so we relay them to the end user.
+        hifiPool.underlying().safeTransfer(msg.sender, underlyingReturned);
+        hifiPool.hToken().transfer(msg.sender, hTokenReturned);
+    }
+
+    /// @inheritdoc IHifiProxyTarget
+    function removeLiquidityAndSellHToken(
+        IHifiPool hifiPool,
+        uint256 poolTokensBurned,
+        uint256 minUnderlyingOut
+    ) external override {
+        // Transfer the LP tokens to the DSProxy.
+        hifiPool.transferFrom(msg.sender, address(this), poolTokensBurned);
+
+        // Burn the LP tokens.
+        (uint256 underlyingReturned, uint256 hTokenReturned) = hifiPool.burn(poolTokensBurned);
 
         // The underlying is now in the DSProxy, so we relay it to the end user.
-        underlying.safeTransfer(msg.sender, underlyingAmount);
+        hifiPool.underlying().safeTransfer(msg.sender, underlyingReturned);
+
+        // Ensure that we are within the user's slippage tolerance.
+        uint256 underlyingOut = hifiPool.getQuoteForSellingUnderlying(hTokenReturned);
+        if (underlyingOut < minUnderlyingOut) {
+            revert HifiProxyTarget__TradeSlippageTooHigh(minUnderlyingOut, underlyingOut);
+        }
+
+        // Allow the HifiPool contract to spend hTokens from the DSProxy.
+        approveSpender(hifiPool.hToken(), address(hifiPool), hTokenReturned);
+
+        // Sell the hTokens and relay the underlying to the end user.
+        hifiPool.sellHToken(msg.sender, hTokenReturned);
+    }
+
+    /// @inheritdoc IHifiProxyTarget
+    function removeLiquidityAndSellUnderlyingAndRepayBorrow(
+        IHifiPool hifiPool,
+        IBalanceSheetV1 balanceSheet,
+        uint256 poolTokensBurned,
+        uint256 minHTokenOut
+    ) external override {
+        // Transfer the LP tokens to the DSProxy.
+        hifiPool.transferFrom(msg.sender, address(this), poolTokensBurned);
+
+        // Burn the LP tokens.
+        (uint256 underlyingReturned, uint256 hTokenReturned) = hifiPool.burn(poolTokensBurned);
+
+        // Ensure that we are within the user's slippage tolerance.
+        uint256 hTokenOut = hifiPool.getQuoteForSellingUnderlying(underlyingReturned);
+        if (hTokenOut < minHTokenOut) {
+            revert HifiProxyTarget__TradeSlippageTooHigh(minHTokenOut, hTokenOut);
+        }
+
+        // Allow the HifiPool contract to spend underlying from the DSProxy.
+        approveSpender(hifiPool.underlying(), address(hifiPool), underlyingReturned);
+
+        // Sell the underlying.
+        hifiPool.sellUnderlying(msg.sender, underlyingReturned);
+
+        // Allow the HifiPool contract to spend hTokens from the DSProxy.
+        IHToken hToken = hifiPool.hToken();
+        approveSpender(hToken, address(hifiPool), underlyingReturned);
+
+        // Query the amount of debt that the user owes.
+        uint256 debtAmount = balanceSheet.getDebtAmount(address(this), hToken);
+
+        // Sum up the returned hTokens and the recently bought hTokens.
+        uint256 repayAmount = hTokenReturned + hTokenOut;
+
+        // Tepay the borrow.
+        if (debtAmount >= repayAmount) {
+            balanceSheet.repayBorrow(hToken, repayAmount);
+        } else {
+            balanceSheet.repayBorrow(hToken, repayAmount);
+            unchecked {
+                // Relay any remainding hTokens to the end user.
+                uint256 hTokenDelta = repayAmount - debtAmount;
+                if (hTokenDelta > 0) {
+                    hToken.transfer(msg.sender, hTokenDelta);
+                }
+            }
+        }
     }
 
     /// @inheritdoc IHifiProxyTarget
@@ -434,7 +463,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         IBalanceSheetV1 balanceSheet,
         IHToken hToken,
         uint256 repayAmount
-    ) public override {
+    ) external override {
         // Transfer the hTokens to the DSProxy.
         hToken.transferFrom(msg.sender, address(this), repayAmount);
 
@@ -445,78 +474,117 @@ contract HifiProxyTarget is IHifiProxyTarget {
     /// @inheritdoc IHifiProxyTarget
     function sellHToken(
         IHifiPool hifiPool,
-        uint256 hTokenAmount,
-        uint256 underlyingAmount
-    ) public override {
-        IHToken hToken = hifiPool.hToken();
-
-        uint256 underlyingAmountOut = hifiPool.getQuoteForSellingHToken(hTokenAmount);
-        if (underlyingAmountOut < underlyingAmount) {
-            revert HifiProxyTarget__ExceedExpectedSlippageTolerance(underlyingAmountOut);
+        uint256 hTokenIn,
+        uint256 minUnderlyingOut
+    ) external override {
+        // Ensure that we are within the user's slippage tolerance.
+        uint256 underlyingOut = hifiPool.getQuoteForSellingHToken(hTokenIn);
+        if (underlyingOut < minUnderlyingOut) {
+            revert HifiProxyTarget__TradeSlippageTooHigh(minUnderlyingOut, underlyingOut);
         }
+
         // Transfer the hTokens to the DSProxy.
-        hToken.transferFrom(msg.sender, address(this), hTokenAmount);
+        IHToken hToken = hifiPool.hToken();
+        hToken.transferFrom(msg.sender, address(this), hTokenIn);
 
-        // Allow the HiFiPool contract to spend hToken if allowance not enough.
-        uint256 hTokenAllowance = hToken.allowance(address(this), address(hifiPool));
-        if (hTokenAllowance < hTokenAmount) {
-            hToken.approve(address(hifiPool), type(uint256).max);
-        }
-        hifiPool.sellHToken(msg.sender, hTokenAmount);
+        // Allow the HifiPool contract to spend hTokens from the DSProxy.
+        approveSpender(hToken, address(hifiPool), hTokenIn);
+
+        // Sell the hTokens and relay the underlying to the end user.
+        hifiPool.sellHToken(msg.sender, hTokenIn);
     }
 
     /// @inheritdoc IHifiProxyTarget
     function sellUnderlying(
         IHifiPool hifiPool,
-        uint256 hTokenAmount,
-        uint256 underlyingAmount
-    ) public override {
-        IHToken hToken = hifiPool.hToken();
-        uint256 hTokenOut = sellUnderlyingInternal(hifiPool, hTokenAmount, underlyingAmount);
-        hToken.transfer(msg.sender, hTokenOut);
+        uint256 underlyingIn,
+        uint256 minHTokenOut
+    ) external override {
+        // Ensure that we are within the user's slippage tolerance.
+        uint256 hTokenOut = hifiPool.getQuoteForSellingUnderlying(underlyingIn);
+        if (hTokenOut < minHTokenOut) {
+            revert HifiProxyTarget__TradeSlippageTooHigh(minHTokenOut, hTokenOut);
+        }
+
+        // Transfer the underlying to the DSProxy.
+        IErc20 underlying = hifiPool.underlying();
+        underlying.transferFrom(msg.sender, address(this), underlyingIn);
+
+        // Allow the HifiPool contract to spend underlying from the DSProxy.
+        approveSpender(underlying, address(hifiPool), underlyingIn);
+
+        // Sell the underlying and relay the hTokens to the end user.
+        hifiPool.sellUnderlying(msg.sender, underlyingIn);
     }
 
     /// @inheritdoc IHifiProxyTarget
     function sellUnderlyingAndRepayBorrow(
-        IBalanceSheetV1 balanceSheet,
         IHifiPool hifiPool,
-        uint256 hTokenAmount,
-        uint256 underlyingAmount
+        IBalanceSheetV1 balanceSheet,
+        uint256 underlyingIn,
+        uint256 minHTokenOut
     ) external override {
-        IHToken hToken = hifiPool.hToken();
-        uint256 hTokenOut = sellUnderlyingInternal(hifiPool, hTokenAmount, underlyingAmount);
+        // Ensure that we are within the user's slippage tolerance.
+        uint256 hTokenOut = hifiPool.getQuoteForSellingUnderlying(underlyingIn);
+        if (hTokenOut < minHTokenOut) {
+            revert HifiProxyTarget__TradeSlippageTooHigh(minHTokenOut, hTokenOut);
+        }
+
+        // Transfer the underlying to the DSProxy.
+        IErc20 underlying = hifiPool.underlying();
+        underlying.transferFrom(msg.sender, address(this), underlyingIn);
+
+        // Allow the HifiPool contract to spend underlying from the DSProxy.
+        approveSpender(underlying, address(hifiPool), underlyingIn);
+
+        // Sell the underlying.
+        hifiPool.sellUnderlying(address(this), underlyingIn);
+
         // Use the recently bought hTokens to repay the borrow.
+        IHToken hToken = hifiPool.hToken();
         balanceSheet.repayBorrow(hToken, hTokenOut);
+
+        unchecked {
+            // Relay any remainding hTokens to the end user.
+            uint256 hTokenDelta = hTokenOut - minHTokenOut;
+            if (hTokenDelta > 0) {
+                hToken.transfer(msg.sender, hTokenDelta);
+            }
+        }
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function supplyUnderlying(IHToken hToken, uint256 underlyingAmount) public override {
+    function supplyUnderlying(IHToken hToken, uint256 underlyingAmount) external override {
         uint256 preHTokenBalance = hToken.balanceOf(address(this));
         supplyUnderlyingInternal(hToken, underlyingAmount);
 
-        //Calculate how many hTokens have been minted.
-        uint256 postHTokenBalance = hToken.balanceOf(address(this));
-        uint256 hTokenAmount = postHTokenBalance - preHTokenBalance;
+        unchecked {
+            // Calculate how many hTokens were minted.
+            uint256 postHTokenBalance = hToken.balanceOf(address(this));
+            uint256 hTokenAmount = postHTokenBalance - preHTokenBalance;
 
-        // The hTokens are now in the DSProxy, so we relay them to the end user.
-        hToken.transfer(msg.sender, hTokenAmount);
+            // The hTokens are now in the DSProxy, so we relay them to the end user.
+            hToken.transfer(msg.sender, hTokenAmount);
+        }
     }
 
     /// @inheritdoc IHifiProxyTarget
     function supplyUnderlyingAndRepayBorrow(
-        IBalanceSheetV1 balanceSheet,
         IHToken hToken,
+        IBalanceSheetV1 balanceSheet,
         uint256 underlyingAmount
     ) external override {
         uint256 preHTokenBalance = hToken.balanceOf(address(this));
         supplyUnderlyingInternal(hToken, underlyingAmount);
 
-        // Calculate how many hTokens have been minted.
-        uint256 postHTokenBalance = hToken.balanceOf(address(this));
-        uint256 hTokenAmount = postHTokenBalance - preHTokenBalance;
+        unchecked {
+            // Calculate how many hTokens were minted.
+            uint256 postHTokenBalance = hToken.balanceOf(address(this));
+            uint256 hTokenAmount = postHTokenBalance - preHTokenBalance;
 
-        // Use the newly minted hTokens to repay the debt.
-        balanceSheet.repayBorrow(hToken, hTokenAmount);
+            // Use the newly minted hTokens to repay the debt.
+            balanceSheet.repayBorrow(hToken, hTokenAmount);
+        }
     }
 
     /// @inheritdoc IHifiProxyTarget
@@ -524,8 +592,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         IBalanceSheetV1 balanceSheet,
         IErc20 collateral,
         uint256 withdrawAmount
-    ) public override {
-        ///IErc20 collateral, uint256 withdrawAmount
+    ) external override {
         balanceSheet.withdrawCollateral(collateral, withdrawAmount);
 
         // The collateral is now in the DSProxy, so we relay it to the end user.
@@ -533,95 +600,39 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function wrapEthAndDepositCollateral(IBalanceSheetV1 balanceSheet, IErc20 collateral) public payable override {
+    function wrapEthAndDepositCollateral(IBalanceSheetV1 balanceSheet) public payable override {
         uint256 collateralAmount = msg.value;
 
         // Convert the received ETH to WETH.
         WethInterface(WETH_ADDRESS).deposit{ value: collateralAmount }();
 
         // Deposit the collateral into the BalanceSheet contract.
-        depositCollateralInternal(balanceSheet, collateral, collateralAmount);
+        depositCollateralInternal(balanceSheet, IErc20(WETH_ADDRESS), collateralAmount);
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function wrapEthAndDepositAndBorrowAndSellHTokens(
+    function wrapEthAndDepositAndBorrowHTokenAndSellHToken(
         IBalanceSheetV1 balanceSheet,
-        IErc20 collateral,
         IHifiPool hifiPool,
         uint256 borrowAmount,
-        uint256 underlyingAmount
+        uint256 minUnderlyingOut
     ) external payable override {
-        wrapEthAndDepositCollateral(balanceSheet, collateral);
-        borrowAndSellHTokens(balanceSheet, hifiPool, borrowAmount, underlyingAmount);
+        wrapEthAndDepositCollateral(balanceSheet);
+        borrowHTokenAndSellHToken(balanceSheet, hifiPool, borrowAmount, minUnderlyingOut);
     }
 
     /// INTERNAL NON-CONSTANT FUNCTIONS ///
 
-    function burnInternal(IHifiPool hifiPool, uint256 poolTokens)
-        internal
-        returns (uint256 underlyingReturned, uint256 hTokenReturned)
-    {
-        // Transfer the liquidity tokens to the DSProxy.
-        hifiPool.transferFrom(msg.sender, address(this), poolTokens);
-
-        // Allow the HiFiPool contract to spend iquidity tokens if allowance not enough.
-        uint256 allowance = hifiPool.allowance(address(this), address(hifiPool));
-        if (allowance < poolTokens) {
-            hifiPool.approve(address(hifiPool), type(uint256).max);
-        }
-
-        // Burn pool tokens
-        (underlyingReturned, hTokenReturned) = hifiPool.burn(poolTokens);
-    }
-
     /// @dev See the documentation for the public functions that call this internal function.
-    function buyHTokenInternal(
-        IHifiPool hifiPool,
-        uint256 hTokenAmount,
-        uint256 underlyingAmount
+    function approveSpender(
+        IErc20 token,
+        address spender,
+        uint256 amount
     ) internal {
-        IErc20 underlying = hifiPool.underlying();
-
-        uint256 underlyingAmountIn = hifiPool.getQuoteForBuyingHToken(hTokenAmount);
-
-        if (underlyingAmountIn > underlyingAmount) {
-            revert HifiProxyTarget__ExceedExpectedSlippageTolerance(underlyingAmountIn);
+        uint256 allowance = token.allowance(address(this), spender);
+        if (allowance < amount) {
+            token.approve(spender, type(uint256).max);
         }
-        // Transfer the underlying to the DSProxy.
-        underlying.safeTransferFrom(msg.sender, address(this), underlyingAmountIn);
-
-        // Allow the HiFiPool contract to spend underlying if allowance not enough.
-        uint256 allowance = underlying.allowance(address(this), address(hifiPool));
-        if (allowance < underlyingAmountIn) {
-            underlying.approve(address(hifiPool), type(uint256).max);
-        }
-
-        // Buys hToken with underlying, hToken is now in DSProxy.
-        hifiPool.buyHToken(address(this), hTokenAmount);
-    }
-
-    /// @dev See the documentation for the public functions that call this internal function.
-
-    function buyUnderlyingInternal(
-        IHifiPool hifiPool,
-        uint256 hTokenAmount,
-        uint256 underlyingAmount
-    ) internal returns (uint256 underlyingReturned) {
-        IErc20 hToken = hifiPool.hToken();
-        uint256 hTokenIn = hifiPool.getQuoteForBuyingUnderlying(underlyingAmount);
-        if (hTokenIn > hTokenAmount) {
-            revert HifiProxyTarget__ExceedExpectedSlippageTolerance(hTokenIn);
-        }
-        // Transfer the hToken to the DSProxy.
-        hToken.transferFrom(msg.sender, address(this), hTokenIn);
-
-        // Allow the HiFiPool contract to spend underlying if allowance not enough.
-        uint256 allowance = hToken.allowance(address(this), address(hifiPool));
-        if (allowance < hTokenIn) {
-            hToken.approve(address(hifiPool), type(uint256).max);
-        }
-        // Buys hToken with underlying
-        underlyingReturned = hifiPool.buyUnderlying(address(this), underlyingAmount);
     }
 
     /// @dev See the documentation for the public functions that call this internal function.
@@ -630,27 +641,11 @@ contract HifiProxyTarget is IHifiProxyTarget {
         IErc20 collateral,
         uint256 collateralAmount
     ) internal {
-        // Allow the BalanceSheet contract to spend tokens if allowance not enough.
-        uint256 allowance = collateral.allowance(address(this), address(balanceSheet));
-        if (allowance < collateralAmount) {
-            collateral.approve(address(balanceSheet), type(uint256).max);
-        }
+        // Allow the BalanceSheet contract to spend collateral from the DSProxy.
+        approveSpender(collateral, address(balanceSheet), collateralAmount);
+
         // Deposit the collateral into the BalanceSheet contract.
         balanceSheet.depositCollateral(collateral, collateralAmount);
-    }
-
-    /// @dev See the documentation for the public functions that call this internal function.
-    /// @notice Upscales the underlying amount to normalized form, i.e. 18 decimals of precision.
-    /// @param underlyingAmount The underlying amount with its actual decimals of precision.
-    /// @param normalizedUnderlyingAmount The underlying amount with 18 decimals of precision.
-    function normalize(IHifiPool hifiPool, uint256 underlyingAmount)
-        internal
-        view
-        returns (uint256 normalizedUnderlyingAmount)
-    {
-        normalizedUnderlyingAmount = hifiPool.underlyingPrecisionScalar() != 1
-            ? underlyingAmount * hifiPool.underlyingPrecisionScalar()
-            : underlyingAmount;
     }
 
     /// @dev See the documentation for the public functions that call this internal function.
@@ -661,37 +656,10 @@ contract HifiProxyTarget is IHifiProxyTarget {
         // Transfer the underlying to the DSProxy.
         underlying.safeTransferFrom(msg.sender, address(this), underlyingAmount);
 
-        // Allow the RedemptionPool contract to spend tokens if allowance not enough.
-        uint256 allowance = underlying.allowance(address(this), address(hToken));
-        if (allowance < underlyingAmount) {
-            underlying.approve(address(hToken), type(uint256).max);
-        }
+        // Allow the HToken contract to spend underlying from the DSProxy.
+        approveSpender(underlying, address(hToken), underlyingAmount);
 
         // Supply the underlying and mint hTokens.
         hToken.supplyUnderlying(underlyingAmount);
-    }
-
-    /// @dev See the documentation for the public functions that call this internal function.
-
-    function sellUnderlyingInternal(
-        IHifiPool hifiPool,
-        uint256 hTokenAmount,
-        uint256 underlyingAmount
-    ) internal returns (uint256 hTokenOut) {
-        IErc20 underlying = hifiPool.underlying();
-
-        uint256 hTokenAmountOut = hifiPool.getQuoteForSellingUnderlying(underlyingAmount);
-        if (hTokenAmountOut < hTokenAmount) {
-            revert HifiProxyTarget__ExceedExpectedSlippageTolerance(hTokenAmountOut);
-        }
-        // Transfer the underlying to the DSProxy.
-        underlying.transferFrom(msg.sender, address(this), underlyingAmount);
-
-        // Allow the HiFiPool contract to spend underlying if allowance not enough.
-        uint256 hTokenAllowance = underlying.allowance(address(this), address(hifiPool));
-        if (hTokenAllowance < underlyingAmount) {
-            underlying.approve(address(hifiPool), type(uint256).max);
-        }
-        hTokenOut = hifiPool.sellUnderlying(address(this), underlyingAmount);
     }
 }
