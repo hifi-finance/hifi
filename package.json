@@ -52,7 +52,7 @@
     "smart-contracts",
     "solidity"
   ],
-  "license": "WTFPL",
+  "license": "LGPL-3.0-or-later",
   "private": true,
   "resolutions": {
     "@ethersproject/abi": "^5.4.0",
