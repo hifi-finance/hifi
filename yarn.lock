@@ -770,7 +770,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@ethersproject/wallet@npm:^5.4.0":
+"@ethersproject/wallet@npm:5.4.0":
   version: 5.4.0
   resolution: "@ethersproject/wallet@npm:5.4.0"
   dependencies:
@@ -849,6 +849,44 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hifi/proxy-target@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@hifi/proxy-target@workspace:."
+  dependencies:
+    "@commitlint/cli": ^12.1.4
+    "@commitlint/config-conventional": ^12.1.4
+    "@ethersproject/abi": ^5.4.0
+    "@ethersproject/bytes": ^5.4.0
+    "@ethersproject/providers": ^5.4.0
+    "@hifi/amm": ^1.1.0
+    "@hifi/protocol": 1.1.1
+    "@paulrberg/contracts": ^3.4.0
+    "@typechain/ethers-v5": ^7.0.1
+    "@typechain/hardhat": ^2.1.0
+    "@types/node": ^15.12.5
+    "@typescript-eslint/eslint-plugin": ^4.28.1
+    "@typescript-eslint/parser": ^4.28.1
+    commitizen: ^4.2.4
+    cz-conventional-changelog: ^3.3.0
+    dotenv: ^10.0.0
+    eslint: ^7.29.0
+    eslint-config-prettier: ^8.3.0
+    ethers: ^5.4.0
+    hardhat: ^2.4.1
+    husky: ^6.0.0
+    lint-staged: ^11.0.0
+    prettier: ^2.3.2
+    prettier-plugin-solidity: ^1.0.0-beta.11
+    shelljs: ^0.8.4
+    solhint: ^3.3.6
+    solhint-plugin-prettier: ^0.0.5
+    ts-generator: ^0.1.1
+    ts-node: ^10.0.0
+    typechain: ^5.1.1
+    typescript: ~4.2.4
+  languageName: unknown
+  linkType: soft
+
 "@nodelib/fs.scandir@npm:2.1.4":
   version: 2.1.4
   resolution: "@nodelib/fs.scandir@npm:2.1.4"
@@ -903,44 +941,6 @@ __metadata:
   checksum: ffcf03835190fd9567f083cd04d1e9306f4cdcbacadef9b03c625a1a9b10979360c75c585d148ac0a120e4446fa0fd418f6745cb4132316431c345892367c8a5
   languageName: node
   linkType: hard
-
-"@paulrberg/solidity-template@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "@paulrberg/solidity-template@workspace:."
-  dependencies:
-    "@commitlint/cli": ^12.1.4
-    "@commitlint/config-conventional": ^12.1.4
-    "@ethersproject/abi": ^5.4.0
-    "@ethersproject/bytes": ^5.4.0
-    "@ethersproject/providers": ^5.4.0
-    "@hifi/amm": ^1.1.0
-    "@hifi/protocol": 1.1.1
-    "@paulrberg/contracts": ^3.4.0
-    "@typechain/ethers-v5": ^7.0.1
-    "@typechain/hardhat": ^2.1.0
-    "@types/node": ^15.12.5
-    "@typescript-eslint/eslint-plugin": ^4.28.1
-    "@typescript-eslint/parser": ^4.28.1
-    commitizen: ^4.2.4
-    cz-conventional-changelog: ^3.3.0
-    dotenv: ^10.0.0
-    eslint: ^7.29.0
-    eslint-config-prettier: ^8.3.0
-    ethers: ^5.4.0
-    hardhat: ^2.4.1
-    husky: ^6.0.0
-    lint-staged: ^11.0.0
-    prettier: ^2.3.2
-    prettier-plugin-solidity: ^1.0.0-beta.11
-    shelljs: ^0.8.4
-    solhint: ^3.3.6
-    solhint-plugin-prettier: ^0.0.5
-    ts-generator: ^0.1.1
-    ts-node: ^10.0.0
-    typechain: ^5.1.1
-    typescript: ~4.2.4
-  languageName: unknown
-  linkType: soft
 
 "@sentry/core@npm:5.30.0":
   version: 5.30.0
