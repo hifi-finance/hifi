@@ -1,7 +1,7 @@
 {
   "name": "@hifi/protocol",
   "description": "The Hifi fixed-rate, fixed-term lending protocol",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "author": {
     "name": "Hifi",
     "email": "contact@hifi.finance",
@@ -11,9 +11,9 @@
     "url": "https://github.com/hifi-finance/hifi-protocol/issues"
   },
   "dependencies": {
-    "@openzeppelin/contracts-upgradeable": "^4.1.0",
-    "@paulrberg/contracts": "^3.4.0",
-    "prb-math": "^2.2.0"
+    "@openzeppelin/contracts-upgradeable": "4.2.0",
+    "@paulrberg/contracts": "3.4.0",
+    "prb-math": "2.2.0"
   },
   "devDependencies": {
     "@codechecks/client": "^0.1.10",
@@ -97,9 +97,9 @@
   ],
   "license": "LGPL-3.0-or-later",
   "peerDependencies": {
-    "@openzeppelin/contracts-upgradeable": "^4.1.0",
-    "@paulrberg/contracts": "^3.4.0",
-    "prb-math": "^2.2.0"
+    "@openzeppelin/contracts-upgradeable": "4.2.0",
+    "@paulrberg/contracts": "3.4.0",
+    "prb-math": "2.2.0"
   },
   "publishConfig": {
     "access": "public"
