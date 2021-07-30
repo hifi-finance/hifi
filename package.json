@@ -1,7 +1,7 @@
 {
   "name": "@hifi/amm",
   "description": "Dedicated AMM for market-making hTokens",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "author": {
     "name": "Hifi",
     "email": "contact@hifi.finance",
@@ -11,9 +11,9 @@
     "url": "https://github.com/hifi-finance/hifi-amm/issues"
   },
   "dependencies": {
-    "@hifi/protocol": "^1.1.1",
-    "@paulrberg/contracts": "^3.4.0",
-    "prb-math": "^2.2.0"
+    "@hifi/protocol": "1.1.2",
+    "@paulrberg/contracts": "3.4.0",
+    "prb-math": "2.2.0"
   },
   "devDependencies": {
     "@codechecks/client": "^0.1.10",
@@ -96,9 +96,9 @@
   ],
   "license": "LGPL-3.0-or-later",
   "peerDependencies": {
-    "@hifi/protocol": "^1.1.1",
-    "@paulrberg/contracts": "^3.4.0",
-    "prb-math": "^2.2.0"
+    "@hifi/protocol": "1.1.2",
+    "@paulrberg/contracts": "3.4.0",
+    "prb-math": "2.2.0"
   },
   "publishConfig": {
     "access": "public"
