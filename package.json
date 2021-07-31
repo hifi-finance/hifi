@@ -20,6 +20,7 @@
     "@ethersproject/providers": "^5.4.0",
     "@typechain/ethers-v5": "^7.0.1",
     "@typechain/hardhat": "^2.1.0",
+    "@types/fs-extra": "^9.0.12",
     "@types/node": "^15.12.5",
     "@typescript-eslint/eslint-plugin": "^4.28.1",
     "@typescript-eslint/parser": "^4.28.1",
@@ -29,21 +30,26 @@
     "eslint": "^7.29.0",
     "eslint-config-prettier": "^8.3.0",
     "ethers": "^5.4.0",
+    "fs-extra": "^10.0.0",
     "hardhat": "^2.4.1",
     "husky": "^6.0.0",
     "lint-staged": "^11.0.0",
+    "pinst": "^2.1.6",
     "prettier": "^2.3.2",
     "prettier-plugin-solidity": "^1.0.0-beta.11",
     "shelljs": "^0.8.4",
     "solhint": "^3.3.6",
     "solhint-plugin-prettier": "^0.0.5",
+    "tempy": "^1.0.1",
     "ts-generator": "^0.1.1",
     "ts-node": "^10.0.0",
     "typechain": "^5.1.1",
     "typescript": "~4.2.4"
   },
   "files": [
-    "/contracts"
+    "/artifacts",
+    "/contracts",
+    "/typechain"
   ],
   "keywords": [
     "blockchain",
