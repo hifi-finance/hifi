@@ -10,16 +10,14 @@ import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 import "./IHifiProxyTarget.sol";
 import "./external/WethInterface.sol";
 
-/// @notice Emitted when the slippage of an LP event is higher than what the user is willing to tolerate.
+/// @notice Emitted when the slippage for adding liquidity is higher than what the user is willing to tolerate.
 error HifiProxyTarget__AddLiquiditySlippageTooHigh(uint256 expectedHTokenRequired, uint256 actualHTokenRequired);
 
-/// @notice Emitted when the slippage of a trade is higher than what the user is willing to tolerate.
+/// @notice Emitted when the slippage for a trade is higher than what the user is willing to tolerate.
 error HifiProxyTarget__TradeSlippageTooHigh(uint256 expectedAmount, uint256 actualAmount);
 
 /// @title HifiProxyTarget
 /// @author Hifi
-/// @notice DSProxy target contract with scripts for the Hifi protocol.
-/// @dev Meant to be used with a DSProxy contract via delegatecall.
 contract HifiProxyTarget is IHifiProxyTarget {
     using SafeErc20 for IErc20;
 
@@ -224,10 +222,10 @@ contract HifiProxyTarget is IHifiProxyTarget {
         IHifiPool hifiPool,
         IBalanceSheetV1 balanceSheet,
         uint256 maxUnderlyingIn,
-        uint256 repayAmount
+        uint256 hTokenOut
     ) external override {
         // Ensure that we are within the user's slippage tolerance.
-        uint256 underlyingIn = hifiPool.getQuoteForBuyingHToken(repayAmount);
+        uint256 underlyingIn = hifiPool.getQuoteForBuyingHToken(hTokenOut);
         if (underlyingIn > maxUnderlyingIn) {
             revert HifiProxyTarget__TradeSlippageTooHigh(maxUnderlyingIn, underlyingIn);
         }
@@ -240,10 +238,10 @@ contract HifiProxyTarget is IHifiProxyTarget {
         approveSpender(underlying, address(hifiPool), underlyingIn);
 
         // Buy the hTokens.
-        hifiPool.buyHToken(address(this), repayAmount);
+        hifiPool.buyHToken(address(this), hTokenOut);
 
         // Use the recently bought hTokens to repay the borrow.
-        balanceSheet.repayBorrow(hifiPool.hToken(), repayAmount);
+        balanceSheet.repayBorrow(hifiPool.hToken(), hTokenOut);
     }
 
     /// @inheritdoc IHifiProxyTarget
@@ -431,23 +429,20 @@ contract HifiProxyTarget is IHifiProxyTarget {
         approveSpender(hifiPool.underlying(), address(hifiPool), underlyingReturned);
 
         // Sell the underlying.
-        hifiPool.sellUnderlying(msg.sender, underlyingReturned);
-
-        // Allow the HifiPool contract to spend hTokens from the DSProxy.
-        IHToken hToken = hifiPool.hToken();
-        approveSpender(hToken, address(hifiPool), underlyingReturned);
+        hifiPool.sellUnderlying(address(this), underlyingReturned);
 
         // Query the amount of debt that the user owes.
+        IHToken hToken = hifiPool.hToken();
         uint256 debtAmount = balanceSheet.getDebtAmount(address(this), hToken);
 
         // Sum up the returned hTokens and the recently bought hTokens.
         uint256 repayAmount = hTokenReturned + hTokenOut;
 
-        // Tepay the borrow.
+        // Repay the borrow.
         if (debtAmount >= repayAmount) {
             balanceSheet.repayBorrow(hToken, repayAmount);
         } else {
-            balanceSheet.repayBorrow(hToken, repayAmount);
+            balanceSheet.repayBorrow(hToken, debtAmount);
             unchecked {
                 // Relay any remainding hTokens to the end user.
                 uint256 hTokenDelta = repayAmount - debtAmount;
@@ -540,15 +535,21 @@ contract HifiProxyTarget is IHifiProxyTarget {
         // Sell the underlying.
         hifiPool.sellUnderlying(address(this), underlyingIn);
 
-        // Use the recently bought hTokens to repay the borrow.
+        // Query the amount of debt that the user owes.
         IHToken hToken = hifiPool.hToken();
-        balanceSheet.repayBorrow(hToken, hTokenOut);
+        uint256 debtAmount = balanceSheet.getDebtAmount(address(this), hToken);
 
-        unchecked {
-            // Relay any remainding hTokens to the end user.
-            uint256 hTokenDelta = hTokenOut - minHTokenOut;
-            if (hTokenDelta > 0) {
-                hToken.transfer(msg.sender, hTokenDelta);
+        // Repay the borrow.
+        if (debtAmount >= hTokenOut) {
+            balanceSheet.repayBorrow(hToken, hTokenOut);
+        } else {
+            balanceSheet.repayBorrow(hToken, debtAmount);
+            unchecked {
+                // Relay any remainding hTokens to the end user.
+                uint256 hTokenDelta = hTokenOut - debtAmount;
+                if (hTokenDelta > 0) {
+                    hToken.transfer(msg.sender, hTokenDelta);
+                }
             }
         }
     }
