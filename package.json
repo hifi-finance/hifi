@@ -70,9 +70,10 @@
     "typescript": "~4.2.4"
   },
   "files": [
-    "/artifacts",
-    "/contracts",
-    "/typechain"
+    "/artifacts/**/*.json",
+    "/contracts/**/*.sol",
+    "/typechain/**/*.ts",
+    "/typechain/**/*.d.ts"
   ],
   "homepage": "https://github.com/hifi-finance/hifi-amm#readme",
   "importSort": {
