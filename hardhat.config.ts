@@ -2,6 +2,7 @@ import "@nomiclabs/hardhat-waffle";
 import "@openzeppelin/hardhat-upgrades";
 import "@typechain/hardhat";
 import "hardhat-gas-reporter";
+import "hardhat-packager";
 import "solidity-coverage";
 
 import "./tasks/clean";
@@ -65,6 +66,26 @@ const config: HardhatUserConfig = {
     kovan: createTestnetConfig("kovan"),
     rinkeby: createTestnetConfig("rinkeby"),
     ropsten: createTestnetConfig("ropsten"),
+  },
+  packager: {
+    contracts: [
+      "BalanceSheetV1",
+      "ChainlinkOperator",
+      "Erc20",
+      "Erc20Permit",
+      "FintrollerV1",
+      "HToken",
+      "IAggregatorV3",
+      "IBalanceSheetV1",
+      "IChainlinkOperator",
+      "IErc20",
+      "IErc20Permit",
+      "IFintrollerV1",
+      "IHToken",
+      "IOwnableUpgradeable",
+      "OwnableUpgradeable",
+      "StablecoinPriceFeed",
+    ],
   },
   paths: {
     artifacts: "./artifacts",
