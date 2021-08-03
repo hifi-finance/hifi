@@ -1,7 +1,7 @@
 {
   "name": "@hifi/amm",
   "description": "Dedicated AMM for market-making hTokens",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "author": {
     "name": "Hifi",
     "email": "contact@hifi.finance",
