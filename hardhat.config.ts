@@ -1,5 +1,6 @@
 import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
+import "hardhat-packager";
 import "solidity-coverage";
 
 import "./tasks/clean";
@@ -56,6 +57,9 @@ const config: HardhatUserConfig = {
     rinkeby: createTestnetConfig("rinkeby"),
     ropsten: createTestnetConfig("ropsten"),
   },
+  packager: {
+    contracts: ["HifiPool", "IHifiPool"],
+  },
   paths: {
     artifacts: "./artifacts",
     cache: "./cache",
@@ -65,7 +69,9 @@ const config: HardhatUserConfig = {
   solidity: {
     version: "0.8.6",
     settings: {
-      // https://hardhat.org/hardhat-network/#solidity-optimizer-support
+      metadata: {
+        bytecodeHash: "none",
+      },
       optimizer: {
         enabled: true,
         runs: 800,
