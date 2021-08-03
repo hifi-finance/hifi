@@ -84,6 +84,7 @@ const config: HardhatUserConfig = {
       "IHToken",
       "IOwnableUpgradeable",
       "OwnableUpgradeable",
+      "SimplePriceFeed",
       "StablecoinPriceFeed",
     ],
   },
