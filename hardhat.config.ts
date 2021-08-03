@@ -1,5 +1,6 @@
 import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
+import "hardhat-packager";
 import "solidity-coverage";
 
 import "./tasks/clean";
@@ -56,6 +57,9 @@ const config: HardhatUserConfig = {
     rinkeby: createTestnetConfig("rinkeby"),
     ropsten: createTestnetConfig("ropsten"),
   },
+  packager: {
+    contracts: ["HifiFlashUniswapV2", "IHifiFlashUniswapV2", "IUniswapV2Pair", "UniswapV2Pair"],
+  },
   paths: {
     artifacts: "./artifacts",
     cache: "./cache",
@@ -69,13 +73,16 @@ const config: HardhatUserConfig = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 999999,
+            runs: 999_999,
           },
         },
       },
       {
         version: "0.8.6",
         settings: {
+          metadata: {
+            bytecodeHash: "none",
+          },
           optimizer: {
             enabled: true,
             runs: 800,
