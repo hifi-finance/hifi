@@ -1,6 +1,6 @@
-import { MockContract } from "@ethereum-waffle/mock-contract";
 import { AddressZero } from "@ethersproject/constants";
 import { expect } from "chai";
+import { MockContract } from "ethereum-waffle";
 
 import { BalanceSheetErrors, OwnableUpgradeableErrors } from "../../../shared/errors";
 import { deployMockChainlinkOperator } from "../../../shared/mocks";
