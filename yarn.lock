@@ -787,24 +787,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hifi/amm@npm:1.2.1":
-  version: 1.2.1
-  resolution: "@hifi/amm@npm:1.2.1"
+"@hifi/amm@npm:1.3.0":
+  version: 1.3.0
+  resolution: "@hifi/amm@npm:1.3.0"
   dependencies:
-    "@hifi/protocol": 1.2.0
+    "@hifi/protocol": 1.3.0
     "@paulrberg/contracts": 3.4.0
     prb-math: 2.2.0
   peerDependencies:
-    "@hifi/protocol": 1.2.0
+    "@hifi/protocol": 1.3.0
     "@paulrberg/contracts": 3.4.0
     prb-math: 2.2.0
-  checksum: 3a7001c83e3cd1389bb829e1c22bf0bd4df326bda5293fd53a873262127671311fe3f6e980a4a02e29363b378dcce76c28cfcd280f5d1b33abbdbe4855350fc1
+  checksum: 8c074278f25db6fc5689be769a0efb462f39b9024044e652844a250c8b7b2ff146428dc7efa5cd197ca374b16ea408619af88322bfb7764932b7fa03b6245514
   languageName: node
   linkType: hard
 
-"@hifi/protocol@npm:1.2.0":
-  version: 1.2.0
-  resolution: "@hifi/protocol@npm:1.2.0"
+"@hifi/protocol@npm:1.3.0":
+  version: 1.3.0
+  resolution: "@hifi/protocol@npm:1.3.0"
   dependencies:
     "@openzeppelin/contracts-upgradeable": 4.2.0
     "@paulrberg/contracts": 3.4.0
@@ -813,7 +813,7 @@ __metadata:
     "@openzeppelin/contracts-upgradeable": 4.2.0
     "@paulrberg/contracts": 3.4.0
     prb-math: 2.2.0
-  checksum: 797b0884732592b415a6650e7ed2dad9d7167c62787bf1b3dfe1427a0def5b4e73e5c5338a5c5e765169da6f2696ae1446e795741db9687beed0e052f624b13e
+  checksum: 5399ef514915d8d5881b6b8fa1eebb9f07e27be1bfd2c10c4c9c03f3554882efe3de99aabd0604ba10d8654a11c0af907023a114a586c153153d1ff6da41551f
   languageName: node
   linkType: hard
 
@@ -826,8 +826,8 @@ __metadata:
     "@ethersproject/abi": ^5.4.0
     "@ethersproject/bytes": ^5.4.0
     "@ethersproject/providers": ^5.4.3
-    "@hifi/amm": 1.2.1
-    "@hifi/protocol": 1.2.0
+    "@hifi/amm": 1.3.0
+    "@hifi/protocol": 1.3.0
     "@paulrberg/contracts": 3.4.0
     "@typechain/ethers-v5": ^7.0.1
     "@typechain/hardhat": ^2.2.0
@@ -855,8 +855,8 @@ __metadata:
     typechain: ^5.1.2
     typescript: ~4.2.4
   peerDependencies:
-    "@hifi/amm": 1.2.1
-    "@hifi/protocol": 1.2.0
+    "@hifi/amm": 1.3.0
+    "@hifi/protocol": 1.3.0
     "@paulrberg/contracts": 3.4.0
   languageName: unknown
   linkType: soft

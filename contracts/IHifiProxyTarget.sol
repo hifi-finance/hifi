@@ -6,6 +6,8 @@ import "@hifi/amm/contracts/IHifiPool.sol";
 import "@hifi/protocol/contracts/core/balanceSheet/IBalanceSheetV1.sol";
 import "@hifi/protocol/contracts/core/hToken/IHToken.sol";
 
+import "./external/WethInterface.sol";
+
 /// @title IHifiProxyTarget
 /// @author Hifi
 /// @notice DSProxy target contract with scripts for the Hifi protocol.
@@ -24,11 +26,6 @@ interface IHifiProxyTarget {
     /// @param borrowAmount The amount of hTokens borrowed and sold.
     /// @param underlyingAmount The amount of underlying bought.
     event BorrowHTokenAndSellHToken(address indexed borrower, uint256 borrowAmount, uint256 underlyingAmount);
-
-    /// CONSTANT FUNCTIONS ///
-
-    /// @notice The contract that enables wrapping ETH into Erc20 form.
-    function WETH_ADDRESS() external view returns (address);
 
     /// NON-CONSTANT FUNCTIONS ///
 
@@ -366,18 +363,21 @@ interface IHifiProxyTarget {
 
     /// @notice Wraps ETH into WETH and make a collateral deposit in the BalanceSheet contract.
     /// @dev This is a payable function so it can receive ETH transfers.
+    /// @param weth The address of the WETH contract.
     /// @param balanceSheet The address of the BalanceSheet contract.
-    function wrapEthAndDepositCollateral(IBalanceSheetV1 balanceSheet) external payable;
+    function wrapEthAndDepositCollateral(WethInterface weth, IBalanceSheetV1 balanceSheet) external payable;
 
     /// @notice Wraps ETH into WETH, deposits collateral into the vault, borrows hTokens and sells them.
     ///
     /// @dev This is a payable function so it can receive ETH transfers.
     ///
+    /// @param weth The address of the WETH contract.
     /// @param balanceSheet The address of the BalanceSheet contract.
     /// @param hifiPool  The address of the HifiPool contract.
     /// @param borrowAmount The exact amount of hTokens to borrow and sell for underlying.
     /// @param minUnderlyingOut The minimum amount of underlying that the user is willing to accept.
     function wrapEthAndDepositAndBorrowHTokenAndSellHToken(
+        WethInterface weth,
         IBalanceSheetV1 balanceSheet,
         IHifiPool hifiPool,
         uint256 borrowAmount,

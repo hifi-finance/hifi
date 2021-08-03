@@ -21,11 +21,6 @@ error HifiProxyTarget__TradeSlippageTooHigh(uint256 expectedAmount, uint256 actu
 contract HifiProxyTarget is IHifiProxyTarget {
     using SafeErc20 for IErc20;
 
-    /// PUBLIC STORAGE ///
-
-    /// @inheritdoc IHifiProxyTarget
-    address public constant override WETH_ADDRESS = 0xDf032Bc4B9dC2782Bb09352007D4C57B75160B15;
-
     /// PUBLIC NON-CONSTANT FUNCTIONS ///
 
     /// @inheritdoc IHifiProxyTarget
@@ -604,24 +599,25 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function wrapEthAndDepositCollateral(IBalanceSheetV1 balanceSheet) public payable override {
+    function wrapEthAndDepositCollateral(WethInterface weth, IBalanceSheetV1 balanceSheet) public payable override {
         uint256 collateralAmount = msg.value;
 
         // Convert the received ETH to WETH.
-        WethInterface(WETH_ADDRESS).deposit{ value: collateralAmount }();
+        weth.deposit{ value: collateralAmount }();
 
         // Deposit the collateral into the BalanceSheet contract.
-        depositCollateralInternal(balanceSheet, IErc20(WETH_ADDRESS), collateralAmount);
+        depositCollateralInternal(balanceSheet, IErc20(address(weth)), collateralAmount);
     }
 
     /// @inheritdoc IHifiProxyTarget
     function wrapEthAndDepositAndBorrowHTokenAndSellHToken(
+        WethInterface weth,
         IBalanceSheetV1 balanceSheet,
         IHifiPool hifiPool,
         uint256 borrowAmount,
         uint256 minUnderlyingOut
     ) external payable override {
-        wrapEthAndDepositCollateral(balanceSheet);
+        wrapEthAndDepositCollateral(weth, balanceSheet);
         borrowHTokenAndSellHToken(balanceSheet, hifiPool, borrowAmount, minUnderlyingOut);
     }
 
