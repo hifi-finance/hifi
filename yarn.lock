@@ -1195,7 +1195,7 @@ __metadata:
     "@ethersproject/bytes": ^5.4.0
     "@ethersproject/providers": ^5.4.3
     "@ethersproject/wallet": ^5.4.0
-    "@hifi/protocol": 1.2.0
+    "@hifi/protocol": 1.3.0
     "@nomiclabs/hardhat-ethers": ^2.0.2
     "@nomiclabs/hardhat-waffle": ^2.0.1
     "@paulrberg/contracts": 3.4.0
@@ -1241,15 +1241,15 @@ __metadata:
     typechain: ^5.1.2
     typescript: ~4.2.4
   peerDependencies:
-    "@hifi/protocol": 1.2.0
+    "@hifi/protocol": 1.3.0
     "@paulrberg/contracts": 3.4.0
     prb-math: 2.2.0
   languageName: unknown
   linkType: soft
 
-"@hifi/protocol@npm:1.2.0":
-  version: 1.2.0
-  resolution: "@hifi/protocol@npm:1.2.0"
+"@hifi/protocol@npm:1.3.0":
+  version: 1.3.0
+  resolution: "@hifi/protocol@npm:1.3.0"
   dependencies:
     "@openzeppelin/contracts-upgradeable": 4.2.0
     "@paulrberg/contracts": 3.4.0
@@ -1258,7 +1258,7 @@ __metadata:
     "@openzeppelin/contracts-upgradeable": 4.2.0
     "@paulrberg/contracts": 3.4.0
     prb-math: 2.2.0
-  checksum: 797b0884732592b415a6650e7ed2dad9d7167c62787bf1b3dfe1427a0def5b4e73e5c5338a5c5e765169da6f2696ae1446e795741db9687beed0e052f624b13e
+  checksum: 5399ef514915d8d5881b6b8fa1eebb9f07e27be1bfd2c10c4c9c03f3554882efe3de99aabd0604ba10d8654a11c0af907023a114a586c153153d1ff6da41551f
   languageName: node
   linkType: hard
 

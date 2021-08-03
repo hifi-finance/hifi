@@ -75,11 +75,11 @@ contract HifiPool is
         _;
     }
 
-    /// @notice Instantiates the HifiPool.
-    /// @dev The HifiPool LP token always has 18 decimals.
-    /// @param name_ Erc20 name of this token.
-    /// @param symbol_ Erc20 symbol of this token.
-    /// @param hToken_ The contract address of the hToken.
+    /// @notice Instantiates the HifiPool contract.
+    /// @dev The LP token always has 18 decimals.
+    /// @param name_ Erc20 name of this LP token.
+    /// @param symbol_ Erc20 symbol of this LP token.
+    /// @param hToken_ The address of the hToken contract.
     constructor(
         string memory name_,
         string memory symbol_,
