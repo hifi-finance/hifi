@@ -889,24 +889,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hifi/amm@npm:1.1.2":
-  version: 1.1.2
-  resolution: "@hifi/amm@npm:1.1.2"
+"@hifi/amm@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@hifi/amm@npm:1.2.0"
   dependencies:
-    "@hifi/protocol": 1.1.2
+    "@hifi/protocol": 1.2.0
     "@paulrberg/contracts": 3.4.0
     prb-math: 2.2.0
   peerDependencies:
-    "@hifi/protocol": 1.1.2
+    "@hifi/protocol": 1.2.0
     "@paulrberg/contracts": 3.4.0
     prb-math: 2.2.0
-  checksum: e72f93df75b6d90af251248508cd035b90e9e2ce53564e58d8f5af07bee170ff2a5780b955b00a59e7b06a43be46fb5ec1a6226cf682d7d35a20c41b14ce218c
+  checksum: b8151008057d8c271eb21b31127feca3d979d05e5b8fb7a7ac54f1386644768f06b4e2755ce5b4090c6f8a2eed854ea9a553bea1910ebe079dd0f1641b1165ab
   languageName: node
   linkType: hard
 
-"@hifi/protocol@npm:1.1.2":
-  version: 1.1.2
-  resolution: "@hifi/protocol@npm:1.1.2"
+"@hifi/protocol@npm:1.2.0":
+  version: 1.2.0
+  resolution: "@hifi/protocol@npm:1.2.0"
   dependencies:
     "@openzeppelin/contracts-upgradeable": 4.2.0
     "@paulrberg/contracts": 3.4.0
@@ -915,7 +915,7 @@ __metadata:
     "@openzeppelin/contracts-upgradeable": 4.2.0
     "@paulrberg/contracts": 3.4.0
     prb-math: 2.2.0
-  checksum: 7c3803350bbec02e33195a2426843f6811c8dcc67c48578a7814223684d69cd1e09f95a1dac3fce5822232019e3230caac1533b1ae2ba0c1ca7bb8aa0fa0fda0
+  checksum: 797b0884732592b415a6650e7ed2dad9d7167c62787bf1b3dfe1427a0def5b4e73e5c5338a5c5e765169da6f2696ae1446e795741db9687beed0e052f624b13e
   languageName: node
   linkType: hard
 
@@ -928,12 +928,11 @@ __metadata:
     "@ethersproject/abi": ^5.4.0
     "@ethersproject/bytes": ^5.4.0
     "@ethersproject/providers": ^5.4.0
-    "@hifi/amm": 1.1.2
-    "@hifi/protocol": 1.1.2
+    "@hifi/amm": 1.2.0
+    "@hifi/protocol": 1.2.0
     "@paulrberg/contracts": 3.4.0
     "@typechain/ethers-v5": ^7.0.1
     "@typechain/hardhat": ^2.2.0
-    "@types/fs-extra": ^9.0.12
     "@types/node": ^15.12.5
     "@typescript-eslint/eslint-plugin": ^4.28.1
     "@typescript-eslint/parser": ^4.28.1
@@ -943,9 +942,8 @@ __metadata:
     eslint: ^7.29.0
     eslint-config-prettier: ^8.3.0
     ethers: ^5.4.0
-    fs-extra: ^10.0.0
     hardhat: ^2.4.1
-    hardhat-packager: ^1.0.3
+    hardhat-packager: ^1.0.4
     husky: ^6.0.0
     lint-staged: ^11.0.0
     pinst: ^2.1.6
@@ -959,8 +957,8 @@ __metadata:
     typechain: ^5.1.1
     typescript: ~4.2.4
   peerDependencies:
-    "@hifi/amm": 1.1.2
-    "@hifi/protocol": 1.1.2
+    "@hifi/amm": 1.2.0
+    "@hifi/protocol": 1.2.0
     "@paulrberg/contracts": 3.4.0
   languageName: unknown
   linkType: soft
@@ -1195,15 +1193,6 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: e33009f99b19bfbef4591704c2deb18f3c55dc433435091895d462846b97bc22ec0440ff0a05439bc7e3a25b07f8bfd2c43215ee50523e4238a9e2865f98578e
-  languageName: node
-  linkType: hard
-
-"@types/fs-extra@npm:^9.0.12":
-  version: 9.0.12
-  resolution: "@types/fs-extra@npm:9.0.12"
-  dependencies:
-    "@types/node": "*"
-  checksum: bb3cd95b9748301127e35a64cde9621d4bb7cd6edb1f1155a00e07eeafd92740e2cacca6f9e3e26ec7bedd76cafa8d9a6b3751478311b4294bb4127768489f47
   languageName: node
   linkType: hard
 
@@ -3926,9 +3915,9 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"hardhat-packager@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "hardhat-packager@npm:1.0.3"
+"hardhat-packager@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "hardhat-packager@npm:1.0.4"
   dependencies:
     "@typechain/hardhat": ^2.2.0
     fs-extra: ^10.0.0
@@ -3939,7 +3928,7 @@ fsevents@~2.3.1:
     hardhat: ^2.0.10
     lodash: ^4.17.15
     typechain: ^5.0.0
-  checksum: c2ce4163fda58d8afdb2399e94c733704d67963e1d16489542bdd026e673b86d7211e166cf612e0d2c5fed3a02646e8d96b1867a583c0c4788a6dd4c918399b0
+  checksum: 4ba387ff37b6912af12139eb3a5abd1cdee6e55d96b166dd48fa1ea099c604c1c0bcf8b588cdd3e65a0376a32cf913ecb8c0ce9c868dced8a1d88d6090f72a10
   languageName: node
   linkType: hard
 
