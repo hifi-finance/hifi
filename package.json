@@ -8,40 +8,40 @@
     "url": "https://hifi.finance"
   },
   "dependencies": {
-    "@hifi/amm": "1.2.0",
+    "@hifi/amm": "1.2.1",
     "@hifi/protocol": "1.2.0",
     "@paulrberg/contracts": "3.4.0"
   },
   "devDependencies": {
-    "@commitlint/cli": "^12.1.4",
-    "@commitlint/config-conventional": "^12.1.4",
+    "@commitlint/cli": "^13.1.0",
+    "@commitlint/config-conventional": "^13.1.0",
     "@ethersproject/abi": "^5.4.0",
     "@ethersproject/bytes": "^5.4.0",
-    "@ethersproject/providers": "^5.4.0",
+    "@ethersproject/providers": "^5.4.3",
     "@typechain/ethers-v5": "^7.0.1",
     "@typechain/hardhat": "^2.2.0",
-    "@types/node": "^15.12.5",
-    "@typescript-eslint/eslint-plugin": "^4.28.1",
-    "@typescript-eslint/parser": "^4.28.1",
+    "@types/node": "^16.4.10",
+    "@typescript-eslint/eslint-plugin": "^4.29.0",
+    "@typescript-eslint/parser": "^4.29.0",
     "commitizen": "^4.2.4",
     "cz-conventional-changelog": "^3.3.0",
     "dotenv": "^10.0.0",
-    "eslint": "^7.29.0",
+    "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
-    "ethers": "^5.4.0",
-    "hardhat": "^2.4.1",
+    "ethers": "^5.4.3",
+    "hardhat": "^2.5.0",
     "hardhat-packager": "^1.0.4",
-    "husky": "^6.0.0",
-    "lint-staged": "^11.0.0",
+    "husky": "^7.0.1",
+    "lint-staged": "^11.1.1",
     "pinst": "^2.1.6",
     "prettier": "^2.3.2",
-    "prettier-plugin-solidity": "^1.0.0-beta.11",
+    "prettier-plugin-solidity": "^1.0.0-beta.17",
     "shelljs": "^0.8.4",
     "solhint": "^3.3.6",
     "solhint-plugin-prettier": "^0.0.5",
     "ts-generator": "^0.1.1",
-    "ts-node": "^10.0.0",
-    "typechain": "^5.1.1",
+    "ts-node": "^10.1.0",
+    "typechain": "^5.1.2",
     "typescript": "~4.2.4"
   },
   "files": [
@@ -58,7 +58,7 @@
   ],
   "license": "LGPL-3.0-or-later",
   "peerDependencies": {
-    "@hifi/amm": "1.2.0",
+    "@hifi/amm": "1.2.1",
     "@hifi/protocol": "1.2.0",
     "@paulrberg/contracts": "3.4.0"
   },
@@ -66,9 +66,7 @@
     "access": "public"
   },
   "resolutions": {
-    "@ethersproject/abi": "^5.4.0",
-    "@solidity-parser/parser": "^0.13.2",
-    "ethers": "^5.4.0"
+    "@solidity-parser/parser": "^0.13.2"
   },
   "scripts": {
     "clean": "hardhat clean",
