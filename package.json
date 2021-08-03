@@ -1,7 +1,7 @@
 {
   "name": "@hifi/protocol",
   "description": "The Hifi fixed-rate, fixed-term lending protocol",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "author": {
     "name": "Hifi",
     "email": "contact@hifi.finance",
@@ -71,9 +71,9 @@
     "typescript": "~4.2.4"
   },
   "files": [
-    "/artifacts/**/*.json",
-    "/contracts/**/*.sol",
-    "/typechain/**/*.d.ts"
+    "/artifacts",
+    "/contracts",
+    "/typechain"
   ],
   "homepage": "https://github.com/hifi-finance/hifi-protocol#readme",
   "importSort": {
