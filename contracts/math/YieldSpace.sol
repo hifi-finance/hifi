@@ -135,8 +135,8 @@ library YieldSpace {
             }
 
             uint256 newHTokenReserves = (startingReservesFactor - newNormalizedUnderlyingReservesFactor)
-            .pow(exponent.inv())
-            .toUint();
+                .pow(exponent.inv())
+                .toUint();
             if (hTokenReserves < newHTokenReserves) {
                 revert YieldSpace__LossyPrecisionUnderflow(hTokenReserves, newHTokenReserves);
             }
@@ -242,8 +242,8 @@ library YieldSpace {
             }
 
             uint256 newNormalizedUnderlyingReserves = (startingReservesFactor - newHTokenReservesFactor)
-            .pow(exponent.inv())
-            .toUint();
+                .pow(exponent.inv())
+                .toUint();
             if (normalizedUnderlyingReserves < newNormalizedUnderlyingReserves) {
                 revert YieldSpace__LossyPrecisionUnderflow(
                     normalizedUnderlyingReserves,
