@@ -1,7 +1,7 @@
 {
   "name": "@hifi/flash-swap",
   "description": "Flash swap implementations for liquidating underwater accounts in Hifi",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "author": {
     "name": "Hifi",
     "email": "contact@hifi.finance",
@@ -11,7 +11,7 @@
     "url": "https://github.com/hifi-finance/hifi-flash-swap/issues"
   },
   "dependencies": {
-    "@hifi/protocol": "1.1.2",
+    "@hifi/protocol": "1.2.0",
     "@paulrberg/contracts": "3.4.0",
     "@uniswap/v2-core": "1.0.1"
   },
@@ -46,7 +46,7 @@
     "from-exponential": "^1.1.1",
     "fs-extra": "^10.0.0",
     "hardhat": "^2.4.1",
-    "hardhat-packager": "^1.0.3",
+    "hardhat-packager": "^1.0.4",
     "husky": "^6.0.0",
     "import-sort-parser-typescript": "^6.0.0",
     "import-sort-style-module": "^6.0.0",
@@ -65,9 +65,9 @@
     "typescript": "~4.2.4"
   },
   "files": [
-    "/artifacts/**/*.json",
-    "/contracts/**/*.sol",
-    "/typechain/**/*.d.ts"
+    "/artifacts",
+    "/contracts",
+    "/typechain"
   ],
   "homepage": "https://github.com/hifi-finance/hifi-flash-swap#readme",
   "importSort": {
@@ -92,7 +92,7 @@
   ],
   "license": "LGPL-3.0-or-later",
   "peerDependencies": {
-    "@hifi/protocol": "1.1.2",
+    "@hifi/protocol": "1.2.0",
     "@paulrberg/contracts": "3.4.0",
     "@uniswap/v2-core": "1.0.1"
   },
