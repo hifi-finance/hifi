@@ -1,4 +1,5 @@
 import "@typechain/hardhat";
+import "hardhat-packager";
 
 import { resolve } from "path";
 
@@ -57,6 +58,9 @@ const config: HardhatUserConfig = {
     rinkeby: createTestnetConfig("rinkeby"),
     ropsten: createTestnetConfig("ropsten"),
   },
+  packager: {
+    contracts: ["HifiProxyTarget", "IHifiProxyTarget", "WethInterface"],
+  },
   paths: {
     artifacts: "./artifacts",
     cache: "./cache",
@@ -67,12 +71,8 @@ const config: HardhatUserConfig = {
     version: "0.8.6",
     settings: {
       metadata: {
-        // Not including the metadata hash
-        // https://github.com/paulrberg/solidity-template/issues/31
         bytecodeHash: "none",
       },
-      // You should disable the optimizer when debugging
-      // https://hardhat.org/hardhat-network/#solidity-optimizer-support
       optimizer: {
         enabled: true,
         runs: 800,
