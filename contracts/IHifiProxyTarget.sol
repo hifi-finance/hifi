@@ -162,16 +162,14 @@ interface IHifiProxyTarget {
 
     /// @notice Buys underlying and adds liquidity to the AMM.
     ///
-    /// - The caller must have allowed DSProxy to spend `maxHTokenIn + hTokenRequired` tokens.
+    /// - The caller must have allowed DSProxy to spend `maxHTokenAmount` tokens.
     ///
     /// @param hifiPool The address of the HifiPool contract.
-    /// @param maxHTokenIn The maximum amount of hTokens that the user is willing to pay.
-    /// @param maxHTokenRequired The maximum amount of hTokens that the user is willing to accept.
+    /// @param maxHTokenAmount maxHTokenAmount The maximum amount of hTokens that the user is willing to accept.
     /// @param underlyingOffered The amount of underlying tokens to invest.
     function buyUnderlyingAndAddLiquidity(
         IHifiPool hifiPool,
-        uint256 maxHTokenIn,
-        uint256 maxHTokenRequired,
+        uint256 maxHTokenAmount,
         uint256 underlyingOffered
     ) external;
 

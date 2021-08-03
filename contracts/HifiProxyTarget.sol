@@ -270,35 +270,38 @@ contract HifiProxyTarget is IHifiProxyTarget {
     /// @inheritdoc IHifiProxyTarget
     function buyUnderlyingAndAddLiquidity(
         IHifiPool hifiPool,
-        uint256 maxHTokenIn,
-        uint256 maxHTokenRequired,
+        uint256 maxHTokenAmount,
         uint256 underlyingOffered
     ) external override {
         // Ensure that we are within the user's slippage tolerance.
         uint256 hTokenIn = hifiPool.getQuoteForBuyingUnderlying(underlyingOffered);
-        if (hTokenIn > maxHTokenIn) {
-            revert HifiProxyTarget__TradeSlippageTooHigh(maxHTokenIn, hTokenIn);
-        }
-        (uint256 hTokenRequired, ) = hifiPool.getMintParams(underlyingOffered);
-        if (hTokenRequired > maxHTokenRequired) {
-            revert HifiProxyTarget__AddLiquiditySlippageTooHigh(maxHTokenRequired, hTokenRequired);
+        if (hTokenIn > maxHTokenAmount) {
+            revert HifiProxyTarget__TradeSlippageTooHigh(maxHTokenAmount, hTokenIn);
         }
 
-        // Transfer the hTokens to the DSProxy. We're transferring the sum of `hTokenIn` and `hTokenRequired` to
-        // avoid making two Erc20 transfers.
+        // Transfer the hTokens to the DSProxy.
         IHToken hToken = hifiPool.hToken();
-        uint256 totalHTokenAmount = hTokenIn + hTokenRequired;
-        hToken.transferFrom(msg.sender, address(this), totalHTokenAmount);
+        hToken.transferFrom(msg.sender, address(this), hTokenIn);
 
         // Allow the HifiPool contract to spend hTokens from the DSProxy.
-        approveSpender(hToken, address(hifiPool), totalHTokenAmount);
+        approveSpender(hToken, address(hifiPool), maxHTokenAmount);
 
         // Buy the underlying.
         hifiPool.buyUnderlying(address(this), underlyingOffered);
 
+        // Ensure that we are within the user's slippage tolerance.
+        (uint256 hTokenRequired, ) = hifiPool.getMintParams(underlyingOffered);
+        uint256 totalhTokenAmount = hTokenIn + hTokenRequired;
+        if (totalhTokenAmount > maxHTokenAmount) {
+            revert HifiProxyTarget__AddLiquiditySlippageTooHigh(maxHTokenAmount, totalhTokenAmount);
+        }
+
+        // Transfer the hTokens to the DSProxy. We couldn't have known what value `hTokenRequired` will have had
+        // after the call to `buyUnderlying`.
+        hToken.transferFrom(msg.sender, address(this), hTokenRequired);
+
         // Allow the HifiPool contract to spend underlying from the DSProxy.
-        IErc20 underlying = hifiPool.underlying();
-        approveSpender(underlying, address(hifiPool), underlyingOffered);
+        approveSpender(hifiPool.underlying(), address(hifiPool), underlyingOffered);
 
         // Add liquidity to the AMM.
         uint256 poolTokensMinted = hifiPool.mint(underlyingOffered);
