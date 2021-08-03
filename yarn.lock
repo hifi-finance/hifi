@@ -1174,7 +1174,7 @@ __metadata:
     fs-extra: ^10.0.0
     hardhat: ^2.4.1
     hardhat-gas-reporter: ^1.0.4
-    hardhat-packager: ^1.0.3
+    hardhat-packager: ^1.0.4
     husky: ^6.0.0
     import-sort-parser-typescript: ^6.0.0
     import-sort-style-module: ^6.0.0
@@ -7497,9 +7497,9 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
-"hardhat-packager@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "hardhat-packager@npm:1.0.3"
+"hardhat-packager@npm:^1.0.4":
+  version: 1.0.4
+  resolution: "hardhat-packager@npm:1.0.4"
   dependencies:
     "@typechain/hardhat": ^2.2.0
     fs-extra: ^10.0.0
@@ -7510,7 +7510,7 @@ fsevents@~2.3.1:
     hardhat: ^2.0.10
     lodash: ^4.17.15
     typechain: ^5.0.0
-  checksum: c2ce4163fda58d8afdb2399e94c733704d67963e1d16489542bdd026e673b86d7211e166cf612e0d2c5fed3a02646e8d96b1867a583c0c4788a6dd4c918399b0
+  checksum: 4ba387ff37b6912af12139eb3a5abd1cdee6e55d96b166dd48fa1ea099c604c1c0bcf8b588cdd3e65a0376a32cf913ecb8c0ce9c868dced8a1d88d6090f72a10
   languageName: node
   linkType: hard
 
