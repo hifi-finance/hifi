@@ -130,6 +130,6 @@
     "test": "hardhat test",
     "test:integration": "hardhat test ./test/integration --network hardhat",
     "test:unit": "hardhat test ./test/unit --network hardhat",
-    "typechain": "hardhat typechain"
+    "typechain": "TS_NODE_TRANSPILE_ONLY=1 hardhat typechain"
   }
 }
