@@ -1,3 +1,4 @@
+import "@nomiclabs/hardhat-etherscan";
 import "@typechain/hardhat";
 import "hardhat-packager";
 
@@ -6,6 +7,8 @@ import { resolve } from "path";
 import { config as dotenvConfig } from "dotenv";
 import { HardhatUserConfig } from "hardhat/config";
 import { NetworkUserConfig } from "hardhat/types";
+
+import { getEnvVar } from "./helpers/env";
 
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
@@ -20,15 +23,8 @@ const chainIds = {
 };
 
 // Ensure that we have all the environment variables we need.
-const mnemonic = process.env.MNEMONIC;
-if (!mnemonic) {
-  throw new Error("Please set your MNEMONIC in a .env file");
-}
-
-const infuraApiKey = process.env.INFURA_API_KEY;
-if (!infuraApiKey) {
-  throw new Error("Please set your INFURA_API_KEY in a .env file");
-}
+const mnemonic: string = getEnvVar("MNEMONIC");
+const infuraApiKey: string = getEnvVar("INFURA_API_KEY");
 
 function createTestnetConfig(network: keyof typeof chainIds): NetworkUserConfig {
   const url: string = "https://" + network + ".infura.io/v3/" + infuraApiKey;
@@ -46,6 +42,9 @@ function createTestnetConfig(network: keyof typeof chainIds): NetworkUserConfig 
 
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
+  etherscan: {
+    apiKey: getEnvVar("ETHERSCAN_API_KEY"),
+  },
   networks: {
     hardhat: {
       accounts: {
