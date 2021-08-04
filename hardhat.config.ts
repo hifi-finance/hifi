@@ -24,6 +24,7 @@ const chainIds = {
   goerli: 5,
   kovan: 42,
   mainnet: 1,
+  "polygon-mainnet": 137,
   rinkeby: 4,
   ropsten: 3,
 };
@@ -32,12 +33,11 @@ const chainIds = {
 const infuraApiKey: string = getEnvVar("INFURA_API_KEY");
 const mnemonic: string = getEnvVar("MNEMONIC");
 
-function createTestnetConfig(network: keyof typeof chainIds): NetworkUserConfig {
+function getChainConfig(network: keyof typeof chainIds): NetworkUserConfig {
   const url: string = "https://" + network + ".infura.io/v3/" + infuraApiKey;
   return {
     accounts: {
       count: 6,
-      initialIndex: 0,
       mnemonic,
       path: "m/44'/60'/0'/0",
     },
@@ -67,10 +67,11 @@ const config: HardhatUserConfig = {
       chainId: chainIds.hardhat,
       gas: GAS_LIMIT_HARDHAT.toNumber(), // https://github.com/nomiclabs/hardhat/issues/660#issuecomment-715897156
     },
-    goerli: createTestnetConfig("goerli"),
-    kovan: createTestnetConfig("kovan"),
-    rinkeby: createTestnetConfig("rinkeby"),
-    ropsten: createTestnetConfig("ropsten"),
+    goerli: getChainConfig("goerli"),
+    kovan: getChainConfig("kovan"),
+    "polygon-mainnet": getChainConfig("polygon-mainnet"),
+    rinkeby: getChainConfig("rinkeby"),
+    ropsten: getChainConfig("ropsten"),
   },
   packager: {
     contracts: [
