@@ -72,7 +72,6 @@
     "clean": "hardhat clean",
     "commit": "git-cz",
     "compile": "hardhat compile",
-    "coverage": "hardhat coverage --solcoverjs ./.solcover.js --temp artifacts --testfiles \"./test/**/*.ts\"",
     "deploy": "hardhat run scripts/deploy.ts",
     "deploy:network": "hardhat run scripts/deploy.ts --network",
     "lint": "yarn run lint:sol && yarn run lint:ts && yarn run prettier:check",
@@ -83,7 +82,6 @@
     "prepublishOnly": "pinst --disable",
     "prettier": "prettier --config ./.prettierrc --write \"**/*.{js,json,md,sol,ts}\"",
     "prettier:check": "prettier --check --config ./.prettierrc \"**/*.{js,json,md,sol,ts}\"",
-    "test": "hardhat test",
     "typechain": "hardhat typechain"
   }
 }
