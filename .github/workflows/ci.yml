@@ -1,6 +1,7 @@
 name: "Continuous Integration"
 
 env:
+  ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
   INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
   MNEMONIC: ${{ secrets.MNEMONIC }}
 
