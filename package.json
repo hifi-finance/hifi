@@ -124,7 +124,6 @@
     "lint:ts": "eslint --config ./.eslintrc.yaml --ignore-path ./.eslintignore --ext .js,.ts .",
     "postinstall": "husky install",
     "postpublish": "pinst --enable",
-    "prepare:package": "hardhat run scripts/prepare-package.ts",
     "prepublishOnly": "pinst --disable",
     "prettier": "prettier --config ./.prettierrc --write \"**/*.{js,json,md,sol,ts}\"",
     "prettier:check": "prettier --check --config ./.prettierrc \"**/*.{js,json,md,sol,ts}\"",
