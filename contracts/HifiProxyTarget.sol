@@ -74,7 +74,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         IHifiPool hifiPool,
         uint256 maxBorrowAmount,
         uint256 underlyingOffered
-    ) external override {
+    ) public override {
         // Ensure that we are within the user's slippage tolerance.
         (uint256 hTokenRequired, ) = hifiPool.getMintParams(underlyingOffered);
         if (hTokenRequired > maxBorrowAmount) {
@@ -309,13 +309,13 @@ contract HifiProxyTarget is IHifiProxyTarget {
     function depositCollateral(
         IBalanceSheetV1 balanceSheet,
         IErc20 collateral,
-        uint256 collateralAmount
+        uint256 depositAmount
     ) public override {
         // Transfer the collateral to the DSProxy.
-        collateral.safeTransferFrom(msg.sender, address(this), collateralAmount);
+        collateral.safeTransferFrom(msg.sender, address(this), depositAmount);
 
         // Deposit the collateral into the BalanceSheet contract.
-        depositCollateralInternal(balanceSheet, collateral, collateralAmount);
+        depositCollateralInternal(balanceSheet, collateral, depositAmount);
     }
 
     /// @inheritdoc IHifiProxyTarget
@@ -323,11 +323,24 @@ contract HifiProxyTarget is IHifiProxyTarget {
         IBalanceSheetV1 balanceSheet,
         IErc20 collateral,
         IHToken hToken,
-        uint256 collateralAmount,
+        uint256 depositAmount,
         uint256 borrowAmount
     ) external override {
-        depositCollateral(balanceSheet, collateral, collateralAmount);
+        depositCollateral(balanceSheet, collateral, depositAmount);
         borrowHToken(balanceSheet, hToken, borrowAmount);
+    }
+
+    /// @inheritdoc IHifiProxyTarget
+    function depositCollateralAndBorrowHTokenAndAddLiquidity(
+        IBalanceSheetV1 balanceSheet,
+        IErc20 collateral,
+        IHifiPool hifiPool,
+        uint256 depositAmount,
+        uint256 maxBorrowAmount,
+        uint256 underlyingOffered
+    ) external override {
+        depositCollateral(balanceSheet, collateral, depositAmount);
+        borrowHTokenAndAddLiquidity(balanceSheet, hifiPool, maxBorrowAmount, underlyingOffered);
     }
 
     /// @inheritdoc IHifiProxyTarget
@@ -335,11 +348,11 @@ contract HifiProxyTarget is IHifiProxyTarget {
         IBalanceSheetV1 balanceSheet,
         IErc20 collateral,
         IHifiPool hifiPool,
-        uint256 collateralAmount,
+        uint256 depositAmount,
         uint256 borrowAmount,
         uint256 minUnderlyingOut
     ) external override {
-        depositCollateral(balanceSheet, collateral, collateralAmount);
+        depositCollateral(balanceSheet, collateral, depositAmount);
         borrowHTokenAndSellHToken(balanceSheet, hifiPool, borrowAmount, minUnderlyingOut);
     }
 
@@ -600,13 +613,13 @@ contract HifiProxyTarget is IHifiProxyTarget {
 
     /// @inheritdoc IHifiProxyTarget
     function wrapEthAndDepositCollateral(WethInterface weth, IBalanceSheetV1 balanceSheet) public payable override {
-        uint256 collateralAmount = msg.value;
+        uint256 depositAmount = msg.value;
 
         // Convert the received ETH to WETH.
-        weth.deposit{ value: collateralAmount }();
+        weth.deposit{ value: depositAmount }();
 
         // Deposit the collateral into the BalanceSheet contract.
-        depositCollateralInternal(balanceSheet, IErc20(address(weth)), collateralAmount);
+        depositCollateralInternal(balanceSheet, IErc20(address(weth)), depositAmount);
     }
 
     /// @inheritdoc IHifiProxyTarget
@@ -639,13 +652,13 @@ contract HifiProxyTarget is IHifiProxyTarget {
     function depositCollateralInternal(
         IBalanceSheetV1 balanceSheet,
         IErc20 collateral,
-        uint256 collateralAmount
+        uint256 depositAmount
     ) internal {
         // Allow the BalanceSheet contract to spend collateral from the DSProxy.
-        approveSpender(collateral, address(balanceSheet), collateralAmount);
+        approveSpender(collateral, address(balanceSheet), depositAmount);
 
         // Deposit the collateral into the BalanceSheet contract.
-        balanceSheet.depositCollateral(collateral, collateralAmount);
+        balanceSheet.depositCollateral(collateral, depositAmount);
     }
 
     /// @dev See the documentation for the public functions that call this internal function.

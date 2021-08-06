@@ -60,7 +60,7 @@ interface IHifiProxyTarget {
     ///
     /// @param balanceSheet The address of the BalanceSheet contract.
     /// @param hifiPool The address of the HifiPool contract.
-    /// @param maxBorrowAmount The amount of hTokens to borrow and the max amount that the user is willing to accept.
+    /// @param maxBorrowAmount The amount of hTokens to borrow and the max amount that the user is willing to invest.
     /// @param underlyingOffered The amount of underlying tokens to invest.
     function borrowHTokenAndAddLiquidity(
         IBalanceSheetV1 balanceSheet,
@@ -162,7 +162,7 @@ interface IHifiProxyTarget {
     /// - The caller must have allowed DSProxy to spend `maxHTokenAmount` tokens.
     ///
     /// @param hifiPool The address of the HifiPool contract.
-    /// @param maxHTokenAmount maxHTokenAmount The maximum amount of hTokens that the user is willing to accept.
+    /// @param maxHTokenAmount maxHTokenAmount The maximum amount of hTokens that the user is willing to invest.
     /// @param underlyingOffered The amount of underlying tokens to invest.
     function buyUnderlyingAndAddLiquidity(
         IHifiPool hifiPool,
@@ -177,11 +177,11 @@ interface IHifiProxyTarget {
     ///
     /// @param balanceSheet The address of the BalanceSheet contract.
     /// @param collateral The address of the collateral contract.
-    /// @param collateralAmount The amount of collateral to deposit.
+    /// @param depositAmount The amount of collateral to deposit.
     function depositCollateral(
         IBalanceSheetV1 balanceSheet,
         IErc20 collateral,
-        uint256 collateralAmount
+        uint256 depositAmount
     ) external;
 
     /// @notice Deposits collateral into the vault and borrows hTokens.
@@ -192,14 +192,34 @@ interface IHifiProxyTarget {
     /// @param balanceSheet The address of the BalanceSheet contract.
     /// @param collateral The address of the collateral contract.
     /// @param hToken The address of the HToken contract.
-    /// @param collateralAmount The amount of collateral to deposit.
+    /// @param depositAmount The amount of collateral to deposit.
     /// @param borrowAmount The amount of hTokens to borrow.
     function depositCollateralAndBorrowHToken(
         IBalanceSheetV1 balanceSheet,
         IErc20 collateral,
         IHToken hToken,
-        uint256 collateralAmount,
+        uint256 depositAmount,
         uint256 borrowAmount
+    ) external;
+
+    /// @notice Deposits collateral into the vault, borrows hTokens and adds liquidity to the AMM.
+    ///
+    /// Requirements:
+    /// - The caller must have allowed the DSProxy to spend `collateralAmount` tokens.
+    ///
+    /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param collateral The address of the collateral contract.
+    /// @param hifiPool The address of the HifiPool contract.
+    /// @param depositAmount The amount of collateral to deposit.
+    /// @param maxBorrowAmount The amount of hTokens to borrow and the max amount that the user is willing to invest.
+    /// @param underlyingOffered The amount of underlying tokens to invest.
+    function depositCollateralAndBorrowHTokenAndAddLiquidity(
+        IBalanceSheetV1 balanceSheet,
+        IErc20 collateral,
+        IHifiPool hifiPool,
+        uint256 depositAmount,
+        uint256 maxBorrowAmount,
+        uint256 underlyingOffered
     ) external;
 
     /// @notice Deposits collateral into the vault, borrows hTokens and sells them.
@@ -210,14 +230,14 @@ interface IHifiProxyTarget {
     /// @param balanceSheet The address of the BalanceSheet contract.
     /// @param collateral The address of the collateral contract.
     /// @param hifiPool The address of the HifiPool contract.
-    /// @param collateralAmount The amount of collateral to deposit.
+    /// @param depositAmount The amount of collateral to deposit.
     /// @param borrowAmount The amount of exact hTokens to borrow.
     /// @param minUnderlyingOut The minimum amount of underlying that the user is willing to accept.
     function depositCollateralAndBorrowHTokenAndSellHToken(
         IBalanceSheetV1 balanceSheet,
         IErc20 collateral,
         IHifiPool hifiPool,
-        uint256 collateralAmount,
+        uint256 depositAmount,
         uint256 borrowAmount,
         uint256 minUnderlyingOut
     ) external;
