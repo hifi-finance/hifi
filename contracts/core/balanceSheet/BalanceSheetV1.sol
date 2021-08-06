@@ -205,7 +205,7 @@ contract BalanceSheetV1 is
         IHToken[] memory bondList = vaults[account].bondList;
         vars.bondListLength = bondList.length;
 
-        // Sum up all debts.
+        // Sum up all bond debts.
         for (uint256 i = 0; i < vars.bondListLength; i++) {
             IHToken bond = bondList[i];
 
@@ -242,9 +242,10 @@ contract BalanceSheetV1 is
         uint256 repayAmount,
         IErc20 collateral
     ) public view override returns (uint256 seizableCollateralAmount) {
-        // When the liquidation incentive is zero, the end result would be zero anyways.
+        // When the liquidation incentive is 100%, which is Fintroller.LIQUIDATION_INCENTIVE_LOWER_BOUND, the end
+        // result would be zero.
         uint256 liquidationIncentive = fintroller.getLiquidationIncentive(collateral);
-        if (liquidationIncentive == 0) {
+        if (liquidationIncentive == 1.0e18) {
             return 0;
         }
 

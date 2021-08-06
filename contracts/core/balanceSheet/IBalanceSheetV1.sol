@@ -101,8 +101,8 @@ interface IBalanceSheetV1 is IOwnableUpgradeable {
     /// @param bond The bond to make the query against.
     function getDebtAmount(address account, IHToken bond) external view returns (uint256 debtAmount);
 
-    /// @notice Calculates the account liquidity given a modified collateral and debt amount, at the current prices
-    /// provided by the oracle.
+    /// @notice Calculates the account liquidity given a modified collateral, collateral amount, bond and debt amount,
+    /// using the current prices provided by the oracle.
     ///
     /// @dev Works by summing up each collateral amount multiplied by the USD value of each unit and divided by its
     /// respective collateralization ratio, then dividing the sum by the total amount of debt drawn by the user.
@@ -127,7 +127,7 @@ interface IBalanceSheetV1 is IOwnableUpgradeable {
     ) external view returns (uint256 excessLiquidity, uint256 shortfallLiquidity);
 
     /// @notice Calculates the amount of collateral that can be seized when liquidating a borrow. Note that this
-    /// is for informational purposes only, it doesn't tell anything about whether the user can be liquidated.
+    /// is for informational purposes only, it doesn't say anything about whether the user can be liquidated.
     /// @dev The formula applied:
     /// seizableCollateralAmount = repayAmount * liquidationIncentive * underlyingPriceUsd / collateralPriceUsd
     /// @param bond The bond to make the query against.
