@@ -1,8 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
+import { LIQUIDATION_INCENTIVES } from "@hifi/constants";
 import { expect } from "chai";
-
-import { DEFAULT_LIQUIDATION_INCENTIVE } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeGetDebtCeiling(): void {
   context("when the bond is not listed", function () {
@@ -23,7 +22,7 @@ export default function shouldBehaveLikeGetDebtCeiling(): void {
       const liquidationIncentive: BigNumber = await this.contracts.fintroller.getLiquidationIncentive(
         this.mocks.wbtc.address,
       );
-      expect(liquidationIncentive).to.equal(DEFAULT_LIQUIDATION_INCENTIVE);
+      expect(liquidationIncentive).to.equal(LIQUIDATION_INCENTIVES.default);
     });
   });
 }

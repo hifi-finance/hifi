@@ -1,8 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
+import { COLLATERALIZATION_RATIOS } from "@hifi/constants";
 import { expect } from "chai";
-
-import { DEFAULT_COLLATERALIZATION_RATIO } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeGetCollateralizationRatio(): void {
   context("when the collateral is not listed", function () {
@@ -23,7 +22,7 @@ export default function shouldBehaveLikeGetCollateralizationRatio(): void {
       const collateralizationRatio: BigNumber = await this.contracts.fintroller.getCollateralizationRatio(
         this.mocks.wbtc.address,
       );
-      expect(collateralizationRatio).to.equal(DEFAULT_COLLATERALIZATION_RATIO);
+      expect(collateralizationRatio).to.equal(COLLATERALIZATION_RATIOS.default);
     });
   });
 }

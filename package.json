@@ -1,0 +1,47 @@
+{
+  "name": "hifi",
+  "description": "Monorepo implementing the Hifi fixed-rate, fixed-term lending protocol",
+  "version": "1.0.0",
+  "author": {
+    "name": "Hifi",
+    "email": "contact@hifi.finance",
+    "url": "https://hifi.finance"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^13.1.0",
+    "@commitlint/config-conventional": "^13.1.0",
+    "commitizen": "^4.2.4",
+    "cz-conventional-changelog": "^3.3.0",
+    "husky": "^7.0.1",
+    "lint-staged": "^11.1.2",
+    "typescript": "~4.2.4"
+  },
+  "keywords": [
+    "blockchain",
+    "decentralized-finance",
+    "ethereum",
+    "hifi",
+    "lending",
+    "smart-contracts",
+    "solidity"
+  ],
+  "packageManager": "yarn@2.4.1",
+  "private": true,
+  "scripts": {
+    "build": "yarn workspaces foreach --parallel --topological run build",
+    "clean": "yarn workspaces foreach --from @hifi/proxy-target --parallel run clean",
+    "compile": "yarn workspaces foreach --parallel --verbose run compile",
+    "coverage": "yarn workspaces foreach --parallel run coverage",
+    "lint": "yarn workspaces foreach --parallel run lint",
+    "lint:ts": "yarn workspaces foreach --parallel run lint:ts",
+    "postinstall": "husky install",
+    "prettier": "yarn workspaces foreach --parallel run prettier",
+    "prettier:check": "yarn workspaces foreach --parallel run prettier:check",
+    "test": "yarn workspaces foreach --parallel run test",
+    "typechain": "yarn workspaces foreach --parallel --verbose run typechain",
+    "watch": "yarn workspaces foreach --interlaced --parallel --verbose run watch"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}

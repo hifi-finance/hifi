@@ -1,7 +1,7 @@
+import { WBTC_SYMBOL } from "@hifi/constants";
+import { bn } from "@hifi/helpers";
 import { expect } from "chai";
 
-import { WBTC_SYMBOL } from "../../../../helpers/constants";
-import { bn } from "../../../../helpers/numbers";
 import { ChainlinkOperatorErrors, OwnableErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeSetFeed(): void {

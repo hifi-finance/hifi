@@ -1,7 +1,6 @@
 import { Zero } from "@ethersproject/constants";
+import { COLLATERALIZATION_RATIOS, LIQUIDATION_INCENTIVES } from "@hifi/constants";
 import { expect } from "chai";
-
-import { DEFAULT_COLLATERALIZATION_RATIO, DEFAULT_LIQUIDATION_INCENTIVE } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeGetCollateral(): void {
   context("when the collateral is not listed", function () {
@@ -21,8 +20,8 @@ export default function shouldBehaveLikeGetCollateral(): void {
 
     it("retrieves the default values after listing", async function () {
       const collateral = await this.contracts.fintroller.getCollateral(this.mocks.wbtc.address);
-      expect(collateral.collateralizationRatio).to.equal(DEFAULT_COLLATERALIZATION_RATIO);
-      expect(collateral.liquidationIncentive).to.equal(DEFAULT_LIQUIDATION_INCENTIVE);
+      expect(collateral.collateralizationRatio).to.equal(COLLATERALIZATION_RATIOS.default);
+      expect(collateral.liquidationIncentive).to.equal(LIQUIDATION_INCENTIVES.default);
       expect(collateral.isDepositCollateralAllowed).to.equal(true);
       expect(collateral.isListed).to.equal(true);
     });

@@ -1,8 +1,8 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
+import { WBTC } from "@hifi/helpers";
 import { expect } from "chai";
 
-import { WBTC } from "../../../../helpers/numbers";
 import { BalanceSheetErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeDepositCollateral(): void {

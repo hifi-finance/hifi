@@ -1,7 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
+import { DEFAULT_MAX_BONDS } from "@hifi/constants";
 import { expect } from "chai";
-
-import { DEFAULT_MAX_BONDS } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeMaxBonds(): void {
   context("when a new value was not set", function () {

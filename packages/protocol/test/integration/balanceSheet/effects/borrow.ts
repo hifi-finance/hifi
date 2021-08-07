@@ -1,8 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { AddressZero } from "@ethersproject/constants";
+import { WBTC, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
-
-import { WBTC, hUSDC } from "../../../../helpers/numbers";
 
 export default function shouldBehaveLikeBorrow(): void {
   const borrowAmount: BigNumber = hUSDC("15000");

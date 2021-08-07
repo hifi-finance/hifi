@@ -1,7 +1,7 @@
 import { Zero } from "@ethersproject/constants";
+import { bn } from "@hifi/helpers";
 import { expect } from "chai";
 
-import { bn } from "../../../../helpers/numbers";
 import { FintrollerErrors, OwnableUpgradeableErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeListCollateral(): void {

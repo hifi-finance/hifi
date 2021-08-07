@@ -1,8 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
+import { WBTC } from "@hifi/helpers";
 import { expect } from "chai";
-
-import { WBTC } from "../../../../helpers/numbers";
 
 export default function shouldBehaveLikeGetCollateralAmount(): void {
   context("when the caller did not deposit collateral", function () {

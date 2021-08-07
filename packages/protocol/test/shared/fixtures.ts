@@ -1,17 +1,17 @@
 import { Signer } from "@ethersproject/abstract-signer";
-import { MockContract } from "ethereum-waffle";
-
 import {
   H_TOKEN_MATURITIES,
   NORMALIZED_USDC_PRICE,
   NORMALIZED_WBTC_PRICE,
   NORMALIZED_WETH_PRICE,
-  USDC_PRECISION_SCALAR,
+  USDC_PRICE_PRECISION_SCALAR,
   USDC_SYMBOL,
   WBTC_PRICE,
   WBTC_SYMBOL,
   WETH_SYMBOL,
-} from "../../helpers/constants";
+} from "@hifi/constants";
+import { MockContract } from "ethereum-waffle";
+
 import { ChainlinkOperator } from "../../typechain/ChainlinkOperator";
 import { FintrollerV1 } from "../../typechain/FintrollerV1";
 import { GodModeBalanceSheet } from "../../typechain/GodModeBalanceSheet";
@@ -107,11 +107,11 @@ export async function unitFixtureBalanceSheet(signers: Signer[]): Promise<UnitFi
 
   const hToken1: MockContract = await deployMockHToken(deployer, H_TOKEN_MATURITIES[0]);
   await hToken1.mock.underlying.returns(usdc.address);
-  await hToken1.mock.underlyingPrecisionScalar.returns(USDC_PRECISION_SCALAR);
+  await hToken1.mock.underlyingPrecisionScalar.returns(USDC_PRICE_PRECISION_SCALAR);
 
   const hToken2: MockContract = await deployMockHToken(deployer, H_TOKEN_MATURITIES[1]);
   await hToken2.mock.underlying.returns(usdc.address);
-  await hToken2.mock.underlyingPrecisionScalar.returns(USDC_PRECISION_SCALAR);
+  await hToken2.mock.underlyingPrecisionScalar.returns(USDC_PRICE_PRECISION_SCALAR);
 
   const oracle: MockContract = await deployMockChainlinkOperator(deployer);
   await oracle.mock.getNormalizedPrice.withArgs(USDC_SYMBOL).returns(NORMALIZED_USDC_PRICE);

@@ -1,13 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
+import { COLLATERALIZATION_RATIOS, DEFAULT_MAX_BONDS } from "@hifi/constants";
+import { WBTC, WETH, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 
-import {
-  DEFAULT_MAX_BONDS,
-  WBTC_COLLATERALIZATION_RATIO,
-  WETH_COLLATERALIZATION_RATIO,
-} from "../../../../helpers/constants";
-import { WBTC, WETH, hUSDC } from "../../../../helpers/numbers";
 import { BalanceSheetErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeBorrow(): void {
@@ -129,7 +125,7 @@ export default function shouldBehaveLikeBorrow(): void {
                   // Mock the necessary methods.
                   await this.mocks.fintroller.mock.getCollateralizationRatio
                     .withArgs(this.mocks.wbtc.address)
-                    .returns(WBTC_COLLATERALIZATION_RATIO);
+                    .returns(COLLATERALIZATION_RATIOS.wbtc);
 
                   // Make the collateral deposits.
                   await this.contracts.balanceSheet.__godMode_setCollateralList(this.signers.borrower.address, [
@@ -158,10 +154,10 @@ export default function shouldBehaveLikeBorrow(): void {
                 // Mock the necessary methods.
                 await this.mocks.fintroller.mock.getCollateralizationRatio
                   .withArgs(this.mocks.wbtc.address)
-                  .returns(WBTC_COLLATERALIZATION_RATIO);
+                  .returns(COLLATERALIZATION_RATIOS.wbtc);
                 await this.mocks.fintroller.mock.getCollateralizationRatio
                   .withArgs(this.mocks.weth.address)
-                  .returns(WETH_COLLATERALIZATION_RATIO);
+                  .returns(COLLATERALIZATION_RATIOS.weth);
 
                 // Make the collateral deposits.
                 await this.contracts.balanceSheet.__godMode_setCollateralList(this.signers.borrower.address, [

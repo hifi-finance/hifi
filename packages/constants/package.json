@@ -1,0 +1,45 @@
+{
+  "name": "@hifi/constants",
+  "description": "Constants shared across Hifi packages",
+  "version": "1.0.0",
+  "author": {
+    "name": "Hifi",
+    "email": "contact@hifi.finance",
+    "url": "https://hifi.finance"
+  },
+  "bugs": {
+    "url": "https://github.com/hifi-finance/hifi/issues"
+  },
+  "devDependencies": {
+    "@ethersproject/bignumber": "^5.4.1",
+    "@typescript-eslint/eslint-plugin": "^4.29.0",
+    "@typescript-eslint/parser": "^4.29.0",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "evm-fp": "^1.1.2",
+    "from-exponential": "^1.1.1",
+    "prettier": "^2.3.2",
+    "shx": "^0.3.3",
+    "typescript": "~4.2.4"
+  },
+  "files": [
+    "/dist"
+  ],
+  "homepage": "https://github.com/hifi-finance/hifi/tree/main/packages/constants#readme",
+  "main": "./dist/index.js",
+  "repository": {
+    "directory": "packages/constants",
+    "type": "git",
+    "url": "https://github.com/hifi-finance/hifi"
+  },
+  "scripts": {
+    "build": "tsc --project ./tsconfig.json",
+    "clean": "shx rm -rf ./dist ./tsconfig.tsbuildinfo",
+    "lint": "yarn lint:ts && yarn prettier:check",
+    "lint:ts": "eslint --config ../../.eslintrc.yaml --ignore-path ../../.eslintignore --ext .js,.ts .",
+    "prettier": "prettier --config ../../.prettierrc.js --ignore-path ../../.prettierignore --write \"**/*.{js,json,md,ts}\"",
+    "prettier:check": "prettier --check --config ../../.prettierrc.js --ignore-path ../../.prettierignore \"**/*.{js,json,md,ts}\"",
+    "watch": "yarn build --watch"
+  },
+  "types": "./dist/index.d.ts"
+}

@@ -1,9 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
+import { USDC, bn, getPrecisionScalar, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 import fp from "evm-fp";
 
-import { USDC, bn, hUSDC, precisionScalarForDecimals } from "../../../../helpers/numbers";
 import { HTokenErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeSupplyUnderlying(): void {
@@ -40,7 +40,7 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
 
     context("when the underlying has 6 decimals", function () {
       beforeEach(async function () {
-        await this.contracts.hTokens[0].__godMode_setUnderlyingPrecisionScalar(precisionScalarForDecimals(bn("6")));
+        await this.contracts.hTokens[0].__godMode_setUnderlyingPrecisionScalar(getPrecisionScalar(bn("6")));
         await this.mocks.usdc.mock.transferFrom
           .withArgs(this.signers.maker.address, this.contracts.hTokens[0].address, underlyingAmount)
           .returns(true);

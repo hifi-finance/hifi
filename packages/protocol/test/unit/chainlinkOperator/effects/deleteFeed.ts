@@ -1,7 +1,7 @@
 import { AddressZero } from "@ethersproject/constants";
+import { WBTC_SYMBOL } from "@hifi/constants";
 import { expect } from "chai";
 
-import { WBTC_SYMBOL } from "../../../../helpers/constants";
 import { ChainlinkOperatorErrors, OwnableErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeDeleteFeed(): void {

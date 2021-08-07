@@ -11,40 +11,15 @@ import "./tasks/deployers";
 
 import { resolve } from "path";
 
+import { GAS_LIMITS } from "@hifi/constants";
+import { getChainConfig, getEnvVar } from "@hifi/helpers";
 import { config as dotenvConfig } from "dotenv";
-import { HardhatUserConfig, NetworkUserConfig } from "hardhat/types";
-
-import { GAS_LIMIT_HARDHAT } from "./helpers/constants";
-import { getEnvVar } from "./helpers/env";
+import { HardhatUserConfig } from "hardhat/types";
 
 dotenvConfig({ path: resolve(__dirname, "./.env") });
 
-const chainIds = {
-  hardhat: 31337,
-  goerli: 5,
-  kovan: 42,
-  mainnet: 1,
-  "polygon-mainnet": 137,
-  rinkeby: 4,
-  ropsten: 3,
-};
-
-// Ensure that we have the environment variables we need.
 const infuraApiKey: string = getEnvVar("INFURA_API_KEY");
 const mnemonic: string = getEnvVar("MNEMONIC");
-
-function getChainConfig(network: keyof typeof chainIds): NetworkUserConfig {
-  const url: string = "https://" + network + ".infura.io/v3/" + infuraApiKey;
-  return {
-    accounts: {
-      count: 6,
-      mnemonic,
-      path: "m/44'/60'/0'/0",
-    },
-    chainId: chainIds[network],
-    url,
-  };
-}
 
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
@@ -63,15 +38,13 @@ const config: HardhatUserConfig = {
         mnemonic,
       },
       allowUnlimitedContractSize: true,
-      blockGasLimit: GAS_LIMIT_HARDHAT.toNumber(),
-      chainId: chainIds.hardhat,
-      gas: GAS_LIMIT_HARDHAT.toNumber(), // https://github.com/nomiclabs/hardhat/issues/660#issuecomment-715897156
+      blockGasLimit: GAS_LIMITS.hardhat.toNumber(),
+      gas: GAS_LIMITS.hardhat.toNumber(), // https://github.com/nomiclabs/hardhat/issues/660#issuecomment-715897156
     },
-    goerli: getChainConfig("goerli"),
-    kovan: getChainConfig("kovan"),
-    "polygon-mainnet": getChainConfig("polygon-mainnet"),
-    rinkeby: getChainConfig("rinkeby"),
-    ropsten: getChainConfig("ropsten"),
+    goerli: getChainConfig("goerli", infuraApiKey, mnemonic),
+    "polygon-mainnet": getChainConfig("polygon-mainnet", infuraApiKey, mnemonic),
+    rinkeby: getChainConfig("rinkeby", infuraApiKey, mnemonic),
+    ropsten: getChainConfig("ropsten", infuraApiKey, mnemonic),
   },
   packager: {
     contracts: [

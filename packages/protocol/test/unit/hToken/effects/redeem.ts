@@ -1,10 +1,10 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
+import { getNow } from "@hifi/helpers";
+import { USDC, bn, getPrecisionScalar, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 import fp from "evm-fp";
 
-import { USDC, bn, hUSDC, precisionScalarForDecimals } from "../../../../helpers/numbers";
-import { now } from "../../../../helpers/time";
 import { HTokenErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeRedeem(): void {
@@ -21,7 +21,7 @@ export default function shouldBehaveLikeRedeem(): void {
 
   context("when the bond matured", function () {
     beforeEach(async function () {
-      const oneHourAgo: BigNumber = now().sub(3600);
+      const oneHourAgo: BigNumber = getNow().sub(3600);
       await this.contracts.hTokens[0].__godMode_setMaturity(oneHourAgo);
     });
 
@@ -69,7 +69,7 @@ export default function shouldBehaveLikeRedeem(): void {
 
         context("when the underlying has 6 decimals", function () {
           beforeEach(async function () {
-            await this.contracts.hTokens[0].__godMode_setUnderlyingPrecisionScalar(precisionScalarForDecimals(bn("6")));
+            await this.contracts.hTokens[0].__godMode_setUnderlyingPrecisionScalar(getPrecisionScalar(bn("6")));
             await this.mocks.usdc.mock.transfer.withArgs(this.signers.maker.address, underlyingAmount).returns(true);
           });
 

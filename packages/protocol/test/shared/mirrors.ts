@@ -1,17 +1,16 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
-import fp from "evm-fp";
-
 import {
-  DEFAULT_LIQUIDATION_INCENTIVE,
+  COLLATERALIZATION_RATIOS,
+  LIQUIDATION_INCENTIVES,
   NORMALIZED_USDC_PRICE,
   NORMALIZED_WBTC_PRICE,
   NORMALIZED_WETH_PRICE,
-  WBTC_COLLATERALIZATION_RATIO,
-  WBTC_PRECISION_SCALAR,
-  WETH_COLLATERALIZATION_RATIO,
-} from "../../helpers/constants";
-import { precisionScalarForDecimals } from "../../helpers/numbers";
+  WBTC_DECIMALS,
+  WBTC_PRICE_PRECISION_SCALAR,
+} from "@hifi/constants";
+import { getPrecisionScalar } from "@hifi/helpers";
+import fp from "evm-fp";
 
 const SCALE = fp("1");
 const HALF_SCALE = fp("0.5");
@@ -65,27 +64,27 @@ export function getHypotheticalAccountLiquidity(
 export function getSeizableCollateralAmount(
   repayAmount: BigNumber,
   wbtcPrice: BigNumber,
-  collateralDecimals: BigNumber = BigNumber.from(8),
-  liquidationIncentive: BigNumber = DEFAULT_LIQUIDATION_INCENTIVE,
+  collateralDecimals: BigNumber = WBTC_DECIMALS,
+  liquidationIncentive: BigNumber = LIQUIDATION_INCENTIVES.default,
 ): BigNumber {
   const numerator: BigNumber = prbMul(prbMul(repayAmount, liquidationIncentive), NORMALIZED_USDC_PRICE);
   const normalizedSeizableCollateralAmount: BigNumber = prbDiv(numerator, wbtcPrice);
-  const precisionScalar: BigNumber = precisionScalarForDecimals(collateralDecimals);
+  const precisionScalar: BigNumber = getPrecisionScalar(collateralDecimals);
   const seizableCollateralAmount: BigNumber = normalizedSeizableCollateralAmount.div(precisionScalar);
   return seizableCollateralAmount;
 }
 
 export function weighWbtc(
   wbtcDepositAmount: BigNumber,
-  collateralizationRatio: BigNumber = WBTC_COLLATERALIZATION_RATIO,
+  collateralizationRatio: BigNumber = COLLATERALIZATION_RATIOS.wbtc,
 ): BigNumber {
-  const normalizedWbtcAmount: BigNumber = wbtcDepositAmount.mul(WBTC_PRECISION_SCALAR);
+  const normalizedWbtcAmount: BigNumber = wbtcDepositAmount.mul(WBTC_PRICE_PRECISION_SCALAR);
   return prbDiv(prbMul(normalizedWbtcAmount, NORMALIZED_WBTC_PRICE), collateralizationRatio);
 }
 
 export function weighWeth(
   wethDepositAmount: BigNumber,
-  collateralizationRatio: BigNumber = WETH_COLLATERALIZATION_RATIO,
+  collateralizationRatio: BigNumber = COLLATERALIZATION_RATIOS.weth,
 ): BigNumber {
   return prbDiv(prbMul(wethDepositAmount, NORMALIZED_WETH_PRICE), collateralizationRatio);
 }

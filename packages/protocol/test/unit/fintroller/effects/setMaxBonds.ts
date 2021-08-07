@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
+import { DEFAULT_MAX_BONDS } from "@hifi/constants";
 import { expect } from "chai";
 
-import { DEFAULT_MAX_BONDS } from "../../../../helpers/constants";
 import { OwnableUpgradeableErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeSetMaxBonds(): void {

@@ -4,6 +4,7 @@ import { artifacts, ethers, upgrades, waffle } from "hardhat";
 import { Artifact } from "hardhat/types";
 
 import {
+  GAS_LIMITS,
   USDC_DECIMALS,
   USDC_NAME,
   USDC_SYMBOL,
@@ -11,10 +12,8 @@ import {
   WBTC_NAME,
   WBTC_PRICE,
   WBTC_SYMBOL,
-} from "../../helpers/constants";
-import { getHTokenName, getHTokenSymbol } from "../../helpers/contracts";
-import { getDeployContractOverrides } from "../../helpers/env";
-import { price } from "../../helpers/numbers";
+} from "@hifi/constants";
+import { getHTokenName, getHTokenSymbol, price } from "@hifi/helpers";
 import {
   FintrollerV1__factory,
   GodModeBalanceSheet__factory,
@@ -30,7 +29,7 @@ import { HToken } from "../../typechain/HToken";
 import { SimplePriceFeed } from "../../typechain/SimplePriceFeed";
 
 const { deployContract } = waffle;
-const overrides = getDeployContractOverrides();
+const overrides = { gasLimit: process.env.CODE_COVERAGE ? GAS_LIMITS.coverage : GAS_LIMITS.hardhat };
 
 export async function deployChainlinkOperator(deployer: Signer): Promise<ChainlinkOperator> {
   const chainlinkOperatorArtifact: Artifact = await artifacts.readArtifact("ChainlinkOperator");

@@ -1,14 +1,10 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
+import { COLLATERALIZATION_RATIOS, LIQUIDATION_INCENTIVES } from "@hifi/constants";
+import { WBTC, hUSDC, price } from "@hifi/helpers";
 import { expect } from "chai";
 import fp from "evm-fp";
 
-import {
-  DEFAULT_LIQUIDATION_INCENTIVE,
-  WBTC_COLLATERALIZATION_RATIO,
-  WBTC_SYMBOL,
-} from "../../../../helpers/constants";
-import { WBTC, hUSDC, price } from "../../../../helpers/numbers";
 import { getSeizableCollateralAmount } from "../../../shared/mirrors";
 
 export default function shouldBehaveLikeLiquidateBorrow(): void {
@@ -47,12 +43,12 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
     // Set the collateralization ratio.
     await this.contracts.fintroller
       .connect(this.signers.admin)
-      .setCollateralizationRatio(this.contracts.wbtc.address, WBTC_COLLATERALIZATION_RATIO);
+      .setCollateralizationRatio(this.contracts.wbtc.address, COLLATERALIZATION_RATIOS.wbtc);
 
     // Set the liquidation incentive.
     await this.contracts.fintroller
       .connect(this.signers.admin)
-      .setLiquidationIncentive(this.contracts.wbtc.address, DEFAULT_LIQUIDATION_INCENTIVE);
+      .setLiquidationIncentive(this.contracts.wbtc.address, LIQUIDATION_INCENTIVES.default);
 
     // Mint 1 WBTC and approve the BalanceSheet to spend it.
     await this.contracts.wbtc.mint(this.signers.borrower.address, wbtcDepositAmount);

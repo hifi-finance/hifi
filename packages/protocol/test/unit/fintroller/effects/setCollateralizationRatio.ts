@@ -1,20 +1,16 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
+import { COLLATERALIZATION_RATIOS } from "@hifi/constants";
+import { bn } from "@hifi/helpers";
 import { expect } from "chai";
 import fp from "evm-fp";
 
-import {
-  COLLATERALIZATION_RATIO_LOWER_BOUND,
-  COLLATERALIZATION_RATIO_UPPER_BOUND,
-  DEFAULT_COLLATERALIZATION_RATIO,
-} from "../../../../helpers/constants";
-import { bn } from "../../../../helpers/numbers";
 import { FintrollerErrors, OwnableUpgradeableErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeSetCollateralizationRatio(): void {
   const newCollateralizationRatio: BigNumber = fp("1.75");
-  const overflowCollateralizationRatio: BigNumber = COLLATERALIZATION_RATIO_UPPER_BOUND.add(bn("1"));
-  const underflowCollateralizationRatio: BigNumber = COLLATERALIZATION_RATIO_LOWER_BOUND.sub(bn("1"));
+  const overflowCollateralizationRatio: BigNumber = COLLATERALIZATION_RATIOS.upperBound.add(bn("1"));
+  const underflowCollateralizationRatio: BigNumber = COLLATERALIZATION_RATIOS.lowerBound.sub(bn("1"));
 
   context("when the caller is not the owner", function () {
     it("reverts", async function () {
@@ -95,7 +91,7 @@ export default function shouldBehaveLikeSetCollateralizationRatio(): void {
             .withArgs(
               this.signers.admin.address,
               this.mocks.wbtc.address,
-              DEFAULT_COLLATERALIZATION_RATIO,
+              COLLATERALIZATION_RATIOS.default,
               newCollateralizationRatio,
             );
         });

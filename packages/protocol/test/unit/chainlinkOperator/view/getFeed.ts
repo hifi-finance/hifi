@@ -1,7 +1,6 @@
 import { AddressZero } from "@ethersproject/constants";
+import { WBTC_SYMBOL } from "@hifi/constants";
 import { expect } from "chai";
-
-import { WBTC_SYMBOL } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeGetFeed(): void {
   context("when the feed is not set", function () {

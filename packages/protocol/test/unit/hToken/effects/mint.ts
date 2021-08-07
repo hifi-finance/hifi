@@ -1,8 +1,8 @@
 import { BigNumber } from "@ethersproject/bignumber";
+import { hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 
 import { HTokenErrors } from "../../../shared/errors";
-import { hUSDC } from "../../../../helpers/numbers";
 
 export default function shouldBehaveLikeMint(): void {
   const mintAmount: BigNumber = hUSDC("100");

@@ -1,13 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
+import { LIQUIDATION_INCENTIVES, NORMALIZED_WBTC_PRICE } from "@hifi/constants";
+import { bn, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 
-import {
-  DEFAULT_LIQUIDATION_INCENTIVE,
-  LIQUIDATION_INCENTIVE_LOWER_BOUND,
-  NORMALIZED_WBTC_PRICE,
-} from "../../../../helpers/constants";
-import { bn, hUSDC } from "../../../../helpers/numbers";
 import { getSeizableCollateralAmount } from "../../../shared/mirrors";
 
 export default function shouldBehaveLikeGetSeizableCollateralAmount(): void {
@@ -15,7 +11,7 @@ export default function shouldBehaveLikeGetSeizableCollateralAmount(): void {
     beforeEach(async function () {
       await this.mocks.fintroller.mock.getLiquidationIncentive
         .withArgs(this.mocks.wbtc.address)
-        .returns(LIQUIDATION_INCENTIVE_LOWER_BOUND);
+        .returns(LIQUIDATION_INCENTIVES.lowerBound);
     });
 
     it("returns zero", async function () {
@@ -33,7 +29,7 @@ export default function shouldBehaveLikeGetSeizableCollateralAmount(): void {
     beforeEach(async function () {
       await this.mocks.fintroller.mock.getLiquidationIncentive
         .withArgs(this.mocks.wbtc.address)
-        .returns(DEFAULT_LIQUIDATION_INCENTIVE);
+        .returns(LIQUIDATION_INCENTIVES.default);
     });
 
     context("when the repay amount is zero", function () {

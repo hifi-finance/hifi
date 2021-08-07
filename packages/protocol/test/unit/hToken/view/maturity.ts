@@ -1,7 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
+import { H_TOKEN_MATURITIES } from "@hifi/constants";
 import { expect } from "chai";
-
-import { H_TOKEN_MATURITIES } from "../../../../helpers/constants";
 
 export default function shouldBehaveLikeMaturityGetter(): void {
   it("retrieves the maturity", async function () {

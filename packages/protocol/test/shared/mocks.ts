@@ -1,10 +1,6 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
-import { MockContract } from "ethereum-waffle";
-import hre from "hardhat";
-import { Artifact } from "hardhat/types";
-
 import {
   CHAINLINK_PRICE_PRECISION,
   H_TOKEN_DECIMALS,
@@ -17,8 +13,11 @@ import {
   WETH_DECIMALS,
   WETH_NAME,
   WETH_SYMBOL,
-} from "../../helpers/constants";
-import { getHTokenName, getHTokenSymbol } from "../../helpers/contracts";
+} from "@hifi/constants";
+import { getHTokenName, getHTokenSymbol } from "@hifi/helpers";
+import { MockContract } from "ethereum-waffle";
+import hre from "hardhat";
+import { Artifact } from "hardhat/types";
 
 const { deployMockContract } = hre.waffle;
 

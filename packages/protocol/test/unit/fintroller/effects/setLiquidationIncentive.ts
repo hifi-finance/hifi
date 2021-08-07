@@ -1,20 +1,16 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
+import { LIQUIDATION_INCENTIVES } from "@hifi/constants";
+import { bn } from "@hifi/helpers";
 import { expect } from "chai";
 import fp from "evm-fp";
 
-import {
-  DEFAULT_LIQUIDATION_INCENTIVE,
-  LIQUIDATION_INCENTIVE_LOWER_BOUND,
-  LIQUIDATION_INCENTIVE_UPPER_BOUND,
-} from "../../../../helpers/constants";
-import { bn } from "../../../../helpers/numbers";
 import { FintrollerErrors, OwnableUpgradeableErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeSetLiquidationIncentive(): void {
   const newLiquidationIncentive: BigNumber = fp("1.20");
-  const overflowLiquidationIncentive: BigNumber = LIQUIDATION_INCENTIVE_UPPER_BOUND.add(bn("1"));
-  const underflowLiquidationIncentive: BigNumber = LIQUIDATION_INCENTIVE_LOWER_BOUND.sub(bn("1"));
+  const overflowLiquidationIncentive: BigNumber = LIQUIDATION_INCENTIVES.upperBound.add(bn("1"));
+  const underflowLiquidationIncentive: BigNumber = LIQUIDATION_INCENTIVES.lowerBound.sub(bn("1"));
 
   context("when the caller is not the owner", function () {
     it("reverts", async function () {
@@ -95,7 +91,7 @@ export default function shouldBehaveLikeSetLiquidationIncentive(): void {
             .withArgs(
               this.signers.admin.address,
               this.mocks.wbtc.address,
-              DEFAULT_LIQUIDATION_INCENTIVE,
+              LIQUIDATION_INCENTIVES.default,
               newLiquidationIncentive,
             );
         });

@@ -8,40 +8,15 @@ import "./tasks/clean";
 
 import { resolve } from "path";
 
+import { getChainConfig, getEnvVar } from "@hifi/helpers";
 import { config as dotenvConfig } from "dotenv";
 import { HardhatUserConfig } from "hardhat/config";
-import { NetworkUserConfig } from "hardhat/types";
-
-import { getEnvVar } from "./helpers/env";
 
 dotenvConfig({ path: resolve(__dirname, "./.env") });
-
-const chainIds = {
-  goerli: 5,
-  hardhat: 31337,
-  kovan: 42,
-  mainnet: 1,
-  "polygon-mainnet": 137,
-  rinkeby: 4,
-  ropsten: 3,
-};
 
 // Ensure that we have the environment variables we need.
 const infuraApiKey: string = getEnvVar("INFURA_API_KEY");
 const mnemonic: string = getEnvVar("MNEMONIC");
-
-function getChainConfig(network: keyof typeof chainIds): NetworkUserConfig {
-  const url: string = "https://" + network + ".infura.io/v3/" + infuraApiKey;
-  return {
-    accounts: {
-      count: 10,
-      mnemonic,
-      path: "m/44'/60'/0'/0",
-    },
-    chainId: chainIds[network],
-    url,
-  };
-}
 
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
@@ -53,13 +28,11 @@ const config: HardhatUserConfig = {
       accounts: {
         mnemonic,
       },
-      chainId: chainIds.hardhat,
     },
-    goerli: getChainConfig("goerli"),
-    kovan: getChainConfig("kovan"),
-    "polygon-mainnet": getChainConfig("polygon-mainnet"),
-    rinkeby: getChainConfig("rinkeby"),
-    ropsten: getChainConfig("ropsten"),
+    goerli: getChainConfig("goerli", infuraApiKey, mnemonic),
+    "polygon-mainnet": getChainConfig("polygon-mainnet", infuraApiKey, mnemonic),
+    rinkeby: getChainConfig("rinkeby", infuraApiKey, mnemonic),
+    ropsten: getChainConfig("ropsten", infuraApiKey, mnemonic),
   },
   packager: {
     contracts: ["HifiPool", "IHifiPool"],

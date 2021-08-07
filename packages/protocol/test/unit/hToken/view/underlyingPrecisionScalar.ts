@@ -1,8 +1,8 @@
 import { BigNumber } from "@ethersproject/bignumber";
+import { H_TOKEN_MATURITIES } from "@hifi/constants";
+import { bn, getPrecisionScalar } from "@hifi/helpers";
 import { expect } from "chai";
 
-import { H_TOKEN_MATURITIES } from "../../../../helpers/constants";
-import { bn, precisionScalarForDecimals } from "../../../../helpers/numbers";
 import { HToken } from "../../../../typechain/HToken";
 import { deployHToken } from "../../../shared/deployers";
 
@@ -20,7 +20,7 @@ export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void 
         this.mocks.usdc.address,
       );
       const underlyingPrecisionScalar: BigNumber = await hToken.underlyingPrecisionScalar();
-      expect(underlyingPrecisionScalar).to.equal(precisionScalarForDecimals(bn("6")));
+      expect(underlyingPrecisionScalar).to.equal(getPrecisionScalar(bn("6")));
     });
   });
 
@@ -37,7 +37,7 @@ export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void 
         this.mocks.usdc.address,
       );
       const underlyingPrecisionScalar: BigNumber = await hToken.underlyingPrecisionScalar();
-      expect(underlyingPrecisionScalar).to.equal(precisionScalarForDecimals(bn("8")));
+      expect(underlyingPrecisionScalar).to.equal(getPrecisionScalar(bn("8")));
     });
   });
 
@@ -54,7 +54,7 @@ export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void 
         this.mocks.usdc.address,
       );
       const underlyingPrecisionScalar: BigNumber = await hToken.underlyingPrecisionScalar();
-      expect(underlyingPrecisionScalar).to.equal(precisionScalarForDecimals(bn("18")));
+      expect(underlyingPrecisionScalar).to.equal(getPrecisionScalar(bn("18")));
     });
   });
 }

@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 import { ethers, upgrades } from "hardhat";
 
-import { DEFAULT_MAX_BONDS } from "../../../../helpers/constants";
+import { DEFAULT_MAX_BONDS } from "@hifi/constants";
 import { FintrollerV2__factory } from "../../../../typechain";
 import { FintrollerV2 } from "../../../../typechain/FintrollerV2";
 

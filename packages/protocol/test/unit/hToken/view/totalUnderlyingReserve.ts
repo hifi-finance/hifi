@@ -1,8 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
+import { USDC } from "@hifi/helpers";
 import { expect } from "chai";
-
-import { USDC } from "../../../../helpers/numbers";
 
 export default function shouldBehaveLikeTotalUnderlyingReserveGetter(): void {
   const underlyingAmount: BigNumber = USDC("100");

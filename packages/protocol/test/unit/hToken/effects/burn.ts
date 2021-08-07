@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
+import { hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 
-import { hUSDC } from "../../../../helpers/numbers";
 import { HTokenErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeBurn(): void {

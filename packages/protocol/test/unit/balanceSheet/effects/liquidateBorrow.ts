@@ -1,14 +1,10 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
+import { COLLATERALIZATION_RATIOS, LIQUIDATION_INCENTIVES, WBTC_SYMBOL } from "@hifi/constants";
+import { WBTC, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 import fp from "evm-fp";
 
-import {
-  DEFAULT_LIQUIDATION_INCENTIVE,
-  WBTC_COLLATERALIZATION_RATIO,
-  WBTC_SYMBOL,
-} from "../../../../helpers/constants";
-import { WBTC, hUSDC } from "../../../../helpers/numbers";
 import { BalanceSheetErrors } from "../../../shared/errors";
 import { prbMul } from "../../../shared/mirrors";
 import { getSeizableCollateralAmount } from "../../../shared/mirrors";
@@ -67,7 +63,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
         // Mock the necessary methods.
         await this.mocks.fintroller.mock.getLiquidationIncentive
           .withArgs(this.mocks.wbtc.address)
-          .returns(DEFAULT_LIQUIDATION_INCENTIVE);
+          .returns(LIQUIDATION_INCENTIVES.default);
         await this.mocks.fintroller.mock.getRepayBorrowAllowed.withArgs(this.mocks.hTokens[0].address).returns(true);
       });
 
@@ -98,7 +94,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
             // Mock the necessary methods.
             await this.mocks.fintroller.mock.getCollateralizationRatio
               .withArgs(this.mocks.wbtc.address)
-              .returns(WBTC_COLLATERALIZATION_RATIO);
+              .returns(COLLATERALIZATION_RATIOS.wbtc);
             await this.mocks.hTokens[0].mock.balanceOf.withArgs(this.signers.liquidator.address).returns(debtAmount);
             await this.mocks.hTokens[0].mock.burn.withArgs(this.signers.liquidator.address, repayAmount).returns();
             await this.mocks.wbtc.mock.transfer
@@ -160,7 +156,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
           // Mock the necessary methods.
           await this.mocks.fintroller.mock.getCollateralizationRatio
             .withArgs(this.mocks.wbtc.address)
-            .returns(WBTC_COLLATERALIZATION_RATIO);
+            .returns(COLLATERALIZATION_RATIOS.wbtc);
 
           // Make the collateral deposit.
           await this.contracts.balanceSheet.__godMode_setCollateralList(this.signers.borrower.address, [
@@ -238,7 +234,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
 
             context("when all collateral is seized", function () {
               beforeEach(async function () {
-                const localWbtcPrice: BigNumber = prbMul(repayAmount, DEFAULT_LIQUIDATION_INCENTIVE);
+                const localWbtcPrice: BigNumber = prbMul(repayAmount, LIQUIDATION_INCENTIVES.default);
                 await this.mocks.oracle.mock.getNormalizedPrice.withArgs(WBTC_SYMBOL).returns(localWbtcPrice);
 
                 // Mock the necessary methods.
