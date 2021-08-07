@@ -1,0 +1,19 @@
+# folders
+.coverage_artifacts/
+.coverage_cache/
+.coverage_contracts/
+.yarn/
+artifacts/
+build/
+coverage/
+dist/
+lib/
+node_modules/
+typechain/
+
+# files
+coverage.json
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+

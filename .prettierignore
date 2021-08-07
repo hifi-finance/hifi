@@ -1,0 +1,17 @@
+# folders
+.coverage_artifacts/
+.coverage_cache/
+.coverage_contracts/
+.yarn/
+artifacts/
+build/
+cache/
+coverage/
+dist/
+lib/
+node_modules/
+typechain/
+
+# files
+LICENSE.md
+coverage.json
