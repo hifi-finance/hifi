@@ -27,12 +27,10 @@ export const COLLATERALIZATION_RATIOS = {
 };
 export const DEFAULT_MAX_BONDS: BigNumber = BigNumber.from("10");
 export const H_TOKEN_DECIMALS: BigNumber = BigNumber.from("18");
-export const H_TOKEN_MATURITIES: BigNumber[] = [getNow().add(getDaysInSeconds(90)), getNow().add(getYearsInSeconds(1))];
+export const H_TOKEN_MATURITY_ONE_YEAR: BigNumber = getNow().add(getYearsInSeconds(1));
+export const H_TOKEN_MATURITY_THREE_MONTHS: BigNumber = getNow().add(getDaysInSeconds(90));
 export const LIQUIDATION_INCENTIVES = {
   default: fp("1.10"),
   lowerBound: fp("1.00"),
   upperBound: fp("1.50"),
 };
-export const MAX_INT256: BigNumber = BigNumber.from(
-  "57896044618658097711785492504343953926634992332820282019728792003956564819967",
-);

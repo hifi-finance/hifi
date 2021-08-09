@@ -2,19 +2,11 @@ import { Signer } from "@ethersproject/abstract-signer";
 import { artifacts, waffle } from "hardhat";
 import { Artifact } from "hardhat/types";
 
-import {
-  HIFI_POOL_NAME,
-  HIFI_POOL_SYMBOL,
-  H_TOKEN_MATURITY,
-  H_TOKEN_NAME,
-  H_TOKEN_SYMBOL,
-  USDC_DECIMALS,
-  USDC_NAME,
-  USDC_SYMBOL,
-} from "../../helpers/constants";
+import { H_TOKEN_MATURITY_ONE_YEAR, USDC_DECIMALS, USDC_NAME, USDC_SYMBOL } from "@hifi/constants";
 import { GodModeHToken } from "../../typechain";
 import { GodModeErc20 } from "../../typechain/GodModeErc20";
 import { GodModeHifiPool } from "../../typechain/GodModeHifiPool";
+import { getHTokenName, getHifiPoolName, getHTokenSymbol, getHifiPoolSymbol } from "@hifi/helpers";
 
 const { deployContract } = waffle;
 
@@ -30,9 +22,9 @@ export async function deployGodModeHToken(deployer: Signer, underlyingAddress: s
   const godModeHTokenArtifact: Artifact = await artifacts.readArtifact("GodModeHToken");
   const godModeHToken: GodModeHToken = <GodModeHToken>(
     await deployContract(deployer, godModeHTokenArtifact, [
-      H_TOKEN_NAME,
-      H_TOKEN_SYMBOL,
-      H_TOKEN_MATURITY,
+      getHTokenName(H_TOKEN_MATURITY_ONE_YEAR),
+      getHTokenSymbol(H_TOKEN_MATURITY_ONE_YEAR),
+      H_TOKEN_MATURITY_ONE_YEAR,
       underlyingAddress,
     ])
   );
@@ -42,7 +34,11 @@ export async function deployGodModeHToken(deployer: Signer, underlyingAddress: s
 export async function deployHifiPool(deployer: Signer, hTokenAddress: string): Promise<GodModeHifiPool> {
   const hifiPoolArtifact: Artifact = await artifacts.readArtifact("GodModeHifiPool");
   const hifiPool: GodModeHifiPool = <GodModeHifiPool>(
-    await deployContract(deployer, hifiPoolArtifact, [HIFI_POOL_NAME, HIFI_POOL_SYMBOL, hTokenAddress])
+    await deployContract(deployer, hifiPoolArtifact, [
+      getHifiPoolName(H_TOKEN_MATURITY_ONE_YEAR),
+      getHifiPoolSymbol(H_TOKEN_MATURITY_ONE_YEAR),
+      hTokenAddress,
+    ])
   );
   return hifiPool;
 }

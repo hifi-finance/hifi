@@ -1,11 +1,10 @@
 import { BigNumber } from "@ethersproject/bignumber";
+import { EPSILON, G2, MAX_UD60x18, SCALE } from "@hifi/constants";
+import { bn, getDaysInSeconds, getYearsInSeconds, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 import fp from "evm-fp";
 import forEach from "mocha-each";
 
-import { EPSILON, G2, MAX_UD60x18, SCALE } from "../../../../helpers/constants";
-import { bn, hUSDC } from "../../../../helpers/numbers";
-import { secondsInDays, secondsInYears } from "../../../../helpers/time";
 import { PRBMathUD60x18Errors, YieldSpaceErrors } from "../../../shared/errors";
 import { getYieldExponent, inForOut } from "../../../shared/mirrors";
 
@@ -13,7 +12,7 @@ export default function shouldBehaveLikeHTokenInForUnderlyingOut(): void {
   context("when too much underlying out", function () {
     const testSets = [
       [fp("0"), hUSDC("0"), fp("1"), bn("0")],
-      [fp("100"), hUSDC("120"), fp("100.000000000000000001"), bn(secondsInYears(1))],
+      [fp("100"), hUSDC("120"), fp("100.000000000000000001"), bn(getYearsInSeconds(1))],
     ];
 
     forEach(testSets).it(
@@ -39,8 +38,8 @@ export default function shouldBehaveLikeHTokenInForUnderlyingOut(): void {
   context("when not too much underlying out", function () {
     context("when the call to fromUint reverts", function () {
       const testSets = [
-        [fp(MAX_UD60x18), hUSDC("120"), fp("10"), bn(secondsInYears(1))],
-        [fp("100"), hUSDC(MAX_UD60x18), fp("10"), bn(secondsInYears(1))],
+        [fp(MAX_UD60x18), hUSDC("120"), fp("10"), bn(getYearsInSeconds(1))],
+        [fp("100"), hUSDC(MAX_UD60x18), fp("10"), bn(getYearsInSeconds(1))],
       ];
 
       forEach(testSets).it(
@@ -118,12 +117,12 @@ export default function shouldBehaveLikeHTokenInForUnderlyingOut(): void {
           const testSets = [
             ["0", "0", "0", "0"],
             ["1", "1", "1", "1"],
-            ["1", "1", "1", secondsInYears(1)],
-            ["3.14", "5.04", "0.54", secondsInYears(3)],
-            ["100", "120", "10", secondsInDays(30)],
-            ["100", "120", "10", secondsInYears(1)],
-            ["4077.248409399657329853", "5528.584115752365727396", "307.1381232", secondsInDays(270)],
-            ["995660.5689", "9248335", "255866.119", secondsInDays(855)],
+            ["1", "1", "1", getYearsInSeconds(1)],
+            ["3.14", "5.04", "0.54", getYearsInSeconds(3)],
+            ["100", "120", "10", getDaysInSeconds(30)],
+            ["100", "120", "10", getYearsInSeconds(1)],
+            ["4077.248409399657329853", "5528.584115752365727396", "307.1381232", getDaysInSeconds(270)],
+            ["995660.5689", "9248335", "255866.119", getDaysInSeconds(855)],
           ];
 
           forEach(testSets).it(
@@ -146,7 +145,7 @@ export default function shouldBehaveLikeHTokenInForUnderlyingOut(): void {
                 inForOut(normalizedUnderlyingReserves, hTokenReserves, normalizedUnderlyingOut, exponent),
               );
               const delta: BigNumber = expected.sub(result).abs();
-              expect(delta).to.be.lte(EPSILON);
+              expect(delta).to.be.lte(fp(EPSILON));
             },
           );
         });

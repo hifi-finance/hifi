@@ -1,12 +1,12 @@
 import {} from "../../../shared/errors";
 
 import { BigNumber } from "@ethersproject/bignumber";
+import { H_TOKEN_MATURITY_ONE_YEAR, USDC_PRICE_PRECISION_SCALAR } from "@hifi/constants";
+import { USDC, bn, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 import fp from "evm-fp";
 import forEach from "mocha-each";
 
-import { H_TOKEN_MATURITY, UNDERLYING_PRECISION_SCALAR } from "../../../../helpers/constants";
-import { USDC, bn, hUSDC } from "../../../../helpers/numbers";
 import { HifiPoolErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeBurn(): void {
@@ -80,7 +80,7 @@ export default function shouldBehaveLikeBurn(): void {
             const underlyingReturned: BigNumber = poolTokensBurnedBn
               .mul(normalizedUnderlyingReserves)
               .div(lpTokenMintAmount)
-              .div(UNDERLYING_PRECISION_SCALAR);
+              .div(USDC_PRICE_PRECISION_SCALAR);
             const hTokenReturned: BigNumber = bn("0");
 
             // Mock the necessary methods.
@@ -95,7 +95,7 @@ export default function shouldBehaveLikeBurn(): void {
             await expect(this.contracts.hifiPool.connect(this.signers.alice).burn(poolTokensBurnedBn))
               .to.emit(this.contracts.hifiPool, "RemoveLiquidity")
               .withArgs(
-                H_TOKEN_MATURITY,
+                H_TOKEN_MATURITY_ONE_YEAR,
                 this.signers.alice.address,
                 underlyingReturned,
                 hTokenReturned,
@@ -134,7 +134,7 @@ export default function shouldBehaveLikeBurn(): void {
             const underlyingReturned: BigNumber = poolTokensBurnedBn
               .mul(normalizedUnderlyingReserves)
               .div(lpTokenMintAmount)
-              .div(UNDERLYING_PRECISION_SCALAR);
+              .div(USDC_PRICE_PRECISION_SCALAR);
             const hTokenReturned = lpTokenMintAmount.mul(initialHTokenReserves).div(lpTokenSupply);
 
             // Mock the necessary methods.
@@ -150,7 +150,7 @@ export default function shouldBehaveLikeBurn(): void {
             await expect(this.contracts.hifiPool.connect(this.signers.alice).burn(poolTokensBurnedBn))
               .to.emit(this.contracts.hifiPool, "RemoveLiquidity")
               .withArgs(
-                H_TOKEN_MATURITY,
+                H_TOKEN_MATURITY_ONE_YEAR,
                 this.signers.alice.address,
                 underlyingReturned,
                 hTokenReturned,

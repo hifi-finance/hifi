@@ -1,10 +1,10 @@
 import { BigNumber } from "@ethersproject/bignumber";
+import { MAX_UD60x18 } from "@hifi/constants";
+import { bn, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 import fp from "evm-fp";
 import forEach from "mocha-each";
 
-import { MAX_UD60x18 } from "../../../../helpers/constants";
-import { bn, hUSDC } from "../../../../helpers/numbers";
 import { HifiPoolErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeGetVirtualHTokenReserves(): void {

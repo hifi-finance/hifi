@@ -1,7 +1,7 @@
 import { BigNumber as MathjsBigNumber } from "mathjs";
 
-import { G1, G2, K } from "../../helpers/constants";
-import { mbn, pow } from "../../helpers/math";
+import { G1, G2, K } from "@hifi/constants";
+import { mbn, pow } from "@hifi/helpers/dist/math";
 
 export function getQuoteForBuyingHToken(
   hTokenReserves: string,

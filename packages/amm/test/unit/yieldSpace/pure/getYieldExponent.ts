@@ -1,11 +1,10 @@
 import { BigNumber } from "@ethersproject/bignumber";
+import { CUTOFF_TTM, EPSILON, G1, G2, SCALE } from "@hifi/constants";
+import { bn, getDaysInSeconds, getHoursInSeconds, getYearsInSeconds } from "@hifi/helpers";
 import { expect } from "chai";
 import fp from "evm-fp";
 import forEach from "mocha-each";
 
-import { CUTOFF_TTM, EPSILON, G1, G2, SCALE } from "../../../../helpers/constants";
-import { bn } from "../../../../helpers/numbers";
-import { secondsInDays, secondsInHours, secondsInYears } from "../../../../helpers/time";
 import { YieldSpaceErrors } from "../../../shared/errors";
 import { getYieldExponent } from "../../../shared/mirrors";
 
@@ -32,17 +31,17 @@ export default function shouldBehaveLikeGetYieldExponent(): void {
     const g1TestSets = [
       ["0", G1],
       ["1", G1],
-      [secondsInHours(1), G1],
-      [secondsInDays(1), G1],
-      [secondsInYears(1), G1],
+      [getHoursInSeconds(1), G1],
+      [getDaysInSeconds(1), G1],
+      [getYearsInSeconds(1), G1],
       [CUTOFF_TTM, G1],
     ];
     const g2TestSets = [
       ["0", G2],
       ["1", G2],
-      [secondsInHours(1), G2],
-      [secondsInDays(1), G2],
-      [secondsInYears(1), G2],
+      [getHoursInSeconds(1), G2],
+      [getDaysInSeconds(1), G2],
+      [getYearsInSeconds(1), G2],
       [CUTOFF_TTM, G2],
     ];
     const testSets = g1TestSets.concat(g2TestSets);
@@ -53,7 +52,7 @@ export default function shouldBehaveLikeGetYieldExponent(): void {
         const result: BigNumber = await this.contracts.yieldSpace.doGetYieldExponent(fp(timeToMaturity), fp(g));
         const expected: BigNumber = fp(getYieldExponent(timeToMaturity, g));
         const delta: BigNumber = expected.sub(result).abs();
-        expect(delta).to.be.lte(EPSILON);
+        expect(delta).to.be.lte(fp(EPSILON));
       },
     );
   });

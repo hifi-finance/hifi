@@ -8,9 +8,16 @@ import { FintrollerV1 } from "@hifi/protocol/typechain/FintrollerV1";
 import { artifacts, waffle } from "hardhat";
 import { Artifact } from "hardhat/types";
 
-import { H_TOKEN_MATURITY } from "../../helpers/constants";
-import { USDC_DECIMALS, USDC_NAME, USDC_SYMBOL, WBTC_DECIMALS, WBTC_NAME, WBTC_SYMBOL } from "../../helpers/constants";
-import { getHTokenName, getHTokenSymbol } from "../../helpers/contracts";
+import {
+  H_TOKEN_MATURITY_ONE_YEAR,
+  USDC_DECIMALS,
+  USDC_NAME,
+  USDC_SYMBOL,
+  WBTC_DECIMALS,
+  WBTC_NAME,
+  WBTC_SYMBOL,
+} from "@hifi/constants";
+import { getHTokenName, getHTokenSymbol } from "@hifi/helpers";
 import { GodModeErc20 } from "../../typechain/GodModeErc20";
 import { GodModeHToken } from "../../typechain/GodModeHToken";
 import { GodModeUniswapV2Pair } from "../../typechain/GodModeUniswapV2Pair";
@@ -55,9 +62,9 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
   const godModeHTokenArtifact: Artifact = await artifacts.readArtifact("GodModeHToken");
   const hToken: GodModeHToken = <GodModeHToken>(
     await deployContract(deployer, godModeHTokenArtifact, [
-      getHTokenName(H_TOKEN_MATURITY),
-      getHTokenSymbol(H_TOKEN_MATURITY),
-      H_TOKEN_MATURITY,
+      getHTokenName(H_TOKEN_MATURITY_ONE_YEAR),
+      getHTokenSymbol(H_TOKEN_MATURITY_ONE_YEAR),
+      H_TOKEN_MATURITY_ONE_YEAR,
       balanceSheet.address,
       usdc.address,
     ])
