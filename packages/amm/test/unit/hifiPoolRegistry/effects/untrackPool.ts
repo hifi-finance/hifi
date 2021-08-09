@@ -1,8 +1,5 @@
-import {} from "../../../shared/errors";
-
-import { expect } from "chai";
-
 import { HifiPoolRegistryErrors } from "../../../shared/errors";
+import { expect } from "chai";
 
 export default function shouldBehaveLikeUntrackPool(): void {
   context("when called to untrack a tracked pool", function () {

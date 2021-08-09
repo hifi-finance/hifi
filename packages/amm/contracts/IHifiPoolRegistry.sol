@@ -18,7 +18,7 @@ interface IHifiPoolRegistry {
     ///
     /// @param pool The pool for which reference to return.
     /// @return bool true = pool is tracked, otherwise not.
-    function poolIsTracked(IHifiPool pool) external view returns (bool);
+    function pools(IHifiPool pool) external view returns (bool);
 
     /// NON-CONSTANT FUNCTIONS ///
 
@@ -32,7 +32,7 @@ interface IHifiPoolRegistry {
     /// @param pool The reference to the pool to be tracked.
     function trackPool(IHifiPool pool) external;
 
-    /// @notice Utracks a previously-tracked AMM pool.
+    /// @notice Untracks a previously-tracked AMM pool.
     ///
     /// @dev Emits an {UntrackPool} event.
     ///
