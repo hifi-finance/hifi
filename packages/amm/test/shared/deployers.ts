@@ -3,7 +3,7 @@ import { artifacts, waffle } from "hardhat";
 import { Artifact } from "hardhat/types";
 
 import { H_TOKEN_MATURITY_ONE_YEAR, USDC_DECIMALS, USDC_NAME, USDC_SYMBOL } from "@hifi/constants";
-import { GodModeHToken } from "../../typechain";
+import { GodModeHifiPoolRegistry, GodModeHToken } from "../../typechain";
 import { GodModeErc20 } from "../../typechain/GodModeErc20";
 import { GodModeHifiPool } from "../../typechain/GodModeHifiPool";
 import { getHTokenName, getHifiPoolName, getHTokenSymbol, getHifiPoolSymbol } from "@hifi/helpers";
@@ -41,4 +41,12 @@ export async function deployHifiPool(deployer: Signer, hTokenAddress: string): P
     ])
   );
   return hifiPool;
+}
+
+export async function deployHifiPoolRegistry(deployer: Signer): Promise<GodModeHifiPoolRegistry> {
+  const hifiPoolRegistryArtifact: Artifact = await artifacts.readArtifact("GodModeHifiPoolRegistry");
+  const hifiPoolRegistry: GodModeHifiPoolRegistry = <GodModeHifiPoolRegistry>(
+    await deployContract(deployer, hifiPoolRegistryArtifact)
+  );
+  return hifiPoolRegistry;
 }
