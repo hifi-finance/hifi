@@ -1,4 +1,4 @@
-# Hifi Protocol [![Coverage Status](https://coveralls.io/repos/github/hifi-finance/hifi-protocol/badge.svg?branch=main)](https://coveralls.io/github/hifi-finance/hifi-protocol?branch=main) [![Commitizen Friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/) [![License: LGPL3.0](https://img.shields.io/badge/license-LGPL3.0-yellow.svg)](https://opensource.org/licenses/lgpl-3.0)
+# Hifi Protocol
 
 An implementation of zero-coupon bonds on the Ethereum blockchain. In-depth documentation on Hifi is available at [docs.hifi.finance](https://docs.hifi.finance).
 

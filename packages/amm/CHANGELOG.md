@@ -59,10 +59,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - First release of the package.
 
-[1.3.0]: https://github.com/hifi-finance/hifi-amm/releases/tag/v1.3.0
-[1.2.1]: https://github.com/hifi-finance/hifi-amm/releases/tag/v1.2.1
-[1.2.0]: https://github.com/hifi-finance/hifi-amm/releases/tag/v1.2.0
-[1.1.2]: https://github.com/hifi-finance/hifi-amm/releases/tag/v1.1.2
-[1.1.1]: https://github.com/hifi-finance/hifi-amm/releases/tag/v1.1.1
-[1.1.0]: https://github.com/hifi-finance/hifi-amm/releases/tag/v1.1.0
-[1.0.0]: https://github.com/hifi-finance/hifi-amm/releases/tag/v1.0.0
+[1.3.0]: https://github.com/hifi-finance/hifi/releases/tag/@hifi/amm@1.3.0
+[1.2.1]: https://github.com/hifi-finance/hifi/releases/tag/@hifi/amm@1.2.1
+[1.2.0]: https://github.com/hifi-finance/hifi/releases/tag/@hifi/amm@1.2.0
+[1.1.2]: https://github.com/hifi-finance/hifi/releases/tag/@hifi/amm@1.1.2
+[1.1.1]: https://github.com/hifi-finance/hifi/releases/tag/@hifi/amm@1.1.1
+[1.1.0]: https://github.com/hifi-finance/hifi/releases/tag/@hifi/amm@1.1.0
+[1.0.0]: https://github.com/hifi-finance/hifi/releases/tag/@hifi/amm@1.0.0
