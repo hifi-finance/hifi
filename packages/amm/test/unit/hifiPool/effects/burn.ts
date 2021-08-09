@@ -1,13 +1,11 @@
-import {} from "../../../shared/errors";
-
-import { BigNumber } from "@ethersproject/bignumber";
 import { H_TOKEN_MATURITY_ONE_YEAR, USDC_PRICE_PRECISION_SCALAR } from "@hifi/constants";
 import { USDC, bn, hUSDC } from "@hifi/helpers";
-import { expect } from "chai";
-import fp from "evm-fp";
-import forEach from "mocha-each";
 
+import { BigNumber } from "@ethersproject/bignumber";
 import { HifiPoolErrors } from "../../../shared/errors";
+import { expect } from "chai";
+import forEach from "mocha-each";
+import fp from "evm-fp";
 
 export default function shouldBehaveLikeBurn(): void {
   context("when the pool tokens returned are 0", function () {
