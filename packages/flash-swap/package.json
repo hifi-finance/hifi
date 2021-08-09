@@ -22,7 +22,7 @@
     "@ethersproject/bytes": "^5.4.0",
     "@ethersproject/contracts": "^5.4.1",
     "@ethersproject/providers": "^5.4.3",
-    "@hifi/helpers": "^1.0.0",
+    "@hifi/helpers": "workspace:*",
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@nomiclabs/hardhat-waffle": "^2.0.1",
     "@typechain/ethers-v5": "^7.0.1",

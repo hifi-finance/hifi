@@ -19,7 +19,7 @@
     "@ethersproject/abi": "^5.4.0",
     "@ethersproject/bytes": "^5.4.0",
     "@ethersproject/providers": "^5.4.3",
-    "@hifi/helpers": "^1.0.0",
+    "@hifi/helpers": "workspace:*",
     "@nomiclabs/hardhat-etherscan": "^2.1.4",
     "@typechain/ethers-v5": "^7.0.1",
     "@typechain/hardhat": "^2.3.0",

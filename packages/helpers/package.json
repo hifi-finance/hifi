@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@ethersproject/bignumber": "^5.4.1",
-    "@hifi/constants": "^1.0.0",
+    "@hifi/constants": "workspace:*",
     "hardhat": "^2.6.0"
   },
   "devDependencies": {
