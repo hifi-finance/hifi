@@ -1,5 +1,5 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { H_TOKEN_MATURITIES } from "@hifi/constants";
+import { H_TOKEN_MATURITY_THREE_MONTHS } from "@hifi/constants";
 import { bn, getPrecisionScalar } from "@hifi/helpers";
 import { expect } from "chai";
 
@@ -15,7 +15,7 @@ export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void 
     it("retrieves 1", async function () {
       const hToken: HToken = await deployHToken(
         this.signers.admin,
-        H_TOKEN_MATURITIES[0],
+        H_TOKEN_MATURITY_THREE_MONTHS,
         this.mocks.balanceSheet.address,
         this.mocks.usdc.address,
       );
@@ -32,7 +32,7 @@ export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void 
     it("retrieves 1.0e10", async function () {
       const hToken: HToken = await deployHToken(
         this.signers.admin,
-        H_TOKEN_MATURITIES[0],
+        H_TOKEN_MATURITY_THREE_MONTHS,
         this.mocks.balanceSheet.address,
         this.mocks.usdc.address,
       );
@@ -49,7 +49,7 @@ export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void 
     it("retrieves 1", async function () {
       const hToken: HToken = await deployHToken(
         this.signers.admin,
-        H_TOKEN_MATURITIES[0],
+        H_TOKEN_MATURITY_THREE_MONTHS,
         this.mocks.balanceSheet.address,
         this.mocks.usdc.address,
       );

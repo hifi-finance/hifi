@@ -1,6 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
-import { H_TOKEN_MATURITIES } from "@hifi/constants";
+import { H_TOKEN_MATURITY_THREE_MONTHS } from "@hifi/constants";
 import { bn, getNow } from "@hifi/helpers";
 import { expect } from "chai";
 
@@ -17,7 +17,7 @@ export default function shouldBehaveLikeConstructor(): void {
     it("reverts", async function () {
       const deployHTokenPromise: Promise<HToken> = deployHToken(
         this.signers.admin,
-        H_TOKEN_MATURITIES[0],
+        H_TOKEN_MATURITY_THREE_MONTHS,
         this.mocks.balanceSheet.address,
         this.mocks.usdc.address,
       );
@@ -33,7 +33,7 @@ export default function shouldBehaveLikeConstructor(): void {
     it("reverts", async function () {
       const deployHTokenPromise: Promise<HToken> = deployHToken(
         this.signers.admin,
-        H_TOKEN_MATURITIES[0],
+        H_TOKEN_MATURITY_THREE_MONTHS,
         this.mocks.balanceSheet.address,
         this.mocks.usdc.address,
       );

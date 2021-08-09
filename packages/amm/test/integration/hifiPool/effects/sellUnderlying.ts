@@ -1,12 +1,12 @@
 import { BigNumber } from "@ethersproject/bignumber";
+import { EPSILON, H_TOKEN_MATURITY_ONE_YEAR } from "@hifi/constants";
+import { USDC, bn, getNow, hUSDC } from "@hifi/helpers";
+import { add, div } from "@hifi/helpers/dist/math";
 import { expect } from "chai";
+import fp from "evm-fp";
 import forEach from "mocha-each";
 
-import { EPSILON, H_TOKEN_MATURITY } from "../../../../helpers/constants";
-import { add, div } from "../../../../helpers/math";
-import { USDC, bn, hUSDC } from "../../../../helpers/numbers";
 import { getLatestBlockTimestamp } from "../../../../helpers/provider";
-import { now } from "../../../../helpers/time";
 import { HifiPoolErrors, YieldSpaceErrors } from "../../../shared/errors";
 import { getQuoteForSellingUnderlying } from "../../../shared/mirrors";
 
@@ -29,7 +29,7 @@ async function testSellUnderlying(
   const actualUnderlyingIn: BigNumber = preUnderlyingBalance.sub(postUnderlyingBalance);
 
   // Calculate the expected value of the delta using the local mirror implementation.
-  const timeToMaturity: string = String(H_TOKEN_MATURITY.sub(await getLatestBlockTimestamp()));
+  const timeToMaturity: string = String(H_TOKEN_MATURITY_ONE_YEAR.sub(await getLatestBlockTimestamp()));
   const expectedHTokenOut: string = getQuoteForSellingUnderlying(
     underlyingReserves,
     hTokenReserves,
@@ -38,7 +38,7 @@ async function testSellUnderlying(
   );
 
   // Run the tests.
-  expect(hUSDC(expectedHTokenOut).sub(actualHTokenOut).abs()).to.be.lte(EPSILON);
+  expect(hUSDC(expectedHTokenOut).sub(actualHTokenOut).abs()).to.be.lte(fp(EPSILON));
   expect(USDC(underlyingIn)).to.equal(actualUnderlyingIn);
 }
 
@@ -55,7 +55,7 @@ export default function shouldBehaveLikeSellUnderlying(): void {
   context("when the amount of underlying to sell is not zero", function () {
     context("when the bond matured", function () {
       beforeEach(async function () {
-        const oneHourAgo: BigNumber = now().sub(3600);
+        const oneHourAgo: BigNumber = getNow().sub(3600);
         await this.contracts.hifiPool.connect(this.signers.alice).__godMode_setMaturity(oneHourAgo);
       });
 

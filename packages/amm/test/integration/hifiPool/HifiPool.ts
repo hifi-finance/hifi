@@ -1,6 +1,6 @@
+import { MAX_UD60x18 } from "@hifi/constants";
 import fp from "evm-fp";
 
-import { MAX_UD60x18 } from "../../../helpers/constants";
 import { integrationFixtureHifiPool } from "../../shared/fixtures";
 import { shouldBehaveLikeHifiPool } from "./HifiPool.behavior";
 

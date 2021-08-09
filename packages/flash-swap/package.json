@@ -56,7 +56,7 @@
     "ts-generator": "^0.1.1",
     "ts-node": "^10.1.0",
     "typechain": "^5.1.2",
-    "typescript": "~4.2.4"
+    "typescript": "^4.3.5"
   },
   "files": [
     "/artifacts",
@@ -95,8 +95,8 @@
     "lint": "yarn lint:sol && yarn lint:ts && yarn prettier:check",
     "lint:sol": "solhint --config ../../.solhint.json --max-warnings 0 \"contracts/**/*.sol\"",
     "lint:ts": "eslint --config ../../.eslintrc.yaml --ignore-path ../../.eslintignore --ext .js,.ts .",
-    "prettier": "prettier --config ../../.prettierrc --ignore-path ../../.prettierignore --write \"**/*.{js,json,md,sol,ts}\"",
-    "prettier:check": "prettier --check --config ../../.prettierrc --ignore-path ../../.prettierignore \"**/*.{js,json,md,sol,ts}\"",
+    "prettier": "prettier --config ../../.prettierrc.js --ignore-path ../../.prettierignore --write \"**/*.{js,json,md,sol,ts}\"",
+    "prettier:check": "prettier --check --config ../../.prettierrc.js --ignore-path ../../.prettierignore \"**/*.{js,json,md,sol,ts}\"",
     "test": "hardhat test",
     "typechain": "hardhat typechain"
   }

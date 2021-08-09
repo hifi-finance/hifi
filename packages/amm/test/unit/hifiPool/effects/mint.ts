@@ -1,10 +1,10 @@
 import { BigNumber } from "@ethersproject/bignumber";
+import { H_TOKEN_MATURITY_ONE_YEAR } from "@hifi/constants";
+import { USDC, bn, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 import fp from "evm-fp";
 import forEach from "mocha-each";
 
-import { H_TOKEN_MATURITY } from "../../../../helpers/constants";
-import { USDC, bn, hUSDC } from "../../../../helpers/numbers";
 import { HifiPoolErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeMint(): void {
@@ -38,7 +38,13 @@ export default function shouldBehaveLikeMint(): void {
 
         await expect(this.contracts.hifiPool.connect(this.signers.alice).mint(USDC(underlyingOffered)))
           .to.emit(this.contracts.hifiPool, "AddLiquidity")
-          .withArgs(H_TOKEN_MATURITY, this.signers.alice.address, underlyingAmount, hTokenRequired, poolTokensMinted);
+          .withArgs(
+            H_TOKEN_MATURITY_ONE_YEAR,
+            this.signers.alice.address,
+            underlyingAmount,
+            hTokenRequired,
+            poolTokensMinted,
+          );
       });
     });
 
@@ -103,7 +109,7 @@ export default function shouldBehaveLikeMint(): void {
             await expect(this.contracts.hifiPool.connect(this.signers.alice).mint(USDC(underlyingOffered)))
               .to.emit(this.contracts.hifiPool, "AddLiquidity")
               .withArgs(
-                H_TOKEN_MATURITY,
+                H_TOKEN_MATURITY_ONE_YEAR,
                 this.signers.alice.address,
                 underlyingAmount,
                 hTokenRequired,
@@ -148,7 +154,7 @@ export default function shouldBehaveLikeMint(): void {
             await expect(this.contracts.hifiPool.connect(this.signers.alice).mint(USDC(underlyingOffered)))
               .to.emit(this.contracts.hifiPool, "AddLiquidity")
               .withArgs(
-                H_TOKEN_MATURITY,
+                H_TOKEN_MATURITY_ONE_YEAR,
                 this.signers.alice.address,
                 underlyingAmount,
                 hTokenRequired,

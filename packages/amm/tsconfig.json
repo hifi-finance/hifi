@@ -1,5 +1,12 @@
 {
   "extends": "../../tsconfig.json",
   "files": ["./hardhat.config.ts"],
-  "include": ["tasks/**/**.ts", "test/**/*.d.ts", "test/**/*.ts", "typechain/**/*.d.ts", "typechain/**/*.ts"]
+  "include": [
+    "helpers/**/*.ts",
+    "tasks/**/**.ts",
+    "test/**/*.d.ts",
+    "test/**/*.ts",
+    "typechain/**/*.d.ts",
+    "typechain/**/*.ts"
+  ]
 }

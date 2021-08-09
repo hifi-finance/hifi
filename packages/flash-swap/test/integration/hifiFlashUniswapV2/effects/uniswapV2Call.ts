@@ -1,10 +1,10 @@
 import { defaultAbiCoder } from "@ethersproject/abi";
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
+import { USDC, WBTC, bn, hUSDC, price } from "@hifi/helpers";
 import { expect } from "chai";
 import fp from "evm-fp";
 
-import { USDC, WBTC, bn, hUSDC, price } from "../../../../helpers/numbers";
 import { GodModeErc20 } from "../../../../typechain";
 import { deployGodModeErc20 } from "../../../shared/deployers";
 import { HifiFlashUniswapV2Errors } from "../../../shared/errors";
