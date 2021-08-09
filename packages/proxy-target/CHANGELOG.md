@@ -44,7 +44,7 @@ YANKED.
 
 - First release of the package.
 
-[1.2.0]: https://github.com/hifi-finance/hifi-proxy-target/releases/tag/v1.2.0
-[1.1.1]: https://github.com/hifi-finance/hifi-proxy-target/releases/tag/v1.1.1
-[1.1.0]: https://github.com/hifi-finance/hifi-proxy-target/releases/tag/v1.1.0
-[1.0.0]: https://github.com/hifi-finance/hifi-proxy-target/releases/tag/v1.0.0
+[1.2.0]: https://github.com/hifi-finance/hifi/releases/tag/@hifi/proxy-target@1.2.0
+[1.1.1]: https://github.com/hifi-finance/hifi/releases/tag/@hifi/proxy-target@1.1.1
+[1.1.0]: https://github.com/hifi-finance/hifi/releases/tag/@hifi/proxy-target@1.1.0
+[1.0.0]: https://github.com/hifi-finance/hifi/releases/tag/@hifi/proxy-target@1.0.0
