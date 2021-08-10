@@ -16,7 +16,7 @@ import { getChainConfig, getEnvVar } from "@hifi/helpers";
 import { config as dotenvConfig } from "dotenv";
 import { HardhatUserConfig } from "hardhat/types";
 
-dotenvConfig({ path: resolve(__dirname, "./.env") });
+dotenvConfig({ path: resolve(__dirname, "..", "..", ".env") });
 
 const infuraApiKey: string = getEnvVar("INFURA_API_KEY");
 const mnemonic: string = getEnvVar("MNEMONIC");

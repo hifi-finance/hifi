@@ -8,7 +8,7 @@ import { getChainConfig, getEnvVar } from "@hifi/helpers";
 import { config as dotenvConfig } from "dotenv";
 import { HardhatUserConfig } from "hardhat/config";
 
-dotenvConfig({ path: resolve(__dirname, "./.env") });
+dotenvConfig({ path: resolve(__dirname, "..", "..", ".env") });
 
 // Ensure that we have all the environment variables we need.
 const mnemonic: string = getEnvVar("MNEMONIC");
