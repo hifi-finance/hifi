@@ -7803,7 +7803,6 @@ fsevents@~2.3.2:
     cz-conventional-changelog: ^3.3.0
     husky: ^7.0.1
     lint-staged: ^11.1.2
-    typescript: ^4.3.5
   languageName: unknown
   linkType: soft
 
