@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 // solhint-disable func-name-mixedcase
-pragma solidity =0.5.16;
+pragma solidity >=0.5.0;
 
 import "@uniswap/v2-core/contracts/UniswapV2Pair.sol";
 
