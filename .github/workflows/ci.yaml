@@ -17,6 +17,28 @@ on:
       - "main"
 
 jobs:
+  diff:
+    runs-on: ubuntu-latest
+    outputs:
+      amm: ${{ steps.filter.outputs["amm"] }}
+      flash-swap: ${{ steps.filter.outputs["flash-swap"] }}
+      protocol: ${{ steps.filter.outputs["protocol"] }}
+      proxy-target: ${{ steps.filter.outputs["proxy-target"] }}
+    steps:
+      - uses: dorny/paths-filter@v2
+        id: diff
+        with:
+          base: "main"
+          filters: |
+            amm:
+              - "packages/amm/**"
+            flash-swap:
+              - "packages/flash-swap/**"
+            protocol:
+              - "packages/protocol/**"
+            proxy-target:
+              - "packages/proxy-target/**"
+
   ci-amm:
     runs-on: "ubuntu-latest"
     steps:
