@@ -25,6 +25,9 @@
     "solidity"
   ],
   "private": true,
+  "resolutions": {
+    "@solidity-parser/parser": "^0.13.2"
+  },
   "scripts": {
     "build": "yarn workspaces foreach --parallel --topological run build",
     "clean": "yarn workspaces foreach --from @hifi/proxy-target --parallel run clean",
