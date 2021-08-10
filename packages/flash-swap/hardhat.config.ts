@@ -24,6 +24,7 @@ const config: HardhatUserConfig = {
       accounts: {
         mnemonic,
       },
+      hardfork: process.env.CODE_COVERAGE ? "berlin" : "london", // https://github.com/sc-forks/solidity-coverage/issues/652
     },
     goerli: getChainConfig("goerli", infuraApiKey, mnemonic),
     "polygon-mainnet": getChainConfig("polygon-mainnet", infuraApiKey, mnemonic),
