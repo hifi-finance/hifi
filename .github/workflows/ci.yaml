@@ -2,7 +2,6 @@ name: "Continuous Integration"
 
 env:
   COVERAGE_GIT_BRANCH: "main"
-  COVERAGE_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
   COVERAGE_SERVICE_NAME: "github-actions-ci"
   ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
   INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
@@ -20,12 +19,15 @@ jobs:
   diff:
     runs-on: ubuntu-latest
     outputs:
-      amm: ${{ steps.filter.outputs["amm"] }}
-      flash-swap: ${{ steps.filter.outputs["flash-swap"] }}
-      protocol: ${{ steps.filter.outputs["protocol"] }}
-      proxy-target: ${{ steps.filter.outputs["proxy-target"] }}
+      amm: ${{ steps.filter.outputs.amm }}
+      flash-swap: ${{ steps.filter.outputs.flash-swap }}
+      protocol: ${{ steps.filter.outputs.protocol }}
+      proxy-target: ${{ steps.filter.outputs.proxy-target }}
     steps:
-      - uses: dorny/paths-filter@v2
+      - name: "Check out the repo"
+        uses: "actions/checkout@v2"
+      - name: "Diff the files"
+        uses: dorny/paths-filter@v2
         id: diff
         with:
           base: "main"
@@ -40,6 +42,8 @@ jobs:
               - "packages/proxy-target/**"
 
   ci-amm:
+    needs: diff
+    if: ${{ needs.diff.outputs.amm == true }}
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
@@ -70,11 +74,13 @@ jobs:
         uses: "coverallsapp/github-action@master"
         with:
           flag-name: "amm"
-          github-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           parallel: true
           path-to-lcov: "./packages/amm/coverage/lcov.info"
 
   ci-flash-swap:
+    needs: diff
+    if: ${{ needs.diff.outputs.flash-swap == true }}
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
@@ -105,11 +111,13 @@ jobs:
         uses: "coverallsapp/github-action@master"
         with:
           flag-name: "flash-swap"
-          github-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           parallel: true
           path-to-lcov: "./packages/flash-swap/coverage/lcov.info"
 
   ci-protocol:
+    needs: diff
+    if: ${{ needs.diff.outputs.protocol == true }}
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
@@ -140,11 +148,13 @@ jobs:
         uses: "coverallsapp/github-action@master"
         with:
           flag-name: "protocol"
-          github-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           parallel: true
           path-to-lcov: "./packages/protocol/coverage/lcov.info"
 
   ci-proxy-target:
+    needs: diff
+    if: ${{ needs.diff.outputs.proxy-target == true }}
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
@@ -168,7 +178,7 @@ jobs:
       - name: "Compile the contracts and generate TypeChain artifacts"
         run: "yarn workspace @hifi/proxy-target typechain"
 
-  finish:
+  upload-coverage-report:
     needs:
       - ci-amm
       - ci-flash-swap
@@ -178,5 +188,5 @@ jobs:
       - name: Coveralls Finished
         uses: coverallsapp/github-action@master
         with:
-          github-token: ${{ secrets.COVERALLS_REPO_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           parallel-finished: true
