@@ -1,4 +1,4 @@
-name: "Continuous Integration"
+name: "CI: Protocol Package"
 
 env:
   COVERAGE_GIT_BRANCH: "main"
@@ -31,6 +31,9 @@ jobs:
 
       - name: "Install dependencies"
         run: "yarn workspace @hifi/protocol install --immutable"
+
+      - name: "Build packages"
+        run: "yarn build"
 
       - name: "Lint Solidity and TypeScript code"
         run: "yarn workspace @hifi/protocol lint"

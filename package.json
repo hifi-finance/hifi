@@ -24,7 +24,6 @@
     "smart-contracts",
     "solidity"
   ],
-  "packageManager": "yarn@2.4.2",
   "private": true,
   "scripts": {
     "build": "yarn workspaces foreach --parallel --topological run build",
