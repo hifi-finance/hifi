@@ -30,7 +30,7 @@
   },
   "scripts": {
     "build": "yarn workspaces foreach --parallel --topological run build",
-    "clean": "yarn workspaces foreach --from @hifi/proxy-target --parallel run clean",
+    "clean": "yarn workspaces foreach --parallel run clean",
     "commit": "git-cz",
     "compile": "yarn workspaces foreach --parallel --verbose run compile",
     "coverage": "yarn workspaces foreach --parallel run coverage",

@@ -96,7 +96,6 @@
     "url": "https://github.com/hifi-finance/hifi"
   },
   "scripts": {
-    "clean": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat clean",
     "compile": "hardhat compile",
     "coverage": "cross-env CODE_COVERAGE=true hardhat coverage --solcoverjs ./.solcover.js --temp artifacts --testfiles \"./test/**/*.ts\"",
     "lint": "yarn lint:sol && yarn lint:ts && yarn prettier:check",

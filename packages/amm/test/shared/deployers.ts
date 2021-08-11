@@ -31,10 +31,10 @@ export async function deployGodModeHToken(deployer: Signer, underlyingAddress: s
   return godModeHToken;
 }
 
-export async function deployHifiPool(deployer: Signer, hTokenAddress: string): Promise<GodModeHifiPool> {
-  const hifiPoolArtifact: Artifact = await artifacts.readArtifact("GodModeHifiPool");
+export async function deployGodModeHifiPool(deployer: Signer, hTokenAddress: string): Promise<GodModeHifiPool> {
+  const godModeHifiPoolArtifact: Artifact = await artifacts.readArtifact("GodModeHifiPool");
   const hifiPool: GodModeHifiPool = <GodModeHifiPool>(
-    await deployContract(deployer, hifiPoolArtifact, [
+    await deployContract(deployer, godModeHifiPoolArtifact, [
       getHifiPoolName(H_TOKEN_MATURITY_ONE_YEAR),
       getHifiPoolSymbol(H_TOKEN_MATURITY_ONE_YEAR),
       hTokenAddress,
@@ -43,10 +43,10 @@ export async function deployHifiPool(deployer: Signer, hTokenAddress: string): P
   return hifiPool;
 }
 
-export async function deployHifiPoolRegistry(deployer: Signer): Promise<GodModeHifiPoolRegistry> {
-  const hifiPoolRegistryArtifact: Artifact = await artifacts.readArtifact("GodModeHifiPoolRegistry");
+export async function deployGodModeHifiPoolRegistry(deployer: Signer): Promise<GodModeHifiPoolRegistry> {
+  const godModeHifiPoolRegistryArtifact: Artifact = await artifacts.readArtifact("GodModeHifiPoolRegistry");
   const hifiPoolRegistry: GodModeHifiPoolRegistry = <GodModeHifiPoolRegistry>(
-    await deployContract(deployer, hifiPoolRegistryArtifact)
+    await deployContract(deployer, godModeHifiPoolRegistryArtifact)
   );
   return hifiPoolRegistry;
 }

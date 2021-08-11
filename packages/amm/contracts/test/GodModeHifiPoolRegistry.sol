@@ -9,13 +9,13 @@ import "../HifiPoolRegistry.sol";
 contract GodModeHifiPoolRegistry is HifiPoolRegistry {
     function __godMode_trackPools(IHifiPool[] calldata pools_) external {
         for (uint256 i; i < pools_.length; i++) {
-            pools[pools_[i]] = true;
+            pools[address(pools_[i])] = true;
         }
     }
 
     function __godMode_untrackPools(IHifiPool[] calldata pools_) external {
         for (uint256 i; i < pools_.length; i++) {
-            pools[pools_[i]] = false;
+            pools[address(pools_[i])] = false;
         }
     }
 }

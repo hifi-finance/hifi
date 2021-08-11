@@ -27,27 +27,27 @@ contract HifiPoolRegistry is
     /// CONSTANT FUNCTIONS ///
 
     /// @inheritdoc IHifiPoolRegistry
-    mapping(IHifiPool => bool) public override pools;
+    mapping(address => bool) public override pools;
 
     /// NON-CONSTANT FUNCTIONS ///
 
     /// @inheritdoc IHifiPoolRegistry
     function trackPool(IHifiPool pool) public override onlyOwner {
-        if (pools[pool]) {
+        if (pools[address(pool)]) {
             revert HifiPoolRegistry__PoolAlreadyTracked(pool);
         }
 
-        pools[pool] = true;
+        pools[address(pool)] = true;
         emit TrackPool(pool);
     }
 
     /// @inheritdoc IHifiPoolRegistry
     function untrackPool(IHifiPool pool) public override onlyOwner {
-        if (!pools[pool]) {
+        if (!pools[address(pool)]) {
             revert HifiPoolRegistry__PoolNotTracked(pool);
         }
 
-        pools[pool] = false;
+        pools[address(pool)] = false;
         emit UntrackPool(pool);
     }
 }

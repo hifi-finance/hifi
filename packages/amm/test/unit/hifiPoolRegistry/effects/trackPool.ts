@@ -1,5 +1,6 @@
-import { HifiPoolRegistryErrors } from "../../../shared/errors";
 import { expect } from "chai";
+
+import { HifiPoolRegistryErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeTrackPool(): void {
   context("when called to track an untracked pool", function () {
@@ -8,7 +9,7 @@ export default function shouldBehaveLikeTrackPool(): void {
         .to.emit(this.contracts.hifiPoolRegistry, "TrackPool")
         .withArgs(this.mocks.hifiPool.address);
 
-      expect(await this.contracts.hifiPoolRegistry.pools(this.mocks.hifiPool.address)).to.be.eq(true);
+      expect(await this.contracts.hifiPoolRegistry.pools(this.mocks.hifiPool.address)).to.be.equal(true);
     });
   });
 

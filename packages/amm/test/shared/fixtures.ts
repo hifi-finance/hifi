@@ -8,7 +8,7 @@ import { GodModeErc20 } from "../../typechain/GodModeErc20";
 import { GodModeHifiPool } from "../../typechain/GodModeHifiPool";
 import { GodModeHToken } from "../../typechain/GodModeHToken";
 import { YieldSpaceMock } from "../../typechain/YieldSpaceMock";
-import { deployGodModeHToken, deployHifiPool, deployUsdc, deployHifiPoolRegistry } from "./deployers";
+import { deployGodModeHToken, deployGodModeHifiPool, deployUsdc, deployGodModeHifiPoolRegistry } from "./deployers";
 import { deployMockHifiPool, deployMockHToken, deployMockUsdc } from "./mocks";
 
 const { deployContract } = hre.waffle;
@@ -23,7 +23,7 @@ export async function integrationFixtureHifiPool(signers: Signer[]): Promise<Int
   const deployer: Signer = signers[0];
   const underlying: GodModeErc20 = await deployUsdc(deployer);
   const hToken: GodModeHToken = await deployGodModeHToken(deployer, underlying.address);
-  const hifiPool: GodModeHifiPool = await deployHifiPool(deployer, hToken.address);
+  const hifiPool: GodModeHifiPool = await deployGodModeHifiPool(deployer, hToken.address);
   return { hToken, hifiPool, underlying };
 }
 
@@ -37,7 +37,7 @@ export async function unitFixtureHifiPool(signers: Signer[]): Promise<UnitFixtur
   const deployer: Signer = signers[0];
   const underlying: MockContract = await deployMockUsdc(deployer);
   const hToken: MockContract = await deployMockHToken(deployer, underlying.address);
-  const hifiPool: GodModeHifiPool = await deployHifiPool(deployer, hToken.address);
+  const hifiPool: GodModeHifiPool = await deployGodModeHifiPool(deployer, hToken.address);
   return { hToken, hifiPool, underlying };
 }
 
@@ -52,7 +52,7 @@ export async function unitFixtureHifiPoolRegistry(signers: Signer[]): Promise<Un
   const underlying: MockContract = await deployMockUsdc(deployer);
   const hToken: MockContract = await deployMockHToken(deployer, underlying.address);
   const hifiPool: MockContract = await deployMockHifiPool(deployer, hToken.address, underlying.address);
-  const hifiPoolRegistry: GodModeHifiPoolRegistry = await deployHifiPoolRegistry(deployer);
+  const hifiPoolRegistry: GodModeHifiPoolRegistry = await deployGodModeHifiPoolRegistry(deployer);
   return { hToken, hifiPool, hifiPoolRegistry };
 }
 
