@@ -43,7 +43,7 @@ jobs:
 
   ci-amm:
     needs: diff
-    if: ${{ needs.diff.outputs.amm == true }}
+    if: ${{ needs.diff.outputs.amm == 'true' }}
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
@@ -80,7 +80,7 @@ jobs:
 
   ci-flash-swap:
     needs: diff
-    if: ${{ needs.diff.outputs.flash-swap == true }}
+    if: ${{ needs.diff.outputs.flash-swap == 'true' }}
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
@@ -117,7 +117,7 @@ jobs:
 
   ci-protocol:
     needs: diff
-    if: ${{ needs.diff.outputs.protocol == true }}
+    if: ${{ needs.diff.outputs.protocol == 'true' }}
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
@@ -154,7 +154,7 @@ jobs:
 
   ci-proxy-target:
     needs: diff
-    if: ${{ needs.diff.outputs.proxy-target == true }}
+    if: ${{ needs.diff.outputs.proxy-target == 'true' }}
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
