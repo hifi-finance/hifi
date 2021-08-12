@@ -19,10 +19,10 @@ jobs:
   diff:
     runs-on: ubuntu-latest
     outputs:
-      amm: ${{ steps.filter.outputs.amm }}
-      flash-swap: ${{ steps.filter.outputs.flash-swap }}
-      protocol: ${{ steps.filter.outputs.protocol }}
-      proxy-target: ${{ steps.filter.outputs.proxy-target }}
+      amm: ${{ steps.diff.outputs.amm }}
+      flash-swap: ${{ steps.diff.outputs.flash-swap }}
+      protocol: ${{ steps.diff.outputs.protocol }}
+      proxy-target: ${{ steps.diff.outputs.proxy-target }}
     steps:
       - name: "Check out the repo"
         uses: "actions/checkout@v2"
