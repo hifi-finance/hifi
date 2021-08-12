@@ -99,7 +99,7 @@
     "url": "https://github.com/hifi-finance/hifi"
   },
   "scripts": {
-    "build": "tsc --project ./tsconfig.prod.json",
+    "build": "yarn typechain && tsc --project ./tsconfig.prod.json",
     "compile": "hardhat compile",
     "coverage": "cross-env CODE_COVERAGE=true hardhat coverage --solcoverjs ./.solcover.js --temp artifacts --testfiles \"./test/{unit,integration}/**/*.ts\"",
     "lint": "yarn lint:sol && yarn lint:ts && yarn prettier:check",
