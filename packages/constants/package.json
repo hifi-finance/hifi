@@ -27,6 +27,7 @@
   ],
   "homepage": "https://github.com/hifi-finance/hifi/tree/main/packages/constants#readme",
   "main": "./dist/index.js",
+  "private": true,
   "repository": {
     "directory": "packages/constants",
     "type": "git",

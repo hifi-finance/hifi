@@ -38,6 +38,7 @@
     "prettier": "^2.3.2",
     "prettier-plugin-solidity": "^1.0.0-beta.17",
     "shelljs": "^0.8.4",
+    "shx": "^0.3.3",
     "solhint": "^3.3.6",
     "solhint-plugin-prettier": "^0.0.5",
     "ts-generator": "^0.1.1",
@@ -74,7 +75,7 @@
     "url": "https://github.com/hifi-finance/hifi"
   },
   "scripts": {
-    "compile": "hardhat compile",
+    "clean": "shx rm -rf ./artifacts ./cache /typechain ./tsconfig.prod.tsbuildinfo",
     "lint": "yarn lint:sol && yarn lint:ts && yarn prettier:check",
     "lint:sol": "solhint --config ../../.solhint.json --max-warnings 0 \"contracts/**/*.sol\"",
     "lint:ts": "eslint --config ../../.eslintrc.yaml --ignore-path ../../.eslintignore --ext .js,.ts .",

@@ -30,6 +30,7 @@
   ],
   "homepage": "https://github.com/hifi-finance/hifi/tree/main/packages/helpers#readme",
   "main": "./dist/index.js",
+  "private": true,
   "repository": {
     "directory": "packages/helpers",
     "type": "git",
