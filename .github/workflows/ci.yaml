@@ -179,6 +179,7 @@ jobs:
         run: "yarn workspace @hifi/proxy-target typechain"
 
   upload-coverage-report:
+    if: always()
     needs:
       - ci-amm
       - ci-flash-swap
