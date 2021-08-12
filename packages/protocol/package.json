@@ -1,7 +1,7 @@
 {
   "name": "@hifi/protocol",
   "description": "The Hifi fixed-rate, fixed-term lending protocol",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "author": {
     "name": "Hifi",
     "email": "contact@hifi.finance",
@@ -51,7 +51,7 @@
     "fs-extra": "^10.0.0",
     "hardhat": "^2.6.0",
     "hardhat-gas-reporter": "^1.0.4",
-    "hardhat-packager": "^1.0.5",
+    "hardhat-packager": "^1.1.0",
     "lodash": "^4.17.21",
     "mocha": "^9.0.3",
     "mocha-each": "^2.0.1",
@@ -67,9 +67,11 @@
     "typescript": "^4.3.5"
   },
   "files": [
-    "/artifacts",
+    "/artifacts/**/*.json",
     "/contracts",
-    "/typechain"
+    "/typechain/**/*.d.ts",
+    "/typechain/**/*.js",
+    "CHANGELOG.md"
   ],
   "homepage": "https://github.com/hifi-finance/hifi/tree/main/packages/protocol#readme",
   "keywords": [
@@ -97,11 +99,13 @@
     "url": "https://github.com/hifi-finance/hifi"
   },
   "scripts": {
+    "build": "tsc --project ./tsconfig.prod.json",
     "compile": "hardhat compile",
     "coverage": "cross-env CODE_COVERAGE=true hardhat coverage --solcoverjs ./.solcover.js --temp artifacts --testfiles \"./test/{unit,integration}/**/*.ts\"",
     "lint": "yarn lint:sol && yarn lint:ts && yarn prettier:check",
     "lint:sol": "solhint --config ../../.solhint.json --max-warnings 0 \"contracts/**/*.sol\"",
     "lint:ts": "eslint --config ../../.eslintrc.yaml --ignore-path ../../.eslintignore --ext .js,.ts .",
+    "prepack": "yarn hardhat prepare-package && yarn build",
     "prettier": "prettier --config ../../.prettierrc.js --ignore-path ../../.prettierignore --write \"**/*.{js,json,md,sol,ts}\"",
     "prettier:check": "prettier --check --config ../../.prettierrc.js --ignore-path ../../.prettierignore \"**/*.{js,json,md,sol,ts}\"",
     "test": "hardhat test",
