@@ -1,10 +1,11 @@
-import { Fixture } from "ethereum-waffle";
-import { GodModeErc20 } from "../typechain/GodModeErc20";
-import { GodModeHToken } from "../typechain/GodModeHToken";
-import { GodModeHifiPool } from "../typechain/GodModeHifiPool";
-import { GodModeHifiPoolRegistry } from "../typechain";
-import { MockContract } from "ethereum-waffle";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
+import { Fixture } from "ethereum-waffle";
+import { MockContract } from "ethereum-waffle";
+
+import { GodModeHifiPoolRegistry } from "../typechain";
+import { GodModeErc20 } from "../typechain/GodModeErc20";
+import { GodModeHifiPool } from "../typechain/GodModeHifiPool";
+import { GodModeHToken } from "../typechain/GodModeHToken";
 import { YieldSpaceMock } from "../typechain/YieldSpaceMock";
 
 declare module "mocha" {
@@ -28,6 +29,7 @@ export interface Signers {
   admin: SignerWithAddress;
   alice: SignerWithAddress;
   bob: SignerWithAddress;
+  raider: SignerWithAddress;
 }
 
 export interface Mocks {

@@ -16,6 +16,10 @@ export enum HifiPoolRegistryErrors {
   PoolNotTracked = "HifiPoolRegistry__PoolNotTracked",
 }
 
+export enum OwnableErrors {
+  NotOwner = "Ownable__NotOwner",
+}
+
 export enum PRBMathUD60x18Errors {
   Exp2InputTooBig = "PRBMathUD60x18__Exp2InputTooBig",
   FromUintOverflow = "PRBMathUD60x18__FromUintOverflow",

@@ -1,24 +1,37 @@
-import { HifiPoolRegistryErrors } from "../../../shared/errors";
 import { expect } from "chai";
 
-export default function shouldBehaveLikeUntrackPool(): void {
-  context("when called to untrack a tracked pool", function () {
-    beforeEach(async function () {
-      await this.contracts.hifiPoolRegistry.connect(this.signers.admin).trackPool(this.mocks.hifiPool.address);
-    });
+import { HifiPoolRegistryErrors, OwnableErrors } from "../../../shared/errors";
 
-    it("untracks pool", async function () {
-      await expect(this.contracts.hifiPoolRegistry.connect(this.signers.admin).untrackPool(this.mocks.hifiPool.address))
-        .to.emit(this.contracts.hifiPoolRegistry, "UntrackPool")
-        .withArgs(this.mocks.hifiPool.address);
+export default function shouldBehaveLikeUntrackPool(): void {
+  context("when the caller is not the owner", function () {
+    it("reverts", async function () {
+      await expect(
+        this.contracts.hifiPoolRegistry.connect(this.signers.alice).untrackPool(this.mocks.hifiPool.address),
+      ).to.be.revertedWith(OwnableErrors.NotOwner);
     });
   });
 
-  context("when called to untrack an non-tracked pool", function () {
-    it("reverts", async function () {
-      await expect(
-        this.contracts.hifiPoolRegistry.connect(this.signers.admin).untrackPool(this.mocks.hifiPool.address),
-      ).to.be.revertedWith(HifiPoolRegistryErrors.PoolNotTracked);
+  context("when the caller is the owner", function () {
+    context("when pool is not already tracked", function () {
+      it("reverts", async function () {
+        await expect(
+          this.contracts.hifiPoolRegistry.connect(this.signers.admin).untrackPool(this.mocks.hifiPool.address),
+        ).to.be.revertedWith(HifiPoolRegistryErrors.PoolNotTracked);
+      });
+    });
+
+    context("when the pool is already tracked", function () {
+      beforeEach(async function () {
+        await this.contracts.hifiPoolRegistry.connect(this.signers.admin).trackPool(this.mocks.hifiPool.address);
+      });
+
+      it("untracks pool", async function () {
+        await expect(
+          this.contracts.hifiPoolRegistry.connect(this.signers.admin).untrackPool(this.mocks.hifiPool.address),
+        )
+          .to.emit(this.contracts.hifiPoolRegistry, "UntrackPool")
+          .withArgs(this.mocks.hifiPool.address);
+      });
     });
   });
 }
