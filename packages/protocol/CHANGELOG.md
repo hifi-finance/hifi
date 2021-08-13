@@ -20,4 +20,4 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Zero edge case in `getSeizableCollateralAmount` function.
 
-[1.3.0]: https://github.com/hifi-finance/hifi/releases/tag/@hifi/protocol@1.4.0
+[1.4.0]: https://github.com/hifi-finance/hifi/releases/tag/@hifi/protocol@1.4.0

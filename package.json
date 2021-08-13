@@ -29,7 +29,7 @@
     "@solidity-parser/parser": "^0.13.2"
   },
   "scripts": {
-    "build": "yarn workspaces foreach --topological --verbose run build",
+    "build": "yarn workspaces foreach --topological-dev --verbose run build",
     "clean": "yarn workspaces foreach --parallel run clean",
     "commit": "git-cz",
     "compile": "yarn workspaces foreach --parallel --verbose run compile",
