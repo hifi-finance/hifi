@@ -9,11 +9,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ### Added
 
 - Ethers as a peer dependency.
+- New `depositCollateralAndBorrowHTokenAndAddLiquidity` function.
 - TypeChain bindings for IErc20 in the npm package bundle.
 - TypeChain factories in the npm package bundle.
 
 ### Changed
 
+- Mark `borrowHTokenAndAddLiquidity` function as public.
+- Refactor `collateralAmount` to `depositAmount`.
 - Upgrade to @hifi/amm@1.4.0 and @hifi/protocol@1.4.0.
 
 ## [1.2.0] - 2021-08-03
