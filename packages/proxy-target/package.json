@@ -1,7 +1,7 @@
 {
   "name": "@hifi/proxy-target",
   "description": "DSProxy target contract with scripts for the Hifi protocol",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "author": {
     "name": "Hifi",
     "email": "contact@hifi.finance",
@@ -63,8 +63,8 @@
   ],
   "license": "LGPL-3.0-or-later",
   "peerDependencies": {
-    "@hifi/amm": "1.3.0",
-    "@hifi/protocol": "1.3.0",
+    "@hifi/amm": "1.4.0",
+    "@hifi/protocol": "1.4.0",
     "@paulrberg/contracts": "3.4.0",
     "ethers": "^5.4.4"
   },
