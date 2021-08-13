@@ -1,3 +1,4 @@
+import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "hardhat-packager";
@@ -19,6 +20,9 @@ const mnemonic: string = getEnvVar("MNEMONIC");
 
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
+  etherscan: {
+    apiKey: getEnvVar("ETHERSCAN_API_KEY"),
+  },
   networks: {
     hardhat: {
       accounts: {
