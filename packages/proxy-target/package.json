@@ -1,7 +1,7 @@
 {
   "name": "@hifi/proxy-target",
   "description": "DSProxy target contract with scripts for the Hifi protocol",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "author": {
     "name": "Hifi",
     "email": "contact@hifi.finance",
@@ -11,8 +11,8 @@
     "url": "https://github.com/hifi-finance/hifi/issues"
   },
   "dependencies": {
-    "@hifi/amm": "1.3.0",
-    "@hifi/protocol": "1.3.0",
+    "@hifi/amm": "1.4.0",
+    "@hifi/protocol": "1.4.0",
     "@paulrberg/contracts": "3.4.0",
     "ethers": "^5.4.4"
   },
@@ -47,9 +47,11 @@
     "typescript": "^4.3.5"
   },
   "files": [
-    "/artifacts",
+    "/artifacts/**/*.json",
     "/contracts",
-    "/typechain"
+    "/typechain/**/*.d.ts",
+    "/typechain/**/*.js",
+    "CHANGELOG.md"
   ],
   "homepage": "https://github.com/hifi-finance/hifi/tree/main/packages/proxy-target#readme",
   "keywords": [
@@ -75,10 +77,12 @@
     "url": "https://github.com/hifi-finance/hifi"
   },
   "scripts": {
+    "build": "yarn typechain && tsc --project ./tsconfig.prod.json",
     "clean": "shx rm -rf ./artifacts ./cache ./typechain ./tsconfig.prod.tsbuildinfo",
     "lint": "yarn lint:sol && yarn lint:ts && yarn prettier:check",
     "lint:sol": "solhint --config ../../.solhint.json --max-warnings 0 \"contracts/**/*.sol\"",
     "lint:ts": "eslint --config ../../.eslintrc.yaml --ignore-path ../../.eslintignore --ext .js,.ts .",
+    "prepack": "cross-env TS_NODE_TRANSPILE_ONLY=true yarn hardhat prepare-package && tsc --project ./tsconfig.prod.json",
     "prettier": "prettier --config ../../.prettierrc.js --ignore-path ../../.prettierignore --write \"**/*.{js,json,md,sol,ts}\"",
     "prettier:check": "prettier --check --config ../../.prettierrc.js --ignore-path ../../.prettierignore \"**/*.{js,json,md,sol,ts}\"",
     "typechain": "hardhat typechain"

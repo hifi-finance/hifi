@@ -31,7 +31,8 @@ const config: HardhatUserConfig = {
     ropsten: getChainConfig("ropsten", infuraApiKey, mnemonic),
   },
   packager: {
-    contracts: ["HifiProxyTarget", "IHifiProxyTarget", "WethInterface"],
+    contracts: ["HifiProxyTarget", "IErc20", "IHifiProxyTarget", "WethInterface"],
+    includeFactories: true,
   },
   paths: {
     artifacts: "./artifacts",

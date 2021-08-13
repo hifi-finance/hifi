@@ -890,18 +890,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hifi/amm@npm:1.3.0":
-  version: 1.3.0
-  resolution: "@hifi/amm@npm:1.3.0"
+"@hifi/amm@npm:1.4.0":
+  version: 1.4.0
+  resolution: "@hifi/amm@npm:1.4.0"
   dependencies:
-    "@hifi/protocol": 1.3.0
+    "@hifi/protocol": 1.4.0
     "@paulrberg/contracts": 3.4.0
+    ethers: ^5.4.4
     prb-math: 2.2.0
   peerDependencies:
-    "@hifi/protocol": 1.3.0
+    "@hifi/protocol": 1.4.0
     "@paulrberg/contracts": 3.4.0
+    ethers: ^5.4.4
     prb-math: 2.2.0
-  checksum: a489d4ac458eb9358b4ef221a929bdbfad7492b4cf8dc78f2d88d10f146294b9703ada6c8bb1df6eed17574c86e5dfff0a453c1819174494a919d592f1d38b67
+  checksum: ad5b183c15f4700fa89b6a82486a338d0756c64c0db73bf81480019b5fa24f5a1604e22f73d93c982e47e30f4fb176d34561ce556adaf619f786c96f7c4ac0b1
   languageName: node
   linkType: hard
 
@@ -1061,21 +1063,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hifi/protocol@npm:1.3.0":
-  version: 1.3.0
-  resolution: "@hifi/protocol@npm:1.3.0"
-  dependencies:
-    "@openzeppelin/contracts-upgradeable": 4.2.0
-    "@paulrberg/contracts": 3.4.0
-    prb-math: 2.2.0
-  peerDependencies:
-    "@openzeppelin/contracts-upgradeable": 4.2.0
-    "@paulrberg/contracts": 3.4.0
-    prb-math: 2.2.0
-  checksum: 30a78955186fe38b4ae5729a7db44a79816d745fb3376bdc232087dbba4214bafb0c531f4350f8e373ea66bca0bc2d90de61f0c3b784d272e15c637f6eb41d3a
-  languageName: node
-  linkType: hard
-
 "@hifi/protocol@npm:1.4.0":
   version: 1.4.0
   resolution: "@hifi/protocol@npm:1.4.0"
@@ -1164,9 +1151,9 @@ __metadata:
     "@ethersproject/abi": ^5.4.0
     "@ethersproject/bytes": ^5.4.0
     "@ethersproject/providers": ^5.4.3
-    "@hifi/amm": 1.3.0
+    "@hifi/amm": 1.4.0
     "@hifi/helpers": "workspace:*"
-    "@hifi/protocol": 1.3.0
+    "@hifi/protocol": 1.4.0
     "@nomiclabs/hardhat-etherscan": ^2.1.4
     "@paulrberg/contracts": 3.4.0
     "@typechain/ethers-v5": ^7.0.1
