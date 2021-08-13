@@ -69,6 +69,7 @@ const config: HardhatUserConfig = {
       "SimplePriceFeed",
       "StablecoinPriceFeed",
     ],
+    includeFactories: true,
   },
   paths: {
     artifacts: "./artifacts",

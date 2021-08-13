@@ -36,7 +36,19 @@ const config: HardhatUserConfig = {
     ropsten: getChainConfig("ropsten", infuraApiKey, mnemonic),
   },
   packager: {
-    contracts: ["HifiPool", "HifiPoolRegistry", "IHifiPool", "IHifiPoolRegistry"],
+    contracts: [
+      "Erc20",
+      "Erc20Permit",
+      "HifiPool",
+      "HifiPoolRegistry",
+      "IErc20",
+      "IErc20Permit",
+      "IHifiPool",
+      "IHifiPoolRegistry",
+      "IOwnable",
+      "Ownable",
+    ],
+    includeFactories: true,
   },
   paths: {
     artifacts: "./artifacts",
