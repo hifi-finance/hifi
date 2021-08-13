@@ -100,7 +100,7 @@
   },
   "scripts": {
     "build": "yarn typechain && tsc --project ./tsconfig.prod.json",
-    "clean": "shx rm -rf ./artifacts ./cache ./coverage /typechain ./coverage.json ./tsconfig.prod.tsbuildinfo",
+    "clean": "shx rm -rf ./artifacts ./cache ./coverage ./typechain ./coverage.json ./tsconfig.prod.tsbuildinfo",
     "coverage": "cross-env CODE_COVERAGE=true hardhat coverage --solcoverjs ./.solcover.js --temp artifacts --testfiles \"./test/**/*.ts\"",
     "lint": "yarn lint:sol && yarn lint:ts && yarn prettier:check",
     "lint:sol": "solhint --config ../../.solhint.json --max-warnings 0 \"contracts/**/*.sol\"",

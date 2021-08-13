@@ -2,7 +2,7 @@
 // solhint-disable func-name-mixedcase
 pragma solidity >=0.5.0;
 
-import "@uniswap/v2-core/contracts/UniswapV2Pair.sol";
+import "..//UniswapV2Pair.sol";
 
 /// @title GodModeUniswapV2Pair
 /// @author Hifi

@@ -6,9 +6,9 @@ import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 import "@hifi/protocol/contracts/core/balanceSheet/IBalanceSheetV1.sol";
 import "@hifi/protocol/contracts/core/balanceSheet/SBalanceSheetV1.sol";
 import "@hifi/protocol/contracts/core/hToken/IHToken.sol";
-import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
 
 import "./IHifiFlashUniswapV2.sol";
+import "./IUniswapV2Pair.sol";
 
 /// @notice Emitted when the caller is not the Uniswap V2 pair contract.
 error HifiFlashUniswapV2__CallNotAuthorized(address caller);

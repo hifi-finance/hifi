@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2021-08-13
+
+### Added
+
+- Ethers as a peer dependency.
+- TypeChain bindings for IErc20 and IUniswapV2Callee in the npm package bundle.
+- New `HifiPoolRegistry.sol` contract, to track deployed AMMs.
+- TypeChain factories in the npm package bundle.
+
+### Changed
+
+- Hardcode Uniswap v2 contracts to fix the TypeChain bindings bug.
+- Upgrade to @hifi/protocol@1.4.0.
+
+### Fixed
+
+- TypeChain binding for IErc20.
+
 ## [1.2.0] - 2021-08-03
 
 ### Changed
@@ -33,6 +51,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - First release of the package.
 
+[1.3.0]: https://github.com/hifi-finance/hifi/releases/tag/@hifi/flash-swap@1.3.0
 [1.2.0]: https://github.com/hifi-finance/hifi/releases/tag/@hifi/flash-swap@1.2.0
 [1.1.0]: https://github.com/hifi-finance/hifi/releases/tag/@hifi/flash-swap@1.1.0
 [1.0.1]: https://github.com/hifi-finance/hifi/releases/tag/@hifi/flash-swap@1.0.1

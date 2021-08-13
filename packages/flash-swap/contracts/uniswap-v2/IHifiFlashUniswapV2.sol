@@ -3,7 +3,8 @@ pragma solidity >=0.8.4;
 
 import "@hifi/protocol/contracts/core/balanceSheet/IBalanceSheetV1.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Callee.sol";
-import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Pair.sol";
+
+import "./IUniswapV2Pair.sol";
 
 /// @title IHifiFlashUniswapV2
 /// @author Hifi
