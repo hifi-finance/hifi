@@ -51,7 +51,7 @@ jobs:
       - name: "Check out the repo"
         uses: "actions/checkout@v2"
 
-      - name: "Install Node.js"
+      - name: "Setup Node.js"
         uses: "actions/setup-node@v2"
         with:
           cache: "yarn"
@@ -109,7 +109,7 @@ jobs:
       - name: "Check out the repo"
         uses: "actions/checkout@v2"
 
-      - name: "Install Node.js"
+      - name: "Setup Node.js"
         uses: "actions/setup-node@v2"
         with:
           cache: "yarn"
@@ -167,7 +167,7 @@ jobs:
       - name: "Check out the repo"
         uses: "actions/checkout@v2"
 
-      - name: "Install Node.js"
+      - name: "Setup Node.js"
         uses: "actions/setup-node@v2"
         with:
           cache: "yarn"
@@ -225,7 +225,7 @@ jobs:
       - name: "Check out the repo"
         uses: "actions/checkout@v2"
 
-      - name: "Install Node.js"
+      - name: "Setup Node.js"
         uses: "actions/setup-node@v2"
         with:
           cache: "yarn"
@@ -246,11 +246,8 @@ jobs:
   upload-coverage-report:
     if: always()
     needs:
-      - ci-amm
       - ci-amm-cache
-      - ci-flash-swap
       - ci-flash-swap-cache
-      - ci-protocol
       - ci-protocol-cache
     runs-on: ubuntu-latest
     steps:
