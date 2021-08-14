@@ -39,6 +39,7 @@
   "scripts": {
     "build": "tsc --project ./tsconfig.json",
     "clean": "shx rm -rf ./dist ./tsconfig.tsbuildinfo",
+    "clean:node_modules": "shx rm -rf ./node_modules",
     "lint": "yarn lint:ts && yarn prettier:check",
     "lint:ts": "eslint --config ../../.eslintrc.yaml --ignore-path ../../.eslintignore --ext .js,.ts .",
     "prettier": "prettier --config ../../.prettierrc.js --ignore-path ../../.prettierignore --write \"**/*.{js,json,md,ts}\"",
