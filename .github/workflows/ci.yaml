@@ -58,7 +58,7 @@ jobs:
           node-version: "16"
 
       - name: "Install dependencies"
-        run: "yarn workspace @hifi/amm install --immutable"
+        run: "yarn install --immutable"
 
       - name: "Build packages"
         run: "yarn build"
@@ -87,7 +87,7 @@ jobs:
           path-to-lcov: "./packages/amm/coverage/lcov.info"
 
   # When the @hifi/amm package has not been modified, load the coverage report cache if it exists.
-  ci-amm-cache:
+  load-ci-amm-cache:
     needs:
       - "diff"
       - "ci-amm"
@@ -116,7 +116,7 @@ jobs:
           node-version: "16"
 
       - name: "Install dependencies"
-        run: "yarn workspace @hifi/flash-swap install --immutable"
+        run: "yarn install --immutable"
 
       - name: "Build packages"
         run: "yarn build"
@@ -145,7 +145,7 @@ jobs:
           path-to-lcov: "./packages/flash-swap/coverage/lcov.info"
 
   # When the @hifi/flash-swap package has not been modified, load the coverage report cache if it exists.
-  ci-flash-swap-cache:
+  load-ci-flash-swap-cache:
     needs:
       - "diff"
       - "ci-flash-swap"
@@ -174,7 +174,7 @@ jobs:
           node-version: "16"
 
       - name: "Install dependencies"
-        run: "yarn workspace @hifi/protocol install --immutable"
+        run: "yarn install --immutable"
 
       - name: "Build packages"
         run: "yarn build"
@@ -203,7 +203,7 @@ jobs:
           path-to-lcov: "./packages/protocol/coverage/lcov.info"
 
   # When the @hifi/protocol package has not been modified, load the coverage report cache if it exists.
-  ci-protocol-cache:
+  load-ci-protocol-cache:
     needs:
       - "diff"
       - "ci-protocol"
@@ -246,9 +246,9 @@ jobs:
   upload-coverage-report:
     if: always()
     needs:
-      - ci-amm-cache
-      - ci-flash-swap-cache
-      - ci-protocol-cache
+      - load-ci-amm-cache
+      - load-ci-flash-swap-cache
+      - load-ci-protocol-cache
     runs-on: ubuntu-latest
     steps:
       - name: Coveralls Finished
