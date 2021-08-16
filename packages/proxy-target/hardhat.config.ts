@@ -25,6 +25,12 @@ const config: HardhatUserConfig = {
         mnemonic,
       },
     },
+    localhost: {
+      accounts: {
+        mnemonic,
+      },
+      url: "http://localhost:8545",
+    },
     goerli: getChainConfig("goerli", infuraApiKey, mnemonic),
     "polygon-mainnet": getChainConfig("polygon-mainnet", infuraApiKey, mnemonic),
     rinkeby: getChainConfig("rinkeby", infuraApiKey, mnemonic),

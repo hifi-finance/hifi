@@ -30,6 +30,12 @@ const config: HardhatUserConfig = {
       },
       hardfork: process.env.CODE_COVERAGE ? "berlin" : "london", // https://github.com/sc-forks/solidity-coverage/issues/652
     },
+    localhost: {
+      accounts: {
+        mnemonic,
+      },
+      url: "http://localhost:8545",
+    },
     goerli: getChainConfig("goerli", infuraApiKey, mnemonic),
     "polygon-mainnet": getChainConfig("polygon-mainnet", infuraApiKey, mnemonic),
     rinkeby: getChainConfig("rinkeby", infuraApiKey, mnemonic),
