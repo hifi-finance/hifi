@@ -4,7 +4,7 @@ An implementation of zero-coupon bonds on the Ethereum blockchain. In-depth docu
 
 The built contract artifacts can be browsed via [unpkg.com](https://unpkg.com/browse/@hifi/protocol@latest/).
 
-## Developers
+## Usage
 
 The contracts are written in Solidity and the tests in TypeScript. If you want to contribute, familiarity with Hardhat,
 Ethers and Waffle is requisite.
