@@ -73,9 +73,6 @@ jobs:
       - name: "Lint the code"
         run: "yarn workspace @hifi/deployers lint"
 
-      - name: "Build the package"
-        run: "yarn workspace @hifi/deployers build"
-
   integration-helpers:
     if: ${{ needs.diff.outputs.helpers == 'true' }}
     runs-on: "ubuntu-latest"
@@ -94,3 +91,6 @@ jobs:
 
       - name: "Lint the code"
         run: "yarn workspace @hifi/helpers lint"
+
+      - name: "Build the package"
+        run: "yarn workspace @hifi/helpers build"

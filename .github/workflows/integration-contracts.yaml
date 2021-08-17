@@ -43,7 +43,7 @@ jobs:
               - "packages/proxy-target/**"
 
   # When the @hifi/amm package has been modified, run continuous integration.
-  integration-amm:
+  run-integration-amm:
     needs: "diff"
     if: ${{ needs.diff.outputs.amm == 'true' }}
     runs-on: "ubuntu-latest"
@@ -78,7 +78,7 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('./packages/amm/**/*') }}-coverage-lcov
           path: "./packages/amm/coverage/lcov.info"
 
-      - name: "Upload coverage report to Coveralls"
+      - name: "Prepare coverage report"
         uses: "coverallsapp/github-action@master"
         with:
           flag-name: "amm"
@@ -90,7 +90,7 @@ jobs:
   load-amm-cache:
     needs:
       - "diff"
-      - "integration-amm"
+      - "run-integration-amm"
     if: ${{ needs.diff.outputs.amm == 'false' }}
     runs-on: "ubuntu-latest"
     steps:
@@ -99,9 +99,16 @@ jobs:
         with:
           key: ${{ runner.os }}-${{ hashFiles('./packages/amm/**/*') }}-coverage-lcov
           path: "./packages/amm/coverage/lcov.info"
+      - name: "Prepare coverage report"
+        uses: "coverallsapp/github-action@master"
+        with:
+          flag-name: "amm"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel: true
+          path-to-lcov: "./packages/amm/coverage/lcov.info"
 
   # When the @hifi/flash-swap package has been modified, run continuous integration.
-  integration-flash-swap:
+  run-integration-flash-swap:
     needs: "diff"
     if: ${{ needs.diff.outputs.flash-swap == 'true' }}
     runs-on: "ubuntu-latest"
@@ -136,7 +143,7 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('./packages/flash-swap/**/*') }}-coverage-lcov
           path: "./packages/flash-swap/coverage/lcov.info"
 
-      - name: "Upload coverage report to Coveralls"
+      - name: "Prepare coverage report"
         uses: "coverallsapp/github-action@master"
         with:
           flag-name: "flash-swap"
@@ -148,7 +155,7 @@ jobs:
   load-flash-swap-cache:
     needs:
       - "diff"
-      - "integration-flash-swap"
+      - "run-integration-flash-swap"
     if: ${{ needs.diff.outputs.flash-swap == 'false' }}
     runs-on: "ubuntu-latest"
     steps:
@@ -157,9 +164,16 @@ jobs:
         with:
           key: ${{ runner.os }}-${{ hashFiles('./packages/flash-swap/**/*') }}-coverage-lcov
           path: "./packages/flash-swap/coverage/lcov.info"
+      - name: "Prepare coverage report"
+        uses: "coverallsapp/github-action@master"
+        with:
+          flag-name: "flash-swap"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel: true
+          path-to-lcov: "./packages/flash-swap/coverage/lcov.info"
 
   # When the @hifi/protocol package has been modified, run continuous integration.
-  integration-protocol:
+  run-protocol-integration:
     needs: "diff"
     if: ${{ needs.diff.outputs.protocol == 'true' }}
     runs-on: "ubuntu-latest"
@@ -194,7 +208,7 @@ jobs:
           key: ${{ runner.os }}-${{ hashFiles('./packages/protocol/**/*') }}-coverage-lcov
           path: "./packages/protocol/coverage/lcov.info"
 
-      - name: "Upload coverage report to Coveralls"
+      - name: "Prepare coverage report"
         uses: "coverallsapp/github-action@master"
         with:
           flag-name: "protocol"
@@ -206,7 +220,7 @@ jobs:
   load-protocol-cache:
     needs:
       - "diff"
-      - "integration-protocol"
+      - "run-protocol-integration"
     if: ${{ needs.diff.outputs.protocol == 'false' }}
     runs-on: "ubuntu-latest"
     steps:
@@ -215,9 +229,16 @@ jobs:
         with:
           key: ${{ runner.os }}-${{ hashFiles('./packages/protocol/**/*') }}-coverage-lcov
           path: "./packages/protocol/coverage/lcov.info"
+      - name: "Prepare coverage report"
+        uses: "coverallsapp/github-action@master"
+        with:
+          flag-name: "protocol"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          parallel: true
+          path-to-lcov: "./packages/protocol/coverage/lcov.info"
 
   # When the @hifi/proxy-target package has been modified, run continuous integration.
-  integration-proxy-target:
+  run-integration-proxy-target:
     needs: "diff"
     if: ${{ needs.diff.outputs.proxy-target == 'true' }}
     runs-on: "ubuntu-latest"
@@ -252,8 +273,8 @@ jobs:
       - load-protocol-cache
     runs-on: ubuntu-latest
     steps:
-      - name: Coveralls Finished
-        uses: coverallsapp/github-action@master
+      - name: "Coveralls Finished"
+        uses: "coverallsapp/github-action@master"
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           parallel-finished: true

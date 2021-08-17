@@ -1,0 +1,51 @@
+name: "Deploy Protocol"
+
+env:
+  COVERAGE_GIT_BRANCH: "main"
+  COVERAGE_SERVICE_NAME: "github-actions-ci"
+  ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+  INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
+  MNEMONIC: ${{ secrets.MNEMONIC }}
+
+on:
+  workflow_dispatch:
+    chain: ""
+    arguments:
+      balance_sheet: ""
+      h_token:
+        maturity: ""
+        name: ""
+        symbol: ""
+      hifi_pool:
+        name: ""
+        symbol: ""
+      underlying: ""
+
+jobs:
+  deploy:
+    if: ${{ github.event.inputs.chain != '' }}
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Check out the repo"
+        uses: "actions/checkout@v2"
+
+      - name: "Setup Node.js"
+        uses: "actions/setup-node@v2"
+        with:
+          cache: "yarn"
+          node-version: "16"
+
+      - name: "Install dependencies"
+        run: "yarn install --immutable"
+
+      - name: "Deploy protocol"
+        run: >-
+          yarn workspace @hifi/deployers hardhat
+          --network ${{ github.event.inputs.chain }} deploy
+          --balance-sheet ${{ github.event.inputs.balance_sheet }}
+          --h-token-maturity ${{ github.event.inputs.h_token.maturity }}
+          --h-token-name ${{ github.event.inputs.h_token.name }}
+          --h-token-symbol ${{ github.event.inputs.h_token.symbol }}
+          --hifi-pool-name ${{ github.event.inputs.hifi_pool.name }}
+          --hifi-pool-symbol ${{ github.event.inputs.hifi_pool.symbol }}
+          --underlying ${{ github.event.inputs.underlying }}
