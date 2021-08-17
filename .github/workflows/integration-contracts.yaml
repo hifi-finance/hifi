@@ -75,7 +75,7 @@ jobs:
       - name: "Cache coverage report"
         uses: "actions/cache@v2"
         with:
-          key: ${{ runner.os }}-${{ hashFiles('./packages/amm/**/*') }}-coverage-lcov
+          key: ${{ runner.os }}-${{ hashFiles('./packages/amm/**/*', '!node_modules') }}-coverage-lcov
           path: "./packages/amm/coverage/lcov.info"
 
       - name: "Prepare coverage report"
@@ -103,7 +103,7 @@ jobs:
       - name: "Load cache coverage report if it exists"
         uses: "actions/cache@v2"
         with:
-          key: ${{ runner.os }}-${{ hashFiles('./packages/amm/**/*') }}-coverage-lcov
+          key: ${{ runner.os }}-${{ hashFiles('./packages/amm/**/*', '!node_modules') }}-coverage-lcov
           path: "./packages/amm/coverage/lcov.info"
       - name: "Check lcov file exists"
         id: check-lcov-file
@@ -152,7 +152,7 @@ jobs:
       - name: "Cache coverage report"
         uses: "actions/cache@v2"
         with:
-          key: ${{ runner.os }}-${{ hashFiles('./packages/flash-swap/**/*') }}-coverage-lcov
+          key: ${{ runner.os }}-${{ hashFiles('./packages/flash-swap/**/*', '!node_modules') }}-coverage-lcov
           path: "./packages/flash-swap/coverage/lcov.info"
 
       - name: "Prepare coverage report"
@@ -180,7 +180,7 @@ jobs:
       - name: "Load cache coverage report if it exists"
         uses: "actions/cache@v2"
         with:
-          key: ${{ runner.os }}-${{ hashFiles('./packages/flash-swap/**/*') }}-coverage-lcov
+          key: ${{ runner.os }}-${{ hashFiles('./packages/flash-swap/**/*', '!node_modules') }}-coverage-lcov
           path: "./packages/flash-swap/coverage/lcov.info"
       - name: "Check lcov file exists"
         id: check-lcov-file
@@ -229,7 +229,7 @@ jobs:
       - name: "Cache coverage report"
         uses: "actions/cache@v2"
         with:
-          key: ${{ runner.os }}-${{ hashFiles('./packages/protocol/**/*') }}-coverage-lcov
+          key: ${{ runner.os }}-${{ hashFiles('./packages/protocol/**/*', '!node_modules') }}-coverage-lcov
           path: "./packages/protocol/coverage/lcov.info"
 
       - name: "Prepare coverage report"
@@ -258,7 +258,7 @@ jobs:
         id: "load-protocol-cache"
         uses: "actions/cache@v2"
         with:
-          key: ${{ runner.os }}-${{ hashFiles('./packages/protocol/**/*') }}-coverage-lcov
+          key: ${{ runner.os }}-${{ hashFiles('./packages/protocol/**/*', '!node_modules') }}-coverage-lcov
           path: "./packages/protocol/coverage/lcov.info"
       - name: "Check lcov file exists"
         id: check-lcov-file
