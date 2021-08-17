@@ -101,13 +101,17 @@ jobs:
       - name: "Check out the repo"
         uses: "actions/checkout@v2"
       - name: "Load cache coverage report if it exists"
-        id: "load-amm-cache"
         uses: "actions/cache@v2"
         with:
           key: ${{ runner.os }}-${{ hashFiles('./packages/amm/**/*') }}-coverage-lcov
           path: "./packages/amm/coverage/lcov.info"
+      - name: "Check lcov file exists"
+        id: check-lcov-file
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "./packages/amm/coverage/lcov.info"
       - name: "Prepare coverage report"
-        if: ${{ steps.load-amm-cache.outputs.cache-hit == 'true' }}
+        if: ${{ steps.check-lcov-file.outputs.files_exists == 'true' }}
         uses: "coverallsapp/github-action@master"
         with:
           flag-name: "amm"
@@ -174,13 +178,17 @@ jobs:
       - name: "Check out the repo"
         uses: "actions/checkout@v2"
       - name: "Load cache coverage report if it exists"
-        id: load-flash-swap-cache
         uses: "actions/cache@v2"
         with:
           key: ${{ runner.os }}-${{ hashFiles('./packages/flash-swap/**/*') }}-coverage-lcov
           path: "./packages/flash-swap/coverage/lcov.info"
+      - name: "Check lcov file exists"
+        id: check-lcov-file
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "./packages/flash-swap/coverage/lcov.info"
       - name: "Prepare coverage report"
-        if: ${{ steps.load-flash-swap-cache.outputs.cache-hit == 'true' }}
+        if: ${{ steps.check-lcov-file.outputs.files_exists == 'true' }}
         uses: "coverallsapp/github-action@master"
         with:
           flag-name: "flash-swap"
@@ -252,12 +260,17 @@ jobs:
         with:
           key: ${{ runner.os }}-${{ hashFiles('./packages/protocol/**/*') }}-coverage-lcov
           path: "./packages/protocol/coverage/lcov.info"
+      - name: "Check lcov file exists"
+        id: check-lcov-file
+        uses: andstor/file-existence-action@v1
+        with:
+          files: "./packages/protocol/coverage/lcov.info"
       - name: "Prepare coverage report"
-        if: ${{ steps.load-protocol-cache.outputs.cache-hit == 'true' }}
+        if: ${{ steps.check-lcov-file.outputs.files_exists == 'true' }}
         uses: "coverallsapp/github-action@master"
         with:
           flag-name: "protocol"
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          github-token: secrets.GITHUB_TOKEN
           parallel: true
           path-to-lcov: "./packages/protocol/coverage/lcov.info"
 
@@ -297,7 +310,16 @@ jobs:
       - load-protocol-cache
     runs-on: ubuntu-latest
     steps:
-      - name: "Coveralls Finished"
+      - name: "Check lcov files exist"
+        id: check-lcov-files
+        uses: andstor/file-existence-action@v1
+        with:
+          files: >-
+            ./packages/amm/coverage/lcov.info,
+            ./packages/flash-swap/coverage/lcov.info,
+            ./packages/protocol/coverage/lcov.info
+      - name: "Upload coverage reports to Coveralls"
+        if: ${{ steps.check-lcov-files.outputs.files_exists == 'true' }}
         uses: "coverallsapp/github-action@master"
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}

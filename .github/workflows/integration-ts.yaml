@@ -9,7 +9,6 @@ on:
       - "main"
 
 jobs:
-  # Identify what packages have been touched by the git commit.
   diff:
     runs-on: ubuntu-latest
     outputs:
