@@ -43,7 +43,7 @@ jobs:
               - "packages/proxy-target/**"
 
   # When the @hifi/amm package has been modified, run continuous integration.
-  run-integration-amm:
+  run-amm-integration:
     needs: "diff"
     if: ${{ needs.diff.outputs.amm == 'true' }}
     runs-on: "ubuntu-latest"
@@ -88,8 +88,14 @@ jobs:
 
   # When the @hifi/amm package has not been modified, load the coverage report cache if it exists.
   load-amm-cache:
-    needs: "diff"
-    if: ${{ needs.diff.outputs.amm == 'false' }}
+    needs:
+      - "diff"
+      - "run-amm-integration"
+    if: |
+      always() &&
+      (needs.diff.result == 'success' || needs.diff.result == 'skipped') &&
+      (needs.run-amm-integration.result == 'success' || needs.run-amm-integration.result == 'skipped') &&
+      needs.diff.outputs.amm == 'false'
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
@@ -110,7 +116,7 @@ jobs:
           path-to-lcov: "./packages/amm/coverage/lcov.info"
 
   # When the @hifi/flash-swap package has been modified, run continuous integration.
-  run-integration-flash-swap:
+  run-flash-swap-integration:
     needs: "diff"
     if: ${{ needs.diff.outputs.flash-swap == 'true' }}
     runs-on: "ubuntu-latest"
@@ -155,8 +161,14 @@ jobs:
 
   # When the @hifi/flash-swap package has not been modified, load the coverage report cache if it exists.
   load-flash-swap-cache:
-    needs: "diff"
-    if: ${{ needs.diff.outputs.flash-swap == 'false' }}
+    needs:
+      - "diff"
+      - "run-flash-swap-integration"
+    if: |
+      always() &&
+      (needs.diff.result == 'success' || needs.diff.result == 'skipped') &&
+      (needs.run-flash-swap-integration.result == 'success' || needs.run-flash-swap-integration.result == 'skipped') &&
+      needs.diff.outputs.flash-swap == 'false'
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
@@ -222,8 +234,14 @@ jobs:
 
   # When the @hifi/protocol package has not been modified, load the coverage report cache if it exists.
   load-protocol-cache:
-    needs: "diff"
-    if: ${{ needs.diff.outputs.protocol == 'false' }}
+    needs:
+      - "diff"
+      - "run-protocol-integration"
+    if: |
+      always() &&
+      (needs.diff.result == 'success' || needs.diff.result == 'skipped') &&
+      (needs.run-protocol-integration.result == 'success' || needs.run-protocol-integration.result == 'skipped') &&
+      needs.diff.outputs.protocol == 'false'
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
