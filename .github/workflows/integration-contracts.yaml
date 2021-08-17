@@ -301,13 +301,16 @@ jobs:
       - name: "Compile the contracts and generate TypeChain artifacts"
         run: "yarn workspace @hifi/proxy-target typechain"
 
-  # Upload all reports to Coveralls.
+  # Upload all reports to Coveralls if only one of the packages has been modified.
   upload-coverage-report:
-    if: always()
     needs:
+      - "diff"
       - "load-amm-cache"
       - "load-flash-swap-cache"
       - "load-protocol-cache"
+    if: |
+      always() &&
+      (needs.diff.outputs.amm== 'true' || needs.diff.outputs.flash-swap == 'true' || needs.diff.outputs.protocol == 'true')
     runs-on: "ubuntu-latest"
     steps:
       - name: "Upload coverage reports to Coveralls"
