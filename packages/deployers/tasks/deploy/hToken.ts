@@ -7,9 +7,9 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { TASK_DEPLOY_H_TOKEN } from "../constants";
 
 task(TASK_DEPLOY_H_TOKEN)
-  .addParam("name", "The ERC-20 name of the token")
-  .addParam("symbol", "The ERC-20 symbol of the token")
-  .addParam("maturity", "Unix timestamp in seconds for when the hToken matures")
+  .addParam("name", "The ERC-20 name of the hToken")
+  .addParam("symbol", "The ERC-20 symbol of the hToken")
+  .addParam("maturity", "Unix timestamp for when the hToken matures")
   .addParam("balanceSheet", "The address of the BalanceSheet contract")
   .addParam("underlying", "The address of the underlying ERC-20 contract")
   .setAction(async function (taskArgs: TaskArguments, { ethers }): Promise<string> {

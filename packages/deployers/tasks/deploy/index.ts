@@ -23,9 +23,9 @@ task(TASK_DEPLOY)
   .addParam("balanceSheet", "The address of the BalanceSheet contract")
   .addParam("hifiPoolName", "The ERC-20 name of the pool token")
   .addParam("hifiPoolSymbol", "The ERC-20 symbol of the pool token")
-  .addParam("hTokenMaturity", "Unix timestamp in seconds for when the hToken matures")
-  .addParam("hTokenName", "The ERC-20 name of the token")
-  .addParam("hTokenSymbol", "The ERC-20 symbol of the token")
+  .addParam("hTokenMaturity", "Unix timestamp for when the hToken matures")
+  .addParam("hTokenName", "The ERC-20 name of the hToken")
+  .addParam("hTokenSymbol", "The ERC-20 symbol of the hToken")
   .addParam("underlying", "The address of the underlying ERC-20 contract")
   .setAction(async function (taskArgs: TaskArguments, { run }) {
     const chainlinkOperator: string = await run(TASK_DEPLOY_CHAINLINK_OPERATOR);
