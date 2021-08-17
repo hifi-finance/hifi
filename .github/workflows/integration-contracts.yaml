@@ -88,18 +88,20 @@ jobs:
 
   # When the @hifi/amm package has not been modified, load the coverage report cache if it exists.
   load-amm-cache:
-    needs:
-      - "diff"
-      - "run-integration-amm"
+    needs: "diff"
     if: ${{ needs.diff.outputs.amm == 'false' }}
     runs-on: "ubuntu-latest"
     steps:
+      - name: "Check out the repo"
+        uses: "actions/checkout@v2"
       - name: "Load cache coverage report if it exists"
+        id: "load-amm-cache"
         uses: "actions/cache@v2"
         with:
           key: ${{ runner.os }}-${{ hashFiles('./packages/amm/**/*') }}-coverage-lcov
           path: "./packages/amm/coverage/lcov.info"
       - name: "Prepare coverage report"
+        if: ${{ steps.load-amm-cache.outputs.cache-hit == 'true' }}
         uses: "coverallsapp/github-action@master"
         with:
           flag-name: "amm"
@@ -153,18 +155,20 @@ jobs:
 
   # When the @hifi/flash-swap package has not been modified, load the coverage report cache if it exists.
   load-flash-swap-cache:
-    needs:
-      - "diff"
-      - "run-integration-flash-swap"
+    needs: "diff"
     if: ${{ needs.diff.outputs.flash-swap == 'false' }}
     runs-on: "ubuntu-latest"
     steps:
+      - name: "Check out the repo"
+        uses: "actions/checkout@v2"
       - name: "Load cache coverage report if it exists"
+        id: load-flash-swap-cache
         uses: "actions/cache@v2"
         with:
           key: ${{ runner.os }}-${{ hashFiles('./packages/flash-swap/**/*') }}-coverage-lcov
           path: "./packages/flash-swap/coverage/lcov.info"
       - name: "Prepare coverage report"
+        if: ${{ steps.load-flash-swap-cache.outputs.cache-hit == 'true' }}
         uses: "coverallsapp/github-action@master"
         with:
           flag-name: "flash-swap"
@@ -218,18 +222,20 @@ jobs:
 
   # When the @hifi/protocol package has not been modified, load the coverage report cache if it exists.
   load-protocol-cache:
-    needs:
-      - "diff"
-      - "run-protocol-integration"
+    needs: "diff"
     if: ${{ needs.diff.outputs.protocol == 'false' }}
     runs-on: "ubuntu-latest"
     steps:
+      - name: "Check out the repo"
+        uses: "actions/checkout@v2"
       - name: "Load cache coverage report if it exists"
+        id: "load-protocol-cache"
         uses: "actions/cache@v2"
         with:
           key: ${{ runner.os }}-${{ hashFiles('./packages/protocol/**/*') }}-coverage-lcov
           path: "./packages/protocol/coverage/lcov.info"
       - name: "Prepare coverage report"
+        if: ${{ steps.load-protocol-cache.outputs.cache-hit == 'true' }}
         uses: "coverallsapp/github-action@master"
         with:
           flag-name: "protocol"
