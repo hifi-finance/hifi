@@ -1,0 +1,9 @@
+export const TASK_DEPLOY_CHAINLINK_OPERATOR: string = "deploy:ChainlinkOperator";
+export const TASK_DEPLOY_HIFI_FLASH_UNISWAP_V2: string = "deploy:HifiFlashUniswapV2";
+export const TASK_DEPLOY_HIFI_POOL: string = "deploy:HifiPool";
+export const TASK_DEPLOY_HIFI_POOL_REGISTRY: string = "deploy:HifiPoolRegistry";
+export const TASK_DEPLOY_HIFI_PROXY_TARGET: string = "deploy:HifiProxyTarget";
+export const TASK_DEPLOY_H_TOKEN: string = "deploy:HToken";
+export const TASK_DEPLOY: string = "deploy";
+export const TASK_DEPLOY_SIMPLE_PRICE_FEED: string = "deploy:SimplePriceFeed";
+export const TASK_DEPLOY_STABLECOIN_PRICE_FEED: string = "deploy:StablecoinPriceFeed";

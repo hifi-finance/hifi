@@ -1,0 +1,53 @@
+{
+  "name": "@hifi/deployers",
+  "description": "Deployer scripts for the Hifi protocol",
+  "version": "1.0.0",
+  "author": {
+    "name": "Hifi",
+    "email": "contact@hifi.finance",
+    "url": "https://hifi.finance"
+  },
+  "dependencies": {
+    "@hifi/amm": "1.4.0",
+    "@hifi/flash-swap": "1.3.1",
+    "@hifi/protocol": "1.4.0",
+    "@hifi/proxy-target": "1.3.1"
+  },
+  "devDependencies": {
+    "@ethersproject/abi": "^5.4.0",
+    "@ethersproject/bignumber": "^5.4.1",
+    "@ethersproject/bytes": "^5.4.0",
+    "@ethersproject/contracts": "^5.4.1",
+    "@ethersproject/providers": "^5.4.3",
+    "@hifi/helpers": "workspace:*",
+    "@nomiclabs/hardhat-ethers": "^2.0.2",
+    "@types/node": "^16.6.1",
+    "@typescript-eslint/eslint-plugin": "^4.29.1",
+    "@typescript-eslint/parser": "^4.29.1",
+    "dotenv": "^10.0.0",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "ethers": "^5.4.4",
+    "fs-extra": "^10.0.0",
+    "hardhat": "^2.6.0",
+    "prettier": "^2.3.2",
+    "ts-node": "^10.2.0",
+    "typechain": "^5.1.2",
+    "typescript": "~4.3.5"
+  },
+  "keywords": [
+    "blockchain",
+    "ethereum",
+    "hardhat",
+    "hifi",
+    "smart-contracts"
+  ],
+  "license": "LGPL-3.0-or-later",
+  "private": true,
+  "scripts": {
+    "lint": "yarn lint:ts && yarn prettier:check",
+    "lint:ts": "eslint --config ../../.eslintrc.yaml --ignore-path ../../.eslintignore --ext .js,.ts .",
+    "prettier": "prettier --config ../../.prettierrc.js --ignore-path ../../.prettierignore --write \"**/*.{js,json,md,ts}\"",
+    "prettier:check": "prettier --check --config ../../.prettierrc.js --ignore-path ../../.prettierignore \"**/*.{js,json,md,ts}\""
+  }
+}
