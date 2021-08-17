@@ -305,21 +305,12 @@ jobs:
   upload-coverage-report:
     if: always()
     needs:
-      - load-amm-cache
-      - load-flash-swap-cache
-      - load-protocol-cache
-    runs-on: ubuntu-latest
+      - "load-amm-cache"
+      - "load-flash-swap-cache"
+      - "load-protocol-cache"
+    runs-on: "ubuntu-latest"
     steps:
-      - name: "Check lcov files exist"
-        id: check-lcov-files
-        uses: andstor/file-existence-action@v1
-        with:
-          files: >-
-            ./packages/amm/coverage/lcov.info,
-            ./packages/flash-swap/coverage/lcov.info,
-            ./packages/protocol/coverage/lcov.info
       - name: "Upload coverage reports to Coveralls"
-        if: ${{ steps.check-lcov-files.outputs.files_exists == 'true' }}
         uses: "coverallsapp/github-action@master"
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
