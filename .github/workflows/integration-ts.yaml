@@ -1,0 +1,96 @@
+name: "TypeScript Packages Integration"
+
+on:
+  pull_request:
+    branches:
+      - "main"
+  push:
+    branches:
+      - "main"
+
+jobs:
+  # Identify what packages have been touched by the git commit.
+  diff:
+    runs-on: ubuntu-latest
+    outputs:
+      constants: ${{ steps.diff.outputs.constants }}
+      deployers: ${{ steps.diff.outputs.deployers }}
+      helpers: ${{ steps.diff.outputs.helpers }}
+    steps:
+      - name: "Check out the repo"
+        uses: "actions/checkout@v2"
+      - name: "Diff the files"
+        uses: dorny/paths-filter@v2
+        id: diff
+        with:
+          base: "main"
+          filters: |
+            constants:
+              - "packages/constants/**"
+            deployers:
+              - "packages/deployers/**"
+            helpers:
+              - "packages/helpers/**"
+
+  integration-constants:
+    if: ${{ needs.diff.outputs.constants == 'true' }}
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Check out the repo"
+        uses: "actions/checkout@v2"
+
+      - name: "Install Node.js"
+        uses: "actions/setup-node@v2"
+        with:
+          cache: "yarn"
+          node-version: "16"
+
+      - name: "Install dependencies"
+        run: "yarn install --immutable"
+
+      - name: "Lint the code"
+        run: "yarn workspace @hifi/constants lint"
+
+      - name: "Build the package"
+        run: "yarn workspace @hifi/constants build"
+
+  integration-deployers:
+    if: ${{ needs.diff.outputs.deployers == 'true' }}
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Check out the repo"
+        uses: "actions/checkout@v2"
+
+      - name: "Install Node.js"
+        uses: "actions/setup-node@v2"
+        with:
+          cache: "yarn"
+          node-version: "16"
+
+      - name: "Install dependencies"
+        run: "yarn install --immutable"
+
+      - name: "Lint the code"
+        run: "yarn workspace @hifi/deployers lint"
+
+      - name: "Build the package"
+        run: "yarn workspace @hifi/deployers build"
+
+  integration-helpers:
+    if: ${{ needs.diff.outputs.helpers == 'true' }}
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Check out the repo"
+        uses: "actions/checkout@v2"
+
+      - name: "Install Node.js"
+        uses: "actions/setup-node@v2"
+        with:
+          cache: "yarn"
+          node-version: "16"
+
+      - name: "Install dependencies"
+        run: "yarn install --immutable"
+
+      - name: "Lint the code"
+        run: "yarn workspace @hifi/helpers lint"

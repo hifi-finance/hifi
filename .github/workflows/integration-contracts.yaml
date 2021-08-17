@@ -1,4 +1,4 @@
-name: "Continuous Integration"
+name: "Contracts Packages Integration"
 
 env:
   COVERAGE_GIT_BRANCH: "main"
@@ -43,7 +43,7 @@ jobs:
               - "packages/proxy-target/**"
 
   # When the @hifi/amm package has been modified, run continuous integration.
-  ci-amm:
+  integration-amm:
     needs: "diff"
     if: ${{ needs.diff.outputs.amm == 'true' }}
     runs-on: "ubuntu-latest"
@@ -87,10 +87,10 @@ jobs:
           path-to-lcov: "./packages/amm/coverage/lcov.info"
 
   # When the @hifi/amm package has not been modified, load the coverage report cache if it exists.
-  load-ci-amm-cache:
+  load-amm-cache:
     needs:
       - "diff"
-      - "ci-amm"
+      - "integration-amm"
     if: ${{ needs.diff.outputs.amm == 'false' }}
     runs-on: "ubuntu-latest"
     steps:
@@ -101,7 +101,7 @@ jobs:
           path: "./packages/amm/coverage/lcov.info"
 
   # When the @hifi/flash-swap package has been modified, run continuous integration.
-  ci-flash-swap:
+  integration-flash-swap:
     needs: "diff"
     if: ${{ needs.diff.outputs.flash-swap == 'true' }}
     runs-on: "ubuntu-latest"
@@ -145,10 +145,10 @@ jobs:
           path-to-lcov: "./packages/flash-swap/coverage/lcov.info"
 
   # When the @hifi/flash-swap package has not been modified, load the coverage report cache if it exists.
-  load-ci-flash-swap-cache:
+  load-flash-swap-cache:
     needs:
       - "diff"
-      - "ci-flash-swap"
+      - "integration-flash-swap"
     if: ${{ needs.diff.outputs.flash-swap == 'false' }}
     runs-on: "ubuntu-latest"
     steps:
@@ -159,7 +159,7 @@ jobs:
           path: "./packages/flash-swap/coverage/lcov.info"
 
   # When the @hifi/protocol package has been modified, run continuous integration.
-  ci-protocol:
+  integration-protocol:
     needs: "diff"
     if: ${{ needs.diff.outputs.protocol == 'true' }}
     runs-on: "ubuntu-latest"
@@ -203,10 +203,10 @@ jobs:
           path-to-lcov: "./packages/protocol/coverage/lcov.info"
 
   # When the @hifi/protocol package has not been modified, load the coverage report cache if it exists.
-  load-ci-protocol-cache:
+  load-protocol-cache:
     needs:
       - "diff"
-      - "ci-protocol"
+      - "integration-protocol"
     if: ${{ needs.diff.outputs.protocol == 'false' }}
     runs-on: "ubuntu-latest"
     steps:
@@ -217,7 +217,7 @@ jobs:
           path: "./packages/protocol/coverage/lcov.info"
 
   # When the @hifi/proxy-target package has been modified, run continuous integration.
-  ci-proxy-target:
+  integration-proxy-target:
     needs: "diff"
     if: ${{ needs.diff.outputs.proxy-target == 'true' }}
     runs-on: "ubuntu-latest"
@@ -243,12 +243,13 @@ jobs:
       - name: "Compile the contracts and generate TypeChain artifacts"
         run: "yarn workspace @hifi/proxy-target typechain"
 
+  # Upload all reports to Coveralls.
   upload-coverage-report:
     if: always()
     needs:
-      - load-ci-amm-cache
-      - load-ci-flash-swap-cache
-      - load-ci-protocol-cache
+      - load-amm-cache
+      - load-flash-swap-cache
+      - load-protocol-cache
     runs-on: ubuntu-latest
     steps:
       - name: Coveralls Finished
