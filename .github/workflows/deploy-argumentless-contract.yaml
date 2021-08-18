@@ -1,4 +1,4 @@
-name: "Deploy: ChainlinkOperator"
+name: "Deploy: Argumentless Contract"
 
 env:
   ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
@@ -10,6 +10,9 @@ on:
     inputs:
       chain:
         description: "Chain name in lowercase"
+        required: true
+      contract:
+        description: "Contract name in CamelCase"
         required: true
 
 jobs:
@@ -31,7 +34,7 @@ jobs:
       - name: "Build packages"
         run: "yarn build"
 
-      - name: "Deploy ChainlinkOperator"
+      - name: "Deploy ${{ github.events.inputs.contract }}"
         run: >-
           yarn workspace @hifi/deployers
-          hardhat --network ${{ github.event.inputs.chain }} deploy:ChainlinkOperator
+          hardhat --network ${{ github.event.inputs.chain }} deploy:${{ github.events.inputs.contract }}
