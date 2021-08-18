@@ -1,4 +1,4 @@
-name: "Deploy: StablecoinPriceFeed"
+name: "Deploy: HifiFlashUniswapV2"
 
 env:
   ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
@@ -8,18 +8,21 @@ env:
 on:
   workflow_dispatch:
     inputs:
+      balance_sheet:
+        description: "Address of the BalanceSheet contract"
+        required: true
       chain:
         description: "Chain name in lowercase"
         required: true
-      description:
-        description: "Description of the price feed, e.g. 'USDC/USD'"
+      pair0:
+        description: "The address of an Uniswap V2 pair contract"
         required: true
-      price:
-        description: "Immutable price of the stablecoin, with 8 decimals of precision"
-        required: true
+      pair1:
+        description: "The address of an Uniswap V2 pair contract"
+        required: false
 
 jobs:
-  deploy-stablecoin-price-feed:
+  deploy-hifi-flash-uniswap-v2:
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
@@ -37,9 +40,10 @@ jobs:
       - name: "Build packages"
         run: "yarn build"
 
-      - name: "Deploy StablecoinPriceFeed"
+      - name: "Deploy HifiFlashUniswapV2"
         run: >-
           yarn workspace @hifi/deployers hardhat
-          deploy:StablecoinPriceFeed --network "${{ github.event.inputs.chain }}"
-          --description "${{ github.event.inputs.description }}"
-          --price "${{ github.event.inputs.price }}"
+          deploy:HifiFlashUniswapV2 --network "${{ github.event.inputs.chain }}"
+          --balance-sheet "${{ github.event.inputs.balance_sheet }}"
+          --pair0 "${{ github.event.inputs.pair0 }}"
+          --pair0 "${{ github.event.inputs.pair1 }}"

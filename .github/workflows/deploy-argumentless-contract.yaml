@@ -36,5 +36,5 @@ jobs:
 
       - name: "Deploy Argumentless Contract"
         run: >-
-          yarn workspace @hifi/deployers
-          hardhat deploy:${{ github.event.inputs.contract }} --network ${{ github.event.inputs.chain }}
+          yarn workspace @hifi/deployers hardhat
+          deploy:${{ github.event.inputs.contract }} --network ${{ github.event.inputs.chain }}

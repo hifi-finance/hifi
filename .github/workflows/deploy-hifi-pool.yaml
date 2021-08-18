@@ -1,4 +1,4 @@
-name: "Deploy: StablecoinPriceFeed"
+name: "Deploy: HifiPool"
 
 env:
   ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
@@ -11,15 +11,18 @@ on:
       chain:
         description: "Chain name in lowercase"
         required: true
-      description:
-        description: "Description of the price feed, e.g. 'USDC/USD'"
+      h_token:
+        description: "Address of the hToken contract"
         required: true
-      price:
-        description: "Immutable price of the stablecoin, with 8 decimals of precision"
+      name:
+        description: "ERC-20 name of the pool"
+        required: true
+      symbol:
+        description: "ERC-20 symbol of the pool"
         required: true
 
 jobs:
-  deploy-stablecoin-price-feed:
+  deploy-hifi-pool:
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
@@ -37,9 +40,10 @@ jobs:
       - name: "Build packages"
         run: "yarn build"
 
-      - name: "Deploy StablecoinPriceFeed"
+      - name: "Deploy HifiPool"
         run: >-
           yarn workspace @hifi/deployers hardhat
-          deploy:StablecoinPriceFeed --network "${{ github.event.inputs.chain }}"
-          --description "${{ github.event.inputs.description }}"
-          --price "${{ github.event.inputs.price }}"
+          deploy:HifiPool --network "${{ github.event.inputs.chain }}"
+          --h-token "${{ github.event.inputs.h_token }}"
+          --name "${{ github.event.inputs.name }}"
+          --symbol "${{ github.event.inputs.symbol }}"

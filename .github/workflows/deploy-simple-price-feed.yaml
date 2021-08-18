@@ -1,4 +1,4 @@
-name: "Deploy: StablecoinPriceFeed"
+name: "Deploy: SimplePriceFeed"
 
 env:
   ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
@@ -12,14 +12,11 @@ on:
         description: "Chain name in lowercase"
         required: true
       description:
-        description: "Description of the price feed, e.g. 'USDC/USD'"
-        required: true
-      price:
-        description: "Immutable price of the stablecoin, with 8 decimals of precision"
+        description: "Description of the price feed, e.g. 'WBTC/USD'"
         required: true
 
 jobs:
-  deploy-stablecoin-price-feed:
+  deploy-simple-price-feed:
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
@@ -37,9 +34,8 @@ jobs:
       - name: "Build packages"
         run: "yarn build"
 
-      - name: "Deploy StablecoinPriceFeed"
+      - name: "Deploy SimplePriceFeed"
         run: >-
           yarn workspace @hifi/deployers hardhat
-          deploy:StablecoinPriceFeed --network "${{ github.event.inputs.chain }}"
+          deploy:SimplePriceFeed --network "${{ github.event.inputs.chain }}"
           --description "${{ github.event.inputs.description }}"
-          --price "${{ github.event.inputs.price }}"
