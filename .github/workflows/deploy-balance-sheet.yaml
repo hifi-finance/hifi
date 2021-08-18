@@ -1,0 +1,50 @@
+name: "Deploy: BalanceSheet"
+
+env:
+  ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+  INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
+  MNEMONIC: ${{ secrets.MNEMONIC }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      chain:
+        description: "Chain name in lowercase"
+        required: true
+      fintroller:
+        description: "Address of the Fintroller contract"
+        required: true
+      oracle:
+        description: "Address of the oracle contract"
+        required: true
+      ref:
+        description: "Git ref to checkout"
+        required: true
+
+jobs:
+  deploy-balance-sheet:
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Check out the repo"
+        uses: "actions/checkout@v2"
+        with:
+          ref: ${{ github.event.inputs.ref }}
+
+      - name: "Setup Node.js"
+        uses: "actions/setup-node@v2"
+        with:
+          cache: "yarn"
+          node-version: "16"
+
+      - name: "Install dependencies"
+        run: "yarn install --immutable"
+
+      - name: "Build packages"
+        run: "yarn build"
+
+      - name: "Deploy BalanceSheet"
+        run: >-
+          yarn workspace @hifi/protocol hardhat
+          deploy:BalanceSheet --network "${{ github.event.inputs.chain }}"
+          --fintroller "${{ github.event.inputs.fintroller }}"
+          --oracle "${{ github.event.inputs.oracle }}"
