@@ -55,7 +55,7 @@ jobs:
       - name: "Deploy protocol"
         run: >-
           yarn workspace @hifi/deployers hardhat
-          --network "${{ github.event.inputs.chain }}" deploy
+          deploy:protocol --network "${{ github.event.inputs.chain }}"
           --balance-sheet "${{ github.event.inputs.balance_sheet }}"
           --h-token-maturity "${{ github.event.inputs.h_token_maturity }}"
           --h-token-name "${{ github.event.inputs.h_token_name }}"

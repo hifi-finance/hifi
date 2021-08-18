@@ -1,4 +1,4 @@
-name: "Deploy: Argumentless Contract"
+name: "Deploy: StablecoinPriceFeed"
 
 env:
   ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
@@ -11,8 +11,11 @@ on:
       chain:
         description: "Chain name in lowercase"
         required: true
-      contract:
-        description: "Contract name in CamelCase"
+      description:
+        description: "Description of the price feed, e.g. 'USDC/USD'"
+        required: true
+      price:
+        description: "Immutable price of the stablecoin, with 8 decimals of precision"
         required: true
 
 jobs:
@@ -34,7 +37,9 @@ jobs:
       - name: "Build packages"
         run: "yarn build"
 
-      - name: "Deploy Argumentless Contract"
+      - name: "Deploy StablecoinPriceFeed"
         run: >-
-          yarn workspace @hifi/deployers
-          hardhat deploy:${{ github.event.inputs.contract }} --network ${{ github.event.inputs.chain }}
+          yarn workspace @hifi/deployers hardhat
+          deploy:StablecoinPriceFeed --network "${{ github.event.inputs.chain }}"
+          --description "${{ github.event.inputs.description }}"
+          --price "${{ github.event.inputs.price }}"
