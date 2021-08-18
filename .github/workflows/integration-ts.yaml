@@ -1,4 +1,4 @@
-name: "TypeScript Packages Integration"
+name: "Integration: TypeScript Packages"
 
 on:
   pull_request:

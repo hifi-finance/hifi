@@ -31,6 +31,7 @@
   },
   "scripts": {
     "build": "yarn workspaces foreach --topological-dev --verbose run build",
+    "build:contracts": "yarn workspaces foreach --topological-dev --verbose run build:contracts",
     "clean": "yarn workspaces foreach --parallel run clean",
     "clean:node_modules": "yarn workspaces foreach --parallel run clean:node_modules && shx rm -rf ./node_modules",
     "commit": "git-cz",

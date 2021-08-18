@@ -1,4 +1,4 @@
-name: "Contracts Packages Integration"
+name: "Integration: Contracts Packages"
 
 env:
   COVERAGE_GIT_BRANCH: "main"
