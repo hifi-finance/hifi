@@ -1,0 +1,37 @@
+name: "Deploy ChainlinkOperator"
+
+env:
+  ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+  INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
+  MNEMONIC: ${{ secrets.MNEMONIC }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      chain:
+        description: "Chain name in lowercase"
+        required: true
+
+jobs:
+  deploy-protocol:
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Check out the repo"
+        uses: "actions/checkout@v2"
+
+      - name: "Setup Node.js"
+        uses: "actions/setup-node@v2"
+        with:
+          cache: "yarn"
+          node-version: "16"
+
+      - name: "Install dependencies"
+        run: "yarn install --immutable"
+
+      - name: "Build packages"
+        run: "yarn build"
+
+      - name: "Deploy ChainlinkOperator"
+        run: >-
+          yarn workspace @hifi/deployers
+          hardhat --network ${{ github.event.inputs.chain }} deploy:ChainlinkOperator"

@@ -1,8 +1,6 @@
 name: "Deploy Protocol"
 
 env:
-  COVERAGE_GIT_BRANCH: "main"
-  COVERAGE_SERVICE_NAME: "github-actions-ci"
   ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
   INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
   MNEMONIC: ${{ secrets.MNEMONIC }}
@@ -14,7 +12,7 @@ on:
         description: "Address of the BalanceSheet contract"
         required: true
       chain:
-        description: "Ethereum chain name"
+        description: "Chain name in lowercase"
         required: true
       h_token_maturity:
         description: "Unix timestamp for when the hToken matures"
