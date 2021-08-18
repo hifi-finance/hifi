@@ -42,6 +42,9 @@ jobs:
       - name: "Build packages"
         run: "yarn build"
 
+      - name: "Compile the contracts and generate TypeChain bindings"
+        run: "yarn workspace @hifi/protocol typechain"
+
       - name: "Deploy BalanceSheet"
         run: >-
           yarn workspace @hifi/protocol hardhat
