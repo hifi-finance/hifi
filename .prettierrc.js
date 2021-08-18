@@ -13,5 +13,11 @@ module.exports = {
         tabWidth: 4,
       },
     },
+    {
+      files: "*.{yaml,yml}",
+      options: {
+        bracketSpacing: false,
+      },
+    },
   ],
 };

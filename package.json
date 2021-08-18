@@ -14,6 +14,8 @@
     "cz-conventional-changelog": "^3.3.0",
     "husky": "^7.0.1",
     "lint-staged": "^11.1.2",
+    "prettier": "^2.3.2",
+    "prettier-plugin-solidity": "^1.0.0-beta.17",
     "shx": "^0.3.3"
   },
   "keywords": [
@@ -40,8 +42,8 @@
     "lint": "yarn workspaces foreach --parallel run lint",
     "lint:ts": "yarn workspaces foreach --parallel run lint:ts",
     "postinstall": "husky install",
-    "prettier": "yarn workspaces foreach --parallel run prettier",
-    "prettier:check": "yarn workspaces foreach --parallel run prettier:check",
+    "prettier": "prettier --config ./.prettierrc.js --ignore-path ./.prettierignore --write \"**/*.{js,json,md,sol,ts,yaml,yml}\"",
+    "prettier:check": "prettier --check --config ./.prettierrc.js --ignore-path ./.prettierignore \"**/*.{js,json,md,sol,ts,yaml,yml}\"",
     "test": "yarn workspaces foreach --parallel run test",
     "typechain": "yarn workspaces foreach --parallel --verbose run typechain",
     "watch": "yarn workspaces foreach --interlaced --parallel --verbose run watch"
