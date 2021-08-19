@@ -11,6 +11,10 @@ on:
       chain:
         description: "Chain name in lowercase"
         required: true
+      confirmations:
+        default: "2"
+        description: "Number of block confirmations to wait before attempting verification"
+        required: false
       ref:
         default: "main"
         description: "Git ref to checkout"
@@ -43,7 +47,9 @@ jobs:
         id: "deploy"
         run: >-
           yarn workspace @hifi/deployers hardhat
-          deploy:ChainlinkOperator --network ${{ github.event.inputs.chain }}
+          deploy:contract:chainlink-operator --network "${{ github.event.inputs.chain }}"
+          --confirmations "${{ github.event.inputs.confirmations }}"
+          --set-output true
 
   verify:
     needs: "deploy"
@@ -72,5 +78,5 @@ jobs:
       - name: "Verify ChainlinkOperator"
         run: >-
           yarn workspace @hifi/protocol hardhat
-          verify ${{ needs.deploy.outputs.chainlink-operator }}
+          verify "${{ needs.deploy.outputs.chainlink-operator }}"
           --network "${{ github.event.inputs.chain }}"
