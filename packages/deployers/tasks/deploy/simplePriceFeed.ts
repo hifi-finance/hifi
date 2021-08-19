@@ -1,3 +1,4 @@
+import * as core from "@actions/core";
 import { SimplePriceFeed } from "@hifi/protocol/typechain/SimplePriceFeed";
 import { SimplePriceFeed__factory } from "@hifi/protocol/typechain/factories/SimplePriceFeed__factory";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
@@ -15,6 +16,7 @@ task(TASK_DEPLOY_SIMPLE_PRICE_FEED)
     const simplePriceFeed: SimplePriceFeed = <SimplePriceFeed>await simplePriceFeedFactory.deploy(taskArgs.description);
     await simplePriceFeed.deployed();
     if (taskArgs.printAddress) {
+      core.setOutput("simple-price-feed", simplePriceFeed.address);
       console.table([{ name: "SimplePriceFeed", address: simplePriceFeed.address }]);
     }
     return simplePriceFeed.address;

@@ -1,3 +1,4 @@
+import * as core from "@actions/core";
 import { task, types } from "hardhat/config";
 import { TaskArguments } from "hardhat/types";
 import { HifiPool__factory } from "@hifi/amm/typechain/factories/HifiPool__factory";
@@ -17,6 +18,7 @@ task(TASK_DEPLOY_HIFI_POOL)
     const hifiPool: HifiPool = <HifiPool>await hifiPoolFactory.deploy(taskArgs.name, taskArgs.symbol, taskArgs.hToken);
     await hifiPool.deployed();
     if (taskArgs.printAddress) {
+      core.setOutput("hifi-pool", hifiPool.address);
       console.table([{ name: "HifiPool", address: hifiPool.address }]);
     }
     return hifiPool.address;

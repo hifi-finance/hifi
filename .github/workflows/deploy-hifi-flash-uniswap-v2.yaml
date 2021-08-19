@@ -15,10 +15,10 @@ on:
         description: "Chain name in lowercase"
         required: true
       pair0:
-        description: "The address of an Uniswap V2 pair contract"
+        description: "Address of an Uniswap V2 pair contract"
         required: true
       pair1:
-        description: "The address of an Uniswap V2 pair contract"
+        description: "Address of an Uniswap V2 pair contract"
         required: false
 
 jobs:

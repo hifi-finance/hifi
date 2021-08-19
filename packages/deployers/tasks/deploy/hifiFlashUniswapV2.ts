@@ -1,3 +1,4 @@
+import * as core from "@actions/core";
 import { HifiFlashUniswapV2 } from "@hifi/flash-swap/typechain/HifiFlashUniswapV2";
 import { HifiFlashUniswapV2__factory } from "@hifi/flash-swap/typechain/factories/HifiFlashUniswapV2__factory";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
@@ -23,6 +24,7 @@ task(TASK_DEPLOY_HIFI_FLASH_UNISWAP_V2)
     );
     await hifiFlashUniswapV2.deployed();
     if (taskArgs.printAddress) {
+      core.setOutput("hifi-flash-uniswap-v2", hifiFlashUniswapV2.address);
       console.table([{ name: "HifiFlashUniswapV2", address: hifiFlashUniswapV2.address }]);
     }
     return hifiFlashUniswapV2.address;

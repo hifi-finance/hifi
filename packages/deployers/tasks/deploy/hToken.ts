@@ -1,3 +1,4 @@
+import * as core from "@actions/core";
 import { HToken } from "@hifi/protocol/typechain/HToken";
 import { HToken__factory } from "@hifi/protocol/typechain/factories/HToken__factory";
 import { task, types } from "hardhat/config";
@@ -27,6 +28,7 @@ task(TASK_DEPLOY_H_TOKEN)
     );
     await hToken.deployed();
     if (taskArgs.printAddress) {
+      core.setOutput("h-token", hToken.address);
       console.table([{ name: "HToken", address: hToken.address }]);
     }
     return hToken.address;

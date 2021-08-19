@@ -1,3 +1,4 @@
+import * as core from "@actions/core";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { HifiProxyTarget } from "@hifi/proxy-target/typechain/HifiProxyTarget";
 import { HifiProxyTarget__factory } from "@hifi/proxy-target/typechain/factories/HifiProxyTarget__factory";
@@ -13,6 +14,7 @@ task(TASK_DEPLOY_HIFI_PROXY_TARGET)
     const hifiProxyTarget: HifiProxyTarget = <HifiProxyTarget>await hifiProxyTargetFactory.deploy();
     await hifiProxyTarget.deployed();
     if (taskArgs.printAddress) {
+      core.setOutput("hifi-proxy-target", hifiProxyTarget.address);
       console.table([{ name: "HifiProxyTarget", address: hifiProxyTarget.address }]);
     }
     return hifiProxyTarget.address;

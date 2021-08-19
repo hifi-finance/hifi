@@ -1,3 +1,4 @@
+import * as core from "@actions/core";
 import { ChainlinkOperator } from "@hifi/protocol/typechain/ChainlinkOperator";
 import { ChainlinkOperator__factory } from "@hifi/protocol/typechain/factories/ChainlinkOperator__factory";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
@@ -13,6 +14,7 @@ task(TASK_DEPLOY_CHAINLINK_OPERATOR)
     const chainlinkOperator: ChainlinkOperator = <ChainlinkOperator>await chainlinkOperatorFactory.deploy();
     await chainlinkOperator.deployed();
     if (taskArgs.printAddress) {
+      core.setOutput("chainlink-operator", chainlinkOperator.address);
       console.table([{ name: "ChainlinkOperator", address: chainlinkOperator.address }]);
     }
     return chainlinkOperator.address;

@@ -1,4 +1,5 @@
-import { task } from "hardhat/config";
+import * as core from "@actions/core";
+import { task, types } from "hardhat/config";
 import { TaskArguments } from "hardhat/types";
 
 import {
@@ -18,6 +19,7 @@ task(TASK_DEPLOY)
   .addParam("hTokenName", "The ERC-20 name of the hToken")
   .addParam("hTokenSymbol", "The ERC-20 symbol of the hToken")
   .addParam("underlying", "The address of the underlying ERC-20 contract")
+  .addOptionalParam("printAddresses", "Whether to print the address in the console", true, types.boolean)
   .setAction(async function (taskArgs: TaskArguments, { run }) {
     const chainlinkOperator: string = await run(TASK_DEPLOY_CHAINLINK_OPERATOR, { printAddress: false });
     const hifiPoolRegistry: string = await run(TASK_DEPLOY_HIFI_POOL_REGISTRY, { printAddress: false });
@@ -39,26 +41,34 @@ task(TASK_DEPLOY)
       hToken,
     });
 
-    console.table([
-      {
-        name: "ChainlinkOperator",
-        address: chainlinkOperator,
-      },
-      {
-        name: "HifiPoolRegistry",
-        address: hifiPoolRegistry,
-      },
-      {
-        name: "HifiProxyTarget",
-        address: hifiProxyTarget,
-      },
-      {
-        name: "HToken",
-        address: hToken,
-      },
-      {
-        name: "HifiPool",
-        address: hifiPool,
-      },
-    ]);
+    if (taskArgs.printAddresses) {
+      core.setOutput("chainlink-operator", chainlinkOperator);
+      core.setOutput("hifi-pool-registry", hifiPoolRegistry);
+      core.setOutput("hifi-proxy-target", hifiProxyTarget);
+      core.setOutput("h-token", hToken);
+      core.setOutput("hifi-pool", hifiPool);
+
+      console.table([
+        {
+          name: "ChainlinkOperator",
+          address: chainlinkOperator,
+        },
+        {
+          name: "HifiPoolRegistry",
+          address: hifiPoolRegistry,
+        },
+        {
+          name: "HifiProxyTarget",
+          address: hifiProxyTarget,
+        },
+        {
+          name: "HToken",
+          address: hToken,
+        },
+        {
+          name: "HifiPool",
+          address: hifiPool,
+        },
+      ]);
+    }
   });

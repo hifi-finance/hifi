@@ -1,3 +1,4 @@
+import * as core from "@actions/core";
 import { StablecoinPriceFeed } from "@hifi/protocol/typechain/StablecoinPriceFeed";
 import { StablecoinPriceFeed__factory } from "@hifi/protocol/typechain/factories/StablecoinPriceFeed__factory";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
@@ -18,6 +19,7 @@ task(TASK_DEPLOY_STABLECOIN_PRICE_FEED)
     );
     await stablecoinPriceFeed.deployed();
     if (taskArgs.printAddress) {
+      core.setOutput("stablecoin-price-feed", stablecoinPriceFeed.address);
       console.table([{ name: "StablecoinPriceFeed", address: stablecoinPriceFeed.address }]);
     }
     return stablecoinPriceFeed.address;
