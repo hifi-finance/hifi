@@ -5,16 +5,20 @@ import { task, types } from "hardhat/config";
 import { TaskArguments } from "hardhat/types";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-import { TASK_DEPLOY_H_TOKEN } from "../constants";
+import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_H_TOKEN } from "../constants";
 
-task(TASK_DEPLOY_H_TOKEN)
-  .addParam("name", "The ERC-20 name of the hToken")
-  .addParam("symbol", "The ERC-20 symbol of the hToken")
+task(TASK_DEPLOY_CONTRACT_H_TOKEN)
+  // Contract arguments
+  .addParam("name", "ERC-20 name of the hToken")
+  .addParam("symbol", "ERC-20 symbol of the hToken")
   .addParam("maturity", "Unix timestamp for when the hToken matures")
-  .addParam("balanceSheet", "The address of the BalanceSheet contract")
-  .addParam("underlying", "The address of the underlying ERC-20 contract")
-  .addOptionalParam("printAddress", "Whether to print the address in the console", true, types.boolean)
-  .setAction(async function (taskArgs: TaskArguments, { ethers }): Promise<string> {
+  .addParam("balanceSheet", "Address of the BalanceSheet contract")
+  .addParam("underlying", "Address of the underlying ERC-20 contract")
+  // Developer settings
+  .addOptionalParam("confirmations", "How many block confirmations to wait for", 0, types.int)
+  .addOptionalParam("printAddress", "Print the address in the console", true, types.boolean)
+  .addOptionalParam("setOutput", "Set the contract address as an output in GitHub Actions", false, types.boolean)
+  .setAction(async function (taskArgs: TaskArguments, { ethers, run }): Promise<string> {
     const signers: SignerWithAddress[] = await ethers.getSigners();
     const hTokenFactory: HToken__factory = new HToken__factory(signers[0]);
     const hToken: HToken = <HToken>(
@@ -26,9 +30,13 @@ task(TASK_DEPLOY_H_TOKEN)
         taskArgs.underlying,
       )
     );
-    await hToken.deployed();
+
+    await run(SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, { contract: hToken, confirmations: taskArgs.confirmations });
+
+    if (taskArgs.setOutput) {
+      core.setOutput("hifi-token", hToken.address);
+    }
     if (taskArgs.printAddress) {
-      core.setOutput("h-token", hToken.address);
       console.table([{ name: "HToken", address: hToken.address }]);
     }
     return hToken.address;

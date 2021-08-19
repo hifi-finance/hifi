@@ -17,6 +17,7 @@
     "prb-math": "2.2.0"
   },
   "devDependencies": {
+    "@actions/core": "^1.4.0",
     "@codechecks/client": "^0.1.11",
     "@ethersproject/abi": "^5.4.0",
     "@ethersproject/abstract-signer": "^5.4.1",
