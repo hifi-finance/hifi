@@ -49,7 +49,7 @@ jobs:
           yarn workspace @hifi/deployers hardhat
           deploy:contract:chainlink-operator --network "${{ github.event.inputs.chain }}"
           --confirmations "${{ github.event.inputs.confirmations }}"
-          --set-output true
+          --set-output "true"
 
   verify:
     needs: "deploy"

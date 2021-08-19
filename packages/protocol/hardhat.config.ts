@@ -6,6 +6,7 @@ import "hardhat-gas-reporter";
 import "hardhat-packager";
 import "solidity-coverage";
 
+import "./tasks/shared";
 import "./tasks/clean";
 import "./tasks/deploy";
 
