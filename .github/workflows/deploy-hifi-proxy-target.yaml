@@ -1,4 +1,4 @@
-name: "Deploy: Fintroller"
+name: "Deploy: HifiProxyTarget"
 
 env:
   ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
@@ -16,11 +16,12 @@ on:
         description: "Number of block confirmations to wait before attempting verification"
         required: false
       ref:
+        default: "main"
         description: "Git ref to checkout"
-        required: true
+        required: false
 
 jobs:
-  deploy-fintroller:
+  deploy-and-verify:
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
@@ -40,17 +41,18 @@ jobs:
       - name: "Build packages"
         run: "yarn build"
 
-      - name: "Compile the contracts and generate TypeChain bindings"
-        run: "yarn workspace @hifi/protocol typechain"
-
-      - name: "Deploy Fintroller"
+      - name: "Deploy HifiProxyTarget"
+        id: "deploy"
         run: >-
-          yarn workspace @hifi/protocol hardhat
-          deploy:contract:fintroller --network "${{ github.event.inputs.chain }}"
+          yarn workspace @hifi/deployers hardhat
+          deploy:contract:hifi-proxy-target --network "${{ github.event.inputs.chain }}"
           --confirmations "${{ github.event.inputs.confirmations }}"
           --set-output true
 
-      - name: "Verify Fintroller"
+      - name: "Compile the contracts and generate TypeChain bindings"
+        run: "yarn workspace @hifi/proxy-target typechain"
+
+      - name: "Verify HifiProxyTarget"
         run: >-
-          yarn workspace @hifi/protocol hardhat
-          verify "${{ steps.deploy.outputs.fintroller-implementation }}" --network "${{ github.event.inputs.chain }}"
+          yarn workspace @hifi/proxy-target hardhat
+          verify "${{ steps.deploy.outputs.hifi-proxy-target }}" --network "${{ github.event.inputs.chain }}"

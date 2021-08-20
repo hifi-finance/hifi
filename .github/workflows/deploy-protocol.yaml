@@ -8,25 +8,29 @@ env:
 on:
   workflow_dispatch:
     inputs:
-      balance_sheet:
+      balance-sheet:
         description: "Address of the BalanceSheet contract"
         required: true
       chain:
         description: "Chain name in lowercase"
         required: true
-      h_token_maturity:
+      confirmations:
+        default: "2"
+        description: "Number of block confirmations to wait before attempting verification"
+        required: false
+      h-token-maturity:
         description: "Unix timestamp for when the hToken matures"
         required: true
-      h_token_name:
+      h-token-name:
         description: "ERC-20 name of the hToken"
         required: true
-      h_token_symbol:
+      h-token-symbol:
         description: "ERC-20 symbol of the hToken"
         required: true
-      hifi_pool_name:
+      hifi-pool-name:
         description: "ERC-20 name of the pool"
         required: true
-      hifi_pool_symbol:
+      hifi-pool-symbol:
         description: "ERC-20 symbol of the pool"
         required: true
       underlying:
@@ -34,7 +38,7 @@ on:
         required: true
 
 jobs:
-  deploy-protocol:
+  deploy-and-verify:
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
@@ -56,10 +60,12 @@ jobs:
         run: >-
           yarn workspace @hifi/deployers hardhat
           deploy:protocol --network "${{ github.event.inputs.chain }}"
-          --balance-sheet "${{ github.event.inputs.balance_sheet }}"
-          --h-token-maturity "${{ github.event.inputs.h_token_maturity }}"
-          --h-token-name "${{ github.event.inputs.h_token_name }}"
-          --h-token-symbol "${{ github.event.inputs.h_token_symbol }}"
-          --hifi-pool-name "${{ github.event.inputs.hifi_pool_name }}"
-          --hifi-pool-symbol "${{ github.event.inputs.hifi_pool_symbol }}"
+          --balance-sheet "${{ github.event.inputs.balance-sheet }}"
+          --h-token-maturity "${{ github.event.inputs.h-token-maturity }}"
+          --h-token-name "${{ github.event.inputs.h-token-name }}"
+          --h-token-symbol "${{ github.event.inputs.h-token-symbol }}"
+          --hifi-pool-name "${{ github.event.inputs.hifi-pool-name }}"
+          --hifi-pool-symbol "${{ github.event.inputs.hifi-pool-symbol }}"
           --underlying "${{ github.event.inputs.underlying }}"
+          --confirmations "${{ github.event.inputs.confirmations }}"
+          --set-output true

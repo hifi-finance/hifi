@@ -5,7 +5,10 @@ import { HifiPoolRegistry__factory } from "@hifi/amm/typechain/factories/HifiPoo
 import { HifiPoolRegistry } from "@hifi/amm/typechain/HifiPoolRegistry";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_HIFI_POOL_REGISTRY } from "../constants";
+import {
+  SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS,
+  TASK_DEPLOY_CONTRACT_HIFI_POOL_REGISTRY,
+} from "../../helpers/constants";
 
 task(TASK_DEPLOY_CONTRACT_HIFI_POOL_REGISTRY)
   .addOptionalParam("confirmations", "How many block confirmations to wait for", 0, types.int)

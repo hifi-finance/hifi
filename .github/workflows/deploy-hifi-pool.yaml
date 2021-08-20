@@ -11,7 +11,11 @@ on:
       chain:
         description: "Chain name in lowercase"
         required: true
-      h_token:
+      confirmations:
+        default: "2"
+        description: "Number of block confirmations to wait before attempting verification"
+        required: false
+      h-token:
         description: "Address of the hToken contract"
         required: true
       name:
@@ -22,7 +26,7 @@ on:
         required: true
 
 jobs:
-  deploy-hifi-pool:
+  deploy-and-verify:
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
@@ -41,9 +45,21 @@ jobs:
         run: "yarn build"
 
       - name: "Deploy HifiPool"
+        id: "deploy"
         run: >-
           yarn workspace @hifi/deployers hardhat
           deploy:HifiPool --network "${{ github.event.inputs.chain }}"
-          --h-token "${{ github.event.inputs.h_token }}"
+          --h-token "${{ github.event.inputs.h-token }}"
           --name "${{ github.event.inputs.name }}"
           --symbol "${{ github.event.inputs.symbol }}"
+
+      - name: "Compile the contracts and generate TypeChain bindings"
+        run: "yarn workspace @hifi/amm typechain"
+
+      - name: "Verify HifiPool"
+        run: >-
+          yarn workspace @hifi/amm hardhat
+          verify "${{ steps.deploy.outputs.hifi-pool }}" --network "${{ github.event.inputs.chain }}"
+          "${{ github.event.inputs.h-token }}"
+          "${{ github.event.inputs.name }}"
+          "${{ github.event.inputs.symbol }}"

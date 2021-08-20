@@ -5,7 +5,7 @@ import { HifiPool__factory } from "@hifi/amm/typechain/factories/HifiPool__facto
 import { HifiPool } from "@hifi/amm/typechain/HifiPool";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_HIFI_POOL } from "../constants";
+import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_HIFI_POOL } from "../../helpers/constants";
 
 task(TASK_DEPLOY_CONTRACT_HIFI_POOL)
   // Contract arguments

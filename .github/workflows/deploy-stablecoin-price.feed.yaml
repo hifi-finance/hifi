@@ -11,6 +11,10 @@ on:
       chain:
         description: "Chain name in lowercase"
         required: true
+      confirmations:
+        default: "2"
+        description: "Number of block confirmations to wait before attempting verification"
+        required: false
       description:
         description: "Description of the price feed, e.g. 'USDC/USD'"
         required: true
@@ -19,7 +23,7 @@ on:
         required: true
 
 jobs:
-  deploy-stablecoin-price-feed:
+  deploy-and-verify:
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
@@ -41,5 +45,17 @@ jobs:
         run: >-
           yarn workspace @hifi/deployers hardhat
           deploy:StablecoinPriceFeed --network "${{ github.event.inputs.chain }}"
+          --description "${{ github.event.inputs.description }}"
+          --price "${{ github.event.inputs.price }}"
+          --confirmations "${{ github.event.inputs.confirmations }}"
+          --set-output true
+
+      - name: "Compile the contracts and generate TypeChain bindings"
+        run: "yarn workspace @hifi/protocol typechain"
+
+      - name: "Verify StablecoinPriceFeed"
+        run: >-
+          yarn workspace @hifi/protocol hardhat
+          verify "${{ steps.deploy.outputs.stablecoin-price-feed }}" --network "${{ github.event.inputs.chain }}"
           --description "${{ github.event.inputs.description }}"
           --price "${{ github.event.inputs.price }}"

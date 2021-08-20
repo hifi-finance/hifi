@@ -4,7 +4,10 @@ import { ChainlinkOperator__factory } from "@hifi/protocol/typechain/factories/C
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
 import { TaskArguments } from "hardhat/types";
-import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_CHAINLINK_OPERATOR } from "../constants";
+import {
+  SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS,
+  TASK_DEPLOY_CONTRACT_CHAINLINK_OPERATOR,
+} from "../../helpers/constants";
 
 task(TASK_DEPLOY_CONTRACT_CHAINLINK_OPERATOR)
   .addOptionalParam("confirmations", "How many block confirmations to wait for", 0, types.int)

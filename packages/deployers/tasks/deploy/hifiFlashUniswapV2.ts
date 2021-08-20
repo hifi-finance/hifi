@@ -5,7 +5,10 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
 import { TaskArguments } from "hardhat/types";
 
-import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_HIFI_FLASH_UNISWAP_V2 } from "../constants";
+import {
+  SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS,
+  TASK_DEPLOY_CONTRACT_HIFI_FLASH_UNISWAP_V2,
+} from "../../helpers/constants";
 
 task(TASK_DEPLOY_CONTRACT_HIFI_FLASH_UNISWAP_V2)
   // Contract arguments

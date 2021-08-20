@@ -5,7 +5,7 @@ import { task, types } from "hardhat/config";
 import { TaskArguments } from "hardhat/types";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_H_TOKEN } from "../constants";
+import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_H_TOKEN } from "../../helpers/constants";
 
 task(TASK_DEPLOY_CONTRACT_H_TOKEN)
   // Contract arguments

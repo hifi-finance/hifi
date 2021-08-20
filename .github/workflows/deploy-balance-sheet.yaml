@@ -11,6 +11,10 @@ on:
       chain:
         description: "Chain name in lowercase"
         required: true
+      confirmations:
+        default: "2"
+        description: "Number of block confirmations to wait before attempting verification"
+        required: false
       fintroller:
         description: "Address of the Fintroller contract"
         required: true
@@ -22,7 +26,7 @@ on:
         required: true
 
 jobs:
-  deploy-balance-sheet:
+  deploy-and-verify:
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
@@ -48,6 +52,13 @@ jobs:
       - name: "Deploy BalanceSheet"
         run: >-
           yarn workspace @hifi/protocol hardhat
-          deploy:BalanceSheet --network "${{ github.event.inputs.chain }}"
+          deploy:contract:balance-sheet --network "${{ github.event.inputs.chain }}"
           --fintroller "${{ github.event.inputs.fintroller }}"
           --oracle "${{ github.event.inputs.oracle }}"
+          --confirmations "${{ github.event.inputs.confirmations }}"
+          --set-output true
+
+      - name: "Verify BalanceSheet"
+        run: >-
+          yarn workspace @hifi/protocol hardhat
+          verify "${{ steps.deploy.outputs.balance-sheet-implementation }}" --network "${{ github.event.inputs.chain }}"

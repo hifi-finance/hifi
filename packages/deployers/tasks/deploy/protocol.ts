@@ -9,7 +9,7 @@ import {
   TASK_DEPLOY_CONTRACT_HIFI_PROXY_TARGET,
   TASK_DEPLOY_CONTRACT_H_TOKEN,
   TASK_DEPLOY_PROTOCOL,
-} from "../constants";
+} from "../../helpers/constants";
 
 task(TASK_DEPLOY_PROTOCOL)
   // Contract arguments

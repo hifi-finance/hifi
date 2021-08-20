@@ -14,6 +14,10 @@ on:
       chain:
         description: "Chain name in lowercase"
         required: true
+      confirmations:
+        default: "2"
+        description: "Number of block confirmations to wait before attempting verification"
+        required: false
       maturity:
         description: "Unix timestamp for when the hToken matures"
         required: true
@@ -28,7 +32,7 @@ on:
         required: true
 
 jobs:
-  deploy-h-token:
+  deploy-and-verify:
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
@@ -47,6 +51,7 @@ jobs:
         run: "yarn build"
 
       - name: "Deploy HToken"
+        id: "deploy"
         run: >-
           yarn workspace @hifi/deployers hardhat
           deploy:HToken --network "${{ github.event.inputs.chain }}"
@@ -55,3 +60,18 @@ jobs:
           --name "${{ github.event.inputs.name }}"
           --symbol "${{ github.event.inputs.symbol }}"
           --underlying "${{ github.event.inputs.underlying }}"
+          --confirmations "${{ github.event.inputs.confirmations }}"
+          --set-output true
+
+      - name: "Compile the contracts and generate TypeChain bindings"
+        run: "yarn workspace @hifi/protocol typechain"
+
+      - name: "Verify HToken"
+        run: >-
+          yarn workspace @hifi/protocol hardhat
+          verify "${{ steps.deploy.outputs.h-token }}" --network "${{ github.event.inputs.chain }}"
+          "${{ github.event.inputs.balance_sheet }}"
+          "${{ github.event.inputs.maturity }}"
+          "${{ github.event.inputs.name }}"
+          "${{ github.event.inputs.symbol }}"
+          "${{ github.event.inputs.underlying }}"
