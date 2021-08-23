@@ -50,6 +50,7 @@ jobs:
         run: "yarn workspace @hifi/protocol typechain"
 
       - name: "Deploy BalanceSheet"
+        id: deploy
         run: >-
           yarn workspace @hifi/protocol hardhat
           deploy:contract:balance-sheet --network "${{ github.event.inputs.chain }}"

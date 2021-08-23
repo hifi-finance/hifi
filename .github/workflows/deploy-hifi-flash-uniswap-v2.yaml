@@ -52,7 +52,7 @@ jobs:
           --set-output true
 
       - name: "Prepare contract arguments for verification"
-        uses: DamianReeves/write-file-action
+        uses: "DamianReeves/write-file-action@master"
         with:
           contents: |
             module.exports = [
