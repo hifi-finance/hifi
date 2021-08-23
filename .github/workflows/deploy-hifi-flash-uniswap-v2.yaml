@@ -62,8 +62,11 @@ jobs:
           path: "./arguments.js"
           write-mode: "overwrite"
 
+      - name: "Compile the contracts and generate TypeChain bindings"
+        run: "yarn workspace @hifi/flash-swap typechain"
+
       - name: "Verify HifiFlashUniswapV2"
         run: >-
-          yarn workspace @hifi/protocol hardhat
+          yarn workspace @hifi/flash-swap hardhat
           verify --constructor-args "./arguments.js" "${{ steps.deploy.outputs.hifi-flash-uniswap-v2 }}"
           --network "${{ github.event.inputs.chain }}"
