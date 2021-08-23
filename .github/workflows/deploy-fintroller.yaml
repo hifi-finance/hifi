@@ -20,7 +20,7 @@ on:
         required: true
 
 jobs:
-  deploy-fintroller:
+  deploy-and-verify:
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
@@ -44,6 +44,7 @@ jobs:
         run: "yarn workspace @hifi/protocol typechain"
 
       - name: "Deploy Fintroller"
+        id: deploy
         run: >-
           yarn workspace @hifi/protocol hardhat
           deploy:contract:fintroller --network "${{ github.event.inputs.chain }}"

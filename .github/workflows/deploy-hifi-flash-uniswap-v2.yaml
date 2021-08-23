@@ -14,15 +14,16 @@ on:
       chain:
         description: "Chain name in lowercase"
         required: true
+      confirmations:
+        default: "2"
+        description: "Number of block confirmations to wait before attempting verification"
+        required: false
       pair0:
         description: "Address of an Uniswap V2 pair contract"
         required: true
-      pair1:
-        description: "Address of an Uniswap V2 pair contract"
-        required: false
 
 jobs:
-  deploy-hifi-flash-uniswap-v2:
+  deploy-and-verify:
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
@@ -41,9 +42,28 @@ jobs:
         run: "yarn build"
 
       - name: "Deploy HifiFlashUniswapV2"
+        id: deploy
         run: >-
           yarn workspace @hifi/deployers hardhat
           deploy:HifiFlashUniswapV2 --network "${{ github.event.inputs.chain }}"
           --balance-sheet "${{ github.event.inputs.balance_sheet }}"
           --pair0 "${{ github.event.inputs.pair0 }}"
-          --pair0 "${{ github.event.inputs.pair1 }}"
+          --confirmations "${{ github.event.inputs.confirmations }}"
+          --set-output true
+
+      - name: "Prepare contract arguments for verification"
+        uses: DamianReeves/write-file-action
+        with:
+          contents: |
+            module.exports = [
+              "${{ github.event.inputs.balance_sheet }}",
+              ["${{ github.event.inputs.pair0 }}"]
+            ];
+          path: "./arguments.js"
+          write-mode: "overwrite"
+
+      - name: "Verify HifiFlashUniswapV2"
+        run: >-
+          yarn workspace @hifi/protocol hardhat
+          verify --constructor-args "./arguments.js" "${{ steps.deploy.outputs.hifi-flash-uniswap-v2 }}"
+          --network "${{ github.event.inputs.chain }}"
