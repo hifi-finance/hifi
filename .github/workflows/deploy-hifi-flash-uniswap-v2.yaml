@@ -51,22 +51,21 @@ jobs:
           --confirmations "${{ github.event.inputs.confirmations }}"
           --set-output true
 
+      - name: "Compile the contracts and generate TypeChain bindings"
+        run: "yarn workspace @hifi/flash-swap typechain"
+
       - name: "Prepare contract arguments for verification"
-        uses: "DamianReeves/write-file-action@master"
-        with:
-          contents: |
+        uses: "finnp/create-file-action@1.0.0"
+        env:
+          FILE_NAME: "${{ github.workspace }}/arguments.js"
+          FILE_DATA: >-
             module.exports = [
               "${{ github.event.inputs.balance_sheet }}",
               ["${{ github.event.inputs.pair0 }}"]
             ];
-          path: "./arguments.js"
-          write-mode: "overwrite"
-
-      - name: "Compile the contracts and generate TypeChain bindings"
-        run: "yarn workspace @hifi/flash-swap typechain"
 
       - name: "Verify HifiFlashUniswapV2"
         run: >-
           yarn workspace @hifi/flash-swap hardhat
-          verify --constructor-args "./arguments.js" "${{ steps.deploy.outputs.hifi-flash-uniswap-v2 }}"
+          verify --constructor-args "${{ github.workspace }}/arguments.js" "${{ steps.deploy.outputs.hifi-flash-uniswap-v2 }}"
           --network "${{ github.event.inputs.chain }}"
