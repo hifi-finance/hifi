@@ -45,7 +45,7 @@ jobs:
         id: deploy
         run: >-
           yarn workspace @hifi/deployers hardhat
-          deploy:HifiFlashUniswapV2 --network "${{ github.event.inputs.chain }}"
+          deploy:contract:hifi-flash-uniswap-v2 --network "${{ github.event.inputs.chain }}"
           --balance-sheet "${{ github.event.inputs.balance_sheet }}"
           --pair0 "${{ github.event.inputs.pair0 }}"
           --confirmations "${{ github.event.inputs.confirmations }}"

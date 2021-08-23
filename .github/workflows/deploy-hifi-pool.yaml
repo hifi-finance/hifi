@@ -48,7 +48,7 @@ jobs:
         id: "deploy"
         run: >-
           yarn workspace @hifi/deployers hardhat
-          deploy:HifiPool --network "${{ github.event.inputs.chain }}"
+          deploy:contract:hifi-pool --network "${{ github.event.inputs.chain }}"
           --h-token "${{ github.event.inputs.h-token }}"
           --name "${{ github.event.inputs.name }}"
           --symbol "${{ github.event.inputs.symbol }}"

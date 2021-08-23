@@ -44,7 +44,7 @@ jobs:
       - name: "Deploy StablecoinPriceFeed"
         run: >-
           yarn workspace @hifi/deployers hardhat
-          deploy:StablecoinPriceFeed --network "${{ github.event.inputs.chain }}"
+          deploy:contract:stablecoin-price-feed --network "${{ github.event.inputs.chain }}"
           --description "${{ github.event.inputs.description }}"
           --price "${{ github.event.inputs.price }}"
           --confirmations "${{ github.event.inputs.confirmations }}"
