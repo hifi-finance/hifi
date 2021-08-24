@@ -1,0 +1,105 @@
+name: "Deploy: HToken and HifiPool"
+
+env:
+  ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+  INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
+  MNEMONIC: ${{ secrets.MNEMONIC }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      balance-sheet:
+        description: "Address of the BalanceSheet contract"
+        required: true
+      chain:
+        description: "Chain name in lowercase"
+        required: true
+      confirmations:
+        default: "2"
+        description: "Number of block confirmations to wait before attempting verification"
+        required: false
+      h-token-maturity:
+        description: "Unix timestamp for when the hToken matures"
+        required: true
+      h-token-name:
+        description: "ERC-20 name of the hToken"
+        required: true
+      h-token-symbol:
+        description: "ERC-20 symbol of the hToken"
+        required: true
+      hifi-pool-name:
+        description: "ERC-20 name of the pool"
+        required: true
+      hifi-pool-symbol:
+        description: "ERC-20 symbol of the pool"
+        required: true
+      underlying:
+        description: "Address of the underlying ERC-20 contract"
+        required: true
+
+jobs:
+  deploy-and-verify:
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Check out the repo"
+        uses: "actions/checkout@v2"
+
+      - name: "Setup Node.js"
+        uses: "actions/setup-node@v2"
+        with:
+          cache: "yarn"
+          node-version: "16"
+
+      - name: "Install dependencies"
+        run: "yarn install --immutable"
+
+      - name: "Build packages"
+        run: "yarn build"
+
+      - name: "Deploy HToken"
+        id: "deploy-h-token"
+        run: >-
+          yarn workspace @hifi/deployers hardhat
+          deploy:contract:h-token --network "${{ github.event.inputs.chain }}"
+          --balance-sheet "${{ github.event.inputs.balance-sheet }}"
+          --maturity "${{ github.event.inputs.h-token-maturity }}"
+          --name "${{ github.event.inputs.h-token-name }}"
+          --symbol "${{ github.event.inputs.h-token-symbol }}"
+          --underlying "${{ github.event.inputs.underlying }}"
+          --confirmations "${{ github.event.inputs.confirmations }}"
+          --set-output true
+
+      - name: "Compile the HToken contracts and generate TypeChain bindings"
+        run: "yarn workspace @hifi/protocol typechain"
+
+      - name: "Verify HToken"
+        run: >-
+          yarn workspace @hifi/protocol hardhat
+          verify "${{ steps.deploy-h-token.outputs.h-token }}" --network "${{ github.event.inputs.chain }}"
+          "${{ github.event.inputs.balance-sheet }}"
+          "${{ github.event.inputs.h-token-maturity }}"
+          "${{ github.event.inputs.h-token-name }}"
+          "${{ github.event.inputs.h-token-symbol }}"
+          "${{ github.event.inputs.underlying }}"
+
+      - name: "Deploy HifiPool"
+        id: "deploy-hifi-pool"
+        run: >-
+          yarn workspace @hifi/deployers hardhat
+          deploy:contract:hifi-pool --network "${{ github.event.inputs.chain }}"
+          --h-token "${{ steps.deploy-h-token.outputs.h-token }}"
+          --name "${{ github.event.inputs.hifi-pool-name }}"
+          --symbol "${{ github.event.inputs.hifi-pool-symbol }}"
+          --confirmations "${{ github.event.inputs.confirmations }}"
+          --set-output true
+
+      - name: "Compile the HifiPool contracts and generate TypeChain bindings"
+        run: "yarn workspace @hifi/amm typechain"
+
+      - name: "Verify HifiPool"
+        run: >-
+          yarn workspace @hifi/amm hardhat
+          verify "${{ steps.deploy-hifi-pool.outputs.hifi-pool }}" --network "${{ github.event.inputs.chain }}"
+          "${{ steps.deploy-h-token.outputs.h-token }}"
+          "${{ github.event.inputs.hifi-pool-name }}"
+          "${{ github.event.inputs.hifi-pool-symbol }}"

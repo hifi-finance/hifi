@@ -8,7 +8,7 @@ env:
 on:
   workflow_dispatch:
     inputs:
-      balance_sheet:
+      balance-sheet:
         description: "Address of the BalanceSheet contract"
         required: true
       chain:
@@ -46,7 +46,7 @@ jobs:
         run: >-
           yarn workspace @hifi/deployers hardhat
           deploy:contract:hifi-flash-uniswap-v2 --network "${{ github.event.inputs.chain }}"
-          --balance-sheet "${{ github.event.inputs.balance_sheet }}"
+          --balance-sheet "${{ github.event.inputs.balance-sheet }}"
           --pair0 "${{ github.event.inputs.pair0 }}"
           --confirmations "${{ github.event.inputs.confirmations }}"
           --set-output true
@@ -60,7 +60,7 @@ jobs:
           FILE_NAME: "${{ github.workspace }}/arguments.js"
           FILE_DATA: >-
             module.exports = [
-              "${{ github.event.inputs.balance_sheet }}",
+              "${{ github.event.inputs.balance-sheet }}",
               ["${{ github.event.inputs.pair0 }}"]
             ];
 

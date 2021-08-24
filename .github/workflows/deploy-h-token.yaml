@@ -8,7 +8,7 @@ env:
 on:
   workflow_dispatch:
     inputs:
-      balance_sheet:
+      balance-sheet:
         description: "Address of the BalanceSheet contract"
         required: true
       chain:
@@ -55,7 +55,7 @@ jobs:
         run: >-
           yarn workspace @hifi/deployers hardhat
           deploy:HToken --network "${{ github.event.inputs.chain }}"
-          --balance-sheet "${{ github.event.inputs.balance_sheet }}"
+          --balance-sheet "${{ github.event.inputs.balance-sheet }}"
           --maturity "${{ github.event.inputs.maturity }}"
           --name "${{ github.event.inputs.name }}"
           --symbol "${{ github.event.inputs.symbol }}"
@@ -70,7 +70,7 @@ jobs:
         run: >-
           yarn workspace @hifi/protocol hardhat
           verify "${{ steps.deploy.outputs.h-token }}" --network "${{ github.event.inputs.chain }}"
-          "${{ github.event.inputs.balance_sheet }}"
+          "${{ github.event.inputs.balance-sheet }}"
           "${{ github.event.inputs.maturity }}"
           "${{ github.event.inputs.name }}"
           "${{ github.event.inputs.symbol }}"
