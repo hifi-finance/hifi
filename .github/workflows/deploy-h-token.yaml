@@ -54,7 +54,7 @@ jobs:
         id: "deploy"
         run: >-
           yarn workspace @hifi/deployers hardhat
-          deploy:HToken --network "${{ github.event.inputs.chain }}"
+          deploy:contract:h-token --network "${{ github.event.inputs.chain }}"
           --balance-sheet "${{ github.event.inputs.balance-sheet }}"
           --maturity "${{ github.event.inputs.maturity }}"
           --name "${{ github.event.inputs.name }}"
@@ -70,8 +70,8 @@ jobs:
         run: >-
           yarn workspace @hifi/protocol hardhat
           verify "${{ steps.deploy.outputs.h-token }}" --network "${{ github.event.inputs.chain }}"
-          "${{ github.event.inputs.balance-sheet }}"
-          "${{ github.event.inputs.maturity }}"
           "${{ github.event.inputs.name }}"
           "${{ github.event.inputs.symbol }}"
+          "${{ github.event.inputs.maturity }}"
+          "${{ github.event.inputs.balance-sheet }}"
           "${{ github.event.inputs.underlying }}"
