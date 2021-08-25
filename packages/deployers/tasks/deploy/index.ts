@@ -4,6 +4,5 @@ import "./hifiPoolRegistry";
 import "./hifiProxyTarget";
 import "./hToken";
 import "./hifiPool";
-import "./protocol";
 import "./simplePriceFeed";
 import "./stablecoinPriceFeed";
