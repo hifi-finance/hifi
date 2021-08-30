@@ -361,19 +361,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         // Transfer the hTokens to the DSProxy.
         hToken.transferFrom(msg.sender, address(this), hTokenAmount);
 
-        // Redeem the hTokens.
-        IErc20 underlying = hToken.underlying();
-        uint256 preUnderlyingBalance = underlying.balanceOf(address(this));
-        hToken.redeem(hTokenAmount);
-
-        unchecked {
-            // Calculate how much underlying was redeemed.
-            uint256 postUnderlyigBalance = underlying.balanceOf(address(this));
-            uint256 underlyingAmount = postUnderlyigBalance - preUnderlyingBalance;
-
-            // The underlying is now in the DSProxy, so we relay it to the end user.
-            underlying.safeTransfer(msg.sender, underlyingAmount);
-        }
+        redeemHTokenInternal(hToken, hTokenAmount);
     }
 
     /// @inheritdoc IHifiProxyTarget
@@ -413,8 +401,14 @@ contract HifiProxyTarget is IHifiProxyTarget {
         // Allow the HifiPool contract to spend hTokens from the DSProxy.
         approveSpender(hifiPool.hToken(), address(hifiPool), hTokenReturned);
 
-        // Sell the hTokens and relay the underlying to the end user.
-        hifiPool.sellHToken(msg.sender, hTokenReturned);
+        // Sell the hTokens if pool is expired else redeem htokens and relay the underlying to the end user.
+        uint256 maturity = hifiPool.maturity();
+
+        if (block.timestamp >= maturity) {
+            redeemHTokenInternal(hifiPool.hToken(), hTokenReturned);
+        } else {
+            hifiPool.sellHToken(msg.sender, hTokenReturned);
+        }
     }
 
     /// @inheritdoc IHifiProxyTarget
@@ -659,6 +653,23 @@ contract HifiProxyTarget is IHifiProxyTarget {
 
         // Deposit the collateral into the BalanceSheet contract.
         balanceSheet.depositCollateral(collateral, depositAmount);
+    }
+
+    /// @dev See the documentation for the public functions that call this internal function.
+    function redeemHTokenInternal(IHToken hToken, uint256 hTokenAmount) internal {
+        // Redeem the hTokens.
+        IErc20 underlying = hToken.underlying();
+        uint256 preUnderlyingBalance = underlying.balanceOf(address(this));
+        hToken.redeem(hTokenAmount);
+
+        unchecked {
+            // Calculate how much underlying was redeemed.
+            uint256 postUnderlyigBalance = underlying.balanceOf(address(this));
+            uint256 underlyingAmount = postUnderlyigBalance - preUnderlyingBalance;
+
+            // The underlying is now in the DSProxy, so we relay it to the end user.
+            underlying.safeTransfer(msg.sender, underlyingAmount);
+        }
     }
 
     /// @dev See the documentation for the public functions that call this internal function.
