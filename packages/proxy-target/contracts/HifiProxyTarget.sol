@@ -405,7 +405,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         hifiPool.underlying().safeTransfer(msg.sender, underlyingReturned);
 
         // Ensure that we are within the user's slippage tolerance.
-        uint256 underlyingOut = hifiPool.getQuoteForSellingUnderlying(hTokenReturned);
+        uint256 underlyingOut = hifiPool.getQuoteForSellingHToken(hTokenReturned);
         if (underlyingOut < minUnderlyingOut) {
             revert HifiProxyTarget__TradeSlippageTooHigh(minUnderlyingOut, underlyingOut);
         }
