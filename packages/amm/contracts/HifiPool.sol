@@ -94,6 +94,48 @@ contract HifiPool is
     /// PUBLIC CONSTANT FUNCTIONS ///
 
     /// @inheritdoc IHifiPool
+    function getBurnParams(uint256 poolTokensBurned)
+        public
+        view
+        override
+        returns (uint256 underlyingReturned, uint256 hTokenReturned)
+    {
+        uint256 supply = totalSupply;
+        uint256 normalizedUnderlyingReserves = getNormalizedUnderlyingReserves();
+
+        // This block avoids the stack too deep error.
+        {
+            // Use the actual reserves rather than the virtual reserves.
+            uint256 hTokenReserves = hToken.balanceOf(address(this));
+            uint256 normalizedUnderlyingReturned = (poolTokensBurned * normalizedUnderlyingReserves) / supply;
+            underlyingReturned = denormalize(normalizedUnderlyingReturned);
+            hTokenReturned = (poolTokensBurned * hTokenReserves) / supply;
+        }
+    }
+
+    /// @inheritdoc IHifiPool
+    function getMintParams(uint256 underlyingOffered)
+        public
+        view
+        override
+        returns (uint256 hTokenRequired, uint256 poolTokensMinted)
+    {
+        // Our native precision is 18 decimals so the underlying amount needs to be normalized.
+        uint256 normalizedUnderlyingOffered = normalize(underlyingOffered);
+        uint256 supply = totalSupply;
+
+        // When there are no LP tokens in existence, only underlying needs to be provided.
+        if (supply == 0) {
+            return (0, normalizedUnderlyingOffered);
+        }
+
+        // We need to use the actual reserves rather than the virtual reserves here.
+        uint256 hTokenReserves = hToken.balanceOf(address(this));
+        poolTokensMinted = (supply * normalizedUnderlyingOffered) / getNormalizedUnderlyingReserves();
+        hTokenRequired = (hTokenReserves * poolTokensMinted) / supply;
+    }
+
+    /// @inheritdoc IHifiPool
     function getQuoteForBuyingHToken(uint256 hTokenOut)
         public
         view
@@ -139,28 +181,6 @@ contract HifiPool is
                 maturity - block.timestamp
             );
         }
-    }
-
-    /// @inheritdoc IHifiPool
-    function getMintParams(uint256 underlyingOffered)
-        public
-        view
-        override
-        returns (uint256 hTokenRequired, uint256 poolTokensMinted)
-    {
-        // Our native precision is 18 decimals so the underlying amount needs to be normalized.
-        uint256 normalizedUnderlyingOffered = normalize(underlyingOffered);
-        uint256 supply = totalSupply;
-
-        // When there are no LP tokens in existence, only underlying needs to be provided.
-        if (supply == 0) {
-            return (0, normalizedUnderlyingOffered);
-        }
-
-        // We need to use the actual reserves rather than the virtual reserves here.
-        uint256 hTokenReserves = hToken.balanceOf(address(this));
-        poolTokensMinted = (supply * normalizedUnderlyingOffered) / getNormalizedUnderlyingReserves();
-        hTokenRequired = (hTokenReserves * poolTokensMinted) / supply;
     }
 
     /// @inheritdoc IHifiPool
@@ -240,17 +260,7 @@ contract HifiPool is
             revert HifiPool__BurnZero();
         }
 
-        uint256 supply = totalSupply;
-        uint256 normalizedUnderlyingReserves = getNormalizedUnderlyingReserves();
-
-        // This block avoids the stack too deep error.
-        {
-            // Use the actual reserves rather than the virtual reserves.
-            uint256 hTokenReserves = hToken.balanceOf(address(this));
-            uint256 normalizedUnderlyingReturned = (poolTokensBurned * normalizedUnderlyingReserves) / supply;
-            underlyingReturned = denormalize(normalizedUnderlyingReturned);
-            hTokenReturned = (poolTokensBurned * hTokenReserves) / supply;
-        }
+        (underlyingReturned, hTokenReturned) = getBurnParams(poolTokensBurned);
 
         // Effects
         burnInternal(msg.sender, poolTokensBurned);
