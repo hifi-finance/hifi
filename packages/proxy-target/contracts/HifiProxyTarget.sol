@@ -378,6 +378,21 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
+    function removeLiquidityAndRedeemHToken(IHifiPool hifiPool, uint256 poolTokensBurned) external override {
+        // Transfer the LP tokens to the DSProxy.
+        hifiPool.transferFrom(msg.sender, address(this), poolTokensBurned);
+
+        // Burn the LP tokens.
+        (uint256 underlyingReturned, uint256 hTokenReturned) = hifiPool.burn(poolTokensBurned);
+
+        // The underlying is now in the DSProxy, so we relay it to the end user.
+        hifiPool.underlying().safeTransfer(msg.sender, underlyingReturned);
+
+        // redeem htokens and relay the underlying to the end user.
+        redeemHTokenInternal(hifiPool.hToken(), hTokenReturned);
+    }
+
+    /// @inheritdoc IHifiProxyTarget
     function removeLiquidityAndSellHToken(
         IHifiPool hifiPool,
         uint256 poolTokensBurned,
@@ -401,14 +416,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         // Allow the HifiPool contract to spend hTokens from the DSProxy.
         approveSpender(hifiPool.hToken(), address(hifiPool), hTokenReturned);
 
-        // Sell the hTokens if pool is expired else redeem htokens and relay the underlying to the end user.
-        uint256 maturity = hifiPool.maturity();
-
-        if (block.timestamp >= maturity) {
-            redeemHTokenInternal(hifiPool.hToken(), hTokenReturned);
-        } else {
-            hifiPool.sellHToken(msg.sender, hTokenReturned);
-        }
+        hifiPool.sellHToken(msg.sender, hTokenReturned);
     }
 
     /// @inheritdoc IHifiProxyTarget
