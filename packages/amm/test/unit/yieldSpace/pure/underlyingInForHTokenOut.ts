@@ -9,7 +9,7 @@ import { PRBMathUD60x18Errors, YieldSpaceErrors } from "../../../shared/errors";
 import { getYieldExponent, inForOut } from "../../../shared/mirrors";
 
 export default function shouldBehaveLikeUnderlyingInForHTokenOut(): void {
-  context("when too much hToken out", function () {
+  context("when too many hTokens out", function () {
     const testSets = [
       [hUSDC("0"), fp("0"), hUSDC("1"), bn("0")],
       [hUSDC("120"), fp("100"), hUSDC("120.000000000000000001"), bn(getYearsInSeconds(1))],
@@ -35,7 +35,7 @@ export default function shouldBehaveLikeUnderlyingInForHTokenOut(): void {
     );
   });
 
-  context("when not too much hToken out", function () {
+  context("when not too many hTokens out", function () {
     context("when the call to fromUint reverts", function () {
       const testSets = [
         [hUSDC(MAX_UD60x18), fp("100"), hUSDC("10"), getYearsInSeconds(1)],

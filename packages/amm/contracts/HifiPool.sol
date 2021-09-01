@@ -94,7 +94,7 @@ contract HifiPool is
     /// PUBLIC CONSTANT FUNCTIONS ///
 
     /// @inheritdoc IHifiPool
-    function getBurnParams(uint256 poolTokensBurned)
+    function getBurnOutputs(uint256 poolTokensBurned)
         public
         view
         override
@@ -103,24 +103,21 @@ contract HifiPool is
         uint256 supply = totalSupply;
         uint256 normalizedUnderlyingReserves = getNormalizedUnderlyingReserves();
 
-        // This block avoids the stack too deep error.
-        {
-            // Use the actual reserves rather than the virtual reserves.
-            uint256 hTokenReserves = hToken.balanceOf(address(this));
-            uint256 normalizedUnderlyingReturned = (poolTokensBurned * normalizedUnderlyingReserves) / supply;
-            underlyingReturned = denormalize(normalizedUnderlyingReturned);
-            hTokenReturned = (poolTokensBurned * hTokenReserves) / supply;
-        }
+        // Use the actual reserves rather than the virtual reserves.
+        uint256 hTokenReserves = hToken.balanceOf(address(this));
+        uint256 normalizedUnderlyingReturned = (poolTokensBurned * normalizedUnderlyingReserves) / supply;
+        underlyingReturned = denormalize(normalizedUnderlyingReturned);
+        hTokenReturned = (poolTokensBurned * hTokenReserves) / supply;
     }
 
     /// @inheritdoc IHifiPool
-    function getMintParams(uint256 underlyingOffered)
+    function getMintInputs(uint256 underlyingOffered)
         public
         view
         override
         returns (uint256 hTokenRequired, uint256 poolTokensMinted)
     {
-        // Our native precision is 18 decimals so the underlying amount needs to be normalized.
+        // Our precision is 18 decimals so the underlying amount needs to be normalized.
         uint256 normalizedUnderlyingOffered = normalize(underlyingOffered);
         uint256 supply = totalSupply;
 
@@ -260,7 +257,7 @@ contract HifiPool is
             revert HifiPool__BurnZero();
         }
 
-        (underlyingReturned, hTokenReturned) = getBurnParams(poolTokensBurned);
+        (underlyingReturned, hTokenReturned) = getBurnOutputs(poolTokensBurned);
 
         // Effects
         burnInternal(msg.sender, poolTokensBurned);
@@ -314,7 +311,7 @@ contract HifiPool is
         }
 
         uint256 hTokenRequired;
-        (hTokenRequired, poolTokensMinted) = getMintParams(underlyingOffered);
+        (hTokenRequired, poolTokensMinted) = getMintInputs(underlyingOffered);
 
         // Effects
         mintInternal(msg.sender, poolTokensMinted);

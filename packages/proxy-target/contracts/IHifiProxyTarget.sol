@@ -242,7 +242,7 @@ interface IHifiProxyTarget {
         uint256 minUnderlyingOut
     ) external;
 
-    /// @notice Redeems hTokens in exchange for underlying tokens.
+    /// @notice Redeems hTokens for underlying tokens.
     ///
     /// @dev Requirements:
     /// - The caller must have allowed the DSProxy to spend `hTokenAmount` hTokens.
@@ -260,7 +260,7 @@ interface IHifiProxyTarget {
     /// @param poolTokensBurned The amount of LP tokens to burn.
     function removeLiquidity(IHifiPool hifiPool, uint256 poolTokensBurned) external;
 
-    /// @notice Removes liquidity from the AMM, and redeem all hTokens for underlying.
+    /// @notice Removes liquidity from the AMM, and redeems all hTokens for underlying.
     ///
     /// @dev Requirements:
     /// - The caller must have allowed the DSProxy to spend `poolTokensBurned` tokens.
