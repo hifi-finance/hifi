@@ -64,6 +64,15 @@ interface IHifiPool is IErc20Permit {
         view
         returns (uint256 hTokenRequired, uint256 poolTokensMinted);
 
+    /// @notice Quotes how much underlying and hToken will be returned for offered pool tokens.
+    /// @param poolTokensBurned Amount of liquidity tokens to burn.
+    /// @return underlyingReturned The amount of reserve underlying retrieved.
+    /// @return hTokenReturned The amount of reserve hToken retrieved.
+    function getBurnParams(uint256 poolTokensBurned)
+        external
+        view
+        returns (uint256 underlyingReturned, uint256 hTokenReturned);
+
     /// @notice Quotes how much underlying would be obtained by selling `hTokenIn` hToken.
     ///
     /// @dev Requirements:
@@ -71,6 +80,7 @@ interface IHifiPool is IErc20Permit {
     ///
     /// @param hTokenIn Hypothetical amount of hToken to sell.
     /// @return underlyingOut Hypothetical amount of underlying that would be obtained.
+
     function getQuoteForSellingHToken(uint256 hTokenIn) external view returns (uint256 underlyingOut);
 
     /// @notice Quotes how much hToken would be obtained by selling `underlyingIn` underlying.
