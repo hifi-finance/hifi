@@ -390,6 +390,32 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
+    function removeLiquidityAndRedeemHToken(IHifiPool hifiPool, uint256 poolTokensBurned) external override {
+        // Transfer the LP tokens to the DSProxy.
+        hifiPool.transferFrom(msg.sender, address(this), poolTokensBurned);
+
+        // Burn the LP tokens.
+        (uint256 underlyingReturned, uint256 hTokenReturned) = hifiPool.burn(poolTokensBurned);
+
+        // Redeem the hTokens.
+        IHToken hToken = hifiPool.hToken();
+        IErc20 underlying = hToken.underlying();
+        uint256 preUnderlyingBalance = underlying.balanceOf(address(this));
+        hToken.redeem(hTokenReturned);
+
+        // Calculate how much underlying was redeemed.
+        uint256 underlyingAmount;
+        unchecked {
+            uint256 postUnderlyigBalance = underlying.balanceOf(address(this));
+            underlyingAmount = postUnderlyigBalance - preUnderlyingBalance;
+        }
+
+        // Relay all the underlying it to the end user.
+        uint256 totalUnderlyingAmount = underlyingReturned + underlyingAmount;
+        underlying.safeTransfer(msg.sender, totalUnderlyingAmount);
+    }
+
+    /// @inheritdoc IHifiProxyTarget
     function removeLiquidityAndSellHToken(
         IHifiPool hifiPool,
         uint256 poolTokensBurned,
@@ -405,7 +431,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         hifiPool.underlying().safeTransfer(msg.sender, underlyingReturned);
 
         // Ensure that we are within the user's slippage tolerance.
-        uint256 underlyingOut = hifiPool.getQuoteForSellingUnderlying(hTokenReturned);
+        uint256 underlyingOut = hifiPool.getQuoteForSellingHToken(hTokenReturned);
         if (underlyingOut < minUnderlyingOut) {
             revert HifiProxyTarget__TradeSlippageTooHigh(minUnderlyingOut, underlyingOut);
         }

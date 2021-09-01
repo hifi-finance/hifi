@@ -260,6 +260,15 @@ interface IHifiProxyTarget {
     /// @param poolTokensBurned The amount of LP tokens to burn.
     function removeLiquidity(IHifiPool hifiPool, uint256 poolTokensBurned) external;
 
+    /// @notice Removes liquidity from the AMM, and redeem all hTokens for underlying.
+    ///
+    /// @dev Requirements:
+    /// - The caller must have allowed the DSProxy to spend `poolTokensBurned` tokens.
+    ///
+    /// @param hifiPool The address of the HifiPool contract.
+    /// @param poolTokensBurned The amount of LP tokens to burn.
+    function removeLiquidityAndRedeemHToken(IHifiPool hifiPool, uint256 poolTokensBurned) external;
+
     /// @notice Removes liquidity from the AMM, and sells all hTokens for underlying.
     ///
     /// @dev Requirements:
