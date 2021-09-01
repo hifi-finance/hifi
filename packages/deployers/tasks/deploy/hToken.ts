@@ -34,7 +34,7 @@ task(TASK_DEPLOY_CONTRACT_H_TOKEN)
     await run(SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, { contract: hToken, confirmations: taskArgs.confirmations });
 
     if (taskArgs.setOutput) {
-      core.setOutput("hifi-token", hToken.address);
+      core.setOutput("h-token", hToken.address);
     }
     if (taskArgs.printAddress) {
       console.table([{ name: "HToken", address: hToken.address }]);
