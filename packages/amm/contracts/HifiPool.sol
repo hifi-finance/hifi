@@ -304,7 +304,7 @@ contract HifiPool is
     }
 
     /// @inheritdoc IHifiPool
-    function mint(uint256 underlyingOffered) external override returns (uint256 poolTokensMinted) {
+    function mint(uint256 underlyingOffered) external override isBeforeMaturity returns (uint256 poolTokensMinted) {
         // Checks: avoid the zero edge case.
         if (underlyingOffered == 0) {
             revert HifiPool__MintZero();
