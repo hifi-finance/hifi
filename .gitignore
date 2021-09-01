@@ -1,8 +1,8 @@
 # directories
-.yarn/
+.yarn/*
 !.yarn/patches
-!.yarn/releases
 !.yarn/plugins
+!.yarn/releases
 !.yarn/sdks
 !.yarn/versions
 **/.coverage_artifacts
