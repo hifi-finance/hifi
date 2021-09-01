@@ -275,13 +275,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@cto.af/textdecoder@npm:^0.0.0":
-  version: 0.0.0
-  resolution: "@cto.af/textdecoder@npm:0.0.0"
-  checksum: c6bd8045a8e4fae82d997af199e852ba3efc128c1ea52c52463100402178577fee889cacf590fe09872eb72bec2abf799da4e67a8bc0960d41281b722b0adf7d
-  languageName: node
-  linkType: hard
-
 "@ensdomains/ens@npm:^0.4.4":
   version: 0.4.5
   resolution: "@ensdomains/ens@npm:0.4.5"
@@ -1215,8 +1208,8 @@ __metadata:
     "@nomiclabs/hardhat-ethers": ^2.0.2
     "@nomiclabs/hardhat-etherscan": ^2.1.6
     "@nomiclabs/hardhat-waffle": ^2.0.1
-    "@openzeppelin/contracts-upgradeable": 4.2.0
-    "@openzeppelin/hardhat-upgrades": ^1.9.0
+    "@openzeppelin/contracts-upgradeable": 4.3.1
+    "@openzeppelin/hardhat-upgrades": ^1.10.0
     "@paulrberg/contracts": 3.4.0
     "@typechain/ethers-v5": ^7.0.1
     "@typechain/hardhat": ^2.3.0
@@ -1426,33 +1419,40 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openzeppelin/hardhat-upgrades@npm:^1.9.0":
-  version: 1.9.0
-  resolution: "@openzeppelin/hardhat-upgrades@npm:1.9.0"
+"@openzeppelin/contracts-upgradeable@npm:4.3.1":
+  version: 4.3.1
+  resolution: "@openzeppelin/contracts-upgradeable@npm:4.3.1"
+  checksum: b28fd7cbd40b640add82d8b1b01d26994d9c3e411c3d2e7858f3865aefc2a4ab9e3aec8fe1db22f61e959b740fb40202dc28d0d9252534aad2271239cce3629a
+  languageName: node
+  linkType: hard
+
+"@openzeppelin/hardhat-upgrades@npm:^1.10.0":
+  version: 1.10.0
+  resolution: "@openzeppelin/hardhat-upgrades@npm:1.10.0"
   dependencies:
-    "@openzeppelin/upgrades-core": ^1.8.0
+    "@openzeppelin/upgrades-core": ^1.9.0
   peerDependencies:
     "@nomiclabs/hardhat-ethers": ^2.0.0
     hardhat: ^2.0.2
   bin:
     migrate-oz-cli-project: dist/scripts/migrate-oz-cli-project.js
-  checksum: 1e585d0fc97741b0953b788a82cbea26e1c80c5b238699b08a9f2d850a528f0ca259e5f74d23d2a3ff4878231c89feffd0525f6a5740d7404aea9ff8d383168a
+  checksum: e1f1fea2258a5d2f7c04025412752bc5d6096b9645003389cae79334cb07ac0870815a14e0bf8f12f77bc1c30fadd10a92e9792c3bd2dc04253ded5307b2e371
   languageName: node
   linkType: hard
 
-"@openzeppelin/upgrades-core@npm:^1.8.0":
-  version: 1.8.1
-  resolution: "@openzeppelin/upgrades-core@npm:1.8.1"
+"@openzeppelin/upgrades-core@npm:^1.9.0":
+  version: 1.9.0
+  resolution: "@openzeppelin/upgrades-core@npm:1.9.0"
   dependencies:
     bn.js: ^5.1.2
-    cbor: ^7.0.0
+    cbor: ^8.0.0
     chalk: ^4.1.0
     compare-versions: ^3.6.0
     debug: ^4.1.1
     ethereumjs-util: ^7.0.3
     proper-lockfile: ^4.1.1
     solidity-ast: ^0.4.15
-  checksum: 85d6bece9feafc55c38d4c7a63a08139df31009503838ca9935d9e71288257bfa784d6a663236fc916e38e701f84a597f2cb0168d904fe436de4efc5092ab8e7
+  checksum: bc1aed9d77dbfed4fa16b9eef53ca1db872e142041fc5c3eb303ee9ac30f3f30435e521265eee60ae229b6caef62616304e101ec05196e0619d9f8d7302e2a25
   languageName: node
   linkType: hard
 
@@ -3975,18 +3975,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cbor@npm:^7.0.0":
-  version: 7.0.6
-  resolution: "cbor@npm:7.0.6"
+"cbor@npm:^8.0.0":
+  version: 8.0.0
+  resolution: "cbor@npm:8.0.0"
   dependencies:
-    "@cto.af/textdecoder": ^0.0.0
-    nofilter: ^2.0.3
-  peerDependencies:
-    bignumber.js: ^9.0.1
-  peerDependenciesMeta:
-    bignumber.js:
-      optional: true
-  checksum: e0e109be85e80a5e6a7bccd4a9a0405c85e8df7e502958987f79e4372b2b005e2008bd72e588e5b88e2858711c7a6cd7087d0c7070d73c5dc683b2bf5f9c6aca
+    nofilter: ^3.0.2
+  checksum: a53199261c531311e813926e249101aac11cef8594edb21715a2968782433902b9cba1939f1c837e59f4ef903d82f3eddfaae8d685c1c6789f3b7ed6f3889ee2
   languageName: node
   linkType: hard
 
@@ -10817,12 +10811,10 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"nofilter@npm:^2.0.3":
-  version: 2.0.3
-  resolution: "nofilter@npm:2.0.3"
-  dependencies:
-    "@cto.af/textdecoder": ^0.0.0
-  checksum: 1728a589c5ecb4e605f4bd42abfe20750205599e00bd895580f306823e9042e8fcd0796095f01d4f3bad21b6154d621f1c315b949ba312a2b64a73587561a7e4
+"nofilter@npm:^3.0.2":
+  version: 3.0.3
+  resolution: "nofilter@npm:3.0.3"
+  checksum: c13974cf064179f5574dc4ff2c4e26ff3dedf06309715ea888e92ab2947e2a1068f22b9597a2b79813d2d1958b63f65548b9ad4dbb7d9ab85c05d01a97d40333
   languageName: node
   linkType: hard
 
