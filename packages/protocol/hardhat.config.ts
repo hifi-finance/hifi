@@ -41,7 +41,6 @@ const config: HardhatUserConfig = {
       allowUnlimitedContractSize: true,
       blockGasLimit: GAS_LIMITS.hardhat.toNumber(),
       gas: GAS_LIMITS.hardhat.toNumber(), // https://github.com/nomiclabs/hardhat/issues/660#issuecomment-715897156
-      hardfork: process.env.CODE_COVERAGE ? "berlin" : "london", // https://github.com/sc-forks/solidity-coverage/issues/652
     },
     localhost: {
       accounts: {

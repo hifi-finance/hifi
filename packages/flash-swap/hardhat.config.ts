@@ -28,7 +28,6 @@ const config: HardhatUserConfig = {
       accounts: {
         mnemonic,
       },
-      hardfork: process.env.CODE_COVERAGE ? "berlin" : "london", // https://github.com/sc-forks/solidity-coverage/issues/652
     },
     localhost: {
       accounts: {
