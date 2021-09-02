@@ -54,18 +54,18 @@ interface IHifiPool is IErc20Permit {
     /// @return hTokenIn The hypothetical amount of hTokensrequired.
     function getQuoteForBuyingUnderlying(uint256 underlyingOut) external view returns (uint256 hTokenIn);
 
-    /// @notice Calculates how many hTokens would be required and how many lp tokens would be issued for a given
+    /// @notice Calculates how many hTokens would be required and how many LP tokens would be issued for a given
     /// amount of underlying invested.
     /// @param underlyingOffered The amount of underlying tokens invested.
-    /// @return hTokenRequired The hypothetical amount of hTokens required to mint new lp tokens.
-    /// @return poolTokensMinted The amount of lp tokens to mint.
+    /// @return hTokenRequired The hypothetical amount of hTokens required to mint new LP tokens.
+    /// @return poolTokensMinted The amount of LP tokens to mint.
     function getMintInputs(uint256 underlyingOffered)
         external
         view
         returns (uint256 hTokenRequired, uint256 poolTokensMinted);
 
-    /// @notice Calculates how much underlying and hToken would be returned for a given amount of lp tokens.
-    /// @param poolTokensBurned The amount of lp tokens to burn.
+    /// @notice Calculates how much underlying and hToken would be returned for a given amount of LP tokens.
+    /// @param poolTokensBurned The amount of LP tokens to burn.
     /// @return underlyingReturned The amount of reserve underlying retrieved.
     /// @return hTokenReturned The amount of reserve hToken retrieved.
     function getBurnOutputs(uint256 poolTokensBurned)
@@ -80,7 +80,6 @@ interface IHifiPool is IErc20Permit {
     ///
     /// @param hTokenIn The hypothetical amount of hTokensto sell.
     /// @return underlyingOut The hypothetical amount of underlying that would be obtained.
-
     function getQuoteForSellingHToken(uint256 hTokenIn) external view returns (uint256 underlyingOut);
 
     /// @notice Quotes how many hTokens would be obtained by selling `underlyingIn` underlying.
@@ -96,7 +95,7 @@ interface IHifiPool is IErc20Permit {
     function getNormalizedUnderlyingReserves() external view returns (uint256 normalizedUnderlyingReserves);
 
     /// @notice Retrieves the virtual hToken reserves, as explained in the whitepaper.
-    /// @dev Adds the Erc20 hToken balance to the total supply of lp tokens.
+    /// @dev Adds the Erc20 hToken balance to the total supply of LP tokens.
     function getVirtualHTokenReserves() external view returns (uint256 virtualHTokenReserves);
 
     /// @notice The unix timestamp at which the hToken expires.
@@ -113,14 +112,14 @@ interface IHifiPool is IErc20Permit {
 
     /// NON-CONSTANT FUNCTIONS ///
 
-    /// @notice Burns lp tokens in exchange for underlying tokens and hTokens.
+    /// @notice Burns LP tokens in exchange for underlying tokens and hTokens.
     ///
     /// @dev Emits a {RemoveLiquidity} event.
     ///
     /// Requirements:
     /// - The amount to burn cannot be zero.
     ///
-    /// @param poolTokensBurned The amount of lp tokens to burn.
+    /// @param poolTokensBurned The amount of LP tokens to burn.
     /// @return underlyingReturned The amount of reserve underlying retrieved.
     /// @return hTokenReturned The amount of reserve hToken retrieved.
     function burn(uint256 poolTokensBurned) external returns (uint256 underlyingReturned, uint256 hTokenReturned);
@@ -151,7 +150,7 @@ interface IHifiPool is IErc20Permit {
     /// @return hTokenIn The amount of hTokensthat will be taken from the caller's account.
     function buyUnderlying(address to, uint256 underlyingOut) external returns (uint256 hTokenIn);
 
-    /// @notice Mints lp tokens in exchange for adding underlying tokens and hTokens. An appropriate amount of
+    /// @notice Mints LP tokens in exchange for adding underlying tokens and hTokens. An appropriate amount of
     /// hTokens gets calculated and taken from the caller to be investigated alongside underlying tokens.
     ///
     /// @dev Emits an {AddLiquidity} event.
@@ -160,7 +159,7 @@ interface IHifiPool is IErc20Permit {
     /// - The caller must have allowed this contract to spend `underlyingOffered` and `hTokenRequired` tokens.
     ///
     /// @param underlyingOffered The amount of underlying tokens invested.
-    /// @return poolTokensMinted The amount of lp tokens to mint.
+    /// @return poolTokensMinted The amount of LP tokens to mint.
     function mint(uint256 underlyingOffered) external returns (uint256 poolTokensMinted);
 
     /// @notice Sells hToken for underlying.

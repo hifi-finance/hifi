@@ -165,7 +165,7 @@ contract HToken is
             revert HToken__RedeemInsufficientLiquidity(underlyingAmount, totalUnderlyingReserve);
         }
 
-        // Effects: decrease the remaining supply of underlying.
+        // Effects: decrease the remainding supply of underlying.
         totalUnderlyingReserve -= underlyingAmount;
 
         // Interactions: burn the hTokens.

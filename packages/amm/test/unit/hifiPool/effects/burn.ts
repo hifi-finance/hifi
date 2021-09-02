@@ -8,7 +8,7 @@ import forEach from "mocha-each";
 import fp from "evm-fp";
 
 export default function shouldBehaveLikeBurn(): void {
-  context("when the lp tokens returned are 0", function () {
+  context("when the LP tokens returned are 0", function () {
     it("reverts", async function () {
       const poolTokensBurned: BigNumber = bn("0");
       await expect(this.contracts.hifiPool.connect(this.signers.alice).burn(poolTokensBurned)).to.be.revertedWith(
@@ -17,7 +17,7 @@ export default function shouldBehaveLikeBurn(): void {
     });
   });
 
-  context("when the lp tokens returned are not 0", function () {
+  context("when the LP tokens returned are not 0", function () {
     context("when the total supply is 0", function () {
       it("reverts", async function () {
         await this.mocks.underlying.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(bn("0"));

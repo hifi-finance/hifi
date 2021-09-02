@@ -35,7 +35,7 @@ interface IHifiProxyTarget {
     /// - The caller must have allowed the DSProxy to spend `underlyingAmount` and `maxHTokenRequired` tokens.
     ///
     /// @param hifiPool The address of the HifiPool contract.
-    /// @param underlyingOffered The amount of underlying tokens to invest.
+    /// @param underlyingOffered The amount of underlying to invest.
     /// @param maxHTokenRequired The maximum amount of hTokens that the user is willing to accept.
     function addLiquidity(
         IHifiPool hifiPool,
@@ -61,7 +61,7 @@ interface IHifiProxyTarget {
     /// @param balanceSheet The address of the BalanceSheet contract.
     /// @param hifiPool The address of the HifiPool contract.
     /// @param maxBorrowAmount The amount of hTokens to borrow and the max amount that the user is willing to invest.
-    /// @param underlyingOffered The amount of underlying tokens to invest.
+    /// @param underlyingOffered The amount of underlying to invest.
     function borrowHTokenAndAddLiquidity(
         IBalanceSheetV1 balanceSheet,
         IHifiPool hifiPool,
@@ -120,7 +120,7 @@ interface IHifiProxyTarget {
     ///
     /// @param hifiPool The address of the HifiPool contract.
     /// @param maxUnderlyingIn The maximum amount of underlying that the user is willing to pay.
-    /// @param underyingOffered The amount of underlying tokens to invest.
+    /// @param underyingOffered The amount of underlying to invest.
     function buyHTokenAndAddLiquidity(
         IHifiPool hifiPool,
         uint256 maxUnderlyingIn,
@@ -163,7 +163,7 @@ interface IHifiProxyTarget {
     ///
     /// @param hifiPool The address of the HifiPool contract.
     /// @param maxHTokenAmount maxHTokenAmount The maximum amount of hTokens that the user is willing to invest.
-    /// @param underlyingOffered The amount of underlying tokens to invest.
+    /// @param underlyingOffered The amount of underlying to invest.
     function buyUnderlyingAndAddLiquidity(
         IHifiPool hifiPool,
         uint256 maxHTokenAmount,
@@ -212,7 +212,7 @@ interface IHifiProxyTarget {
     /// @param hifiPool The address of the HifiPool contract.
     /// @param depositAmount The amount of collateral to deposit.
     /// @param maxBorrowAmount The amount of hTokens to borrow and the max amount that the user is willing to invest.
-    /// @param underlyingOffered The amount of underlying tokens to invest.
+    /// @param underlyingOffered The amount of underlying to invest.
     function depositCollateralAndBorrowHTokenAndAddLiquidity(
         IBalanceSheetV1 balanceSheet,
         IErc20 collateral,
@@ -231,7 +231,7 @@ interface IHifiProxyTarget {
     /// @param collateral The address of the collateral contract.
     /// @param hifiPool The address of the HifiPool contract.
     /// @param depositAmount The amount of collateral to deposit.
-    /// @param borrowAmount The amount of exact hTokens to borrow.
+    /// @param borrowAmount The exact amount of hTokens to borrow.
     /// @param minUnderlyingOut The minimum amount of underlying that the user is willing to accept.
     function depositCollateralAndBorrowHTokenAndSellHToken(
         IBalanceSheetV1 balanceSheet,
@@ -242,7 +242,23 @@ interface IHifiProxyTarget {
         uint256 minUnderlyingOut
     ) external;
 
-    /// @notice Redeems hTokens for underlying tokens.
+    /// @notice Deposits underlying as collateral into the vault, borrows hTokens and adds liquidity to the AMM.
+    ///
+    /// Requirements:
+    /// - The caller must have allowed the DSProxy to spend `depositAmount + underlyingOffered` tokens.
+    ///
+    /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param hifiPool The address of the HifiPool contract.
+    /// @param depositAmount The amount of underlying to deposit as collateral.
+    /// @param underlyingOffered The amount of underlying to invest.
+    function depositUnderlyingAsCollateralAndBorrowHTokenAndAddLiquidity(
+        IBalanceSheetV1 balanceSheet,
+        IHifiPool hifiPool,
+        uint256 depositAmount,
+        uint256 underlyingOffered
+    ) external;
+
+    /// @notice Redeems hTokens for underlying.
     ///
     /// @dev Requirements:
     /// - The caller must have allowed the DSProxy to spend `hTokenAmount` hTokens.
@@ -269,6 +285,24 @@ interface IHifiProxyTarget {
     /// @param poolTokensBurned The amount of LP tokens to burn.
     function removeLiquidityAndRedeemHToken(IHifiPool hifiPool, uint256 poolTokensBurned) external;
 
+    /// @notice Removes liquidity from the AMM, repays the borrow and withdraws collateral.
+    ///
+    /// @dev Requirements:
+    /// - The caller must have allowed the DSProxy to spend `poolTokensBurned` tokens.
+    ///
+    /// @param hifiPool The address of the HifiPool contract.
+    /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param collateral The address of the collateral contract.
+    /// @param poolTokensBurned The amount of LP tokens to burn.
+    /// @param withdrawAmount The amount of collateral to withdraw.
+    function removeLiquidityAndRepayBorrowAndWithdrawCollateral(
+        IHifiPool hifiPool,
+        IBalanceSheetV1 balanceSheet,
+        IErc20 collateral,
+        uint256 poolTokensBurned,
+        uint256 withdrawAmount
+    ) external;
+
     /// @notice Removes liquidity from the AMM, and sells all hTokens for underlying.
     ///
     /// @dev Requirements:
@@ -281,22 +315,6 @@ interface IHifiProxyTarget {
         IHifiPool hifiPool,
         uint256 poolTokensBurned,
         uint256 minUnderlyingOut
-    ) external;
-
-    /// @notice Removes liquidity from the AMM, sells all underlying for hTokens, and repays the borrow.
-    ///
-    /// @dev Requirements:
-    /// - The caller must have allowed the DSProxy to spend `poolTokensBurned` tokens.
-    ///
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param poolTokensBurned The amount of LP tokens to burn.
-    /// @param minHTokenOut The minimum amount of hTokens that the user is willing to accept.
-    function removeLiquidityAndSellUnderlyingAndRepayBorrow(
-        IHifiPool hifiPool,
-        IBalanceSheetV1 balanceSheet,
-        uint256 poolTokensBurned,
-        uint256 minHTokenOut
     ) external;
 
     /// @notice Repays the hToken borrow.

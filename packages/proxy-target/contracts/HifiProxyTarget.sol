@@ -81,7 +81,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
             revert HifiProxyTarget__AddLiquiditySlippageTooHigh(maxBorrowAmount, hTokenRequired);
         }
 
-        // Borrow hToken.
+        // Borrow the hTokens.
         IHToken hToken = hifiPool.hToken();
         balanceSheet.borrow(hToken, hTokenRequired);
 
@@ -343,6 +343,46 @@ contract HifiProxyTarget is IHifiProxyTarget {
         borrowHTokenAndAddLiquidity(balanceSheet, hifiPool, maxBorrowAmount, underlyingOffered);
     }
 
+    function depositUnderlyingAsCollateralAndBorrowHTokenAndAddLiquidity(
+        IBalanceSheetV1 balanceSheet,
+        IHifiPool hifiPool,
+        uint256 depositAmount,
+        uint256 underlyingOffered
+    ) external override {
+        // When the underlying moonlights as the collateral, the user can borrow on a one-to-one basis.
+        uint256 maxBorrowAmount = normalize(hifiPool.underlyingPrecisionScalar(), depositAmount);
+
+        // Ensure that we are within the user's slippage tolerance.
+        (uint256 hTokenRequired, ) = hifiPool.getMintParams(underlyingOffered);
+        if (hTokenRequired > maxBorrowAmount) {
+            revert HifiProxyTarget__AddLiquiditySlippageTooHigh(maxBorrowAmount, hTokenRequired);
+        }
+
+        // Transfer the underlying to the DSProxy.
+        IErc20 underlying = hifiPool.underlying();
+        uint256 totalUnderlyingAmount = depositAmount + underlyingOffered;
+        underlying.safeTransferFrom(msg.sender, address(this), totalUnderlyingAmount);
+
+        // Deposit the underlying as collateral into the BalanceSheet contract.
+        depositCollateralInternal(balanceSheet, underlying, depositAmount);
+
+        // Borrow the hTokens.
+        IHToken hToken = hifiPool.hToken();
+        balanceSheet.borrow(hToken, hTokenRequired);
+
+        // Allow the HifiPool contract to spend underlying from the DSProxy.
+        approveSpender(underlying, address(hifiPool), underlyingOffered);
+
+        // Allow the HifiPool contract to spend hTokens from the DSProxy.
+        approveSpender(hToken, address(hifiPool), hTokenRequired);
+
+        // Add liquidity to pool.
+        uint256 poolTokensMinted = hifiPool.mint(underlyingOffered);
+
+        // The LP tokens are now in the DSProxy, so we relay them to the end user.
+        hifiPool.transfer(msg.sender, poolTokensMinted);
+    }
+
     /// @inheritdoc IHifiProxyTarget
     function depositCollateralAndBorrowHTokenAndSellHToken(
         IBalanceSheetV1 balanceSheet,
@@ -416,6 +456,49 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
+    function removeLiquidityAndRepayBorrowAndWithdrawCollateral(
+        IHifiPool hifiPool,
+        IBalanceSheetV1 balanceSheet,
+        IErc20 collateral,
+        uint256 poolTokensBurned,
+        uint256 withdrawAmount
+    ) external override {
+        // Transfer the LP tokens to the DSProxy.
+        hifiPool.transferFrom(msg.sender, address(this), poolTokensBurned);
+
+        // Burn the LP tokens.
+        (uint256 underlyingReturned, uint256 hTokenReturned) = hifiPool.burn(poolTokensBurned);
+
+        // Repay the borrow.
+        IHToken hToken = hifiPool.hToken();
+        uint256 debtAmount = balanceSheet.getDebtAmount(address(this), hToken);
+        if (debtAmount >= hTokenReturned) {
+            balanceSheet.repayBorrow(hToken, hTokenReturned);
+        } else {
+            balanceSheet.repayBorrow(hToken, debtAmount);
+
+            // Relay any remainding hTokens to the end user.
+            unchecked {
+                uint256 hTokenDelta = hTokenReturned - debtAmount;
+                if (hTokenDelta > 0) {
+                    hToken.transfer(msg.sender, hTokenDelta);
+                }
+            }
+        }
+
+        // Withdraw the collateral and relay the underlying to the end user.
+        IErc20 underlying = hifiPool.underlying();
+        if (collateral == underlying) {
+            balanceSheet.withdrawCollateral(collateral, withdrawAmount);
+            uint256 totalUnderlyingAmount = underlyingReturned + withdrawAmount;
+            underlying.safeTransfer(msg.sender, totalUnderlyingAmount);
+        } else {
+            withdrawCollateral(balanceSheet, collateral, withdrawAmount);
+            underlying.safeTransfer(msg.sender, underlyingReturned);
+        }
+    }
+
+    /// @inheritdoc IHifiProxyTarget
     function removeLiquidityAndSellHToken(
         IHifiPool hifiPool,
         uint256 poolTokensBurned,
@@ -441,53 +524,6 @@ contract HifiProxyTarget is IHifiProxyTarget {
 
         // Sell the hTokens and relay the underlying to the end user.
         hifiPool.sellHToken(msg.sender, hTokenReturned);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
-    function removeLiquidityAndSellUnderlyingAndRepayBorrow(
-        IHifiPool hifiPool,
-        IBalanceSheetV1 balanceSheet,
-        uint256 poolTokensBurned,
-        uint256 minHTokenOut
-    ) external override {
-        // Transfer the LP tokens to the DSProxy.
-        hifiPool.transferFrom(msg.sender, address(this), poolTokensBurned);
-
-        // Burn the LP tokens.
-        (uint256 underlyingReturned, uint256 hTokenReturned) = hifiPool.burn(poolTokensBurned);
-
-        // Ensure that we are within the user's slippage tolerance.
-        uint256 hTokenOut = hifiPool.getQuoteForSellingUnderlying(underlyingReturned);
-        if (hTokenOut < minHTokenOut) {
-            revert HifiProxyTarget__TradeSlippageTooHigh(minHTokenOut, hTokenOut);
-        }
-
-        // Allow the HifiPool contract to spend underlying from the DSProxy.
-        approveSpender(hifiPool.underlying(), address(hifiPool), underlyingReturned);
-
-        // Sell the underlying.
-        hifiPool.sellUnderlying(address(this), underlyingReturned);
-
-        // Query the amount of debt that the user owes.
-        IHToken hToken = hifiPool.hToken();
-        uint256 debtAmount = balanceSheet.getDebtAmount(address(this), hToken);
-
-        // Sum up the returned hTokens and the recently bought hTokens.
-        uint256 repayAmount = hTokenReturned + hTokenOut;
-
-        // Repay the borrow.
-        if (debtAmount >= repayAmount) {
-            balanceSheet.repayBorrow(hToken, repayAmount);
-        } else {
-            balanceSheet.repayBorrow(hToken, debtAmount);
-            unchecked {
-                // Relay any remainding hTokens to the end user.
-                uint256 hTokenDelta = repayAmount - debtAmount;
-                if (hTokenDelta > 0) {
-                    hToken.transfer(msg.sender, hTokenDelta);
-                }
-            }
-        }
     }
 
     /// @inheritdoc IHifiProxyTarget
@@ -581,8 +617,9 @@ contract HifiProxyTarget is IHifiProxyTarget {
             balanceSheet.repayBorrow(hToken, hTokenOut);
         } else {
             balanceSheet.repayBorrow(hToken, debtAmount);
+
+            // Relay any remainding hTokens to the end user.
             unchecked {
-                // Relay any remainding hTokens to the end user.
                 uint256 hTokenDelta = hTokenOut - debtAmount;
                 if (hTokenDelta > 0) {
                     hToken.transfer(msg.sender, hTokenDelta);
@@ -630,7 +667,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         IBalanceSheetV1 balanceSheet,
         IErc20 collateral,
         uint256 withdrawAmount
-    ) external override {
+    ) public override {
         balanceSheet.withdrawCollateral(collateral, withdrawAmount);
 
         // The collateral is now in the DSProxy, so we relay it to the end user.
@@ -658,6 +695,22 @@ contract HifiProxyTarget is IHifiProxyTarget {
     ) external payable override {
         wrapEthAndDepositCollateral(weth, balanceSheet);
         borrowHTokenAndSellHToken(balanceSheet, hifiPool, borrowAmount, minUnderlyingOut);
+    }
+
+    /// INTERNAL CONSTANT FUNCTIONS ///
+
+    /// @notice Upscales the underlying amount to normalized form, i.e. 18 decimals of precision.
+    /// @param underlyingPrecisionScalar The ratio between normalized precision (1e18) and the underlying precision.
+    /// @param underlyingAmount The underlying amount with its actual decimals of precision.
+    /// @param normalizedUnderlyingAmount The underlying amount with 18 decimals of precision.
+    function normalize(uint256 underlyingPrecisionScalar, uint256 underlyingAmount)
+        internal
+        pure
+        returns (uint256 normalizedUnderlyingAmount)
+    {
+        normalizedUnderlyingAmount = underlyingPrecisionScalar != 1
+            ? underlyingAmount * underlyingPrecisionScalar
+            : underlyingAmount;
     }
 
     /// INTERNAL NON-CONSTANT FUNCTIONS ///
