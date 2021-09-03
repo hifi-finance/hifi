@@ -21,6 +21,10 @@ on:
       price:
         description: "Immutable price of the stablecoin, with 8 decimals of precision"
         required: true
+      ref:
+        default: "main"
+        description: "Git ref to checkout"
+        required: true
 
 jobs:
   deploy-and-verify:
@@ -28,6 +32,8 @@ jobs:
     steps:
       - name: "Check out the repo"
         uses: "actions/checkout@v2"
+        with:
+          ref: ${{ github.event.inputs.ref }}
 
       - name: "Setup Node.js"
         uses: "actions/setup-node@v2"

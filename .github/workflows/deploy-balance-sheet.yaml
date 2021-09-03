@@ -22,6 +22,7 @@ on:
         description: "Address of the oracle contract"
         required: true
       ref:
+        default: "main"
         description: "Git ref to checkout"
         required: true
 
