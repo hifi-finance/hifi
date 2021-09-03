@@ -24,7 +24,7 @@ on:
       symbol:
         description: "ERC-20 symbol of the pool"
         required: true
-     ref:
+      ref:
         default: "main"
         description: "Git ref to checkout"
         required: false
