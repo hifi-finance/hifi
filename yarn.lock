@@ -1619,6 +1619,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@solidity-parser/parser@npm:^0.11.0":
+  version: 0.11.1
+  resolution: "@solidity-parser/parser@npm:0.11.1"
+  checksum: eee5a7aea63e245df3745396bf84ea04f9763647f94d9d3e0c496833198ab881db177fcea818274ea8c3f0b18fdf76d6bca2afcea427f9ed9702210b3588a225
+  languageName: node
+  linkType: hard
+
+"@solidity-parser/parser@npm:^0.12.0":
+  version: 0.12.2
+  resolution: "@solidity-parser/parser@npm:0.12.2"
+  checksum: dab68de9b819a279063881250406dc7c4c75a3b8312a2f0cc51bcd6a4dc99dd42bb7a2f1484e199e929745800b02197135ba483ef711498a6bb7d3e28f81ee59
+  languageName: node
+  linkType: hard
+
 "@solidity-parser/parser@npm:^0.13.2":
   version: 0.13.2
   resolution: "@solidity-parser/parser@npm:0.13.2"
