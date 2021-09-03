@@ -82,10 +82,10 @@ jobs:
         run: >-
           yarn workspace @hifi/protocol hardhat
           verify "${{ steps.deploy-h-token.outputs.h-token }}" --network "${{ github.event.inputs.chain }}"
-          "${{ github.event.inputs.balance-sheet }}"
-          "${{ github.event.inputs.h-token-maturity }}"
           "${{ github.event.inputs.h-token-name }}"
           "${{ github.event.inputs.h-token-symbol }}"
+          "${{ github.event.inputs.h-token-maturity }}"
+          "${{ github.event.inputs.balance-sheet }}"
           "${{ github.event.inputs.underlying }}"
 
       - name: "Deploy HifiPool"
@@ -106,6 +106,6 @@ jobs:
         run: >-
           yarn workspace @hifi/amm hardhat
           verify "${{ steps.deploy-hifi-pool.outputs.hifi-pool }}" --network "${{ github.event.inputs.chain }}"
-          "${{ steps.deploy-h-token.outputs.h-token }}"
           "${{ github.event.inputs.hifi-pool-name }}"
           "${{ github.event.inputs.hifi-pool-symbol }}"
+          "${{ steps.deploy-h-token.outputs.h-token }}"

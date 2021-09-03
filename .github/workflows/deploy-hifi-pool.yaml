@@ -66,6 +66,6 @@ jobs:
         run: >-
           yarn workspace @hifi/amm hardhat
           verify "${{ steps.deploy.outputs.hifi-pool }}" --network "${{ github.event.inputs.chain }}"
-          "${{ github.event.inputs.h-token }}"
           "${{ github.event.inputs.name }}"
           "${{ github.event.inputs.symbol }}"
+          "${{ github.event.inputs.h-token }}"
