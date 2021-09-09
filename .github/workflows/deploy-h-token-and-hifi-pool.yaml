@@ -33,6 +33,10 @@ on:
       hifi-pool-symbol:
         description: "ERC-20 symbol of the pool"
         required: true
+      ref:
+        default: "main"
+        description: "Git ref to checkout"
+        required: false
       underlying:
         description: "Address of the underlying ERC-20 contract"
         required: true
@@ -43,6 +47,8 @@ jobs:
     steps:
       - name: "Check out the repo"
         uses: "actions/checkout@v2"
+        with:
+          ref: ${{ github.event.inputs.ref }}
 
       - name: "Setup Node.js"
         uses: "actions/setup-node@v2"
@@ -76,10 +82,10 @@ jobs:
         run: >-
           yarn workspace @hifi/protocol hardhat
           verify "${{ steps.deploy-h-token.outputs.h-token }}" --network "${{ github.event.inputs.chain }}"
-          "${{ github.event.inputs.balance-sheet }}"
-          "${{ github.event.inputs.h-token-maturity }}"
           "${{ github.event.inputs.h-token-name }}"
           "${{ github.event.inputs.h-token-symbol }}"
+          "${{ github.event.inputs.h-token-maturity }}"
+          "${{ github.event.inputs.balance-sheet }}"
           "${{ github.event.inputs.underlying }}"
 
       - name: "Deploy HifiPool"
@@ -100,6 +106,6 @@ jobs:
         run: >-
           yarn workspace @hifi/amm hardhat
           verify "${{ steps.deploy-hifi-pool.outputs.hifi-pool }}" --network "${{ github.event.inputs.chain }}"
-          "${{ steps.deploy-h-token.outputs.h-token }}"
           "${{ github.event.inputs.hifi-pool-name }}"
           "${{ github.event.inputs.hifi-pool-symbol }}"
+          "${{ steps.deploy-h-token.outputs.h-token }}"
