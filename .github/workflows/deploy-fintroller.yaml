@@ -18,7 +18,7 @@ on:
       ref:
         default: "main"
         description: "Git ref to checkout"
-        required: true
+        required: false
 
 jobs:
   deploy-and-verify:
