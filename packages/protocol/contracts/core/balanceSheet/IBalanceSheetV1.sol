@@ -126,6 +126,21 @@ interface IBalanceSheetV1 is IOwnableUpgradeable {
         uint256 debtAmountModify
     ) external view returns (uint256 excessLiquidity, uint256 shortfallLiquidity);
 
+    /// @notice Calculates the amount of bond that should be repaid in order to liquidate a specified amount
+    /// of collateral in a borrow. Note that this is for informational purposes only, it doesn't say anything about
+    /// whether the user can be liquidated.
+    /// @dev The formula applied:
+    /// repayBondAmount = (liquidationAmount * collateralPriceUsd) / (liquidationIncentive * underlyingPriceUsd)
+    /// @param bond The bond to make the query against.
+    /// @param liquidationAmount The amount of collateral to liquidate.
+    /// @param collateral The collateral to make the query against.
+    /// @return repayBondAmount The amount of bond that should be repaid.
+    function getRepayBondAmount(
+        IHToken bond,
+        uint256 liquidationAmount,
+        IErc20 collateral
+    ) external view returns (uint256 repayBondAmount);
+
     /// @notice Calculates the amount of collateral that can be seized when liquidating a borrow. Note that this
     /// is for informational purposes only, it doesn't say anything about whether the user can be liquidated.
     /// @dev The formula applied:

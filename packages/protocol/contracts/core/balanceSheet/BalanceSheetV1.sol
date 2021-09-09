@@ -237,6 +237,41 @@ contract BalanceSheetV1 is
     }
 
     /// @inheritdoc IBalanceSheetV1
+    function getRepayBondAmount(
+        IHToken bond,
+        uint256 liquidationAmount,
+        IErc20 collateral
+    ) public view override returns (uint256 repayBondAmount) {
+        // Normalize the collateral amount.
+        uint256 normalizedLiquidationAmount;
+        uint256 collateralPrecisionScalar = 10**(18 - collateral.decimals());
+        if (collateralPrecisionScalar != 1) {
+            normalizedLiquidationAmount = liquidationAmount.mul(collateralPrecisionScalar);
+        } else {
+            normalizedLiquidationAmount = liquidationAmount;
+        }
+
+        // Grab the normalized USD price of the collateral.
+        uint256 normalizedCollateralPrice = oracle.getNormalizedPrice(collateral.symbol());
+
+        // Grab the normalized USD price of the underlying.
+        uint256 normalizedUnderlyingPrice = oracle.getNormalizedPrice(bond.underlying().symbol());
+
+        // Calculate the top part of the equation.
+        uint256 numerator = normalizedLiquidationAmount.mul(normalizedCollateralPrice);
+
+        // When the liquidation incentive is 100%, which is Fintroller.LIQUIDATION_INCENTIVE_LOWER_BOUND, the end
+        // result would be zero.
+        uint256 liquidationIncentive = fintroller.getLiquidationIncentive(collateral);
+        if (liquidationIncentive == 1.0e18) {
+            return 0;
+        }
+
+        // Calculate the repay bond amount.
+        repayBondAmount = numerator.div(liquidationIncentive.mul(normalizedUnderlyingPrice));
+    }
+
+    /// @inheritdoc IBalanceSheetV1
     function getSeizableCollateralAmount(
         IHToken bond,
         uint256 repayAmount,
