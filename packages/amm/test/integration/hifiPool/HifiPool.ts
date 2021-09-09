@@ -13,8 +13,8 @@ export function integrationTestHifiPool(): void {
       this.contracts.underlying = underlying;
 
       // Give Alice an infinite amount of hTokens and underlying.
-      await this.contracts.hToken.mint(this.signers.alice.address, fp(MAX_UD60x18));
-      await this.contracts.underlying.mint(this.signers.alice.address, fp(MAX_UD60x18));
+      await this.contracts.hToken.__godMode_mint(this.signers.alice.address, fp(MAX_UD60x18));
+      await this.contracts.underlying.__godMode_mint(this.signers.alice.address, fp(MAX_UD60x18));
 
       // Approve the pool to spend an infinite amount of hTokens and underlying from Alice's wallet.
       await this.contracts.hToken.connect(this.signers.alice).approve(this.contracts.hifiPool.address, fp(MAX_UD60x18));

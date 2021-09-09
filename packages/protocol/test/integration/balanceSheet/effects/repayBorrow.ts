@@ -30,7 +30,7 @@ export default function shouldBehaveLikeRepayBorrow(): void {
       .setDebtCeiling(this.contracts.hTokens[0].address, debtCeiling);
 
     // Mint 1 WBTC and approve the BalanceSheet to spend it.
-    await this.contracts.wbtc.mint(this.signers.borrower.address, wbtcDepositAmount);
+    await this.contracts.wbtc.__godMode_mint(this.signers.borrower.address, wbtcDepositAmount);
     await this.contracts.wbtc
       .connect(this.signers.borrower)
       .approve(this.contracts.balanceSheet.address, wbtcDepositAmount);

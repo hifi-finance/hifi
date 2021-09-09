@@ -13,7 +13,9 @@ import shouldBehaveLikeUnderlyingPrecisionScalarGetter from "./view/underlyingPr
 
 export function shouldBehaveLikeHToken(): void {
   describe("Deployment", function () {
-    shouldBehaveLikeConstructor();
+    describe("constructor", function () {
+      shouldBehaveLikeConstructor();
+    });
   });
 
   describe("View Functions", function () {

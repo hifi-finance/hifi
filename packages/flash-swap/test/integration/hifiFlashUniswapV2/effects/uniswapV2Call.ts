@@ -12,12 +12,12 @@ import { HifiFlashUniswapV2Errors } from "../../../shared/errors";
 async function bumpPoolReserves(this: Mocha.Context, wbtcAmount: BigNumber, usdcAmount: BigNumber): Promise<void> {
   // Mint WBTC to the pool.
   if (!wbtcAmount.isZero()) {
-    await this.contracts.wbtc.mint(this.contracts.uniswapV2Pair.address, wbtcAmount);
+    await this.contracts.wbtc.__godMode_mint(this.contracts.uniswapV2Pair.address, wbtcAmount);
   }
 
   // Mint USDC to the pool.
   if (!usdcAmount.isZero()) {
-    await this.contracts.usdc.mint(this.contracts.uniswapV2Pair.address, usdcAmount);
+    await this.contracts.usdc.__godMode_mint(this.contracts.uniswapV2Pair.address, usdcAmount);
   }
 
   // Sync the token reserves in the UniswapV2Pair contract.
@@ -35,12 +35,12 @@ function encodeCallData(this: Mocha.Context): string {
 async function reducePoolReserves(this: Mocha.Context, wbtcAmount: BigNumber, usdcAmount: BigNumber): Promise<void> {
   // Mint WBTC to the pool.
   if (!wbtcAmount.isZero()) {
-    await this.contracts.wbtc.burn(this.contracts.uniswapV2Pair.address, wbtcAmount);
+    await this.contracts.wbtc.__godMode_burn(this.contracts.uniswapV2Pair.address, wbtcAmount);
   }
 
   // Mint USDC to the pool.
   if (!usdcAmount.isZero()) {
-    await this.contracts.usdc.burn(this.contracts.uniswapV2Pair.address, usdcAmount);
+    await this.contracts.usdc.__godMode_burn(this.contracts.uniswapV2Pair.address, usdcAmount);
   }
 
   // Sync the token reserves in the UniswapV2Pair contract.
@@ -129,7 +129,7 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
             .setDebtCeiling(this.contracts.hToken.address, debtCeiling);
 
           // Mint WBTC and approve the Balance Sheet to spend it.
-          await this.contracts.wbtc.mint(this.signers.borrower.address, wbtcDepositAmount);
+          await this.contracts.wbtc.__godMode_mint(this.signers.borrower.address, wbtcDepositAmount);
           await this.contracts.wbtc
             .connect(this.signers.borrower)
             .approve(this.contracts.balanceSheet.address, wbtcDepositAmount);

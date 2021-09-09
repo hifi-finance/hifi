@@ -51,7 +51,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
       .setLiquidationIncentive(this.contracts.wbtc.address, LIQUIDATION_INCENTIVES.default);
 
     // Mint 1 WBTC and approve the BalanceSheet to spend it.
-    await this.contracts.wbtc.mint(this.signers.borrower.address, wbtcDepositAmount);
+    await this.contracts.wbtc.__godMode_mint(this.signers.borrower.address, wbtcDepositAmount);
     await this.contracts.wbtc
       .connect(this.signers.borrower)
       .approve(this.contracts.balanceSheet.address, wbtcDepositAmount);
