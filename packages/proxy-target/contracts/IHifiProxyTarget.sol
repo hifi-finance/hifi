@@ -135,7 +135,7 @@ interface IHifiProxyTarget {
     /// @param hifiPool The address of the HifiPool contract.
     /// @param balanceSheet The address of the BalanceSheet contract.
     /// @param maxUnderlyingIn The maximum amount of underlying that the user is willing to pay.
-    /// @param hTokenOut The exact amount of hTokens to buy and the amount to repay.
+    /// @param hTokenOut The exact amount of hTokens to buy and the amount to repay and the maximum amount to repay.
     function buyHTokenAndRepayBorrow(
         IHifiPool hifiPool,
         IBalanceSheetV1 balanceSheet,
@@ -294,12 +294,14 @@ interface IHifiProxyTarget {
     /// @param balanceSheet The address of the BalanceSheet contract.
     /// @param collateral The address of the collateral contract.
     /// @param poolTokensBurned The amount of LP tokens to burn.
+    /// @param repayAmount The amount of hTokens to repay.
     /// @param withdrawAmount The amount of collateral to withdraw.
     function removeLiquidityAndRepayBorrowAndWithdrawCollateral(
         IHifiPool hifiPool,
         IBalanceSheetV1 balanceSheet,
         IErc20 collateral,
         uint256 poolTokensBurned,
+        uint256 repayAmount,
         uint256 withdrawAmount
     ) external;
 
@@ -367,7 +369,8 @@ interface IHifiProxyTarget {
     /// @param hifiPool The address of the HifiPool contract.
     /// @param balanceSheet The address of the BalanceSheet contract.
     /// @param underlyingIn The exact amount of underlying that the user wants to sell.
-    /// @param minHTokenOut The minimum amount of hTokens that the user is willing to accept.
+    /// @param minHTokenOut The minimum amount of hTokens that the user is willing to accept and the maximum
+    /// amount to repay.
     function sellUnderlyingAndRepayBorrow(
         IHifiPool hifiPool,
         IBalanceSheetV1 balanceSheet,

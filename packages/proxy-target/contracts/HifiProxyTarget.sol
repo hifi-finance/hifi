@@ -235,8 +235,24 @@ contract HifiProxyTarget is IHifiProxyTarget {
         // Buy the hTokens.
         hifiPool.buyHToken(address(this), hTokenOut);
 
+        // Query the amount of debt that the user owes.
+        IHToken hToken = hifiPool.hToken();
+        uint256 debtAmount = balanceSheet.getDebtAmount(address(this), hToken);
+
         // Use the recently bought hTokens to repay the borrow.
-        balanceSheet.repayBorrow(hifiPool.hToken(), hTokenOut);
+        if (debtAmount >= hTokenOut) {
+            balanceSheet.repayBorrow(hToken, hTokenOut);
+        } else {
+            balanceSheet.repayBorrow(hToken, debtAmount);
+
+            // Relay any remainding hTokens to the end user.
+            unchecked {
+                uint256 hTokenDelta = hTokenOut - debtAmount;
+                if (hTokenDelta > 0) {
+                    hToken.transfer(msg.sender, hTokenDelta);
+                }
+            }
+        }
     }
 
     /// @inheritdoc IHifiProxyTarget
@@ -461,6 +477,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         IBalanceSheetV1 balanceSheet,
         IErc20 collateral,
         uint256 poolTokensBurned,
+        uint256 repayAmount,
         uint256 withdrawAmount
     ) external override {
         // Transfer the LP tokens to the DSProxy.
@@ -471,15 +488,12 @@ contract HifiProxyTarget is IHifiProxyTarget {
 
         // Repay the borrow.
         IHToken hToken = hifiPool.hToken();
-        uint256 debtAmount = balanceSheet.getDebtAmount(address(this), hToken);
-        if (debtAmount >= hTokenReturned) {
-            balanceSheet.repayBorrow(hToken, hTokenReturned);
-        } else {
-            balanceSheet.repayBorrow(hToken, debtAmount);
+        balanceSheet.repayBorrow(hToken, repayAmount);
 
-            // Relay any remainding hTokens to the end user.
+        // Relay any remainding hTokens to the end user.
+        if (hTokenReturned > repayAmount) {
             unchecked {
-                uint256 hTokenDelta = hTokenReturned - debtAmount;
+                uint256 hTokenDelta = hTokenReturned - repayAmount;
                 if (hTokenDelta > 0) {
                     hToken.transfer(msg.sender, hTokenDelta);
                 }
