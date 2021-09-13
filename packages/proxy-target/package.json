@@ -13,7 +13,7 @@
   "dependencies": {
     "@hifi/amm": "1.4.0",
     "@hifi/protocol": "1.4.0",
-    "@paulrberg/contracts": "3.4.0",
+    "@paulrberg/contracts": "3.5.1",
     "ethers": "^5.4.6"
   },
   "devDependencies": {
@@ -65,7 +65,7 @@
   "peerDependencies": {
     "@hifi/amm": "1.4.0",
     "@hifi/protocol": "1.4.0",
-    "@paulrberg/contracts": "3.4.0",
+    "@paulrberg/contracts": "3.5.1",
     "ethers": "^5.4.4"
   },
   "publishConfig": {
