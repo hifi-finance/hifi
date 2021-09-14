@@ -99,6 +99,11 @@ contract HToken is
         }
         underlyingPrecisionScalar = 10**(18 - underlyingDecimals);
         underlying = underlying_;
+
+        // Set the list of non-recoverable tokens.
+        IErc20[] memory nonRecoverableTokens = new IErc20[](1);
+        nonRecoverableTokens[0] = IErc20(underlying_);
+        _setNonRecoverableTokens(nonRecoverableTokens);
     }
 
     /// PUBLIC CONSTANT FUNCTIONS ///

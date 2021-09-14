@@ -7,6 +7,7 @@ import shouldBehaveLikeSupplyUnderlying from "./effects/supplyUnderlying";
 import shouldBehaveLikeBalanceSheetGetter from "./view/balanceSheet";
 import shouldBehaveLikeIsMatured from "./view/isMatured";
 import shouldBehaveLikeMaturityGetter from "./view/maturity";
+import shouldBehaveLikeNonRecoverableTokensGetter from "./view/nonRecoverableTokens";
 import shouldBehaveLikeTotalUnderlyingReserveGetter from "./view/totalUnderlyingReserve";
 import shouldBehaveLikeUnderlyingGetter from "./view/underlying";
 import shouldBehaveLikeUnderlyingPrecisionScalarGetter from "./view/underlyingPrecisionScalar";
@@ -29,6 +30,10 @@ export function shouldBehaveLikeHToken(): void {
 
     describe("maturity", function () {
       shouldBehaveLikeMaturityGetter();
+    });
+
+    describe("nonRecoverableTokens", function () {
+      shouldBehaveLikeNonRecoverableTokensGetter();
     });
 
     describe("totalUnderlyingReserve", function () {
