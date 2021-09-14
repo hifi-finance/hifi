@@ -2,9 +2,9 @@
 pragma solidity >=0.8.4;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "prb-math/contracts/PRBMathUD60x18.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
+import "prb-math/contracts/PRBMathUD60x18.sol";
 
 import "./IBalanceSheetV1.sol";
 import "./SBalanceSheetV1.sol";
@@ -237,18 +237,21 @@ contract BalanceSheetV1 is
     }
 
     /// @inheritdoc IBalanceSheetV1
-    function getRepayBondAmount(
-        IHToken bond,
-        uint256 liquidationAmount,
-        IErc20 collateral
+    function getRepayAmount(
+        IErc20 collateral,
+        uint256 seizableCollateralAmount,
+        IHToken bond
     ) public view override returns (uint256 repayAmount) {
         // Normalize the collateral amount.
-        uint256 normalizedLiquidationAmount;
-        uint256 collateralPrecisionScalar = 10**(18 - collateral.decimals());
+        uint256 normalizedSeizableAmount;
+        uint256 collateralPrecisionScalar;
+        unchecked {
+            collateralPrecisionScalar = 10**(18 - collateral.decimals());
+        }
         if (collateralPrecisionScalar != 1) {
-            normalizedLiquidationAmount = liquidationAmount.mul(collateralPrecisionScalar);
+            normalizedSeizableAmount = seizableCollateralAmount * collateralPrecisionScalar;
         } else {
-            normalizedLiquidationAmount = liquidationAmount;
+            normalizedSeizableAmount = seizableCollateralAmount;
         }
 
         // Grab the normalized USD price of the collateral.
@@ -258,16 +261,10 @@ contract BalanceSheetV1 is
         uint256 normalizedUnderlyingPrice = oracle.getNormalizedPrice(bond.underlying().symbol());
 
         // Calculate the top part of the equation.
-        uint256 numerator = normalizedLiquidationAmount.mul(normalizedCollateralPrice);
-
-        // When the liquidation incentive is 100%, which is Fintroller.LIQUIDATION_INCENTIVE_LOWER_BOUND, the end
-        // result would be zero.
-        uint256 liquidationIncentive = fintroller.getLiquidationIncentive(collateral);
-        if (liquidationIncentive == 1.0e18) {
-            return 0;
-        }
+        uint256 numerator = normalizedSeizableAmount.mul(normalizedCollateralPrice);
 
         // Calculate the repay amount.
+        uint256 liquidationIncentive = fintroller.getLiquidationIncentive(collateral);
         repayAmount = numerator.div(liquidationIncentive.mul(normalizedUnderlyingPrice));
     }
 
@@ -277,8 +274,8 @@ contract BalanceSheetV1 is
         uint256 repayAmount,
         IErc20 collateral
     ) public view override returns (uint256 seizableCollateralAmount) {
-        // When the liquidation incentive is 100%, which is Fintroller.LIQUIDATION_INCENTIVE_LOWER_BOUND, the end
-        // result would be zero.
+        // When the liquidation incentive is 100%, which is Fintroller.LIQUIDATION_INCENTIVE_LOWER_BOUND, the
+        // result is zero.
         uint256 liquidationIncentive = fintroller.getLiquidationIncentive(collateral);
         if (liquidationIncentive == 1.0e18) {
             return 0;

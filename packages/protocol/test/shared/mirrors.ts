@@ -1,3 +1,5 @@
+import { BigNumber } from "@ethersproject/bignumber";
+import { Zero } from "@ethersproject/constants";
 import {
   COLLATERALIZATION_RATIOS,
   LIQUIDATION_INCENTIVES,
@@ -7,11 +9,8 @@ import {
   WBTC_DECIMALS,
   WBTC_PRICE_PRECISION_SCALAR,
 } from "@hifi/constants";
-
-import { BigNumber } from "@ethersproject/bignumber";
-import { Zero } from "@ethersproject/constants";
-import fp from "evm-fp";
 import { getPrecisionScalar } from "@hifi/helpers";
+import fp from "evm-fp";
 
 const SCALE = fp("1");
 const HALF_SCALE = fp("0.5");
@@ -62,7 +61,7 @@ export function getHypotheticalAccountLiquidity(
   }
 }
 
-export function getRepayBondAmount(
+export function getRepayAmount(
   collateralAmount: BigNumber,
   wbtcPrice: BigNumber,
   collateralDecimals: BigNumber = WBTC_DECIMALS,
@@ -71,8 +70,8 @@ export function getRepayBondAmount(
   const precisionScalar: BigNumber = getPrecisionScalar(collateralDecimals);
   const normalizedCollateralAmount: BigNumber = collateralAmount.mul(precisionScalar);
   const numerator: BigNumber = prbMul(normalizedCollateralAmount, wbtcPrice);
-  const denumerator: BigNumber = prbMul(liquidationIncentive, NORMALIZED_USDC_PRICE);
-  const repayAmount: BigNumber = prbDiv(numerator, denumerator);
+  const denominator: BigNumber = prbMul(liquidationIncentive, NORMALIZED_USDC_PRICE);
+  const repayAmount: BigNumber = prbDiv(numerator, denominator);
   return repayAmount;
 }
 
