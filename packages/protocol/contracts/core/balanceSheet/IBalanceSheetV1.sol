@@ -126,6 +126,21 @@ interface IBalanceSheetV1 is IOwnableUpgradeable {
         uint256 debtAmountModify
     ) external view returns (uint256 excessLiquidity, uint256 shortfallLiquidity);
 
+    /// @notice Calculates the amount of hTokens that should be repaid in order to seize a given amount of collateral.
+    /// Note that this is for informational purposes only, it doesn't say anything about whether the user can be
+    /// liquidated.
+    /// @dev The formula applied:
+    /// repayAmount = (seizableCollateralAmount * collateralPriceUsd) / (liquidationIncentive * underlyingPriceUsd)
+    /// @param collateral The collateral to make the query against.
+    /// @param seizableCollateralAmount The amount of collateral to seize.
+    /// @param bond The bond to make the query against.
+    /// @return repayAmount The amount of hTokens that should be repaid.
+    function getRepayAmount(
+        IErc20 collateral,
+        uint256 seizableCollateralAmount,
+        IHToken bond
+    ) external view returns (uint256 repayAmount);
+
     /// @notice Calculates the amount of collateral that can be seized when liquidating a borrow. Note that this
     /// is for informational purposes only, it doesn't say anything about whether the user can be liquidated.
     /// @dev The formula applied:

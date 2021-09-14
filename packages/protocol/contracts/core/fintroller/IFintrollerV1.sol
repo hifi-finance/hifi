@@ -235,7 +235,7 @@ interface IFintrollerV1 is IOwnableUpgradeable {
     /// - The debt ceiling cannot fall below the current total supply of hTokens.
     ///
     /// @param bond The bond to update the debt ceiling for.
-    /// @param newDebtCeiling The uint256 value of the new debt ceiling, specified in the bond's decimal system.
+    /// @param newDebtCeiling The new debt ceiling.
     function setDebtCeiling(IHToken bond, uint256 newDebtCeiling) external;
 
     /// @notice Updates the collateral liquidation incentive.

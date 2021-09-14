@@ -61,6 +61,20 @@ export function getHypotheticalAccountLiquidity(
   }
 }
 
+export function getRepayAmount(
+  collateralAmount: BigNumber,
+  wbtcPrice: BigNumber,
+  collateralDecimals: BigNumber = WBTC_DECIMALS,
+  liquidationIncentive: BigNumber = LIQUIDATION_INCENTIVES.default,
+): BigNumber {
+  const precisionScalar: BigNumber = getPrecisionScalar(collateralDecimals);
+  const normalizedCollateralAmount: BigNumber = collateralAmount.mul(precisionScalar);
+  const numerator: BigNumber = prbMul(normalizedCollateralAmount, wbtcPrice);
+  const denominator: BigNumber = prbMul(liquidationIncentive, NORMALIZED_USDC_PRICE);
+  const repayAmount: BigNumber = prbDiv(numerator, denominator);
+  return repayAmount;
+}
+
 export function getSeizableCollateralAmount(
   repayAmount: BigNumber,
   wbtcPrice: BigNumber,

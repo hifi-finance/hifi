@@ -13,6 +13,7 @@ import shouldBehaveLikeGetCollateralList from "./view/getCollateralList";
 import shouldBehaveLikeGetCurrentAccountLiquidity from "./view/getCurrentAccountLiquidity";
 import shouldBehaveLikeGetDebtAmount from "./view/getDebtAmount";
 import shouldBehaveLikeGetHypotheticalAccountLiquidity from "./view/getHypotheticalAccountLiquidity";
+import shouldBehaveLikeGetRepayAmount from "./view/getRepayAmount";
 import shouldBehaveLikeGetSeizableCollateralAmount from "./view/getSeizableCollateralAmount";
 import shouldBehaveLikeOracleGetter from "./view/oracle";
 
@@ -48,6 +49,10 @@ export function shouldBehaveLikeBalanceSheet(): void {
 
     describe("getHypotheticalAccountLiquidity", function () {
       shouldBehaveLikeGetHypotheticalAccountLiquidity();
+    });
+
+    describe("getRepayAmount", function () {
+      shouldBehaveLikeGetRepayAmount();
     });
 
     describe("getSeizableCollateralAmount", function () {
