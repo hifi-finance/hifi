@@ -20,10 +20,12 @@ import {
 import { getHTokenName, getHTokenSymbol } from "@hifi/helpers";
 import { GodModeErc20 } from "../../typechain/GodModeErc20";
 import { GodModeHToken } from "../../typechain/GodModeHToken";
-import { GodModeUniswapV2Pair } from "../../typechain/GodModeUniswapV2Pair";
 import { HifiFlashUniswapV2 } from "../../typechain/HifiFlashUniswapV2";
 import { SimplePriceFeed } from "../../typechain/SimplePriceFeed";
 import { deployGodModeErc20 } from "./deployers";
+import { Contract, utils } from "ethers";
+import { UniswapV2Factory } from "../../typechain/UniswapV2Factory";
+import { UniswapV2Pair } from "../../typechain";
 
 const { deployContract } = waffle;
 
@@ -34,7 +36,7 @@ type IntegrationFixtureReturnType = {
   hToken: GodModeHToken;
   usdc: GodModeErc20;
   usdcPriceFeed: SimplePriceFeed;
-  uniswapV2Pair: GodModeUniswapV2Pair;
+  uniswapV2Pair: UniswapV2Pair;
   wbtc: GodModeErc20;
   wbtcPriceFeed: SimplePriceFeed;
 };
@@ -70,15 +72,23 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
     ])
   );
 
-  const godModeUniswapV2PairArtifact: Artifact = await artifacts.readArtifact("GodModeUniswapV2Pair");
-  const uniswapV2Pair: GodModeUniswapV2Pair = <GodModeUniswapV2Pair>(
-    await deployContract(deployer, godModeUniswapV2PairArtifact, [])
+  const uniswapV2FactoryArtifact: Artifact = await artifacts.readArtifact("UniswapV2Factory");
+  const uniswapV2Factory: UniswapV2Factory = <UniswapV2Factory>(
+    await deployContract(deployer, uniswapV2FactoryArtifact, [await deployer.getAddress()])
   );
-  await uniswapV2Pair.initialize(wbtc.address, usdc.address);
+  await uniswapV2Factory.createPair(usdc.address, wbtc.address);
+  const pairAddress = await uniswapV2Factory.allPairs(0);
+
+  const uniswapV2PairArtifact: Artifact = await artifacts.readArtifact("UniswapV2Pair");
+  const uniswapV2Pair = new Contract(pairAddress, uniswapV2PairArtifact.abi, deployer) as UniswapV2Pair;
 
   const hifiFlashUniswapV2Artifact: Artifact = await artifacts.readArtifact("HifiFlashUniswapV2");
   const hifiFlashUniswapV2: HifiFlashUniswapV2 = <HifiFlashUniswapV2>(
-    await deployContract(deployer, hifiFlashUniswapV2Artifact, [balanceSheet.address, [uniswapV2Pair.address]])
+    await deployContract(deployer, hifiFlashUniswapV2Artifact, [
+      balanceSheet.address,
+      uniswapV2Factory.address,
+      utils.keccak256(uniswapV2PairArtifact.bytecode),
+    ])
   );
 
   return {

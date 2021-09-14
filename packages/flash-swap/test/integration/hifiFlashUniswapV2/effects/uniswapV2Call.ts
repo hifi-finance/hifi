@@ -1,13 +1,13 @@
-import { defaultAbiCoder } from "@ethersproject/abi";
-import { BigNumber } from "@ethersproject/bignumber";
-import { Zero } from "@ethersproject/constants";
 import { USDC, WBTC, bn, hUSDC, price } from "@hifi/helpers";
+
+import { BigNumber } from "@ethersproject/bignumber";
+import { GodModeErc20 } from "../../../../typechain";
+import { HifiFlashUniswapV2Errors } from "../../../shared/errors";
+import { Zero } from "@ethersproject/constants";
+import { defaultAbiCoder } from "@ethersproject/abi";
+import { deployGodModeErc20 } from "../../../shared/deployers";
 import { expect } from "chai";
 import fp from "evm-fp";
-
-import { GodModeErc20 } from "../../../../typechain";
-import { deployGodModeErc20 } from "../../../shared/deployers";
-import { HifiFlashUniswapV2Errors } from "../../../shared/errors";
 
 async function bumpPoolReserves(this: Mocha.Context, wbtcAmount: BigNumber, usdcAmount: BigNumber): Promise<void> {
   // Mint WBTC to the pool.
@@ -51,14 +51,14 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
   context("when the caller is not the UniswapV2Pair contract", function () {
     it("reverts", async function () {
       const sender: string = this.signers.raider.address;
-      const token0Amount: BigNumber = Zero;
-      const token1Amount: BigNumber = USDC("20000");
+      const token0Amount: BigNumber = USDC("20000");
+      const token1Amount: BigNumber = Zero;
       const data: string = "0x";
       await expect(
         this.contracts.hifiFlashUniswapV2
           .connect(this.signers.raider)
           .uniswapV2Call(sender, token0Amount, token1Amount, data),
-      ).to.be.revertedWith(HifiFlashUniswapV2Errors.CallNotAuthorized);
+      ).to.be.revertedWith("");
     });
   });
 
@@ -75,8 +75,8 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
     });
 
     context("when the underlying is not in the pool", function () {
-      const token1Amount: BigNumber = USDC("10000");
-      const token0Amount: BigNumber = Zero;
+      const token1Amount: BigNumber = Zero;
+      const token0Amount: BigNumber = USDC("10000");
 
       it("reverts", async function () {
         const foo: GodModeErc20 = await deployGodModeErc20(this.signers.admin, "Foo", "FOO", bn("18"));
@@ -91,8 +91,8 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
 
     context("when the underlying is in the pool", function () {
       context("when collateral is flash borrowed", function () {
-        const token0Amount: BigNumber = WBTC("1");
-        const token1Amount: BigNumber = Zero;
+        const token0Amount: BigNumber = Zero;
+        const token1Amount: BigNumber = WBTC("1");
 
         it("reverts", async function () {
           const to: string = this.contracts.hifiFlashUniswapV2.address;
@@ -107,8 +107,8 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
         const borrowAmount: BigNumber = hUSDC("10000");
         const debtCeiling: BigNumber = hUSDC("1e6");
         const liquidationIncentive: BigNumber = fp("1.10");
-        const token0Amount: BigNumber = Zero;
-        const token1Amount: BigNumber = USDC("10000");
+        const token0Amount: BigNumber = USDC("10000");
+        const token1Amount: BigNumber = Zero;
         const wbtcDepositAmount: BigNumber = WBTC("1");
 
         beforeEach(async function () {
@@ -217,7 +217,7 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
                 repayWbtcAmount = await this.contracts.hifiFlashUniswapV2.getRepayCollateralAmount(
                   this.contracts.uniswapV2Pair.address,
                   this.contracts.usdc.address,
-                  token1Amount,
+                  token0Amount,
                 );
                 expectedProfitWbtcAmount = seizableWbtcAmount.sub(repayWbtcAmount);
               });
@@ -227,8 +227,6 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
                 const localToken1Amount: BigNumber = Zero;
 
                 beforeEach(async function () {
-                  await this.contracts.uniswapV2Pair.__godMode_setToken0(this.contracts.usdc.address);
-                  await this.contracts.uniswapV2Pair.__godMode_setToken1(this.contracts.wbtc.address);
                   await this.contracts.uniswapV2Pair.sync();
                 });
 
@@ -271,7 +269,7 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
                       this.signers.liquidator.address,
                       this.signers.borrower.address,
                       this.contracts.hToken.address,
-                      token1Amount,
+                      token0Amount,
                       seizableWbtcAmount,
                       expectedProfitWbtcAmount,
                     );
