@@ -1,4 +1,5 @@
 import { BigNumber } from "@ethersproject/bignumber";
+import { Zero } from "@ethersproject/constants";
 import { EPSILON, G1, MAX_UD60x18, SCALE } from "@hifi/constants";
 import { bn, getDaysInSeconds, getYearsInSeconds, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
@@ -11,7 +12,7 @@ import { getYieldExponent, inForOut } from "../../../shared/mirrors";
 export default function shouldBehaveLikeUnderlyingInForHTokenOut(): void {
   context("when too many hTokens out", function () {
     const testSets = [
-      [hUSDC("0"), fp("0"), hUSDC("1"), bn("0")],
+      [Zero, Zero, hUSDC("1"), Zero],
       [hUSDC("120"), fp("100"), hUSDC("120.000000000000000001"), bn(getYearsInSeconds(1))],
     ];
 

@@ -1,6 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
+import { Zero } from "@ethersproject/constants";
 import { EPSILON, H_TOKEN_MATURITY_ONE_YEAR } from "@hifi/constants";
-import { USDC, bn, getNow, hUSDC } from "@hifi/helpers";
+import { USDC, getNow, hUSDC } from "@hifi/helpers";
 import { add, div } from "@hifi/helpers/dist/math";
 import { expect } from "chai";
 import fp from "evm-fp";
@@ -45,7 +46,7 @@ async function testSellUnderlying(
 export default function shouldBehaveLikeSellUnderlying(): void {
   context("when the amount of underlying to sell is zero", function () {
     it("reverts", async function () {
-      const hTokenOut: BigNumber = bn("0");
+      const hTokenOut: BigNumber = Zero;
       await expect(
         this.contracts.hifiPool.connect(this.signers.alice).sellUnderlying(this.signers.alice.address, hTokenOut),
       ).to.be.revertedWith(HifiPoolErrors.SellUnderlyingZero);

@@ -224,7 +224,7 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
 
               context("when the token0 is the underlying", function () {
                 const localToken0Amount: BigNumber = USDC("10000");
-                const localToken1Amount: BigNumber = WBTC("0");
+                const localToken1Amount: BigNumber = Zero;
 
                 beforeEach(async function () {
                   await this.contracts.uniswapV2Pair.__godMode_setToken0(this.contracts.usdc.address);

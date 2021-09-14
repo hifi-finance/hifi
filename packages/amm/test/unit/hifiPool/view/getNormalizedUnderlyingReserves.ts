@@ -1,4 +1,5 @@
 import { BigNumber } from "@ethersproject/bignumber";
+import { Zero } from "@ethersproject/constants";
 import { MAX_UD60x18, USDC_PRICE_PRECISION_SCALAR } from "@hifi/constants";
 import { USDC, bn } from "@hifi/helpers";
 import { expect } from "chai";
@@ -8,12 +9,12 @@ import forEach from "mocha-each";
 export default function shouldBehaveLikeGetNormalizedUnderlyingReserves(): void {
   context("when there is no underlying in the pool", function () {
     beforeEach(async function () {
-      await this.mocks.underlying.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(bn("0"));
+      await this.mocks.underlying.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(Zero);
     });
 
     it("returns 0", async function () {
       const result: BigNumber = await this.contracts.hifiPool.getNormalizedUnderlyingReserves();
-      expect(bn("0")).to.equal(result);
+      expect(Zero).to.equal(result);
     });
   });
 

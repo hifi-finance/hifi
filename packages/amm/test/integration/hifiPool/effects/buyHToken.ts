@@ -1,6 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
+import { Zero } from "@ethersproject/constants";
 import { H_TOKEN_MATURITY_ONE_YEAR } from "@hifi/constants";
-import { USDC, bn, getNow, hUSDC } from "@hifi/helpers";
+import { USDC, getNow, hUSDC } from "@hifi/helpers";
 import { add, div, sub } from "@hifi/helpers/dist/math";
 import { expect } from "chai";
 import forEach from "mocha-each";
@@ -42,7 +43,7 @@ async function testBuyHToken(
 export default function shouldBehaveLikeBuyHToken(): void {
   context("when the amount of hTokens to buy is zero", function () {
     it("reverts", async function () {
-      const hTokenOut: BigNumber = bn("0");
+      const hTokenOut: BigNumber = Zero;
       await expect(
         this.contracts.hifiPool.connect(this.signers.alice).buyHToken(this.signers.alice.address, hTokenOut),
       ).to.be.revertedWith(HifiPoolErrors.BuyHTokenZero);

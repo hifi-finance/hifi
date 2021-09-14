@@ -1,4 +1,5 @@
 import { BigNumber } from "@ethersproject/bignumber";
+import { Zero } from "@ethersproject/constants";
 import { MAX_UD60x18 } from "@hifi/constants";
 import { bn, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
@@ -10,7 +11,7 @@ import { HifiPoolErrors } from "../../../shared/errors";
 export default function shouldBehaveLikeGetVirtualHTokenReserves(): void {
   context("when there is no hToken in the pool", function () {
     beforeEach(async function () {
-      await this.mocks.hToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(bn("0"));
+      await this.mocks.hToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(Zero);
     });
 
     const testSets = [[bn("1"), fp("100"), fp("1729"), [fp(MAX_UD60x18)]]];

@@ -1,16 +1,17 @@
-import { H_TOKEN_MATURITY_ONE_YEAR, USDC_PRICE_PRECISION_SCALAR } from "@hifi/constants";
-import { USDC, bn, hUSDC } from "@hifi/helpers";
-
 import { BigNumber } from "@ethersproject/bignumber";
-import { HifiPoolErrors } from "../../../shared/errors";
+import { Zero } from "@ethersproject/constants";
+import { H_TOKEN_MATURITY_ONE_YEAR, USDC_PRICE_PRECISION_SCALAR } from "@hifi/constants";
+import { USDC, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
-import forEach from "mocha-each";
 import fp from "evm-fp";
+import forEach from "mocha-each";
+
+import { HifiPoolErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeBurn(): void {
   context("when the LP tokens returned are 0", function () {
     it("reverts", async function () {
-      const poolTokensBurned: BigNumber = bn("0");
+      const poolTokensBurned: BigNumber = Zero;
       await expect(this.contracts.hifiPool.connect(this.signers.alice).burn(poolTokensBurned)).to.be.revertedWith(
         HifiPoolErrors.BurnZero,
       );
@@ -20,8 +21,8 @@ export default function shouldBehaveLikeBurn(): void {
   context("when the LP tokens returned are not 0", function () {
     context("when the total supply is 0", function () {
       it("reverts", async function () {
-        await this.mocks.underlying.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(bn("0"));
-        await this.mocks.hToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(bn("0"));
+        await this.mocks.underlying.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(Zero);
+        await this.mocks.hToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(Zero);
         const poolTokensBurned: BigNumber = fp("100");
         await expect(this.contracts.hifiPool.connect(this.signers.alice).burn(poolTokensBurned)).to.be.reverted;
       });
@@ -37,7 +38,7 @@ export default function shouldBehaveLikeBurn(): void {
 
         const testSets = [
           // Makes "poolTokensBurned * normalizedUnderlyingReserves" overflow.
-          [hUSDC("0"), fp("1157920892373161954235709850086879078532.699846656405640395")],
+          [Zero, fp("1157920892373161954235709850086879078532.699846656405640395")],
           // Makes "poolTokensBurned * hTokenReserves" overflow.
           [hUSDC("1157920892373161954235709850086879078532.699846656405640395"), fp("100")],
         ];
@@ -54,7 +55,7 @@ export default function shouldBehaveLikeBurn(): void {
       context("when there is no phantom overflow", function () {
         context("when there are no hToken reserves", function () {
           beforeEach(async function () {
-            await this.mocks.hToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(bn("0"));
+            await this.mocks.hToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(Zero);
           });
 
           const testSets = [
@@ -79,7 +80,7 @@ export default function shouldBehaveLikeBurn(): void {
               .mul(normalizedUnderlyingReserves)
               .div(lpTokenMintAmount)
               .div(USDC_PRICE_PRECISION_SCALAR);
-            const hTokenReturned: BigNumber = bn("0");
+            const hTokenReturned: BigNumber = Zero;
 
             // Mock the necessary methods.
             await this.mocks.underlying.mock.balanceOf

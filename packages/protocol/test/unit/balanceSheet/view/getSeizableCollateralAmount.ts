@@ -32,7 +32,7 @@ export default function shouldBehaveLikeGetSeizableCollateralAmount(): void {
 
     context("when the repay amount is zero", function () {
       it("returns zero", async function () {
-        const repayAmount: BigNumber = hUSDC("0");
+        const repayAmount: BigNumber = Zero;
         const seizableCollateralAmount: BigNumber = await this.contracts.balanceSheet.getSeizableCollateralAmount(
           this.mocks.hTokens[0].address,
           repayAmount,

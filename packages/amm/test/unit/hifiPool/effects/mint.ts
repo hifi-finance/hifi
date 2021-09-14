@@ -1,6 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
+import { Zero } from "@ethersproject/constants";
 import { H_TOKEN_MATURITY_ONE_YEAR } from "@hifi/constants";
-import { USDC, bn, hUSDC, getNow } from "@hifi/helpers";
+import { USDC, getNow, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 import fp from "evm-fp";
 import forEach from "mocha-each";
@@ -15,7 +16,7 @@ export default function shouldBehaveLikeMint(): void {
     });
 
     it("reverts", async function () {
-      const underlyingOffered: BigNumber = bn("0");
+      const underlyingOffered: BigNumber = Zero;
       await expect(this.contracts.hifiPool.connect(this.signers.alice).mint(underlyingOffered)).to.be.revertedWith(
         HifiPoolErrors.BondMatured,
       );
@@ -25,7 +26,7 @@ export default function shouldBehaveLikeMint(): void {
   context("when the bond did not mature", function () {
     context("when the underlying offered is 0", function () {
       it("reverts", async function () {
-        const underlyingOffered: BigNumber = bn("0");
+        const underlyingOffered: BigNumber = Zero;
         await expect(this.contracts.hifiPool.connect(this.signers.alice).mint(underlyingOffered)).to.be.revertedWith(
           HifiPoolErrors.MintZero,
         );
@@ -48,7 +49,7 @@ export default function shouldBehaveLikeMint(): void {
             .returns(true);
 
           const underlyingAmount: BigNumber = USDC(underlyingOffered);
-          const hTokenRequired: BigNumber = bn("0");
+          const hTokenRequired: BigNumber = Zero;
           const poolTokensMinted: BigNumber = fp(underlyingOffered);
 
           await expect(this.contracts.hifiPool.connect(this.signers.alice).mint(USDC(underlyingOffered)))
@@ -79,7 +80,7 @@ export default function shouldBehaveLikeMint(): void {
         context("when there is phantom overflow", function () {
           const testSets = [
             // Makes "supply * normalizedUnderlyingOffered" overflow.
-            [hUSDC("0"), USDC("1157920892373161954235709850086879078532.699847")],
+            [Zero, USDC("1157920892373161954235709850086879078532.699847")],
             // Makes "hTokenReserves * poolTokensMinted" overflow.
             [hUSDC("1157920892373161954235709850086879078532.699846656405640395"), USDC("100")],
           ];
@@ -96,7 +97,7 @@ export default function shouldBehaveLikeMint(): void {
         context("when there is no phantom overflow", function () {
           context("when there are no hToken reserves", function () {
             beforeEach(async function () {
-              await this.mocks.hToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(bn("0"));
+              await this.mocks.hToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(Zero);
             });
 
             const testSets = [
@@ -110,7 +111,7 @@ export default function shouldBehaveLikeMint(): void {
             forEach(testSets).it("takes %e and mints the LP tokens", async function (underlyingOffered: string) {
               // Calculate the arguments emitted in the event.
               const underlyingAmount: BigNumber = USDC(underlyingOffered);
-              const hTokenRequired: BigNumber = bn("0");
+              const hTokenRequired: BigNumber = Zero;
               const poolTokensMinted: BigNumber = initialLpTokenSupply
                 .mul(fp(underlyingOffered))
                 .div(initialNormalizedUnderlyingDeposit);
