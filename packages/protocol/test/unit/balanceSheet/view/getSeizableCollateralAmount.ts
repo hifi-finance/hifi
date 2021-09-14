@@ -7,11 +7,9 @@ import { expect } from "chai";
 import { getSeizableCollateralAmount } from "../../../shared/mirrors";
 
 export default function shouldBehaveLikeGetSeizableCollateralAmount(): void {
-  context("when the liquidation incentive is 100%", function () {
+  context("when the liquidation incentive is zero", function () {
     beforeEach(async function () {
-      await this.mocks.fintroller.mock.getLiquidationIncentive
-        .withArgs(this.mocks.wbtc.address)
-        .returns(LIQUIDATION_INCENTIVES.lowerBound);
+      await this.mocks.fintroller.mock.getLiquidationIncentive.withArgs(this.mocks.wbtc.address).returns(Zero);
     });
 
     it("returns zero", async function () {
@@ -25,7 +23,7 @@ export default function shouldBehaveLikeGetSeizableCollateralAmount(): void {
     });
   });
 
-  context("when the liquidation incentive is not 100%", function () {
+  context("when the liquidation incentive is not zero", function () {
     beforeEach(async function () {
       await this.mocks.fintroller.mock.getLiquidationIncentive
         .withArgs(this.mocks.wbtc.address)

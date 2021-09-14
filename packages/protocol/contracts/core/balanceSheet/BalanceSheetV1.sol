@@ -179,7 +179,9 @@ contract BalanceSheetV1 is
             }
 
             // Normalize the collateral amount.
-            vars.precisionScalar = 10**(18 - collateral.decimals());
+            unchecked {
+                vars.precisionScalar = 10**(18 - collateral.decimals());
+            }
             if (vars.precisionScalar != 1) {
                 vars.normalizedCollateralAmount = vars.collateralAmount * vars.precisionScalar;
             } else {
@@ -274,13 +276,6 @@ contract BalanceSheetV1 is
         uint256 repayAmount,
         IErc20 collateral
     ) public view override returns (uint256 seizableCollateralAmount) {
-        // When the liquidation incentive is 100%, which is Fintroller.LIQUIDATION_INCENTIVE_LOWER_BOUND, the
-        // result is zero.
-        uint256 liquidationIncentive = fintroller.getLiquidationIncentive(collateral);
-        if (liquidationIncentive == 1.0e18) {
-            return 0;
-        }
-
         // Grab the normalized USD price of the collateral.
         uint256 normalizedCollateralPrice = oracle.getNormalizedPrice(collateral.symbol());
 
@@ -288,19 +283,20 @@ contract BalanceSheetV1 is
         uint256 normalizedUnderlyingPrice = oracle.getNormalizedPrice(bond.underlying().symbol());
 
         // Calculate the top part of the equation.
+        uint256 liquidationIncentive = fintroller.getLiquidationIncentive(collateral);
         uint256 numerator = repayAmount.mul(liquidationIncentive.mul(normalizedUnderlyingPrice));
 
         // Calculate the normalized seizable collateral amount.
         uint256 normalizedSeizableCollateralAmount = numerator.div(normalizedCollateralPrice);
 
         // Denormalize the collateral amount.
-        uint256 collateralPrecisionScalar = 10**(18 - collateral.decimals());
-        if (collateralPrecisionScalar != 1) {
-            unchecked {
+        unchecked {
+            uint256 collateralPrecisionScalar = 10**(18 - collateral.decimals());
+            if (collateralPrecisionScalar != 1) {
                 seizableCollateralAmount = normalizedSeizableCollateralAmount / collateralPrecisionScalar;
+            } else {
+                seizableCollateralAmount = normalizedSeizableCollateralAmount;
             }
-        } else {
-            seizableCollateralAmount = normalizedSeizableCollateralAmount;
         }
     }
 
