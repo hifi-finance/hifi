@@ -986,7 +986,7 @@ __metadata:
     "@nomiclabs/hardhat-ethers": ^2.0.2
     "@nomiclabs/hardhat-etherscan": ^2.1.6
     "@nomiclabs/hardhat-waffle": ^2.0.1
-    "@paulrberg/contracts": 3.5.1
+    "@paulrberg/contracts": 3.5.2
     "@typechain/ethers-v5": ^7.0.1
     "@typechain/hardhat": ^2.3.0
     "@types/chai": ^4.2.21
@@ -1026,7 +1026,7 @@ __metadata:
     typescript: ^4.4.2
   peerDependencies:
     "@hifi/protocol": 1.4.0
-    "@paulrberg/contracts": 3.5.1
+    "@paulrberg/contracts": 3.5.2
     ethers: ^5.4.4
     prb-math: 2.2.0
   languageName: unknown
@@ -1114,7 +1114,7 @@ __metadata:
     "@nomiclabs/hardhat-ethers": ^2.0.2
     "@nomiclabs/hardhat-etherscan": ^2.1.6
     "@nomiclabs/hardhat-waffle": ^2.0.1
-    "@paulrberg/contracts": 3.5.1
+    "@paulrberg/contracts": 3.5.2
     "@typechain/ethers-v5": ^7.0.1
     "@typechain/hardhat": ^2.3.0
     "@types/chai": ^4.2.21
@@ -1151,7 +1151,7 @@ __metadata:
     typescript: ^4.4.2
   peerDependencies:
     "@hifi/protocol": 1.4.0
-    "@paulrberg/contracts": 3.5.1
+    "@paulrberg/contracts": 3.5.2
     "@uniswap/v2-core": 1.0.1
     ethers: ^5.4.4
   languageName: unknown
@@ -1212,7 +1212,7 @@ __metadata:
     "@nomiclabs/hardhat-waffle": ^2.0.1
     "@openzeppelin/contracts-upgradeable": 4.3.1
     "@openzeppelin/hardhat-upgrades": ^1.10.0
-    "@paulrberg/contracts": 3.5.1
+    "@paulrberg/contracts": 3.5.2
     "@typechain/ethers-v5": ^7.0.1
     "@typechain/hardhat": ^2.3.0
     "@types/chai": ^4.2.21
@@ -1251,7 +1251,7 @@ __metadata:
     typescript: ^4.4.2
   peerDependencies:
     "@openzeppelin/contracts-upgradeable": 4.2.0
-    "@paulrberg/contracts": 3.5.1
+    "@paulrberg/contracts": 3.5.2
     ethers: ^5.4.4
     prb-math: 2.2.0
   languageName: unknown
@@ -1285,7 +1285,7 @@ __metadata:
     "@hifi/helpers": "workspace:*"
     "@hifi/protocol": 1.4.0
     "@nomiclabs/hardhat-etherscan": ^2.1.6
-    "@paulrberg/contracts": 3.5.1
+    "@paulrberg/contracts": 3.5.2
     "@typechain/ethers-v5": ^7.0.1
     "@typechain/hardhat": ^2.3.0
     "@types/node": ^16.7.10
@@ -1312,7 +1312,7 @@ __metadata:
   peerDependencies:
     "@hifi/amm": 1.4.0
     "@hifi/protocol": 1.4.0
-    "@paulrberg/contracts": 3.5.1
+    "@paulrberg/contracts": 3.5.2
     ethers: ^5.4.4
   languageName: unknown
   linkType: soft
@@ -1469,14 +1469,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@paulrberg/contracts@npm:3.5.1":
-  version: 3.5.1
-  resolution: "@paulrberg/contracts@npm:3.5.1"
+"@paulrberg/contracts@npm:3.5.2":
+  version: 3.5.2
+  resolution: "@paulrberg/contracts@npm:3.5.2"
   dependencies:
     prb-math: ^2.2.0
   peerDependencies:
     prb-math: ^2.2.0
-  checksum: 1fa3c8fecc6bb6761512a119cede140632bcd90ad5d1a8c6bdcb5110f99077b8282bde009b03f0084aa12e58b32018ab486939ab24d8e98d547194c6ba509916
+  checksum: 1ce4da9edca78318ae4665126e49e4f305938b945e62c6030a504940f7bc1dc3dc886daf6106c980ebb964726e6c207c3ac6902e1bc41325631af6f442a47431
   languageName: node
   linkType: hard
 
