@@ -1108,6 +1108,7 @@ __metadata:
     "@ethersproject/bytes": ^5.4.0
     "@ethersproject/constants": ^5.4.0
     "@ethersproject/contracts": ^5.4.1
+    "@ethersproject/keccak256": ^5.4.0
     "@ethersproject/providers": ^5.4.5
     "@hifi/helpers": "workspace:*"
     "@hifi/protocol": 1.4.0

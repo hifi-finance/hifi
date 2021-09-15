@@ -37,14 +37,20 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
     IBalanceSheetV1 public override balanceSheet;
 
     /// @inheritdoc IHifiFlashUniswapV2
-    mapping(address => IUniswapV2Pair) public override pairs;
+    address public override uniV2Factory;
+
+    /// @inheritdoc IHifiFlashUniswapV2
+    bytes32 public override uniV2PairInitCodeHash;
 
     /// CONSTRUCTOR ///
-    constructor(IBalanceSheetV1 balanceSheet_, address[] memory pairs_) {
+    constructor(
+        IBalanceSheetV1 balanceSheet_,
+        address uniV2Factory_,
+        bytes32 uniV2PairInitCodeHash_
+    ) {
         balanceSheet = IBalanceSheetV1(balanceSheet_);
-        for (uint256 i = 0; i < pairs_.length; i++) {
-            pairs[pairs_[i]] = IUniswapV2Pair(pairs_[i]);
-        }
+        uniV2Factory = uniV2Factory_;
+        uniV2PairInitCodeHash = uniV2PairInitCodeHash_;
     }
 
     /// PUBLIC CONSTANT FUNCTIONS ////
@@ -109,27 +115,32 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
         uint256 amount1,
         bytes calldata data
     ) external override {
-        if (msg.sender != address(pairs[msg.sender])) {
-            revert HifiFlashUniswapV2__CallNotAuthorized(msg.sender);
-        }
-
         // Unpack the ABI encoded data passed by the UniswapV2Pair contract.
         (address borrower, IHToken bond, uint256 minProfit) = abi.decode(data, (address, IHToken, uint256));
 
         // Figure out which token is the collateral and which token is the underlying.
         IErc20 underlying = bond.underlying();
         (IErc20 collateral, uint256 underlyingAmount) = getCollateralAndUnderlyingAmount(
-            pairs[msg.sender],
+            IUniswapV2Pair(msg.sender),
             amount0,
             amount1,
             underlying
         );
 
+        // Check that the caller is a genuine UniswapV2Pair contract.
+        if (msg.sender != pairFor(address(underlying), address(collateral))) {
+            revert HifiFlashUniswapV2__CallNotAuthorized(msg.sender);
+        }
+
         // Mint hTokens and liquidate the borrower.
         uint256 seizedCollateralAmount = mintAndLiquidateBorrow(borrower, bond, underlyingAmount, collateral);
 
         // Calculate the amount of collateral required to repay.
-        uint256 repayCollateralAmount = getRepayCollateralAmount(pairs[msg.sender], underlying, underlyingAmount);
+        uint256 repayCollateralAmount = getRepayCollateralAmount(
+            IUniswapV2Pair(msg.sender),
+            underlying,
+            underlyingAmount
+        );
         if (seizedCollateralAmount <= repayCollateralAmount + minProfit) {
             revert HifiFlashUniswapV2__InsufficientProfit(seizedCollateralAmount, repayCollateralAmount, minProfit);
         }
@@ -152,6 +163,27 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
         );
     }
 
+    /// INTERNAL CONSTANT FUNCTIONS ///
+
+    /// @dev Calculates the CREATE2 address for a pair without making any external calls.
+    function pairFor(address tokenA, address tokenB) internal view returns (address pair) {
+        (address token0, address token1) = tokenA < tokenB ? (tokenA, tokenB) : (tokenB, tokenA);
+        pair = address(
+            uint160(
+                uint256(
+                    keccak256(
+                        abi.encodePacked(
+                            hex"ff",
+                            uniV2Factory,
+                            keccak256(abi.encodePacked(token0, token1)),
+                            uniV2PairInitCodeHash
+                        )
+                    )
+                )
+            )
+        );
+    }
+
     /// INTERNAL NON-CONSTANT FUNCTIONS ///
 
     /// @dev Performs two operations:
@@ -166,19 +198,19 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
     ) internal returns (uint256 seizedCollateralAmount) {
         IErc20 underlying = bond.underlying();
 
-        // Allow the HToken contract to spend USDC if allowance not enough.
+        // Allow the HToken contract to spend underlying if allowance not enough.
         uint256 allowance = underlying.allowance(address(this), address(bond));
         if (allowance < underlyingAmount) {
             underlying.approve(address(bond), type(uint256).max);
         }
 
         // Mint hTokens.
-        uint256 oldHTokenBalance = bond.balanceOf(address(this));
+        uint256 preHTokenBalance = bond.balanceOf(address(this));
         bond.supplyUnderlying(underlyingAmount);
-        uint256 newHTokenBalance = bond.balanceOf(address(this));
+        uint256 postHTokenBalance = bond.balanceOf(address(this));
         uint256 mintedHTokenAmount;
         unchecked {
-            mintedHTokenAmount = newHTokenBalance - oldHTokenBalance;
+            mintedHTokenAmount = postHTokenBalance - preHTokenBalance;
         }
 
         // Liquidate borrow with the newly minted hTokens.

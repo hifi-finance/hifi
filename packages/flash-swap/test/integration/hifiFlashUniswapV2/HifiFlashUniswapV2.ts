@@ -9,6 +9,7 @@ export function integrationTestHifiFlashUniswapV2(): void {
         fintroller,
         hToken,
         hifiFlashUniswapV2,
+        maliciousPair,
         oracle,
         usdc,
         usdcPriceFeed,
@@ -20,6 +21,7 @@ export function integrationTestHifiFlashUniswapV2(): void {
       this.contracts.fintroller = fintroller;
       this.contracts.hToken = hToken;
       this.contracts.hifiFlashUniswapV2 = hifiFlashUniswapV2;
+      this.contracts.maliciousPair = maliciousPair;
       this.contracts.oracle = oracle;
       this.contracts.usdc = usdc;
       this.contracts.usdcPriceFeed = usdcPriceFeed;

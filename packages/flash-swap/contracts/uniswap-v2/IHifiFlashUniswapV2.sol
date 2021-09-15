@@ -65,6 +65,9 @@ interface IHifiFlashUniswapV2 is IUniswapV2Callee {
         uint256 underlyingAmount
     ) external view returns (uint256 collateralRepayAmount);
 
-    /// @notice Mapping between the raw address of the pair contract and the interfaced pair contract.
-    function pairs(address pair) external view returns (IUniswapV2Pair);
+    /// @notice The address of the UniswapV2Factory contract.
+    function uniV2Factory() external view returns (address);
+
+    /// @notice The init code hash of the UniswapV2Pair contract.
+    function uniV2PairInitCodeHash() external view returns (bytes32);
 }
