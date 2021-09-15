@@ -1,11 +1,16 @@
 import * as core from "@actions/core";
-import { SimplePriceFeed } from "@hifi/protocol/typechain/SimplePriceFeed";
-import { SimplePriceFeed__factory } from "@hifi/protocol/typechain/factories/SimplePriceFeed__factory";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { task, types } from "hardhat/config";
-import { TaskArguments } from "hardhat/types";
 
-import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_SIMPLE_PRICE_FEED } from "../../helpers/constants";
+import {
+  DETERMINISTIC_DEPLOYMENT_PROXY_ADDRESS,
+  SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS,
+  TASK_DEPLOY_CONTRACT_SIMPLE_PRICE_FEED,
+} from "../../helpers/constants";
+import { TransactionRequest, TransactionResponse } from "@ethersproject/abstract-provider";
+import { task, types } from "hardhat/config";
+
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { SimplePriceFeed__factory } from "@hifi/protocol/typechain/factories/SimplePriceFeed__factory";
+import { TaskArguments } from "hardhat/types";
 
 task(TASK_DEPLOY_CONTRACT_SIMPLE_PRICE_FEED)
   // Contract arguments
@@ -17,19 +22,23 @@ task(TASK_DEPLOY_CONTRACT_SIMPLE_PRICE_FEED)
   .setAction(async function (taskArgs: TaskArguments, { ethers, run }): Promise<string> {
     const signers: SignerWithAddress[] = await ethers.getSigners();
     const simplePriceFeedFactory: SimplePriceFeed__factory = new SimplePriceFeed__factory(signers[0]);
-    const simplePriceFeed: SimplePriceFeed = <SimplePriceFeed>await simplePriceFeedFactory.deploy(taskArgs.description);
+    const deploymentTx: TransactionRequest = simplePriceFeedFactory.getDeployTransaction(taskArgs.description);
+    deploymentTx.to = DETERMINISTIC_DEPLOYMENT_PROXY_ADDRESS;
+    const contractAddress: string = await signers[0].call(deploymentTx);
+    const txResponse: TransactionResponse = await signers[0].sendTransaction(deploymentTx);
 
     await run(SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, {
-      contract: simplePriceFeed,
+      factory: simplePriceFeedFactory,
       confirmations: taskArgs.confirmations,
+      txResponse: txResponse,
     });
 
     if (taskArgs.setOutput) {
-      core.setOutput("simple-price-feed", simplePriceFeed.address);
+      core.setOutput("simple-price-feed", contractAddress);
     }
     if (taskArgs.printAddress) {
-      console.table([{ name: "SimplePriceFeed", address: simplePriceFeed.address }]);
+      console.table([{ name: "SimplePriceFeed", address: contractAddress }]);
     }
 
-    return simplePriceFeed.address;
+    return contractAddress;
   });

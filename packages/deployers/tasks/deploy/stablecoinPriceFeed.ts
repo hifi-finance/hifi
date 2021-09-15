@@ -1,14 +1,16 @@
 import * as core from "@actions/core";
-import { StablecoinPriceFeed } from "@hifi/protocol/typechain/StablecoinPriceFeed";
-import { StablecoinPriceFeed__factory } from "@hifi/protocol/typechain/factories/StablecoinPriceFeed__factory";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { task, types } from "hardhat/config";
-import { TaskArguments } from "hardhat/types";
 
 import {
+  DETERMINISTIC_DEPLOYMENT_PROXY_ADDRESS,
   SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS,
   TASK_DEPLOY_CONTRACT_STABLECOIN_PRICE_FEED,
 } from "../../helpers/constants";
+import { TransactionRequest, TransactionResponse } from "@ethersproject/abstract-provider";
+import { task, types } from "hardhat/config";
+
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { StablecoinPriceFeed__factory } from "@hifi/protocol/typechain/factories/StablecoinPriceFeed__factory";
+import { TaskArguments } from "hardhat/types";
 
 task(TASK_DEPLOY_CONTRACT_STABLECOIN_PRICE_FEED)
   // Contract arguments
@@ -21,20 +23,26 @@ task(TASK_DEPLOY_CONTRACT_STABLECOIN_PRICE_FEED)
   .setAction(async function (taskArgs: TaskArguments, { ethers, run }): Promise<string> {
     const signers: SignerWithAddress[] = await ethers.getSigners();
     const stablecoinPriceFeedFactory: StablecoinPriceFeed__factory = new StablecoinPriceFeed__factory(signers[0]);
-    const stablecoinPriceFeed: StablecoinPriceFeed = <StablecoinPriceFeed>(
-      await stablecoinPriceFeedFactory.deploy(taskArgs.price, taskArgs.description)
+
+    const deploymentTx: TransactionRequest = stablecoinPriceFeedFactory.getDeployTransaction(
+      taskArgs.price,
+      taskArgs.description,
     );
+    deploymentTx.to = DETERMINISTIC_DEPLOYMENT_PROXY_ADDRESS;
+    const contractAddress: string = await signers[0].call(deploymentTx);
+    const txResponse: TransactionResponse = await signers[0].sendTransaction(deploymentTx);
 
     await run(SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, {
-      contract: stablecoinPriceFeed,
+      factory: stablecoinPriceFeedFactory,
       confirmations: taskArgs.confirmations,
+      txResponse: txResponse,
     });
 
     if (taskArgs.setOutput) {
-      core.setOutput("stablecoin-price-feed", stablecoinPriceFeed.address);
+      core.setOutput("stablecoin-price-feed", contractAddress);
     }
     if (taskArgs.printAddress) {
-      console.table([{ name: "StablecoinPriceFeed", address: stablecoinPriceFeed.address }]);
+      console.table([{ name: "StablecoinPriceFeed", address: contractAddress }]);
     }
-    return stablecoinPriceFeed.address;
+    return contractAddress;
   });

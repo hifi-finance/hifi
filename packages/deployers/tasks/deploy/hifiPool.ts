@@ -1,11 +1,16 @@
 import * as core from "@actions/core";
-import { task, types } from "hardhat/config";
-import { TaskArguments } from "hardhat/types";
-import { HifiPool__factory } from "@hifi/amm/typechain/factories/HifiPool__factory";
-import { HifiPool } from "@hifi/amm/typechain/HifiPool";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_HIFI_POOL } from "../../helpers/constants";
+import {
+  DETERMINISTIC_DEPLOYMENT_PROXY_ADDRESS,
+  SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS,
+  TASK_DEPLOY_CONTRACT_HIFI_POOL,
+} from "../../helpers/constants";
+import { TransactionRequest, TransactionResponse } from "@ethersproject/abstract-provider";
+import { task, types } from "hardhat/config";
+
+import { HifiPool__factory } from "@hifi/amm/typechain/factories/HifiPool__factory";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { TaskArguments } from "hardhat/types";
 
 task(TASK_DEPLOY_CONTRACT_HIFI_POOL)
   // Contract arguments
@@ -19,16 +24,28 @@ task(TASK_DEPLOY_CONTRACT_HIFI_POOL)
   .setAction(async function (taskArgs: TaskArguments, { ethers, run }): Promise<string> {
     const signers: SignerWithAddress[] = await ethers.getSigners();
     const hifiPoolFactory: HifiPool__factory = new HifiPool__factory(signers[0]);
-    const hifiPool: HifiPool = <HifiPool>await hifiPoolFactory.deploy(taskArgs.name, taskArgs.symbol, taskArgs.hToken);
+    const deploymentTx: TransactionRequest = hifiPoolFactory.getDeployTransaction(
+      taskArgs.name,
+      taskArgs.symbol,
+      taskArgs.hToken,
+    );
 
-    await run(SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, { contract: hifiPool, confirmations: taskArgs.confirmations });
+    deploymentTx.to = DETERMINISTIC_DEPLOYMENT_PROXY_ADDRESS;
+    const contractAddress: string = await signers[0].call(deploymentTx);
+    const txResponse: TransactionResponse = await signers[0].sendTransaction(deploymentTx);
+
+    await run(SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, {
+      factory: hifiPoolFactory,
+      confirmations: taskArgs.confirmations,
+      txResponse: txResponse,
+    });
 
     if (taskArgs.setOutput) {
-      core.setOutput("hifi-pool", hifiPool.address);
+      core.setOutput("hifi-pool", contractAddress);
     }
     if (taskArgs.printAddress) {
-      console.table([{ name: "HifiPool", address: hifiPool.address }]);
+      console.table([{ name: "HifiPool", address: contractAddress }]);
     }
 
-    return hifiPool.address;
+    return contractAddress;
   });

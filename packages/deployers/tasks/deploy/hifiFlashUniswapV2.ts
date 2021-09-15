@@ -1,14 +1,16 @@
 import * as core from "@actions/core";
-import { HifiFlashUniswapV2 } from "@hifi/flash-swap/typechain/HifiFlashUniswapV2";
-import { HifiFlashUniswapV2__factory } from "@hifi/flash-swap/typechain/factories/HifiFlashUniswapV2__factory";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { task, types } from "hardhat/config";
-import { TaskArguments } from "hardhat/types";
 
 import {
+  DETERMINISTIC_DEPLOYMENT_PROXY_ADDRESS,
   SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS,
   TASK_DEPLOY_CONTRACT_HIFI_FLASH_UNISWAP_V2,
 } from "../../helpers/constants";
+import { TransactionRequest, TransactionResponse } from "@ethersproject/abstract-provider";
+import { task, types } from "hardhat/config";
+
+import { HifiFlashUniswapV2__factory } from "@hifi/flash-swap/typechain/factories/HifiFlashUniswapV2__factory";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { TaskArguments } from "hardhat/types";
 
 task(TASK_DEPLOY_CONTRACT_HIFI_FLASH_UNISWAP_V2)
   // Contract arguments
@@ -26,21 +28,26 @@ task(TASK_DEPLOY_CONTRACT_HIFI_FLASH_UNISWAP_V2)
     if (taskArgs.pair1) {
       pairs.push(taskArgs.pair1);
     }
-    const hifiFlashUniswapV2: HifiFlashUniswapV2 = <HifiFlashUniswapV2>(
-      await hifiFlashUniswapV2Factory.deploy(taskArgs.balanceSheet, pairs)
+    const deploymentTx: TransactionRequest = hifiFlashUniswapV2Factory.getDeployTransaction(
+      taskArgs.balanceSheet,
+      pairs,
     );
+    deploymentTx.to = DETERMINISTIC_DEPLOYMENT_PROXY_ADDRESS;
+    const contractAddress: string = await signers[0].call(deploymentTx);
+    const txResponse: TransactionResponse = await signers[0].sendTransaction(deploymentTx);
 
     await run(SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, {
-      contract: hifiFlashUniswapV2,
+      factory: hifiFlashUniswapV2Factory,
       confirmations: taskArgs.confirmations,
+      txResponse: txResponse,
     });
 
     if (taskArgs.setOutput) {
-      core.setOutput("hifi-flash-uniswap-v2", hifiFlashUniswapV2.address);
+      core.setOutput("hifi-flash-uniswap-v2", contractAddress);
     }
     if (taskArgs.printAddress) {
-      console.table([{ name: "HifiFlashUniswapV2", address: hifiFlashUniswapV2.address }]);
+      console.table([{ name: "HifiFlashUniswapV2", address: contractAddress }]);
     }
 
-    return hifiFlashUniswapV2.address;
+    return contractAddress;
   });

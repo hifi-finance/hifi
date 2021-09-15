@@ -1,9 +1,15 @@
 import * as core from "@actions/core";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { HifiProxyTarget } from "@hifi/proxy-target/typechain/HifiProxyTarget";
-import { HifiProxyTarget__factory } from "@hifi/proxy-target/typechain/factories/HifiProxyTarget__factory";
+
+import {
+  DETERMINISTIC_DEPLOYMENT_PROXY_ADDRESS,
+  SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS,
+  TASK_DEPLOY_CONTRACT_HIFI_PROXY_TARGET,
+} from "../../helpers/constants";
+import { TransactionRequest, TransactionResponse } from "@ethersproject/abstract-provider";
 import { task, types } from "hardhat/config";
-import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_HIFI_PROXY_TARGET } from "../../helpers/constants";
+
+import { HifiProxyTarget__factory } from "@hifi/proxy-target/typechain/factories/HifiProxyTarget__factory";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { TaskArguments } from "hardhat/types";
 
 task(TASK_DEPLOY_CONTRACT_HIFI_PROXY_TARGET)
@@ -13,19 +19,23 @@ task(TASK_DEPLOY_CONTRACT_HIFI_PROXY_TARGET)
   .setAction(async function (taskArgs: TaskArguments, { ethers, run }): Promise<string> {
     const signers: SignerWithAddress[] = await ethers.getSigners();
     const hifiProxyTargetFactory: HifiProxyTarget__factory = new HifiProxyTarget__factory(signers[0]);
-    const hifiProxyTarget: HifiProxyTarget = <HifiProxyTarget>await hifiProxyTargetFactory.deploy();
+    const deploymentTx: TransactionRequest = hifiProxyTargetFactory.getDeployTransaction();
+    deploymentTx.to = DETERMINISTIC_DEPLOYMENT_PROXY_ADDRESS;
+    const contractAddress: string = await signers[0].call(deploymentTx);
+    const txResponse: TransactionResponse = await signers[0].sendTransaction(deploymentTx);
 
     await run(SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, {
-      contract: hifiProxyTarget,
+      factory: hifiProxyTargetFactory,
       confirmations: taskArgs.confirmations,
+      txResponse: txResponse,
     });
 
     if (taskArgs.setOutput) {
-      core.setOutput("hifi-proxy-target", hifiProxyTarget.address);
+      core.setOutput("hifi-proxy-target", contractAddress);
     }
     if (taskArgs.printAddress) {
-      console.table([{ name: "HifiProxyTarget", address: hifiProxyTarget.address }]);
+      console.table([{ name: "HifiProxyTarget", address: contractAddress }]);
     }
 
-    return hifiProxyTarget.address;
+    return contractAddress;
   });

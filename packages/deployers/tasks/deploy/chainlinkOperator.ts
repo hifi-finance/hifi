@@ -1,13 +1,16 @@
 import * as core from "@actions/core";
-import { ChainlinkOperator } from "@hifi/protocol/typechain/ChainlinkOperator";
-import { ChainlinkOperator__factory } from "@hifi/protocol/typechain/factories/ChainlinkOperator__factory";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { task, types } from "hardhat/config";
-import { TaskArguments } from "hardhat/types";
+
 import {
+  DETERMINISTIC_DEPLOYMENT_PROXY_ADDRESS,
   SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS,
   TASK_DEPLOY_CONTRACT_CHAINLINK_OPERATOR,
 } from "../../helpers/constants";
+import { TransactionRequest, TransactionResponse } from "@ethersproject/abstract-provider";
+import { task, types } from "hardhat/config";
+
+import { ChainlinkOperator__factory } from "@hifi/protocol/typechain/factories/ChainlinkOperator__factory";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { TaskArguments } from "hardhat/types";
 
 task(TASK_DEPLOY_CONTRACT_CHAINLINK_OPERATOR)
   .addOptionalParam("confirmations", "How many block confirmations to wait for", 0, types.int)
@@ -16,19 +19,23 @@ task(TASK_DEPLOY_CONTRACT_CHAINLINK_OPERATOR)
   .setAction(async function (taskArgs: TaskArguments, { ethers, run }): Promise<string> {
     const signers: SignerWithAddress[] = await ethers.getSigners();
     const chainlinkOperatorFactory: ChainlinkOperator__factory = new ChainlinkOperator__factory(signers[0]);
-    const chainlinkOperator: ChainlinkOperator = <ChainlinkOperator>await chainlinkOperatorFactory.deploy();
+    const deploymentTx: TransactionRequest = chainlinkOperatorFactory.getDeployTransaction();
+    deploymentTx.to = DETERMINISTIC_DEPLOYMENT_PROXY_ADDRESS;
+    const contractAddress: string = await signers[0].call(deploymentTx);
+    const txResponse: TransactionResponse = await signers[0].sendTransaction(deploymentTx);
 
     await run(SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, {
-      contract: chainlinkOperator,
+      factory: chainlinkOperatorFactory,
       confirmations: taskArgs.confirmations,
+      txResponse: txResponse,
     });
 
     if (taskArgs.setOutput) {
-      core.setOutput("chainlink-operator", chainlinkOperator.address);
+      core.setOutput("chainlink-operator", contractAddress);
     }
     if (taskArgs.printAddress) {
-      console.table([{ name: "ChainlinkOperator", address: chainlinkOperator.address }]);
+      console.table([{ name: "ChainlinkOperator", address: contractAddress }]);
     }
 
-    return chainlinkOperator.address;
+    return contractAddress;
   });

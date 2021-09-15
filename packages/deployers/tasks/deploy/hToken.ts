@@ -1,11 +1,16 @@
 import * as core from "@actions/core";
-import { HToken } from "@hifi/protocol/typechain/HToken";
-import { HToken__factory } from "@hifi/protocol/typechain/factories/HToken__factory";
-import { task, types } from "hardhat/config";
-import { TaskArguments } from "hardhat/types";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
-import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_H_TOKEN } from "../../helpers/constants";
+import {
+  DETERMINISTIC_DEPLOYMENT_PROXY_ADDRESS,
+  SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS,
+  TASK_DEPLOY_CONTRACT_H_TOKEN,
+} from "../../helpers/constants";
+import { TransactionRequest, TransactionResponse } from "@ethersproject/abstract-provider";
+import { task, types } from "hardhat/config";
+
+import { HToken__factory } from "@hifi/protocol/typechain/factories/HToken__factory";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { TaskArguments } from "hardhat/types";
 
 task(TASK_DEPLOY_CONTRACT_H_TOKEN)
   // Contract arguments
@@ -21,23 +26,29 @@ task(TASK_DEPLOY_CONTRACT_H_TOKEN)
   .setAction(async function (taskArgs: TaskArguments, { ethers, run }): Promise<string> {
     const signers: SignerWithAddress[] = await ethers.getSigners();
     const hTokenFactory: HToken__factory = new HToken__factory(signers[0]);
-    const hToken: HToken = <HToken>(
-      await hTokenFactory.deploy(
-        taskArgs.name,
-        taskArgs.symbol,
-        taskArgs.maturity,
-        taskArgs.balanceSheet,
-        taskArgs.underlying,
-      )
-    );
 
-    await run(SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, { contract: hToken, confirmations: taskArgs.confirmations });
+    const deploymentTx: TransactionRequest = hTokenFactory.getDeployTransaction(
+      taskArgs.name,
+      taskArgs.symbol,
+      taskArgs.maturity,
+      taskArgs.balanceSheet,
+      taskArgs.underlying,
+    );
+    deploymentTx.to = DETERMINISTIC_DEPLOYMENT_PROXY_ADDRESS;
+    const contractAddress: string = await signers[0].call(deploymentTx);
+    const txResponse: TransactionResponse = await signers[0].sendTransaction(deploymentTx);
+
+    await run(SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, {
+      factory: hTokenFactory,
+      confirmations: taskArgs.confirmations,
+      txResponse: txResponse,
+    });
 
     if (taskArgs.setOutput) {
-      core.setOutput("h-token", hToken.address);
+      core.setOutput("h-token", contractAddress);
     }
     if (taskArgs.printAddress) {
-      console.table([{ name: "HToken", address: hToken.address }]);
+      console.table([{ name: "HToken", address: contractAddress }]);
     }
-    return hToken.address;
+    return contractAddress;
   });

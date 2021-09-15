@@ -7,3 +7,4 @@ export const TASK_DEPLOY_CONTRACT_HIFI_PROXY_TARGET: string = "deploy:contract:h
 export const TASK_DEPLOY_CONTRACT_H_TOKEN: string = "deploy:contract:h-token";
 export const TASK_DEPLOY_CONTRACT_SIMPLE_PRICE_FEED: string = "deploy:contract:simple-price-feed";
 export const TASK_DEPLOY_CONTRACT_STABLECOIN_PRICE_FEED: string = "deploy:contract:stablecoin-price-feed";
+export const DETERMINISTIC_DEPLOYMENT_PROXY_ADDRESS: string = "0x7A0D94F55792C434d74a40883C6ed8545E406D12";
