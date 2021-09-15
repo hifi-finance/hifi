@@ -40,17 +40,17 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
     address public override uniV2Factory;
 
     /// @inheritdoc IHifiFlashUniswapV2
-    bytes32 public override uniV2InitCodeHash;
+    bytes32 public override uniV2PairInitCodeHash;
 
     /// CONSTRUCTOR ///
     constructor(
         IBalanceSheetV1 balanceSheet_,
         address uniV2Factory_,
-        bytes32 uniV2InitCodeHash_
+        bytes32 uniV2PairInitCodeHash_
     ) {
         balanceSheet = IBalanceSheetV1(balanceSheet_);
         uniV2Factory = uniV2Factory_;
-        uniV2InitCodeHash = uniV2InitCodeHash_;
+        uniV2PairInitCodeHash = uniV2PairInitCodeHash_;
     }
 
     /// PUBLIC CONSTANT FUNCTIONS ////
@@ -127,7 +127,8 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
             underlying
         );
 
-        if (msg.sender != address(pairFor(address(underlying), address(collateral)))) {
+        // Check that the caller is a genuine UniswapV2Pair contract.
+        if (msg.sender != pairFor(address(underlying), address(collateral))) {
             revert HifiFlashUniswapV2__CallNotAuthorized(msg.sender);
         }
 
@@ -164,8 +165,6 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
 
     /// INTERNAL CONSTANT FUNCTIONS ///
 
-    // solhint-disable-next-line
-    /// @dev https://raw.githubusercontent.com/Uniswap/uniswap-v2-periphery/v1.0.0-beta.0/contracts/libraries/UniswapV2Library.sol
     /// @dev Calculates the CREATE2 address for a pair without making any external calls.
     function pairFor(address tokenA, address tokenB) internal view returns (address pair) {
         (address token0, address token1) = tokenA < tokenB ? (tokenA, tokenB) : (tokenB, tokenA);
@@ -177,7 +176,7 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
                             hex"ff",
                             uniV2Factory,
                             keccak256(abi.encodePacked(token0, token1)),
-                            uniV2InitCodeHash
+                            uniV2PairInitCodeHash
                         )
                     )
                 )
@@ -199,19 +198,19 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
     ) internal returns (uint256 seizedCollateralAmount) {
         IErc20 underlying = bond.underlying();
 
-        // Allow the HToken contract to spend USDC if allowance not enough.
+        // Allow the HToken contract to spend underlying if allowance not enough.
         uint256 allowance = underlying.allowance(address(this), address(bond));
         if (allowance < underlyingAmount) {
             underlying.approve(address(bond), type(uint256).max);
         }
 
         // Mint hTokens.
-        uint256 oldHTokenBalance = bond.balanceOf(address(this));
+        uint256 preHTokenBalance = bond.balanceOf(address(this));
         bond.supplyUnderlying(underlyingAmount);
-        uint256 newHTokenBalance = bond.balanceOf(address(this));
+        uint256 postHTokenBalance = bond.balanceOf(address(this));
         uint256 mintedHTokenAmount;
         unchecked {
-            mintedHTokenAmount = newHTokenBalance - oldHTokenBalance;
+            mintedHTokenAmount = postHTokenBalance - preHTokenBalance;
         }
 
         // Liquidate borrow with the newly minted hTokens.

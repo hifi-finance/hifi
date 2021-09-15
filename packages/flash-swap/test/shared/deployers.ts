@@ -5,8 +5,6 @@ import { Artifact } from "hardhat/types";
 
 import { GodModeErc20 } from "../../typechain/GodModeErc20";
 
-const { deployContract } = waffle;
-
 export async function deployGodModeErc20(
   deployer: Signer,
   name: string,
@@ -15,7 +13,7 @@ export async function deployGodModeErc20(
 ): Promise<GodModeErc20> {
   const godModeErc20Artifact: Artifact = await artifacts.readArtifact("GodModeErc20");
   const godModeErc20: GodModeErc20 = <GodModeErc20>(
-    await deployContract(deployer, godModeErc20Artifact, [name, symbol, decimals])
+    await waffle.deployContract(deployer, godModeErc20Artifact, [name, symbol, decimals])
   );
   return godModeErc20;
 }

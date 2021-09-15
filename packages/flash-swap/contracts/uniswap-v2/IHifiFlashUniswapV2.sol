@@ -65,9 +65,9 @@ interface IHifiFlashUniswapV2 is IUniswapV2Callee {
         uint256 underlyingAmount
     ) external view returns (uint256 collateralRepayAmount);
 
-    /// @notice The Uniswap V2 factory contract address.
+    /// @notice The address of the UniswapV2Factory contract.
     function uniV2Factory() external view returns (address);
 
-    /// @notice The Uniswap V2 init code hash.
-    function uniV2InitCodeHash() external view returns (bytes32);
+    /// @notice The init code hash of the UniswapV2Pair contract.
+    function uniV2PairInitCodeHash() external view returns (bytes32);
 }
