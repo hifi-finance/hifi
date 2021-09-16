@@ -16,36 +16,7 @@ on:
       - "main"
 
 jobs:
-  # Identify what packages have been touched by the git commit.
-  diff:
-    runs-on: ubuntu-latest
-    outputs:
-      amm: ${{ steps.diff.outputs.amm }}
-      flash-swap: ${{ steps.diff.outputs.flash-swap }}
-      protocol: ${{ steps.diff.outputs.protocol }}
-      proxy-target: ${{ steps.diff.outputs.proxy-target }}
-    steps:
-      - name: "Check out the repo"
-        uses: "actions/checkout@v2"
-      - name: "Diff the files"
-        uses: dorny/paths-filter@v2
-        id: diff
-        with:
-          base: "main"
-          filters: |
-            amm:
-              - "packages/amm/**"
-            flash-swap:
-              - "packages/flash-swap/**"
-            protocol:
-              - "packages/protocol/**"
-            proxy-target:
-              - "packages/proxy-target/**"
-
-  # When the @hifi/amm package has been modified, run continuous integration.
   run-amm-integration:
-    needs: "diff"
-    if: ${{ needs.diff.outputs.amm == 'true' }}
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
@@ -72,12 +43,6 @@ jobs:
       - name: "Test the contracts and run test coverage"
         run: "yarn workspace @hifi/amm coverage"
 
-      - name: "Cache coverage report"
-        uses: "actions/cache@v2"
-        with:
-          key: ${{ runner.os }}-${{ hashFiles('./packages/amm/**/*', '!node_modules') }}-coverage-lcov
-          path: "./packages/amm/coverage/lcov.info"
-
       - name: "Prepare coverage report"
         uses: "coverallsapp/github-action@master"
         with:
@@ -86,43 +51,7 @@ jobs:
           parallel: true
           path-to-lcov: "./packages/amm/coverage/lcov.info"
 
-  # When the @hifi/amm package has not been modified, load the coverage report cache if it exists.
-  load-amm-cache:
-    needs:
-      - "diff"
-      - "run-amm-integration"
-    if: |
-      always() &&
-      (needs.diff.result == 'success' || needs.diff.result == 'skipped') &&
-      (needs.run-amm-integration.result == 'success' || needs.run-amm-integration.result == 'skipped') &&
-      needs.diff.outputs.amm == 'false'
-    runs-on: "ubuntu-latest"
-    steps:
-      - name: "Check out the repo"
-        uses: "actions/checkout@v2"
-      - name: "Load cache coverage report if it exists"
-        uses: "actions/cache@v2"
-        with:
-          key: ${{ runner.os }}-${{ hashFiles('./packages/amm/**/*', '!node_modules') }}-coverage-lcov
-          path: "./packages/amm/coverage/lcov.info"
-      - name: "Check lcov file exists"
-        id: check-lcov-file
-        uses: andstor/file-existence-action@v1
-        with:
-          files: "./packages/amm/coverage/lcov.info"
-      - name: "Prepare coverage report"
-        if: ${{ steps.check-lcov-file.outputs.files_exists == 'true' }}
-        uses: "coverallsapp/github-action@master"
-        with:
-          flag-name: "amm"
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          parallel: true
-          path-to-lcov: "./packages/amm/coverage/lcov.info"
-
-  # When the @hifi/flash-swap package has been modified, run continuous integration.
   run-flash-swap-integration:
-    needs: "diff"
-    if: ${{ needs.diff.outputs.flash-swap == 'true' }}
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
@@ -149,12 +78,6 @@ jobs:
       - name: "Test the contracts and run test coverage"
         run: "yarn workspace @hifi/flash-swap coverage"
 
-      - name: "Cache coverage report"
-        uses: "actions/cache@v2"
-        with:
-          key: ${{ runner.os }}-${{ hashFiles('./packages/flash-swap/**/*', '!node_modules') }}-coverage-lcov
-          path: "./packages/flash-swap/coverage/lcov.info"
-
       - name: "Prepare coverage report"
         uses: "coverallsapp/github-action@master"
         with:
@@ -163,43 +86,7 @@ jobs:
           parallel: true
           path-to-lcov: "./packages/flash-swap/coverage/lcov.info"
 
-  # When the @hifi/flash-swap package has not been modified, load the coverage report cache if it exists.
-  load-flash-swap-cache:
-    needs:
-      - "diff"
-      - "run-flash-swap-integration"
-    if: |
-      always() &&
-      (needs.diff.result == 'success' || needs.diff.result == 'skipped') &&
-      (needs.run-flash-swap-integration.result == 'success' || needs.run-flash-swap-integration.result == 'skipped') &&
-      needs.diff.outputs.flash-swap == 'false'
-    runs-on: "ubuntu-latest"
-    steps:
-      - name: "Check out the repo"
-        uses: "actions/checkout@v2"
-      - name: "Load cache coverage report if it exists"
-        uses: "actions/cache@v2"
-        with:
-          key: ${{ runner.os }}-${{ hashFiles('./packages/flash-swap/**/*', '!node_modules') }}-coverage-lcov
-          path: "./packages/flash-swap/coverage/lcov.info"
-      - name: "Check lcov file exists"
-        id: check-lcov-file
-        uses: andstor/file-existence-action@v1
-        with:
-          files: "./packages/flash-swap/coverage/lcov.info"
-      - name: "Prepare coverage report"
-        if: ${{ steps.check-lcov-file.outputs.files_exists == 'true' }}
-        uses: "coverallsapp/github-action@master"
-        with:
-          flag-name: "flash-swap"
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          parallel: true
-          path-to-lcov: "./packages/flash-swap/coverage/lcov.info"
-
-  # When the @hifi/protocol package has been modified, run continuous integration.
   run-protocol-integration:
-    needs: "diff"
-    if: ${{ needs.diff.outputs.protocol == 'true' }}
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
@@ -226,12 +113,6 @@ jobs:
       - name: "Test the contracts and run test coverage"
         run: "yarn workspace @hifi/protocol coverage"
 
-      - name: "Cache coverage report"
-        uses: "actions/cache@v2"
-        with:
-          key: ${{ runner.os }}-${{ hashFiles('./packages/protocol/**/*', '!node_modules') }}-coverage-lcov
-          path: "./packages/protocol/coverage/lcov.info"
-
       - name: "Prepare coverage report"
         uses: "coverallsapp/github-action@master"
         with:
@@ -240,44 +121,7 @@ jobs:
           parallel: true
           path-to-lcov: "./packages/protocol/coverage/lcov.info"
 
-  # When the @hifi/protocol package has not been modified, load the coverage report cache if it exists.
-  load-protocol-cache:
-    needs:
-      - "diff"
-      - "run-protocol-integration"
-    if: |
-      always() &&
-      (needs.diff.result == 'success' || needs.diff.result == 'skipped') &&
-      (needs.run-protocol-integration.result == 'success' || needs.run-protocol-integration.result == 'skipped') &&
-      needs.diff.outputs.protocol == 'false'
-    runs-on: "ubuntu-latest"
-    steps:
-      - name: "Check out the repo"
-        uses: "actions/checkout@v2"
-      - name: "Load cache coverage report if it exists"
-        id: "load-protocol-cache"
-        uses: "actions/cache@v2"
-        with:
-          key: ${{ runner.os }}-${{ hashFiles('./packages/protocol/**/*', '!node_modules') }}-coverage-lcov
-          path: "./packages/protocol/coverage/lcov.info"
-      - name: "Check lcov file exists"
-        id: check-lcov-file
-        uses: andstor/file-existence-action@v1
-        with:
-          files: "./packages/protocol/coverage/lcov.info"
-      - name: "Prepare coverage report"
-        if: ${{ steps.check-lcov-file.outputs.files_exists == 'true' }}
-        uses: "coverallsapp/github-action@master"
-        with:
-          flag-name: "protocol"
-          github-token: secrets.GITHUB_TOKEN
-          parallel: true
-          path-to-lcov: "./packages/protocol/coverage/lcov.info"
-
-  # When the @hifi/proxy-target package has been modified, run continuous integration.
   run-integration-proxy-target:
-    needs: "diff"
-    if: ${{ needs.diff.outputs.proxy-target == 'true' }}
     runs-on: "ubuntu-latest"
     steps:
       - name: "Check out the repo"
@@ -301,16 +145,11 @@ jobs:
       - name: "Compile the contracts and generate TypeChain artifacts"
         run: "yarn workspace @hifi/proxy-target typechain"
 
-  # Upload all reports to Coveralls if only one of the packages has been modified.
   upload-coverage-report:
     needs:
-      - "diff"
-      - "load-amm-cache"
-      - "load-flash-swap-cache"
-      - "load-protocol-cache"
-    if: |
-      always() &&
-      (needs.diff.outputs.amm== 'true' || needs.diff.outputs.flash-swap == 'true' || needs.diff.outputs.protocol == 'true')
+      - "run-amm-integration"
+      - "run-flash-swap-integration"
+      - "run-protocol-integration"
     runs-on: "ubuntu-latest"
     steps:
       - name: "Upload coverage reports to Coveralls"
