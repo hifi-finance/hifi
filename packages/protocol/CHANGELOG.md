@@ -17,9 +17,9 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Improve wording in NatSpec comments.
 - Refactor all test `burn` and `mint` functions to `__godMode_burn` and `__godMode_mint`
 - Set the list of non-recoverable tokens in the `HToken` contract constructor.
-- Upgrade `ethers` dependency to v5.4.6
-- Upgrade `@paulrberg/contracts` dependency to v3.5.2
-- Upgrade `@openzeppelin/contracts-upgradeable` dependency to v4.3.1
+- Upgrade to `ethers` v5.4.6.
+- Upgrade to `@paulrberg/contracts` v3.5.2.
+- Upgrade to `@openzeppelin/contracts-upgradeable` v4.3.1.
 - Upgrade to Solidity compiler v0.8.7.
 - Use LGPL v3 license for all contracts.
 - Wrap the precision scalar in `unchecked` blocks to save gas.
