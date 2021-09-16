@@ -1,0 +1,275 @@
+{
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0x55eb897bFf1905C38eC93678762D1D9EE9a2A27A",
+    "txHash": "0xf6785efa679e3dbb53a9ff1804305a65c9c3d700b59e3db656b811e02bc256a1",
+    "deployTransaction": {
+      "hash": "0xf6785efa679e3dbb53a9ff1804305a65c9c3d700b59e3db656b811e02bc256a1",
+      "type": 0,
+      "accessList": null,
+      "blockHash": null,
+      "blockNumber": null,
+      "transactionIndex": null,
+      "confirmations": 0,
+      "from": "0x62CF64Fa216B3a40c51609D1Ea174a2E750cC929",
+      "gasPrice": {
+        "type": "BigNumber",
+        "hex": "0x02363e7f00"
+      },
+      "gasLimit": {
+        "type": "BigNumber",
+        "hex": "0x0762b4"
+      },
+      "to": null,
+      "value": {
+        "type": "BigNumber",
+        "hex": "0x00"
+      },
+      "nonce": 49,
+      "data": "0x608060405234801561001057600080fd5b50600080546001600160a01b031916339081178255604051909182917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908290a350610759806100616000396000f3fe60806040526004361061007b5760003560e01c80639623609d1161004e5780639623609d1461011157806399a88ec414610124578063f2fde38b14610144578063f3b7dead146101645761007b565b8063204e1c7a14610080578063715018a6146100bc5780637eff275e146100d35780638da5cb5b146100f3575b600080fd5b34801561008c57600080fd5b506100a061009b366004610515565b610184565b6040516001600160a01b03909116815260200160405180910390f35b3480156100c857600080fd5b506100d1610215565b005b3480156100df57600080fd5b506100d16100ee366004610554565b610292565b3480156100ff57600080fd5b506000546001600160a01b03166100a0565b6100d161011f36600461058c565b61031c565b34801561013057600080fd5b506100d161013f366004610554565b6103ad565b34801561015057600080fd5b506100d161015f366004610515565b610405565b34801561017057600080fd5b506100a061017f366004610515565b6104ef565b6000806000836001600160a01b03166040516101aa90635c60da1b60e01b815260040190565b600060405180830381855afa9150503d80600081146101e5576040519150601f19603f3d011682016040523d82523d6000602084013e6101ea565b606091505b5091509150816101f957600080fd5b8080602001905181019061020d9190610538565b949350505050565b6000546001600160a01b031633146102485760405162461bcd60e51b815260040161023f906106c0565b60405180910390fd5b600080546040516001600160a01b03909116907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e0908390a3600080546001600160a01b0319169055565b6000546001600160a01b031633146102bc5760405162461bcd60e51b815260040161023f906106c0565b6040516308f2839760e41b81526001600160a01b038281166004830152831690638f283970906024015b600060405180830381600087803b15801561030057600080fd5b505af1158015610314573d6000803e3d6000fd5b505050505050565b6000546001600160a01b031633146103465760405162461bcd60e51b815260040161023f906106c0565b60405163278f794360e11b81526001600160a01b03841690634f1ef286903490610376908690869060040161065d565b6000604051808303818588803b15801561038f57600080fd5b505af11580156103a3573d6000803e3d6000fd5b5050505050505050565b6000546001600160a01b031633146103d75760405162461bcd60e51b815260040161023f906106c0565b604051631b2ce7f360e11b81526001600160a01b038281166004830152831690633659cfe6906024016102e6565b6000546001600160a01b0316331461042f5760405162461bcd60e51b815260040161023f906106c0565b6001600160a01b0381166104945760405162461bcd60e51b815260206004820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201526564647265737360d01b606482015260840161023f565b600080546040516001600160a01b03808516939216917f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e091a3600080546001600160a01b0319166001600160a01b0392909216919091179055565b6000806000836001600160a01b03166040516101aa906303e1469160e61b815260040190565b600060208284031215610526578081fd5b81356105318161070b565b9392505050565b600060208284031215610549578081fd5b81516105318161070b565b60008060408385031215610566578081fd5b82356105718161070b565b915060208301356105818161070b565b809150509250929050565b6000806000606084860312156105a0578081fd5b83356105ab8161070b565b925060208401356105bb8161070b565b9150604084013567ffffffffffffffff808211156105d7578283fd5b818601915086601f8301126105ea578283fd5b8135818111156105fc576105fc6106f5565b604051601f8201601f19908116603f01168101908382118183101715610624576106246106f5565b8160405282815289602084870101111561063c578586fd5b82602086016020830137856020848301015280955050505050509250925092565b600060018060a01b038416825260206040818401528351806040850152825b818110156106985785810183015185820160600152820161067c565b818111156106a95783606083870101525b50601f01601f191692909201606001949350505050565b6020808252818101527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e6572604082015260600190565b634e487b7160e01b600052604160045260246000fd5b6001600160a01b038116811461072057600080fd5b5056fea2646970667358221220d849f96f3086b9f82cdcf665adb8c697ace05638da1c7c16ab2d26293717af6764736f6c63430008020033",
+      "r": "0xe14dd4ff3ee3b855ddd308185db19ffe70ba8c257821dc0ddc7279e193a57bc3",
+      "s": "0x5f973d1184c8563c8191f44ddadc8363fb477da1b0968ba2db39e19f8db75efe",
+      "v": 310,
+      "creates": "0x55eb897bFf1905C38eC93678762D1D9EE9a2A27A",
+      "chainId": 137
+    }
+  },
+  "proxies": [
+    {
+      "address": "0x3a7fBa017F786527Ce8f962d894B5d291Dd8e365",
+      "txHash": "0xbe4763e39924d2adaba7ee63ae00b805a79e803774a4f4356ca968f26eb5ea41",
+      "kind": "transparent"
+    },
+    {
+      "address": "0x0503D88253caB48AD62aBee73EAf947c58B45eA4",
+      "txHash": "0x476a0b09b8ad5288be46e01ee1d153a829fcadcdda98b34912b6f40ccc6deeaf",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "232c4ee43578c61e8da66d5a65dbfbed2bcbdeffaf44b91fe0d76d720de13164": {
+      "address": "0x964b495364FD9082CE9c4cCCF35B3d1986e3C07a",
+      "txHash": "0x5573f27218c2e06d164e94c954c350d39216995f388e02cd32b6973c6f4cfa70",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:21"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:26"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "owner",
+            "type": "t_address",
+            "src": "contracts/access/OwnableUpgradeable.sol:25"
+          },
+          {
+            "contract": "SFintrollerV1",
+            "label": "maxBonds",
+            "type": "t_uint256",
+            "src": "contracts/core/fintroller/SFintrollerV1.sol:32"
+          },
+          {
+            "contract": "SFintrollerV1",
+            "label": "bonds",
+            "type": "t_mapping(t_contract(IHToken)5290,t_struct(Bond)4677_storage)",
+            "src": "contracts/core/fintroller/SFintrollerV1.sol:58"
+          },
+          {
+            "contract": "SFintrollerV1",
+            "label": "collaterals",
+            "type": "t_mapping(t_contract(IErc20)1200,t_struct(Collateral)4686_storage)",
+            "src": "contracts/core/fintroller/SFintrollerV1.sol:61"
+          }
+        ],
+        "types": {
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_mapping(t_contract(IHToken)5290,t_struct(Bond)4677_storage)": {
+            "label": "mapping(contract IHToken => struct SFintrollerV1.Bond)"
+          },
+          "t_contract(IHToken)5290": {
+            "label": "contract IHToken"
+          },
+          "t_struct(Bond)4677_storage": {
+            "label": "struct SFintrollerV1.Bond",
+            "members": [
+              {
+                "label": "debtCeiling",
+                "type": "t_uint256"
+              },
+              {
+                "label": "isBorrowAllowed",
+                "type": "t_bool"
+              },
+              {
+                "label": "isLiquidateBorrowAllowed",
+                "type": "t_bool"
+              },
+              {
+                "label": "isListed",
+                "type": "t_bool"
+              },
+              {
+                "label": "isRedeemHTokenAllowed",
+                "type": "t_bool"
+              },
+              {
+                "label": "isRepayBorrowAllowed",
+                "type": "t_bool"
+              },
+              {
+                "label": "isSupplyUnderlyingAllowed",
+                "type": "t_bool"
+              }
+            ]
+          },
+          "t_bool": {
+            "label": "bool"
+          },
+          "t_mapping(t_contract(IErc20)1200,t_struct(Collateral)4686_storage)": {
+            "label": "mapping(contract IErc20 => struct SFintrollerV1.Collateral)"
+          },
+          "t_contract(IErc20)1200": {
+            "label": "contract IErc20"
+          },
+          "t_struct(Collateral)4686_storage": {
+            "label": "struct SFintrollerV1.Collateral",
+            "members": [
+              {
+                "label": "collateralizationRatio",
+                "type": "t_uint256"
+              },
+              {
+                "label": "liquidationIncentive",
+                "type": "t_uint256"
+              },
+              {
+                "label": "isDepositCollateralAllowed",
+                "type": "t_bool"
+              },
+              {
+                "label": "isListed",
+                "type": "t_bool"
+              }
+            ]
+          },
+          "t_address": {
+            "label": "address"
+          }
+        }
+      }
+    },
+    "b77d2d3b4377ef7ef54a2a27d522beb5431554734bd75743be7f6878a2666b4a": {
+      "address": "0x7fD2C63e30b82CAB3b249D49Ac0f355926F03d77",
+      "txHash": "0xa4eb4573d8afceac9f22b468e2753d255f1921fa4fce7941ae487ff87c33328e",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:21"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:26"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "owner",
+            "type": "t_address",
+            "src": "contracts/access/OwnableUpgradeable.sol:25"
+          },
+          {
+            "contract": "SBalanceSheetV1",
+            "label": "fintroller",
+            "type": "t_contract(IFintrollerV1)4657",
+            "src": "contracts/core/balanceSheet/SBalanceSheetV1.sol:26"
+          },
+          {
+            "contract": "SBalanceSheetV1",
+            "label": "oracle",
+            "type": "t_contract(IChainlinkOperator)5682",
+            "src": "contracts/core/balanceSheet/SBalanceSheetV1.sol:29"
+          },
+          {
+            "contract": "SBalanceSheetV1",
+            "label": "vaults",
+            "type": "t_mapping(t_address,t_struct(Vault)3587_storage)",
+            "src": "contracts/core/balanceSheet/SBalanceSheetV1.sol:32"
+          }
+        ],
+        "types": {
+          "t_contract(IFintrollerV1)4657": {
+            "label": "contract IFintrollerV1"
+          },
+          "t_contract(IChainlinkOperator)5682": {
+            "label": "contract IChainlinkOperator"
+          },
+          "t_mapping(t_address,t_struct(Vault)3587_storage)": {
+            "label": "mapping(address => struct SBalanceSheetV1.Vault)"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_struct(Vault)3587_storage": {
+            "label": "struct SBalanceSheetV1.Vault",
+            "members": [
+              {
+                "label": "bondList",
+                "type": "t_array(t_contract(IHToken)5290)dyn_storage"
+              },
+              {
+                "label": "collateralAmounts",
+                "type": "t_mapping(t_contract(IErc20)1200,t_uint256)"
+              },
+              {
+                "label": "collateralList",
+                "type": "t_array(t_contract(IErc20)1200)dyn_storage"
+              },
+              {
+                "label": "debtAmounts",
+                "type": "t_mapping(t_contract(IHToken)5290,t_uint256)"
+              }
+            ]
+          },
+          "t_array(t_contract(IHToken)5290)dyn_storage": {
+            "label": "contract IHToken[]"
+          },
+          "t_contract(IHToken)5290": {
+            "label": "contract IHToken"
+          },
+          "t_mapping(t_contract(IErc20)1200,t_uint256)": {
+            "label": "mapping(contract IErc20 => uint256)"
+          },
+          "t_contract(IErc20)1200": {
+            "label": "contract IErc20"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_array(t_contract(IErc20)1200)dyn_storage": {
+            "label": "contract IErc20[]"
+          },
+          "t_mapping(t_contract(IHToken)5290,t_uint256)": {
+            "label": "mapping(contract IHToken => uint256)"
+          },
+          "t_bool": {
+            "label": "bool"
+          }
+        }
+      }
+    }
+  }
+}
