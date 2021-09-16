@@ -13,8 +13,8 @@ import {
 task(TASK_DEPLOY_CONTRACT_HIFI_FLASH_UNISWAP_V2)
   // Contract arguments
   .addParam("balanceSheet", "Address of the BalanceSheet contract")
-  .addParam("pair0", "Address of an Uniswap V2 pair contract")
-  .addOptionalParam("pair1", "Address of an Uniswap V2 pair contract")
+  .addParam("uniV2Factory", "The address of the UniswapV2Factory contract")
+  .addParam("uniV2PairInitCodeHash", "The init code hash of the UniswapV2Pair contract")
   // Developer settings
   .addOptionalParam("confirmations", "How many block confirmations to wait for", 0, types.int)
   .addOptionalParam("printAddress", "Print the address in the console", true, types.boolean)
@@ -22,12 +22,12 @@ task(TASK_DEPLOY_CONTRACT_HIFI_FLASH_UNISWAP_V2)
   .setAction(async function (taskArgs: TaskArguments, { ethers, run }): Promise<string> {
     const signers: SignerWithAddress[] = await ethers.getSigners();
     const hifiFlashUniswapV2Factory: HifiFlashUniswapV2__factory = new HifiFlashUniswapV2__factory(signers[0]);
-    const pairs: string[] = [taskArgs.pair0];
-    if (taskArgs.pair1) {
-      pairs.push(taskArgs.pair1);
-    }
     const hifiFlashUniswapV2: HifiFlashUniswapV2 = <HifiFlashUniswapV2>(
-      await hifiFlashUniswapV2Factory.deploy(taskArgs.balanceSheet, pairs)
+      await hifiFlashUniswapV2Factory.deploy(
+        taskArgs.balanceSheet,
+        taskArgs.uniV2Factory,
+        taskArgs.uniV2PairInitCodeHash,
+      )
     );
 
     await run(SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, {

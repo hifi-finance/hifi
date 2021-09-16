@@ -950,23 +950,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hifi/amm@npm:1.4.0":
-  version: 1.4.0
-  resolution: "@hifi/amm@npm:1.4.0"
-  dependencies:
-    "@hifi/protocol": 1.4.0
-    "@paulrberg/contracts": 3.4.0
-    ethers: ^5.4.4
-    prb-math: 2.2.0
-  peerDependencies:
-    "@hifi/protocol": 1.4.0
-    "@paulrberg/contracts": 3.4.0
-    ethers: ^5.4.4
-    prb-math: 2.2.0
-  checksum: ad5b183c15f4700fa89b6a82486a338d0756c64c0db73bf81480019b5fa24f5a1604e22f73d93c982e47e30f4fb176d34561ce556adaf619f786c96f7c4ac0b1
-  languageName: node
-  linkType: hard
-
 "@hifi/amm@npm:1.5.0":
   version: 1.5.0
   resolution: "@hifi/amm@npm:1.5.0"
@@ -1076,11 +1059,11 @@ __metadata:
     "@ethersproject/bytes": ^5.4.0
     "@ethersproject/contracts": ^5.4.1
     "@ethersproject/providers": ^5.4.5
-    "@hifi/amm": 1.4.0
-    "@hifi/flash-swap": 1.3.1
+    "@hifi/amm": 1.5.0
+    "@hifi/flash-swap": 1.4.0
     "@hifi/helpers": "workspace:*"
-    "@hifi/protocol": 1.4.0
-    "@hifi/proxy-target": 1.3.1
+    "@hifi/protocol": 1.5.0
+    "@hifi/proxy-target": 1.4.0
     "@nomiclabs/hardhat-ethers": ^2.0.2
     "@types/node": ^16.9.1
     "@typescript-eslint/eslint-plugin": ^4.31.1
@@ -1098,20 +1081,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hifi/flash-swap@npm:1.3.1":
-  version: 1.3.1
-  resolution: "@hifi/flash-swap@npm:1.3.1"
+"@hifi/flash-swap@npm:1.4.0":
+  version: 1.4.0
+  resolution: "@hifi/flash-swap@npm:1.4.0"
   dependencies:
-    "@hifi/protocol": 1.4.0
-    "@paulrberg/contracts": 3.4.0
+    "@hifi/protocol": 1.5.0
+    "@paulrberg/contracts": 3.5.2
     "@uniswap/v2-core": 1.0.1
-    ethers: ^5.4.4
+    ethers: ^5.4.6
   peerDependencies:
-    "@hifi/protocol": 1.4.0
-    "@paulrberg/contracts": 3.4.0
+    "@hifi/protocol": 1.5.0
+    "@paulrberg/contracts": 3.5.2
     "@uniswap/v2-core": 1.0.1
-    ethers: ^5.4.4
-  checksum: 31e54db705c930e24395e79ab8ab89c764eef9a9c9fbb903f114300d494b447e6a9bc27866fa416ee00936b448c34cb52cff562e4d8dcd0a22f92f39ac5008da
+    ethers: ^5.4.6
+  checksum: a9f542944c25d85334a5da65acfd91633a24279e5f1cdd5d210dbc4a322f46f52b4e2198a5554c8c69e85af7358a35c154e5c0dc9abb71575612daececa27b0b
   languageName: node
   linkType: hard
 
@@ -1192,23 +1175,6 @@ __metadata:
     typescript: ^4.4.3
   languageName: unknown
   linkType: soft
-
-"@hifi/protocol@npm:1.4.0":
-  version: 1.4.0
-  resolution: "@hifi/protocol@npm:1.4.0"
-  dependencies:
-    "@openzeppelin/contracts-upgradeable": 4.2.0
-    "@paulrberg/contracts": 3.4.0
-    ethers: ^5.4.4
-    prb-math: 2.2.0
-  peerDependencies:
-    "@openzeppelin/contracts-upgradeable": 4.2.0
-    "@paulrberg/contracts": 3.4.0
-    ethers: ^5.4.4
-    prb-math: 2.2.0
-  checksum: e126b68c3ed016e0cb2b9a419c890faed7fb2cd44ea0a12eac56a869f0e9def308286a26f4470d792ed789f5a13a8684dad3074dddb584102f9782e43df4cd08
-  languageName: node
-  linkType: hard
 
 "@hifi/protocol@npm:1.5.0":
   version: 1.5.0
@@ -1292,20 +1258,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hifi/proxy-target@npm:1.3.1":
-  version: 1.3.1
-  resolution: "@hifi/proxy-target@npm:1.3.1"
+"@hifi/proxy-target@npm:1.4.0":
+  version: 1.4.0
+  resolution: "@hifi/proxy-target@npm:1.4.0"
   dependencies:
-    "@hifi/amm": 1.4.0
-    "@hifi/protocol": 1.4.0
-    "@paulrberg/contracts": 3.4.0
-    ethers: ^5.4.4
+    "@hifi/amm": 1.5.0
+    "@hifi/protocol": 1.5.0
+    "@paulrberg/contracts": 3.5.2
+    ethers: ^5.4.6
   peerDependencies:
-    "@hifi/amm": 1.4.0
-    "@hifi/protocol": 1.4.0
-    "@paulrberg/contracts": 3.4.0
-    ethers: ^5.4.4
-  checksum: 783eae9a9feeb74d90904fb566b4be47c23a1412aaf9fc7275b0674b18005e57fd17cc0aa16cdb9af10a0f9a60b7b4d5a8cfee278b637499516a91d2feca97b6
+    "@hifi/amm": 1.5.0
+    "@hifi/protocol": 1.5.0
+    "@paulrberg/contracts": 3.5.2
+    ethers: ^5.4.6
+  checksum: 17be15b92426ff8c9cec09dbeb058201407d31d5ef3504c743d99c9277553b2d4c40508035fd99aff9fb4cf7778da6855c3b8ec9b602c536f15700c7cbc86c2d
   languageName: node
   linkType: hard
 
@@ -1449,13 +1415,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openzeppelin/contracts-upgradeable@npm:4.2.0":
-  version: 4.2.0
-  resolution: "@openzeppelin/contracts-upgradeable@npm:4.2.0"
-  checksum: 76f0105f162e3fe96fbb894c7cb9ed5fa1da2b3015a642bd22c6d177ce6795ef3caddee41675cc2c62e5aef900c122b67e561bba31e143c03087b1fe519364e5
-  languageName: node
-  linkType: hard
-
 "@openzeppelin/contracts-upgradeable@npm:4.3.1":
   version: 4.3.1
   resolution: "@openzeppelin/contracts-upgradeable@npm:4.3.1"
@@ -1490,17 +1449,6 @@ __metadata:
     proper-lockfile: ^4.1.1
     solidity-ast: ^0.4.15
   checksum: bc1aed9d77dbfed4fa16b9eef53ca1db872e142041fc5c3eb303ee9ac30f3f30435e521265eee60ae229b6caef62616304e101ec05196e0619d9f8d7302e2a25
-  languageName: node
-  linkType: hard
-
-"@paulrberg/contracts@npm:3.4.0":
-  version: 3.4.0
-  resolution: "@paulrberg/contracts@npm:3.4.0"
-  dependencies:
-    prb-math: ^2.2.0
-  peerDependencies:
-    prb-math: ^2.2.0
-  checksum: eb84aab04bd5deeff5ec74030355b095f5ef375b4719cf1df8e4adb7321e036e27eb03c477347135659761e5e4ebb2c826af4744df6f297923bdf33fdffda55a
   languageName: node
   linkType: hard
 
@@ -6398,7 +6346,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ethers@npm:^5.0.0, ethers@npm:^5.0.1, ethers@npm:^5.0.2, ethers@npm:^5.4.4":
+"ethers@npm:^5.0.0, ethers@npm:^5.0.1, ethers@npm:^5.0.2":
   version: 5.4.4
   resolution: "ethers@npm:5.4.4"
   dependencies:
