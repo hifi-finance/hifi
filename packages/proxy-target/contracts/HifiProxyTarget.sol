@@ -30,7 +30,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         uint256 maxHTokenRequired
     ) external override {
         // Ensure that we are within the user's slippage tolerance.
-        (uint256 hTokenRequired, ) = hifiPool.getMintParams(underlyingOffered);
+        (uint256 hTokenRequired, ) = hifiPool.getMintInputs(underlyingOffered);
         if (hTokenRequired > maxHTokenRequired) {
             revert HifiProxyTarget__AddLiquiditySlippageTooHigh(maxHTokenRequired, hTokenRequired);
         }
@@ -76,7 +76,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         uint256 underlyingOffered
     ) public override {
         // Ensure that we are within the user's slippage tolerance.
-        (uint256 hTokenRequired, ) = hifiPool.getMintParams(underlyingOffered);
+        (uint256 hTokenRequired, ) = hifiPool.getMintInputs(underlyingOffered);
         if (hTokenRequired > maxBorrowAmount) {
             revert HifiProxyTarget__AddLiquiditySlippageTooHigh(maxBorrowAmount, hTokenRequired);
         }
@@ -184,7 +184,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         uint256 underlyingOffered
     ) external override {
         // Ensure that we are within the user's slippage tolerance.
-        (uint256 hTokenRequired, ) = hifiPool.getMintParams(underlyingOffered);
+        (uint256 hTokenRequired, ) = hifiPool.getMintInputs(underlyingOffered);
         uint256 underlyingIn = hifiPool.getQuoteForBuyingHToken(hTokenRequired);
         if (underlyingIn > maxUnderlyingIn) {
             revert HifiProxyTarget__TradeSlippageTooHigh(maxUnderlyingIn, underlyingIn);
@@ -301,7 +301,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         hifiPool.buyUnderlying(address(this), underlyingOffered);
 
         // Ensure that we are within the user's slippage tolerance.
-        (uint256 hTokenRequired, ) = hifiPool.getMintParams(underlyingOffered);
+        (uint256 hTokenRequired, ) = hifiPool.getMintInputs(underlyingOffered);
         uint256 totalhTokenAmount = hTokenIn + hTokenRequired;
         if (totalhTokenAmount > maxHTokenAmount) {
             revert HifiProxyTarget__AddLiquiditySlippageTooHigh(maxHTokenAmount, totalhTokenAmount);
@@ -369,7 +369,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         uint256 maxBorrowAmount = normalize(hifiPool.underlyingPrecisionScalar(), depositAmount);
 
         // Ensure that we are within the user's slippage tolerance.
-        (uint256 hTokenRequired, ) = hifiPool.getMintParams(underlyingOffered);
+        (uint256 hTokenRequired, ) = hifiPool.getMintInputs(underlyingOffered);
         if (hTokenRequired > maxBorrowAmount) {
             revert HifiProxyTarget__AddLiquiditySlippageTooHigh(maxBorrowAmount, hTokenRequired);
         }
