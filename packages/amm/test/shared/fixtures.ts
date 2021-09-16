@@ -1,17 +1,15 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { MockContract } from "ethereum-waffle";
-import hre from "hardhat";
+import { artifacts, waffle } from "hardhat";
 import { Artifact } from "hardhat/types";
 
-import { GodModeHifiPoolRegistry } from "../../typechain";
 import { GodModeErc20 } from "../../typechain/GodModeErc20";
 import { GodModeHifiPool } from "../../typechain/GodModeHifiPool";
+import { GodModeHifiPoolRegistry } from "../../typechain/GodModeHifiPoolRegistry";
 import { GodModeHToken } from "../../typechain/GodModeHToken";
 import { YieldSpaceMock } from "../../typechain/YieldSpaceMock";
-import { deployGodModeHToken, deployGodModeHifiPool, deployUsdc, deployGodModeHifiPoolRegistry } from "./deployers";
-import { deployMockHifiPool, deployMockHToken, deployMockUsdc } from "./mocks";
-
-const { deployContract } = hre.waffle;
+import { deployGodModeHToken, deployGodModeHifiPool, deployGodModeHifiPoolRegistry, deployUsdc } from "./deployers";
+import { deployMockHToken, deployMockHifiPool, deployMockUsdc } from "./mocks";
 
 type IntegrationFixtureFixtureReturnType = {
   hToken: GodModeHToken;
@@ -62,7 +60,7 @@ type UnitFixtureYieldSpaceReturnType = {
 
 export async function unitFixtureYieldSpace(signers: Signer[]): Promise<UnitFixtureYieldSpaceReturnType> {
   const deployer: Signer = signers[0];
-  const yieldSpaceArtifact: Artifact = await hre.artifacts.readArtifact("YieldSpaceMock");
-  const yieldSpace = <YieldSpaceMock>await deployContract(deployer, yieldSpaceArtifact, []);
+  const yieldSpaceArtifact: Artifact = await artifacts.readArtifact("YieldSpaceMock");
+  const yieldSpace = <YieldSpaceMock>await waffle.deployContract(deployer, yieldSpaceArtifact, []);
   return { yieldSpace };
 }

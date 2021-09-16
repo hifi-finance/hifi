@@ -982,7 +982,7 @@ __metadata:
     "@ethersproject/wallet": ^5.4.0
     "@hifi/constants": "workspace:*"
     "@hifi/helpers": "workspace:*"
-    "@hifi/protocol": 1.4.0
+    "@hifi/protocol": 1.5.0
     "@nomiclabs/hardhat-ethers": ^2.0.2
     "@nomiclabs/hardhat-etherscan": ^2.1.6
     "@nomiclabs/hardhat-waffle": ^2.0.1
@@ -1025,7 +1025,7 @@ __metadata:
     typechain: ^5.1.2
     typescript: ^4.4.3
   peerDependencies:
-    "@hifi/protocol": 1.4.0
+    "@hifi/protocol": 1.5.0
     "@paulrberg/contracts": 3.5.2
     ethers: ^5.4.4
     prb-math: 2.2.0
@@ -1190,6 +1190,23 @@ __metadata:
     ethers: ^5.4.4
     prb-math: 2.2.0
   checksum: e126b68c3ed016e0cb2b9a419c890faed7fb2cd44ea0a12eac56a869f0e9def308286a26f4470d792ed789f5a13a8684dad3074dddb584102f9782e43df4cd08
+  languageName: node
+  linkType: hard
+
+"@hifi/protocol@npm:1.5.0":
+  version: 1.5.0
+  resolution: "@hifi/protocol@npm:1.5.0"
+  dependencies:
+    "@openzeppelin/contracts-upgradeable": 4.3.1
+    "@paulrberg/contracts": 3.5.2
+    ethers: ^5.4.6
+    prb-math: 2.2.0
+  peerDependencies:
+    "@openzeppelin/contracts-upgradeable": 4.2.0
+    "@paulrberg/contracts": 3.5.2
+    ethers: ^5.4.4
+    prb-math: 2.2.0
+  checksum: d6045bd405717fce33f351ad2ed3bc292b73817f8e2c217160ee3ee129511e0d257c30de75dc92f8f178fff3849e6a4f0eab78d0a122c24de87ea79b65930f26
   languageName: node
   linkType: hard
 

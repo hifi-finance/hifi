@@ -2,9 +2,9 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-wit
 import { Fixture } from "ethereum-waffle";
 import { MockContract } from "ethereum-waffle";
 
-import { GodModeHifiPoolRegistry } from "../../typechain";
 import { GodModeErc20 } from "../../typechain/GodModeErc20";
 import { GodModeHifiPool } from "../../typechain/GodModeHifiPool";
+import { GodModeHifiPoolRegistry } from "../../typechain/GodModeHifiPoolRegistry";
 import { GodModeHToken } from "../../typechain/GodModeHToken";
 import { YieldSpaceMock } from "../../typechain/YieldSpaceMock";
 
