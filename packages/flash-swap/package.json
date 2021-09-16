@@ -11,7 +11,7 @@
     "url": "https://github.com/hifi-finance/hifi/issues"
   },
   "dependencies": {
-    "@hifi/protocol": "1.4.0",
+    "@hifi/protocol": "1.5.0",
     "@paulrberg/contracts": "3.5.2",
     "@uniswap/v2-core": "1.0.1",
     "ethers": "^5.4.6"
@@ -82,10 +82,10 @@
   ],
   "license": "LGPL-3.0-or-later",
   "peerDependencies": {
-    "@hifi/protocol": "1.4.0",
+    "@hifi/protocol": "1.5.0",
     "@paulrberg/contracts": "3.5.2",
     "@uniswap/v2-core": "1.0.1",
-    "ethers": "^5.4.4"
+    "ethers": "^5.4.6"
   },
   "publishConfig": {
     "access": "public"
