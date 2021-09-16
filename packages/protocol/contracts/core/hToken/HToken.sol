@@ -101,9 +101,8 @@ contract HToken is
         underlying = underlying_;
 
         // Set the list of non-recoverable tokens.
-        IErc20[] memory nonRecoverableTokens = new IErc20[](1);
-        nonRecoverableTokens[0] = IErc20(underlying_);
-        _setNonRecoverableTokens(nonRecoverableTokens);
+        nonRecoverableTokens.push(underlying);
+        isRecoverInitialized = true;
     }
 
     /// PUBLIC CONSTANT FUNCTIONS ///
