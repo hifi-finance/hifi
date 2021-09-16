@@ -10,6 +10,7 @@ import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Callee.sol";
 
 import "./IUniswapV2Pair.sol";
 
+// @dev We need this custom interface because of a TypeChain bug.
 interface Erc20Interface {
     event Approval(address indexed owner, address indexed spender, uint256 value);
     event Transfer(address indexed from, address indexed to, uint256 value);

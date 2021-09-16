@@ -12,14 +12,14 @@ import { FintrollerV1 } from "@hifi/protocol/typechain/FintrollerV1";
 import { artifacts, waffle } from "hardhat";
 import { Artifact } from "hardhat/types";
 
-import { UniswapV2Pair__factory } from "../../typechain/factories/UniswapV2Pair__factory";
+import { GodModeUniswapV2Pair__factory } from "../../typechain/factories/GodModeUniswapV2Pair__factory";
 import { GodModeErc20 } from "../../typechain/GodModeErc20";
 import { GodModeHToken } from "../../typechain/GodModeHToken";
+import { GodModeUniswapV2Factory } from "../../typechain/GodModeUniswapV2Factory";
 import { HifiFlashUniswapV2 } from "../../typechain/HifiFlashUniswapV2";
 import { MaliciousPair } from "../../typechain/MaliciousPair";
 import { SimplePriceFeed } from "../../typechain/SimplePriceFeed";
-import { UniswapV2Factory } from "../../typechain/UniswapV2Factory";
-import { UniswapV2Pair } from "../../typechain/UniswapV2Pair";
+import { GodModeUniswapV2Pair } from "../../typechain/GodModeUniswapV2Pair";
 import { deployGodModeErc20 } from "./deployers";
 
 type IntegrationFixtureReturnType = {
@@ -28,7 +28,7 @@ type IntegrationFixtureReturnType = {
   hifiFlashUniswapV2: HifiFlashUniswapV2;
   hToken: GodModeHToken;
   maliciousPair: MaliciousPair;
-  uniswapV2Pair: UniswapV2Pair;
+  uniswapV2Pair: GodModeUniswapV2Pair;
   usdc: GodModeErc20;
   usdcPriceFeed: SimplePriceFeed;
   wbtc: GodModeErc20;
@@ -74,15 +74,15 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
     ])
   );
 
-  const uniswapV2FactoryArtifact: Artifact = await artifacts.readArtifact("UniswapV2Factory");
-  const uniswapV2Factory: UniswapV2Factory = <UniswapV2Factory>(
-    await waffle.deployContract(deployer, uniswapV2FactoryArtifact, [await deployer.getAddress()])
+  const godModeUniswapV2FactoryArtifact: Artifact = await artifacts.readArtifact("GodModeUniswapV2Factory");
+  const uniswapV2Factory: GodModeUniswapV2Factory = <GodModeUniswapV2Factory>(
+    await waffle.deployContract(deployer, godModeUniswapV2FactoryArtifact, [await deployer.getAddress()])
   );
   await uniswapV2Factory.createPair(wbtc.address, usdc.address);
   const pairAddress: string = await uniswapV2Factory.allPairs(0);
 
-  const uniswapV2PairArtifact: Artifact = await artifacts.readArtifact("UniswapV2Pair");
-  const uniswapV2Pair: UniswapV2Pair = UniswapV2Pair__factory.connect(pairAddress, deployer);
+  const godModeUniswapV2PairArtifact: Artifact = await artifacts.readArtifact("GodModeUniswapV2Pair");
+  const uniswapV2Pair: GodModeUniswapV2Pair = GodModeUniswapV2Pair__factory.connect(pairAddress, deployer);
 
   const maliciousPairArtifact: Artifact = await artifacts.readArtifact("MaliciousPair");
   const maliciousPair: MaliciousPair = <MaliciousPair>(
@@ -90,7 +90,7 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
   );
 
   const hifiFlashUniswapV2Artifact: Artifact = await artifacts.readArtifact("HifiFlashUniswapV2");
-  const uniV2PairInitCodeHash: string = keccak256(uniswapV2PairArtifact.bytecode);
+  const uniV2PairInitCodeHash: string = keccak256(godModeUniswapV2PairArtifact.bytecode);
   const hifiFlashUniswapV2: HifiFlashUniswapV2 = <HifiFlashUniswapV2>(
     await waffle.deployContract(deployer, hifiFlashUniswapV2Artifact, [
       balanceSheet.address,

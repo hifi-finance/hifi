@@ -5,10 +5,10 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-wit
 
 import { GodModeErc20 } from "../typechain/GodModeErc20";
 import { GodModeHToken } from "../typechain/GodModeHToken";
+import { GodModeUniswapV2Pair } from "../typechain/GodModeUniswapV2Pair";
 import { HifiFlashUniswapV2 } from "../typechain/HifiFlashUniswapV2";
 import { MaliciousPair } from "../typechain/MaliciousPair";
 import { SimplePriceFeed } from "../typechain/SimplePriceFeed";
-import { UniswapV2Pair } from "../typechain/UniswapV2Pair";
 
 declare module "mocha" {
   export interface Context {
@@ -26,7 +26,7 @@ export interface Contracts {
   oracle: ChainlinkOperator;
   usdc: GodModeErc20;
   usdcPriceFeed: SimplePriceFeed;
-  uniswapV2Pair: UniswapV2Pair;
+  uniswapV2Pair: GodModeUniswapV2Pair;
   wbtc: GodModeErc20;
   wbtcPriceFeed: SimplePriceFeed;
 }

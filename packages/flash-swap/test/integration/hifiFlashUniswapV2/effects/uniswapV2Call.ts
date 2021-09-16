@@ -5,7 +5,7 @@ import { USDC, WBTC, bn, hUSDC, price } from "@hifi/helpers";
 import { expect } from "chai";
 import fp from "evm-fp";
 
-import { GodModeErc20 } from "../../../../typechain";
+import { GodModeErc20 } from "../../../../typechain/GodModeErc20";
 import { deployGodModeErc20 } from "../../../shared/deployers";
 import { HifiFlashUniswapV2Errors } from "../../../shared/errors";
 
@@ -117,7 +117,7 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
       });
     });
 
-    context("when the caller is the UniswapV2Pair contract", function () {
+    context("when the caller is the pair contract", function () {
       beforeEach(async function () {
         // Set the oracle price to 1 WBTC = $20k.
         await this.contracts.wbtcPriceFeed.setPrice(price("20000"));
@@ -154,6 +154,7 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
 
         context("when underlying is flash borrowed", function () {
           const borrowAmount: BigNumber = hUSDC("10000");
+          const collateralAmount: BigNumber = Zero;
           const debtCeiling: BigNumber = hUSDC("1e6");
           const liquidationIncentive: BigNumber = fp("1.10");
           const underlyingAmount: BigNumber = USDC("10000");
@@ -162,7 +163,7 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
           let token1Amount: BigNumber;
 
           beforeEach(async function () {
-            const tokenAmounts = await getTokenAmounts.call(this, Zero, underlyingAmount);
+            const tokenAmounts = await getTokenAmounts.call(this, collateralAmount, underlyingAmount);
             token0Amount = tokenAmounts.token0Amount;
             token1Amount = tokenAmounts.token1Amount;
 
@@ -275,31 +276,64 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
                   expectedProfitWbtcAmount = seizableWbtcAmount.sub(repayWbtcAmount);
                 });
 
-                it("flash swaps USDC via and makes a WBTC profit", async function () {
-                  const to: string = this.contracts.hifiFlashUniswapV2.address;
-                  const preWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
-                  await this.contracts.uniswapV2Pair
-                    .connect(this.signers.liquidator)
-                    .swap(token0Amount, token1Amount, to, data);
-                  const newWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
-                  expect(newWbtcBalance.sub(expectedProfitWbtcAmount)).to.equal(preWbtcBalance);
+                context("initial order of tokens in the pair", function () {
+                  it("flash swaps USDC via and makes a WBTC profit", async function () {
+                    const to: string = this.contracts.hifiFlashUniswapV2.address;
+                    const preWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+                    await this.contracts.uniswapV2Pair
+                      .connect(this.signers.liquidator)
+                      .swap(token0Amount, token1Amount, to, data);
+                    const newWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+                    expect(newWbtcBalance.sub(expectedProfitWbtcAmount)).to.equal(preWbtcBalance);
+                  });
                 });
 
-                it("emits a FlashLiquidateBorrow event", async function () {
-                  const to: string = this.contracts.hifiFlashUniswapV2.address;
-                  const contractCall = this.contracts.uniswapV2Pair
-                    .connect(this.signers.liquidator)
-                    .swap(token0Amount, token1Amount, to, data);
-                  await expect(contractCall)
-                    .to.emit(this.contracts.hifiFlashUniswapV2, "FlashLiquidateBorrow")
-                    .withArgs(
-                      this.signers.liquidator.address,
-                      this.signers.borrower.address,
-                      this.contracts.hToken.address,
-                      underlyingAmount,
-                      seizableWbtcAmount,
-                      expectedProfitWbtcAmount,
-                    );
+                context("new order of tokens in the pair", function () {
+                  let localToken0Amount: BigNumber;
+                  let localToken1Amount: BigNumber;
+
+                  beforeEach(async function () {
+                    const token0: string = await this.contracts.uniswapV2Pair.token0();
+                    if (token0 == this.contracts.wbtc.address) {
+                      await this.contracts.uniswapV2Pair.__godMode_setToken0(this.contracts.usdc.address);
+                      await this.contracts.uniswapV2Pair.__godMode_setToken1(this.contracts.wbtc.address);
+                      localToken0Amount = underlyingAmount;
+                      localToken1Amount = collateralAmount;
+                    } else {
+                      await this.contracts.uniswapV2Pair.__godMode_setToken0(this.contracts.wbtc.address);
+                      await this.contracts.uniswapV2Pair.__godMode_setToken1(this.contracts.usdc.address);
+                      localToken0Amount = collateralAmount;
+                      localToken1Amount = underlyingAmount;
+                    }
+                    await this.contracts.uniswapV2Pair.sync();
+                  });
+
+                  it("flash swaps USDC via and makes a WBTC profit", async function () {
+                    const to: string = this.contracts.hifiFlashUniswapV2.address;
+                    const preWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+                    await this.contracts.uniswapV2Pair
+                      .connect(this.signers.liquidator)
+                      .swap(localToken0Amount, localToken1Amount, to, data);
+                    const newWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+                    expect(newWbtcBalance.sub(expectedProfitWbtcAmount)).to.equal(preWbtcBalance);
+                  });
+
+                  it("emits a FlashLiquidateBorrow event", async function () {
+                    const to: string = this.contracts.hifiFlashUniswapV2.address;
+                    const contractCall = this.contracts.uniswapV2Pair
+                      .connect(this.signers.liquidator)
+                      .swap(localToken0Amount, localToken1Amount, to, data);
+                    await expect(contractCall)
+                      .to.emit(this.contracts.hifiFlashUniswapV2, "FlashLiquidateBorrow")
+                      .withArgs(
+                        this.signers.liquidator.address,
+                        this.signers.borrower.address,
+                        this.contracts.hToken.address,
+                        underlyingAmount,
+                        seizableWbtcAmount,
+                        expectedProfitWbtcAmount,
+                      );
+                  });
                 });
               });
             });
