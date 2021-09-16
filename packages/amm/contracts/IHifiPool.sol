@@ -41,7 +41,7 @@ interface IHifiPool is IErc20Permit {
     /// @dev Requirements:
     /// - Cannot be called after maturity.
     ///
-    /// @param hTokenOut The hypothetical amount of hTokensto sell.
+    /// @param hTokenOut The hypothetical amount of hTokens to sell.
     /// @return underlyingIn The hypothetical amount of underlying required.
     function getQuoteForBuyingHToken(uint256 hTokenOut) external view returns (uint256 underlyingIn);
 
@@ -51,7 +51,7 @@ interface IHifiPool is IErc20Permit {
     /// - Cannot be called after maturity.
     ///
     /// @param underlyingOut The hypothetical amount of underlying desired.
-    /// @return hTokenIn The hypothetical amount of hTokensrequired.
+    /// @return hTokenIn The hypothetical amount of hTokens required.
     function getQuoteForBuyingUnderlying(uint256 underlyingOut) external view returns (uint256 hTokenIn);
 
     /// @notice Calculates how many hTokens would be required and how many LP tokens would be issued for a given
@@ -78,7 +78,7 @@ interface IHifiPool is IErc20Permit {
     /// @dev Requirements:
     /// - Cannot be called after maturity.
     ///
-    /// @param hTokenIn The hypothetical amount of hTokensto sell.
+    /// @param hTokenIn The hypothetical amount of hTokens to sell.
     /// @return underlyingOut The hypothetical amount of underlying that would be obtained.
     function getQuoteForSellingHToken(uint256 hTokenIn) external view returns (uint256 underlyingOut);
 
@@ -88,7 +88,7 @@ interface IHifiPool is IErc20Permit {
     /// - Cannot be called after maturity.
     ///
     /// @param underlyingIn The hypothetical amount of underlying to sell.
-    /// @return hTokenOut The hypothetical amount of hTokensthat would be obtained.
+    /// @return hTokenOut The hypothetical amount of hTokens that would be obtained.
     function getQuoteForSellingUnderlying(uint256 underlyingIn) external view returns (uint256 hTokenOut);
 
     /// @notice Retrieves the normalized underlying reserves, i.e. the Erc20 balance scaled to have 18 decimals.
@@ -134,7 +134,7 @@ interface IHifiPool is IErc20Permit {
     /// - The caller must have at least `underlyingIn` in their account.
     ///
     /// @param to The account that receives the hToken being bought.
-    /// @param hTokenOut The amount of hTokensbeing bought that will be transferred to the `to` account.
+    /// @param hTokenOut The amount of hTokens being bought that will be transferred to the `to` account.
     /// @return underlyingIn The amount of underlying that will be taken from the caller's account.
     function buyHToken(address to, uint256 hTokenOut) external returns (uint256 underlyingIn);
 
@@ -147,7 +147,7 @@ interface IHifiPool is IErc20Permit {
     ///
     /// @param to The account that receives the underlying being bought.
     /// @param underlyingOut The amount of underlying being bought that will be transferred to the `to` account.
-    /// @return hTokenIn The amount of hTokensthat will be taken from the caller's account.
+    /// @return hTokenIn The amount of hTokens that will be taken from the caller's account.
     function buyUnderlying(address to, uint256 underlyingOut) external returns (uint256 hTokenIn);
 
     /// @notice Mints LP tokens in exchange for adding underlying tokens and hTokens. An appropriate amount of

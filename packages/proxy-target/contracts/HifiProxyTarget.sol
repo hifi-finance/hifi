@@ -245,7 +245,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         } else {
             balanceSheet.repayBorrow(hToken, debtAmount);
 
-            // Relay any remainding hTokens to the end user.
+            // Relay any remaining hTokens to the end user.
             unchecked {
                 uint256 hTokenDelta = hTokenOut - debtAmount;
                 if (hTokenDelta > 0) {
@@ -424,8 +424,8 @@ contract HifiProxyTarget is IHifiProxyTarget {
 
         unchecked {
             // Calculate how much underlying was redeemed.
-            uint256 postUnderlyigBalance = underlying.balanceOf(address(this));
-            uint256 underlyingAmount = postUnderlyigBalance - preUnderlyingBalance;
+            uint256 postUnderlyingBalance = underlying.balanceOf(address(this));
+            uint256 underlyingAmount = postUnderlyingBalance - preUnderlyingBalance;
 
             // The underlying is now in the DSProxy, so we relay it to the end user.
             underlying.safeTransfer(msg.sender, underlyingAmount);
@@ -462,8 +462,8 @@ contract HifiProxyTarget is IHifiProxyTarget {
         // Calculate how much underlying was redeemed.
         uint256 underlyingAmount;
         unchecked {
-            uint256 postUnderlyigBalance = underlying.balanceOf(address(this));
-            underlyingAmount = postUnderlyigBalance - preUnderlyingBalance;
+            uint256 postUnderlyingBalance = underlying.balanceOf(address(this));
+            underlyingAmount = postUnderlyingBalance - preUnderlyingBalance;
         }
 
         // Relay all the underlying it to the end user.
@@ -490,7 +490,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         IHToken hToken = hifiPool.hToken();
         balanceSheet.repayBorrow(hToken, repayAmount);
 
-        // Relay any remainding hTokens to the end user.
+        // Relay any remaining hTokens to the end user.
         if (hTokenReturned > repayAmount) {
             unchecked {
                 uint256 hTokenDelta = hTokenReturned - repayAmount;
@@ -632,7 +632,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         } else {
             balanceSheet.repayBorrow(hToken, debtAmount);
 
-            // Relay any remainding hTokens to the end user.
+            // Relay any remaining hTokens to the end user.
             unchecked {
                 uint256 hTokenDelta = hTokenOut - debtAmount;
                 if (hTokenDelta > 0) {

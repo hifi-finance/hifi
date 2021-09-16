@@ -120,11 +120,11 @@ interface IHifiProxyTarget {
     ///
     /// @param hifiPool The address of the HifiPool contract.
     /// @param maxUnderlyingIn The maximum amount of underlying that the user is willing to pay.
-    /// @param underyingOffered The amount of underlying to invest.
+    /// @param underlyingOffered The amount of underlying to invest.
     function buyHTokenAndAddLiquidity(
         IHifiPool hifiPool,
         uint256 maxUnderlyingIn,
-        uint256 underyingOffered
+        uint256 underlyingOffered
     ) external;
 
     /// @notice Buys hTokens with underlying and repays the borrow.

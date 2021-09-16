@@ -19,10 +19,10 @@ error HifiPool__BuyHTokenZero();
 /// @notice Emitted when attempting to buy a zero amount of underlying.
 error HifiPool__BuyUnderlyingZero();
 
-/// @notice Emitted when offerring zero underlying to mint LP tokens.
+/// @notice Emitted when offering zero underlying to mint LP tokens.
 error HifiPool__BurnZero();
 
-/// @notice Emitted when offerring zero underlying to mint LP tokens.
+/// @notice Emitted when offering zero underlying to mint LP tokens.
 error HifiPool__MintZero();
 
 /// @notice Emitted when buying hTokens or selling underlying and the resultant hToken reserves would become

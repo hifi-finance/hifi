@@ -14,7 +14,7 @@ import "../../access/OwnableUpgradeable.sol";
 /// @notice Emitted when the bond matured.
 error BalanceSheet__BondMatured(IHToken bond);
 
-/// @notice Emitted when the account exceeds the maximunm numbers of bonds permitted.
+/// @notice Emitted when the account exceeds the maximum numbers of bonds permitted.
 error BalanceSheet__BorrowMaxBonds(IHToken bond, uint256 hypotheticalBondListLength, uint256 maxBonds);
 
 /// @notice Emitted when borrows are not allowed by the Fintroller contract.

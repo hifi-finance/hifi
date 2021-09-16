@@ -57,7 +57,7 @@ interface IHifiFlashUniswapV2 is IUniswapV2Callee {
     /// corresponding pair token is akin to a normal swap, so the 0.3% LP fee applies.
     /// @param pair The Uniswap V2 pair contract.
     /// @param underlying The address of the underlying contract.
-    /// @param underlyingAmount The amount of underlying flash florrowed.
+    /// @param underlyingAmount The amount of underlying flash borrowed.
     /// @return collateralRepayAmount The minimum amount of collateral that must be repaid.
     function getRepayCollateralAmount(
         IUniswapV2Pair pair,

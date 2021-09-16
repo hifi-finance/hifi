@@ -169,7 +169,7 @@ contract HToken is
             revert HToken__RedeemInsufficientLiquidity(underlyingAmount, totalUnderlyingReserve);
         }
 
-        // Effects: decrease the remainding supply of underlying.
+        // Effects: decrease the remaining supply of underlying.
         totalUnderlyingReserve -= underlyingAmount;
 
         // Interactions: burn the hTokens.
@@ -199,7 +199,7 @@ contract HToken is
             hTokenAmount = underlyingSupplyAmount;
         }
 
-        // Effeects: mint the hTokens.
+        // Effects: mint the hTokens.
         mintInternal(msg.sender, hTokenAmount);
 
         // Interactions: perform the Erc20 transfer.

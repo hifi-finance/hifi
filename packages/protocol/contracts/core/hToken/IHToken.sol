@@ -40,7 +40,7 @@ interface IHToken is
     /// @param newBalanceSheet The address of the new BalanceSheet.
     event SetBalanceSheet(address indexed owner, IBalanceSheetV1 oldBalanceSheet, IBalanceSheetV1 newBalanceSheet);
 
-    /// @notice Emitted when underlying is supplied in exhcange for an equivalent amount of hTokens.
+    /// @notice Emitted when underlying is supplied in exchange for an equivalent amount of hTokens.
     /// @param account The account supplying underlying.
     /// @param underlyingAmount The amount of supplied underlying.
     /// @param hTokenAmount The amount of minted hTokens.

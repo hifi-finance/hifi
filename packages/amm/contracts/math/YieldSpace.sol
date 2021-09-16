@@ -207,7 +207,7 @@ library YieldSpace {
         }
     }
 
-    /// @notice Calculates the amount of underyling a user would get for a given amount of hToken.
+    /// @notice Calculates the amount of underlying a user would get for a given amount of hToken.
     /// @dev Based on the equation y = (x_s^(1-gt) + y_s^(1-gt) - x^(1-gt))^(1/(1-gt)).
     /// @param hTokenReserves Amount of hToken reserves.
     /// @param normalizedUnderlyingReserves Amount of underlying reserves.
