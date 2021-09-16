@@ -2,14 +2,14 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-wit
 import { MockContract } from "ethereum-waffle";
 import { Fixture } from "ethereum-waffle";
 
-import { ChainlinkOperator } from "../typechain/ChainlinkOperator";
-import { FintrollerV1 } from "../typechain/FintrollerV1";
-import { GodModeBalanceSheet } from "../typechain/GodModeBalanceSheet";
-import { GodModeErc20 } from "../typechain/GodModeErc20";
-import { GodModeHToken } from "../typechain/GodModeHToken";
-import { OwnableUpgradeable } from "../typechain/OwnableUpgradeable";
-import { SimplePriceFeed } from "../typechain/SimplePriceFeed";
-import { StablecoinPriceFeed } from "../typechain/StablecoinPriceFeed";
+import { ChainlinkOperator } from "../../typechain/ChainlinkOperator";
+import { FintrollerV1 } from "../../typechain/FintrollerV1";
+import { GodModeBalanceSheet } from "../../typechain/GodModeBalanceSheet";
+import { GodModeErc20 } from "../../typechain/GodModeErc20";
+import { GodModeHToken } from "../../typechain/GodModeHToken";
+import { OwnableUpgradeable } from "../../typechain/OwnableUpgradeable";
+import { SimplePriceFeed } from "../../typechain/SimplePriceFeed";
+import { StablecoinPriceFeed } from "../../typechain/StablecoinPriceFeed";
 
 declare module "mocha" {
   interface Context {
