@@ -13,17 +13,17 @@
   "dependencies": {
     "@ethersproject/bignumber": "^5.4.1",
     "@hifi/constants": "workspace:*",
-    "hardhat": "^2.6.2",
-    "mathjs": "^9.4.4"
+    "hardhat": "^2.6.4",
+    "mathjs": "^9.4.5"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^4.30.0",
-    "@typescript-eslint/parser": "^4.30.0",
+    "@typescript-eslint/eslint-plugin": "^4.31.1",
+    "@typescript-eslint/parser": "^4.31.1",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
-    "prettier": "^2.3.2",
+    "prettier": "^2.4.1",
     "shx": "^0.3.3",
-    "typescript": "^4.4.2"
+    "typescript": "^4.4.3"
   },
   "files": [
     "/dist"
