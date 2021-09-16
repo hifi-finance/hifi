@@ -18,13 +18,16 @@ on:
         default: "2"
         description: "Number of block confirmations to wait before attempting verification"
         required: false
-      pair0:
-        description: "Address of an Uniswap V2 pair contract"
-        required: true
       ref:
         default: "main"
         description: "Git ref to checkout"
         required: false
+      uni-v2-factory:
+        description: "Address of the UniswapV2Factory contract"
+        required: true
+      uni-v2-pair-init-code-hash:
+        description: "Init code hash of the UniswapV2Pair contract"
+        required: true
 
 jobs:
   deploy-and-verify:
@@ -53,25 +56,18 @@ jobs:
           yarn workspace @hifi/deployers hardhat
           deploy:contract:hifi-flash-uniswap-v2 --network "${{ github.event.inputs.chain }}"
           --balance-sheet "${{ github.event.inputs.balance-sheet }}"
-          --pair0 "${{ github.event.inputs.pair0 }}"
+          --uni-v2-factory "${{ github.event.inputs.uni-v2-factory }}"
+          --uni-v2-pair-init-code-hash "${{ github.event.inputs.uni-v2-pair-init-code-hash }}"
           --confirmations "${{ github.event.inputs.confirmations }}"
           --set-output true
 
       - name: "Compile the contracts and generate TypeChain bindings"
         run: "yarn workspace @hifi/flash-swap typechain"
 
-      - name: "Prepare contract arguments for verification"
-        uses: "finnp/create-file-action@1.0.0"
-        env:
-          FILE_NAME: "${{ github.workspace }}/arguments.js"
-          FILE_DATA: >-
-            module.exports = [
-              "${{ github.event.inputs.balance-sheet }}",
-              ["${{ github.event.inputs.pair0 }}"]
-            ];
-
       - name: "Verify HifiFlashUniswapV2"
         run: >-
           yarn workspace @hifi/flash-swap hardhat
-          verify --constructor-args "${{ github.workspace }}/arguments.js" "${{ steps.deploy.outputs.hifi-flash-uniswap-v2 }}"
-          --network "${{ github.event.inputs.chain }}"
+          verify "${{ steps.deploy.outputs.hifi-flash-uniswap-v2 }}" --network "${{ github.event.inputs.chain }}"
+          "${{ github.event.inputs.balance-sheet }}"
+          "${{ github.event.inputs.uni-v2-factory }}"
+          "${{ github.event.inputs.uni-v2-pair-init-code-hash }}"

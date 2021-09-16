@@ -13,8 +13,8 @@ import {
 task(TASK_DEPLOY_CONTRACT_HIFI_FLASH_UNISWAP_V2)
   // Contract arguments
   .addParam("balanceSheet", "Address of the BalanceSheet contract")
-  .addParam("uniV2Factory", "The address of the UniswapV2Factory contract")
-  .addParam("uniV2PairInitCodeHash", "The init code hash of the UniswapV2Pair contract")
+  .addParam("uniV2Factory", "Address of the UniswapV2Factory contract")
+  .addParam("uniV2PairInitCodeHash", "Init code hash of the UniswapV2Pair contract")
   // Developer settings
   .addOptionalParam("confirmations", "How many block confirmations to wait for", 0, types.int)
   .addOptionalParam("printAddress", "Print the address in the console", true, types.boolean)
