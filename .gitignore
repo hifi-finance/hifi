@@ -8,6 +8,7 @@
 **/.coverage_artifacts
 **/.coverage_cache
 **/.coverage_contracts
+**/.openzeppelin/unknown-31337.json
 **/artifacts
 **/bin
 **/build
