@@ -23,7 +23,7 @@ export default function shouldBehaveLikeTransferOwnership(): void {
         const newOwner: string = AddressZero;
         await expect(
           this.contracts.ownableUpgradeable.connect(this.signers.admin)._transferOwnership(newOwner),
-        ).to.be.revertedWith(OwnableUpgradeableErrors.NotOwner);
+        ).to.be.revertedWith(OwnableUpgradeableErrors.OwnerZeroAddress);
       });
     });
 

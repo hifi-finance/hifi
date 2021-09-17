@@ -57,4 +57,5 @@ export enum OwnableErrors {
 
 export enum OwnableUpgradeableErrors {
   NotOwner = "OwnableUpgradeable__NotOwner",
+  OwnerZeroAddress = "OwnableUpgradeable__OwnerZeroAddress",
 }
