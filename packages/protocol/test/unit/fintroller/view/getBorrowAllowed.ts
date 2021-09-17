@@ -16,7 +16,7 @@ export default function shouldBehaveLikeGetBorrowAllowed(): void {
       await this.contracts.fintroller.connect(this.signers.admin).listBond(this.mocks.hTokens[0].address);
     });
 
-    it("retrieves the default value", async function () {
+    it("returns the default value", async function () {
       const borrowAllowed: boolean = await this.contracts.fintroller.getBorrowAllowed(this.mocks.hTokens[0].address);
       expect(borrowAllowed).to.equal(true);
     });

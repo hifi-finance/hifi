@@ -213,9 +213,9 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
           });
 
           context("when the borrower has a liquidity shortfall", function () {
-            context("when the collateralization ratio is lower than 110%", function () {
+            context("when the collateral ratio is lower than 110%", function () {
               beforeEach(async function () {
-                // Set the WBTC price to $10k to make the borrower's collateralization ratio 100%.
+                // Set the WBTC price to $10k to make the borrower's collateral ratio 100%.
                 await this.contracts.wbtcPriceFeed.setPrice(price("10000"));
               });
 
@@ -230,9 +230,9 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
               });
             });
 
-            context("when the collateralization ratio is lower than 150% but higher than 110%", function () {
+            context("when the collateral ratio is lower than 150% but higher than 110%", function () {
               beforeEach(async function () {
-                // Set the WBTC price to $12.5k to make borrower's collateralization ratio 125%.
+                // Set the WBTC price to $12.5k to make borrower's collateral ratio 125%.
                 await this.contracts.wbtcPriceFeed.setPrice(price("12500"));
               });
 

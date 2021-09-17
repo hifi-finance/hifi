@@ -1,6 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
-import { COLLATERALIZATION_RATIOS, LIQUIDATION_INCENTIVES, WBTC_SYMBOL } from "@hifi/constants";
+import { COLLATERAL_RATIOS, LIQUIDATION_INCENTIVES, WBTC_SYMBOL } from "@hifi/constants";
 import { WBTC, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 import fp from "evm-fp";
@@ -92,9 +92,9 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
 
           beforeEach(async function () {
             // Mock the necessary methods.
-            await this.mocks.fintroller.mock.getCollateralizationRatio
+            await this.mocks.fintroller.mock.getCollateralRatio
               .withArgs(this.mocks.wbtc.address)
-              .returns(COLLATERALIZATION_RATIOS.wbtc);
+              .returns(COLLATERAL_RATIOS.wbtc);
             await this.mocks.hTokens[0].mock.balanceOf.withArgs(this.signers.liquidator.address).returns(debtAmount);
             await this.mocks.hTokens[0].mock.burn.withArgs(this.signers.liquidator.address, repayAmount).returns();
             await this.mocks.wbtc.mock.transfer
@@ -154,9 +154,9 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
           await this.mocks.hTokens[0].mock.isMatured.returns(true);
 
           // Mock the necessary methods.
-          await this.mocks.fintroller.mock.getCollateralizationRatio
+          await this.mocks.fintroller.mock.getCollateralRatio
             .withArgs(this.mocks.wbtc.address)
-            .returns(COLLATERALIZATION_RATIOS.wbtc);
+            .returns(COLLATERAL_RATIOS.wbtc);
 
           // Make the collateral deposit.
           await this.contracts.balanceSheet.__godMode_setCollateralList(this.signers.borrower.address, [

@@ -12,7 +12,7 @@ export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void 
       await this.mocks.usdc.mock.decimals.returns(bn("6"));
     });
 
-    it("retrieves 1", async function () {
+    it("returns 1", async function () {
       const hToken: HToken = await deployHToken(
         this.signers.admin,
         H_TOKEN_MATURITY_THREE_MONTHS,
@@ -29,7 +29,7 @@ export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void 
       await this.mocks.usdc.mock.decimals.returns(bn("8"));
     });
 
-    it("retrieves 1.0e10", async function () {
+    it("returns 1.0e10", async function () {
       const hToken: HToken = await deployHToken(
         this.signers.admin,
         H_TOKEN_MATURITY_THREE_MONTHS,
@@ -46,7 +46,7 @@ export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void 
       await this.mocks.usdc.mock.decimals.returns(bn("18"));
     });
 
-    it("retrieves 1", async function () {
+    it("returns 1", async function () {
       const hToken: HToken = await deployHToken(
         this.signers.admin,
         H_TOKEN_MATURITY_THREE_MONTHS,

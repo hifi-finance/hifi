@@ -34,7 +34,7 @@ export default function shouldBehaveLikeGetPrice(): void {
         await this.mocks.wbtcPriceFeed.mock.latestRoundData.returns(Zero, WBTC_PRICE, Zero, Zero, Zero);
       });
 
-      it("retrieves the price", async function () {
+      it("returns the price", async function () {
         const contractPrice: BigNumber = await this.contracts.oracle.getPrice(WBTC_SYMBOL);
         expect(contractPrice).to.equal(WBTC_PRICE);
       });

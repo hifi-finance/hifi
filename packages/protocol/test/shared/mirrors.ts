@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import {
-  COLLATERALIZATION_RATIOS,
+  COLLATERAL_RATIOS,
   LIQUIDATION_INCENTIVES,
   NORMALIZED_USDC_PRICE,
   NORMALIZED_WBTC_PRICE,
@@ -90,15 +90,15 @@ export function getSeizableCollateralAmount(
 
 export function weighWbtc(
   wbtcDepositAmount: BigNumber,
-  collateralizationRatio: BigNumber = COLLATERALIZATION_RATIOS.wbtc,
+  collateralRatio: BigNumber = COLLATERAL_RATIOS.wbtc,
 ): BigNumber {
   const normalizedWbtcAmount: BigNumber = wbtcDepositAmount.mul(WBTC_PRICE_PRECISION_SCALAR);
-  return prbDiv(prbMul(normalizedWbtcAmount, NORMALIZED_WBTC_PRICE), collateralizationRatio);
+  return prbDiv(prbMul(normalizedWbtcAmount, NORMALIZED_WBTC_PRICE), collateralRatio);
 }
 
 export function weighWeth(
   wethDepositAmount: BigNumber,
-  collateralizationRatio: BigNumber = COLLATERALIZATION_RATIOS.weth,
+  collateralRatio: BigNumber = COLLATERAL_RATIOS.weth,
 ): BigNumber {
-  return prbDiv(prbMul(wethDepositAmount, NORMALIZED_WETH_PRICE), collateralizationRatio);
+  return prbDiv(prbMul(wethDepositAmount, NORMALIZED_WETH_PRICE), collateralRatio);
 }

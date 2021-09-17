@@ -29,18 +29,6 @@ interface IFintrollerV1 is IOwnableUpgradeable {
     /// @param state True if borrowing is allowed.
     event SetBorrowAllowed(address indexed owner, IHToken indexed bond, bool state);
 
-    /// @notice Emitted when the collateralization ratio is updated.
-    /// @param owner The address of the contract owner.
-    /// @param collateral The related HToken.
-    /// @param oldCollateralizationRatio The old collateralization ratio.
-    /// @param newCollateralizationRatio the new collateralization ratio.
-    event SetCollateralizationRatio(
-        address indexed owner,
-        IErc20 indexed collateral,
-        uint256 oldCollateralizationRatio,
-        uint256 newCollateralizationRatio
-    );
-
     /// @notice Emitted when the collateral ceiling is updated.
     /// @param owner The address of the contract owner.
     /// @param collateral The related collateral.
@@ -51,6 +39,18 @@ interface IFintrollerV1 is IOwnableUpgradeable {
         IErc20 indexed collateral,
         uint256 oldCollateralCeiling,
         uint256 newCollateralCeiling
+    );
+
+    /// @notice Emitted when the collateral ratio is updated.
+    /// @param owner The address of the contract owner.
+    /// @param collateral The related HToken.
+    /// @param oldCollateralRatio The old collateral ratio.
+    /// @param newCollateralRatio the new collateral ratio.
+    event SetCollateralRatio(
+        address indexed owner,
+        IErc20 indexed collateral,
+        uint256 oldCollateralRatio,
+        uint256 newCollateralRatio
     );
 
     /// @notice Emitted when the debt ceiling for a bond is updated.
@@ -133,11 +133,11 @@ interface IFintrollerV1 is IOwnableUpgradeable {
     /// @return The collateral ceiling as a uint256, or zero if an invalid address was provided.
     function getCollateralCeiling(IErc20 collateral) external view returns (uint256);
 
-    /// @notice Returns the collateralization ratio of the given collateral.
+    /// @notice Returns the collateral ratio.
     /// @dev It is not an error to provide an invalid address.
     /// @param collateral The address of the collateral contract.
-    /// @return The collateralization ratio, or zero if an invalid address was provided.
-    function getCollateralizationRatio(IErc20 collateral) external view returns (uint256);
+    /// @return The collateral ratio, or zero if an invalid address was provided.
+    function getCollateralRatio(IErc20 collateral) external view returns (uint256);
 
     /// @notice Returns the debt ceiling for the given bond.
     /// @dev It is not an error to provide an invalid address.
@@ -229,20 +229,20 @@ interface IFintrollerV1 is IOwnableUpgradeable {
     /// @param newCollateralCeiling The new collateral ceiling.
     function setCollateralCeiling(IHToken collateral, uint256 newCollateralCeiling) external;
 
-    /// @notice Updates the collateralization ratio.
+    /// @notice Updates the collateral ratio.
     ///
-    /// @dev Emits a {SetCollateralizationRatio} event.
+    /// @dev Emits a {SetCollateralRatio} event.
     ///
     /// Requirements:
     ///
     /// - The caller must be the owner.
     /// - The collateral must be listed.
-    /// - The new collateralization ratio cannot be higher than the maximum collateralization ratio.
-    /// - The new collateralization ratio cannot be lower than the minimum collateralization ratio.
+    /// - The new collateral ratio cannot be higher than the maximum collateral ratio.
+    /// - The new collateral ratio cannot be lower than the minimum collateral ratio.
     ///
-    /// @param collateral The collateral to update the collateralization ratio for.
-    /// @param newCollateralizationRatio The new collateralization ratio.
-    function setCollateralizationRatio(IErc20 collateral, uint256 newCollateralizationRatio) external;
+    /// @param collateral The collateral to update the collateral ratio for.
+    /// @param newCollateralRatio The new collateral ratio.
+    function setCollateralRatio(IErc20 collateral, uint256 newCollateralRatio) external;
 
     /// @notice Updates the state of the permission accessed by the BalanceSheet before a collateral deposit.
     ///

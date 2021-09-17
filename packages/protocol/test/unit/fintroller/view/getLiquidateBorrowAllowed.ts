@@ -16,7 +16,7 @@ export default function shouldBehaveLikeGetLiquidateBorrowAllowed(): void {
       await this.contracts.fintroller.connect(this.signers.admin).listBond(this.mocks.hTokens[0].address);
     });
 
-    it("retrieves the default value", async function () {
+    it("returns the default value", async function () {
       const liquidateBorrowAllowed: boolean = await this.contracts.fintroller.getLiquidateBorrowAllowed(
         this.mocks.hTokens[0].address,
       );

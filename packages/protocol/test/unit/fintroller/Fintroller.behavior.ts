@@ -3,7 +3,7 @@ import shouldBehaveLikeListBond from "./effects/listBond";
 import shouldBehaveLikeListCollateral from "./effects/listCollateral";
 import shouldBehaveLikeSetBorrowAllowed from "./effects/setBorrowAllowed";
 import shouldBehaveLikeSetCollateralCeiling from "./effects/setCollateralCeiling";
-import shouldBehaveLikeSetCollateralizationRatio from "./effects/setCollateralizationRatio";
+import shouldBehaveLikeSetCollateralRatio from "./effects/setCollateralRatio";
 import shouldBehaveLikeSetDebtCeiling from "./effects/setDebtCeiling";
 import shouldBehaveLikeSetDepositCollateralAllowed from "./effects/setDepositCollateralAllowed";
 import shouldBehaveLikeSetLiquidateBorrowAllowed from "./effects/setLiquidateBorrowAllowed";
@@ -14,7 +14,7 @@ import shouldBehaveLikeGetBond from "./view/getBond";
 import shouldBehaveLikeGetBorrowAllowed from "./view/getBorrowAllowed";
 import shouldBehaveLikeGetCollateral from "./view/getCollateral";
 import shouldBehaveLikeGetCollateralCeiling from "./view/getCollateralCeiling";
-import shouldBehaveLikeGetCollateralizationRatio from "./view/getCollateralizationRatio";
+import shouldBehaveLikeGetCollateralRatio from "./view/getCollateralRatio";
 import shouldBehaveLikeGetDebtCeiling from "./view/getDebtCeiling";
 import shouldBehaveLikeGetDepositCollateralAllowed from "./view/getDepositCollateralAllowed";
 import shouldBehaveLikeGetLiquidateBorrowAllowed from "./view/getLiquidateBorrowAllowed";
@@ -46,8 +46,8 @@ export function shouldBehaveLikeFintroller(): void {
       shouldBehaveLikeGetCollateralCeiling();
     });
 
-    describe("getCollateralizationRatio", function () {
-      shouldBehaveLikeGetCollateralizationRatio();
+    describe("getCollateralRatio", function () {
+      shouldBehaveLikeGetCollateralRatio();
     });
 
     describe("getDebtCeiling", function () {
@@ -100,8 +100,8 @@ export function shouldBehaveLikeFintroller(): void {
       shouldBehaveLikeSetCollateralCeiling();
     });
 
-    describe("setCollateralizationRatio", function () {
-      shouldBehaveLikeSetCollateralizationRatio();
+    describe("setCollateralRatio", function () {
+      shouldBehaveLikeSetCollateralRatio();
     });
 
     describe("setDebtCeiling", function () {

@@ -4,7 +4,7 @@ import { expect } from "chai";
 
 export default function shouldBehaveLikeGetCollateralCeiling(): void {
   context("when the collateral is not listed", function () {
-    it("retrieves zero", async function () {
+    it("returns zero", async function () {
       const collateralCeiling: BigNumber = await this.contracts.fintroller.getCollateralCeiling(
         this.mocks.wbtc.address,
       );
@@ -17,7 +17,7 @@ export default function shouldBehaveLikeGetCollateralCeiling(): void {
       await this.contracts.fintroller.connect(this.signers.admin).listCollateral(this.mocks.wbtc.address);
     });
 
-    it("retrieves the default collateral ceiling", async function () {
+    it("returns the default collateral ceiling", async function () {
       const collateralCeiling: BigNumber = await this.contracts.fintroller.getCollateralCeiling(
         this.mocks.hTokens[0].address,
       );

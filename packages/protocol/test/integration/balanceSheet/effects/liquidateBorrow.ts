@@ -1,6 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
-import { COLLATERALIZATION_RATIOS, LIQUIDATION_INCENTIVES } from "@hifi/constants";
+import { COLLATERAL_RATIOS, LIQUIDATION_INCENTIVES } from "@hifi/constants";
 import { WBTC, hUSDC, price } from "@hifi/helpers";
 import { expect } from "chai";
 import fp from "evm-fp";
@@ -46,10 +46,10 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
       .connect(this.signers.admin)
       .setDebtCeiling(this.contracts.hTokens[0].address, debtCeiling);
 
-    // Set the collateralization ratio.
+    // Set the collateral ratio.
     await this.contracts.fintroller
       .connect(this.signers.admin)
-      .setCollateralizationRatio(this.contracts.wbtc.address, COLLATERALIZATION_RATIOS.wbtc);
+      .setCollateralRatio(this.contracts.wbtc.address, COLLATERAL_RATIOS.wbtc);
 
     // Set the liquidation incentive.
     await this.contracts.fintroller

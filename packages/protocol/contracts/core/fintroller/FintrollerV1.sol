@@ -21,11 +21,11 @@ error Fintroller__CollateralDecimalsOverflow(uint256 decimals);
 /// @notice Emitted when listing a collateral that has zero decimals.
 error Fintroller__CollateralDecimalsZero();
 
-/// @notice Emitted when setting a new collateralization ratio that is above the upper bound.
-error Fintroller__CollateralizationRatioOverflow(uint256 newCollateralizationRatio);
+/// @notice Emitted when setting a new collateral ratio that is above the upper bound.
+error Fintroller__CollateralRatioOverflow(uint256 newCollateralRatio);
 
-/// @notice Emitted when setting a new collateralization ratio that is below the lower bound.
-error Fintroller__CollateralizationRatioUnderflow(uint256 newCollateralizationRatio);
+/// @notice Emitted when setting a new collateral ratio that is below the lower bound.
+error Fintroller__CollateralRatioUnderflow(uint256 newCollateralRatio);
 
 /// @notice Emitted when setting a new debt ceiling that is below the total supply of hTokens.
 error Fintroller__DebtCeilingUnderflow(uint256 newDebtCeiling, uint256 totalSupply);
@@ -82,8 +82,8 @@ contract FintrollerV1 is
     }
 
     /// @inheritdoc IFintrollerV1
-    function getCollateralizationRatio(IErc20 collateral) external view override returns (uint256) {
-        return collaterals[collateral].collateralizationRatio;
+    function getCollateralRatio(IErc20 collateral) external view override returns (uint256) {
+        return collaterals[collateral].ratio;
     }
 
     /// @inheritdoc IFintrollerV1
@@ -162,10 +162,10 @@ contract FintrollerV1 is
         // Effects: update storage.
         collaterals[collateral] = Collateral({
             ceiling: 0,
-            collateralizationRatio: DEFAULT_COLLATERALIZATION_RATIO,
             isDepositCollateralAllowed: true,
             isListed: true,
-            liquidationIncentive: DEFAULT_LIQUIDATION_INCENTIVE
+            liquidationIncentive: DEFAULT_LIQUIDATION_INCENTIVE,
+            ratio: DEFAULT_COLLATERAL_RATIO
         });
 
         emit ListCollateral(owner, collateral);
@@ -195,29 +195,25 @@ contract FintrollerV1 is
     }
 
     /// @inheritdoc IFintrollerV1
-    function setCollateralizationRatio(IErc20 collateral, uint256 newCollateralizationRatio)
-        external
-        override
-        onlyOwner
-    {
+    function setCollateralRatio(IErc20 collateral, uint256 newCollateralRatio) external override onlyOwner {
         // Checks: collateral is listed.
         if (!collaterals[collateral].isListed) {
             revert Fintroller__CollateralNotListed(collateral);
         }
 
-        // Checks: new collateralization ratio is within the accepted bounds.
-        if (newCollateralizationRatio > COLLATERALIZATION_RATIO_UPPER_BOUND) {
-            revert Fintroller__CollateralizationRatioOverflow(newCollateralizationRatio);
+        // Checks: new collateral ratio is within the accepted bounds.
+        if (newCollateralRatio > COLLATERAL_RATIO_UPPER_BOUND) {
+            revert Fintroller__CollateralRatioOverflow(newCollateralRatio);
         }
-        if (newCollateralizationRatio < COLLATERALIZATION_RATIO_LOWER_BOUND) {
-            revert Fintroller__CollateralizationRatioUnderflow(newCollateralizationRatio);
+        if (newCollateralRatio < COLLATERAL_RATIO_LOWER_BOUND) {
+            revert Fintroller__CollateralRatioUnderflow(newCollateralRatio);
         }
 
         // Effects: update storage.
-        uint256 oldCollateralizationRatio = collaterals[collateral].collateralizationRatio;
-        collaterals[collateral].collateralizationRatio = newCollateralizationRatio;
+        uint256 oldCollateralRatio = collaterals[collateral].ratio;
+        collaterals[collateral].ratio = newCollateralRatio;
 
-        emit SetCollateralizationRatio(owner, collateral, oldCollateralizationRatio, newCollateralizationRatio);
+        emit SetCollateralRatio(owner, collateral, oldCollateralRatio, newCollateralRatio);
     }
 
     /// @inheritdoc IFintrollerV1
@@ -265,7 +261,7 @@ contract FintrollerV1 is
             revert Fintroller__CollateralNotListed(collateral);
         }
 
-        // Checks: new collateralization ratio is within the accepted bounds.
+        // Checks: new collateral ratio is within the accepted bounds.
         if (newLiquidationIncentive > LIQUIDATION_INCENTIVE_UPPER_BOUND) {
             revert Fintroller__LiquidationIncentiveOverflow(newLiquidationIncentive);
         }

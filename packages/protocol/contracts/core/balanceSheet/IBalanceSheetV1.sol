@@ -105,7 +105,7 @@ interface IBalanceSheetV1 is IOwnableUpgradeable {
     /// using the current prices provided by the oracle.
     ///
     /// @dev Works by summing up each collateral amount multiplied by the USD value of each unit and divided by its
-    /// respective collateralization ratio, then dividing the sum by the total amount of debt drawn by the user.
+    /// respective collateral ratio, then dividing the sum by the total amount of debt drawn by the user.
     ///
     /// Caveats:
     /// - This function expects that the "collateralList" and the "bondList" are each modified in advance to include
@@ -264,7 +264,7 @@ interface IBalanceSheetV1 is IOwnableUpgradeable {
     ///
     /// - The amount to withdraw cannot be zero.
     /// - There must be enough collateral in the vault.
-    /// - The caller's account cannot fall below the collateralization ratio.
+    /// - The caller's account cannot fall below the collateral ratio.
     ///
     /// @param collateral The address of the collateral contract.
     /// @param withdrawAmount The amount of collateral to withdraw.

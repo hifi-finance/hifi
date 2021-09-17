@@ -4,7 +4,7 @@ import { expect } from "chai";
 
 export default function shouldBehaveLikeGetFeed(): void {
   context("when the feed is not set", function () {
-    it("retrieves the default values", async function () {
+    it("returns the default values", async function () {
       const feed = await this.contracts.oracle.getFeed("FOO");
       expect(feed[0]).to.equal(AddressZero); // asset
       expect(feed[1]).to.equal(AddressZero); // id
@@ -19,7 +19,7 @@ export default function shouldBehaveLikeGetFeed(): void {
         .setFeed(this.mocks.wbtc.address, this.mocks.wbtcPriceFeed.address);
     });
 
-    it("retrieves the storage properties of the feed", async function () {
+    it("returns the storage properties of the feed", async function () {
       const feed = await this.contracts.oracle.getFeed(WBTC_SYMBOL);
       expect(feed[0]).to.equal(this.mocks.wbtc.address); // asset
       expect(feed[1]).to.equal(this.mocks.wbtcPriceFeed.address); // id

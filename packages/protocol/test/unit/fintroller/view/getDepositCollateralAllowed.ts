@@ -16,7 +16,7 @@ export default function shouldBehaveLikeGetDepositCollateralAllowed(): void {
       await this.contracts.fintroller.connect(this.signers.admin).listCollateral(this.mocks.wbtc.address);
     });
 
-    it("retrieves the default value", async function () {
+    it("returns the default value", async function () {
       const depositCollateralAllowed: boolean = await this.contracts.fintroller.getDepositCollateralAllowed(
         this.mocks.wbtc.address,
       );

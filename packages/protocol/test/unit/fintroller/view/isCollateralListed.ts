@@ -2,7 +2,7 @@ import { expect } from "chai";
 
 export default function shouldBehaveLikeIsCollateralListed(): void {
   context("when the collateral is not listed", function () {
-    it("retrieves false", async function () {
+    it("returns false", async function () {
       const isCollateralListed: boolean = await this.contracts.fintroller.isCollateralListed(this.mocks.wbtc.address);
       expect(isCollateralListed).to.equal(false);
     });
@@ -13,7 +13,7 @@ export default function shouldBehaveLikeIsCollateralListed(): void {
       await this.contracts.fintroller.connect(this.signers.admin).listCollateral(this.mocks.wbtc.address);
     });
 
-    it("retrieves true", async function () {
+    it("returns true", async function () {
       const isCollateralListed: boolean = await this.contracts.fintroller.isCollateralListed(this.mocks.wbtc.address);
       expect(isCollateralListed).to.equal(true);
     });

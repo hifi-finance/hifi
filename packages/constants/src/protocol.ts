@@ -18,7 +18,7 @@ function getYearsInSeconds(years: number): BigNumber {
 
 export const CHAINLINK_PRICE_PRECISION: BigNumber = BigNumber.from("8");
 export const CHAINLINK_PRICE_PRECISION_SCALAR: BigNumber = BigNumber.from(fromExponential("1e10"));
-export const COLLATERALIZATION_RATIOS = {
+export const COLLATERAL_RATIOS = {
   default: fp("1.50"),
   lowerBound: fp("1.00"),
   upperBound: fp("100.00"),

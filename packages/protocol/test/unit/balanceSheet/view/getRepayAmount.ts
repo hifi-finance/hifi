@@ -35,7 +35,7 @@ export default function shouldBehaveLikeGetRepayAmount(): void {
         await this.mocks.wbtc.mock.decimals.returns(collateralDecimals);
       });
 
-      it("retrieves the correct amount", async function () {
+      it("returns the correct amount", async function () {
         const repayAmount: BigNumber = await this.contracts.balanceSheet.getRepayAmount(
           this.mocks.wbtc.address,
           seizableCollateralAmount,
@@ -55,7 +55,7 @@ export default function shouldBehaveLikeGetRepayAmount(): void {
         await this.mocks.wbtc.mock.decimals.returns(collateralDecimals);
       });
 
-      it("retrieves the correct amount", async function () {
+      it("returns the correct amount", async function () {
         const repayAmount: BigNumber = await this.contracts.balanceSheet.getRepayAmount(
           this.mocks.wbtc.address,
           seizableCollateralAmount,

@@ -21,7 +21,7 @@ abstract contract SFintrollerV1 {
 
     struct Collateral {
         uint256 ceiling;
-        uint256 collateralizationRatio;
+        uint256 ratio;
         uint256 liquidationIncentive;
         bool isDepositCollateralAllowed;
         bool isListed;
@@ -34,14 +34,14 @@ abstract contract SFintrollerV1 {
 
     /// INTERNAL STORAGE ///
 
-    /// @dev The threshold below which the collateralization ratio cannot be set, equivalent to 100%.
-    uint256 internal constant COLLATERALIZATION_RATIO_LOWER_BOUND = 1.0e18;
+    /// @dev The threshold below which the collateral ratio cannot be set, equivalent to 100%.
+    uint256 internal constant COLLATERAL_RATIO_LOWER_BOUND = 1.0e18;
 
-    /// @dev The threshold above which the collateralization ratio cannot be set, equivalent to 10,000%.
-    uint256 internal constant COLLATERALIZATION_RATIO_UPPER_BOUND = 1.0e20;
+    /// @dev The threshold above which the collateral ratio cannot be set, equivalent to 10,000%.
+    uint256 internal constant COLLATERAL_RATIO_UPPER_BOUND = 1.0e20;
 
-    /// @dev The default collateralization ratio set when a new bond is listed, equivalent to 150%.
-    uint256 internal constant DEFAULT_COLLATERALIZATION_RATIO = 1.5e18;
+    /// @dev The default collateral ratio set when a new bond is listed, equivalent to 150%.
+    uint256 internal constant DEFAULT_COLLATERAL_RATIO = 1.5e18;
 
     /// @dev The default liquidation incentive set when a new bond is listed, equivalent to 110%.
     uint256 internal constant DEFAULT_LIQUIDATION_INCENTIVE = 1.1e18;

@@ -1,7 +1,7 @@
 import { expect } from "chai";
 
 export default function shouldBehaveLikeFintrollerGetter(): void {
-  it("retrieves the address of the Fintroller contract", async function () {
+  it("returns the address of the Fintroller contract", async function () {
     const fintrollerAddress: string = await this.contracts.balanceSheet.fintroller();
     expect(fintrollerAddress).to.equal(this.mocks.fintroller.address);
   });

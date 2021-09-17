@@ -5,7 +5,7 @@ import { expect } from "chai";
 
 export default function shouldBehaveLikeGetDebtCeiling(): void {
   context("when the bond is not listed", function () {
-    it("retrieves zero", async function () {
+    it("returns zero", async function () {
       const liquidationIncentive: BigNumber = await this.contracts.fintroller.getLiquidationIncentive(
         this.mocks.wbtc.address,
       );
@@ -18,7 +18,7 @@ export default function shouldBehaveLikeGetDebtCeiling(): void {
       await this.contracts.fintroller.connect(this.signers.admin).listCollateral(this.mocks.wbtc.address);
     });
 
-    it("retrieves the default liquidation incentive", async function () {
+    it("returns the default liquidation incentive", async function () {
       const liquidationIncentive: BigNumber = await this.contracts.fintroller.getLiquidationIncentive(
         this.mocks.wbtc.address,
       );

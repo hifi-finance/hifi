@@ -1,6 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
-import { COLLATERALIZATION_RATIOS } from "@hifi/constants";
+import { COLLATERAL_RATIOS } from "@hifi/constants";
 import { WBTC, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 
@@ -34,12 +34,12 @@ export default function shouldBehaveLikeWithdrawCollateral(): void {
     context("when the caller deposited collateral", function () {
       beforeEach(async function () {
         // Mock the necessary methods.
-        await this.mocks.fintroller.mock.getCollateralizationRatio
+        await this.mocks.fintroller.mock.getCollateralRatio
           .withArgs(this.mocks.wbtc.address)
-          .returns(COLLATERALIZATION_RATIOS.wbtc);
-        await this.mocks.fintroller.mock.getCollateralizationRatio
+          .returns(COLLATERAL_RATIOS.wbtc);
+        await this.mocks.fintroller.mock.getCollateralRatio
           .withArgs(this.mocks.weth.address)
-          .returns(COLLATERALIZATION_RATIOS.weth);
+          .returns(COLLATERAL_RATIOS.weth);
 
         // Make the collateral deposits.
         await this.contracts.balanceSheet.__godMode_setCollateralList(this.signers.borrower.address, [

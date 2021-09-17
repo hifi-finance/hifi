@@ -33,7 +33,7 @@ export default function shouldBehaveLikeGetNormalizedPrice(): void {
     });
 
     context("when the multiplication does not overflow uint256", function () {
-      it("retrieves the normalized price", async function () {
+      it("returns the normalized price", async function () {
         const normalizedPrice: BigNumber = await this.contracts.oracle.getNormalizedPrice(WBTC_SYMBOL);
         expect(normalizedPrice).to.equal(NORMALIZED_WBTC_PRICE);
       });

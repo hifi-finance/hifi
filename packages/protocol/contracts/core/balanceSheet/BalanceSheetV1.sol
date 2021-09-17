@@ -144,8 +144,8 @@ contract BalanceSheetV1 is
         uint256 bondListLength;
         uint256 collateralAmount;
         uint256 collateralListLength;
+        uint256 collateralRatio;
         uint256 collateralValueUsd;
-        uint256 collateralizationRatio;
         uint256 debtAmount;
         uint256 debtValueUsd;
         uint256 normalizedCollateralAmount;
@@ -171,7 +171,7 @@ contract BalanceSheetV1 is
         IErc20[] memory collateralList = vaults[account].collateralList;
         vars.collateralListLength = collateralList.length;
 
-        // Sum up each collateral USD value divided by the collateralization ratio.
+        // Sum up each collateral USD value divided by the collateral ratio.
         for (uint256 i = 0; i < vars.collateralListLength; i++) {
             IErc20 collateral = collateralList[i];
 
@@ -198,9 +198,9 @@ contract BalanceSheetV1 is
             vars.collateralValueUsd = vars.normalizedCollateralAmount.mul(vars.normalizedCollateralPrice);
 
             // Calculate the USD value of the weighted collateral by dividing the USD value of the collateral amount
-            // by the collateralization ratio.
-            vars.collateralizationRatio = fintroller.getCollateralizationRatio(collateral);
-            vars.weightedCollateralValueUsd = vars.collateralValueUsd.div(vars.collateralizationRatio);
+            // by the collateral ratio.
+            vars.collateralRatio = fintroller.getCollateralRatio(collateral);
+            vars.weightedCollateralValueUsd = vars.collateralValueUsd.div(vars.collateralRatio);
 
             // Add the previously calculated USD value of the weighted collateral to the totals.
             vars.totalWeightedCollateralValueUsd += vars.weightedCollateralValueUsd;

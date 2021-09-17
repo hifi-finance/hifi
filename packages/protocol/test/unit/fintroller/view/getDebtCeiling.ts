@@ -4,7 +4,7 @@ import { expect } from "chai";
 
 export default function shouldBehaveLikeGetDebtCeiling(): void {
   context("when the bond is not listed", function () {
-    it("retrieves zero", async function () {
+    it("returns zero", async function () {
       const debtCeiling: BigNumber = await this.contracts.fintroller.getDebtCeiling(this.mocks.hTokens[0].address);
       expect(debtCeiling).to.equal(Zero);
     });
@@ -15,7 +15,7 @@ export default function shouldBehaveLikeGetDebtCeiling(): void {
       await this.contracts.fintroller.connect(this.signers.admin).listBond(this.mocks.hTokens[0].address);
     });
 
-    it("retrieves the default debt ceiling", async function () {
+    it("returns the default debt ceiling", async function () {
       const debtCeiling: BigNumber = await this.contracts.fintroller.getDebtCeiling(this.mocks.hTokens[0].address);
       expect(debtCeiling).to.equal(Zero);
     });
