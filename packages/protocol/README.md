@@ -1,105 +1,71 @@
-# Hifi Protocol
+# Hifi Protocol ![npm (scoped)](https://img.shields.io/npm/v/@hifi/protocol)
 
-An implementation of zero-coupon bonds on the Ethereum blockchain. In-depth documentation is available at [docs.hifi.finance](https://docs.hifi.finance).
+The core Hifi fixed-rate, fixed-term lending protocol. Hifi enables the creation of zero-coupon bonds on EVM-compatible chains.
 
-The built contract artifacts can be browsed via [unpkg.com](https://unpkg.com/browse/@hifi/protocol@latest/).
+The build artifacts can be browsed via [unpkg.com](https://unpkg.com/browse/@hifi/protocol@latest/).
+
+## Install
+
+With yarn:
+
+```bash
+$ yarn add @hifi/protocol
+```
+
+Or npm:
+
+```bash
+npm install @hifi/protocol
+```
 
 ## Usage
 
-The contracts are written in Solidity and the tests in TypeScript. If you want to contribute, familiarity with Hardhat,
-Ethers and Waffle is requisite.
+The node package that you just installed contains both Solidity and JavaScript code. The former represents the smart contracts
+themselves; the latter, the Hardhat artifacts and the TypeChain bindings.
 
-### Pre Requisites
+### Solidity
 
-Before running any command, make sure to install dependencies:
+The core Hifi protocol can only be compiled with Solidity v0.8.4 and above, because we are reverting with [custom
+errors](https://blog.soliditylang.org/2021/04/21/custom-errors/) instead of reason strings.
 
-```sh
-$ yarn install
+```solidity
+// SPDX-License-Identifier: Unlicense
+pragma solidity >=0.8.4;
+
+import "@hifi/protocol/contracts/core/balanceSheet/IBalanceSheetV1.sol";
+
+contract YourContract {
+
+  // Get the address from https://docs.hifi.finance
+  IBalanceSheetV1 balanceSheet = IBalanceSheetV1(0x...);
+
+  function queryAccountLiquidity(address user) external view returns (uint256 excessLiquidity, shortfallLiquidity) {
+    (excessLiquidity, shortfallLiquidity) = balanceSheet.getCurrentAccountLiquidity(user);
+  }
+
+  function queryCollateralAmount(address user, IErc20 collateral) external view returns (uint256 collateralAmount) {
+    debtAmount = balanceSheet.getCollateralAmount(user, collateral);
+  }
+
+  function queryDebtAmount(address user, IHToken hToken) external view returns (uint256 debtAmount) {
+    debtAmount = balanceSheet.getDebtAmount(user, hToken);
+  }
 ```
 
-### Compile
+### JavaScript
 
-Compile the smart contracts with Hardhat:
+```ts
+import { getDefaultProvider } from "@ethersproject/providers";
+import { BalanceSheetV1__factory } from "@hifi/protocol/typechain/factories/BalanceSheet__factory";
 
-```sh
-$ yarn compile
+async function queryAccountLiquidity() {
+  const defaultProvider = getDefaultProvider();
+  const balanceSheet = BalanceSheetV1__factory("0x...", defaultProvider); // Get the address from https://docs.hifi.finance
+  const user = "0x...";
+  const accountLiquidity = await balanceSheet.getCurrentAccountLiquidity(user);
+}
 ```
-
-### TypeChain
-
-Compile the smart contracts and generate TypeChain artifacts:
-
-```sh
-$ yarn typechain
-```
-
-### Lint Solidity
-
-Lint the Solidity code:
-
-```sh
-$ yarn lint:sol
-```
-
-### Lint TypeScript
-
-Lint the TypeScript code:
-
-```sh
-$ yarn lint:ts
-```
-
-### Format Code
-
-Run the Prettier formatter:
-
-```sh
-$ yarn prettier
-```
-
-### Test Unit
-
-Run the unit tests:
-
-```sh
-$ yarn test:unit
-```
-
-### Test Integration
-
-Run the integration tests:
-
-```sh
-$ yarn test:integration
-```
-
-### Coverage
-
-Generate the code coverage report:
-
-```sh
-$ yarn coverage
-```
-
-### Clean
-
-Delete the smart contract artifacts, the coverage reports and the Hardhat cache:
-
-```sh
-$ yarn clean
-```
-
-## Acknowledgements
-
-- Dan Robinson and Allan Niemerg, for their work on [The Yield Protocol: On-Chain Lending With Interest Rate
-  Discovery](https://research.paradigm.xyz/Yield.pdf), which shaped many of our protocol design choices.
-- Chainlink, for their [Price Feeds](https://docs.chain.link/docs/using-chainlink-reference-contracts).
-- OpenZeppelin, for their outstanding [upgradeable contracts library](https://github.com/OpenZeppelin/openzeppelin-contracts/tree/master/contracts).
-
-## Discussion
-
-For any concerns or feedback, open an issue or visit us on [Discord](https://discord.gg/mhtSRz6) to discuss.
 
 ## License
 
-Everything is released under the [LGPL3.0 license](./LICENSE.md).
+[LGPL v3](./LICENSE.md) © Mainframe Group Inc.

@@ -1,6 +1,6 @@
 {
   "name": "@hifi/deployers",
-  "description": "Deployer scripts for the Hifi protocol",
+  "description": "Deployer scripts for the Hifi smart contracts",
   "version": "1.0.0",
   "author": {
     "name": "Hifi",

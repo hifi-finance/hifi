@@ -1,6 +1,6 @@
 {
   "name": "@hifi/proxy-target",
-  "description": "DSProxy target contract with scripts for the Hifi protocol",
+  "description": "DSProxy target contract with stateless scripts",
   "version": "1.4.0",
   "author": {
     "name": "Hifi",

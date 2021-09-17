@@ -1,6 +1,6 @@
 {
   "name": "@hifi/flash-swap",
-  "description": "Flash swap implementations for liquidating underwater accounts in Hifi",
+  "description": "Flash swap implementations for liquidating underwater accounts",
   "version": "1.4.0",
   "author": {
     "name": "Hifi",
