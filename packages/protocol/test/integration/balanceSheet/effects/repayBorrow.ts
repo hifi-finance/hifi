@@ -5,8 +5,9 @@ import { WBTC, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 
 export default function shouldBehaveLikeRepayBorrow(): void {
-  const debtCeiling: BigNumber = hUSDC("1e6");
   const borrowAmount: BigNumber = hUSDC("15000");
+  const collateralCeiling: BigNumber = WBTC("100");
+  const debtCeiling: BigNumber = hUSDC("1e6");
   const wbtcDepositAmount: BigNumber = WBTC("1");
 
   beforeEach(async function () {
@@ -23,6 +24,11 @@ export default function shouldBehaveLikeRepayBorrow(): void {
     await this.contracts.fintroller
       .connect(this.signers.admin)
       .setRepayBorrowAllowed(this.contracts.hTokens[0].address, true);
+
+    // Set the collateral ceiling.
+    await this.contracts.fintroller
+      .connect(this.signers.admin)
+      .setCollateralCeiling(this.contracts.wbtc.address, collateralCeiling);
 
     // Set the debt ceiling.
     await this.contracts.fintroller

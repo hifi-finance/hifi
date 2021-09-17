@@ -15,7 +15,7 @@ import "../../access/OwnableUpgradeable.sol";
 error BalanceSheet__BondMatured(IHToken bond);
 
 /// @notice Emitted when the account exceeds the maximum numbers of bonds permitted.
-error BalanceSheet__BorrowMaxBonds(IHToken bond, uint256 hypotheticalBondListLength, uint256 maxBonds);
+error BalanceSheet__BorrowMaxBonds(IHToken bond, uint256 newBondListLength, uint256 maxBonds);
 
 /// @notice Emitted when borrows are not allowed by the Fintroller contract.
 error BalanceSheet__BorrowNotAllowed(IHToken bond);
@@ -23,8 +23,11 @@ error BalanceSheet__BorrowNotAllowed(IHToken bond);
 /// @notice Emitted when borrowing a zero amount of hTokens.
 error BalanceSheet__BorrowZero();
 
-/// @notice Emitted when the hypothetical total supply of hTokens exceeds the debt ceiling.
-error BalanceSheet__DebtCeilingOverflow(uint256 hypotheticalTotalSupply, uint256 debtCeiling);
+/// @notice Emitted when the new collateral amount exceeds the collateral ceiling.
+error BalanceSheet__CollateralCeilingOverflow(uint256 newTotalSupply, uint256 debtCeiling);
+
+/// @notice Emitted when the new total amount of debt exceeds the debt ceiling.
+error BalanceSheet__DebtCeilingOverflow(uint256 newCollateralAmount, uint256 debtCeiling);
 
 /// @notice Emitted when collateral deposits are not allowed by the Fintroller contract.
 error BalanceSheet__DepositCollateralNotAllowed(IErc20 collateral);
@@ -320,10 +323,10 @@ contract BalanceSheetV1 is
         }
 
         // Checks: debt ceiling.
-        uint256 hypotheticalTotalSupply = bond.totalSupply() + borrowAmount;
+        uint256 newTotalSupply = bond.totalSupply() + borrowAmount;
         uint256 debtCeiling = fintroller.getDebtCeiling(bond);
-        if (hypotheticalTotalSupply > debtCeiling) {
-            revert BalanceSheet__DebtCeilingOverflow(hypotheticalTotalSupply, debtCeiling);
+        if (newTotalSupply > debtCeiling) {
+            revert BalanceSheet__DebtCeilingOverflow(newTotalSupply, debtCeiling);
         }
 
         // Add the borrow amount to the borrower account's current debt.
@@ -333,10 +336,10 @@ contract BalanceSheetV1 is
         if (vaults[msg.sender].debtAmounts[bond] == 0) {
             // Checks: below max bonds limit.
             unchecked {
-                uint256 hypotheticalBondListLength = vaults[msg.sender].bondList.length + 1;
+                uint256 newBondListLength = vaults[msg.sender].bondList.length + 1;
                 uint256 maxBonds = SFintrollerV1(address(fintroller)).maxBonds();
-                if (hypotheticalBondListLength > maxBonds) {
-                    revert BalanceSheet__BorrowMaxBonds(bond, hypotheticalBondListLength, maxBonds);
+                if (newBondListLength > maxBonds) {
+                    revert BalanceSheet__BorrowMaxBonds(bond, newBondListLength, maxBonds);
                 }
             }
             vaults[msg.sender].bondList.push(bond);
@@ -376,13 +379,21 @@ contract BalanceSheetV1 is
             revert BalanceSheet__DepositCollateralZero();
         }
 
+        // Checks: collateral ceiling.
+        uint256 collateralAmount = vaults[msg.sender].collateralAmounts[collateral];
+        uint256 newCollateralAmount = collateralAmount + depositAmount;
+        uint256 collateralCeiling = fintroller.getCollateralCeiling(collateral);
+        if (newCollateralAmount > collateralCeiling) {
+            revert BalanceSheet__CollateralCeilingOverflow(newCollateralAmount, collateralCeiling);
+        }
+
         // Effects: add the collateral to the redundant list, if this is the first time collateral is added.
-        if (vaults[msg.sender].collateralAmounts[collateral] == 0) {
+        if (collateralAmount == 0) {
             vaults[msg.sender].collateralList.push(collateral);
         }
 
         // Effects: increase the amount of collateral in the vault.
-        vaults[msg.sender].collateralAmounts[collateral] += depositAmount;
+        vaults[msg.sender].collateralAmounts[collateral] = newCollateralAmount;
 
         // Interactions: perform the Erc20 transfer.
         collateral.safeTransferFrom(msg.sender, address(this), depositAmount);

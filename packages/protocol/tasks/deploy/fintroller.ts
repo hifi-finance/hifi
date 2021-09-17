@@ -2,7 +2,8 @@ import * as core from "@actions/core";
 import { task, types } from "hardhat/config";
 import { TaskArguments } from "hardhat/types";
 
-import { FintrollerV1, FintrollerV1__factory } from "../../typechain";
+import { FintrollerV1 } from "../../typechain/FintrollerV1";
+import { FintrollerV1__factory } from "../../typechain/factories/FintrollerV1__factory";
 import {
   ERC1967_IMPLEMENTATION_STORAGE_SLOT,
   SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS,

@@ -8,8 +8,9 @@ import fp from "evm-fp";
 import { getSeizableCollateralAmount } from "../../../shared/mirrors";
 
 export default function shouldBehaveLikeLiquidateBorrow(): void {
-  const debtCeiling: BigNumber = hUSDC("1e6");
   const borrowAmount: BigNumber = hUSDC("15000");
+  const collateralCeiling: BigNumber = WBTC("100");
+  const debtCeiling: BigNumber = hUSDC("1e6");
   const lowWbtcPrice: BigNumber = price("29999");
   const wbtcDepositAmount: BigNumber = WBTC("1");
 
@@ -34,6 +35,11 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
     await this.contracts.fintroller
       .connect(this.signers.admin)
       .setLiquidateBorrowAllowed(this.contracts.hTokens[0].address, true);
+
+    // Set the collateral ceiling.
+    await this.contracts.fintroller
+      .connect(this.signers.admin)
+      .setCollateralCeiling(this.contracts.wbtc.address, collateralCeiling);
 
     // Set the debt ceiling.
     await this.contracts.fintroller

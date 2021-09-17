@@ -77,6 +77,11 @@ contract FintrollerV1 is
     }
 
     /// @inheritdoc IFintrollerV1
+    function getCollateralCeiling(IErc20 collateral) external view override returns (uint256) {
+        return collaterals[collateral].ceiling;
+    }
+
+    /// @inheritdoc IFintrollerV1
     function getCollateralizationRatio(IErc20 collateral) external view override returns (uint256) {
         return collaterals[collateral].collateralizationRatio;
     }
@@ -156,6 +161,7 @@ contract FintrollerV1 is
 
         // Effects: update storage.
         collaterals[collateral] = Collateral({
+            ceiling: 0,
             collateralizationRatio: DEFAULT_COLLATERALIZATION_RATIO,
             isDepositCollateralAllowed: true,
             isListed: true,
@@ -172,6 +178,20 @@ contract FintrollerV1 is
         }
         bonds[bond].isBorrowAllowed = state;
         emit SetBorrowAllowed(owner, bond, state);
+    }
+
+    /// @inheritdoc IFintrollerV1
+    function setCollateralCeiling(IHToken collateral, uint256 newCollateralCeiling) external override onlyOwner {
+        // Checks: collateral is listed.
+        if (!collaterals[collateral].isListed) {
+            revert Fintroller__CollateralNotListed(collateral);
+        }
+
+        // Effects: update storage.
+        uint256 oldCollateralCeiling = collaterals[collateral].ceiling;
+        collaterals[collateral].ceiling = newCollateralCeiling;
+
+        emit SetCollateralCeiling(owner, collateral, oldCollateralCeiling, newCollateralCeiling);
     }
 
     /// @inheritdoc IFintrollerV1

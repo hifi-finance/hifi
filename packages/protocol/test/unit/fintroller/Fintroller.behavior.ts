@@ -2,6 +2,7 @@ import shouldBehaveLikeUpgradeableProxy from "./deployment/proxy";
 import shouldBehaveLikeListBond from "./effects/listBond";
 import shouldBehaveLikeListCollateral from "./effects/listCollateral";
 import shouldBehaveLikeSetBorrowAllowed from "./effects/setBorrowAllowed";
+import shouldBehaveLikeSetCollateralCeiling from "./effects/setCollateralCeiling";
 import shouldBehaveLikeSetCollateralizationRatio from "./effects/setCollateralizationRatio";
 import shouldBehaveLikeSetDebtCeiling from "./effects/setDebtCeiling";
 import shouldBehaveLikeSetDepositCollateralAllowed from "./effects/setDepositCollateralAllowed";
@@ -12,6 +13,7 @@ import shouldBehaveLikeSetRepayBorrowAllowed from "./effects/setRepayBorrowAllow
 import shouldBehaveLikeGetBond from "./view/getBond";
 import shouldBehaveLikeGetBorrowAllowed from "./view/getBorrowAllowed";
 import shouldBehaveLikeGetCollateral from "./view/getCollateral";
+import shouldBehaveLikeGetCollateralCeiling from "./view/getCollateralCeiling";
 import shouldBehaveLikeGetCollateralizationRatio from "./view/getCollateralizationRatio";
 import shouldBehaveLikeGetDebtCeiling from "./view/getDebtCeiling";
 import shouldBehaveLikeGetDepositCollateralAllowed from "./view/getDepositCollateralAllowed";
@@ -38,6 +40,10 @@ export function shouldBehaveLikeFintroller(): void {
 
     describe("getCollateral", function () {
       shouldBehaveLikeGetCollateral();
+    });
+
+    describe("getCollateralCeiling", function () {
+      shouldBehaveLikeGetCollateralCeiling();
     });
 
     describe("getCollateralizationRatio", function () {
@@ -88,6 +94,10 @@ export function shouldBehaveLikeFintroller(): void {
 
     describe("setBorrowAllowed", function () {
       shouldBehaveLikeSetBorrowAllowed();
+    });
+
+    describe("setCollateralCeiling", function () {
+      shouldBehaveLikeSetCollateralCeiling();
     });
 
     describe("setCollateralizationRatio", function () {

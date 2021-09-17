@@ -14,23 +14,23 @@ interface IFintrollerV1 is IOwnableUpgradeable {
     /// EVENTS ///
 
     /// @notice Emitted when a new bond is listed.
-    /// @param owner The address of the owner.
+    /// @param owner The address of the contract owner.
     /// @param bond The newly listed bond.
     event ListBond(address indexed owner, IHToken indexed bond);
 
     /// @notice Emitted when a new collateral is listed.
-    /// @param owner The address of the owner.
+    /// @param owner The address of the contract owner.
     /// @param collateral The newly listed collateral.
     event ListCollateral(address indexed owner, IErc20 indexed collateral);
 
     /// @notice Emitted when the borrow permission is updated.
-    /// @param owner The address of the owner.
+    /// @param owner The address of the contract owner.
     /// @param bond The related HToken.
     /// @param state True if borrowing is allowed.
     event SetBorrowAllowed(address indexed owner, IHToken indexed bond, bool state);
 
-    /// @notice Emitted when the bond collateralization ratio is updated.
-    /// @param owner The address of the owner.
+    /// @notice Emitted when the collateralization ratio is updated.
+    /// @param owner The address of the contract owner.
     /// @param collateral The related HToken.
     /// @param oldCollateralizationRatio The old collateralization ratio.
     /// @param newCollateralizationRatio the new collateralization ratio.
@@ -41,26 +41,38 @@ interface IFintrollerV1 is IOwnableUpgradeable {
         uint256 newCollateralizationRatio
     );
 
-    /// @notice Emitted when the bond debt ceiling is set.
-    /// @param owner The address of the owner.
+    /// @notice Emitted when the collateral ceiling is updated.
+    /// @param owner The address of the contract owner.
+    /// @param collateral The related collateral.
+    /// @param oldCollateralCeiling The old collateral ceiling.
+    /// @param newCollateralCeiling The new collateral ceiling.
+    event SetCollateralCeiling(
+        address indexed owner,
+        IErc20 indexed collateral,
+        uint256 oldCollateralCeiling,
+        uint256 newCollateralCeiling
+    );
+
+    /// @notice Emitted when the debt ceiling for a bond is updated.
+    /// @param owner The address of the contract owner.
     /// @param bond The related HToken.
     /// @param oldDebtCeiling The old debt ceiling.
     /// @param newDebtCeiling The new debt ceiling.
     event SetDebtCeiling(address indexed owner, IHToken indexed bond, uint256 oldDebtCeiling, uint256 newDebtCeiling);
 
     /// @notice Emitted when the deposit collateral permission is updated.
-    /// @param owner The address of the owner.
+    /// @param owner The address of the contract owner.
     /// @param state True if depositing collateral is allowed.
     event SetDepositCollateralAllowed(address indexed owner, IErc20 indexed collateral, bool state);
 
     /// @notice Emitted when the liquidate borrow permission is updated.
-    /// @param owner The address of the owner.
+    /// @param owner The address of the contract owner.
     /// @param bond The related HToken.
     /// @param state True if liquidating borrow is allowed.
     event SetLiquidateBorrowAllowed(address indexed owner, IHToken indexed bond, bool state);
 
     /// @notice Emitted when the collateral liquidation incentive is set.
-    /// @param owner The address of the owner.
+    /// @param owner The address of the contract owner.
     /// @param collateral The related collateral.
     /// @param oldLiquidationIncentive The old liquidation incentive.
     /// @param newLiquidationIncentive The new liquidation incentive.
@@ -78,19 +90,19 @@ interface IFintrollerV1 is IOwnableUpgradeable {
     event SetMaxBonds(address indexed owner, uint256 oldMaxBonds, uint256 newMaxBonds);
 
     /// @notice Emitted when the redeem hTokens permission is updated.
-    /// @param owner The address of the owner.
+    /// @param owner The address of the contract owner.
     /// @param bond The related HToken.
     /// @param state True if redeeming hTokens is allowed.
     event SetRedeemHTokensAllowed(address indexed owner, IHToken indexed bond, bool state);
 
     /// @notice Emitted when the repay borrow permission is updated.
-    /// @param owner The address of the owner.
+    /// @param owner The address of the contract owner.
     /// @param bond The related HToken.
     /// @param state True if repaying borrow is allowed.
     event SetRepayBorrowAllowed(address indexed owner, IHToken indexed bond, bool state);
 
     /// @notice Emitted when the supply underlying permission is set.
-    /// @param owner The address of the owner.
+    /// @param owner The address of the contract owner.
     /// @param bond The related HToken.
     /// @param state True if supplying underlying is allowed.
     event SetSupplyUnderlyingAllowed(address indexed owner, IHToken indexed bond, bool state);
@@ -115,13 +127,19 @@ interface IFintrollerV1 is IOwnableUpgradeable {
     /// @return The collateral object.
     function getCollateral(IErc20 collateral) external view returns (SFintrollerV1.Collateral memory);
 
+    /// @notice Returns the collateral ceiling.
+    /// @dev It is not an error to provide an invalid address.
+    /// @param collateral The address of the collateral contract.
+    /// @return The collateral ceiling as a uint256, or zero if an invalid address was provided.
+    function getCollateralCeiling(IErc20 collateral) external view returns (uint256);
+
     /// @notice Returns the collateralization ratio of the given collateral.
     /// @dev It is not an error to provide an invalid address.
     /// @param collateral The address of the collateral contract.
     /// @return The collateralization ratio, or zero if an invalid address was provided.
     function getCollateralizationRatio(IErc20 collateral) external view returns (uint256);
 
-    /// @notice Returns the debt ceiling of the given bond.
+    /// @notice Returns the debt ceiling for the given bond.
     /// @dev It is not an error to provide an invalid address.
     /// @param bond The address of the bond contract.
     /// @return The debt ceiling as a uint256, or zero if an invalid address was provided.
@@ -198,7 +216,20 @@ interface IFintrollerV1 is IOwnableUpgradeable {
     /// @param state The new state to put in storage.
     function setBorrowAllowed(IHToken bond, bool state) external;
 
-    /// @notice Updates the collateral collateralization ratio.
+    /// @notice Updates the collateral ceiling.
+    ///
+    /// @dev Emits a {SetCollateralCeiling} event.
+    ///
+    /// Requirements:
+    ///
+    /// - The caller must be the owner.
+    /// - The collateral must be listed.
+    ///
+    /// @param collateral The collateral to update the ceiling for.
+    /// @param newCollateralCeiling The new collateral ceiling.
+    function setCollateralCeiling(IHToken collateral, uint256 newCollateralCeiling) external;
+
+    /// @notice Updates the collateralization ratio.
     ///
     /// @dev Emits a {SetCollateralizationRatio} event.
     ///
@@ -224,7 +255,7 @@ interface IFintrollerV1 is IOwnableUpgradeable {
     /// @param state The new state to put in storage.
     function setDepositCollateralAllowed(IErc20 collateral, bool state) external;
 
-    /// @notice Updates the bond debt ceiling.
+    /// @notice Updates the debt ceiling for the given bond.
     ///
     /// @dev Emits a {SetDebtCeiling} event.
     ///

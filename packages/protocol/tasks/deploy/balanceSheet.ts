@@ -3,7 +3,8 @@ import { task, types } from "hardhat/config";
 import { TaskArguments } from "hardhat/types";
 
 import { hexStripZeros } from "@ethersproject/bytes";
-import { BalanceSheetV1, BalanceSheetV1__factory } from "../../typechain";
+import { BalanceSheetV1 } from "../../typechain/BalanceSheetV1";
+import { BalanceSheetV1__factory } from "../../typechain/factories/BalanceSheetV1__factory";
 import {
   ERC1967_IMPLEMENTATION_STORAGE_SLOT,
   SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS,

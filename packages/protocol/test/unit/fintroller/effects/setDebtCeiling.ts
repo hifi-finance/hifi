@@ -57,10 +57,8 @@ export default function shouldBehaveLikeSetDebtCeiling(): void {
           await this.contracts.fintroller
             .connect(this.signers.admin)
             .setDebtCeiling(this.mocks.hTokens[0].address, newDebtCeiling);
-          const contractDebtCeiling: BigNumber = await this.contracts.fintroller.getDebtCeiling(
-            this.mocks.hTokens[0].address,
-          );
-          expect(contractDebtCeiling).to.equal(newDebtCeiling);
+          const debtCeiling: BigNumber = await this.contracts.fintroller.getDebtCeiling(this.mocks.hTokens[0].address);
+          expect(debtCeiling).to.equal(newDebtCeiling);
         });
 
         it("emits a SetDebtCeiling event", async function () {

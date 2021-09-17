@@ -114,7 +114,7 @@ interface IBalanceSheetV1 is IOwnableUpgradeable {
     /// @param account The account to make the query against.
     /// @param collateralModify The collateral to make the check against.
     /// @param collateralAmountModify The hypothetical normalized amount of collateral.
-    /// @param bondModify The bond to make the hypothetical check against.
+    /// @param bondModify The bond to make the check against.
     /// @param debtAmountModify The hypothetical amount of debt.
     /// @return excessLiquidity hypothetical account liquidity in excess of collateral requirements.
     /// @return shortfallLiquidity hypothetical account shortfall below collateral requirements
@@ -183,6 +183,7 @@ interface IBalanceSheetV1 is IOwnableUpgradeable {
     /// - The amount to deposit cannot be zero.
     /// - The Fintroller must allow this action to be performed.
     /// - The caller must have allowed this contract to spend `collateralAmount` tokens.
+    /// - The new collateral amount cannot exceed the collateral ceiling.
     ///
     /// @param collateral The address of the collateral contract.
     /// @param depositAmount The amount of collateral to deposit.

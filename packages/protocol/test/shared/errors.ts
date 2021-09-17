@@ -3,6 +3,7 @@ export enum BalanceSheetErrors {
   BorrowMaxBounds = "BalanceSheet__BorrowMaxBonds",
   BorrowNotAllowed = "BalanceSheet__BorrowNotAllowed",
   BorrowZero = "BalanceSheet__BorrowZero",
+  CollateralCeilingOverflow = "BalanceSheet__CollateralCeilingOverflow",
   DebtCeilingOverflow = "BalanceSheet__DebtCeilingOverflow",
   DepositCollateralNotAllowed = "BalanceSheet__DepositCollateralNotAllowed",
   DepositCollateralZero = "BalanceSheet__DepositCollateralZero",

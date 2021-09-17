@@ -20,6 +20,7 @@ abstract contract SFintrollerV1 {
     }
 
     struct Collateral {
+        uint256 ceiling;
         uint256 collateralizationRatio;
         uint256 liquidationIncentive;
         bool isDepositCollateralAllowed;
