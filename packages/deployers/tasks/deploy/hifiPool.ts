@@ -31,7 +31,11 @@ task(TASK_DEPLOY_CONTRACT_HIFI_POOL)
       hifiPoolRegistryFactory.attach(taskArgs.hifiPoolRegistry)
     );
 
-    await hifiPoolRegistry.trackPool(hifiPool.address);
+    const trackPoolTransaction = await hifiPoolRegistry.trackPool(hifiPool.address);
+
+    if (taskArgs.confirmations > 0) {
+      await trackPoolTransaction.wait(taskArgs.confirmations);
+    }
 
     if (taskArgs.setOutput) {
       core.setOutput("hifi-pool", hifiPool.address);
