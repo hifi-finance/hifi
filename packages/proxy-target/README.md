@@ -1,3 +1,72 @@
 # Hifi Proxy Target ![npm (scoped)](https://img.shields.io/npm/v/@hifi/proxy-target)
 
 DSProxy target contract with stateless scripts.
+
+The build artifacts can be browsed via [unpkg.com](https://unpkg.com/browse/@hifi/proxy-target@latest/).
+
+## Install
+
+With yarn:
+
+```bash
+$ yarn add @hifi/proxy-target
+```
+
+Or npm:
+
+```bash
+npm install @hifi/proxy-target
+```
+
+## Usage
+
+The node package that you just installed contains both Solidity and JavaScript code. The former represents the smart contracts
+themselves; the latter, the Hardhat artifacts and the TypeChain bindings.
+
+### Solidity
+
+You will likely never need to interact with the smart contracts from Solidity. Though for the sake of completeness, here is a code snippet for how to do that:
+
+```solidity
+// SPDX-License-Identifier: Unlicense
+pragma solidity >=0.8.4;
+
+import "@hifi/proxy-target/contracts/IHifiProxyTarget.sol";
+
+contract YourContract {
+    // Get the address from https://docs.hifi.finance
+    IHifiPool hifiProxyTarget = IHifiProxyTarget(0x...);
+
+    function depositCollateral(IBalanceSheetV1 balanceSheet, IErc20 collateral, uint256 depositAmount)
+      external
+      view
+      returns (uint256 underlyingOut)
+    {
+        hifiProxyTarget.depositCollateral(balanceSheet, collateral, depositAmount);
+    }
+}
+```
+
+### JavaScript
+
+This code snippet shows how to interact with a DSProxy contract that is already deployed. For guidance on how to
+deploy the DSProxy itself, refer to Maker's guide [Working with
+DSProxy](https://github.com/makerdao/developerguides/blob/master/devtools/working-with-dsproxy/working-with-dsproxy.md).
+
+```js
+import { parseUnits } from "@ethersproject/units";
+import { HifiProxyTarget__factory } from "@hifi/protocol/typechain/factories/HifiProxyTarget__factory";
+
+async function depositCollateral() {
+  const signer = "..."; // Get hold of an ethers.js Signer
+  const hifiProxyTarget = HifiProxyTarget__factory("0x...", signer); // Get the address from https://docs.hifi.finance
+  const balanceSheet = "0x...";
+  const collateral = "0x...";
+  const depositAmount = parseUnits("100", 18);
+  const accountLiquidity = await hifiProxyTarget.depositCollateral(balanceSheet, collateral, depositAmount);
+}
+```
+
+## License
+
+[LGPL v3](./LICENSE.md) © Mainframe Group Inc.

@@ -35,21 +35,20 @@ pragma solidity >=0.8.4;
 import "@hifi/protocol/contracts/core/balanceSheet/IBalanceSheetV1.sol";
 
 contract YourContract {
+    // Get the address from https://docs.hifi.finance
+    IBalanceSheetV1 balanceSheet = IBalanceSheetV1(0x...);
 
-  // Get the address from https://docs.hifi.finance
-  IBalanceSheetV1 balanceSheet = IBalanceSheetV1(0x...);
+    function queryAccountLiquidity(address user) external view returns (uint256 excessLiquidity, shortfallLiquidity) {
+        (excessLiquidity, shortfallLiquidity) = balanceSheet.getCurrentAccountLiquidity(user);
+    }
 
-  function queryAccountLiquidity(address user) external view returns (uint256 excessLiquidity, shortfallLiquidity) {
-    (excessLiquidity, shortfallLiquidity) = balanceSheet.getCurrentAccountLiquidity(user);
-  }
+    function queryCollateralAmount(address user, IErc20 collateral) external view returns (uint256 collateralAmount) {
+        debtAmount = balanceSheet.getCollateralAmount(user, collateral);
+    }
 
-  function queryCollateralAmount(address user, IErc20 collateral) external view returns (uint256 collateralAmount) {
-    debtAmount = balanceSheet.getCollateralAmount(user, collateral);
-  }
-
-  function queryDebtAmount(address user, IHToken hToken) external view returns (uint256 debtAmount) {
-    debtAmount = balanceSheet.getDebtAmount(user, hToken);
-  }
+    function queryDebtAmount(address user, IHToken hToken) external view returns (uint256 debtAmount) {
+        debtAmount = balanceSheet.getDebtAmount(user, hToken);
+    }
 ```
 
 ### JavaScript

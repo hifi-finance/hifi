@@ -35,13 +35,13 @@ pragma solidity >=0.8.4;
 import "@hifi/amm/contracts/IHifiPool.sol";
 
 contract YourContract {
+    // Get the address from https://docs.hifi.finance
+    IHifiPool hifiPool = IHifiPool(0x...);
 
-  // Get the address from https://docs.hifi.finance
-  IHifiPool hifiPool = IHifiPool(0x...);
-
-  function getQuote(uint256 hTokenIn) external view returns (uint256 underlyingOut) {
-    underlyingOut = hifiPool.getQuoteForSellingHToken(hTokenIn);
-  }
+    function getQuote(uint256 hTokenIn) external view returns (uint256 underlyingOut) {
+        underlyingOut = hifiPool.getQuoteForSellingHToken(hTokenIn);
+    }
+}
 ```
 
 ### JavaScript

@@ -27,10 +27,9 @@ themselves; the latter, the Hardhat artifacts and the TypeChain bindings.
 ### Solidity
 
 You are not supposed to import the smart contracts. Instead, you should interact with the Uniswap pool
-directly. For example, you should call
-the `swap` function on the [UniswapV2Pair](https://github.com/Uniswap/v2-core/blob/v1.0.1/contracts/UniswapV2Pair.sol)
-contract. Then, Uniswap will forward the call to `HifiFlashUniswapV2`. You can read more about flash
-swaps work in Uniswap in their [docs](https://docs.uniswap.org/protocol/V2/concepts/core-concepts/flash-swaps).
+directly. For example, with the [UniswapV2Pair](https://github.com/Uniswap/v2-core/blob/v1.0.1/contracts/UniswapV2Pair.sol)
+contract you would call the `swap` function. Then Uniswap will forward the call to `HifiFlashUniswapV2`. You can read more about flash
+swaps work in Uniswap on [docs.uniswap.org](https://docs.uniswap.org/protocol/V2/concepts/core-concepts/flash-swaps).
 
 ### JavaScript
 

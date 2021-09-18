@@ -4,9 +4,8 @@ Monorepo implementing the Hifi fixed-rate, fixed-term lending protocol. In-depth
 
 ## Packages
 
-The Hifi protocol is maintained as a monorepo composed of multiple [yarn
-workspaces](https://yarnpkg.com/features/workspaces). Check out the README associated to each package for detailed usage
-instructions.
+The Hifi protocol is maintained as a [yarn workspaces](https://yarnpkg.com/features/workspaces) monorepo. Check out the
+README associated to each package for detailed usage instructions.
 
 ### Public
 
@@ -59,7 +58,7 @@ Now you can start making changes.
 
 ## Security
 
-For security concerns, please email `security@hifi.finance`. This repository is subject to the Hifi bug bounty program, per the terms defined [here](https://docs.hifi.finance/getting-started/security#bug-bounty).
+For security concerns, please email [security@hifi.finance](mailto:security@hifi.finance). This repository is subject to the Hifi bug bounty program, per the terms defined [here](https://docs.hifi.finance/getting-started/security#bug-bounty).
 
 ## License
 
