@@ -1211,7 +1211,7 @@ __metadata:
     "@nomiclabs/hardhat-ethers": ^2.0.2
     "@nomiclabs/hardhat-etherscan": ^2.1.6
     "@nomiclabs/hardhat-waffle": ^2.0.1
-    "@openzeppelin/contracts-upgradeable": 4.3.1
+    "@openzeppelin/contracts-upgradeable": 4.3.2
     "@openzeppelin/hardhat-upgrades": ^1.10.0
     "@paulrberg/contracts": 3.5.2
     "@typechain/ethers-v5": ^7.1.0
@@ -1251,9 +1251,9 @@ __metadata:
     typechain: ^5.1.2
     typescript: ^4.4.3
   peerDependencies:
-    "@openzeppelin/contracts-upgradeable": 4.2.0
+    "@openzeppelin/contracts-upgradeable": 4.3.2
     "@paulrberg/contracts": 3.5.2
-    ethers: ^5.4.4
+    ethers: ^5.4.6
     prb-math: 2.2.0
   languageName: unknown
   linkType: soft
@@ -1419,6 +1419,13 @@ __metadata:
   version: 4.3.1
   resolution: "@openzeppelin/contracts-upgradeable@npm:4.3.1"
   checksum: b28fd7cbd40b640add82d8b1b01d26994d9c3e411c3d2e7858f3865aefc2a4ab9e3aec8fe1db22f61e959b740fb40202dc28d0d9252534aad2271239cce3629a
+  languageName: node
+  linkType: hard
+
+"@openzeppelin/contracts-upgradeable@npm:4.3.2":
+  version: 4.3.2
+  resolution: "@openzeppelin/contracts-upgradeable@npm:4.3.2"
+  checksum: b7a0e4733613fe1949e5e31f52b48b8c5080bc2df37f1d623c76b726554b41264680adfa1f1861da28273fc1544de6b6666fd37588a8c47f90cbefb0b8c9f310
   languageName: node
   linkType: hard
 
