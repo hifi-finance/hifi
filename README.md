@@ -4,8 +4,8 @@ Monorepo implementing the Hifi fixed-rate, fixed-term lending protocol. In-depth
 
 ## Packages
 
-The Hifi protocol is maintained as a [yarn workspaces](https://yarnpkg.com/features/workspaces) monorepo. Check out the
-README associated to each package for detailed usage instructions.
+The Hifi monorepo is maintained with [yarn workspaces](https://yarnpkg.com/features/workspaces). Check out the README
+associated to each package for detailed usage instructions.
 
 ### Public
 
@@ -34,9 +34,9 @@ feedback, join us on [Discord](https://discord.gg/mhtSRz6).
 
 You will need the following software on your machine:
 
-- [x] [Git](https://git-scm.com/downloads)
-- [x] [Node.Js](https://nodejs.org/en/download/)
-- [x] [Yarn](https://yarnpkg.com/getting-started/install)
+- [Git](https://git-scm.com/downloads)
+- [Node.Js](https://nodejs.org/en/download/)
+- [Yarn](https://yarnpkg.com/getting-started/install)
 
 In addition, familiarity with [Solidity](https://soliditylang.org/), [TypeScript](https://typescriptlang.org/) and [Hardhat](https://hardhat.org) is requisite.
 
