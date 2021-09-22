@@ -18,15 +18,6 @@
     "prettier-plugin-solidity": "^1.0.0-beta.18",
     "shx": "^0.3.3"
   },
-  "keywords": [
-    "blockchain",
-    "decentralized-finance",
-    "ethereum",
-    "hifi",
-    "lending",
-    "smart-contracts",
-    "solidity"
-  ],
   "private": true,
   "scripts": {
     "build": "yarn workspaces foreach --topological-dev --verbose run build",
