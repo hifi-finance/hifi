@@ -27,14 +27,8 @@ on:
       h-token-symbol:
         description: "ERC-20 symbol of the hToken"
         required: true
-      hifi-pool-name:
-        description: "ERC-20 name of the pool"
-        required: true
       hifi-pool-registry:
         description: "Address of the HifiPoolRegistry contract"
-        required: true
-      hifi-pool-symbol:
-        description: "ERC-20 symbol of the pool"
         required: true
       ref:
         default: "main"
@@ -98,8 +92,8 @@ jobs:
           deploy:contract:hifi-pool --network "${{ github.event.inputs.chain }}"
           --h-token "${{ steps.deploy-h-token.outputs.h-token }}"
           --hifi-pool-registry "${{ github.event.inputs.hifi-pool-registry }}"
-          --name "${{ github.event.inputs.hifi-pool-name }}"
-          --symbol "${{ github.event.inputs.hifi-pool-symbol }}"
+          --name "${{ github.event.inputs.h-token-name }} Pool"
+          --symbol "${{ github.event.inputs.h-token-symbol }}LP"
           --confirmations "${{ github.event.inputs.confirmations }}"
           --set-output true
 
@@ -110,6 +104,6 @@ jobs:
         run: >-
           yarn workspace @hifi/amm hardhat
           verify "${{ steps.deploy-hifi-pool.outputs.hifi-pool }}" --network "${{ github.event.inputs.chain }}"
-          "${{ github.event.inputs.hifi-pool-name }}"
-          "${{ github.event.inputs.hifi-pool-symbol }}"
+          "${{ github.event.inputs.h-token-name }} Pool"
+          "${{ github.event.inputs.h-token-symbol }}LP"
           "${{ steps.deploy-h-token.outputs.h-token }}"
