@@ -53,7 +53,7 @@ jobs:
       - name: "Deploy HifiFlashUniswapV2"
         id: deploy
         run: >-
-          yarn workspace @hifi/deployers hardhat
+          yarn workspace @hifi/tasks hardhat
           deploy:contract:hifi-flash-uniswap-v2 --network "${{ github.event.inputs.chain }}"
           --balance-sheet "${{ github.event.inputs.balance-sheet }}"
           --uni-v2-factory "${{ github.event.inputs.uni-v2-factory }}"

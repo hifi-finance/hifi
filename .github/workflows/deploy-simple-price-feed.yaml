@@ -47,7 +47,7 @@ jobs:
       - name: "Deploy SimplePriceFeed"
         id: "deploy"
         run: >-
-          yarn workspace @hifi/deployers hardhat
+          yarn workspace @hifi/tasks hardhat
           deploy:contract:simple-price-feed --network "${{ github.event.inputs.chain }}"
           --description "${{ github.event.inputs.description }}"
           --confirmations "${{ github.event.inputs.confirmations }}"

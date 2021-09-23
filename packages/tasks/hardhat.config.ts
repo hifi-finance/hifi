@@ -1,7 +1,7 @@
 import "@nomiclabs/hardhat-ethers";
 
-import "./tasks/shared";
-import "./tasks/deploy";
+import "./src/init";
+import "./src/deploy";
 
 import { resolve } from "path";
 

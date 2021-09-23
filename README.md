@@ -18,11 +18,11 @@ associated to each package for detailed usage instructions.
 
 ### Private
 
-| Package                                  | Description                                   |
-| ---------------------------------------- | --------------------------------------------- |
-| [`@hifi/constants`](/packages/deployers) | Constants shared across Hifi packages         |
-| [`@hifi/deployers`](/packages/deployers) | Deployer scripts for the Hifi smart contracts |
-| [`@hifi/helpers`](/packages/deployers)   | Helper functions shared across Hifi packages  |
+| Package                                  | Description                                  |
+| ---------------------------------------- | -------------------------------------------- |
+| [`@hifi/constants`](/packages/constants) | Constants shared across Hifi packages        |
+| [`@hifi/helpers`](/packages/helpers)     | Helper functions shared across Hifi packages |
+| [`@hifi/tasks`](/packages/tasks)         | Hardhat tasks for the Hifi smart contracts   |
 
 ## Contributing
 

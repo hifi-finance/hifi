@@ -59,7 +59,7 @@ jobs:
       - name: "Deploy HToken"
         id: "deploy"
         run: >-
-          yarn workspace @hifi/deployers hardhat
+          yarn workspace @hifi/tasks hardhat
           deploy:contract:h-token --network "${{ github.event.inputs.chain }}"
           --balance-sheet "${{ github.event.inputs.balance-sheet }}"
           --maturity "${{ github.event.inputs.maturity }}"

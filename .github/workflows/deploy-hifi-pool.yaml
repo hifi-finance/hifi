@@ -18,6 +18,9 @@ on:
       h-token:
         description: "Address of the hToken contract"
         required: true
+      hifi-pool-registry:
+        description: "Address of the HifiPoolRegistry contract"
+        required: true
       name:
         description: "ERC-20 name of the pool"
         required: true
@@ -53,9 +56,10 @@ jobs:
       - name: "Deploy HifiPool"
         id: "deploy"
         run: >-
-          yarn workspace @hifi/deployers hardhat
+          yarn workspace @hifi/tasks hardhat
           deploy:contract:hifi-pool --network "${{ github.event.inputs.chain }}"
           --h-token "${{ github.event.inputs.h-token }}"
+          --hifi-pool-registry "${{ github.event.inputs.hifi-pool-registry }}"
           --name "${{ github.event.inputs.name }}"
           --symbol "${{ github.event.inputs.symbol }}"
 

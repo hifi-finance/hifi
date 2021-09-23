@@ -44,7 +44,7 @@ jobs:
       - name: "Deploy HifiProxyTarget"
         id: "deploy"
         run: >-
-          yarn workspace @hifi/deployers hardhat
+          yarn workspace @hifi/tasks hardhat
           deploy:contract:hifi-proxy-target --network "${{ github.event.inputs.chain }}"
           --confirmations "${{ github.event.inputs.confirmations }}"
           --set-output true

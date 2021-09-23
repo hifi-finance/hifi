@@ -13,8 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       constants: ${{ steps.diff.outputs.constants }}
-      deployers: ${{ steps.diff.outputs.deployers }}
       helpers: ${{ steps.diff.outputs.helpers }}
+      tasks: ${{ steps.diff.outputs.tasks }}
     steps:
       - name: "Check out the repo"
         uses: "actions/checkout@v2"
@@ -26,10 +26,10 @@ jobs:
           filters: |
             constants:
               - "packages/constants/**"
-            deployers:
-              - "packages/deployers/**"
             helpers:
               - "packages/helpers/**"
+            tasks:
+              - "packages/tasks/**"
 
   integration-constants:
     if: ${{ needs.diff.outputs.constants == 'true' }}
@@ -53,25 +53,6 @@ jobs:
       - name: "Build the package"
         run: "yarn workspace @hifi/constants build"
 
-  integration-deployers:
-    if: ${{ needs.diff.outputs.deployers == 'true' }}
-    runs-on: "ubuntu-latest"
-    steps:
-      - name: "Check out the repo"
-        uses: "actions/checkout@v2"
-
-      - name: "Install Node.js"
-        uses: "actions/setup-node@v2"
-        with:
-          cache: "yarn"
-          node-version: "16"
-
-      - name: "Install dependencies"
-        run: "yarn install --immutable"
-
-      - name: "Lint the code"
-        run: "yarn workspace @hifi/deployers lint"
-
   integration-helpers:
     if: ${{ needs.diff.outputs.helpers == 'true' }}
     runs-on: "ubuntu-latest"
@@ -93,3 +74,22 @@ jobs:
 
       - name: "Build the package"
         run: "yarn workspace @hifi/helpers build"
+
+  integration-tasks:
+    if: ${{ needs.diff.outputs.tasks == 'true' }}
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Check out the repo"
+        uses: "actions/checkout@v2"
+
+      - name: "Install Node.js"
+        uses: "actions/setup-node@v2"
+        with:
+          cache: "yarn"
+          node-version: "16"
+
+      - name: "Install dependencies"
+        run: "yarn install --immutable"
+
+      - name: "Lint the code"
+        run: "yarn workspace @hifi/tasks lint"

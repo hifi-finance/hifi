@@ -1,12 +1,14 @@
-# Hifi Deployers
+# Hifi Tasks
 
-Deployer scripts for the Hifi smart contracts. Note that because OpenZeppelin's upgrades plugin
+Hardhat tasks for the Hifi smart contracts.
+
+A note on the deploy tasks. This package cannot deploy upgradeable contracts, because OpenZeppelin's upgrades plugin
 [validates](https://github.com/OpenZeppelin/openzeppelin-upgrades/issues/402) the compiler cache before deploying the
-proxies, this package cannot deploy upgradeable contracts.
+proxies.
 
 ## Install
 
-This package is not meant to be installed by any other package, not even another local package in this monorepo.
+This package is not meant to be installed by any other package, not even a local package in this monorepo.
 
 ## Usage
 
@@ -25,7 +27,7 @@ yarn hardhat --network "..." deploy:contract:hifi-flash-uniswap-v2 --balance-she
 ### Deploy HifiPool
 
 ```sh
-yarn hardhat --network "..." deploy:contract:hifi-pool --name "..." --symbol "..." --h-token "0x..."
+yarn hardhat --network "..." deploy:contract:hifi-pool --name "..." --symbol "..." --h-token "0x..." --hifi-pool-registry "0x..."
 ```
 
 ### Deploy HifiPoolRegistry
@@ -56,4 +58,10 @@ yarn hardhat --network "..." deploy:contract:simple-price-feed --description "..
 
 ```sh
 yarn hardhat --network "..." deploy:stablecoin-price-feed --price "..." --description "..."
+```
+
+### Init AddLiquidity
+
+```sh
+yarn hardhat --network "..." init:add-liquidity --hifi-pool "0x..." --pool-underlying-amount "..." --supply-underlying-amount "..."
 ```

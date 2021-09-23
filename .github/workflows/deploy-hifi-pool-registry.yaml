@@ -44,7 +44,7 @@ jobs:
       - name: "Deploy HifiPoolRegistry"
         id: "deploy"
         run: >-
-          yarn workspace @hifi/deployers hardhat
+          yarn workspace @hifi/tasks hardhat
           deploy:contract:hifi-pool-registry --network "${{ github.event.inputs.chain }}"
           --confirmations "${{ github.event.inputs.confirmations }}"
           --set-output true

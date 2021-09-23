@@ -24,7 +24,7 @@ contract GodModeErc20 is Erc20 {
         // solhint-disable-previous-line no-empty-blocks
     }
 
-    /// NON-CONSTANT FUNCTIONS ///
+    /// PUBLIC NON-CONSTANT FUNCTIONS ///
 
     /// @notice Destroys `burnAmount` tokens from `holder`, reducing the token supply.
     /// @param holder The account whose tokens to burn.
