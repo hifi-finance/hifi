@@ -1,3 +1,4 @@
+export const TASK_ADD_LIQUIDITY: string = "init:pool:add-liquidity";
 export const SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS: string = "deploy:wait-for-confirmations";
 export const TASK_DEPLOY_CONTRACT_CHAINLINK_OPERATOR: string = "deploy:contract:chainlink-operator";
 export const TASK_DEPLOY_CONTRACT_HIFI_FLASH_UNISWAP_V2: string = "deploy:contract:hifi-flash-uniswap-v2";

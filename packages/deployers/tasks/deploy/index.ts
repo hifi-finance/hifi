@@ -1,3 +1,4 @@
+import "./addLiquidity";
 import "./chainlinkOperator";
 import "./hifiFlashUniswapV2";
 import "./hifiPoolRegistry";
