@@ -16,7 +16,7 @@ $ yarn add @hifi/flash-swap
 Or npm:
 
 ```bash
-npm install @hifi/flash-swap
+$ npm install @hifi/flash-swap
 ```
 
 ## Usage

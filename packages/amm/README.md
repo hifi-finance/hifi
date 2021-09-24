@@ -15,7 +15,7 @@ $ yarn add @hifi/amm
 Or npm:
 
 ```bash
-npm install @hifi/amm
+$ npm install @hifi/amm
 ```
 
 ## Usage

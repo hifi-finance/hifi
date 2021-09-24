@@ -15,7 +15,7 @@ $ yarn add @hifi/protocol
 Or npm:
 
 ```bash
-npm install @hifi/protocol
+$ npm install @hifi/protocol
 ```
 
 ## Usage

@@ -15,7 +15,7 @@ $ yarn add @hifi/proxy-target
 Or npm:
 
 ```bash
-npm install @hifi/proxy-target
+$ npm install @hifi/proxy-target
 ```
 
 ## Usage
