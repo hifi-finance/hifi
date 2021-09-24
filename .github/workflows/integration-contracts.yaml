@@ -28,11 +28,11 @@ jobs:
           cache: "yarn"
           node-version: "16"
 
-      - name: "Install dependencies"
+      - name: "Install the dependencies"
         run: "yarn install --immutable"
 
-      - name: "Build packages"
-        run: "yarn build"
+      - name: "Build the TypeScript packages"
+        run: "yarn build:ts"
 
       - name: "Lint Solidity and TypeScript code"
         run: "yarn workspace @hifi/amm lint"
@@ -63,11 +63,11 @@ jobs:
           cache: "yarn"
           node-version: "16"
 
-      - name: "Install dependencies"
+      - name: "Install the dependencies"
         run: "yarn install --immutable"
 
-      - name: "Build packages"
-        run: "yarn build"
+      - name: "Build the TypeScript packages"
+        run: "yarn build:ts"
 
       - name: "Lint Solidity and TypeScript code"
         run: "yarn workspace @hifi/flash-swap lint"
@@ -98,11 +98,11 @@ jobs:
           cache: "yarn"
           node-version: "16"
 
-      - name: "Install dependencies"
+      - name: "Install the dependencies"
         run: "yarn install --immutable"
 
-      - name: "Build packages"
-        run: "yarn build"
+      - name: "Build the TypeScript packages"
+        run: "yarn build:ts"
 
       - name: "Lint Solidity and TypeScript code"
         run: "yarn workspace @hifi/protocol lint"
@@ -133,11 +133,11 @@ jobs:
           cache: "yarn"
           node-version: "16"
 
-      - name: "Install dependencies"
+      - name: "Install the dependencies"
         run: "yarn install --immutable"
 
-      - name: "Build packages"
-        run: "yarn build"
+      - name: "Build the TypeScript packages"
+        run: "yarn build:ts"
 
       - name: "Lint Solidity and TypeScript code"
         run: "yarn workspace @hifi/proxy-target lint"

@@ -77,7 +77,7 @@
     "url": "https://github.com/hifi-finance/hifi"
   },
   "scripts": {
-    "build": "cross-env TS_NODE_TRANSPILE_ONLY=true yarn hardhat prepare-package && tsc --project ./tsconfig.prod.json",
+    "build:contracts": "cross-env TS_NODE_TRANSPILE_ONLY=true yarn hardhat prepare-package && tsc --project ./tsconfig.prod.json",
     "clean": "shx rm -rf ./artifacts ./cache ./typechain ./tsconfig.prod.tsbuildinfo",
     "clean:node_modules": "shx rm -rf ./node_modules",
     "lint": "yarn lint:sol && yarn lint:ts && yarn prettier:check",
