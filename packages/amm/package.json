@@ -49,7 +49,7 @@
     "evm-fp": "^1.2.0",
     "fs-extra": "^10.0.0",
     "hardhat": "^2.6.4",
-    "hardhat-packager": "^1.2.0",
+    "hardhat-packager": "^1.2.1",
     "lint-staged": "^11.1.2",
     "lodash": "^4.17.21",
     "mathjs": "^9.5.0",

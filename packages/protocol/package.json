@@ -52,7 +52,7 @@
     "fs-extra": "^10.0.0",
     "hardhat": "^2.6.4",
     "hardhat-gas-reporter": "^1.0.4",
-    "hardhat-packager": "^1.2.0",
+    "hardhat-packager": "^1.2.1",
     "lodash": "^4.17.21",
     "mocha": "^9.1.1",
     "mocha-each": "^2.0.1",
