@@ -1,7 +1,7 @@
 {
   "name": "@hifi/protocol",
   "description": "The core Hifi fixed-rate, fixed-term lending protocol",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "author": {
     "name": "Hifi",
     "email": "contact@hifi.finance",
@@ -108,7 +108,7 @@
     "lint": "yarn lint:sol && yarn lint:ts && yarn prettier:check",
     "lint:sol": "solhint --config ../../.solhint.json --max-warnings 0 \"contracts/**/*.sol\"",
     "lint:ts": "eslint --config ../../.eslintrc.yaml --ignore-path ../../.eslintignore --ext .js,.ts .",
-    "prepack": "yarn build",
+    "prepack": "yarn build:contracts",
     "prettier": "prettier --config ../../.prettierrc.js --ignore-path ../../.prettierignore --write \"**/*.{js,json,md,sol,ts,yaml,yml}\"",
     "prettier:check": "prettier --check --config ../../.prettierrc.js --ignore-path ../../.prettierignore \"**/*.{js,json,md,sol,ts,yaml,yml}\"",
     "test": "hardhat test",
