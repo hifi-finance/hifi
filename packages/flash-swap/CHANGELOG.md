@@ -17,8 +17,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Upgrade to `ethers` v5.4.6.
 - Upgrade to `@hifi/protocol` v1.5.0.
 - Upgrade to `@paulrberg/contracts` v3.5.2.
-- Upgrade to Solidity compiler v0.8.7.
 - Use "pre" and "post" prefixes instead of "old" and "new".
+- Use Solidity v0.8.7.
 
 ### Fixed
 

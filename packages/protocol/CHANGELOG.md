@@ -13,7 +13,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-- Declutter README and add usage guides
+- Declutter README and add usage guides.
 - Polish the NatSpec comments.
 - Refactor `DEFAULT_COLLATERALIZATION_RATIO` to `DEFAULT_COLLATERAL_RATIO` in the `SFintrollerV1` contract.
 - Refactor `COLLATERALIZATION_RATIO_LOWER_BOUND` to `COLLATERAL_RATIO_LOWER_BOUND` in the `SFintrollerV1` contract.
@@ -42,7 +42,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Upgrade to `ethers` v5.4.6.
 - Upgrade to `@paulrberg/contracts` v3.5.2.
 - Upgrade to `@openzeppelin/contracts-upgradeable` v4.3.1.
-- Upgrade to Solidity compiler v0.8.7.
+- Use Solidity v0.8.7.
 - Use LGPL v3 license for all contracts.
 - Wrap the precision scalar in `unchecked` blocks to save gas.
 

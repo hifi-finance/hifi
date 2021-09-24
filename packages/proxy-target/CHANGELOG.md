@@ -21,7 +21,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Upgrade to `@hifi/amm` v1.5.0.
 - Upgrade to `@hifi/protocol` v1.5.0.
 - Upgrade to `@paulrberg/contracts` v3.5.2.
-- Upgrade to Solidity compiler v0.8.7.
+- Use Solidity compiler v0.8.7.
 
 ### Fixed
 

@@ -91,10 +91,10 @@ interface IHifiPool is IErc20Permit {
     /// @return hTokenOut The hypothetical amount of hTokens that would be obtained.
     function getQuoteForSellingUnderlying(uint256 underlyingIn) external view returns (uint256 hTokenOut);
 
-    /// @notice Retrieves the normalized underlying reserves, i.e. the Erc20 balance scaled to have 18 decimals.
+    /// @notice Returns the normalized underlying reserves, i.e. the Erc20 balance scaled to have 18 decimals.
     function getNormalizedUnderlyingReserves() external view returns (uint256 normalizedUnderlyingReserves);
 
-    /// @notice Retrieves the virtual hToken reserves, as explained in the whitepaper.
+    /// @notice Returns the virtual hToken reserves, as explained in the whitepaper.
     /// @dev Adds the Erc20 hToken balance to the total supply of LP tokens.
     function getVirtualHTokenReserves() external view returns (uint256 virtualHTokenReserves);
 

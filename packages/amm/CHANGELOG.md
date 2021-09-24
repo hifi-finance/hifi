@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2021-09-24
+
+### Changed
+
+- Declutter README and add usage guides.
+- Polish the NatSpec comments.
+- Sync peer dependencies.
+- Update year in LICENSE.
+- Upgrade to `@hifi/protocol` v1.6.0.
+- Upgrade to `@paulrberg/contracts` v3.6.0.
+- Upgrade to `prb-math` v2.3.0.
+
 ## [1.5.0] - 2021-09-16
 
 ### Added
@@ -17,7 +29,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Upgrade to `ethers` v5.4.6.
 - Upgrade to `@hifi/protocol` v1.5.0.
 - Upgrade to `@paulrberg/contracts` v3.5.2.
-- Upgrade to Solidity compiler v0.8.7.
+- Use Solidity v0.8.7.
 
 ### Fixed
 
@@ -92,6 +104,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - First release of the package.
 
+[1.6.0]: https://github.com/hifi-finance/hifi/compare/@hifi/amm@1.5.0...@hifi/amm@1.6.0
 [1.5.0]: https://github.com/hifi-finance/hifi/compare/@hifi/amm@1.4.0...@hifi/amm@1.5.0
 [1.4.0]: https://github.com/hifi-finance/hifi/compare/@hifi/amm@1.3.0...@hifi/amm@1.4.0
 [1.3.0]: https://github.com/hifi-finance/hifi/compare/@hifi/amm@1.2.1...@hifi/amm@1.3.0
