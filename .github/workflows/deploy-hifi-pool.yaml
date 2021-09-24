@@ -53,6 +53,9 @@ jobs:
       - name: "Build packages"
         run: "yarn build"
 
+      - name: "Compile the contracts and generate TypeChain bindings"
+        run: "yarn typechain"
+
       - name: "Deploy HifiPool"
         id: "deploy"
         run: >-
@@ -62,9 +65,6 @@ jobs:
           --hifi-pool-registry "${{ github.event.inputs.hifi-pool-registry }}"
           --name "${{ github.event.inputs.name }}"
           --symbol "${{ github.event.inputs.symbol }}"
-
-      - name: "Compile the contracts and generate TypeChain bindings"
-        run: "yarn workspace @hifi/amm typechain"
 
       - name: "Verify HifiPool"
         run: >-

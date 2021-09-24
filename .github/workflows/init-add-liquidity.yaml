@@ -46,6 +46,9 @@ jobs:
       - name: "Build packages"
         run: "yarn build"
 
+      - name: "Compile the contracts and generate TypeChain bindings"
+        run: "yarn typechain"
+
       - name: "Add liquidity"
         id: "init"
         run: >-

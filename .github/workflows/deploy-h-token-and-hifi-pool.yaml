@@ -59,6 +59,9 @@ jobs:
       - name: "Build packages"
         run: "yarn build"
 
+      - name: "Compile the contracts and generate TypeChain bindings"
+        run: "yarn typechain"
+
       - name: "Deploy HToken"
         id: "deploy-h-token"
         run: >-
@@ -71,9 +74,6 @@ jobs:
           --underlying "${{ github.event.inputs.underlying }}"
           --confirmations "${{ github.event.inputs.confirmations }}"
           --set-output true
-
-      - name: "Compile the HToken contracts and generate TypeChain bindings"
-        run: "yarn workspace @hifi/protocol typechain"
 
       - name: "Verify HToken"
         run: >-
@@ -96,9 +96,6 @@ jobs:
           --symbol "${{ github.event.inputs.h-token-symbol }}LP"
           --confirmations "${{ github.event.inputs.confirmations }}"
           --set-output true
-
-      - name: "Compile the HifiPool contracts and generate TypeChain bindings"
-        run: "yarn workspace @hifi/amm typechain"
 
       - name: "Verify HifiPool"
         run: >-

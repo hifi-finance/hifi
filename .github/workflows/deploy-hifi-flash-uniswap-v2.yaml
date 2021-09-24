@@ -50,6 +50,9 @@ jobs:
       - name: "Build packages"
         run: "yarn build"
 
+      - name: "Compile the contracts and generate TypeChain bindings"
+        run: "yarn typechain"
+
       - name: "Deploy HifiFlashUniswapV2"
         id: deploy
         run: >-
@@ -60,9 +63,6 @@ jobs:
           --uni-v2-pair-init-code-hash "${{ github.event.inputs.uni-v2-pair-init-code-hash }}"
           --confirmations "${{ github.event.inputs.confirmations }}"
           --set-output true
-
-      - name: "Compile the contracts and generate TypeChain bindings"
-        run: "yarn workspace @hifi/flash-swap typechain"
 
       - name: "Verify HifiFlashUniswapV2"
         run: >-

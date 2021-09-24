@@ -56,6 +56,9 @@ jobs:
       - name: "Build packages"
         run: "yarn build"
 
+      - name: "Compile the contracts and generate TypeChain bindings"
+        run: "yarn typechain"
+
       - name: "Deploy HToken"
         id: "deploy"
         run: >-
@@ -68,9 +71,6 @@ jobs:
           --underlying "${{ github.event.inputs.underlying }}"
           --confirmations "${{ github.event.inputs.confirmations }}"
           --set-output true
-
-      - name: "Compile the contracts and generate TypeChain bindings"
-        run: "yarn workspace @hifi/protocol typechain"
 
       - name: "Verify HToken"
         run: >-
