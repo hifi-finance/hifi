@@ -11,12 +11,12 @@
     "url": "https://github.com/hifi-finance/hifi/issues"
   },
   "devDependencies": {
-    "@ethersproject/bignumber": "^5.4.1",
-    "@typescript-eslint/eslint-plugin": "^4.31.1",
-    "@typescript-eslint/parser": "^4.31.1",
+    "@ethersproject/bignumber": "^5.4.2",
+    "@typescript-eslint/eslint-plugin": "^4.31.2",
+    "@typescript-eslint/parser": "^4.31.2",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
-    "evm-fp": "^1.1.2",
+    "evm-fp": "^1.2.0",
     "from-exponential": "^1.1.1",
     "prettier": "^2.4.1",
     "shx": "^0.3.3",

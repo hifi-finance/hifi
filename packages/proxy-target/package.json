@@ -13,8 +13,8 @@
   "dependencies": {
     "@hifi/amm": "1.5.0",
     "@hifi/protocol": "1.5.0",
-    "@paulrberg/contracts": "3.5.2",
-    "ethers": "^5.4.6"
+    "@paulrberg/contracts": "3.6.0",
+    "ethers": "^5.4.7"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.4.1",
@@ -22,18 +22,18 @@
     "@ethersproject/providers": "^5.4.5",
     "@hifi/helpers": "workspace:*",
     "@nomiclabs/hardhat-etherscan": "^2.1.6",
-    "@typechain/ethers-v5": "^7.1.0",
+    "@typechain/ethers-v5": "^7.1.1",
     "@typechain/hardhat": "^2.3.0",
-    "@types/node": "^16.9.1",
-    "@typescript-eslint/eslint-plugin": "^4.31.1",
-    "@typescript-eslint/parser": "^4.31.1",
+    "@types/node": "^16.9.6",
+    "@typescript-eslint/eslint-plugin": "^4.31.2",
+    "@typescript-eslint/parser": "^4.31.2",
     "cross-env": "^7.0.3",
     "dotenv": "^10.0.0",
     "eslint": "^7.32.0",
     "eslint-config-prettier": "^8.3.0",
-    "ethers": "^5.4.6",
+    "ethers": "^5.4.7",
     "hardhat": "^2.6.4",
-    "hardhat-packager": "^1.1.0",
+    "hardhat-packager": "^1.2.0",
     "lodash": "^4.17.21",
     "prettier": "^2.4.1",
     "prettier-plugin-solidity": "^1.0.0-beta.18",
@@ -65,7 +65,7 @@
   "peerDependencies": {
     "@hifi/amm": "1.5.0",
     "@hifi/protocol": "1.5.0",
-    "@paulrberg/contracts": "3.5.2",
+    "@paulrberg/contracts": "3.6.0",
     "ethers": "^5.4.6"
   },
   "publishConfig": {
