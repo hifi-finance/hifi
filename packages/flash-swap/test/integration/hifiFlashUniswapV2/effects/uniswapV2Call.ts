@@ -155,10 +155,12 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
         context("when underlying is flash borrowed", function () {
           const borrowAmount: BigNumber = hUSDC("10000");
           const collateralAmount: BigNumber = Zero;
+          const collateralCeiling: BigNumber = WBTC("100");
           const debtCeiling: BigNumber = hUSDC("1e6");
           const liquidationIncentive: BigNumber = fp("1.10");
           const underlyingAmount: BigNumber = USDC("10000");
           const wbtcDepositAmount: BigNumber = WBTC("1");
+
           let token0Amount: BigNumber;
           let token1Amount: BigNumber;
 
@@ -177,6 +179,11 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
             await this.contracts.fintroller
               .connect(this.signers.admin)
               .setLiquidationIncentive(this.contracts.wbtc.address, liquidationIncentive);
+
+            // Set the collateral ceiling.
+            await this.contracts.fintroller
+              .connect(this.signers.admin)
+              .setCollateralCeiling(this.contracts.wbtc.address, collateralCeiling);
 
             // Set the debt ceiling.
             await this.contracts.fintroller
