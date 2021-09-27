@@ -9,9 +9,9 @@ export default function shouldBehaveLikeUpgradeableProxy(): void {
   let balanceSheetV2: BalanceSheetV2;
 
   beforeEach(async function () {
-    const v1Address = this.contracts.balanceSheet.address;
+    const proxyAddress = this.contracts.balanceSheet.address;
     const balanceSheetV2Factory: BalanceSheetV2__factory = await ethers.getContractFactory("BalanceSheetV2");
-    balanceSheetV2 = <BalanceSheetV2>await upgrades.upgradeProxy(v1Address, balanceSheetV2Factory);
+    balanceSheetV2 = <BalanceSheetV2>await upgrades.upgradeProxy(proxyAddress, balanceSheetV2Factory);
   });
 
   context("when the Fintroller implementation is upgraded", function () {
