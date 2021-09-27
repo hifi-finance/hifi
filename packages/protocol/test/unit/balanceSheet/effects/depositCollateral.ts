@@ -40,6 +40,10 @@ export default function shouldBehaveLikeDepositCollateral(): void {
     context("when the amount to deposit is not zero", function () {
       const depositAmounts: BigNumber[] = [WBTC("1"), WBTC("0.5")];
 
+      beforeEach(async function () {
+        await this.mocks.wbtc.mock.balanceOf.withArgs(this.contracts.balanceSheet.address).returns(Zero);
+      });
+
       context("when the deposit overflows the collateral ceiling", function () {
         beforeEach(async function () {
           const collateralCeiling: BigNumber = depositAmounts[0].sub(1);
@@ -61,19 +65,16 @@ export default function shouldBehaveLikeDepositCollateral(): void {
         const collateralCeiling: BigNumber = WBTC("100");
 
         beforeEach(async function () {
+          // Mock the necessary methods.
           await this.mocks.fintroller.mock.getCollateralCeiling
             .withArgs(this.mocks.wbtc.address)
             .returns(collateralCeiling);
+          await this.mocks.wbtc.mock.transferFrom
+            .withArgs(this.signers.borrower.address, this.contracts.balanceSheet.address, depositAmounts[0])
+            .returns(true);
         });
 
         context("when it is the first collateral deposit of the user", function () {
-          beforeEach(async function () {
-            // Mock the necessary methods.
-            await this.mocks.wbtc.mock.transferFrom
-              .withArgs(this.signers.borrower.address, this.contracts.balanceSheet.address, depositAmounts[0])
-              .returns(true);
-          });
-
           it("makes the collateral deposit", async function () {
             await this.contracts.balanceSheet
               .connect(this.signers.borrower)
@@ -95,9 +96,9 @@ export default function shouldBehaveLikeDepositCollateral(): void {
         context("when it is the second collateral deposit of the user", function () {
           beforeEach(async function () {
             // Mock the necessary methods.
-            await this.mocks.wbtc.mock.transferFrom
-              .withArgs(this.signers.borrower.address, this.contracts.balanceSheet.address, depositAmounts[0])
-              .returns(true);
+            await this.mocks.wbtc.mock.balanceOf
+              .withArgs(this.contracts.balanceSheet.address)
+              .returns(depositAmounts[1]);
             await this.mocks.wbtc.mock.transferFrom
               .withArgs(this.signers.borrower.address, this.contracts.balanceSheet.address, depositAmounts[1])
               .returns(true);

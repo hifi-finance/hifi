@@ -380,20 +380,20 @@ contract BalanceSheetV1 is
         }
 
         // Checks: collateral ceiling.
-        uint256 collateralAmount = vaults[msg.sender].collateralAmounts[collateral];
-        uint256 newCollateralAmount = collateralAmount + depositAmount;
+        uint256 newCollateralAmount = collateral.balanceOf(address(this)) + depositAmount;
         uint256 collateralCeiling = fintroller.getCollateralCeiling(collateral);
         if (newCollateralAmount > collateralCeiling) {
             revert BalanceSheet__CollateralCeilingOverflow(newCollateralAmount, collateralCeiling);
         }
 
         // Effects: add the collateral to the redundant list, if this is the first time collateral is added.
+        uint256 collateralAmount = vaults[msg.sender].collateralAmounts[collateral];
         if (collateralAmount == 0) {
             vaults[msg.sender].collateralList.push(collateral);
         }
 
         // Effects: increase the amount of collateral in the vault.
-        vaults[msg.sender].collateralAmounts[collateral] = newCollateralAmount;
+        vaults[msg.sender].collateralAmounts[collateral] = collateralAmount + depositAmount;
 
         // Interactions: perform the Erc20 transfer.
         collateral.safeTransferFrom(msg.sender, address(this), depositAmount);
