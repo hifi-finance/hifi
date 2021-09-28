@@ -494,7 +494,7 @@ contract BalanceSheetV1 is
             revert BalanceSheet__WithdrawCollateralZero();
         }
 
-        // Checks: there is enough collateral in teh vault.
+        // Checks: there is enough collateral in the vault.
         uint256 vaultCollateralAmount = vaults[msg.sender].collateralAmounts[collateral];
         if (vaultCollateralAmount < withdrawAmount) {
             revert BalanceSheet__WithdrawCollateralUnderflow(msg.sender, vaultCollateralAmount, withdrawAmount);
