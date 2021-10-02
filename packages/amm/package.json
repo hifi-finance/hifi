@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@hifi/protocol": "1.6.0",
-    "@paulrberg/contracts": "3.6.0",
+    "@paulrberg/contracts": "3.6.1",
     "ethers": "^5.4.7",
     "prb-math": "2.3.0"
   },
@@ -87,7 +87,7 @@
   "license": "LGPL-3.0-or-later",
   "peerDependencies": {
     "@hifi/protocol": "1.6.0",
-    "@paulrberg/contracts": "3.6.0",
+    "@paulrberg/contracts": "3.6.1",
     "ethers": "^5.4.7",
     "prb-math": "2.3.0"
   },
