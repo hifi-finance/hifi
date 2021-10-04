@@ -18,6 +18,7 @@
     "prettier-plugin-solidity": "^1.0.0-beta.18",
     "shx": "^0.3.3"
   },
+  "packageManager": "yarn@3.1.0-rc.6",
   "private": true,
   "scripts": {
     "build:contracts": "yarn workspaces foreach --topological-dev --verbose run build:contracts",
@@ -34,10 +35,9 @@
     "prettier:check": "prettier --check --config ./.prettierrc.js --ignore-path ./.prettierignore \"**/*.{js,json,md,sol,ts,yaml,yml}\"",
     "test": "yarn workspaces foreach --parallel run test",
     "typechain": "yarn workspaces foreach --parallel --verbose run typechain",
-    "watch": "yarn workspaces foreach --interlaced --parallel --verbose run watch"
+    "watch:ts": "yarn workspaces foreach --interlaced --parallel --verbose run watch"
   },
   "workspaces": [
     "packages/*"
-  ],
-  "packageManager": "yarn@3.1.0-rc.6"
+  ]
 }

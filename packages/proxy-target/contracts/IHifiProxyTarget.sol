@@ -119,12 +119,12 @@ interface IHifiProxyTarget {
     /// - The caller must have allowed DSProxy to spend `maxUnderlyingIn + underlyingOffered` tokens.
     ///
     /// @param hifiPool The address of the HifiPool contract.
-    /// @param maxUnderlyingIn The maximum amount of underlying that the user is willing to pay.
-    /// @param underlyingOffered The amount of underlying to invest.
+    /// @param hTokenOut The amount of hTokens to buy.
+    /// @param maxUnderlyingAmount The maximum amount of underlying that the user is willing to sell and invest.
     function buyHTokenAndAddLiquidity(
         IHifiPool hifiPool,
-        uint256 maxUnderlyingIn,
-        uint256 underlyingOffered
+        uint256 hTokenOut,
+        uint256 maxUnderlyingAmount
     ) external;
 
     /// @notice Buys hTokens with underlying and repays the borrow.
