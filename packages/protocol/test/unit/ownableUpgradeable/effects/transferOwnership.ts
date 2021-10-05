@@ -1,7 +1,6 @@
 import { AddressZero } from "@ethersproject/constants";
+import { OwnableUpgradeableErrors } from "@hifi/errors";
 import { expect } from "chai";
-
-import { OwnableUpgradeableErrors } from "../../../shared/errors";
 
 export function shouldBehaveLikeTransferOwnership(): void {
   beforeEach(async function () {
@@ -13,7 +12,7 @@ export function shouldBehaveLikeTransferOwnership(): void {
       const newOwner: string = this.signers.maker.address;
       await expect(
         this.contracts.ownableUpgradeable.connect(this.signers.raider)._transferOwnership(newOwner),
-      ).to.be.revertedWith(OwnableUpgradeableErrors.NotOwner);
+      ).to.be.revertedWith(OwnableUpgradeableErrors.NOT_OWNER);
     });
   });
 
@@ -23,7 +22,7 @@ export function shouldBehaveLikeTransferOwnership(): void {
         const newOwner: string = AddressZero;
         await expect(
           this.contracts.ownableUpgradeable.connect(this.signers.admin)._transferOwnership(newOwner),
-        ).to.be.revertedWith(OwnableUpgradeableErrors.OwnerZeroAddress);
+        ).to.be.revertedWith(OwnableUpgradeableErrors.OWNER_ZERO_ADDRESS);
       });
     });
 

@@ -1,10 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
+import { HTokenErrors } from "@hifi/errors";
 import { USDC, getPrecisionScalar, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
-
-import { HTokenErrors } from "../../../shared/errors";
 
 export function shouldBehaveLikeSupplyUnderlying(): void {
   context("when the amount of underlying to supply is zero", function () {
@@ -12,7 +11,7 @@ export function shouldBehaveLikeSupplyUnderlying(): void {
       const underlyingSupplyAmount: BigNumber = Zero;
       await expect(
         this.contracts.hTokens[0].connect(this.signers.maker).supplyUnderlying(underlyingSupplyAmount),
-      ).to.be.revertedWith(HTokenErrors.SupplyUnderlyingZero);
+      ).to.be.revertedWith(HTokenErrors.SUPPLY_UNDERLYING_ZERO);
     });
   });
 

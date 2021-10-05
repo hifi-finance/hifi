@@ -1,6 +1,6 @@
 {
-  "name": "@hifi/helpers",
-  "description": "Helper functions shared across Hifi packages",
+  "name": "@hifi/errors",
+  "description": "Errors emitted in the Hifi protocol",
   "version": "1.0.0",
   "author": {
     "name": "Hifi",
@@ -12,9 +12,7 @@
   },
   "dependencies": {
     "@ethersproject/bignumber": "^5.4.2",
-    "@hifi/constants": "workspace:*",
-    "evm-bn": "^1.0.1",
-    "hardhat": "^2.6.4"
+    "evm-bn": "^1.0.1"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.31.2",
@@ -31,11 +29,11 @@
     "/dist/**/*.js",
     "/dist/**/*.js.map"
   ],
-  "homepage": "https://github.com/hifi-finance/hifi/tree/main/packages/helpers#readme",
+  "homepage": "https://github.com/hifi-finance/hifi/tree/main/packages/errors#readme",
   "main": "./dist/index.js",
   "private": true,
   "repository": {
-    "directory": "packages/helpers",
+    "directory": "packages/errors",
     "type": "git",
     "url": "https://github.com/hifi-finance/hifi"
   },

@@ -1,13 +1,13 @@
 import { defaultAbiCoder } from "@ethersproject/abi";
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
+import { HifiFlashUniswapV2Errors } from "@hifi/errors";
 import { USDC, WBTC, hUSDC, price } from "@hifi/helpers";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
 
 import { GodModeErc20 } from "../../../../typechain/GodModeErc20";
 import { deployGodModeErc20 } from "../../../shared/deployers";
-import { HifiFlashUniswapV2Errors } from "../../../shared/errors";
 
 async function bumpPoolReserves(this: Mocha.Context, wbtcAmount: BigNumber, usdcAmount: BigNumber): Promise<void> {
   // Mint WBTC to the pair contract.

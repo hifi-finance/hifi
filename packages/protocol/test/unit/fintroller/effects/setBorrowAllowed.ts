@@ -1,13 +1,12 @@
+import { FintrollerErrors, OwnableUpgradeableErrors } from "@hifi/errors";
 import { expect } from "chai";
-
-import { FintrollerErrors, OwnableUpgradeableErrors } from "../../../shared/errors";
 
 export function shouldBehaveLikeSetBorrowAllowed(): void {
   context("when the caller is not the owner", function () {
     it("reverts", async function () {
       await expect(
         this.contracts.fintroller.connect(this.signers.raider).setBorrowAllowed(this.mocks.hTokens[0].address, true),
-      ).to.be.revertedWith(OwnableUpgradeableErrors.NotOwner);
+      ).to.be.revertedWith(OwnableUpgradeableErrors.NOT_OWNER);
     });
   });
 
@@ -16,7 +15,7 @@ export function shouldBehaveLikeSetBorrowAllowed(): void {
       it("rejects", async function () {
         await expect(
           this.contracts.fintroller.connect(this.signers.admin).setBorrowAllowed(this.mocks.hTokens[0].address, true),
-        ).to.be.revertedWith(FintrollerErrors.BondNotListed);
+        ).to.be.revertedWith(FintrollerErrors.BOND_NOT_LISTED);
       });
     });
 

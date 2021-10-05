@@ -1,6 +1,5 @@
+import { FintrollerErrors, OwnableUpgradeableErrors } from "@hifi/errors";
 import { expect } from "chai";
-
-import { FintrollerErrors, OwnableUpgradeableErrors } from "../../../shared/errors";
 
 export function shouldBehaveLikeSetDepositCollateralAllowed(): void {
   context("when the caller is not the owner", function () {
@@ -9,7 +8,7 @@ export function shouldBehaveLikeSetDepositCollateralAllowed(): void {
         this.contracts.fintroller
           .connect(this.signers.raider)
           .setDepositCollateralAllowed(this.mocks.wbtc.address, true),
-      ).to.be.revertedWith(OwnableUpgradeableErrors.NotOwner);
+      ).to.be.revertedWith(OwnableUpgradeableErrors.NOT_OWNER);
     });
   });
 
@@ -20,7 +19,7 @@ export function shouldBehaveLikeSetDepositCollateralAllowed(): void {
           this.contracts.fintroller
             .connect(this.signers.admin)
             .setDepositCollateralAllowed(this.mocks.wbtc.address, true),
-        ).to.be.revertedWith(FintrollerErrors.CollateralNotListed);
+        ).to.be.revertedWith(FintrollerErrors.COLLATERAL_NOT_LISTED);
       });
     });
 

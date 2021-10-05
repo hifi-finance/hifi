@@ -1,15 +1,15 @@
 import { AddressZero } from "@ethersproject/constants";
+import { BalanceSheetErrors, OwnableUpgradeableErrors } from "@hifi/errors";
 import { expect } from "chai";
 import { MockContract } from "ethereum-waffle";
 
-import { BalanceSheetErrors, OwnableUpgradeableErrors } from "../../../shared/errors";
 import { deployMockChainlinkOperator } from "../../../shared/mocks";
 
 export function shouldBehaveLikeSetOracle(): void {
   context("when the caller is not the owner", function () {
     it("reverts", async function () {
       await expect(this.contracts.balanceSheet.connect(this.signers.raider).setOracle(AddressZero)).to.be.revertedWith(
-        OwnableUpgradeableErrors.NotOwner,
+        OwnableUpgradeableErrors.NOT_OWNER,
       );
     });
   });
@@ -18,7 +18,7 @@ export function shouldBehaveLikeSetOracle(): void {
     context("when the oracle is the zero address", function () {
       it("reverts", async function () {
         await expect(this.contracts.balanceSheet.connect(this.signers.admin).setOracle(AddressZero)).to.be.revertedWith(
-          BalanceSheetErrors.OracleZeroAddress,
+          BalanceSheetErrors.ORACLE_ZERO_ADDRESS,
         );
       });
     });

@@ -1,10 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { COLLATERAL_RATIOS } from "@hifi/constants";
+import { FintrollerErrors, OwnableUpgradeableErrors } from "@hifi/errors";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
-
-import { FintrollerErrors, OwnableUpgradeableErrors } from "../../../shared/errors";
 
 export function shouldBehaveLikeSetCollateralRatio(): void {
   const newCollateralRatio: BigNumber = toBn("1.75");
@@ -17,7 +16,7 @@ export function shouldBehaveLikeSetCollateralRatio(): void {
         this.contracts.fintroller
           .connect(this.signers.raider)
           .setCollateralRatio(this.mocks.wbtc.address, newCollateralRatio),
-      ).to.be.revertedWith(OwnableUpgradeableErrors.NotOwner);
+      ).to.be.revertedWith(OwnableUpgradeableErrors.NOT_OWNER);
     });
   });
 
@@ -28,7 +27,7 @@ export function shouldBehaveLikeSetCollateralRatio(): void {
           this.contracts.fintroller
             .connect(this.signers.admin)
             .setCollateralRatio(this.mocks.wbtc.address, newCollateralRatio),
-        ).to.be.revertedWith(FintrollerErrors.CollateralNotListed);
+        ).to.be.revertedWith(FintrollerErrors.COLLATERAL_NOT_LISTED);
       });
     });
 
@@ -42,7 +41,7 @@ export function shouldBehaveLikeSetCollateralRatio(): void {
           it("reverts", async function () {
             await expect(
               this.contracts.fintroller.connect(this.signers.admin).setCollateralRatio(this.mocks.wbtc.address, Zero),
-            ).to.be.revertedWith(FintrollerErrors.CollateralRatioUnderflow);
+            ).to.be.revertedWith(FintrollerErrors.COLLATERAL_RATIO_UNDERFLOW);
           });
         });
 
@@ -52,7 +51,7 @@ export function shouldBehaveLikeSetCollateralRatio(): void {
               this.contracts.fintroller
                 .connect(this.signers.admin)
                 .setCollateralRatio(this.mocks.wbtc.address, overflowCollateralRatio),
-            ).to.be.revertedWith(FintrollerErrors.CollateralRatioOverflow);
+            ).to.be.revertedWith(FintrollerErrors.COLLATERAL_RATIO_OVERFLOW);
           });
         });
 
@@ -62,7 +61,7 @@ export function shouldBehaveLikeSetCollateralRatio(): void {
               this.contracts.fintroller
                 .connect(this.signers.admin)
                 .setCollateralRatio(this.mocks.wbtc.address, underflowCollateralRatio),
-            ).to.be.revertedWith(FintrollerErrors.CollateralRatioUnderflow);
+            ).to.be.revertedWith(FintrollerErrors.COLLATERAL_RATIO_UNDERFLOW);
           });
         });
       });

@@ -992,6 +992,7 @@ __metadata:
     "@ethersproject/providers": ^5.4.5
     "@ethersproject/wallet": ^5.4.0
     "@hifi/constants": "workspace:*"
+    "@hifi/errors": "workspace:*"
     "@hifi/helpers": "workspace:*"
     "@hifi/protocol": 1.6.0
     "@nomiclabs/hardhat-ethers": ^2.0.2
@@ -1060,6 +1061,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@hifi/errors@workspace:*, @hifi/errors@workspace:packages/errors":
+  version: 0.0.0-use.local
+  resolution: "@hifi/errors@workspace:packages/errors"
+  dependencies:
+    "@ethersproject/bignumber": ^5.4.2
+    "@typescript-eslint/eslint-plugin": ^4.31.2
+    "@typescript-eslint/parser": ^4.31.2
+    eslint: ^7.32.0
+    eslint-config-prettier: ^8.3.0
+    evm-bn: ^1.0.1
+    prettier: ^2.4.1
+    shx: ^0.3.3
+    typescript: ^4.4.3
+  languageName: unknown
+  linkType: soft
+
 "@hifi/flash-swap@workspace:*, @hifi/flash-swap@workspace:packages/flash-swap":
   version: 0.0.0-use.local
   resolution: "@hifi/flash-swap@workspace:packages/flash-swap"
@@ -1071,6 +1088,7 @@ __metadata:
     "@ethersproject/constants": ^5.4.0
     "@ethersproject/keccak256": ^5.4.0
     "@ethersproject/providers": ^5.4.5
+    "@hifi/errors": "workspace:*"
     "@hifi/helpers": "workspace:*"
     "@hifi/protocol": 1.6.0
     "@nomiclabs/hardhat-ethers": ^2.0.2
@@ -1168,6 +1186,7 @@ __metadata:
     "@ethersproject/providers": ^5.4.5
     "@ethersproject/wallet": ^5.4.0
     "@hifi/constants": "workspace:*"
+    "@hifi/errors": "workspace:*"
     "@hifi/helpers": "workspace:*"
     "@nomiclabs/hardhat-ethers": ^2.0.2
     "@nomiclabs/hardhat-etherscan": ^2.1.6

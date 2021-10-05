@@ -1,10 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { LIQUIDATION_INCENTIVES } from "@hifi/constants";
+import { FintrollerErrors, OwnableUpgradeableErrors } from "@hifi/errors";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
-
-import { FintrollerErrors, OwnableUpgradeableErrors } from "../../../shared/errors";
 
 export function shouldBehaveLikeSetLiquidationIncentive(): void {
   const newLiquidationIncentive: BigNumber = toBn("1.20");
@@ -17,7 +16,7 @@ export function shouldBehaveLikeSetLiquidationIncentive(): void {
         this.contracts.fintroller
           .connect(this.signers.raider)
           .setLiquidationIncentive(this.mocks.wbtc.address, newLiquidationIncentive),
-      ).to.be.revertedWith(OwnableUpgradeableErrors.NotOwner);
+      ).to.be.revertedWith(OwnableUpgradeableErrors.NOT_OWNER);
     });
   });
 
@@ -28,7 +27,7 @@ export function shouldBehaveLikeSetLiquidationIncentive(): void {
           this.contracts.fintroller
             .connect(this.signers.admin)
             .setLiquidationIncentive(this.mocks.wbtc.address, newLiquidationIncentive),
-        ).to.be.revertedWith(FintrollerErrors.CollateralNotListed);
+        ).to.be.revertedWith(FintrollerErrors.COLLATERAL_NOT_LISTED);
       });
     });
 
@@ -44,7 +43,7 @@ export function shouldBehaveLikeSetLiquidationIncentive(): void {
               this.contracts.fintroller
                 .connect(this.signers.admin)
                 .setLiquidationIncentive(this.mocks.wbtc.address, Zero),
-            ).to.be.revertedWith(FintrollerErrors.LiquidationIncentiveUnderflow);
+            ).to.be.revertedWith(FintrollerErrors.LIQUIDATION_INCENTIVE_UNDERFLOW);
           });
         });
 
@@ -54,7 +53,7 @@ export function shouldBehaveLikeSetLiquidationIncentive(): void {
               this.contracts.fintroller
                 .connect(this.signers.admin)
                 .setLiquidationIncentive(this.mocks.wbtc.address, overflowLiquidationIncentive),
-            ).to.be.revertedWith(FintrollerErrors.LiquidationIncentiveOverflow);
+            ).to.be.revertedWith(FintrollerErrors.LIQUIDATION_INCENTIVE_OVERFLOW);
           });
         });
 
@@ -64,7 +63,7 @@ export function shouldBehaveLikeSetLiquidationIncentive(): void {
               this.contracts.fintroller
                 .connect(this.signers.admin)
                 .setLiquidationIncentive(this.mocks.wbtc.address, underflowLiquidationIncentive),
-            ).to.be.revertedWith(FintrollerErrors.LiquidationIncentiveUnderflow);
+            ).to.be.revertedWith(FintrollerErrors.LIQUIDATION_INCENTIVE_UNDERFLOW);
           });
         });
       });

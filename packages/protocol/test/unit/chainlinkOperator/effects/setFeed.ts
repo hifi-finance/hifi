@@ -1,7 +1,6 @@
 import { WBTC_SYMBOL } from "@hifi/constants";
+import { ChainlinkOperatorErrors, OwnableErrors } from "@hifi/errors";
 import { expect } from "chai";
-
-import { ChainlinkOperatorErrors, OwnableErrors } from "../../../shared/errors";
 
 export function shouldBehaveLikeSetFeed(): void {
   context("when the caller is not the owner", function () {
@@ -10,7 +9,7 @@ export function shouldBehaveLikeSetFeed(): void {
         this.contracts.oracle
           .connect(this.signers.raider)
           .setFeed(this.mocks.wbtc.address, this.mocks.wbtcPriceFeed.address),
-      ).to.be.revertedWith(OwnableErrors.NotOwner);
+      ).to.be.revertedWith(OwnableErrors.NOT_OWNER);
     });
   });
 
@@ -25,7 +24,7 @@ export function shouldBehaveLikeSetFeed(): void {
           this.contracts.oracle
             .connect(this.signers.admin)
             .setFeed(this.mocks.wbtc.address, this.mocks.wbtcPriceFeed.address),
-        ).to.be.revertedWith(ChainlinkOperatorErrors.DecimalsMismatch);
+        ).to.be.revertedWith(ChainlinkOperatorErrors.DECIMALS_MISMATCH);
       });
     });
 

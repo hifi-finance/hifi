@@ -16,9 +16,6 @@ export enum HifiPoolRegistryErrors {
   POOL_NOT_TRACKED = "HifiPoolRegistry__PoolNotTracked",
 }
 
-export enum OwnableErrors {
-  NOT_OWNER = "Ownable__NotOwner",
-}
 export enum YieldSpaceErrors {
   H_TOKEN_OUT_FOR_UNDERLYING_IN_RESERVES_FACTORS_UNDERFLOW = "YieldSpace__HTokenOutForUnderlyingInReservesFactorsUnderflow",
   H_TOKEN_RESERVES_OVERFLOW = "YieldSpace__HTokenReservesOverflow",

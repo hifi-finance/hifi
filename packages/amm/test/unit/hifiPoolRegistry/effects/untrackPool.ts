@@ -1,6 +1,5 @@
+import { HifiPoolRegistryErrors, OwnableErrors } from "@hifi/errors";
 import { expect } from "chai";
-
-import { HifiPoolRegistryErrors, OwnableErrors } from "../../../shared/errors";
 
 export function shouldBehaveLikeUntrackPool(): void {
   context("when the caller is not the owner", function () {

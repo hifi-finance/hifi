@@ -1,9 +1,8 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { MaxInt256 } from "@ethersproject/constants";
+import { HifiPoolErrors } from "@hifi/errors";
 import { expect } from "chai";
 import forEach from "mocha-each";
-
-import { HifiPoolErrors } from "../../../shared/errors";
 
 export function shouldBehaveLikeToInt256(): void {
   context("when x is bigger than max int256", function () {

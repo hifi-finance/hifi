@@ -17,7 +17,7 @@ error HToken__BondNotMatured(uint256 maturity);
 error HToken__BurnNotAuthorized(address caller);
 
 /// @notice Emitted when the maturity is in the past.
-error HToken__MaturityPast(uint256 maturity);
+error HToken__MaturityPassed(uint256 maturity);
 
 /// @notice Emitted when minting hTokens and the caller is not the BalanceSheet contract.
 error HToken__MintNotAuthorized(address caller);
@@ -82,7 +82,7 @@ contract HToken is
     ) Erc20Permit(name_, symbol_, 18) Ownable() {
         // Set the maturity.
         if (maturity_ <= block.timestamp) {
-            revert HToken__MaturityPast(maturity_);
+            revert HToken__MaturityPassed(maturity_);
         }
         maturity = maturity_;
 

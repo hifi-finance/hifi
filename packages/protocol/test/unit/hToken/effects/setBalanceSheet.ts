@@ -1,8 +1,8 @@
 import { AddressZero } from "@ethersproject/constants";
+import { OwnableErrors } from "@hifi/errors";
 import { expect } from "chai";
 import { MockContract } from "ethereum-waffle";
 
-import { OwnableErrors } from "../../../shared/errors";
 import { deployMockBalanceSheet } from "../../../shared/mocks";
 
 export function shouldBehaveLikeSetBalanceSheet(): void {
@@ -10,7 +10,7 @@ export function shouldBehaveLikeSetBalanceSheet(): void {
     it("reverts", async function () {
       await expect(
         this.contracts.hTokens[0].connect(this.signers.raider)._setBalanceSheet(AddressZero),
-      ).to.be.revertedWith(OwnableErrors.NotOwner);
+      ).to.be.revertedWith(OwnableErrors.NOT_OWNER);
     });
   });
 

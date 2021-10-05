@@ -1,11 +1,10 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
+import { HTokenErrors } from "@hifi/errors";
 import { getNow } from "@hifi/helpers";
 import { USDC, getPrecisionScalar, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
-
-import { HTokenErrors } from "../../../shared/errors";
 
 export function shouldBehaveLikeRedeem(): void {
   const underlyingAmount: BigNumber = USDC("100");
@@ -14,7 +13,7 @@ export function shouldBehaveLikeRedeem(): void {
   context("when the bond did not mature", function () {
     it("reverts", async function () {
       await expect(this.contracts.hTokens[0].connect(this.signers.maker).redeem(Zero)).to.be.revertedWith(
-        HTokenErrors.BondNotMatured,
+        HTokenErrors.BOND_NOT_MATURED,
       );
     });
   });
@@ -28,7 +27,7 @@ export function shouldBehaveLikeRedeem(): void {
     context("when the amount to redeem is zero", function () {
       it("reverts", async function () {
         await expect(this.contracts.hTokens[0].connect(this.signers.maker).redeem(Zero)).to.be.revertedWith(
-          HTokenErrors.RedeemZero,
+          HTokenErrors.REDEEM_ZERO,
         );
       });
     });
@@ -37,7 +36,7 @@ export function shouldBehaveLikeRedeem(): void {
       context("when there is not enough liquidity", function () {
         it("reverts", async function () {
           await expect(this.contracts.hTokens[0].connect(this.signers.maker).redeem(hTokenAmount)).to.be.revertedWith(
-            HTokenErrors.RedeemInsufficientLiquidity,
+            HTokenErrors.REDEEM_INSUFFICIENT_LIQUIDITY,
           );
         });
       });

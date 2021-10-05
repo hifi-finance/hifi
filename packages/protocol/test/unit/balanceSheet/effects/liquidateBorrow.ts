@@ -1,12 +1,12 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { COLLATERAL_RATIOS, LIQUIDATION_INCENTIVES, WBTC_SYMBOL } from "@hifi/constants";
+import { BalanceSheetErrors } from "@hifi/errors";
 import { WBTC, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
 import { mul } from "prb-math.js";
 
-import { BalanceSheetErrors } from "../../../shared/errors";
 import { getSeizableCollateralAmount } from "../../../shared/mirrors";
 
 export function shouldBehaveLikeLiquidateBorrow(): void {
@@ -28,7 +28,7 @@ export function shouldBehaveLikeLiquidateBorrow(): void {
             repayAmount,
             this.mocks.wbtc.address,
           ),
-      ).to.be.revertedWith(BalanceSheetErrors.LiquidateBorrowSelf);
+      ).to.be.revertedWith(BalanceSheetErrors.LIQUIDATE_BORROW_SELF);
     });
   });
 
@@ -50,7 +50,7 @@ export function shouldBehaveLikeLiquidateBorrow(): void {
               repayAmount,
               this.mocks.wbtc.address,
             ),
-        ).to.be.revertedWith(BalanceSheetErrors.LiquidateBorrowNotAllowed);
+        ).to.be.revertedWith(BalanceSheetErrors.LIQUIDATE_BORROW_NOT_ALLOWED);
       });
     });
 
@@ -83,7 +83,7 @@ export function shouldBehaveLikeLiquidateBorrow(): void {
                   repayAmount,
                   this.mocks.wbtc.address,
                 ),
-            ).to.be.revertedWith(BalanceSheetErrors.NoLiquidityShortfall);
+            ).to.be.revertedWith(BalanceSheetErrors.NO_LIQUIDITY_SHORTFALL);
           });
         });
 
@@ -194,7 +194,7 @@ export function shouldBehaveLikeLiquidateBorrow(): void {
                   repayAmount,
                   this.mocks.wbtc.address,
                 ),
-            ).to.be.revertedWith(BalanceSheetErrors.LiquidateBorrowInsufficientCollateral);
+            ).to.be.revertedWith(BalanceSheetErrors.LIQUIDATE_BORROW_INSUFFICIENT_COLLATERAL);
           });
         });
 
@@ -217,7 +217,7 @@ export function shouldBehaveLikeLiquidateBorrow(): void {
                     repayAmount,
                     this.mocks.wbtc.address,
                   ),
-              ).to.be.revertedWith(BalanceSheetErrors.RepayBorrowInsufficientBalance);
+              ).to.be.revertedWith(BalanceSheetErrors.REPAY_BORROW_INSUFFICIENT_BALANCE);
             });
           });
 

@@ -1,9 +1,8 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
+import { BalanceSheetErrors } from "@hifi/errors";
 import { hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
-
-import { BalanceSheetErrors } from "../../../shared/errors";
 
 export function shouldBehaveLikeRepayBorrowBehalf(): void {
   const repayAmount: BigNumber = hUSDC("15000");
@@ -18,7 +17,7 @@ export function shouldBehaveLikeRepayBorrowBehalf(): void {
         this.contracts.balanceSheet
           .connect(this.signers.maker)
           .repayBorrowBehalf(this.signers.borrower.address, this.mocks.hTokens[0].address, repayAmount),
-      ).to.be.revertedWith(BalanceSheetErrors.RepayBorrowInsufficientDebt);
+      ).to.be.revertedWith(BalanceSheetErrors.REPAY_BORROW_INSUFFICIENT_DEBT);
     });
   });
 
@@ -47,7 +46,7 @@ export function shouldBehaveLikeRepayBorrowBehalf(): void {
           this.contracts.balanceSheet
             .connect(this.signers.maker)
             .repayBorrowBehalf(this.signers.borrower.address, this.mocks.hTokens[0].address, repayAmount),
-        ).to.be.revertedWith(BalanceSheetErrors.RepayBorrowInsufficientBalance);
+        ).to.be.revertedWith(BalanceSheetErrors.REPAY_BORROW_INSUFFICIENT_BALANCE);
       });
     });
 

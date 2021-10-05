@@ -1,8 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
+import { HTokenErrors } from "@hifi/errors";
 import { hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
-
-import { HTokenErrors } from "../../../shared/errors";
 
 export function shouldBehaveLikeMint(): void {
   const mintAmount: BigNumber = hUSDC("100");
@@ -11,7 +10,7 @@ export function shouldBehaveLikeMint(): void {
     it("reverts", async function () {
       await expect(
         this.contracts.hTokens[0].connect(this.signers.raider).mint(this.signers.raider.address, mintAmount),
-      ).to.be.revertedWith(HTokenErrors.MintNotAuthorized);
+      ).to.be.revertedWith(HTokenErrors.MINT_NOT_AUTHORIZED);
     });
   });
 }

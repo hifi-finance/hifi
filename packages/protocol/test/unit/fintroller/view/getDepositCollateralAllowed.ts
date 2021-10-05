@@ -1,12 +1,11 @@
+import { FintrollerErrors } from "@hifi/errors";
 import { expect } from "chai";
-
-import { FintrollerErrors } from "../../../shared/errors";
 
 export function shouldBehaveLikeGetDepositCollateralAllowed(): void {
   context("when the collateral is not listed", function () {
     it("reverts", async function () {
       await expect(this.contracts.fintroller.getDepositCollateralAllowed(this.mocks.wbtc.address)).to.be.revertedWith(
-        FintrollerErrors.CollateralNotListed,
+        FintrollerErrors.COLLATERAL_NOT_LISTED,
       );
     });
   });

@@ -1,12 +1,11 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { H_TOKEN_MATURITY_ONE_YEAR } from "@hifi/constants";
+import { HifiPoolErrors } from "@hifi/errors";
 import { USDC, getNow, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
 import forEach from "mocha-each";
-
-import { HifiPoolErrors } from "../../../shared/errors";
 
 export function shouldBehaveLikeMint(): void {
   context("when the bond matured", function () {

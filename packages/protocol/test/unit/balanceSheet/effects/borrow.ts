@@ -1,10 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { COLLATERAL_RATIOS, DEFAULT_MAX_BONDS } from "@hifi/constants";
+import { BalanceSheetErrors } from "@hifi/errors";
 import { WBTC, WETH, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
-
-import { BalanceSheetErrors } from "../../../shared/errors";
 
 export function shouldBehaveLikeBorrow(): void {
   context("when the Fintroller does not allow borrows", function () {
@@ -16,7 +15,7 @@ export function shouldBehaveLikeBorrow(): void {
       const borrowAmount: BigNumber = Zero;
       await expect(
         this.contracts.balanceSheet.connect(this.signers.borrower).borrow(this.mocks.hTokens[0].address, borrowAmount),
-      ).to.be.revertedWith(BalanceSheetErrors.BorrowNotAllowed);
+      ).to.be.revertedWith(BalanceSheetErrors.BORROW_NOT_ALLOWED);
     });
   });
 
@@ -36,7 +35,7 @@ export function shouldBehaveLikeBorrow(): void {
           this.contracts.balanceSheet
             .connect(this.signers.borrower)
             .borrow(this.mocks.hTokens[0].address, borrowAmount),
-        ).to.be.revertedWith(BalanceSheetErrors.BondMatured);
+        ).to.be.revertedWith(BalanceSheetErrors.BOND_MATURED);
       });
     });
 
@@ -52,7 +51,7 @@ export function shouldBehaveLikeBorrow(): void {
             this.contracts.balanceSheet
               .connect(this.signers.borrower)
               .borrow(this.mocks.hTokens[0].address, borrowAmount),
-          ).to.be.revertedWith(BalanceSheetErrors.BorrowZero);
+          ).to.be.revertedWith(BalanceSheetErrors.BORROW_ZERO);
         });
       });
 
@@ -72,7 +71,7 @@ export function shouldBehaveLikeBorrow(): void {
               this.contracts.balanceSheet
                 .connect(this.signers.borrower)
                 .borrow(this.mocks.hTokens[0].address, borrowAmounts[0]),
-            ).to.be.revertedWith(BalanceSheetErrors.DebtCeilingOverflow);
+            ).to.be.revertedWith(BalanceSheetErrors.DEBT_CEILING_OVERFLOW);
           });
         });
 
@@ -96,7 +95,7 @@ export function shouldBehaveLikeBorrow(): void {
                 this.contracts.balanceSheet
                   .connect(this.signers.borrower)
                   .borrow(this.mocks.hTokens[0].address, borrowAmounts[0]),
-              ).to.be.revertedWith(BalanceSheetErrors.BorrowMaxBounds);
+              ).to.be.revertedWith(BalanceSheetErrors.BORROW_MAX_BONDS);
             });
           });
 
@@ -116,7 +115,7 @@ export function shouldBehaveLikeBorrow(): void {
                     this.contracts.balanceSheet
                       .connect(this.signers.borrower)
                       .borrow(this.mocks.hTokens[0].address, borrowAmounts[0]),
-                  ).to.be.revertedWith(BalanceSheetErrors.LiquidityShortfall);
+                  ).to.be.revertedWith(BalanceSheetErrors.LIQUIDITY_SHORTFALL);
                 });
               });
 
@@ -144,7 +143,7 @@ export function shouldBehaveLikeBorrow(): void {
                     this.contracts.balanceSheet
                       .connect(this.signers.borrower)
                       .borrow(this.mocks.hTokens[0].address, ridiculousBorrowAmount),
-                  ).to.be.revertedWith(BalanceSheetErrors.LiquidityShortfall);
+                  ).to.be.revertedWith(BalanceSheetErrors.LIQUIDITY_SHORTFALL);
                 });
               });
             });

@@ -1,12 +1,12 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { H_TOKEN_MATURITY_THREE_MONTHS } from "@hifi/constants";
+import { HTokenErrors } from "@hifi/errors";
 import { getNow } from "@hifi/helpers";
 import { expect } from "chai";
 
 import { HToken } from "../../../../typechain/HToken";
 import { deployHToken } from "../../../shared/deployers";
-import { HTokenErrors } from "../../../shared/errors";
 
 export function shouldBehaveLikeConstructor(): void {
   context("when the underlying has zero decimals", function () {
@@ -21,7 +21,7 @@ export function shouldBehaveLikeConstructor(): void {
         this.mocks.balanceSheet.address,
         this.mocks.usdc.address,
       );
-      await expect(deployHTokenPromise).to.be.revertedWith(HTokenErrors.UnderlyingDecimalsZero);
+      await expect(deployHTokenPromise).to.be.revertedWith(HTokenErrors.UNDERLYING_DECIMALS_ZERO);
     });
   });
 
@@ -37,7 +37,7 @@ export function shouldBehaveLikeConstructor(): void {
         this.mocks.balanceSheet.address,
         this.mocks.usdc.address,
       );
-      await expect(deployHTokenPromise).to.be.revertedWith(HTokenErrors.UnderlyingDecimalsOverflow);
+      await expect(deployHTokenPromise).to.be.revertedWith(HTokenErrors.UNDERLYING_DECIMALS_OVERFLOW);
     });
   });
 
@@ -50,7 +50,7 @@ export function shouldBehaveLikeConstructor(): void {
         this.mocks.balanceSheet.address,
         this.mocks.usdc.address,
       );
-      await expect(deployHTokenPromise).to.be.revertedWith(HTokenErrors.MaturityPast);
+      await expect(deployHTokenPromise).to.be.revertedWith(HTokenErrors.MATURITY_PASSED);
     });
   });
 }

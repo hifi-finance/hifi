@@ -1,14 +1,13 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { WBTC_PRICE, WBTC_SYMBOL } from "@hifi/constants";
+import { ChainlinkOperatorErrors } from "@hifi/errors";
 import { expect } from "chai";
-
-import { ChainlinkOperatorErrors } from "../../../shared/errors";
 
 export function shouldBehaveLikeGetPrice(): void {
   context("when the feed is not set", function () {
     it("reverts", async function () {
-      await expect(this.contracts.oracle.getPrice("FOO")).to.be.revertedWith(ChainlinkOperatorErrors.FeedNotSet);
+      await expect(this.contracts.oracle.getPrice("FOO")).to.be.revertedWith(ChainlinkOperatorErrors.FEED_NOT_SET);
     });
   });
 
@@ -25,7 +24,9 @@ export function shouldBehaveLikeGetPrice(): void {
       });
 
       it("reverts", async function () {
-        await expect(this.contracts.oracle.getPrice(WBTC_SYMBOL)).to.be.revertedWith(ChainlinkOperatorErrors.PriceZero);
+        await expect(this.contracts.oracle.getPrice(WBTC_SYMBOL)).to.be.revertedWith(
+          ChainlinkOperatorErrors.PRICE_ZERO,
+        );
       });
     });
 

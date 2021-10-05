@@ -1,12 +1,11 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { H_TOKEN_MATURITY_ONE_YEAR, USDC_PRICE_PRECISION_SCALAR } from "@hifi/constants";
+import { HifiPoolErrors } from "@hifi/errors";
 import { USDC, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
 import forEach from "mocha-each";
-
-import { HifiPoolErrors } from "../../../shared/errors";
 
 export function shouldBehaveLikeBurn(): void {
   context("when the LP tokens returned are 0", function () {

@@ -1,9 +1,8 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
+import { FintrollerErrors, OwnableUpgradeableErrors } from "@hifi/errors";
 import { hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
-
-import { FintrollerErrors, OwnableUpgradeableErrors } from "../../../shared/errors";
 
 export function shouldBehaveLikeSetDebtCeiling(): void {
   const newDebtCeiling: BigNumber = hUSDC("100");
@@ -14,7 +13,7 @@ export function shouldBehaveLikeSetDebtCeiling(): void {
         this.contracts.fintroller
           .connect(this.signers.raider)
           .setDebtCeiling(this.mocks.hTokens[0].address, newDebtCeiling),
-      ).to.be.revertedWith(OwnableUpgradeableErrors.NotOwner);
+      ).to.be.revertedWith(OwnableUpgradeableErrors.NOT_OWNER);
     });
   });
 
@@ -25,7 +24,7 @@ export function shouldBehaveLikeSetDebtCeiling(): void {
           this.contracts.fintroller
             .connect(this.signers.admin)
             .setDebtCeiling(this.mocks.hTokens[0].address, newDebtCeiling),
-        ).to.be.revertedWith(FintrollerErrors.BondNotListed);
+        ).to.be.revertedWith(FintrollerErrors.BOND_NOT_LISTED);
       });
     });
 
@@ -44,7 +43,7 @@ export function shouldBehaveLikeSetDebtCeiling(): void {
             this.contracts.fintroller
               .connect(this.signers.admin)
               .setDebtCeiling(this.mocks.hTokens[0].address, newDebtCeiling),
-          ).to.be.revertedWith(FintrollerErrors.DebtCeilingUnderflow);
+          ).to.be.revertedWith(FintrollerErrors.DEBT_CEILING_UNDERFLOW);
         });
       });
 

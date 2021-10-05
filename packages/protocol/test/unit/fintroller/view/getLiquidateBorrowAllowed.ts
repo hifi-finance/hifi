@@ -1,13 +1,12 @@
+import { FintrollerErrors } from "@hifi/errors";
 import { expect } from "chai";
-
-import { FintrollerErrors } from "../../../shared/errors";
 
 export function shouldBehaveLikeGetLiquidateBorrowAllowed(): void {
   context("when the bond is not listed", function () {
     it("reverts", async function () {
       await expect(
         this.contracts.fintroller.getLiquidateBorrowAllowed(this.mocks.hTokens[0].address),
-      ).to.be.revertedWith(FintrollerErrors.BondNotListed);
+      ).to.be.revertedWith(FintrollerErrors.BOND_NOT_LISTED);
     });
   });
 

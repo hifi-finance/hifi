@@ -1,14 +1,13 @@
 import { AddressZero } from "@ethersproject/constants";
 import { WBTC_SYMBOL } from "@hifi/constants";
+import { ChainlinkOperatorErrors, OwnableErrors } from "@hifi/errors";
 import { expect } from "chai";
-
-import { ChainlinkOperatorErrors, OwnableErrors } from "../../../shared/errors";
 
 export function shouldBehaveLikeDeleteFeed(): void {
   context("when the caller is not the owner", function () {
     it("reverts", async function () {
       await expect(this.contracts.oracle.connect(this.signers.raider).deleteFeed(WBTC_SYMBOL)).to.be.revertedWith(
-        OwnableErrors.NotOwner,
+        OwnableErrors.NOT_OWNER,
       );
     });
   });
@@ -17,7 +16,7 @@ export function shouldBehaveLikeDeleteFeed(): void {
     context("when the feed is not set", function () {
       it("reverts", async function () {
         await expect(this.contracts.oracle.connect(this.signers.admin).deleteFeed(WBTC_SYMBOL)).to.be.revertedWith(
-          ChainlinkOperatorErrors.FeedNotSet,
+          ChainlinkOperatorErrors.FEED_NOT_SET,
         );
       });
     });

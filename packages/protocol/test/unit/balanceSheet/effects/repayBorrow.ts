@@ -1,9 +1,8 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
+import { BalanceSheetErrors } from "@hifi/errors";
 import { hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
-
-import { BalanceSheetErrors } from "../../../shared/errors";
 
 export function shouldBehaveLikeRepayBorrow(): void {
   context("when the Fintroller does not allow borrow repays", function () {
@@ -17,7 +16,7 @@ export function shouldBehaveLikeRepayBorrow(): void {
         this.contracts.balanceSheet
           .connect(this.signers.borrower)
           .repayBorrow(this.mocks.hTokens[0].address, repayAmount),
-      ).to.be.revertedWith(BalanceSheetErrors.RepayBorrowNotAllowed);
+      ).to.be.revertedWith(BalanceSheetErrors.REPAY_BORROW_NOT_ALLOWED);
     });
   });
 
@@ -33,7 +32,7 @@ export function shouldBehaveLikeRepayBorrow(): void {
           this.contracts.balanceSheet
             .connect(this.signers.borrower)
             .repayBorrow(this.mocks.hTokens[0].address, repayAmount),
-        ).to.be.revertedWith(BalanceSheetErrors.RepayBorrowZero);
+        ).to.be.revertedWith(BalanceSheetErrors.REPAY_BORROW_ZERO);
       });
     });
 
@@ -46,7 +45,7 @@ export function shouldBehaveLikeRepayBorrow(): void {
             this.contracts.balanceSheet
               .connect(this.signers.borrower)
               .repayBorrow(this.mocks.hTokens[0].address, fullRepayAmount),
-          ).to.be.revertedWith(BalanceSheetErrors.RepayBorrowInsufficientDebt);
+          ).to.be.revertedWith(BalanceSheetErrors.REPAY_BORROW_INSUFFICIENT_DEBT);
         });
       });
 
@@ -75,7 +74,7 @@ export function shouldBehaveLikeRepayBorrow(): void {
               this.contracts.balanceSheet
                 .connect(this.signers.borrower)
                 .repayBorrow(this.mocks.hTokens[0].address, fullRepayAmount),
-            ).to.be.revertedWith(BalanceSheetErrors.RepayBorrowInsufficientBalance);
+            ).to.be.revertedWith(BalanceSheetErrors.REPAY_BORROW_INSUFFICIENT_BALANCE);
           });
         });
 

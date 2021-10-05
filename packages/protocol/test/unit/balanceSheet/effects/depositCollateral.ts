@@ -1,9 +1,8 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
+import { BalanceSheetErrors } from "@hifi/errors";
 import { WBTC } from "@hifi/helpers";
 import { expect } from "chai";
-
-import { BalanceSheetErrors } from "../../../shared/errors";
 
 export function shouldBehaveLikeDepositCollateral(): void {
   context("when the Fintroller does not allow collateral deposits", function () {
@@ -17,7 +16,7 @@ export function shouldBehaveLikeDepositCollateral(): void {
         this.contracts.balanceSheet
           .connect(this.signers.borrower)
           .depositCollateral(this.mocks.wbtc.address, depositAmount),
-      ).to.be.revertedWith(BalanceSheetErrors.DepositCollateralNotAllowed);
+      ).to.be.revertedWith(BalanceSheetErrors.DEPOSIT_COLLATERAL_NOT_ALLOWED);
     });
   });
 
@@ -33,7 +32,7 @@ export function shouldBehaveLikeDepositCollateral(): void {
           this.contracts.balanceSheet
             .connect(this.signers.borrower)
             .depositCollateral(this.mocks.wbtc.address, depositAmount),
-        ).to.be.revertedWith(BalanceSheetErrors.DepositCollateralZero);
+        ).to.be.revertedWith(BalanceSheetErrors.DEPOSIT_COLLATERAL_ZERO);
       });
     });
 
@@ -57,7 +56,7 @@ export function shouldBehaveLikeDepositCollateral(): void {
             this.contracts.balanceSheet
               .connect(this.signers.borrower)
               .depositCollateral(this.mocks.wbtc.address, depositAmounts[0]),
-          ).to.be.revertedWith(BalanceSheetErrors.CollateralCeilingOverflow);
+          ).to.be.revertedWith(BalanceSheetErrors.COLLATERAL_CEILING_OVERFLOW);
         });
       });
 

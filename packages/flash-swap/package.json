@@ -24,6 +24,7 @@
     "@ethersproject/constants": "^5.4.0",
     "@ethersproject/keccak256": "^5.4.0",
     "@ethersproject/providers": "^5.4.5",
+    "@hifi/errors": "workspace:*",
     "@hifi/helpers": "workspace:*",
     "@nomiclabs/hardhat-ethers": "^2.0.2",
     "@nomiclabs/hardhat-etherscan": "^2.1.6",

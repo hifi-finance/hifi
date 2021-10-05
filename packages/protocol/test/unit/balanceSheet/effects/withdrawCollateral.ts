@@ -1,10 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { COLLATERAL_RATIOS } from "@hifi/constants";
+import { BalanceSheetErrors } from "@hifi/errors";
 import { WBTC, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
-
-import { BalanceSheetErrors } from "../../../shared/errors";
 
 export function shouldBehaveLikeWithdrawCollateral(): void {
   context("when the amount to withdraw is zero", function () {
@@ -14,7 +13,7 @@ export function shouldBehaveLikeWithdrawCollateral(): void {
         this.contracts.balanceSheet
           .connect(this.signers.borrower)
           .withdrawCollateral(this.mocks.wbtc.address, withdrawAmount),
-      ).to.be.revertedWith(BalanceSheetErrors.WithdrawCollateralZero);
+      ).to.be.revertedWith(BalanceSheetErrors.WITHDRAW_COLLATERAL_ZERO);
     });
   });
 
@@ -27,7 +26,7 @@ export function shouldBehaveLikeWithdrawCollateral(): void {
           this.contracts.balanceSheet
             .connect(this.signers.borrower)
             .withdrawCollateral(this.mocks.wbtc.address, fullWithdrawAmount),
-        ).to.be.revertedWith(BalanceSheetErrors.WithdrawCollateralUnderflow);
+        ).to.be.revertedWith(BalanceSheetErrors.WITHDRAW_COLLATERAL_UNDERFLOW);
       });
     });
 
@@ -72,7 +71,7 @@ export function shouldBehaveLikeWithdrawCollateral(): void {
               this.contracts.balanceSheet
                 .connect(this.signers.borrower)
                 .withdrawCollateral(this.mocks.wbtc.address, fullWithdrawAmount),
-            ).to.be.revertedWith(BalanceSheetErrors.LiquidityShortfall);
+            ).to.be.revertedWith(BalanceSheetErrors.LIQUIDITY_SHORTFALL);
           });
         });
 

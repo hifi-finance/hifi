@@ -1,12 +1,12 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { Zero, One } from "@ethersproject/constants";
+import { One, Zero } from "@ethersproject/constants";
+import { YieldSpaceErrors } from "@hifi/errors";
 import { getDaysInSeconds, getHoursInSeconds, getYearsInSeconds } from "@hifi/helpers";
 import { expect } from "chai";
 import forEach from "mocha-each";
 import { SCALE } from "prb-math.js";
 
 import { CUTOFF_TTM, EPSILON, G1, G2 } from "../../../shared/constants";
-import { YieldSpaceErrors } from "../../../shared/errors";
 import { getYieldExponent } from "../../../shared/mirrors";
 
 export function shouldBehaveLikeGetYieldExponent(): void {

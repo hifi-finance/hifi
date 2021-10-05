@@ -1,5 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { One, Zero } from "@ethersproject/constants";
+import { YieldSpaceErrors } from "@hifi/errors";
 import { getDaysInSeconds, getYearsInSeconds, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
@@ -7,7 +8,6 @@ import forEach from "mocha-each";
 import { MAX_UD60x18, PRBMathUD60x18Errors, SCALE } from "prb-math.js";
 
 import { EPSILON, G2 } from "../../../shared/constants";
-import { YieldSpaceErrors } from "../../../shared/errors";
 import { getYieldExponent, outForIn } from "../../../shared/mirrors";
 
 export function shouldBehaveLikeUnderlyingOutForHTokenIn(): void {
