@@ -31,6 +31,9 @@ error HToken__RedeemZero();
 /// @notice Emitted when supplying a zero amount of underlying.
 error HToken__SupplyUnderlyingZero();
 
+/// @notice Emitted when redeeming a zero amount of underlyingAmount.
+error HToken__UnderlyingZero();
+
 /// @notice Emitted when constructing the contract and the underlying has more than 18 decimals.
 error HToken__UnderlyingDecimalsOverflow(uint256 decimals);
 
@@ -162,6 +165,11 @@ contract HToken is
             }
         } else {
             underlyingAmount = hTokenAmount;
+        }
+
+        // Checks: the zero edge case.
+        if (underlyingAmount == 0) {
+            revert HToken__UnderlyingZero();
         }
 
         // Checks: there is enough liquidity.
