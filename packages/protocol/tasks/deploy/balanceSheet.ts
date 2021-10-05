@@ -2,14 +2,9 @@ import * as core from "@actions/core";
 import { task, types } from "hardhat/config";
 import { TaskArguments } from "hardhat/types";
 
-import { hexStripZeros } from "@ethersproject/bytes";
 import { BalanceSheetV1 } from "../../typechain/BalanceSheetV1";
 import { BalanceSheetV1__factory } from "../../typechain/factories/BalanceSheetV1__factory";
-import {
-  ERC1967_IMPLEMENTATION_STORAGE_SLOT,
-  SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS,
-  TASK_DEPLOY_CONTRACT_BALANCE_SHEET,
-} from "../../helpers/constants";
+import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_BALANCE_SHEET } from "../../helpers/constants";
 
 task(TASK_DEPLOY_CONTRACT_BALANCE_SHEET)
   // Contract arguments
@@ -30,8 +25,8 @@ task(TASK_DEPLOY_CONTRACT_BALANCE_SHEET)
       confirmations: taskArgs.confirmations,
     });
 
-    const balanceSheetImplementation: string = hexStripZeros(
-      await ethers.provider.getStorageAt(balanceSheetProxy.address, ERC1967_IMPLEMENTATION_STORAGE_SLOT),
+    const balanceSheetImplementation: string = await upgrades.erc1967.getImplementationAddress(
+      balanceSheetProxy.address,
     );
     if (taskArgs.setOutput) {
       core.setOutput("balance-sheet-proxy", balanceSheetProxy.address);
