@@ -1,8 +1,8 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
-import { USDC, bn, getPrecisionScalar, hUSDC } from "@hifi/helpers";
+import { USDC, getPrecisionScalar, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
-import fp from "evm-fp";
+import { toBn } from "evm-bn";
 
 import { HTokenErrors } from "../../../shared/errors";
 
@@ -21,10 +21,10 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
     const hTokenAmount: BigNumber = hUSDC("100");
 
     context("when the underlying has 18 decimals", function () {
-      const localUnderlyingAmount: BigNumber = fp("100", 18);
+      const localUnderlyingAmount: BigNumber = toBn("100", 18);
 
       beforeEach(async function () {
-        await this.contracts.hTokens[0].__godMode_setUnderlyingPrecisionScalar(bn("1"));
+        await this.contracts.hTokens[0].__godMode_setUnderlyingPrecisionScalar(1);
         await this.mocks.usdc.mock.transferFrom
           .withArgs(this.signers.maker.address, this.contracts.hTokens[0].address, localUnderlyingAmount)
           .returns(true);
@@ -40,7 +40,7 @@ export default function shouldBehaveLikeSupplyUnderlying(): void {
 
     context("when the underlying has 6 decimals", function () {
       beforeEach(async function () {
-        await this.contracts.hTokens[0].__godMode_setUnderlyingPrecisionScalar(getPrecisionScalar(bn("6")));
+        await this.contracts.hTokens[0].__godMode_setUnderlyingPrecisionScalar(getPrecisionScalar(6));
         await this.mocks.usdc.mock.transferFrom
           .withArgs(this.signers.maker.address, this.contracts.hTokens[0].address, underlyingAmount)
           .returns(true);

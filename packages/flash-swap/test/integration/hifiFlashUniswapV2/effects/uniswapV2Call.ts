@@ -1,9 +1,9 @@
 import { defaultAbiCoder } from "@ethersproject/abi";
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
-import { USDC, WBTC, bn, hUSDC, price } from "@hifi/helpers";
+import { USDC, WBTC, hUSDC, price } from "@hifi/helpers";
 import { expect } from "chai";
-import fp from "evm-fp";
+import { toBn } from "evm-bn";
 
 import { GodModeErc20 } from "../../../../typechain/GodModeErc20";
 import { deployGodModeErc20 } from "../../../shared/deployers";
@@ -132,7 +132,7 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
       context("when the underlying is not in the pair contract", function () {
         it("reverts", async function () {
           const { token0Amount, token1Amount } = await getTokenAmounts.call(this, Zero, USDC("10000"));
-          const foo: GodModeErc20 = await deployGodModeErc20(this.signers.admin, "Foo", "FOO", bn("18"));
+          const foo: GodModeErc20 = await deployGodModeErc20(this.signers.admin, "Foo", "FOO", BigNumber.from(18));
           await this.contracts.hToken.__godMode_setUnderlying(foo.address);
           const to: string = this.contracts.hifiFlashUniswapV2.address;
           await expect(
@@ -157,7 +157,7 @@ export default function shouldBehaveLikeUniswapV2Call(): void {
           const collateralAmount: BigNumber = Zero;
           const collateralCeiling: BigNumber = WBTC("100");
           const debtCeiling: BigNumber = hUSDC("1e6");
-          const liquidationIncentive: BigNumber = fp("1.10");
+          const liquidationIncentive: BigNumber = toBn("1.10");
           const underlyingAmount: BigNumber = USDC("10000");
           const wbtcDepositAmount: BigNumber = WBTC("1");
 

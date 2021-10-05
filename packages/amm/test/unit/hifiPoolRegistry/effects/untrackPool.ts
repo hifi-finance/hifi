@@ -7,7 +7,7 @@ export default function shouldBehaveLikeUntrackPool(): void {
     it("reverts", async function () {
       await expect(
         this.contracts.hifiPoolRegistry.connect(this.signers.alice).untrackPool(this.mocks.hifiPool.address),
-      ).to.be.revertedWith(OwnableErrors.NotOwner);
+      ).to.be.revertedWith(OwnableErrors.NOT_OWNER);
     });
   });
 
@@ -16,7 +16,7 @@ export default function shouldBehaveLikeUntrackPool(): void {
       it("reverts", async function () {
         await expect(
           this.contracts.hifiPoolRegistry.connect(this.signers.admin).untrackPool(this.mocks.hifiPool.address),
-        ).to.be.revertedWith(HifiPoolRegistryErrors.PoolNotTracked);
+        ).to.be.revertedWith(HifiPoolRegistryErrors.POOL_NOT_TRACKED);
       });
     });
 

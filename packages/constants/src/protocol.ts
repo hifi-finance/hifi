@@ -1,6 +1,5 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import fp from "evm-fp";
-import fromExponential from "from-exponential";
+import { toBn } from "evm-bn";
 
 function getDaysInSeconds(days: number): BigNumber {
   const oneDay: BigNumber = BigNumber.from(86400);
@@ -13,24 +12,24 @@ function getNow(): BigNumber {
 
 function getYearsInSeconds(years: number): BigNumber {
   const oneYear = BigNumber.from(years);
-  return oneYear.mul(BigNumber.from("31536000"));
+  return oneYear.mul(BigNumber.from(31_536_000));
 }
 
-export const CHAINLINK_PRICE_PRECISION: BigNumber = BigNumber.from("8");
-export const CHAINLINK_PRICE_PRECISION_SCALAR: BigNumber = BigNumber.from(fromExponential("1e10"));
+export const CHAINLINK_PRICE_PRECISION: BigNumber = BigNumber.from(8);
+export const CHAINLINK_PRICE_PRECISION_SCALAR: BigNumber = BigNumber.from(10_000_000_000);
 export const COLLATERAL_RATIOS = {
-  default: fp("1.50"),
-  lowerBound: fp("1.00"),
-  upperBound: fp("100.00"),
-  wbtc: fp("2.00"),
-  weth: fp("1.50"),
+  default: toBn("1.50"),
+  lowerBound: toBn("1.00"),
+  upperBound: toBn("100.00"),
+  wbtc: toBn("2.00"),
+  weth: toBn("1.50"),
 };
-export const DEFAULT_MAX_BONDS: BigNumber = BigNumber.from("10");
-export const H_TOKEN_DECIMALS: BigNumber = BigNumber.from("18");
+export const DEFAULT_MAX_BONDS: BigNumber = BigNumber.from(10);
+export const H_TOKEN_DECIMALS: BigNumber = BigNumber.from(18);
 export const H_TOKEN_MATURITY_ONE_YEAR: BigNumber = getNow().add(getYearsInSeconds(1));
 export const H_TOKEN_MATURITY_THREE_MONTHS: BigNumber = getNow().add(getDaysInSeconds(90));
 export const LIQUIDATION_INCENTIVES = {
-  default: fp("1.10"),
-  lowerBound: fp("1.00"),
-  upperBound: fp("1.50"),
+  default: toBn("1.10"),
+  lowerBound: toBn("1.00"),
+  upperBound: toBn("1.50"),
 };

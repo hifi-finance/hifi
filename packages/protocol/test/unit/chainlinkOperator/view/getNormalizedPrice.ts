@@ -1,8 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { Zero } from "@ethersproject/constants";
-import { MAX_INT256, NORMALIZED_WBTC_PRICE, WBTC_SYMBOL } from "@hifi/constants";
+import { MaxInt256, Zero } from "@ethersproject/constants";
+import { NORMALIZED_WBTC_PRICE, WBTC_SYMBOL } from "@hifi/constants";
 import { expect } from "chai";
-import fp from "evm-fp";
 
 import { ChainlinkOperatorErrors } from "../../../shared/errors";
 
@@ -24,7 +23,7 @@ export default function shouldBehaveLikeGetNormalizedPrice(): void {
 
     context("when the multiplication overflows uint256", function () {
       beforeEach(async function () {
-        await this.mocks.wbtcPriceFeed.mock.latestRoundData.returns(Zero, fp(MAX_INT256), Zero, Zero, Zero);
+        await this.mocks.wbtcPriceFeed.mock.latestRoundData.returns(Zero, MaxInt256, Zero, Zero, Zero);
       });
 
       it("reverts", async function () {

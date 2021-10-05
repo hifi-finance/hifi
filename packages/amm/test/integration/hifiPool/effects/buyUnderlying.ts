@@ -1,46 +1,49 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
-import { EPSILON, H_TOKEN_MATURITY_ONE_YEAR } from "@hifi/constants";
-import { USDC, getNow, hUSDC } from "@hifi/helpers";
-import { add, div, sub } from "@hifi/helpers/dist/math";
+import { H_TOKEN_MATURITY_ONE_YEAR, USDC_PRICE_PRECISION_SCALAR } from "@hifi/constants";
+import { USDC, getNow } from "@hifi/helpers";
 import { expect } from "chai";
-import fp from "evm-fp";
 import forEach from "mocha-each";
+import { toBn, fromBn } from "evm-bn";
 
-import { getLatestBlockTimestamp } from "../../../../helpers/provider";
+import { SCALE } from "prb-math.js";
+import { EPSILON } from "../../../shared/constants";
 import { HifiPoolErrors, YieldSpaceErrors } from "../../../shared/errors";
+import { getLatestBlockTimestamp } from "../../../shared/helpers";
 import { getQuoteForBuyingUnderlying } from "../../../shared/mirrors";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 async function testBuyUnderlying(
   this: Mocha.Context,
-  underlyingReserves: string,
-  hTokenReserves: string,
-  underlyingOut: string,
+  normalizedUnderlyingReserves: BigNumber,
+  virtualHTokenReserves: BigNumber,
+  underlyingOut: BigNumber,
 ): Promise<void> {
+  const buyer: SignerWithAddress = this.signers.alice;
+
   // Call the buyUnderlying function and calculate the delta in the token balances.
-  const preHTokenBalance: BigNumber = await this.contracts.hToken.balanceOf(this.signers.alice.address);
-  const preUnderlyingBalance: BigNumber = await this.contracts.underlying.balanceOf(this.signers.alice.address);
-  await this.contracts.hifiPool
-    .connect(this.signers.alice)
-    .buyUnderlying(this.signers.alice.address, USDC(underlyingOut));
-  const postHTokenBalance: BigNumber = await this.contracts.hToken.balanceOf(this.signers.alice.address);
-  const postUnderlyingBalance: BigNumber = await this.contracts.underlying.balanceOf(this.signers.alice.address);
+  const preHTokenBalance: BigNumber = await this.contracts.hToken.balanceOf(buyer.address);
+  const preUnderlyingBalance: BigNumber = await this.contracts.underlying.balanceOf(buyer.address);
+  await this.contracts.hifiPool.connect(buyer).buyUnderlying(buyer.address, underlyingOut);
+  const postHTokenBalance: BigNumber = await this.contracts.hToken.balanceOf(buyer.address);
+  const postUnderlyingBalance: BigNumber = await this.contracts.underlying.balanceOf(buyer.address);
 
   const actualHTokenIn: BigNumber = preHTokenBalance.sub(postHTokenBalance);
   const actualUnderlyingOut: BigNumber = postUnderlyingBalance.sub(preUnderlyingBalance);
 
   // Calculate the expected value of the delta using the local mirror implementation.
-  const timeToMaturity: string = String(H_TOKEN_MATURITY_ONE_YEAR.sub(await getLatestBlockTimestamp()));
-  const expectedHTokenIn: string = getQuoteForBuyingUnderlying(
-    underlyingReserves,
-    hTokenReserves,
-    underlyingOut,
+  const timeToMaturity: BigNumber = H_TOKEN_MATURITY_ONE_YEAR.sub(await getLatestBlockTimestamp()).mul(SCALE);
+  const normalizedUnderlyingOut: BigNumber = underlyingOut.mul(USDC_PRICE_PRECISION_SCALAR);
+  const hTokenIn: BigNumber = getQuoteForBuyingUnderlying(
+    normalizedUnderlyingReserves,
+    virtualHTokenReserves,
+    normalizedUnderlyingOut,
     timeToMaturity,
   );
 
   // Run the tests.
-  expect(hUSDC(expectedHTokenIn).sub(actualHTokenIn).abs()).to.be.lte(fp(EPSILON));
-  expect(USDC(underlyingOut)).to.equal(actualUnderlyingOut);
+  expect(hTokenIn.sub(actualHTokenIn).abs()).to.be.lte(EPSILON);
+  expect(underlyingOut).to.equal(actualUnderlyingOut);
 }
 
 export default function shouldBehaveLikeBuyUnderlying(): void {
@@ -49,7 +52,7 @@ export default function shouldBehaveLikeBuyUnderlying(): void {
       const underlyingOut: BigNumber = Zero;
       await expect(
         this.contracts.hifiPool.connect(this.signers.alice).buyUnderlying(this.signers.alice.address, underlyingOut),
-      ).to.be.revertedWith(HifiPoolErrors.BuyUnderlyingZero);
+      ).to.be.revertedWith(HifiPoolErrors.BUY_UNDERLYING_ZERO);
     });
   });
 
@@ -64,7 +67,7 @@ export default function shouldBehaveLikeBuyUnderlying(): void {
         const underlyingOut: BigNumber = USDC("10");
         await expect(
           this.contracts.hifiPool.connect(this.signers.alice).buyUnderlying(this.signers.alice.address, underlyingOut),
-        ).to.be.revertedWith(HifiPoolErrors.BondMatured);
+        ).to.be.revertedWith(HifiPoolErrors.BOND_MATURED);
       });
     });
 
@@ -76,75 +79,87 @@ export default function shouldBehaveLikeBuyUnderlying(): void {
             this.contracts.hifiPool
               .connect(this.signers.alice)
               .buyUnderlying(this.signers.alice.address, underlyingOut),
-          ).to.be.revertedWith(YieldSpaceErrors.UnderlyingReservesUnderflow);
+          ).to.be.revertedWith(YieldSpaceErrors.UNDERLYING_RESERVES_UNDERFLOW);
         });
       });
 
       context("when there is underlying in the pool", function () {
-        const initialUnderlyingReserves: string = "100";
+        const initialNormalizedUnderlyingReserves: BigNumber = toBn("100");
 
         beforeEach(async function () {
           // Initialize the pool
-          await this.contracts.hifiPool.connect(this.signers.alice).mint(USDC(initialUnderlyingReserves));
+          const initialUnderlyingReserves: BigNumber = USDC(fromBn(initialNormalizedUnderlyingReserves));
+          await this.contracts.hifiPool.connect(this.signers.alice).mint(initialUnderlyingReserves);
         });
 
         context("when liquidity was provided once", function () {
-          const testSets = [["3.141592"], ["10"], ["100"]];
+          const testSets = [USDC("3.141592"), USDC("10"), USDC("100")];
 
-          forEach(testSets).it("buys %e underlying with hTokens", async function (underlyingOut: string) {
-            const virtualHTokenReserves: string = initialUnderlyingReserves;
-            await testBuyUnderlying.call(this, initialUnderlyingReserves, virtualHTokenReserves, underlyingOut);
+          forEach(testSets).it("buys %e underlying with hTokens", async function (underlyingOut: BigNumber) {
+            const virtualHTokenReserves: BigNumber = initialNormalizedUnderlyingReserves;
+            await testBuyUnderlying.call(
+              this,
+              initialNormalizedUnderlyingReserves,
+              virtualHTokenReserves,
+              underlyingOut,
+            );
           });
         });
 
         context("when liquidity was provided twice or more times", function () {
-          const extraUnderlyingReserves: string = "50";
-          const lpTokenSupply: string = add(initialUnderlyingReserves, extraUnderlyingReserves);
+          const extraNormalizedUnderlyingAmount: BigNumber = toBn("50");
+          const lpTokenSupply: BigNumber = initialNormalizedUnderlyingReserves.add(extraNormalizedUnderlyingAmount);
 
           beforeEach(async function () {
             // Add extra liquidity to the pool.
-            await this.contracts.hifiPool.connect(this.signers.alice).mint(USDC(extraUnderlyingReserves));
+            const extraUnderlyingAmount: BigNumber = USDC(fromBn(extraNormalizedUnderlyingAmount));
+            await this.contracts.hifiPool.connect(this.signers.alice).mint(extraUnderlyingAmount);
           });
 
           context("when it is the first trade", function () {
-            const testSets = [["3.141592"], ["10"], ["100"]];
+            const testSets = [USDC("3.141592"), USDC("10"), USDC("100")];
 
-            forEach(testSets).it("buys %e underlying with hTokens", async function (underlyingOut: string) {
-              const underlyingReserves: string = lpTokenSupply;
-              const virtualHTokenReserves: string = lpTokenSupply;
-              await testBuyUnderlying.call(this, underlyingReserves, virtualHTokenReserves, underlyingOut);
+            forEach(testSets).it("buys %e underlying with hTokens", async function (underlyingOut: BigNumber) {
+              const normalizedUnderlyingReserves: BigNumber = lpTokenSupply;
+              const virtualHTokenReserves: BigNumber = lpTokenSupply;
+              await testBuyUnderlying.call(this, normalizedUnderlyingReserves, virtualHTokenReserves, underlyingOut);
             });
           });
 
           context("when it is the second trade", function () {
-            const firstUnderlyingOut: string = "1";
-            let virtualHTokenReserves: string;
+            const firstNormalizedUnderlyingOut: BigNumber = toBn("1");
+            let virtualHTokenReserves: BigNumber;
 
             beforeEach(async function () {
               // Do the first trade.
+              const firstUnderlyingOut: BigNumber = USDC(fromBn(firstNormalizedUnderlyingOut));
               await this.contracts.hifiPool
                 .connect(this.signers.alice)
-                .buyUnderlying(this.signers.alice.address, USDC(firstUnderlyingOut));
+                .buyUnderlying(this.signers.alice.address, firstUnderlyingOut);
 
-              // Calculate the amounts necessary for the second trade tests.
-              const virtualHTokenReservesBn: BigNumber = await this.contracts.hifiPool.getVirtualHTokenReserves();
-              virtualHTokenReserves = div(String(virtualHTokenReservesBn), "1e18");
+              // Get the amounts needed for the second trade tests.
+              virtualHTokenReserves = await this.contracts.hifiPool.getVirtualHTokenReserves();
             });
 
-            const testSets = [["2.141592"], ["9"], ["99"]];
+            const testSets = [USDC("2.141592"), USDC("9"), USDC("99")];
 
-            forEach(testSets).it("buys %e underlying with hTokens", async function (hTokenIn: string) {
-              const underlyingReserves: string = sub(lpTokenSupply, firstUnderlyingOut);
-              await testBuyUnderlying.call(this, underlyingReserves, virtualHTokenReserves, hTokenIn);
+            forEach(testSets).it("buys %e underlying with hTokens", async function (secondUnderlyingOut: BigNumber) {
+              const normalizedUnderlyingReserves: BigNumber = lpTokenSupply.sub(firstNormalizedUnderlyingOut);
+              await testBuyUnderlying.call(
+                this,
+                normalizedUnderlyingReserves,
+                virtualHTokenReserves,
+                secondUnderlyingOut,
+              );
             });
 
             forEach(testSets).it(
               "buys %e underlying with hTokens and emits a Trade event",
-              async function (underlyingOut: string) {
+              async function (secondUnderlyingOut: BigNumber) {
                 await expect(
                   this.contracts.hifiPool
                     .connect(this.signers.alice)
-                    .buyUnderlying(this.signers.alice.address, USDC(underlyingOut)),
+                    .buyUnderlying(this.signers.alice.address, secondUnderlyingOut),
                 ).to.emit(this.contracts.hifiPool, "Trade");
               },
             );

@@ -1,16 +1,15 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { LIQUIDATION_INCENTIVES } from "@hifi/constants";
-import { bn } from "@hifi/helpers";
 import { expect } from "chai";
-import fp from "evm-fp";
+import { toBn } from "evm-bn";
 
 import { FintrollerErrors, OwnableUpgradeableErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeSetLiquidationIncentive(): void {
-  const newLiquidationIncentive: BigNumber = fp("1.20");
-  const overflowLiquidationIncentive: BigNumber = LIQUIDATION_INCENTIVES.upperBound.add(bn("1"));
-  const underflowLiquidationIncentive: BigNumber = LIQUIDATION_INCENTIVES.lowerBound.sub(bn("1"));
+  const newLiquidationIncentive: BigNumber = toBn("1.20");
+  const overflowLiquidationIncentive: BigNumber = LIQUIDATION_INCENTIVES.upperBound.add(1);
+  const underflowLiquidationIncentive: BigNumber = LIQUIDATION_INCENTIVES.lowerBound.sub(1);
 
   context("when the caller is not the owner", function () {
     it("reverts", async function () {

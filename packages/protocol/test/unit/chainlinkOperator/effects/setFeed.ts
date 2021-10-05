@@ -1,5 +1,4 @@
 import { WBTC_SYMBOL } from "@hifi/constants";
-import { bn } from "@hifi/helpers";
 import { expect } from "chai";
 
 import { ChainlinkOperatorErrors, OwnableErrors } from "../../../shared/errors";
@@ -18,7 +17,7 @@ export default function shouldBehaveLikeSetFeed(): void {
   context("when the caller is the owner", function () {
     context("when the feed does not have 8 decimals", function () {
       beforeEach(async function () {
-        await this.mocks.wbtcPriceFeed.mock.decimals.returns(bn("6"));
+        await this.mocks.wbtcPriceFeed.mock.decimals.returns(6);
       });
 
       it("reverts", async function () {

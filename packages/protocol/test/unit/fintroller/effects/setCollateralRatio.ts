@@ -1,16 +1,15 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { COLLATERAL_RATIOS } from "@hifi/constants";
-import { bn } from "@hifi/helpers";
 import { expect } from "chai";
-import fp from "evm-fp";
+import { toBn } from "evm-bn";
 
 import { FintrollerErrors, OwnableUpgradeableErrors } from "../../../shared/errors";
 
 export default function shouldBehaveLikeSetCollateralRatio(): void {
-  const newCollateralRatio: BigNumber = fp("1.75");
-  const overflowCollateralRatio: BigNumber = COLLATERAL_RATIOS.upperBound.add(bn("1"));
-  const underflowCollateralRatio: BigNumber = COLLATERAL_RATIOS.lowerBound.sub(bn("1"));
+  const newCollateralRatio: BigNumber = toBn("1.75");
+  const overflowCollateralRatio: BigNumber = COLLATERAL_RATIOS.upperBound.add(1);
+  const underflowCollateralRatio: BigNumber = COLLATERAL_RATIOS.lowerBound.sub(1);
 
   context("when the caller is not the owner", function () {
     it("reverts", async function () {

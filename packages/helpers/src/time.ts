@@ -1,13 +1,13 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
-export function getDaysInSeconds(days: number): string {
+export function getDaysInSeconds(days: number): BigNumber {
   const oneDay: BigNumber = BigNumber.from("86400");
-  return oneDay.mul(days).toString();
+  return oneDay.mul(days);
 }
 
-export function getHoursInSeconds(hours: number): string {
+export function getHoursInSeconds(hours: number): BigNumber {
   const hoursBn = BigNumber.from(hours);
-  return hoursBn.mul(BigNumber.from("3600")).toString();
+  return hoursBn.mul(BigNumber.from("3600"));
 }
 
 export function getNow(): BigNumber {
@@ -15,7 +15,7 @@ export function getNow(): BigNumber {
 }
 
 /// Based on the calendar common year definition, which assumes 365 days.
-export function getYearsInSeconds(years: number): string {
+export function getYearsInSeconds(years: number): BigNumber {
   const oneYear = BigNumber.from(years);
-  return oneYear.mul(BigNumber.from("31536000")).toString();
+  return oneYear.mul(BigNumber.from("31536000"));
 }

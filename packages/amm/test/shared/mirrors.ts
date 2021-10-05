@@ -1,76 +1,90 @@
-import { BigNumber as MathjsBigNumber } from "mathjs";
+import type { BigNumber } from "@ethersproject/bignumber";
+import { SCALE, div, mul, pow } from "prb-math.js";
 
-import { G1, G2, K } from "@hifi/constants";
-import { mbn, pow } from "@hifi/helpers/dist/math";
+import { G1, G2, K } from "./constants";
 
 export function getQuoteForBuyingHToken(
-  hTokenReserves: string,
-  underlyingReserves: string,
-  hTokenOut: string,
-  timeToMaturity: string,
-): string {
-  const exponent: string = getYieldExponent(timeToMaturity, G1);
-  const underlyingIn: string = inForOut(hTokenReserves, underlyingReserves, hTokenOut, exponent);
-  return underlyingIn;
+  virtualHTokenReserves: BigNumber,
+  normalizedUnderlyingReserves: BigNumber,
+  hTokenOut: BigNumber,
+  timeToMaturity: BigNumber,
+): BigNumber {
+  const exponent: BigNumber = getYieldExponent(timeToMaturity, G1);
+  const normalizedUnderlyingIn: BigNumber = inForOut(
+    virtualHTokenReserves,
+    normalizedUnderlyingReserves,
+    hTokenOut,
+    exponent,
+  );
+  return normalizedUnderlyingIn;
 }
 
 export function getQuoteForBuyingUnderlying(
-  underlyingReserves: string,
-  hTokenReserves: string,
-  underlyingOut: string,
-  timeToMaturity: string,
-): string {
-  const exponent: string = getYieldExponent(timeToMaturity, G2);
-  const hTokenIn: string = inForOut(underlyingReserves, hTokenReserves, underlyingOut, exponent);
+  normalizedUnderlyingReserves: BigNumber,
+  virtualHTokenReserves: BigNumber,
+  normalizedUnderlyingOut: BigNumber,
+  timeToMaturity: BigNumber,
+): BigNumber {
+  const exponent: BigNumber = getYieldExponent(timeToMaturity, G2);
+  const hTokenIn: BigNumber = inForOut(
+    normalizedUnderlyingReserves,
+    virtualHTokenReserves,
+    normalizedUnderlyingOut,
+    exponent,
+  );
   return hTokenIn;
 }
 
 export function getQuoteForSellingHToken(
-  hTokenReserves: string,
-  underlyingReserves: string,
-  hTokenIn: string,
-  timeToMaturity: string,
-): string {
-  const exponent: string = getYieldExponent(timeToMaturity, G2);
-  const underlyingIn: string = outForIn(hTokenReserves, underlyingReserves, hTokenIn, exponent);
+  hTokenReserves: BigNumber,
+  normalizedUnderlyingReserves: BigNumber,
+  hTokenIn: BigNumber,
+  timeToMaturity: BigNumber,
+): BigNumber {
+  const exponent: BigNumber = getYieldExponent(timeToMaturity, G2);
+  const underlyingIn: BigNumber = outForIn(hTokenReserves, normalizedUnderlyingReserves, hTokenIn, exponent);
   return underlyingIn;
 }
 
 export function getQuoteForSellingUnderlying(
-  underlyingReserves: string,
-  hTokenReserves: string,
-  underlyingIn: string,
-  timeToMaturity: string,
-): string {
-  const exponent: string = getYieldExponent(timeToMaturity, G1);
-  const hTokenOut: string = outForIn(underlyingReserves, hTokenReserves, underlyingIn, exponent);
+  normalizedUnderlyingReserves: BigNumber,
+  virtualHTokenReserves: BigNumber,
+  normalizedUnderlyingIn: BigNumber,
+  normalizedTimeToMaturity: BigNumber,
+): BigNumber {
+  const exponent: BigNumber = getYieldExponent(normalizedTimeToMaturity, G1);
+  const hTokenOut: BigNumber = outForIn(
+    normalizedUnderlyingReserves,
+    virtualHTokenReserves,
+    normalizedUnderlyingIn,
+    exponent,
+  );
   return hTokenOut;
 }
 
-export function getYieldExponent(timeToMaturity: string, g: string): string {
-  return mbn("1")
-    .sub(mbn(K).mul(mbn(timeToMaturity)).mul(mbn(g)))
-    .toString();
+export function getYieldExponent(normalizedTimeToMaturity: BigNumber, g: BigNumber): BigNumber {
+  const t: BigNumber = mul(K, normalizedTimeToMaturity);
+  return SCALE.sub(mul(g, t));
 }
 
-/// "s" comes from "starting", "d" comes from "delta".
-export function inForOut(xs: string, ys: string, xd: string, exp: string): string {
-  const xs1gt = <MathjsBigNumber>pow(mbn(xs), mbn(exp));
-  const ys1gt = <MathjsBigNumber>pow(mbn(ys), mbn(exp));
-  const x = <MathjsBigNumber>mbn(xs).sub(mbn(xd));
-  const x1gt = <MathjsBigNumber>pow(mbn(x), mbn(exp));
-  const y = <MathjsBigNumber>pow(xs1gt.add(ys1gt).sub(x1gt), mbn("1").div(mbn(exp)));
-  const yd = <MathjsBigNumber>y.sub(mbn(ys));
-  return String(yd);
+// "s" comes from "starting", "d" comes from "delta".
+export function inForOut(xs: BigNumber, ys: BigNumber, xd: BigNumber, exp: BigNumber): BigNumber {
+  const xs1gt: BigNumber = pow(xs, exp);
+  const ys1gt: BigNumber = pow(ys, exp);
+  const x: BigNumber = xs.sub(xd);
+  const x1gt: BigNumber = pow(x, exp);
+  const y: BigNumber = pow(xs1gt.add(ys1gt).sub(x1gt), div(SCALE, exp));
+  const yd: BigNumber = y.sub(ys);
+  return yd;
 }
 
-/// "s" comes from "starting", "d" comes from "delta".
-export function outForIn(xs: string, ys: string, xd: string, exp: string): string {
-  const xs1gt = <MathjsBigNumber>pow(mbn(xs), mbn(exp));
-  const ys1gt = <MathjsBigNumber>pow(mbn(ys), mbn(exp));
-  const x = <MathjsBigNumber>mbn(xs).add(mbn(xd));
-  const x1gt = <MathjsBigNumber>pow(mbn(x), mbn(exp));
-  const y = <MathjsBigNumber>pow(xs1gt.add(ys1gt).sub(x1gt), mbn("1").div(mbn(exp)));
-  const yd = <MathjsBigNumber>mbn(ys).sub(y);
-  return String(yd);
+// "s" comes from "starting", "d" comes from "delta".
+export function outForIn(xs: BigNumber, ys: BigNumber, xd: BigNumber, exp: BigNumber): BigNumber {
+  const xs1gt: BigNumber = pow(xs, exp);
+  const ys1gt: BigNumber = pow(ys, exp);
+  const x: BigNumber = xs.add(xd);
+  const x1gt: BigNumber = pow(x, exp);
+  const y: BigNumber = pow(xs1gt.add(ys1gt).sub(x1gt), div(SCALE, exp));
+  const yd: BigNumber = ys.sub(y);
+  return yd;
 }

@@ -10,26 +10,7 @@ import {
   WBTC_PRICE_PRECISION_SCALAR,
 } from "@hifi/constants";
 import { getPrecisionScalar } from "@hifi/helpers";
-import fp from "evm-fp";
-
-const SCALE = fp("1");
-const HALF_SCALE = fp("0.5");
-
-export function prbDiv(x: BigNumber, y: BigNumber): BigNumber {
-  return x.mul(SCALE).div(y);
-}
-
-export function prbMul(x: BigNumber, y: BigNumber): BigNumber {
-  const doubleScaledProduct = x.mul(y);
-  let doubleScaledProductWithHalfScale: BigNumber;
-  if (doubleScaledProduct.isNegative()) {
-    doubleScaledProductWithHalfScale = doubleScaledProduct.sub(HALF_SCALE);
-  } else {
-    doubleScaledProductWithHalfScale = doubleScaledProduct.add(HALF_SCALE);
-  }
-  const result: BigNumber = doubleScaledProductWithHalfScale.div(SCALE);
-  return result;
-}
+import { div, mul } from "prb-math.js";
 
 export function getHypotheticalAccountLiquidity(
   collateralAmounts: BigNumber[],
@@ -69,9 +50,9 @@ export function getRepayAmount(
 ): BigNumber {
   const precisionScalar: BigNumber = getPrecisionScalar(collateralDecimals);
   const normalizedCollateralAmount: BigNumber = collateralAmount.mul(precisionScalar);
-  const numerator: BigNumber = prbMul(normalizedCollateralAmount, wbtcPrice);
-  const denominator: BigNumber = prbMul(liquidationIncentive, NORMALIZED_USDC_PRICE);
-  const repayAmount: BigNumber = prbDiv(numerator, denominator);
+  const numerator: BigNumber = mul(normalizedCollateralAmount, wbtcPrice);
+  const denominator: BigNumber = mul(liquidationIncentive, NORMALIZED_USDC_PRICE);
+  const repayAmount: BigNumber = div(numerator, denominator);
   return repayAmount;
 }
 
@@ -81,8 +62,8 @@ export function getSeizableCollateralAmount(
   collateralDecimals: BigNumber = WBTC_DECIMALS,
   liquidationIncentive: BigNumber = LIQUIDATION_INCENTIVES.default,
 ): BigNumber {
-  const numerator: BigNumber = prbMul(prbMul(repayAmount, liquidationIncentive), NORMALIZED_USDC_PRICE);
-  const normalizedSeizableCollateralAmount: BigNumber = prbDiv(numerator, wbtcPrice);
+  const numerator: BigNumber = mul(mul(repayAmount, liquidationIncentive), NORMALIZED_USDC_PRICE);
+  const normalizedSeizableCollateralAmount: BigNumber = div(numerator, wbtcPrice);
   const precisionScalar: BigNumber = getPrecisionScalar(collateralDecimals);
   const seizableCollateralAmount: BigNumber = normalizedSeizableCollateralAmount.div(precisionScalar);
   return seizableCollateralAmount;
@@ -93,12 +74,12 @@ export function weighWbtc(
   collateralRatio: BigNumber = COLLATERAL_RATIOS.wbtc,
 ): BigNumber {
   const normalizedWbtcAmount: BigNumber = wbtcDepositAmount.mul(WBTC_PRICE_PRECISION_SCALAR);
-  return prbDiv(prbMul(normalizedWbtcAmount, NORMALIZED_WBTC_PRICE), collateralRatio);
+  return div(mul(normalizedWbtcAmount, NORMALIZED_WBTC_PRICE), collateralRatio);
 }
 
 export function weighWeth(
   wethDepositAmount: BigNumber,
   collateralRatio: BigNumber = COLLATERAL_RATIOS.weth,
 ): BigNumber {
-  return prbDiv(prbMul(wethDepositAmount, NORMALIZED_WETH_PRICE), collateralRatio);
+  return div(mul(wethDepositAmount, NORMALIZED_WETH_PRICE), collateralRatio);
 }

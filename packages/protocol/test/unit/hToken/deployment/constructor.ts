@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { H_TOKEN_MATURITY_THREE_MONTHS } from "@hifi/constants";
-import { bn, getNow } from "@hifi/helpers";
+import { getNow } from "@hifi/helpers";
 import { expect } from "chai";
 
 import { HToken } from "../../../../typechain/HToken";
@@ -27,7 +27,7 @@ export default function shouldBehaveLikeConstructor(): void {
 
   context("when the underlying has more than 18 decimals", function () {
     beforeEach(async function () {
-      await this.mocks.usdc.mock.decimals.returns(bn("36"));
+      await this.mocks.usdc.mock.decimals.returns(36);
     });
 
     it("reverts", async function () {

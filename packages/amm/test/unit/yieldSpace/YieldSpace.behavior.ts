@@ -5,27 +5,25 @@ import shouldBehaveLikeUnderlyingInForHTokenOut from "./pure/underlyingInForHTok
 import shouldBehaveLikeUnderlyingOutForHTokenIn from "./pure/underlyingOutForHTokenIn";
 
 export function shouldBehaveLikeYieldSpace(): void {
-  describe("YieldSpaceMock", function () {
-    describe("Pure Functions", function () {
-      describe("hTokenInForUnderlyingOut", function () {
-        shouldBehaveLikeHTokenInForUnderlyingOut();
-      });
+  describe("Pure Functions", function () {
+    describe("hTokenInForUnderlyingOut", function () {
+      shouldBehaveLikeHTokenInForUnderlyingOut();
+    });
 
-      describe("hTokenOutForUnderlyingIn", function () {
-        shouldBehaveLikeHTokenOutForUnderlyingIn();
-      });
+    describe("hTokenOutForUnderlyingIn", function () {
+      shouldBehaveLikeHTokenOutForUnderlyingIn();
+    });
 
-      describe("getYieldExponent", function () {
-        shouldBehaveLikeGetYieldExponent();
-      });
+    describe("getYieldExponent", function () {
+      shouldBehaveLikeGetYieldExponent();
+    });
 
-      describe("underlyingInForHTokenOut", function () {
-        shouldBehaveLikeUnderlyingInForHTokenOut();
-      });
+    describe("underlyingInForHTokenOut", function () {
+      shouldBehaveLikeUnderlyingInForHTokenOut();
+    });
 
-      describe("underlyingOutForHTokenIn", function () {
-        shouldBehaveLikeUnderlyingOutForHTokenIn();
-      });
+    describe("underlyingOutForHTokenIn", function () {
+      shouldBehaveLikeUnderlyingOutForHTokenIn();
     });
   });
 }

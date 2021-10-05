@@ -3,7 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { H_TOKEN_MATURITY_ONE_YEAR } from "@hifi/constants";
 import { USDC, getNow, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
-import fp from "evm-fp";
+import { toBn } from "evm-bn";
 import forEach from "mocha-each";
 
 import { HifiPoolErrors } from "../../../shared/errors";
@@ -18,7 +18,7 @@ export default function shouldBehaveLikeMint(): void {
     it("reverts", async function () {
       const underlyingOffered: BigNumber = Zero;
       await expect(this.contracts.hifiPool.connect(this.signers.alice).mint(underlyingOffered)).to.be.revertedWith(
-        HifiPoolErrors.BondMatured,
+        HifiPoolErrors.BOND_MATURED,
       );
     });
   });
@@ -28,7 +28,7 @@ export default function shouldBehaveLikeMint(): void {
       it("reverts", async function () {
         const underlyingOffered: BigNumber = Zero;
         await expect(this.contracts.hifiPool.connect(this.signers.alice).mint(underlyingOffered)).to.be.revertedWith(
-          HifiPoolErrors.MintZero,
+          HifiPoolErrors.MINT_ZERO,
         );
       });
     });
@@ -36,11 +36,11 @@ export default function shouldBehaveLikeMint(): void {
     context("when the underlying offered is not 0", function () {
       context("when the total supply is 0", function () {
         const testSets = [
-          ["1e-6"],
-          ["100"],
-          ["1729"],
-          ["31415.92"],
-          ["115792089237316195423570985008687907853269984665640564039457.584007"],
+          "1e-6",
+          "100",
+          "1729",
+          "31415.92",
+          "115792089237316195423570985008687907853269984665640564039457.584007",
         ];
 
         forEach(testSets).it("takes %e and mints the LP tokens", async function (underlyingOffered: string) {
@@ -50,7 +50,7 @@ export default function shouldBehaveLikeMint(): void {
 
           const underlyingAmount: BigNumber = USDC(underlyingOffered);
           const hTokenRequired: BigNumber = Zero;
-          const poolTokensMinted: BigNumber = fp(underlyingOffered);
+          const poolTokensMinted: BigNumber = toBn(underlyingOffered);
 
           await expect(this.contracts.hifiPool.connect(this.signers.alice).mint(USDC(underlyingOffered)))
             .to.emit(this.contracts.hifiPool, "AddLiquidity")
@@ -65,8 +65,8 @@ export default function shouldBehaveLikeMint(): void {
       });
 
       context("when the total supply is not 0", function () {
-        const initialNormalizedUnderlyingDeposit: BigNumber = fp("100");
-        const initialLpTokenSupply: BigNumber = fp("100");
+        const initialNormalizedUnderlyingDeposit: BigNumber = toBn("100");
+        const initialLpTokenSupply: BigNumber = toBn("100");
         const initialUnderlyingDeposit: BigNumber = USDC("100");
 
         beforeEach(async function () {
@@ -101,11 +101,11 @@ export default function shouldBehaveLikeMint(): void {
             });
 
             const testSets = [
-              ["1e-6"],
-              ["100"],
-              ["1729"],
-              ["31415.92"],
-              ["1157920892373161954235709850086879078532.699846"], // First number for which "poolTokensMinted" does not overflow
+              "1e-6",
+              "100",
+              "1729",
+              "31415.92",
+              "1157920892373161954235709850086879078532.699846", // First number for which "poolTokensMinted" does not overflow
             ];
 
             forEach(testSets).it("takes %e and mints the LP tokens", async function (underlyingOffered: string) {
@@ -113,7 +113,7 @@ export default function shouldBehaveLikeMint(): void {
               const underlyingAmount: BigNumber = USDC(underlyingOffered);
               const hTokenRequired: BigNumber = Zero;
               const poolTokensMinted: BigNumber = initialLpTokenSupply
-                .mul(fp(underlyingOffered))
+                .mul(toBn(underlyingOffered))
                 .div(initialNormalizedUnderlyingDeposit);
 
               // Mock the necessary methods.
@@ -143,18 +143,18 @@ export default function shouldBehaveLikeMint(): void {
             });
 
             const testSets = [
-              ["1e-6"],
-              ["100"],
-              ["1729"],
-              ["31415.92"],
-              ["1157920892373161954235709850086879078532.699846"], // First number for which "poolTokensMinted" does not overflow
+              "1e-6",
+              "100",
+              "1729",
+              "31415.92",
+              "1157920892373161954235709850086879078532.699846", // First number for which "poolTokensMinted" does not overflow
             ];
 
             forEach(testSets).it("takes %e and mints the LP tokens", async function (underlyingOffered: string) {
               // Calculate the arguments emitted in the event.
               const underlyingAmount: BigNumber = USDC(underlyingOffered);
               const poolTokensMinted: BigNumber = initialLpTokenSupply
-                .mul(fp(underlyingOffered))
+                .mul(toBn(underlyingOffered))
                 .div(initialNormalizedUnderlyingDeposit);
               const hTokenRequired: BigNumber = initialHTokenReserves.mul(poolTokensMinted).div(initialLpTokenSupply);
 

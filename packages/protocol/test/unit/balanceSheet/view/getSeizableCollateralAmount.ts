@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { LIQUIDATION_INCENTIVES, NORMALIZED_WBTC_PRICE } from "@hifi/constants";
-import { bn, hUSDC } from "@hifi/helpers";
+import { hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 
 import { getSeizableCollateralAmount } from "../../../shared/mirrors";
@@ -46,7 +46,7 @@ export default function shouldBehaveLikeGetSeizableCollateralAmount(): void {
       const repayAmount: BigNumber = hUSDC("15000");
 
       context("when the collateral has 18 decimals", function () {
-        const collateralDecimals: BigNumber = bn("18");
+        const collateralDecimals: BigNumber = BigNumber.from(18);
 
         beforeEach(async function () {
           await this.mocks.wbtc.mock.decimals.returns(collateralDecimals);
@@ -65,7 +65,7 @@ export default function shouldBehaveLikeGetSeizableCollateralAmount(): void {
       });
 
       context("when the collateral has 8 decimals", function () {
-        const collateralDecimals: BigNumber = bn("8");
+        const collateralDecimals: BigNumber = BigNumber.from(8);
 
         beforeEach(async function () {
           await this.mocks.wbtc.mock.decimals.returns(collateralDecimals);

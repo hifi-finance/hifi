@@ -1,5 +1,4 @@
 import { Zero } from "@ethersproject/constants";
-import { bn } from "@hifi/helpers";
 import { expect } from "chai";
 
 import { FintrollerErrors, OwnableUpgradeableErrors } from "../../../shared/errors";
@@ -29,7 +28,7 @@ export default function shouldBehaveLikeListCollateral(): void {
 
       context("when the number of decimals is 36", function () {
         beforeEach(async function () {
-          await this.mocks.wbtc.mock.decimals.returns(bn("36"));
+          await this.mocks.wbtc.mock.decimals.returns(36);
         });
 
         it("reverts", async function () {

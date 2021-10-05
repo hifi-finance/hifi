@@ -1,10 +1,10 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { Zero } from "@ethersproject/constants";
-import { MAX_UD60x18 } from "@hifi/constants";
-import { bn, hUSDC } from "@hifi/helpers";
+import { One, Zero } from "@ethersproject/constants";
+import { hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
-import fp from "evm-fp";
+import { toBn } from "evm-bn";
 import forEach from "mocha-each";
+import { MAX_UD60x18 } from "prb-math.js";
 
 import { HifiPoolErrors } from "../../../shared/errors";
 
@@ -14,7 +14,7 @@ export default function shouldBehaveLikeGetVirtualHTokenReserves(): void {
       await this.mocks.hToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(Zero);
     });
 
-    const testSets = [[bn("1"), fp("100"), fp("1729"), [fp(MAX_UD60x18)]]];
+    const testSets = [One, toBn("100"), toBn("1729"), MAX_UD60x18];
 
     forEach(testSets).it("returns the total supply", async function (totalSupply: BigNumber) {
       await this.contracts.hifiPool.__godMode_setTotalSupply(totalSupply);
@@ -26,10 +26,10 @@ export default function shouldBehaveLikeGetVirtualHTokenReserves(): void {
   context("when there is hToken in the pool", function () {
     context("when the addition overflows", function () {
       const testSets = [
-        [hUSDC("1e-18"), hUSDC(MAX_UD60x18)],
-        [hUSDC(MAX_UD60x18).div(2).add(2), hUSDC(MAX_UD60x18).div(2)],
-        [hUSDC(MAX_UD60x18), hUSDC("1e-18")],
-        [hUSDC(MAX_UD60x18).div(2), hUSDC(MAX_UD60x18).div(2).add(2)],
+        [hUSDC("1e-18"), MAX_UD60x18],
+        [MAX_UD60x18.div(2).add(2), MAX_UD60x18.div(2)],
+        [MAX_UD60x18, hUSDC("1e-18")],
+        [MAX_UD60x18.div(2), MAX_UD60x18.div(2).add(2)],
       ];
 
       forEach(testSets).it(
@@ -38,7 +38,7 @@ export default function shouldBehaveLikeGetVirtualHTokenReserves(): void {
           await this.mocks.hToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(hTokenBalance);
           await this.contracts.hifiPool.__godMode_setTotalSupply(totalSupply);
           await expect(this.contracts.hifiPool.getVirtualHTokenReserves()).to.be.revertedWith(
-            HifiPoolErrors.VirtualHTokenReservesOverflow,
+            HifiPoolErrors.VIRTUAL_H_TOKEN_RESERVES_OVERFLOW,
           );
         },
       );
@@ -52,7 +52,7 @@ export default function shouldBehaveLikeGetVirtualHTokenReserves(): void {
         [hUSDC("549846.799912"), hUSDC("5159245.001")],
         [hUSDC("12e6"), hUSDC("189e8")],
         [hUSDC("3.1415e15"), hUSDC("27.18e18")],
-        [hUSDC(MAX_UD60x18).sub(1), hUSDC("1e-18")],
+        [MAX_UD60x18.sub(1), hUSDC("1e-18")],
       ];
 
       forEach(testSets).it(

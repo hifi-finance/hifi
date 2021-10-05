@@ -7,7 +7,7 @@ export default function shouldBehaveLikeTrackPool(): void {
     it("reverts", async function () {
       await expect(
         this.contracts.hifiPoolRegistry.connect(this.signers.alice).trackPool(this.mocks.hifiPool.address),
-      ).to.be.revertedWith(OwnableErrors.NotOwner);
+      ).to.be.revertedWith(OwnableErrors.NOT_OWNER);
     });
   });
 
@@ -20,7 +20,7 @@ export default function shouldBehaveLikeTrackPool(): void {
       it("reverts", async function () {
         await expect(
           this.contracts.hifiPoolRegistry.connect(this.signers.admin).trackPool(this.mocks.hifiPool.address),
-        ).to.be.revertedWith(HifiPoolRegistryErrors.PoolAlreadyTracked);
+        ).to.be.revertedWith(HifiPoolRegistryErrors.POOL_ALREADY_TRACKED);
       });
     });
 

@@ -3,10 +3,10 @@ import { Zero } from "@ethersproject/constants";
 import { COLLATERAL_RATIOS, LIQUIDATION_INCENTIVES, WBTC_SYMBOL } from "@hifi/constants";
 import { WBTC, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
-import fp from "evm-fp";
+import { toBn } from "evm-bn";
+import { mul } from "prb-math.js";
 
 import { BalanceSheetErrors } from "../../../shared/errors";
-import { prbMul } from "../../../shared/mirrors";
 import { getSeizableCollateralAmount } from "../../../shared/mirrors";
 
 export default function shouldBehaveLikeLiquidateBorrow(): void {
@@ -181,7 +181,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
 
         context("when there is not enough collateral to seize", function () {
           beforeEach(async function () {
-            await this.mocks.oracle.mock.getNormalizedPrice.withArgs(WBTC_SYMBOL).returns(fp("14999"));
+            await this.mocks.oracle.mock.getNormalizedPrice.withArgs(WBTC_SYMBOL).returns(toBn("14999"));
           });
 
           it("reverts", async function () {
@@ -234,7 +234,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
 
             context("when all collateral is seized", function () {
               beforeEach(async function () {
-                const localWbtcPrice: BigNumber = prbMul(repayAmount, LIQUIDATION_INCENTIVES.default);
+                const localWbtcPrice: BigNumber = mul(repayAmount, LIQUIDATION_INCENTIVES.default);
                 await this.mocks.oracle.mock.getNormalizedPrice.withArgs(WBTC_SYMBOL).returns(localWbtcPrice);
 
                 // Mock the necessary methods.

@@ -1,9 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { getNow } from "@hifi/helpers";
-import { USDC, bn, getPrecisionScalar, hUSDC } from "@hifi/helpers";
+import { USDC, getPrecisionScalar, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
-import fp from "evm-fp";
+import { toBn } from "evm-bn";
 
 import { HTokenErrors } from "../../../shared/errors";
 
@@ -45,15 +45,15 @@ export default function shouldBehaveLikeRedeem(): void {
       context("when there is enough liquidity", function () {
         beforeEach(async function () {
           await this.contracts.hTokens[0].__godMode_mint(this.signers.maker.address, hTokenAmount);
-          const totalUnderlyingReserve: BigNumber = fp("1e7", 18);
+          const totalUnderlyingReserve: BigNumber = toBn("1e7", 18);
           await this.contracts.hTokens[0].__godMode_setTotalUnderlyingReserve(totalUnderlyingReserve);
         });
 
         context("when the underlying has 18 decimals", function () {
-          const localUnderlyingAmount: BigNumber = fp("100", 18);
+          const localUnderlyingAmount: BigNumber = toBn("100", 18);
 
           beforeEach(async function () {
-            await this.contracts.hTokens[0].__godMode_setUnderlyingPrecisionScalar(bn("1"));
+            await this.contracts.hTokens[0].__godMode_setUnderlyingPrecisionScalar(1);
             await this.mocks.usdc.mock.transfer
               .withArgs(this.signers.maker.address, localUnderlyingAmount)
               .returns(true);
@@ -69,7 +69,7 @@ export default function shouldBehaveLikeRedeem(): void {
 
         context("when the underlying has 6 decimals", function () {
           beforeEach(async function () {
-            await this.contracts.hTokens[0].__godMode_setUnderlyingPrecisionScalar(getPrecisionScalar(bn("6")));
+            await this.contracts.hTokens[0].__godMode_setUnderlyingPrecisionScalar(getPrecisionScalar(6));
             await this.mocks.usdc.mock.transfer.withArgs(this.signers.maker.address, underlyingAmount).returns(true);
           });
 

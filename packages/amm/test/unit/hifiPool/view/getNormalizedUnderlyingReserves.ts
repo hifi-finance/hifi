@@ -1,10 +1,11 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
-import { MAX_UD60x18, USDC_PRICE_PRECISION_SCALAR } from "@hifi/constants";
-import { USDC, bn } from "@hifi/helpers";
+import { USDC_PRICE_PRECISION_SCALAR } from "@hifi/constants";
+import { USDC } from "@hifi/helpers";
 import { expect } from "chai";
-import fp from "evm-fp";
+import { toBn } from "evm-bn";
 import forEach from "mocha-each";
+import { MAX_UD60x18 } from "prb-math.js";
 
 export default function shouldBehaveLikeGetNormalizedUnderlyingReserves(): void {
   context("when there is no underlying in the pool", function () {
@@ -21,10 +22,10 @@ export default function shouldBehaveLikeGetNormalizedUnderlyingReserves(): void 
   context("when there is underlying in the pool", function () {
     context("when the underlying has 18 decimals", function () {
       beforeEach(async function () {
-        await this.contracts.hifiPool.__godMode_setUnderlyingPrecisionScalar(bn("1"));
+        await this.contracts.hifiPool.__godMode_setUnderlyingPrecisionScalar(1);
       });
 
-      const testSets = [[fp("1e-18")], [fp("100")], [fp("1729")], [fp("31415.92")], [fp(MAX_UD60x18)]];
+      const testSets = [toBn("1e-18"), toBn("100"), toBn("1729"), toBn("31415.92"), MAX_UD60x18];
 
       forEach(testSets).it(
         "takes %e and returns the correct underlying reserves",
@@ -43,7 +44,13 @@ export default function shouldBehaveLikeGetNormalizedUnderlyingReserves(): void 
         await this.contracts.hifiPool.__godMode_setUnderlyingPrecisionScalar(USDC_PRICE_PRECISION_SCALAR);
       });
 
-      const testSets = [[USDC("1e-6")], [USDC("1e2")], [USDC("1729")], [USDC("31415.92")], [USDC(MAX_UD60x18)]];
+      const testSets = [
+        USDC("1e-6"),
+        USDC("1e2"),
+        USDC("1729"),
+        USDC("31415.92"),
+        USDC("115792089237316195423570985008687907853269984665640564039457.584007"),
+      ];
 
       forEach(testSets).it(
         "takes %e and returns the correct underlying reserves",

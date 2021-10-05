@@ -1014,7 +1014,7 @@ __metadata:
     eslint-config-prettier: ^8.3.0
     ethereum-waffle: ^3.4.0
     ethers: ^5.4.7
-    evm-fp: ^1.2.0
+    evm-bn: ^1.0.1
     fs-extra: ^10.0.0
     hardhat: ^2.6.4
     hardhat-packager: ^1.2.1
@@ -1024,6 +1024,7 @@ __metadata:
     mocha: ^9.1.1
     mocha-each: ^2.0.1
     prb-math: 2.3.0
+    prb-math.js: ^1.0.2
     prettier: ^2.4.1
     prettier-plugin-solidity: ^1.0.0-beta.18
     shelljs: ^0.8.4
@@ -1052,8 +1053,7 @@ __metadata:
     "@typescript-eslint/parser": ^4.31.2
     eslint: ^7.32.0
     eslint-config-prettier: ^8.3.0
-    evm-fp: ^1.2.0
-    from-exponential: ^1.1.1
+    evm-bn: ^1.0.1
     prettier: ^2.4.1
     shx: ^0.3.3
     typescript: ^4.4.3
@@ -1093,7 +1093,7 @@ __metadata:
     eslint-config-prettier: ^8.3.0
     ethereum-waffle: ^3.4.0
     ethers: ^5.4.7
-    evm-fp: ^1.2.0
+    evm-bn: ^1.0.1
     from-exponential: ^1.1.1
     fs-extra: ^10.0.0
     hardhat: ^2.6.4
@@ -1129,8 +1129,8 @@ __metadata:
     "@typescript-eslint/parser": ^4.31.2
     eslint: ^7.32.0
     eslint-config-prettier: ^8.3.0
+    evm-bn: ^1.0.1
     hardhat: ^2.6.4
-    mathjs: ^9.5.0
     prettier: ^2.4.1
     shx: ^0.3.3
     typescript: ^4.4.3
@@ -1191,7 +1191,7 @@ __metadata:
     eslint-config-prettier: ^8.3.0
     ethereum-waffle: ^3.4.0
     ethers: ^5.4.7
-    evm-fp: ^1.2.0
+    evm-bn: ^1.0.1
     fs-extra: ^10.0.0
     hardhat: ^2.6.4
     hardhat-gas-reporter: ^1.0.4
@@ -1200,6 +1200,7 @@ __metadata:
     mocha: ^9.1.1
     mocha-each: ^2.0.1
     prb-math: 2.3.0
+    prb-math.js: ^1.0.2
     prettier: ^2.4.1
     prettier-plugin-solidity: ^1.0.0-beta.18
     shelljs: ^0.8.4
@@ -6457,15 +6458,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"evm-fp@npm:^1.2.0":
-  version: 1.2.0
-  resolution: "evm-fp@npm:1.2.0"
+"evm-bn@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "evm-bn@npm:1.0.1"
   dependencies:
     "@ethersproject/bignumber": ^5.4.2
     from-exponential: ^1.1.1
   peerDependencies:
     "@ethersproject/bignumber": ^5.4.2
-  checksum: 53337f7ca7842a1f24f938fed4d94b2fe5fe892a819a52a4dd272a28056a53e469b14f00d05ecdf7e1be81141974f53b9a7e07e29614fb7d95c8ee7736017a7b
+  checksum: bc9f1e7ba76ee008fef70e9002ae9080a03662856a03b8d053de175360a4a3586ab64979ce800e73c423e8ff5fa8ebca8bffbb19688cdec32cae23b52c64d847
   languageName: node
   linkType: hard
 
@@ -11554,6 +11555,21 @@ fsevents@~2.3.2:
   version: 2.1.0
   resolution: "postinstall-postinstall@npm:2.1.0"
   checksum: e1d34252cf8d2c5641c7d2db7426ec96e3d7a975f01c174c68f09ef5b8327bc8d5a9aa2001a45e693db2cdbf69577094d3fe6597b564ad2d2202b65fba76134b
+  languageName: node
+  linkType: hard
+
+"prb-math.js@npm:^1.0.2":
+  version: 1.0.2
+  resolution: "prb-math.js@npm:1.0.2"
+  dependencies:
+    "@ethersproject/bignumber": ^5.4.2
+    decimal.js: ^10.3.1
+    evm-bn: ^1.0.1
+    mathjs: ^9.5.0
+  peerDependencies:
+    "@ethersproject/bignumber": ^5.4.2
+    evm-bn: ^1.0.1
+  checksum: 9163a42f57fd6cf1c94f325dba1f2b7805a1648cb0a0897564f9e0bebd9b0752a3a03e0ccfff9af08255053d853e3196485e74a3a0129cf0bc551ed85ffb6d1b
   languageName: node
   linkType: hard
 

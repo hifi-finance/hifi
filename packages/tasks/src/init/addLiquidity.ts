@@ -4,7 +4,6 @@ import { Erc20__factory } from "@hifi/amm/typechain/factories/Erc20__factory";
 import { HifiPool__factory } from "@hifi/amm/typechain/factories/HifiPool__factory";
 import { HifiPool } from "@hifi/amm/typechain/HifiPool";
 import { MaxUint256 } from "@ethersproject/constants";
-import { bn } from "@hifi/helpers";
 import { HToken__factory } from "@hifi/protocol/typechain/factories/HToken__factory";
 import { HToken } from "@hifi/protocol/typechain/HToken";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
@@ -33,8 +32,8 @@ task(TASK_INIT_ADD_LIQUIDITY)
     const underlying: Erc20 = <Erc20>erc20Factory.attach(underlyingAddress);
 
     // Load the underlying amounts.
-    const poolUnderlyingAmount: BigNumber = bn(taskArgs.poolUnderlyingAmount);
-    const supplyUnderlyingAmount: BigNumber = bn(taskArgs.supplyUnderlyingAmount);
+    const poolUnderlyingAmount: BigNumber = BigNumber.from(taskArgs.poolUnderlyingAmount);
+    const supplyUnderlyingAmount: BigNumber = BigNumber.from(taskArgs.supplyUnderlyingAmount);
     const totalUnderlyingAmount: BigNumber = poolUnderlyingAmount.add(supplyUnderlyingAmount);
 
     // Stop if the signer does not have enough underlying.

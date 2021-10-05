@@ -3,7 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { COLLATERAL_RATIOS, LIQUIDATION_INCENTIVES } from "@hifi/constants";
 import { WBTC, hUSDC, price } from "@hifi/helpers";
 import { expect } from "chai";
-import fp from "evm-fp";
+import { toBn } from "evm-bn";
 
 import { getSeizableCollateralAmount } from "../../../shared/mirrors";
 
@@ -15,7 +15,7 @@ export default function shouldBehaveLikeLiquidateBorrow(): void {
   const wbtcDepositAmount: BigNumber = WBTC("1");
 
   const repayAmount: BigNumber = borrowAmount;
-  const normalizedLowWbtcPrice: BigNumber = fp("29999");
+  const normalizedLowWbtcPrice: BigNumber = toBn("29999");
   const seizedWbtcAmount: BigNumber = getSeizableCollateralAmount(repayAmount, normalizedLowWbtcPrice);
 
   beforeEach(async function () {

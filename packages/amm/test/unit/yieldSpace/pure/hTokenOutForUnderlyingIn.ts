@@ -1,22 +1,24 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { EPSILON, G1, MAX_UD60x18, SCALE } from "@hifi/constants";
-import { bn, getDaysInSeconds, getYearsInSeconds, hUSDC } from "@hifi/helpers";
+import { One, Zero } from "@ethersproject/constants";
+import { getDaysInSeconds, getYearsInSeconds, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
-import fp from "evm-fp";
+import { toBn } from "evm-bn";
 import forEach from "mocha-each";
+import { MAX_UD60x18, PRBMathUD60x18Errors, SCALE } from "prb-math.js";
 
-import { PRBMathUD60x18Errors, YieldSpaceErrors } from "../../../shared/errors";
+import { EPSILON, G1 } from "../../../shared/constants";
+import { YieldSpaceErrors } from "../../../shared/errors";
 import { getYieldExponent, outForIn } from "../../../shared/mirrors";
 
 export default function shouldBehaveLikeHTokenOutForUnderlyingIn(): void {
   context("when too much underlying in", function () {
     const testSets = [
-      [fp(MAX_UD60x18), hUSDC("100"), fp("1e-18"), bn(getYearsInSeconds(1))],
-      [fp(MAX_UD60x18).div(2), hUSDC("100"), fp(MAX_UD60x18).div(2).add(2), bn(getYearsInSeconds(1))],
+      [MAX_UD60x18, hUSDC("100"), toBn("1e-18"), getYearsInSeconds(1)],
+      [MAX_UD60x18.div(2), hUSDC("100"), MAX_UD60x18.div(2).add(2), getYearsInSeconds(1)],
     ];
 
     forEach(testSets).it(
-      "takes %e and reverts",
+      "takes (%e, %e, %e, %e) and reverts",
       async function (
         normalizedUnderlyingReserves: BigNumber,
         hTokenReserves: BigNumber,
@@ -30,7 +32,7 @@ export default function shouldBehaveLikeHTokenOutForUnderlyingIn(): void {
             normalizedUnderlyingIn,
             timeToMaturity,
           ),
-        ).to.be.revertedWith(YieldSpaceErrors.UnderlyingReservesOverflow);
+        ).to.be.revertedWith(YieldSpaceErrors.UNDERLYING_RESERVES_OVERFLOW);
       },
     );
   });
@@ -38,8 +40,8 @@ export default function shouldBehaveLikeHTokenOutForUnderlyingIn(): void {
   context("when not too much underlying in", function () {
     context("when the call to fromUint reverts", function () {
       const testSets = [
-        [fp(MAX_UD60x18).sub(fp("10")), hUSDC("120"), fp("10"), bn(getYearsInSeconds(1))],
-        [fp("100"), hUSDC(MAX_UD60x18), fp("10"), bn(getYearsInSeconds(1))],
+        [MAX_UD60x18.sub(toBn("10")), hUSDC("120"), toBn("10"), getYearsInSeconds(1)],
+        [toBn("100"), MAX_UD60x18, toBn("10"), getYearsInSeconds(1)],
       ];
 
       forEach(testSets).it(
@@ -57,14 +59,14 @@ export default function shouldBehaveLikeHTokenOutForUnderlyingIn(): void {
               normalizedUnderlyingIn,
               timeToMaturity,
             ),
-          ).to.be.revertedWith(PRBMathUD60x18Errors.FromUintOverflow);
+          ).to.be.revertedWith(PRBMathUD60x18Errors.FROM_UINT_OVERFLOW);
         },
       );
     });
 
     context("when the call to fromUint does not revert", function () {
       context("when the call to pow reverts", function () {
-        const testSets = [[fp(MAX_UD60x18).div(fp(SCALE)), hUSDC("100"), fp("10"), bn("1")]];
+        const testSets = [[MAX_UD60x18.div(SCALE), hUSDC("100"), toBn("10"), One]];
 
         forEach(testSets).it(
           "takes (%e, %e, %e, %e) and reverts",
@@ -81,7 +83,7 @@ export default function shouldBehaveLikeHTokenOutForUnderlyingIn(): void {
                 normalizedUnderlyingIn,
                 timeToMaturity,
               ),
-            ).to.be.revertedWith(PRBMathUD60x18Errors.Exp2InputTooBig);
+            ).to.be.revertedWith(PRBMathUD60x18Errors.EXP2_INPUT_TOO_BIG);
           },
         );
       });
@@ -89,8 +91,8 @@ export default function shouldBehaveLikeHTokenOutForUnderlyingIn(): void {
       context("when the call to pow does not revert", function () {
         context("when there are insufficient underlying reserves", function () {
           const testSets = [
-            [fp("100"), hUSDC("120"), fp("220.000000000000000001"), bn(getDaysInSeconds(30))],
-            [fp("3799"), hUSDC("2607"), fp("6407"), bn(getDaysInSeconds(30))],
+            [toBn("100"), hUSDC("120"), toBn("220.000000000000000001"), getDaysInSeconds(30)],
+            [toBn("3799"), hUSDC("2607"), toBn("6407"), getDaysInSeconds(30)],
           ];
 
           forEach(testSets).it(
@@ -108,45 +110,52 @@ export default function shouldBehaveLikeHTokenOutForUnderlyingIn(): void {
                   normalizedUnderlyingIn,
                   timeToMaturity,
                 ),
-              ).to.be.revertedWith(YieldSpaceErrors.HTokenOutForUnderlyingInReservesFactorsUnderflow);
+              ).to.be.revertedWith(YieldSpaceErrors.H_TOKEN_OUT_FOR_UNDERLYING_IN_RESERVES_FACTORS_UNDERFLOW);
             },
           );
         });
 
         context("when there are sufficient underlying reserves", function () {
           const testSets = [
-            ["0", "0", "0", "0"],
-            ["1", "1", "1", "1"],
-            ["1", "1", "1", getYearsInSeconds(1)],
-            ["3.14", "5.04", "0.54", getYearsInSeconds(3)],
-            ["100", "120", "10", getDaysInSeconds(30)],
-            ["100", "120", "10", getYearsInSeconds(1)],
-            ["4077.248409399657329853", "5528.584115752365727396", "307.1381232", getDaysInSeconds(270)],
-            ["995660.5689", "9248335", "255866.119", getDaysInSeconds(855)],
+            [Zero, Zero, Zero, Zero],
+            [toBn("1"), hUSDC("1"), toBn("1"), One],
+            [toBn("1"), hUSDC("1"), toBn("1"), getYearsInSeconds(1)],
+            [toBn("3.14"), hUSDC("5.04"), toBn("0.54"), getYearsInSeconds(3)],
+            [toBn("100"), hUSDC("120"), toBn("10"), getDaysInSeconds(30)],
+            [toBn("100"), hUSDC("120"), toBn("10"), getYearsInSeconds(1)],
+            [
+              toBn("4077.248409399657329853"),
+              hUSDC("5528.584115752365727396"),
+              toBn("307.1381232"),
+              getDaysInSeconds(270),
+            ],
+            [toBn("995660.5689"), hUSDC("9248335"), toBn("255866.119"), getDaysInSeconds(855)],
           ];
 
           forEach(testSets).it(
             "takes (%e, %e, %e, %e) and returns the correct value",
             async function (
-              normalizedUnderlyingReserves: string,
-              hTokenReserves: string,
-              normalizedUnderlyingIn: string,
-              timeToMaturity: string,
+              normalizedUnderlyingReserves: BigNumber,
+              hTokenReserves: BigNumber,
+              normalizedUnderlyingIn: BigNumber,
+              timeToMaturity: BigNumber,
             ) {
               const result: BigNumber = await this.contracts.yieldSpace.doHTokenOutForUnderlyingIn(
-                fp(normalizedUnderlyingReserves),
-                hUSDC(hTokenReserves),
-                fp(normalizedUnderlyingIn),
-                bn(timeToMaturity),
+                normalizedUnderlyingReserves,
+                hTokenReserves,
+                normalizedUnderlyingIn,
+                timeToMaturity,
               );
 
-              const exponent: string = getYieldExponent(timeToMaturity, G1);
-              const expected: BigNumber = hUSDC(
-                outForIn(normalizedUnderlyingReserves, hTokenReserves, normalizedUnderlyingIn, exponent),
+              const exponent: BigNumber = getYieldExponent(timeToMaturity.mul(SCALE), G1);
+              const expected: BigNumber = outForIn(
+                normalizedUnderlyingReserves,
+                hTokenReserves,
+                normalizedUnderlyingIn,
+                exponent,
               );
-
               const delta: BigNumber = expected.sub(result).abs();
-              expect(delta).to.be.lte(fp(EPSILON));
+              expect(delta).to.be.lte(EPSILON);
             },
           );
         });
