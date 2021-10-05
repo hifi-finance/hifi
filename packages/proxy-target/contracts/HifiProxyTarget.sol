@@ -203,7 +203,10 @@ contract HifiProxyTarget is IHifiProxyTarget {
         hifiPool.buyHToken(address(this), hTokenOut);
 
         // Ensure that we are within the user's slippage tolerance.
-        uint256 normalizedUnderlyingReserves = underlying.balanceOf(address(hifiPool));
+        uint256 normalizedUnderlyingReserves = normalize(
+            underlying.balanceOf(address(hifiPool)),
+            hifiPool.underlyingPrecisionScalar()
+        );
         uint256 hTokenReserves = hToken.balanceOf(address(hifiPool));
         uint256 underlyingRequired = (normalizedUnderlyingReserves * hTokenOut) / hTokenReserves;
         uint256 totalUnderlyingAmount = underlyingIn + underlyingRequired;
@@ -375,7 +378,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         uint256 underlyingOffered
     ) external override {
         // When the underlying moonlights as the collateral, the user can borrow on a one-to-one basis.
-        uint256 maxBorrowAmount = normalize(hifiPool.underlyingPrecisionScalar(), depositAmount);
+        uint256 maxBorrowAmount = normalize(depositAmount, hifiPool.underlyingPrecisionScalar());
 
         // Ensure that we are within the user's slippage tolerance.
         (uint256 hTokenRequired, ) = hifiPool.getMintInputs(underlyingOffered);
@@ -722,18 +725,12 @@ contract HifiProxyTarget is IHifiProxyTarget {
 
     /// INTERNAL CONSTANT FUNCTIONS ///
 
-    /// @notice Upscales the underlying amount to normalized form, i.e. 18 decimals of precision.
-    /// @param underlyingPrecisionScalar The ratio between normalized precision (1e18) and the underlying precision.
-    /// @param underlyingAmount The underlying amount with its actual decimals of precision.
-    /// @param normalizedUnderlyingAmount The underlying amount with 18 decimals of precision.
-    function normalize(uint256 underlyingPrecisionScalar, uint256 underlyingAmount)
-        internal
-        pure
-        returns (uint256 normalizedUnderlyingAmount)
-    {
-        normalizedUnderlyingAmount = underlyingPrecisionScalar != 1
-            ? underlyingAmount * underlyingPrecisionScalar
-            : underlyingAmount;
+    /// @notice Upscales the amount to normalized form, i.e. 18 decimals of precision.
+    /// @param amount The amount to normalize.
+    /// @param precisionScalar The ratio between normalized precision and the desired precision.
+    /// @param normalizedAmount The amount with 18 decimals of precision.
+    function normalize(uint256 amount, uint256 precisionScalar) internal pure returns (uint256 normalizedAmount) {
+        normalizedAmount = precisionScalar != 1 ? amount * precisionScalar : amount;
     }
 
     /// INTERNAL NON-CONSTANT FUNCTIONS ///
