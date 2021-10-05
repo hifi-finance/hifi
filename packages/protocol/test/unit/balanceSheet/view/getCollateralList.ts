@@ -1,6 +1,6 @@
 import { expect } from "chai";
 
-export default function shouldBehaveLikeGetCollateralList(): void {
+export function shouldBehaveLikeGetCollateralList(): void {
   context("when the collateral list is empty", function () {
     it("returns an empty array", async function () {
       const collateralList: string[] = await this.contracts.balanceSheet.getCollateralList(

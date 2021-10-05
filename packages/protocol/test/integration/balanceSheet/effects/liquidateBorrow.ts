@@ -7,7 +7,7 @@ import { toBn } from "evm-bn";
 
 import { getSeizableCollateralAmount } from "../../../shared/mirrors";
 
-export default function shouldBehaveLikeLiquidateBorrow(): void {
+export function shouldBehaveLikeLiquidateBorrow(): void {
   const borrowAmount: BigNumber = hUSDC("15000");
   const collateralCeiling: BigNumber = WBTC("100");
   const debtCeiling: BigNumber = hUSDC("1e6");

@@ -6,7 +6,7 @@ import { expect } from "chai";
 
 import { getHypotheticalAccountLiquidity } from "../../../shared/mirrors";
 
-export default function shouldBehaveLikeGetCurrentAccountLiquidity(): void {
+export function shouldBehaveLikeGetCurrentAccountLiquidity(): void {
   context("when no deposit was made", function () {
     it("returns (0,0)", async function () {
       const result = await this.contracts.balanceSheet.getCurrentAccountLiquidity(this.signers.borrower.address);

@@ -8,7 +8,7 @@ import forEach from "mocha-each";
 
 import { HifiPoolErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeBurn(): void {
+export function shouldBehaveLikeBurn(): void {
   context("when the LP tokens returned are 0", function () {
     it("reverts", async function () {
       const poolTokensBurned: BigNumber = Zero;

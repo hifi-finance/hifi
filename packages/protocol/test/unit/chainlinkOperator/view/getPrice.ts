@@ -5,7 +5,7 @@ import { expect } from "chai";
 
 import { ChainlinkOperatorErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeGetPrice(): void {
+export function shouldBehaveLikeGetPrice(): void {
   context("when the feed is not set", function () {
     it("reverts", async function () {
       await expect(this.contracts.oracle.getPrice("FOO")).to.be.revertedWith(ChainlinkOperatorErrors.FeedNotSet);

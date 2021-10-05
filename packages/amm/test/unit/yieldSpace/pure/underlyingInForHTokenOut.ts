@@ -10,7 +10,7 @@ import { EPSILON, G1 } from "../../../shared/constants";
 import { YieldSpaceErrors } from "../../../shared/errors";
 import { getYieldExponent, inForOut } from "../../../shared/mirrors";
 
-export default function shouldBehaveLikeUnderlyingInForHTokenOut(): void {
+export function shouldBehaveLikeUnderlyingInForHTokenOut(): void {
   context("when too many hTokens out", function () {
     const testSets = [
       [Zero, Zero, hUSDC("1"), Zero],

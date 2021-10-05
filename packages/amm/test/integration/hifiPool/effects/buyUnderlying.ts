@@ -46,7 +46,7 @@ async function testBuyUnderlying(
   expect(underlyingOut).to.equal(actualUnderlyingOut);
 }
 
-export default function shouldBehaveLikeBuyUnderlying(): void {
+export function shouldBehaveLikeBuyUnderlying(): void {
   context("when the amount of underlying to buy is zero", function () {
     it("reverts", async function () {
       const underlyingOut: BigNumber = Zero;

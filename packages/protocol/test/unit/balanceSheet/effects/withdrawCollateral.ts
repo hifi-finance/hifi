@@ -6,7 +6,7 @@ import { expect } from "chai";
 
 import { BalanceSheetErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeWithdrawCollateral(): void {
+export function shouldBehaveLikeWithdrawCollateral(): void {
   context("when the amount to withdraw is zero", function () {
     it("reverts", async function () {
       const withdrawAmount: BigNumber = Zero;

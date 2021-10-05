@@ -5,7 +5,7 @@ import { MockContract } from "ethereum-waffle";
 import { BalanceSheetErrors, OwnableUpgradeableErrors } from "../../../shared/errors";
 import { deployMockChainlinkOperator } from "../../../shared/mocks";
 
-export default function shouldBehaveLikeSetOracle(): void {
+export function shouldBehaveLikeSetOracle(): void {
   context("when the caller is not the owner", function () {
     it("reverts", async function () {
       await expect(this.contracts.balanceSheet.connect(this.signers.raider).setOracle(AddressZero)).to.be.revertedWith(

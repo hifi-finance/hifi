@@ -1,6 +1,6 @@
 import { expect } from "chai";
 
-export default function shouldBehaveLikeGetBondList(): void {
+export function shouldBehaveLikeGetBondList(): void {
   context("when the bond list is empty", function () {
     it("returns an empty array", async function () {
       const bondList: string[] = await this.contracts.balanceSheet.getBondList(this.signers.borrower.address);

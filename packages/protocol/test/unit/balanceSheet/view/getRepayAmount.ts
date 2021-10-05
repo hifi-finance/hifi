@@ -7,7 +7,7 @@ import { toBn } from "evm-bn";
 
 import { getRepayAmount } from "../../../shared/mirrors";
 
-export default function shouldBehaveLikeGetRepayAmount(): void {
+export function shouldBehaveLikeGetRepayAmount(): void {
   beforeEach(async function () {
     await this.mocks.fintroller.mock.getLiquidationIncentive
       .withArgs(this.mocks.wbtc.address)

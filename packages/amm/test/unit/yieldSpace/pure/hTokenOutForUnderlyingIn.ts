@@ -10,7 +10,7 @@ import { EPSILON, G1 } from "../../../shared/constants";
 import { YieldSpaceErrors } from "../../../shared/errors";
 import { getYieldExponent, outForIn } from "../../../shared/mirrors";
 
-export default function shouldBehaveLikeHTokenOutForUnderlyingIn(): void {
+export function shouldBehaveLikeHTokenOutForUnderlyingIn(): void {
   context("when too much underlying in", function () {
     const testSets = [
       [MAX_UD60x18, hUSDC("100"), toBn("1e-18"), getYearsInSeconds(1)],

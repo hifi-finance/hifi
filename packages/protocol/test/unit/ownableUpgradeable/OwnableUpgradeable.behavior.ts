@@ -1,6 +1,6 @@
-import shouldBehaveLikeRenounceOwnership from "./effects/renounceOwnership";
-import shouldBehaveLikeTransferOwnership from "./effects/transferOwnership";
-import shouldBehaveLikeOwnerGetter from "./view/owner";
+import { shouldBehaveLikeRenounceOwnership } from "./effects/renounceOwnership";
+import { shouldBehaveLikeTransferOwnership } from "./effects/transferOwnership";
+import { shouldBehaveLikeOwnerGetter } from "./view/owner";
 
 export function shouldBehaveLikeOwnableUpgradeable(): void {
   describe("View Functions", function () {

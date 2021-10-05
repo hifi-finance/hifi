@@ -7,7 +7,7 @@ import forEach from "mocha-each";
 
 import { getHypotheticalAccountLiquidity } from "../../../shared/mirrors";
 
-export default function shouldBehaveLikeGetHypotheticalAccountLiquidity(): void {
+export function shouldBehaveLikeGetHypotheticalAccountLiquidity(): void {
   context("when no deposit was made", function () {
     it("returns (0,0)", async function () {
       const collateralModify: string = AddressZero;

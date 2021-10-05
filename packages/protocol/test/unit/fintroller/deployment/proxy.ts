@@ -6,7 +6,7 @@ import { DEFAULT_MAX_BONDS } from "@hifi/constants";
 import { FintrollerV2__factory } from "../../../../typechain";
 import { FintrollerV2 } from "../../../../typechain/FintrollerV2";
 
-export default function shouldBehaveLikeUpgradeableProxy(): void {
+export function shouldBehaveLikeUpgradeableProxy(): void {
   let fintrollerV2: FintrollerV2;
 
   beforeEach(async function () {

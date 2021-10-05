@@ -1,5 +1,5 @@
-import shouldBehaveLikeTrackPool from "./effects/trackPool";
-import shouldBehaveLikeUntrackPool from "./effects/untrackPool";
+import { shouldBehaveLikeTrackPool } from "./effects/trackPool";
+import { shouldBehaveLikeUntrackPool } from "./effects/untrackPool";
 
 export function shouldBehaveLikeHifiPoolRegistry(): void {
   describe("Effects Functions", function () {

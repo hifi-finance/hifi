@@ -4,7 +4,7 @@ import { expect } from "chai";
 
 import { ChainlinkOperatorErrors, OwnableErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeDeleteFeed(): void {
+export function shouldBehaveLikeDeleteFeed(): void {
   context("when the caller is not the owner", function () {
     it("reverts", async function () {
       await expect(this.contracts.oracle.connect(this.signers.raider).deleteFeed(WBTC_SYMBOL)).to.be.revertedWith(

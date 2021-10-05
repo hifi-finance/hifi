@@ -3,7 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { WBTC } from "@hifi/helpers";
 import { expect } from "chai";
 
-export default function shouldBehaveLikeGetCollateralAmount(): void {
+export function shouldBehaveLikeGetCollateralAmount(): void {
   context("when the caller did not deposit collateral", function () {
     it("returns zero", async function () {
       const collateralAmount: BigNumber = await this.contracts.balanceSheet.getCollateralAmount(

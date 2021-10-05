@@ -10,7 +10,7 @@ import { EPSILON, G2 } from "../../../shared/constants";
 import { YieldSpaceErrors } from "../../../shared/errors";
 import { getYieldExponent, outForIn } from "../../../shared/mirrors";
 
-export default function shouldBehaveLikeUnderlyingOutForHTokenIn(): void {
+export function shouldBehaveLikeUnderlyingOutForHTokenIn(): void {
   context("when too many hTokens in", function () {
     const testSets = [
       [MAX_UD60x18, toBn("100"), hUSDC("1e-18"), getYearsInSeconds(1)],

@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { DEFAULT_MAX_BONDS } from "@hifi/constants";
 import { expect } from "chai";
 
-export default function shouldBehaveLikeMaxBonds(): void {
+export function shouldBehaveLikeMaxBonds(): void {
   context("when a new value was not set", function () {
     it("returns the default value", async function () {
       const maxBonds: BigNumber = await this.contracts.fintroller.maxBonds();

@@ -4,7 +4,7 @@ import { expect } from "chai";
 
 import { HTokenErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeBurn(): void {
+export function shouldBehaveLikeBurn(): void {
   const burnAmount: BigNumber = hUSDC("100");
 
   context("when the caller is not the HToken contract", function () {

@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { getNow } from "@hifi/helpers";
 import { expect } from "chai";
 
-export default function shouldBehaveLikeIsMatured(): void {
+export function shouldBehaveLikeIsMatured(): void {
   context("when the maturity is in the future", function () {
     it("returns false", async function () {
       const isMatured: boolean = await this.contracts.hTokens[0].isMatured();

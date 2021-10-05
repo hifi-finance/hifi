@@ -45,7 +45,7 @@ async function testBuyHToken(
   expect(underlyingIn).to.equal(actualUnderlyingIn);
 }
 
-export default function shouldBehaveLikeBuyHToken(): void {
+export function shouldBehaveLikeBuyHToken(): void {
   context("when the amount of hTokens to buy is zero", function () {
     it("reverts", async function () {
       const hTokenOut: BigNumber = Zero;

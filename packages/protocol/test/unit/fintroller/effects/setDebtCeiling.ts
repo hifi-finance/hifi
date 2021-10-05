@@ -5,7 +5,7 @@ import { expect } from "chai";
 
 import { FintrollerErrors, OwnableUpgradeableErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeSetDebtCeiling(): void {
+export function shouldBehaveLikeSetDebtCeiling(): void {
   const newDebtCeiling: BigNumber = hUSDC("100");
 
   context("when the caller is not the owner", function () {

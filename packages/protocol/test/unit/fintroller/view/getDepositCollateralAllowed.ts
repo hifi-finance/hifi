@@ -2,7 +2,7 @@ import { expect } from "chai";
 
 import { FintrollerErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeGetDepositCollateralAllowed(): void {
+export function shouldBehaveLikeGetDepositCollateralAllowed(): void {
   context("when the collateral is not listed", function () {
     it("reverts", async function () {
       await expect(this.contracts.fintroller.getDepositCollateralAllowed(this.mocks.wbtc.address)).to.be.revertedWith(

@@ -5,7 +5,7 @@ import { MockContract } from "ethereum-waffle";
 import { OwnableErrors } from "../../../shared/errors";
 import { deployMockBalanceSheet } from "../../../shared/mocks";
 
-export default function shouldBehaveLikeSetBalanceSheet(): void {
+export function shouldBehaveLikeSetBalanceSheet(): void {
   context("when the caller is not the owner", function () {
     it("reverts", async function () {
       await expect(

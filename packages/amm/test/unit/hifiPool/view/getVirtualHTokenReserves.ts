@@ -8,7 +8,7 @@ import { MAX_UD60x18 } from "prb-math.js";
 
 import { HifiPoolErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeGetVirtualHTokenReserves(): void {
+export function shouldBehaveLikeGetVirtualHTokenReserves(): void {
   context("when there is no hToken in the pool", function () {
     beforeEach(async function () {
       await this.mocks.hToken.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(Zero);

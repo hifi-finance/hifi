@@ -2,7 +2,7 @@ import { Zero } from "@ethersproject/constants";
 import { COLLATERAL_RATIOS, LIQUIDATION_INCENTIVES } from "@hifi/constants";
 import { expect } from "chai";
 
-export default function shouldBehaveLikeGetCollateral(): void {
+export function shouldBehaveLikeGetCollateral(): void {
   context("when the collateral is not listed", function () {
     it("returns the default values", async function () {
       const collateral = await this.contracts.fintroller.getCollateral(this.mocks.wbtc.address);

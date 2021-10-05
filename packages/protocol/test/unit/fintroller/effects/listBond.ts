@@ -2,7 +2,7 @@ import { expect } from "chai";
 
 import { OwnableUpgradeableErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeListBond(): void {
+export function shouldBehaveLikeListBond(): void {
   context("when the caller is not the owner", function () {
     it("reverts", async function () {
       await expect(

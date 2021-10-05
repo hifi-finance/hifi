@@ -5,7 +5,7 @@ import { expect } from "chai";
 
 import { FintrollerErrors, OwnableUpgradeableErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeSetCollateralCeiling(): void {
+export function shouldBehaveLikeSetCollateralCeiling(): void {
   const newCollateralCeiling: BigNumber = WBTC("100");
 
   context("when the caller is not the owner", function () {

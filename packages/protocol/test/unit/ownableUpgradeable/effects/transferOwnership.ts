@@ -3,7 +3,7 @@ import { expect } from "chai";
 
 import { OwnableUpgradeableErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeTransferOwnership(): void {
+export function shouldBehaveLikeTransferOwnership(): void {
   beforeEach(async function () {
     await this.contracts.ownableUpgradeable.connect(this.signers.admin).__OwnableUpgradeable__init();
   });

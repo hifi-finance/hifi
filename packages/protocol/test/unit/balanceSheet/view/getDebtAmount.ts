@@ -3,7 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 
-export default function shouldBehaveLikeGetDebtAmount(): void {
+export function shouldBehaveLikeGetDebtAmount(): void {
   context("when the caller did not make a borrow", function () {
     it("returns zero", async function () {
       const debtAmount: BigNumber = await this.contracts.balanceSheet.getDebtAmount(

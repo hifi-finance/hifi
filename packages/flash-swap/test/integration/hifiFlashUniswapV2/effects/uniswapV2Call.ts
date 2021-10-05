@@ -66,7 +66,7 @@ async function reducePoolReserves(this: Mocha.Context, wbtcAmount: BigNumber, us
   await this.contracts.uniswapV2Pair.sync();
 }
 
-export default function shouldBehaveLikeUniswapV2Call(): void {
+export function shouldBehaveLikeUniswapV2Call(): void {
   context("when the data is malformed", function () {
     it("reverts", async function () {
       const sender: string = this.signers.raider.address;

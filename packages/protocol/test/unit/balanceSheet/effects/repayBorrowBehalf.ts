@@ -5,7 +5,7 @@ import { expect } from "chai";
 
 import { BalanceSheetErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeRepayBorrowBehalf(): void {
+export function shouldBehaveLikeRepayBorrowBehalf(): void {
   const repayAmount: BigNumber = hUSDC("15000");
 
   beforeEach(async function () {

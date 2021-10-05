@@ -1,7 +1,7 @@
 import { AddressZero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-export default function shouldBehaveLikeOwnerGetter(): void {
+export function shouldBehaveLikeOwnerGetter(): void {
   context("when the contract was not initialized", function () {
     it("returns the zero address", async function () {
       const owner: string = await this.contracts.ownableUpgradeable.owner();

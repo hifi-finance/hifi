@@ -5,7 +5,7 @@ import forEach from "mocha-each";
 
 import { HifiPoolErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeToInt256(): void {
+export function shouldBehaveLikeToInt256(): void {
   context("when x is bigger than max int256", function () {
     it("reverts", async function () {
       const x: BigNumber = MaxInt256.add(1);

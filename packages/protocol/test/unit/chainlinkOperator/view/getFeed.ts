@@ -2,7 +2,7 @@ import { AddressZero } from "@ethersproject/constants";
 import { WBTC_SYMBOL } from "@hifi/constants";
 import { expect } from "chai";
 
-export default function shouldBehaveLikeGetFeed(): void {
+export function shouldBehaveLikeGetFeed(): void {
   context("when the feed is not set", function () {
     it("returns the default values", async function () {
       const feed = await this.contracts.oracle.getFeed("FOO");

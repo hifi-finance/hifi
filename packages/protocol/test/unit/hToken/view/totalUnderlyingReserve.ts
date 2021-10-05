@@ -3,7 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { USDC } from "@hifi/helpers";
 import { expect } from "chai";
 
-export default function shouldBehaveLikeTotalUnderlyingReserveGetter(): void {
+export function shouldBehaveLikeTotalUnderlyingReserveGetter(): void {
   const underlyingAmount: BigNumber = USDC("100");
 
   context("when the underlying supply is zero", function () {

@@ -6,7 +6,7 @@ import { toBn } from "evm-bn";
 
 import { HTokenErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeSupplyUnderlying(): void {
+export function shouldBehaveLikeSupplyUnderlying(): void {
   context("when the amount of underlying to supply is zero", function () {
     it("reverts", async function () {
       const underlyingSupplyAmount: BigNumber = Zero;

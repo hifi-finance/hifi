@@ -1,8 +1,8 @@
-import shouldBehaveLikeBurn from "./effects/burn";
-import shouldBehaveLikeMint from "./effects/mint";
-import shouldBehaveLikeToInt256 from "./pure/toInt256";
-import shouldBehaveLikeGetNormalizedUnderlyingReserves from "./view/getNormalizedUnderlyingReserves";
-import shouldBehaveLikeGetVirtualHTokenReserves from "./view/getVirtualHTokenReserves";
+import { shouldBehaveLikeBurn } from "./effects/burn";
+import { shouldBehaveLikeMint } from "./effects/mint";
+import { shouldBehaveLikeToInt256 } from "./pure/toInt256";
+import { shouldBehaveLikeGetNormalizedUnderlyingReserves } from "./view/getNormalizedUnderlyingReserves";
+import { shouldBehaveLikeGetVirtualHTokenReserves } from "./view/getVirtualHTokenReserves";
 
 export function shouldBehaveLikeHifiPool(): void {
   describe("Pure Functions", function () {

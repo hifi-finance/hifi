@@ -2,7 +2,7 @@ import { expect } from "chai";
 
 import { FintrollerErrors, OwnableUpgradeableErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeSetDepositCollateralAllowed(): void {
+export function shouldBehaveLikeSetDepositCollateralAllowed(): void {
   context("when the caller is not the owner", function () {
     it("reverts", async function () {
       await expect(

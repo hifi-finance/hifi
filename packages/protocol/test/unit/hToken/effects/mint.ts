@@ -4,7 +4,7 @@ import { expect } from "chai";
 
 import { HTokenErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeMint(): void {
+export function shouldBehaveLikeMint(): void {
   const mintAmount: BigNumber = hUSDC("100");
 
   context("when the caller is not the HToken contract", function () {

@@ -2,7 +2,7 @@ import { expect } from "chai";
 
 import { FintrollerErrors, OwnableUpgradeableErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeSetBorrowAllowed(): void {
+export function shouldBehaveLikeSetLiquidateBorrowAllowed(): void {
   context("when the caller is not the owner", function () {
     it("reverts", async function () {
       await expect(

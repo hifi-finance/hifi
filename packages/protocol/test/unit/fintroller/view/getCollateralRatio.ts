@@ -3,7 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { COLLATERAL_RATIOS } from "@hifi/constants";
 import { expect } from "chai";
 
-export default function shouldBehaveLikeGetCollateralRatio(): void {
+export function shouldBehaveLikeGetCollateralRatio(): void {
   context("when the collateral is not listed", function () {
     it("returns zero", async function () {
       const collateralRatio: BigNumber = await this.contracts.fintroller.getCollateralRatio(this.mocks.wbtc.address);

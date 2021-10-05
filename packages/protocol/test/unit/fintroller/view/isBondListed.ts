@@ -1,6 +1,6 @@
 import { expect } from "chai";
 
-export default function shouldBehaveLikeIsBondListed(): void {
+export function shouldBehaveLikeIsBondListed(): void {
   context("when the bond is not listed", function () {
     it("returns false", async function () {
       const isBondListed: boolean = await this.contracts.fintroller.isBondListed(this.mocks.hTokens[0].address);

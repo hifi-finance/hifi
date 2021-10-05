@@ -2,7 +2,7 @@ import { expect } from "chai";
 
 import { FintrollerErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeGetLiquidateBorrowAllowed(): void {
+export function shouldBehaveLikeGetLiquidateBorrowAllowed(): void {
   context("when the bond is not listed", function () {
     it("reverts", async function () {
       await expect(

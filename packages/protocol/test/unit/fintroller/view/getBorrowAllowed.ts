@@ -2,7 +2,7 @@ import { expect } from "chai";
 
 import { FintrollerErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeGetBorrowAllowed(): void {
+export function shouldBehaveLikeGetBorrowAllowed(): void {
   context("when the bond is not listed", function () {
     it("reverts", async function () {
       await expect(this.contracts.fintroller.getBorrowAllowed(this.mocks.hTokens[0].address)).to.be.revertedWith(

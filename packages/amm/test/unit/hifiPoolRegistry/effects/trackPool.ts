@@ -2,7 +2,7 @@ import { expect } from "chai";
 
 import { HifiPoolRegistryErrors, OwnableErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeTrackPool(): void {
+export function shouldBehaveLikeTrackPool(): void {
   context("when the caller is not the owner", function () {
     it("reverts", async function () {
       await expect(

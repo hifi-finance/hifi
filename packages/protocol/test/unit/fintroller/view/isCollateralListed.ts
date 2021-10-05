@@ -1,6 +1,6 @@
 import { expect } from "chai";
 
-export default function shouldBehaveLikeIsCollateralListed(): void {
+export function shouldBehaveLikeIsCollateralListed(): void {
   context("when the collateral is not listed", function () {
     it("returns false", async function () {
       const isCollateralListed: boolean = await this.contracts.fintroller.isCollateralListed(this.mocks.wbtc.address);

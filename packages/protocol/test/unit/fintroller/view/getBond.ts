@@ -1,7 +1,7 @@
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-export default function shouldBehaveLikeGetCollateralRatio(): void {
+export function shouldBehaveLikeGetBond(): void {
   context("when the bond is not listed", function () {
     it("returns the default values", async function () {
       const bond = await this.contracts.fintroller.getBond(this.mocks.hTokens[0].address);

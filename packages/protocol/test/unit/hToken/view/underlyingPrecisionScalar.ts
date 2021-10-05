@@ -6,7 +6,7 @@ import { expect } from "chai";
 import { HToken } from "../../../../typechain/HToken";
 import { deployHToken } from "../../../shared/deployers";
 
-export default function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void {
+export function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void {
   context("when the underlying has 6 decimals", function () {
     beforeEach(async function () {
       await this.mocks.usdc.mock.decimals.returns(6);

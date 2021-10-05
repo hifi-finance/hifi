@@ -8,7 +8,7 @@ import forEach from "mocha-each";
 
 import { HifiPoolErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeMint(): void {
+export function shouldBehaveLikeMint(): void {
   context("when the bond matured", function () {
     beforeEach(async function () {
       const oneHourAgo: BigNumber = getNow().sub(3600);

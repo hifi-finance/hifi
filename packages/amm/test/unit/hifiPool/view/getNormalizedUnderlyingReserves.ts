@@ -7,7 +7,7 @@ import { toBn } from "evm-bn";
 import forEach from "mocha-each";
 import { MAX_UD60x18 } from "prb-math.js";
 
-export default function shouldBehaveLikeGetNormalizedUnderlyingReserves(): void {
+export function shouldBehaveLikeGetNormalizedUnderlyingReserves(): void {
   context("when there is no underlying in the pool", function () {
     beforeEach(async function () {
       await this.mocks.underlying.mock.balanceOf.withArgs(this.contracts.hifiPool.address).returns(Zero);

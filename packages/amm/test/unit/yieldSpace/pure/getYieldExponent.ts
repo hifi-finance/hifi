@@ -9,7 +9,7 @@ import { CUTOFF_TTM, EPSILON, G1, G2 } from "../../../shared/constants";
 import { YieldSpaceErrors } from "../../../shared/errors";
 import { getYieldExponent } from "../../../shared/mirrors";
 
-export default function shouldBehaveLikeGetYieldExponent(): void {
+export function shouldBehaveLikeGetYieldExponent(): void {
   context("when too far from maturity", function () {
     const g1TestSets = [
       [CUTOFF_TTM.mul(SCALE).add(1), G1],

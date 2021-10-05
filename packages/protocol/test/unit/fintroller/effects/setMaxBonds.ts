@@ -4,7 +4,7 @@ import { expect } from "chai";
 
 import { OwnableUpgradeableErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeSetMaxBonds(): void {
+export function shouldBehaveLikeSetMaxBonds(): void {
   const newMaxBonds: BigNumber = DEFAULT_MAX_BONDS.add(1);
 
   context("when the caller is not the owner", function () {

@@ -9,7 +9,7 @@ import { mul } from "prb-math.js";
 import { BalanceSheetErrors } from "../../../shared/errors";
 import { getSeizableCollateralAmount } from "../../../shared/mirrors";
 
-export default function shouldBehaveLikeLiquidateBorrow(): void {
+export function shouldBehaveLikeLiquidateBorrow(): void {
   const lowWbtcPrice: BigNumber = hUSDC("29999");
   const repayAmount: BigNumber = hUSDC("15000");
   const wbtcDepositAmount: BigNumber = WBTC("1");

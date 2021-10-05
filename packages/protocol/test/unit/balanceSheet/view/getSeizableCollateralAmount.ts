@@ -6,7 +6,7 @@ import { expect } from "chai";
 
 import { getSeizableCollateralAmount } from "../../../shared/mirrors";
 
-export default function shouldBehaveLikeGetSeizableCollateralAmount(): void {
+export function shouldBehaveLikeGetSeizableCollateralAmount(): void {
   context("when the liquidation incentive is zero", function () {
     beforeEach(async function () {
       await this.mocks.fintroller.mock.getLiquidationIncentive.withArgs(this.mocks.wbtc.address).returns(Zero);

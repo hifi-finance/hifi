@@ -5,7 +5,7 @@ import { ethers, upgrades } from "hardhat";
 import { BalanceSheetV2__factory } from "../../../../typechain";
 import { BalanceSheetV2 } from "../../../../typechain/BalanceSheetV2";
 
-export default function shouldBehaveLikeUpgradeableProxy(): void {
+export function shouldBehaveLikeUpgradeableProxy(): void {
   let balanceSheetV2: BalanceSheetV2;
 
   beforeEach(async function () {

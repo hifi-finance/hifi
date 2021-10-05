@@ -5,7 +5,7 @@ import { expect } from "chai";
 
 import { BalanceSheetErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeRepayBorrow(): void {
+export function shouldBehaveLikeRepayBorrow(): void {
   context("when the Fintroller does not allow borrow repays", function () {
     beforeEach(async function () {
       await this.mocks.fintroller.mock.getRepayBorrowAllowed.withArgs(this.mocks.hTokens[0].address).returns(false);

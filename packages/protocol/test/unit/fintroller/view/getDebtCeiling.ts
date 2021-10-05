@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-export default function shouldBehaveLikeGetDebtCeiling(): void {
+export function shouldBehaveLikeGetDebtCeiling(): void {
   context("when the bond is not listed", function () {
     it("returns zero", async function () {
       const debtCeiling: BigNumber = await this.contracts.fintroller.getDebtCeiling(this.mocks.hTokens[0].address);

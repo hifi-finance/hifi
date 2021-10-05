@@ -3,7 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { LIQUIDATION_INCENTIVES } from "@hifi/constants";
 import { expect } from "chai";
 
-export default function shouldBehaveLikeGetDebtCeiling(): void {
+export function shouldBehaveLikeGetLiquidationIncentive(): void {
   context("when the bond is not listed", function () {
     it("returns zero", async function () {
       const liquidationIncentive: BigNumber = await this.contracts.fintroller.getLiquidationIncentive(

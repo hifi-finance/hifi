@@ -6,7 +6,7 @@ import { toBn } from "evm-bn";
 
 import { FintrollerErrors, OwnableUpgradeableErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeSetCollateralRatio(): void {
+export function shouldBehaveLikeSetCollateralRatio(): void {
   const newCollateralRatio: BigNumber = toBn("1.75");
   const overflowCollateralRatio: BigNumber = COLLATERAL_RATIOS.upperBound.add(1);
   const underflowCollateralRatio: BigNumber = COLLATERAL_RATIOS.lowerBound.sub(1);

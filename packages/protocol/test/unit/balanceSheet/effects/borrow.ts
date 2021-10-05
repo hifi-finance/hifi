@@ -6,7 +6,7 @@ import { expect } from "chai";
 
 import { BalanceSheetErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeBorrow(): void {
+export function shouldBehaveLikeBorrow(): void {
   context("when the Fintroller does not allow borrows", function () {
     beforeEach(async function () {
       await this.mocks.fintroller.mock.getBorrowAllowed.withArgs(this.mocks.hTokens[0].address).returns(false);

@@ -5,7 +5,7 @@ import { expect } from "chai";
 
 import { BalanceSheetErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeDepositCollateral(): void {
+export function shouldBehaveLikeDepositCollateral(): void {
   context("when the Fintroller does not allow collateral deposits", function () {
     beforeEach(async function () {
       await this.mocks.fintroller.mock.getDepositCollateralAllowed.withArgs(this.mocks.wbtc.address).returns(false);

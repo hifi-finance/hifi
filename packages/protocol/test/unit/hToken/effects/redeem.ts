@@ -7,7 +7,7 @@ import { toBn } from "evm-bn";
 
 import { HTokenErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeRedeem(): void {
+export function shouldBehaveLikeRedeem(): void {
   const underlyingAmount: BigNumber = USDC("100");
   const hTokenAmount: BigNumber = hUSDC("100");
 

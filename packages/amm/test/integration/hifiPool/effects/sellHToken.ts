@@ -45,7 +45,7 @@ async function testSellHToken(
   expect(underlyingOut).to.equal(actualUnderlyingOut);
 }
 
-export default function shouldBehaveLikeSellHToken(): void {
+export function shouldBehaveLikeSellHToken(): void {
   context("when the amount of hTokens to sell is zero", function () {
     it("reverts", async function () {
       const hTokenIn: BigNumber = Zero;

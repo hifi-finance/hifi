@@ -6,7 +6,7 @@ import { toBn } from "evm-bn";
 
 import { FintrollerErrors, OwnableUpgradeableErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeSetLiquidationIncentive(): void {
+export function shouldBehaveLikeSetLiquidationIncentive(): void {
   const newLiquidationIncentive: BigNumber = toBn("1.20");
   const overflowLiquidationIncentive: BigNumber = LIQUIDATION_INCENTIVES.upperBound.add(1);
   const underflowLiquidationIncentive: BigNumber = LIQUIDATION_INCENTIVES.lowerBound.sub(1);

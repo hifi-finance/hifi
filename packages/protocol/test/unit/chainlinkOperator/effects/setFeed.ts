@@ -3,7 +3,7 @@ import { expect } from "chai";
 
 import { ChainlinkOperatorErrors, OwnableErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeSetFeed(): void {
+export function shouldBehaveLikeSetFeed(): void {
   context("when the caller is not the owner", function () {
     it("reverts", async function () {
       await expect(

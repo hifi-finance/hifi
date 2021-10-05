@@ -4,7 +4,7 @@ import { Zero } from "@ethersproject/constants";
 import { WBTC, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 
-export default function shouldBehaveLikeRepayBorrow(): void {
+export function shouldBehaveLikeRepayBorrow(): void {
   const borrowAmount: BigNumber = hUSDC("15000");
   const collateralCeiling: BigNumber = WBTC("100");
   const debtCeiling: BigNumber = hUSDC("1e6");

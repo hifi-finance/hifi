@@ -8,7 +8,7 @@ import { HToken } from "../../../../typechain/HToken";
 import { deployHToken } from "../../../shared/deployers";
 import { HTokenErrors } from "../../../shared/errors";
 
-export default function shouldBehaveLikeConstructor(): void {
+export function shouldBehaveLikeConstructor(): void {
   context("when the underlying has zero decimals", function () {
     beforeEach(async function () {
       await this.mocks.usdc.mock.decimals.returns(Zero);

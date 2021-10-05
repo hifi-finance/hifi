@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { expect } from "chai";
 
-export default function shouldBehaveLikeGetCollateralCeiling(): void {
+export function shouldBehaveLikeGetCollateralCeiling(): void {
   context("when the collateral is not listed", function () {
     it("returns zero", async function () {
       const collateralCeiling: BigNumber = await this.contracts.fintroller.getCollateralCeiling(
