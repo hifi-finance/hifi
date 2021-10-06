@@ -189,31 +189,33 @@ contract HifiProxyTarget is IHifiProxyTarget {
         uint256 hTokenOut,
         uint256 maxUnderlyingAmount
     ) external override {
-        IErc20 underlying = hifiPool.underlying();
-
         // Transfer the underlying to the DSProxy.
+        IErc20 underlying = hifiPool.underlying();
         uint256 underlyingIn = hifiPool.getQuoteForBuyingHToken(hTokenOut);
         underlying.safeTransferFrom(msg.sender, address(this), underlyingIn);
 
-        // Allow the HifiPool contract to spend hTokens from the DSProxy.
-        IHToken hToken = hifiPool.hToken();
-        approveSpender(hToken, address(hifiPool), hTokenOut);
+        // Allow the HifiPool contract to spend underlying from the DSProxy.
+        approveSpender(underlying, address(hifiPool), underlyingIn);
 
         // Buy the hTokens.
         hifiPool.buyHToken(address(this), hTokenOut);
 
-        // Ensure that we are within the user's slippage tolerance.
+        // Calculate how much underlying is required to provide "hTokenOut" liquidity to the AMM.
+        IHToken hToken = hifiPool.hToken();
         uint256 normalizedUnderlyingReserves = hifiPool.getNormalizedUnderlyingReserves();
         uint256 hTokenReserves = hToken.balanceOf(address(hifiPool));
         uint256 normalizedUnderlyingRequired = (normalizedUnderlyingReserves * hTokenOut) / hTokenReserves;
         uint256 underlyingRequired = denormalize(normalizedUnderlyingRequired, hifiPool.underlyingPrecisionScalar());
+
+        // Ensure that we are within the user's slippage tolerance.
         uint256 totalUnderlyingAmount = underlyingIn + underlyingRequired;
         if (totalUnderlyingAmount > maxUnderlyingAmount) {
             revert HifiProxyTarget__AddLiquidityUnderlyingSlippage(maxUnderlyingAmount, totalUnderlyingAmount);
         }
 
-        // Allow the HifiPool contract to spend underlying from the DSProxy.
+        // Allow the HifiPool contract to spend hTokens from the DSProxy.
         approveSpender(underlying, address(hifiPool), underlyingRequired);
+        approveSpender(hToken, address(hifiPool), hTokenOut);
 
         // Add liquidity to the AMM.
         uint256 poolTokensMinted = hifiPool.mint(underlyingRequired);
