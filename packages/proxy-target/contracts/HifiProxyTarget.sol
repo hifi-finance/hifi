@@ -203,12 +203,10 @@ contract HifiProxyTarget is IHifiProxyTarget {
         hifiPool.buyHToken(address(this), hTokenOut);
 
         // Ensure that we are within the user's slippage tolerance.
-        uint256 normalizedUnderlyingReserves = normalize(
-            underlying.balanceOf(address(hifiPool)),
-            hifiPool.underlyingPrecisionScalar()
-        );
+        uint256 normalizedUnderlyingReserves = hifiPool.getNormalizedUnderlyingReserves();
         uint256 hTokenReserves = hToken.balanceOf(address(hifiPool));
-        uint256 underlyingRequired = (normalizedUnderlyingReserves * hTokenOut) / hTokenReserves;
+        uint256 normalizedUnderlyingRequired = (normalizedUnderlyingReserves * hTokenOut) / hTokenReserves;
+        uint256 underlyingRequired = denormalize(normalizedUnderlyingRequired, hifiPool.underlyingPrecisionScalar());
         uint256 totalUnderlyingAmount = underlyingIn + underlyingRequired;
         if (totalUnderlyingAmount > maxUnderlyingAmount) {
             revert HifiProxyTarget__AddLiquidityUnderlyingSlippage(maxUnderlyingAmount, totalUnderlyingAmount);
@@ -725,7 +723,17 @@ contract HifiProxyTarget is IHifiProxyTarget {
 
     /// INTERNAL CONSTANT FUNCTIONS ///
 
-    /// @notice Upscales the amount to normalized form, i.e. 18 decimals of precision.
+    /// @notice Downscales from normalized amount, i.e. 18 decimals of precision.
+    /// @param amount The amount with 18 decimals of precision.
+    /// @param precisionScalar The ratio between normalized precision and the desired precision.
+    /// @param denormalizedAmount The amount with fewer decimals of precision.
+    function denormalize(uint256 amount, uint256 precisionScalar) internal pure returns (uint256 denormalizedAmount) {
+        unchecked {
+            denormalizedAmount = precisionScalar != 1 ? amount / precisionScalar : amount;
+        }
+    }
+
+    /// @notice Upscales to normalized form, i.e. 18 decimals of precision.
     /// @param amount The amount to normalize.
     /// @param precisionScalar The ratio between normalized precision and the desired precision.
     /// @param normalizedAmount The amount with 18 decimals of precision.
