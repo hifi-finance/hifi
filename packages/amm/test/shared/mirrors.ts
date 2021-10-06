@@ -7,9 +7,9 @@ export function getQuoteForBuyingHToken(
   virtualHTokenReserves: BigNumber,
   normalizedUnderlyingReserves: BigNumber,
   hTokenOut: BigNumber,
-  timeToMaturity: BigNumber,
+  normalizedTimeToMaturity: BigNumber,
 ): BigNumber {
-  const exponent: BigNumber = getYieldExponent(timeToMaturity, G1);
+  const exponent: BigNumber = getYieldExponent(normalizedTimeToMaturity, G1);
   const normalizedUnderlyingIn: BigNumber = inForOut(
     virtualHTokenReserves,
     normalizedUnderlyingReserves,
@@ -23,9 +23,9 @@ export function getQuoteForBuyingUnderlying(
   normalizedUnderlyingReserves: BigNumber,
   virtualHTokenReserves: BigNumber,
   normalizedUnderlyingOut: BigNumber,
-  timeToMaturity: BigNumber,
+  normalizedTimeToMaturity: BigNumber,
 ): BigNumber {
-  const exponent: BigNumber = getYieldExponent(timeToMaturity, G2);
+  const exponent: BigNumber = getYieldExponent(normalizedTimeToMaturity, G2);
   const hTokenIn: BigNumber = inForOut(
     normalizedUnderlyingReserves,
     virtualHTokenReserves,
@@ -39,9 +39,9 @@ export function getQuoteForSellingHToken(
   hTokenReserves: BigNumber,
   normalizedUnderlyingReserves: BigNumber,
   hTokenIn: BigNumber,
-  timeToMaturity: BigNumber,
+  normalizedTimeToMaturity: BigNumber,
 ): BigNumber {
-  const exponent: BigNumber = getYieldExponent(timeToMaturity, G2);
+  const exponent: BigNumber = getYieldExponent(normalizedTimeToMaturity, G2);
   const underlyingIn: BigNumber = outForIn(hTokenReserves, normalizedUnderlyingReserves, hTokenIn, exponent);
   return underlyingIn;
 }
