@@ -213,6 +213,9 @@ contract HifiProxyTarget is IHifiProxyTarget {
             revert HifiProxyTarget__AddLiquidityUnderlyingSlippage(maxUnderlyingAmount, totalUnderlyingAmount);
         }
 
+        // Transfer the underlying to the DSProxy.
+        underlying.safeTransferFrom(msg.sender, address(this), underlyingRequired);
+
         // Allow the HifiPool contract to spend hTokens from the DSProxy.
         approveSpender(underlying, address(hifiPool), underlyingRequired);
         approveSpender(hToken, address(hifiPool), hTokenOut);
