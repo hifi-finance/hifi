@@ -27,7 +27,7 @@
     "clean:node_modules": "yarn workspaces foreach --parallel run clean:node_modules && shx rm -rf ./node_modules",
     "commit": "git-cz",
     "coverage": "yarn workspaces foreach --parallel run coverage",
-    "lint": "yarn workspaces foreach --parallel run lint && yarn prettier:check",
+    "lint": "yarn workspaces foreach --parallel run lint",
     "lint:ts": "yarn workspaces foreach --parallel run lint:ts",
     "lint:sol": "yarn workspaces foreach --parallel run lint:sol",
     "postinstall": "husky install",

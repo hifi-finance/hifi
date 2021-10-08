@@ -17,7 +17,6 @@
     "prb-math": "2.3.0"
   },
   "devDependencies": {
-    "@codechecks/client": "^0.1.11",
     "@ethersproject/abi": "^5.4.1",
     "@ethersproject/abstract-provider": "^5.4.1",
     "@ethersproject/abstract-signer": "^5.4.1",
@@ -64,7 +63,6 @@
     "solhint": "^3.3.6",
     "solhint-plugin-prettier": "^0.0.5",
     "solidity-coverage": "^0.7.17",
-    "ts-generator": "^0.1.1",
     "ts-node": "^10.2.1",
     "typechain": "^5.1.2",
     "typescript": "^4.4.3"
