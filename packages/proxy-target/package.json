@@ -81,7 +81,7 @@
     "clean": "shx rm -rf ./artifacts ./cache ./typechain ./tsconfig.prod.tsbuildinfo",
     "clean:node_modules": "shx rm -rf ./node_modules",
     "lint": "yarn lint:sol && yarn lint:ts && yarn prettier:check",
-    "lint:sol": "solhint --config ../../.solhint.json --max-warnings 0 \"contracts/**/*.sol\"",
+    "lint:sol": "solhint --config ../../.solhint.json --ignore-path ../../.solhintignore --max-warnings 0 \"contracts/**/*.sol\"",
     "lint:ts": "eslint --config ../../.eslintrc.yaml --ignore-path ../../.eslintignore --ext .js,.ts .",
     "prepack": "yarn build:contracts",
     "prettier": "prettier --config ../../.prettierrc.js --ignore-path ../../.prettierignore --write \"**/*.{js,json,md,sol,ts,yaml,yml}\"",
