@@ -214,8 +214,14 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
         }
 
         // Liquidate borrow with the newly minted hTokens.
+        uint256 debtAmount = balanceSheet.getDebtAmount(borrower, bond);
         uint256 oldCollateralBalance = collateral.balanceOf(address(this));
-        balanceSheet.liquidateBorrow(borrower, bond, mintedHTokenAmount, collateral);
+        balanceSheet.liquidateBorrow(
+            borrower,
+            bond,
+            mintedHTokenAmount > debtAmount ? debtAmount : mintedHTokenAmount,
+            collateral
+        );
         uint256 newCollateralBalance = collateral.balanceOf(address(this));
         unchecked {
             seizedCollateralAmount = newCollateralBalance - oldCollateralBalance;
