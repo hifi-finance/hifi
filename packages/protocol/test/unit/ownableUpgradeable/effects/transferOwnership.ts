@@ -1,5 +1,6 @@
 import { AddressZero } from "@ethersproject/constants";
 import { OwnableUpgradeableErrors } from "@hifi/errors";
+import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 
 export function shouldBehaveLikeTransferOwnership(): void {
@@ -9,9 +10,9 @@ export function shouldBehaveLikeTransferOwnership(): void {
 
   context("when the caller is not the owner", function () {
     it("reverts", async function () {
-      const newOwner: string = this.signers.maker.address;
+      const raider: SignerWithAddress = this.signers.raider;
       await expect(
-        this.contracts.ownableUpgradeable.connect(this.signers.raider)._transferOwnership(newOwner),
+        this.contracts.ownableUpgradeable.connect(raider)._transferOwnership(raider.address),
       ).to.be.revertedWith(OwnableUpgradeableErrors.NOT_OWNER);
     });
   });
@@ -28,10 +29,9 @@ export function shouldBehaveLikeTransferOwnership(): void {
 
     context("when the new owner is not the zero address", function () {
       it("transfers the ownership", async function () {
-        const newOwner: string = this.signers.maker.address;
+        const newOwner: string = this.signers.borrower.address;
         await this.contracts.ownableUpgradeable.connect(this.signers.admin)._transferOwnership(newOwner);
-        const owner: string = await this.contracts.ownableUpgradeable.owner();
-        expect(owner).to.equal(newOwner);
+        expect(newOwner).to.equal(await this.contracts.ownableUpgradeable.owner());
       });
     });
   });
