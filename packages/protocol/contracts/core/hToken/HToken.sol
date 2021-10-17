@@ -25,6 +25,9 @@ error HToken__MintNotAuthorized(address caller);
 /// @notice Emitted when redeeming more underlying that there is in the reserve.
 error HToken__RedeemInsufficientLiquidity(uint256 underlyingAmount, uint256 totalUnderlyingReserve);
 
+/// @notice Emitted when redeeming a zero amount of underlying.
+error HToken__RedeemUnderlyingZero();
+
 /// @notice Emitted when redeeming a zero amount of hTokens.
 error HToken__RedeemZero();
 
@@ -159,6 +162,10 @@ contract HToken is
         if (underlyingPrecisionScalar != 1) {
             unchecked {
                 underlyingAmount = hTokenAmount / underlyingPrecisionScalar;
+            }
+            // Checks: the zero edge case.
+            if (underlyingAmount == 0) {
+                revert HToken__RedeemUnderlyingZero();
             }
         } else {
             underlyingAmount = hTokenAmount;
