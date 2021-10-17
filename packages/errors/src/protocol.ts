@@ -45,6 +45,7 @@ export enum HTokenErrors {
   MATURITY_PASSED = "HToken__MaturityPassed",
   MINT_NOT_AUTHORIZED = "HToken__MintNotAuthorized",
   REDEEM_INSUFFICIENT_LIQUIDITY = "HToken__RedeemInsufficientLiquidity",
+  REDEEM_UNDERLYING_ZERO = "HToken__RedeemUnderlyingZero",
   REDEEM_ZERO = "HToken__RedeemZero",
   SUPPLY_UNDERLYING_ZERO = "HToken__SupplyUnderlyingZero",
   UNDERLYING_DECIMALS_OVERFLOW = "HToken__UnderlyingDecimalsOverflow",
