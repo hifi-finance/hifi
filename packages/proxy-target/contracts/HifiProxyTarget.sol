@@ -221,10 +221,18 @@ contract HifiProxyTarget is IHifiProxyTarget {
         approveSpender(hToken, address(hifiPool), hTokenOut);
 
         // Add liquidity to the AMM.
+        (uint256 hTokenRequired, ) = hifiPool.getMintInputs(underlyingRequired);
         uint256 poolTokensMinted = hifiPool.mint(underlyingRequired);
 
         // The LP tokens are now in the DSProxy, so we relay them to the end user.
         hifiPool.transfer(msg.sender, poolTokensMinted);
+
+        // "hTokenRequired" is greater or equal than "hTokenOut", because not all of "hTokenOut" was used in the mint.
+        // "normalizedUnderlyingRequired" was denormalized to "underlyingRequired", offsetting the trailing 12 digits.
+        unchecked {
+            uint256 hTokenDelta = hTokenRequired - hTokenOut;
+            hToken.transfer(msg.sender, hTokenDelta);
+        }
     }
 
     /// @inheritdoc IHifiProxyTarget
@@ -263,9 +271,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
             // Relay any remaining hTokens to the end user.
             unchecked {
                 uint256 hTokenDelta = hTokenOut - debtAmount;
-                if (hTokenDelta > 0) {
-                    hToken.transfer(msg.sender, hTokenDelta);
-                }
+                hToken.transfer(msg.sender, hTokenDelta);
             }
         }
     }
@@ -322,8 +328,8 @@ contract HifiProxyTarget is IHifiProxyTarget {
             revert HifiProxyTarget__AddLiquidityHTokenSlippage(maxHTokenAmount, totalhTokenAmount);
         }
 
-        // Transfer the hTokens to the DSProxy. We couldn't have known what value `hTokenRequired` will have had
-        // after the call to `buyUnderlying`.
+        // Transfer the hTokens to the DSProxy. We are calling the "transfer" function twice because we couldn't
+        // have known what value "hTokenRequired" will have had after the call to "buyUnderlying".
         hToken.transferFrom(msg.sender, address(this), hTokenRequired);
 
         // Allow the HifiPool contract to spend underlying from the DSProxy.
@@ -509,9 +515,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         if (hTokenReturned > repayAmount) {
             unchecked {
                 uint256 hTokenDelta = hTokenReturned - repayAmount;
-                if (hTokenDelta > 0) {
-                    hToken.transfer(msg.sender, hTokenDelta);
-                }
+                hToken.transfer(msg.sender, hTokenDelta);
             }
         }
 
@@ -650,9 +654,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
             // Relay any remaining hTokens to the end user.
             unchecked {
                 uint256 hTokenDelta = hTokenOut - debtAmount;
-                if (hTokenDelta > 0) {
-                    hToken.transfer(msg.sender, hTokenDelta);
-                }
+                hToken.transfer(msg.sender, hTokenDelta);
             }
         }
     }
