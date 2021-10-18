@@ -6,7 +6,6 @@ import "hardhat-gas-reporter";
 import "hardhat-packager";
 import "solidity-coverage";
 
-import "./tasks/clean";
 import "./tasks/deploy";
 
 import { resolve } from "path";
@@ -95,7 +94,7 @@ const config: HardhatUserConfig = {
     },
   },
   typechain: {
-    outDir: "typechain",
+    outDir: "src/types",
     target: "ethers-v5",
   },
 };

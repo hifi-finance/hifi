@@ -18,7 +18,6 @@
 **/lib
 **/multisol-*
 **/node_modules
-**/typechain
 
 # files
 *.env

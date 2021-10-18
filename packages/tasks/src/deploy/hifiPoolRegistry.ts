@@ -1,8 +1,8 @@
 import * as core from "@actions/core";
 import { task, types } from "hardhat/config";
 import { TaskArguments } from "hardhat/types";
-import { HifiPoolRegistry__factory } from "@hifi/amm/typechain/factories/HifiPoolRegistry__factory";
-import { HifiPoolRegistry } from "@hifi/amm/typechain/HifiPoolRegistry";
+import { HifiPoolRegistry__factory } from "@hifi/amm/dist/types/factories/HifiPoolRegistry__factory";
+import { HifiPoolRegistry } from "@hifi/amm/dist/types/HifiPoolRegistry";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import {

@@ -3,10 +3,10 @@ import { artifacts, waffle } from "hardhat";
 import { Artifact } from "hardhat/types";
 
 import { H_TOKEN_MATURITY_ONE_YEAR, USDC_DECIMALS, USDC_NAME, USDC_SYMBOL } from "@hifi/constants";
-import { GodModeHifiPoolRegistry } from "../../typechain/GodModeHifiPoolRegistry";
-import { GodModeHToken } from "../../typechain/GodModeHToken";
-import { GodModeErc20 } from "../../typechain/GodModeErc20";
-import { GodModeHifiPool } from "../../typechain/GodModeHifiPool";
+import { GodModeHifiPoolRegistry } from "../../src/types/GodModeHifiPoolRegistry";
+import { GodModeHToken } from "../../src/types/GodModeHToken";
+import { GodModeErc20 } from "../../src/types/GodModeErc20";
+import { GodModeHifiPool } from "../../src/types/GodModeHifiPool";
 import { getHTokenName, getHifiPoolName, getHTokenSymbol, getHifiPoolSymbol } from "@hifi/helpers";
 
 export async function deployUsdc(deployer: Signer): Promise<GodModeErc20> {

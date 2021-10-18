@@ -1,0 +1,10 @@
+# types
+src/types/*
+!src/types/IHifiProxyTarget.d.ts
+!src/types/HifiProxyTarget.d.ts
+!src/types/IErc20.d.ts
+!src/types/WethInterface.d.ts
+!src/types/factories/HifiProxyTarget__factory.ts
+!src/types/factories/IHifiProxyTarget__factory.ts
+!src/types/factories/IErc20__factory.ts
+!src/types/factories/WethInterface.ts

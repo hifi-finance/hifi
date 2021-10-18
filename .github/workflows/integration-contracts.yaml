@@ -38,7 +38,7 @@ jobs:
         run: "yarn workspace @hifi/amm lint"
 
       - name: "Compile the contracts and generate TypeChain bindings"
-        run: "yarn workspace @hifi/amm typechain"
+        run: "yarn workspace @hifi/amm compile:sol"
 
       - name: "Test the contracts and run test coverage"
         run: "yarn workspace @hifi/amm coverage"
@@ -73,7 +73,7 @@ jobs:
         run: "yarn workspace @hifi/flash-swap lint"
 
       - name: "Compile the contracts and generate TypeChain bindings"
-        run: "yarn workspace @hifi/flash-swap typechain"
+        run: "yarn workspace @hifi/flash-swap compile:sol"
 
       - name: "Test the contracts and run test coverage"
         run: "yarn workspace @hifi/flash-swap coverage"
@@ -108,7 +108,7 @@ jobs:
         run: "yarn workspace @hifi/protocol lint"
 
       - name: "Compile the contracts and generate TypeChain bindings"
-        run: "yarn workspace @hifi/protocol typechain"
+        run: "yarn workspace @hifi/protocol compile:sol"
 
       - name: "Test the contracts and run test coverage"
         run: "yarn workspace @hifi/protocol coverage"
@@ -143,7 +143,7 @@ jobs:
         run: "yarn workspace @hifi/proxy-target lint"
 
       - name: "Compile the contracts and generate TypeChain artifacts"
-        run: "yarn workspace @hifi/proxy-target typechain"
+        run: "yarn workspace @hifi/proxy-target compile:sol"
 
   upload-coverage-report:
     needs:

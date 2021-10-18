@@ -1,7 +1,7 @@
 import * as core from "@actions/core";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import { HifiProxyTarget } from "@hifi/proxy-target/typechain/HifiProxyTarget";
-import { HifiProxyTarget__factory } from "@hifi/proxy-target/typechain/factories/HifiProxyTarget__factory";
+import { HifiProxyTarget } from "@hifi/proxy-target/dist/types/HifiProxyTarget";
+import { HifiProxyTarget__factory } from "@hifi/proxy-target/dist/types/factories/HifiProxyTarget__factory";
 import { task, types } from "hardhat/config";
 import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_HIFI_PROXY_TARGET } from "../../helpers/constants";
 import { TaskArguments } from "hardhat/types";

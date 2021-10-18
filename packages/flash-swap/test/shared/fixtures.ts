@@ -12,14 +12,14 @@ import { FintrollerV1 } from "@hifi/protocol/typechain/FintrollerV1";
 import { artifacts, waffle } from "hardhat";
 import { Artifact } from "hardhat/types";
 
-import { GodModeUniswapV2Pair__factory } from "../../typechain/factories/GodModeUniswapV2Pair__factory";
-import { GodModeErc20 } from "../../typechain/GodModeErc20";
-import { GodModeHToken } from "../../typechain/GodModeHToken";
-import { GodModeUniswapV2Factory } from "../../typechain/GodModeUniswapV2Factory";
-import { HifiFlashUniswapV2 } from "../../typechain/HifiFlashUniswapV2";
-import { MaliciousPair } from "../../typechain/MaliciousPair";
-import { SimplePriceFeed } from "../../typechain/SimplePriceFeed";
-import { GodModeUniswapV2Pair } from "../../typechain/GodModeUniswapV2Pair";
+import { GodModeUniswapV2Pair__factory } from "../../src/types/factories/GodModeUniswapV2Pair__factory";
+import { GodModeErc20 } from "../../src/types/GodModeErc20";
+import { GodModeHToken } from "../../src/types/GodModeHToken";
+import { GodModeUniswapV2Factory } from "../../src/types/GodModeUniswapV2Factory";
+import { HifiFlashUniswapV2 } from "../../src/types/HifiFlashUniswapV2";
+import { MaliciousPair } from "../../src/types/MaliciousPair";
+import { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
+import { GodModeUniswapV2Pair } from "../../src/types/GodModeUniswapV2Pair";
 import { deployGodModeErc20 } from "./deployers";
 
 type IntegrationFixtureReturnType = {

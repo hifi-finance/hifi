@@ -2,9 +2,9 @@ import * as core from "@actions/core";
 import { task, types } from "hardhat/config";
 import { TaskArguments } from "hardhat/types";
 
-import { BalanceSheetV1 } from "../../typechain/BalanceSheetV1";
-import { BalanceSheetV1__factory } from "../../typechain/factories/BalanceSheetV1__factory";
-import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_BALANCE_SHEET } from "../../helpers/constants";
+import { BalanceSheetV1 } from "../../src/types/BalanceSheetV1";
+import { BalanceSheetV1__factory } from "../../src/types/factories/BalanceSheetV1__factory";
+import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_BALANCE_SHEET } from "../constants";
 
 task(TASK_DEPLOY_CONTRACT_BALANCE_SHEET)
   // Contract arguments
@@ -15,7 +15,9 @@ task(TASK_DEPLOY_CONTRACT_BALANCE_SHEET)
   .addOptionalParam("printAddress", "Print the address in the console", true, types.boolean)
   .addOptionalParam("setOutput", "Set the contract address as an output in GitHub Actions", false, types.boolean)
   .setAction(async function (taskArgs: TaskArguments, { ethers, run, upgrades }) {
-    const balanceSheetV1Factory: BalanceSheetV1__factory = await ethers.getContractFactory("BalanceSheetV1");
+    const balanceSheetV1Factory: BalanceSheetV1__factory = <BalanceSheetV1__factory>(
+      await ethers.getContractFactory("BalanceSheetV1")
+    );
     const balanceSheetProxy: BalanceSheetV1 = <BalanceSheetV1>(
       await upgrades.deployProxy(balanceSheetV1Factory, [taskArgs.fintroller, taskArgs.oracle])
     );

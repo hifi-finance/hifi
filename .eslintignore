@@ -7,7 +7,7 @@
 **/dist
 **/lib
 **/node_modules
-**/typechain
+**/src/types
 
 # files
 *.env

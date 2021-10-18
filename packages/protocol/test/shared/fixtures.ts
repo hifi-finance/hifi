@@ -13,13 +13,13 @@ import {
 } from "@hifi/constants";
 import { MockContract } from "ethereum-waffle";
 
-import { ChainlinkOperator } from "../../typechain/ChainlinkOperator";
-import { FintrollerV1 } from "../../typechain/FintrollerV1";
-import { GodModeBalanceSheet } from "../../typechain/GodModeBalanceSheet";
-import { GodModeErc20 } from "../../typechain/GodModeErc20";
-import { GodModeHToken } from "../../typechain/GodModeHToken";
-import { OwnableUpgradeable } from "../../typechain/OwnableUpgradeable";
-import { SimplePriceFeed } from "../../typechain/SimplePriceFeed";
+import { ChainlinkOperator } from "../../src/types/ChainlinkOperator";
+import { FintrollerV1 } from "../../src/types/FintrollerV1";
+import { GodModeBalanceSheet } from "../../src/types/GodModeBalanceSheet";
+import { GodModeErc20 } from "../../src/types/GodModeErc20";
+import { GodModeHToken } from "../../src/types/GodModeHToken";
+import { OwnableUpgradeable } from "../../src/types/OwnableUpgradeable";
+import { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
 import {
   deployChainlinkOperator,
   deployFintrollerV1,

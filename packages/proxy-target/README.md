@@ -55,7 +55,7 @@ DSProxy](https://github.com/makerdao/developerguides/blob/master/devtools/workin
 
 ```js
 import { parseUnits } from "@ethersproject/units";
-import { HifiProxyTarget__factory } from "@hifi/protocol/typechain/factories/HifiProxyTarget__factory";
+import { HifiProxyTarget__factory } from "@hifi/protocol/dist/types/factories/HifiProxyTarget__factory";
 
 async function depositCollateral() {
   const signer = "..."; // Get hold of an ethers.js Signer

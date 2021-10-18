@@ -1,6 +1,6 @@
 import * as core from "@actions/core";
-import { ChainlinkOperator } from "@hifi/protocol/typechain/ChainlinkOperator";
-import { ChainlinkOperator__factory } from "@hifi/protocol/typechain/factories/ChainlinkOperator__factory";
+import { ChainlinkOperator } from "@hifi/protocol/dist/types/ChainlinkOperator";
+import { ChainlinkOperator__factory } from "@hifi/protocol/dist/types/factories/ChainlinkOperator__factory";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
 import { TaskArguments } from "hardhat/types";

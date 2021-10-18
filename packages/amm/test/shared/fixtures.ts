@@ -3,11 +3,11 @@ import { MockContract } from "ethereum-waffle";
 import { artifacts, waffle } from "hardhat";
 import { Artifact } from "hardhat/types";
 
-import { GodModeErc20 } from "../../typechain/GodModeErc20";
-import { GodModeHifiPool } from "../../typechain/GodModeHifiPool";
-import { GodModeHifiPoolRegistry } from "../../typechain/GodModeHifiPoolRegistry";
-import { GodModeHToken } from "../../typechain/GodModeHToken";
-import { YieldSpaceMock } from "../../typechain/YieldSpaceMock";
+import { GodModeErc20 } from "../../src/types/GodModeErc20";
+import { GodModeHifiPool } from "../../src/types/GodModeHifiPool";
+import { GodModeHifiPoolRegistry } from "../../src/types/GodModeHifiPoolRegistry";
+import { GodModeHToken } from "../../src/types/GodModeHToken";
+import { YieldSpaceMock } from "../../src/types/YieldSpaceMock";
 import { deployGodModeHToken, deployGodModeHifiPool, deployGodModeHifiPoolRegistry, deployUsdc } from "./deployers";
 import { deployMockHToken, deployMockHifiPool, deployMockUsdc } from "./mocks";
 

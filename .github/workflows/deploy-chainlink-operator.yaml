@@ -42,7 +42,7 @@ jobs:
         run: "yarn build:ts"
 
       - name: "Compile the contracts and generate TypeChain bindings"
-        run: "yarn typechain"
+        run: "yarn compile:sol"
 
       - name: "Deploy ChainlinkOperator"
         id: "deploy"

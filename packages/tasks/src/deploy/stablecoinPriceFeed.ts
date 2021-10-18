@@ -1,6 +1,6 @@
 import * as core from "@actions/core";
-import { StablecoinPriceFeed } from "@hifi/protocol/typechain/StablecoinPriceFeed";
-import { StablecoinPriceFeed__factory } from "@hifi/protocol/typechain/factories/StablecoinPriceFeed__factory";
+import { StablecoinPriceFeed } from "@hifi/protocol/dist/types/StablecoinPriceFeed";
+import { StablecoinPriceFeed__factory } from "@hifi/protocol/dist/types/factories/StablecoinPriceFeed__factory";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
 import { TaskArguments } from "hardhat/types";

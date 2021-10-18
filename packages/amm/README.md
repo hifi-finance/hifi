@@ -49,7 +49,7 @@ contract YourContract {
 ```js
 import { parseUnits } from "@ethersproject/units";
 import { getDefaultProvider } from "@ethersproject/providers";
-import { HifiPool__factory } from "@hifi/amm/typechain/factories/HifiPool__factory";
+import { HifiPool__factory } from "@hifi/amm/dist/types/factories/HifiPool__factory";
 
 async function getQuote() {
   const defaultProvider = getDefaultProvider();

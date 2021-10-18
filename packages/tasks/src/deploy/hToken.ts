@@ -1,6 +1,6 @@
 import * as core from "@actions/core";
-import { HToken } from "@hifi/protocol/typechain/HToken";
-import { HToken__factory } from "@hifi/protocol/typechain/factories/HToken__factory";
+import { HToken } from "@hifi/protocol/dist/types/HToken";
+import { HToken__factory } from "@hifi/protocol/dist/types/factories/HToken__factory";
 import { task, types } from "hardhat/config";
 import { TaskArguments } from "hardhat/types";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";

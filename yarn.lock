@@ -971,13 +971,13 @@ __metadata:
     "@typechain/ethers-v5": ^7.1.1
     "@typechain/hardhat": ^2.3.0
     "@types/chai": ^4.2.22
-    "@types/fs-extra": ^9.0.13
     "@types/mocha": ^9.0.0
     "@types/mocha-each": ^2.0.0
     "@types/node": ^16.9.6
     "@typescript-eslint/eslint-plugin": ^4.31.2
     "@typescript-eslint/parser": ^4.31.2
     chai: ^4.3.4
+    copyfiles: ^2.4.1
     cross-env: ^7.0.3
     dotenv: ^10.0.0
     eslint: ^7.32.0
@@ -985,7 +985,6 @@ __metadata:
     ethereum-waffle: ^3.4.0
     ethers: ^5.4.7
     evm-bn: ^1.0.1
-    fs-extra: ^10.0.0
     hardhat: ^2.6.4
     hardhat-packager: ^1.2.1
     lint-staged: ^11.1.2
@@ -1066,13 +1065,13 @@ __metadata:
     "@typechain/ethers-v5": ^7.1.1
     "@typechain/hardhat": ^2.3.0
     "@types/chai": ^4.2.22
-    "@types/fs-extra": ^9.0.13
     "@types/mocha": ^9.0.0
     "@types/node": ^16.9.6
     "@typescript-eslint/eslint-plugin": ^4.31.2
     "@typescript-eslint/parser": ^4.31.2
     "@uniswap/v2-core": 1.0.1
     chai: ^4.3.4
+    copyfiles: ^2.4.1
     cross-env: ^7.0.3
     dotenv: ^10.0.0
     eslint: ^7.32.0
@@ -1081,7 +1080,6 @@ __metadata:
     ethers: ^5.4.7
     evm-bn: ^1.0.1
     from-exponential: ^1.1.1
-    fs-extra: ^10.0.0
     hardhat: ^2.6.4
     hardhat-packager: ^1.2.1
     lodash: ^4.17.21
@@ -1148,7 +1146,6 @@ __metadata:
     "@ethersproject/abstract-signer": ^5.4.1
     "@ethersproject/bignumber": ^5.4.2
     "@ethersproject/bytes": ^5.4.0
-    "@ethersproject/constants": ^5.4.0
     "@ethersproject/providers": ^5.4.5
     "@ethersproject/wallet": ^5.4.0
     "@hifi/constants": "workspace:*"
@@ -1163,13 +1160,13 @@ __metadata:
     "@typechain/ethers-v5": ^7.1.1
     "@typechain/hardhat": ^2.3.0
     "@types/chai": ^4.2.22
-    "@types/fs-extra": ^9.0.13
     "@types/mocha": ^9.0.0
     "@types/mocha-each": ^2.0.0
     "@types/node": ^16.9.6
     "@typescript-eslint/eslint-plugin": ^4.31.2
     "@typescript-eslint/parser": ^4.31.2
     chai: ^4.3.4
+    copyfiles: ^2.4.1
     cross-env: ^7.0.3
     dotenv: ^10.0.0
     eslint: ^7.32.0
@@ -1177,7 +1174,6 @@ __metadata:
     ethereum-waffle: ^3.4.0
     ethers: ^5.4.7
     evm-bn: ^1.0.1
-    fs-extra: ^10.0.0
     hardhat: ^2.6.4
     hardhat-gas-reporter: ^1.0.4
     hardhat-packager: ^1.2.1
@@ -1269,11 +1265,9 @@ __metadata:
     eslint: ^7.32.0
     eslint-config-prettier: ^8.3.0
     ethers: ^5.4.7
-    fs-extra: ^10.0.0
     hardhat: ^2.6.4
     prettier: ^2.4.1
     ts-node: ^10.2.1
-    typechain: ^5.1.2
     typescript: ~4.4.3
   languageName: unknown
   linkType: soft
@@ -1778,15 +1772,6 @@ __metadata:
   dependencies:
     "@types/node": "*"
   checksum: f0c283fdef2dd7191168a37b9cb2625af3cfbd7f72b5a514f938bea0a135669f79d736186d434b9e81150b47ef1bf20d97b188014a00583556fad6ce59fb9bbf
-  languageName: node
-  linkType: hard
-
-"@types/fs-extra@npm:^9.0.13":
-  version: 9.0.13
-  resolution: "@types/fs-extra@npm:9.0.13"
-  dependencies:
-    "@types/node": "*"
-  checksum: add79e212acd5ac76b97b9045834e03a7996aef60a814185e0459088fd290519a3c1620865d588fa36c4498bf614210d2a703af5cf80aa1dbc125db78f6edac3
   languageName: node
   linkType: hard
 
@@ -4549,6 +4534,24 @@ __metadata:
   version: 0.1.1
   resolution: "copy-descriptor@npm:0.1.1"
   checksum: d4b7b57b14f1d256bb9aa0b479241048afd7f5bcf22035fc7b94e8af757adeae247ea23c1a774fe44869fd5694efba4a969b88d966766c5245fdee59837fe45b
+  languageName: node
+  linkType: hard
+
+"copyfiles@npm:^2.4.1":
+  version: 2.4.1
+  resolution: "copyfiles@npm:2.4.1"
+  dependencies:
+    glob: ^7.0.5
+    minimatch: ^3.0.3
+    mkdirp: ^1.0.4
+    noms: 0.0.0
+    through2: ^2.0.1
+    untildify: ^4.0.0
+    yargs: ^16.1.0
+  bin:
+    copyfiles: copyfiles
+    copyup: copyfiles
+  checksum: aea69873bb99cc5f553967660cbfb70e4eeda198f572a36fb0f748b36877ff2c90fd906c58b1d540adbad8afa8ee82820172f1c18e69736f7ab52792c12745a7
   languageName: node
   linkType: hard
 
@@ -7437,6 +7440,20 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
+"glob@npm:^7.0.5":
+  version: 7.2.0
+  resolution: "glob@npm:7.2.0"
+  dependencies:
+    fs.realpath: ^1.0.0
+    inflight: ^1.0.4
+    inherits: 2
+    minimatch: ^3.0.4
+    once: ^1.3.0
+    path-is-absolute: ^1.0.0
+  checksum: 78a8ea942331f08ed2e055cb5b9e40fe6f46f579d7fd3d694f3412fe5db23223d29b7fee1575440202e9a7ff9a72ab106a39fee39934c7bedafe5e5f8ae20134
+  languageName: node
+  linkType: hard
+
 "global-dirs@npm:^0.1.1":
   version: 0.1.1
   resolution: "global-dirs@npm:0.1.1"
@@ -10162,7 +10179,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"minimatch@npm:2 || 3, minimatch@npm:3.0.4, minimatch@npm:^3.0.4":
+"minimatch@npm:2 || 3, minimatch@npm:3.0.4, minimatch@npm:^3.0.3, minimatch@npm:^3.0.4":
   version: 3.0.4
   resolution: "minimatch@npm:3.0.4"
   dependencies:
@@ -10664,6 +10681,16 @@ fsevents@~2.3.2:
   version: 3.0.3
   resolution: "nofilter@npm:3.0.3"
   checksum: c13974cf064179f5574dc4ff2c4e26ff3dedf06309715ea888e92ab2947e2a1068f22b9597a2b79813d2d1958b63f65548b9ad4dbb7d9ab85c05d01a97d40333
+  languageName: node
+  linkType: hard
+
+"noms@npm:0.0.0":
+  version: 0.0.0
+  resolution: "noms@npm:0.0.0"
+  dependencies:
+    inherits: ^2.0.1
+    readable-stream: ~1.0.31
+  checksum: a05f056dabf764c86472b6b5aad10455f3adcb6971f366cdf36a72b559b29310a940e316bca30802f2804fdd41707941366224f4cba80c4f53071512245bf200
   languageName: node
   linkType: hard
 
@@ -11981,7 +12008,7 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"readable-stream@npm:~1.0.15":
+"readable-stream@npm:~1.0.15, readable-stream@npm:~1.0.31":
   version: 1.0.34
   resolution: "readable-stream@npm:1.0.34"
   dependencies:
@@ -13845,7 +13872,7 @@ resolve@1.17.0:
   languageName: node
   linkType: hard
 
-"through2@npm:^2.0.3":
+"through2@npm:^2.0.1, through2@npm:^2.0.3":
   version: 2.0.5
   resolution: "through2@npm:2.0.5"
   dependencies:
@@ -14474,6 +14501,13 @@ typescript@^4.3.4:
     has-value: ^0.3.1
     isobject: ^3.0.0
   checksum: 5990ecf660672be2781fc9fb322543c4aa592b68ed9a3312fa4df0e9ba709d42e823af090fc8f95775b4cd2c9a5169f7388f0cec39238b6d0d55a69fc2ab6b29
+  languageName: node
+  linkType: hard
+
+"untildify@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "untildify@npm:4.0.0"
+  checksum: 39ced9c418a74f73f0a56e1ba4634b4d959422dff61f4c72a8e39f60b99380c1b45ed776fbaa0a4101b157e4310d873ad7d114e8534ca02609b4916bb4187fb9
   languageName: node
   linkType: hard
 
@@ -15704,7 +15738,7 @@ typescript@^4.3.4:
   languageName: node
   linkType: hard
 
-"yargs@npm:16.2.0":
+"yargs@npm:16.2.0, yargs@npm:^16.1.0":
   version: 16.2.0
   resolution: "yargs@npm:16.2.0"
   dependencies:

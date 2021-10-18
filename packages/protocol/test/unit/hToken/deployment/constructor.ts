@@ -5,7 +5,7 @@ import { HTokenErrors } from "@hifi/errors";
 import { getNow } from "@hifi/helpers";
 import { expect } from "chai";
 
-import { HToken } from "../../../../typechain/HToken";
+import { HToken } from "../../../../src/types/HToken";
 import { deployHToken } from "../../../shared/deployers";
 
 export function shouldBehaveLikeConstructor(): void {

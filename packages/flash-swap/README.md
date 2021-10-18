@@ -39,7 +39,7 @@ Example for Uniswap V2:
 import { defaultAbiCoder } from "@ethersproject/abi";
 import { getDefaultProvider } from "@ethersproject/providers";
 import { parseUnits } from "@ethersproject/units";
-import { UniswapV2Pair__factory } from "@hifi/flash-swap/typechain/factories/UniswapV2Pair__factory";
+import { UniswapV2Pair__factory } from "@hifi/flash-swap/dist/types/factories/UniswapV2Pair__factory";
 
 async function flashSwap() {
   const defaultProvider = getDefaultProvider();

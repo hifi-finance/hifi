@@ -1,5 +1,5 @@
 {
   "extends": "../../tsconfig.json",
   "files": ["./hardhat.config.ts"],
-  "include": ["helpers/**/*.ts", "tasks/**/**.ts", "test/**/*.ts", "typechain/**/*.d.ts", "typechain/**/*.ts"]
+  "include": ["src/**/*", "tasks/**/*", "test/**/*"]
 }

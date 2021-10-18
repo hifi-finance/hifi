@@ -11,15 +11,15 @@
     "url": "https://github.com/hifi-finance/hifi/issues"
   },
   "dependencies": {
+    "@ethersproject/abi": "^5.4.1",
+    "@ethersproject/bytes": "^5.4.0",
+    "@ethersproject/providers": "^5.4.5",
     "@hifi/amm": "1.6.0",
     "@hifi/protocol": "1.6.0",
     "@paulrberg/contracts": "3.6.1",
     "ethers": "^5.4.7"
   },
   "devDependencies": {
-    "@ethersproject/abi": "^5.4.1",
-    "@ethersproject/bytes": "^5.4.0",
-    "@ethersproject/providers": "^5.4.5",
     "@hifi/helpers": "workspace:*",
     "@nomiclabs/hardhat-etherscan": "^2.1.6",
     "@typechain/ethers-v5": "^7.1.1",
@@ -46,10 +46,11 @@
     "typescript": "^4.4.3"
   },
   "files": [
-    "/artifacts/**/*.json",
     "/contracts",
-    "/typechain/**/*.d.ts",
-    "/typechain/**/*.js",
+    "/dist/**/*.d.ts",
+    "/dist/**/*.d.ts.map",
+    "/dist/**/*.js",
+    "/dist/**/*.js.map",
     "CHANGELOG.md"
   ],
   "homepage": "https://github.com/hifi-finance/hifi/tree/main/packages/proxy-target#readme",
@@ -76,15 +77,17 @@
     "url": "https://github.com/hifi-finance/hifi"
   },
   "scripts": {
-    "build:contracts": "yarn hardhat prepare-package && tsc --project ./tsconfig.prod.json",
-    "clean": "shx rm -rf ./artifacts ./cache ./typechain ./tsconfig.prod.tsbuildinfo",
+    "build:types": "yarn prepare:types && tsc --project ./tsconfig.prod.json && copyfiles --up 1 \"./src/**/*.d.ts\" ./dist",
+    "clean": "shx rm -rf ./artifacts ./cache ./tsconfig.prod.tsbuildinfo",
     "clean:node_modules": "shx rm -rf ./node_modules",
+    "compile:sol": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat compile",
+    "generate:types": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat typechain",
     "lint": "yarn lint:sol && yarn lint:ts && yarn prettier:check",
     "lint:sol": "solhint --config ../../.solhint.json --ignore-path ../../.solhintignore --max-warnings 0 \"contracts/**/*.sol\"",
     "lint:ts": "eslint --config ../../.eslintrc.yaml --ignore-path ../../.eslintignore --ext .js,.ts .",
-    "prepack": "yarn build:contracts",
-    "prettier": "prettier --config ../../.prettierrc.js --ignore-path ../../.prettierignore --write \"**/*.{js,json,md,sol,ts,yaml,yml}\"",
-    "prettier:check": "prettier --check --config ../../.prettierrc.js --ignore-path ../../.prettierignore \"**/*.{js,json,md,sol,ts,yaml,yml}\"",
-    "typechain": "hardhat typechain"
+    "prepack": "yarn build:types",
+    "prepare:types": "yarn hardhat prepare-package",
+    "prettier": "prettier --config ../../.prettierrc.js --ignore-path ../../.prettierignore --write \"**/*.{js,json,md,sol,ts}\"",
+    "prettier:check": "prettier --check --config ../../.prettierrc.js --ignore-path ../../.prettierignore \"**/*.{js,json,md,sol,ts}\""
   }
 }

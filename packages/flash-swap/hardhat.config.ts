@@ -4,8 +4,6 @@ import "@typechain/hardhat";
 import "hardhat-packager";
 import "solidity-coverage";
 
-import "./tasks/clean";
-
 import { resolve } from "path";
 
 import { getChainConfig, getEnvVar } from "@hifi/helpers";
@@ -84,7 +82,7 @@ const config: HardhatUserConfig = {
     ],
   },
   typechain: {
-    outDir: "typechain",
+    outDir: "src/types",
     target: "ethers-v5",
   },
 };

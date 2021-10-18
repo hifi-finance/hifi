@@ -1,6 +1,6 @@
 import * as core from "@actions/core";
-import { SimplePriceFeed } from "@hifi/protocol/typechain/SimplePriceFeed";
-import { SimplePriceFeed__factory } from "@hifi/protocol/typechain/factories/SimplePriceFeed__factory";
+import { SimplePriceFeed } from "@hifi/protocol/dist/types/SimplePriceFeed";
+import { SimplePriceFeed__factory } from "@hifi/protocol/dist/types/factories/SimplePriceFeed__factory";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
 import { TaskArguments } from "hardhat/types";

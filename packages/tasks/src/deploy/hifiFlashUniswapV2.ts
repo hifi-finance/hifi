@@ -1,6 +1,6 @@
 import * as core from "@actions/core";
-import { HifiFlashUniswapV2 } from "@hifi/flash-swap/typechain/HifiFlashUniswapV2";
-import { HifiFlashUniswapV2__factory } from "@hifi/flash-swap/typechain/factories/HifiFlashUniswapV2__factory";
+import { HifiFlashUniswapV2 } from "@hifi/flash-swap/dist/types/HifiFlashUniswapV2";
+import { HifiFlashUniswapV2__factory } from "@hifi/flash-swap/dist/types/factories/HifiFlashUniswapV2__factory";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
 import { TaskArguments } from "hardhat/types";

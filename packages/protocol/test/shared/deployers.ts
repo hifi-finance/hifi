@@ -19,14 +19,14 @@ import {
   GodModeBalanceSheet__factory,
   OwnableUpgradeable,
   OwnableUpgradeable__factory,
-} from "../../typechain";
-import { ChainlinkOperator } from "../../typechain/ChainlinkOperator";
-import { FintrollerV1 } from "../../typechain/FintrollerV1";
-import { GodModeBalanceSheet } from "../../typechain/GodModeBalanceSheet";
-import { GodModeErc20 } from "../../typechain/GodModeErc20";
-import { GodModeHToken } from "../../typechain/GodModeHToken";
-import { HToken } from "../../typechain/HToken";
-import { SimplePriceFeed } from "../../typechain/SimplePriceFeed";
+} from "../../src/types";
+import { ChainlinkOperator } from "../../src/types/ChainlinkOperator";
+import { FintrollerV1 } from "../../src/types/FintrollerV1";
+import { GodModeBalanceSheet } from "../../src/types/GodModeBalanceSheet";
+import { GodModeErc20 } from "../../src/types/GodModeErc20";
+import { GodModeHToken } from "../../src/types/GodModeHToken";
+import { HToken } from "../../src/types/HToken";
+import { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
 
 const { deployContract } = waffle;
 const overrides = { gasLimit: process.env.CODE_COVERAGE ? GAS_LIMITS.coverage : GAS_LIMITS.hardhat };

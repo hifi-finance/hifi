@@ -2,8 +2,8 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 import { ethers, upgrades } from "hardhat";
 
-import { BalanceSheetV2__factory } from "../../../../typechain";
-import { BalanceSheetV2 } from "../../../../typechain/BalanceSheetV2";
+import { BalanceSheetV2__factory } from "../../../../src/types";
+import { BalanceSheetV2 } from "../../../../src/types/BalanceSheetV2";
 
 export function shouldBehaveLikeUpgradeableProxy(): void {
   let balanceSheetV2: BalanceSheetV2;
