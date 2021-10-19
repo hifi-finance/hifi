@@ -89,67 +89,78 @@ export function shouldBehaveLikeSellHToken(): void {
           await this.contracts.hifiPool.connect(this.signers.alice).mint(initialUnderlyingReserves);
         });
 
-        context("when liquidity was provided once", function () {
-          const testSets = [hUSDC("3.141592653589793238"), hUSDC("10"), hUSDC("100")];
-
-          forEach(testSets).it("sells %e hTokens for underlying", async function (hTokenIn: BigNumber) {
-            const virtualHTokenReserves: BigNumber = initialNormalizedUnderlyingReserves;
-            await testSellHToken.call(this, virtualHTokenReserves, initialNormalizedUnderlyingReserves, hTokenIn);
+        context("when the calculated amount of underlying to buy is zero", function () {
+          it("reverts", async function () {
+            const hTokenIn: BigNumber = hUSDC("1e-7");
+            await expect(
+              this.contracts.hifiPool.connect(this.signers.alice).sellHToken(this.signers.alice.address, hTokenIn),
+            ).to.be.revertedWith(HifiPoolErrors.SELL_H_TOKEN_UNDERLYING_ZERO);
           });
         });
 
-        context("when liquidity was provided twice or more times", function () {
-          const extraNormalizedUnderlyingAmount: BigNumber = toBn("50");
-          const lpTokenSupply: BigNumber = initialNormalizedUnderlyingReserves.add(extraNormalizedUnderlyingAmount);
-
-          beforeEach(async function () {
-            // Add extra liquidity to the pool.
-            const extraUnderlyingAmount: BigNumber = USDC(fromBn(extraNormalizedUnderlyingAmount));
-            await this.contracts.hifiPool.connect(this.signers.alice).mint(extraUnderlyingAmount);
-          });
-
-          context("when it is the first trade", function () {
+        context("when the calculated amount of underlying to buy is not zero", function () {
+          context("when liquidity was provided once", function () {
             const testSets = [hUSDC("3.141592653589793238"), hUSDC("10"), hUSDC("100")];
 
             forEach(testSets).it("sells %e hTokens for underlying", async function (hTokenIn: BigNumber) {
-              const virtualHTokenReserves: BigNumber = lpTokenSupply;
-              const normalizedUnderlyingReserves: BigNumber = lpTokenSupply;
-              await testSellHToken.call(this, virtualHTokenReserves, normalizedUnderlyingReserves, hTokenIn);
+              const virtualHTokenReserves: BigNumber = initialNormalizedUnderlyingReserves;
+              await testSellHToken.call(this, virtualHTokenReserves, initialNormalizedUnderlyingReserves, hTokenIn);
             });
           });
 
-          context("when it is the second trade", function () {
-            const firstHTokenIn: BigNumber = hUSDC("1");
-            let normalizedUnderlyingReserves: BigNumber;
-            let virtualHTokenReserves: BigNumber;
+          context("when liquidity was provided twice or more times", function () {
+            const extraNormalizedUnderlyingAmount: BigNumber = toBn("50");
+            const lpTokenSupply: BigNumber = initialNormalizedUnderlyingReserves.add(extraNormalizedUnderlyingAmount);
 
             beforeEach(async function () {
-              // Do the first trade.
-              await this.contracts.hifiPool
-                .connect(this.signers.alice)
-                .sellHToken(this.signers.alice.address, firstHTokenIn);
-
-              // Get the amounts needed for the second trade tests.
-              normalizedUnderlyingReserves = await this.contracts.hifiPool.getNormalizedUnderlyingReserves();
+              // Add extra liquidity to the pool.
+              const extraUnderlyingAmount: BigNumber = USDC(fromBn(extraNormalizedUnderlyingAmount));
+              await this.contracts.hifiPool.connect(this.signers.alice).mint(extraUnderlyingAmount);
             });
 
-            const testSets = [hUSDC("2.141592653589793238"), hUSDC("9"), hUSDC("99")];
+            context("when it is the first trade", function () {
+              const testSets = [hUSDC("3.141592653589793238"), hUSDC("10"), hUSDC("100")];
 
-            forEach(testSets).it("sells %e hTokens for underlying", async function (secondHTokenIn: BigNumber) {
-              virtualHTokenReserves = lpTokenSupply.add(firstHTokenIn);
-              await testSellHToken.call(this, virtualHTokenReserves, normalizedUnderlyingReserves, secondHTokenIn);
+              forEach(testSets).it("sells %e hTokens for underlying", async function (hTokenIn: BigNumber) {
+                const virtualHTokenReserves: BigNumber = lpTokenSupply;
+                const normalizedUnderlyingReserves: BigNumber = lpTokenSupply;
+                await testSellHToken.call(this, virtualHTokenReserves, normalizedUnderlyingReserves, hTokenIn);
+              });
             });
 
-            forEach(testSets).it(
-              "sells %e hTokens for underlying and emits a Trade event",
-              async function (secondHTokenIn: BigNumber) {
-                await expect(
-                  this.contracts.hifiPool
-                    .connect(this.signers.alice)
-                    .sellHToken(this.signers.alice.address, secondHTokenIn),
-                ).to.emit(this.contracts.hifiPool, "Trade");
-              },
-            );
+            context("when it is the second trade", function () {
+              const firstHTokenIn: BigNumber = hUSDC("1");
+              let normalizedUnderlyingReserves: BigNumber;
+              let virtualHTokenReserves: BigNumber;
+
+              beforeEach(async function () {
+                // Do the first trade.
+                await this.contracts.hifiPool
+                  .connect(this.signers.alice)
+                  .sellHToken(this.signers.alice.address, firstHTokenIn);
+
+                // Get the amounts needed for the second trade tests.
+                normalizedUnderlyingReserves = await this.contracts.hifiPool.getNormalizedUnderlyingReserves();
+              });
+
+              const testSets = [hUSDC("2.141592653589793238"), hUSDC("9"), hUSDC("99")];
+
+              forEach(testSets).it("sells %e hTokens for underlying", async function (secondHTokenIn: BigNumber) {
+                virtualHTokenReserves = lpTokenSupply.add(firstHTokenIn);
+                await testSellHToken.call(this, virtualHTokenReserves, normalizedUnderlyingReserves, secondHTokenIn);
+              });
+
+              forEach(testSets).it(
+                "sells %e hTokens for underlying and emits a Trade event",
+                async function (secondHTokenIn: BigNumber) {
+                  await expect(
+                    this.contracts.hifiPool
+                      .connect(this.signers.alice)
+                      .sellHToken(this.signers.alice.address, secondHTokenIn),
+                  ).to.emit(this.contracts.hifiPool, "Trade");
+                },
+              );
+            });
           });
         });
       });

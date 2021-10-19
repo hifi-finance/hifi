@@ -34,7 +34,7 @@ interface IHifiPool is IErc20Permit {
         int256 hTokenAmount
     );
 
-    /// CONSTANT FUNCTIONS ///
+    /// PUBLIC CONSTANT FUNCTIONS ///
 
     /// @notice Quotes how much underlying would be required to buy `hTokenOut` hToken.
     ///
@@ -110,7 +110,7 @@ interface IHifiPool is IErc20Permit {
     /// @notice The ratio between our native precision (18) and the underlying precision.
     function underlyingPrecisionScalar() external view returns (uint256);
 
-    /// NON-CONSTANT FUNCTIONS ///
+    /// PUBLIC NON-CONSTANT FUNCTIONS ///
 
     /// @notice Burns LP tokens in exchange for underlying tokens and hTokens.
     ///

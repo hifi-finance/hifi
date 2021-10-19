@@ -16,6 +16,9 @@ error HifiPool__BondMatured();
 /// @notice Emitted when attempting to buy a zero amount of hTokens.
 error HifiPool__BuyHTokenZero();
 
+/// @notice Emitted when attempting to buy hTokens with a zero amount of underlying.
+error HifiPool__BuyHTokenUnderlyingZero();
+
 /// @notice Emitted when attempting to buy a zero amount of underlying.
 error HifiPool__BuyUnderlyingZero();
 
@@ -37,6 +40,9 @@ error HifiPool__NegativeInterestRate(
 /// @notice Emitted when attempting to sell a zero amount of hToken.
 error HifiPool__SellHTokenZero();
 
+/// @notice Emitted when attempting to sell hTokens in exchange for a zero amount of underlying.
+error HifiPool__SellHTokenUnderlyingZero();
+
 /// @notice Emitted when attempting to sell a zero amount of underlying.
 error HifiPool__SellUnderlyingZero();
 
@@ -56,10 +62,10 @@ contract HifiPool is
     using SafeErc20 for IErc20;
 
     /// @inheritdoc IHifiPool
-    uint256 public override maturity;
+    IHToken public override hToken;
 
     /// @inheritdoc IHifiPool
-    IHToken public override hToken;
+    uint256 public override maturity;
 
     /// @inheritdoc IHifiPool
     IErc20 public override underlying;
@@ -280,6 +286,11 @@ contract HifiPool is
 
         underlyingIn = getQuoteForBuyingHToken(hTokenOut);
 
+        // Checks: avoid the zero edge case.
+        if (underlyingIn == 0) {
+            revert HifiPool__BuyHTokenUnderlyingZero();
+        }
+
         // Interactions
         underlying.safeTransferFrom(msg.sender, address(this), underlyingIn);
         hToken.transfer(to, hTokenOut);
@@ -333,6 +344,11 @@ contract HifiPool is
         }
 
         underlyingOut = getQuoteForSellingHToken(hTokenIn);
+
+        // Checks: avoid the zero edge case.
+        if (underlyingOut == 0) {
+            revert HifiPool__SellHTokenUnderlyingZero();
+        }
 
         // Interactions
         hToken.transferFrom(msg.sender, address(this), hTokenIn);

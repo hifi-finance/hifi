@@ -95,58 +95,69 @@ export function shouldBehaveLikeBuyHToken(): void {
             .transfer(this.contracts.hifiPool.address, initialHTokenReserves);
         });
 
-        context("when the interest rate turns negative", function () {
+        context("when the calculated amount of underlying to sell is zero", function () {
           it("reverts", async function () {
-            const hTokenOut: BigNumber = hUSDC("100");
+            const hTokenOut: BigNumber = hUSDC("1e-7");
             await expect(
               this.contracts.hifiPool.connect(this.signers.alice).buyHToken(this.signers.alice.address, hTokenOut),
-            ).to.be.revertedWith(HifiPoolErrors.NEGATIVE_INTEREST_RATE);
+            ).to.be.revertedWith(HifiPoolErrors.BUY_H_TOKEN_UNDERLYING_ZERO);
           });
         });
 
-        context("when the interest rate does not turn negative", function () {
-          const lpTokenSupply: BigNumber = initialNormalizedUnderlyingReserves;
-
-          context("when it is the first trade", function () {
-            const testSets = [hUSDC("3.141592653589793238"), hUSDC("10"), hUSDC("25")];
-
-            forEach(testSets).it("buys %e hTokens with underlying", async function (hTokenOut: BigNumber) {
-              const virtualHTokenReserves: BigNumber = lpTokenSupply.add(initialHTokenReserves);
-              await testBuyHToken.call(this, virtualHTokenReserves, initialNormalizedUnderlyingReserves, hTokenOut);
+        context("when the calculated amount of underlying to sell is not zero", function () {
+          context("when the interest rate turns negative", function () {
+            it("reverts", async function () {
+              const hTokenOut: BigNumber = hUSDC("100");
+              await expect(
+                this.contracts.hifiPool.connect(this.signers.alice).buyHToken(this.signers.alice.address, hTokenOut),
+              ).to.be.revertedWith(HifiPoolErrors.NEGATIVE_INTEREST_RATE);
             });
           });
 
-          context("when it is the second trade", function () {
-            const firstHTokenOut: BigNumber = hUSDC("1");
-            let normalizedUnderlyingReserves: BigNumber;
+          context("when the interest rate does not turn negative", function () {
+            const lpTokenSupply: BigNumber = initialNormalizedUnderlyingReserves;
 
-            beforeEach(async function () {
-              // Do the first trade.
-              await this.contracts.hifiPool
-                .connect(this.signers.alice)
-                .buyHToken(this.signers.alice.address, firstHTokenOut);
+            context("when it is the first trade", function () {
+              const testSets = [hUSDC("3.141592653589793238"), hUSDC("10"), hUSDC("25")];
 
-              // Get the amounts needed for the second trade tests.
-              normalizedUnderlyingReserves = await this.contracts.hifiPool.getNormalizedUnderlyingReserves();
+              forEach(testSets).it("buys %e hTokens with underlying", async function (hTokenOut: BigNumber) {
+                const virtualHTokenReserves: BigNumber = lpTokenSupply.add(initialHTokenReserves);
+                await testBuyHToken.call(this, virtualHTokenReserves, initialNormalizedUnderlyingReserves, hTokenOut);
+              });
             });
 
-            const testSets = [hUSDC("2.141592653589793238"), hUSDC("9"), hUSDC("24")];
+            context("when it is the second trade", function () {
+              const firstHTokenOut: BigNumber = hUSDC("1");
+              let normalizedUnderlyingReserves: BigNumber;
 
-            forEach(testSets).it("buys %e hTokens with underlying", async function (secondHTokenOut: BigNumber) {
-              const virtualHTokenReserves: BigNumber = lpTokenSupply.add(initialHTokenReserves).sub(firstHTokenOut);
-              await testBuyHToken.call(this, virtualHTokenReserves, normalizedUnderlyingReserves, secondHTokenOut);
+              beforeEach(async function () {
+                // Do the first trade.
+                await this.contracts.hifiPool
+                  .connect(this.signers.alice)
+                  .buyHToken(this.signers.alice.address, firstHTokenOut);
+
+                // Get the amounts needed for the second trade tests.
+                normalizedUnderlyingReserves = await this.contracts.hifiPool.getNormalizedUnderlyingReserves();
+              });
+
+              const testSets = [hUSDC("2.141592653589793238"), hUSDC("9"), hUSDC("24")];
+
+              forEach(testSets).it("buys %e hTokens with underlying", async function (secondHTokenOut: BigNumber) {
+                const virtualHTokenReserves: BigNumber = lpTokenSupply.add(initialHTokenReserves).sub(firstHTokenOut);
+                await testBuyHToken.call(this, virtualHTokenReserves, normalizedUnderlyingReserves, secondHTokenOut);
+              });
+
+              forEach(testSets).it(
+                "buys %e hTokens with underlying and emits a Trade event",
+                async function (secondHTokenOut: BigNumber) {
+                  await expect(
+                    this.contracts.hifiPool
+                      .connect(this.signers.alice)
+                      .buyHToken(this.signers.alice.address, secondHTokenOut),
+                  ).to.emit(this.contracts.hifiPool, "Trade");
+                },
+              );
             });
-
-            forEach(testSets).it(
-              "buys %e hTokens with underlying and emits a Trade event",
-              async function (secondHTokenOut: BigNumber) {
-                await expect(
-                  this.contracts.hifiPool
-                    .connect(this.signers.alice)
-                    .buyHToken(this.signers.alice.address, secondHTokenOut),
-                ).to.emit(this.contracts.hifiPool, "Trade");
-              },
-            );
           });
         });
       });
