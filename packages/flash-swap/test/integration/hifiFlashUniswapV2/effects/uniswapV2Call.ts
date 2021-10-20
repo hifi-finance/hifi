@@ -1,7 +1,7 @@
 import { defaultAbiCoder } from "@ethersproject/abi";
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
-import { HifiFlashUniswapV2Errors } from "@hifi/errors";
+import { BalanceSheetErrors, HifiFlashUniswapV2Errors } from "@hifi/errors";
 import { USDC, WBTC, hUSDC, price } from "@hifi/helpers";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
@@ -210,12 +210,11 @@ export function shouldBehaveLikeUniswapV2Call(): void {
           context("when the borrower does not have a liquidity shortfall", function () {
             it("reverts", async function () {
               const to: string = this.contracts.hifiFlashUniswapV2.address;
-              // TODO: change the revert reason with a BalanceSheet error once Hardhat enables external custom errors.
               await expect(
                 this.contracts.uniswapV2Pair
                   .connect(this.signers.liquidator)
                   .swap(token0Amount, token1Amount, to, data),
-              ).to.be.revertedWith("Transaction reverted without a reason string");
+              ).to.be.revertedWith(BalanceSheetErrors.NO_LIQUIDITY_SHORTFALL);
             });
           });
 
@@ -233,7 +232,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                   this.contracts.uniswapV2Pair
                     .connect(this.signers.liquidator)
                     .swap(token0Amount, token1Amount, to, data),
-                ).to.be.revertedWith("Transaction reverted without a reason string");
+                ).to.be.revertedWith(BalanceSheetErrors.LIQUIDATE_BORROW_INSUFFICIENT_COLLATERAL);
               });
             });
 

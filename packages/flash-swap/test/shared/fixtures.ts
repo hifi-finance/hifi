@@ -3,12 +3,9 @@ import { keccak256 } from "@ethersproject/keccak256";
 import { H_TOKEN_MATURITY_ONE_YEAR } from "@hifi/constants";
 import { USDC_DECIMALS, USDC_NAME, USDC_SYMBOL, WBTC_DECIMALS, WBTC_NAME, WBTC_SYMBOL } from "@hifi/constants";
 import { getHTokenName, getHTokenSymbol } from "@hifi/helpers";
-import balanceSheetV1Artifact from "@hifi/protocol/artifacts/BalanceSheetV1.json";
-import chainlinkOperatorArtifact from "@hifi/protocol/artifacts/ChainlinkOperator.json";
-import fintrollerV1Artifact from "@hifi/protocol/artifacts/FintrollerV1.json";
-import { BalanceSheetV1 } from "@hifi/protocol/typechain/BalanceSheetV1";
-import { ChainlinkOperator } from "@hifi/protocol/typechain/ChainlinkOperator";
-import { FintrollerV1 } from "@hifi/protocol/typechain/FintrollerV1";
+import type { BalanceSheetV1 } from "@hifi/protocol/dist/types/BalanceSheetV1";
+import type { ChainlinkOperator } from "@hifi/protocol/dist/types/ChainlinkOperator";
+import type { FintrollerV1 } from "@hifi/protocol/dist/types/FintrollerV1";
 import { artifacts, waffle } from "hardhat";
 import type { Artifact } from "hardhat/types";
 
@@ -49,15 +46,18 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
     await waffle.deployContract(deployer, simplePriceFeedArtifact, [])
   );
 
+  const chainlinkOperatorArtifact: Artifact = await artifacts.readArtifact("ChainlinkOperator");
   const oracle: ChainlinkOperator = <ChainlinkOperator>(
     await waffle.deployContract(deployer, chainlinkOperatorArtifact, [])
   );
   await oracle.setFeed(wbtc.address, wbtcPriceFeed.address);
   await oracle.setFeed(usdc.address, usdcPriceFeed.address);
 
+  const fintrollerV1Artifact: Artifact = await artifacts.readArtifact("FintrollerV1");
   const fintroller: FintrollerV1 = <FintrollerV1>await waffle.deployContract(deployer, fintrollerV1Artifact, []);
   await fintroller.connect(deployer).initialize();
 
+  const balanceSheetV1Artifact: Artifact = await artifacts.readArtifact("BalanceSheetV1");
   const balanceSheet: BalanceSheetV1 = <BalanceSheetV1>(
     await waffle.deployContract(deployer, balanceSheetV1Artifact, [])
   );

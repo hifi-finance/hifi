@@ -1,7 +1,7 @@
-import { BalanceSheetV1 } from "@hifi/protocol/typechain/BalanceSheetV1";
-import { ChainlinkOperator } from "@hifi/protocol/typechain/ChainlinkOperator";
-import { FintrollerV1 } from "@hifi/protocol/typechain/FintrollerV1";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
+import type { BalanceSheetV1 } from "@hifi/protocol/dist/types/BalanceSheetV1";
+import type { ChainlinkOperator } from "@hifi/protocol/dist/types/ChainlinkOperator";
+import type { FintrollerV1 } from "@hifi/protocol/dist/types/FintrollerV1";
+import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 
 import type { GodModeErc20 } from "../../src/types/GodModeErc20";
 import type { GodModeHToken } from "../../src/types/GodModeHToken";

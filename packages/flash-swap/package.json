@@ -1,7 +1,7 @@
 {
   "name": "@hifi/flash-swap",
   "description": "Flash swap implementations for liquidating underwater accounts",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "author": {
     "name": "Hifi",
     "email": "contact@hifi.finance",
@@ -11,19 +11,19 @@
     "url": "https://github.com/hifi-finance/hifi/issues"
   },
   "dependencies": {
-    "@hifi/protocol": "1.6.0",
+    "@ethersproject/abi": "^5.5.0",
+    "@ethersproject/bytes": "^5.5.0",
+    "@ethersproject/providers": "^5.5.0",
+    "@hifi/protocol": "1.7.0",
     "@paulrberg/contracts": "3.6.1",
     "@uniswap/v2-core": "1.0.1",
     "ethers": "^5.5.1"
   },
   "devDependencies": {
-    "@ethersproject/abi": "^5.5.0",
     "@ethersproject/abstract-signer": "^5.5.0",
     "@ethersproject/bignumber": "^5.5.0",
-    "@ethersproject/bytes": "^5.5.0",
     "@ethersproject/constants": "^5.5.0",
     "@ethersproject/keccak256": "^5.5.0",
-    "@ethersproject/providers": "^5.5.0",
     "@hifi/errors": "workspace:*",
     "@hifi/helpers": "workspace:*",
     "@nomiclabs/hardhat-ethers": "^2.0.2",
@@ -81,10 +81,10 @@
   ],
   "license": "LGPL-3.0-or-later",
   "peerDependencies": {
-    "@hifi/protocol": "1.6.0",
+    "@hifi/protocol": "1.7.0",
     "@paulrberg/contracts": "3.6.1",
     "@uniswap/v2-core": "1.0.1",
-    "ethers": "^5.4.7"
+    "ethers": "^5.5.1"
   },
   "publishConfig": {
     "access": "public"
