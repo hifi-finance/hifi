@@ -14,7 +14,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Rename `HToken__MaturityPast` custom error to `HToken__MaturityPassed`.
 - Ship declaration maps and source maps with the npm package.
 - Upgrade to `@paulrberg/contracts` v3.6.1.
-- Upgrade to `ethers` v5.4.7.
+- Upgrade to `ethers` v5.5.1.
 - Upgrade to `prb-math` v2.4.0 and remove `prb-math.js` dev dep.
 - Upgrade to Solidity v0.8.9.
 
