@@ -1,5 +1,5 @@
 import { CHAIN_IDS } from "@hifi/constants";
-import { NetworkUserConfig } from "hardhat/types";
+import type { NetworkUserConfig } from "hardhat/types";
 
 export function getChainConfig(
   chain: keyof typeof CHAIN_IDS,

@@ -1,12 +1,12 @@
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
-import { Fixture } from "ethereum-waffle";
-import { MockContract } from "ethereum-waffle";
+import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
+import type { Fixture } from "ethereum-waffle";
+import type { MockContract } from "ethereum-waffle";
 
-import { GodModeErc20 } from "../../src/types/GodModeErc20";
-import { GodModeHifiPool } from "../../src/types/GodModeHifiPool";
-import { GodModeHifiPoolRegistry } from "../../src/types/GodModeHifiPoolRegistry";
-import { GodModeHToken } from "../../src/types/GodModeHToken";
-import { YieldSpaceMock } from "../../src/types/YieldSpaceMock";
+import type { GodModeErc20 } from "../../src/types/GodModeErc20";
+import type { GodModeHifiPool } from "../../src/types/GodModeHifiPool";
+import type { GodModeHifiPoolRegistry } from "../../src/types/GodModeHifiPoolRegistry";
+import type { GodModeHToken } from "../../src/types/GodModeHToken";
+import type { YieldSpaceMock } from "../../src/types/YieldSpaceMock";
 
 declare module "mocha" {
   export interface Context {

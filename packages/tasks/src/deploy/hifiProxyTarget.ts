@@ -1,5 +1,5 @@
 import * as core from "@actions/core";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { HifiProxyTarget } from "@hifi/proxy-target/dist/types/HifiProxyTarget";
 import { HifiProxyTarget__factory } from "@hifi/proxy-target/dist/types/factories/HifiProxyTarget__factory";
 import { task, types } from "hardhat/config";

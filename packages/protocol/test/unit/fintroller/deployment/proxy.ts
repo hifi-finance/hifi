@@ -3,8 +3,8 @@ import { expect } from "chai";
 import { ethers, upgrades } from "hardhat";
 
 import { DEFAULT_MAX_BONDS } from "@hifi/constants";
-import { FintrollerV2__factory } from "../../../../src/types";
-import { FintrollerV2 } from "../../../../src/types/FintrollerV2";
+import type { FintrollerV2__factory } from "../../../../src/types";
+import type { FintrollerV2 } from "../../../../src/types/FintrollerV2";
 
 export function shouldBehaveLikeUpgradeableProxy(): void {
   let fintrollerV2: FintrollerV2;

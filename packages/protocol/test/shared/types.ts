@@ -1,15 +1,15 @@
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
-import { MockContract } from "ethereum-waffle";
-import { Fixture } from "ethereum-waffle";
+import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
+import type { MockContract } from "ethereum-waffle";
+import type { Fixture } from "ethereum-waffle";
 
-import { ChainlinkOperator } from "../../src/types/ChainlinkOperator";
-import { FintrollerV1 } from "../../src/types/FintrollerV1";
-import { GodModeBalanceSheet } from "../../src/types/GodModeBalanceSheet";
-import { GodModeErc20 } from "../../src/types/GodModeErc20";
-import { GodModeHToken } from "../../src/types/GodModeHToken";
-import { OwnableUpgradeable } from "../../src/types/OwnableUpgradeable";
-import { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
-import { StablecoinPriceFeed } from "../../src/types/StablecoinPriceFeed";
+import type { ChainlinkOperator } from "../../src/types/ChainlinkOperator";
+import type { FintrollerV1 } from "../../src/types/FintrollerV1";
+import type { GodModeBalanceSheet } from "../../src/types/GodModeBalanceSheet";
+import type { GodModeErc20 } from "../../src/types/GodModeErc20";
+import type { GodModeHToken } from "../../src/types/GodModeHToken";
+import type { OwnableUpgradeable } from "../../src/types/OwnableUpgradeable";
+import type { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
+import type { StablecoinPriceFeed } from "../../src/types/StablecoinPriceFeed";
 
 declare module "mocha" {
   interface Context {

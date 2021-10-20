@@ -20,6 +20,9 @@
   },
   "packageManager": "yarn@3.1.0-rc.6",
   "private": true,
+  "resolutions": {
+    "@ethersproject/wallet": "^5.5.0"
+  },
   "scripts": {
     "build:ts": "yarn workspaces foreach --topological-dev --verbose run build:ts",
     "build:types": "yarn workspaces foreach --topological-dev --verbose run build:types",

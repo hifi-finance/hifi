@@ -1,13 +1,13 @@
-import { Signer } from "@ethersproject/abstract-signer";
-import { MockContract } from "ethereum-waffle";
+import type { Signer } from "@ethersproject/abstract-signer";
+import type { MockContract } from "ethereum-waffle";
 import { artifacts, waffle } from "hardhat";
-import { Artifact } from "hardhat/types";
+import type { Artifact } from "hardhat/types";
 
-import { GodModeErc20 } from "../../src/types/GodModeErc20";
-import { GodModeHifiPool } from "../../src/types/GodModeHifiPool";
-import { GodModeHifiPoolRegistry } from "../../src/types/GodModeHifiPoolRegistry";
-import { GodModeHToken } from "../../src/types/GodModeHToken";
-import { YieldSpaceMock } from "../../src/types/YieldSpaceMock";
+import type { GodModeErc20 } from "../../src/types/GodModeErc20";
+import type { GodModeHifiPool } from "../../src/types/GodModeHifiPool";
+import type { GodModeHifiPoolRegistry } from "../../src/types/GodModeHifiPoolRegistry";
+import type { GodModeHToken } from "../../src/types/GodModeHToken";
+import type { YieldSpaceMock } from "../../src/types/YieldSpaceMock";
 import { deployGodModeHToken, deployGodModeHifiPool, deployGodModeHifiPoolRegistry, deployUsdc } from "./deployers";
 import { deployMockHToken, deployMockHifiPool, deployMockUsdc } from "./mocks";
 

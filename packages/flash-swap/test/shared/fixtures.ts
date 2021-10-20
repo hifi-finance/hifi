@@ -1,4 +1,4 @@
-import { Signer } from "@ethersproject/abstract-signer";
+import type { Signer } from "@ethersproject/abstract-signer";
 import { keccak256 } from "@ethersproject/keccak256";
 import { H_TOKEN_MATURITY_ONE_YEAR } from "@hifi/constants";
 import { USDC_DECIMALS, USDC_NAME, USDC_SYMBOL, WBTC_DECIMALS, WBTC_NAME, WBTC_SYMBOL } from "@hifi/constants";
@@ -10,16 +10,16 @@ import { BalanceSheetV1 } from "@hifi/protocol/typechain/BalanceSheetV1";
 import { ChainlinkOperator } from "@hifi/protocol/typechain/ChainlinkOperator";
 import { FintrollerV1 } from "@hifi/protocol/typechain/FintrollerV1";
 import { artifacts, waffle } from "hardhat";
-import { Artifact } from "hardhat/types";
+import type { Artifact } from "hardhat/types";
 
 import { GodModeUniswapV2Pair__factory } from "../../src/types/factories/GodModeUniswapV2Pair__factory";
-import { GodModeErc20 } from "../../src/types/GodModeErc20";
-import { GodModeHToken } from "../../src/types/GodModeHToken";
-import { GodModeUniswapV2Factory } from "../../src/types/GodModeUniswapV2Factory";
-import { HifiFlashUniswapV2 } from "../../src/types/HifiFlashUniswapV2";
-import { MaliciousPair } from "../../src/types/MaliciousPair";
-import { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
-import { GodModeUniswapV2Pair } from "../../src/types/GodModeUniswapV2Pair";
+import type { GodModeErc20 } from "../../src/types/GodModeErc20";
+import type { GodModeHToken } from "../../src/types/GodModeHToken";
+import type { GodModeUniswapV2Factory } from "../../src/types/GodModeUniswapV2Factory";
+import type { HifiFlashUniswapV2 } from "../../src/types/HifiFlashUniswapV2";
+import type { MaliciousPair } from "../../src/types/MaliciousPair";
+import type { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
+import type { GodModeUniswapV2Pair } from "../../src/types/GodModeUniswapV2Pair";
 import { deployGodModeErc20 } from "./deployers";
 
 type IntegrationFixtureReturnType = {

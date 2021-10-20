@@ -22,7 +22,7 @@ $ npm install @hifi/flash-swap
 ## Usage
 
 The node package that you just installed contains both Solidity and JavaScript code. The former represents the smart contracts
-themselves; the latter, the Hardhat artifacts and the TypeChain bindings.
+themselves; the latter, the smart contract ABIs and the TypeChain bindings.
 
 ### Solidity
 
@@ -39,7 +39,7 @@ Example for Uniswap V2:
 import { defaultAbiCoder } from "@ethersproject/abi";
 import { getDefaultProvider } from "@ethersproject/providers";
 import { parseUnits } from "@ethersproject/units";
-import { UniswapV2Pair__factory } from "@hifi/flash-swap/dist/types/factories/UniswapV2Pair__factory";
+import type { UniswapV2Pair__factory } from "@hifi/flash-swap/dist/types/factories/UniswapV2Pair__factory";
 
 async function flashSwap() {
   const defaultProvider = getDefaultProvider();

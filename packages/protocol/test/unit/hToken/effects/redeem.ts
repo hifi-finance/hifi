@@ -3,7 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { HTokenErrors } from "@hifi/errors";
 import { getNow } from "@hifi/helpers";
 import { USDC, getPrecisionScalar, hUSDC } from "@hifi/helpers";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
 

@@ -6,7 +6,7 @@ import { USDC, WBTC, hUSDC, price } from "@hifi/helpers";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
 
-import { GodModeErc20 } from "../../../../src/types/GodModeErc20";
+import type { GodModeErc20 } from "../../../../src/types/GodModeErc20";
 import { deployGodModeErc20 } from "../../../shared/deployers";
 
 async function bumpPoolReserves(this: Mocha.Context, wbtcAmount: BigNumber, usdcAmount: BigNumber): Promise<void> {

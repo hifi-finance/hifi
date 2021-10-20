@@ -1,9 +1,9 @@
 import * as core from "@actions/core";
-import { ChainlinkOperator } from "@hifi/protocol/dist/types/ChainlinkOperator";
+import type { ChainlinkOperator } from "@hifi/protocol/dist/types/ChainlinkOperator";
 import { ChainlinkOperator__factory } from "@hifi/protocol/dist/types/factories/ChainlinkOperator__factory";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
-import { TaskArguments } from "hardhat/types";
+import type { TaskArguments } from "hardhat/types";
 import {
   SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS,
   TASK_DEPLOY_CONTRACT_CHAINLINK_OPERATOR,

@@ -1,8 +1,8 @@
 import * as core from "@actions/core";
 import { task, types } from "hardhat/config";
-import { TaskArguments } from "hardhat/types";
+import type { TaskArguments } from "hardhat/types";
 
-import { FintrollerV1 } from "../../src/types/FintrollerV1";
+import type { FintrollerV1 } from "../../src/types/FintrollerV1";
 import { FintrollerV1__factory } from "../../src/types/factories/FintrollerV1__factory";
 import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_FINTROLLER } from "../constants";
 

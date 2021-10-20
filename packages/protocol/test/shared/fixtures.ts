@@ -1,4 +1,4 @@
-import { Signer } from "@ethersproject/abstract-signer";
+import type { Signer } from "@ethersproject/abstract-signer";
 import {
   H_TOKEN_MATURITY_ONE_YEAR,
   H_TOKEN_MATURITY_THREE_MONTHS,
@@ -11,15 +11,15 @@ import {
   WBTC_SYMBOL,
   WETH_SYMBOL,
 } from "@hifi/constants";
-import { MockContract } from "ethereum-waffle";
+import type { MockContract } from "ethereum-waffle";
 
-import { ChainlinkOperator } from "../../src/types/ChainlinkOperator";
-import { FintrollerV1 } from "../../src/types/FintrollerV1";
-import { GodModeBalanceSheet } from "../../src/types/GodModeBalanceSheet";
-import { GodModeErc20 } from "../../src/types/GodModeErc20";
-import { GodModeHToken } from "../../src/types/GodModeHToken";
-import { OwnableUpgradeable } from "../../src/types/OwnableUpgradeable";
-import { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
+import type { ChainlinkOperator } from "../../src/types/ChainlinkOperator";
+import type { FintrollerV1 } from "../../src/types/FintrollerV1";
+import type { GodModeBalanceSheet } from "../../src/types/GodModeBalanceSheet";
+import type { GodModeErc20 } from "../../src/types/GodModeErc20";
+import type { GodModeHToken } from "../../src/types/GodModeHToken";
+import type { OwnableUpgradeable } from "../../src/types/OwnableUpgradeable";
+import type { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
 import {
   deployChainlinkOperator,
   deployFintrollerV1,

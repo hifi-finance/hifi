@@ -21,7 +21,7 @@ $ npm install @hifi/protocol
 ## Usage
 
 The node package that you just installed contains both Solidity and JavaScript code. The former represents the smart contracts
-themselves; the latter, the Hardhat artifacts and the TypeChain bindings.
+themselves; the latter, the smart contract ABIs and the TypeChain bindings.
 
 ### Solidity
 
@@ -55,7 +55,7 @@ contract YourContract {
 
 ```ts
 import { getDefaultProvider } from "@ethersproject/providers";
-import { BalanceSheetV1__factory } from "@hifi/protocol/dist/types/factories/BalanceSheet__factory";
+import type { BalanceSheetV1__factory } from "@hifi/protocol/dist/types/factories/BalanceSheet__factory";
 
 async function queryAccountLiquidity() {
   const defaultProvider = getDefaultProvider();

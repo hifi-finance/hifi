@@ -1,9 +1,9 @@
 import * as core from "@actions/core";
-import { HifiFlashUniswapV2 } from "@hifi/flash-swap/dist/types/HifiFlashUniswapV2";
+import type { HifiFlashUniswapV2 } from "@hifi/flash-swap/dist/types/HifiFlashUniswapV2";
 import { HifiFlashUniswapV2__factory } from "@hifi/flash-swap/dist/types/factories/HifiFlashUniswapV2__factory";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
-import { TaskArguments } from "hardhat/types";
+import type { TaskArguments } from "hardhat/types";
 
 import {
   SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS,

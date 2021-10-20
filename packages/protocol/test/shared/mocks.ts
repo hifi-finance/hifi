@@ -1,4 +1,4 @@
-import { Signer } from "@ethersproject/abstract-signer";
+import type { Signer } from "@ethersproject/abstract-signer";
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import {
@@ -17,7 +17,7 @@ import {
 import { getHTokenName, getHTokenSymbol } from "@hifi/helpers";
 import { MockContract } from "ethereum-waffle";
 import hre from "hardhat";
-import { Artifact } from "hardhat/types";
+import type { Artifact } from "hardhat/types";
 
 const { deployMockContract } = hre.waffle;
 

@@ -3,12 +3,12 @@ import { ChainlinkOperator } from "@hifi/protocol/typechain/ChainlinkOperator";
 import { FintrollerV1 } from "@hifi/protocol/typechain/FintrollerV1";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 
-import { GodModeErc20 } from "../../src/types/GodModeErc20";
-import { GodModeHToken } from "../../src/types/GodModeHToken";
-import { GodModeUniswapV2Pair } from "../../src/types/GodModeUniswapV2Pair";
-import { HifiFlashUniswapV2 } from "../../src/types/HifiFlashUniswapV2";
-import { MaliciousPair } from "../../src/types/MaliciousPair";
-import { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
+import type { GodModeErc20 } from "../../src/types/GodModeErc20";
+import type { GodModeHToken } from "../../src/types/GodModeHToken";
+import type { GodModeUniswapV2Pair } from "../../src/types/GodModeUniswapV2Pair";
+import type { HifiFlashUniswapV2 } from "../../src/types/HifiFlashUniswapV2";
+import type { MaliciousPair } from "../../src/types/MaliciousPair";
+import type { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
 
 declare module "mocha" {
   export interface Context {

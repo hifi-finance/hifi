@@ -21,7 +21,7 @@ $ npm install @hifi/proxy-target
 ## Usage
 
 The node package that you just installed contains both Solidity and JavaScript code. The former represents the smart contracts
-themselves; the latter, the Hardhat artifacts and the TypeChain bindings.
+themselves; the latter, the smart contract ABIs and the TypeChain bindings.
 
 ### Solidity
 
@@ -55,7 +55,7 @@ DSProxy](https://github.com/makerdao/developerguides/blob/master/devtools/workin
 
 ```js
 import { parseUnits } from "@ethersproject/units";
-import { HifiProxyTarget__factory } from "@hifi/protocol/dist/types/factories/HifiProxyTarget__factory";
+import type { HifiProxyTarget__factory } from "@hifi/protocol/dist/types/factories/HifiProxyTarget__factory";
 
 async function depositCollateral() {
   const signer = "..."; // Get hold of an ethers.js Signer

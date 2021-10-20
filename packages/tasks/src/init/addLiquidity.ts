@@ -1,14 +1,14 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { Erc20 } from "@hifi/amm/dist/types/Erc20";
+import type { Erc20 } from "@hifi/amm/dist/types/Erc20";
 import { Erc20__factory } from "@hifi/amm/dist/types/factories/Erc20__factory";
 import { HifiPool__factory } from "@hifi/amm/dist/types/factories/HifiPool__factory";
-import { HifiPool } from "@hifi/amm/dist/types/HifiPool";
+import type { HifiPool } from "@hifi/amm/dist/types/HifiPool";
 import { MaxUint256 } from "@ethersproject/constants";
 import { HToken__factory } from "@hifi/protocol/dist/types/factories/HToken__factory";
-import { HToken } from "@hifi/protocol/dist/types/HToken";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import type { HToken } from "@hifi/protocol/dist/types/HToken";
+import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
-import { TaskArguments } from "hardhat/types";
+import type { TaskArguments } from "hardhat/types";
 
 import { TASK_INIT_ADD_LIQUIDITY } from "../../helpers/constants";
 

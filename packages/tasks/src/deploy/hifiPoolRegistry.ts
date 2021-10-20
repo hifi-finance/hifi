@@ -1,9 +1,9 @@
 import * as core from "@actions/core";
 import { task, types } from "hardhat/config";
-import { TaskArguments } from "hardhat/types";
+import type { TaskArguments } from "hardhat/types";
 import { HifiPoolRegistry__factory } from "@hifi/amm/dist/types/factories/HifiPoolRegistry__factory";
-import { HifiPoolRegistry } from "@hifi/amm/dist/types/HifiPoolRegistry";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import type { HifiPoolRegistry } from "@hifi/amm/dist/types/HifiPoolRegistry";
+import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import {
   SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS,

@@ -1,12 +1,10 @@
 // eslint-disable @typescript-eslint/no-explicit-any
-import { Signer } from "@ethersproject/abstract-signer";
-import { Wallet } from "@ethersproject/wallet";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
+import type { Signer } from "@ethersproject/abstract-signer";
+import type { Wallet } from "@ethersproject/wallet";
+import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 import { ethers, waffle } from "hardhat";
 
-import { Contracts, Mocks, Signers } from "./types";
-
-const { createFixtureLoader } = waffle;
+import type { Contracts, Mocks, Signers } from "./types";
 
 /// This is run at the beginning of each suite of tests: 2e2, integration and unit.
 export function baseContext(description: string, hooks: () => void): void {
@@ -25,7 +23,7 @@ export function baseContext(description: string, hooks: () => void): void {
       this.signers.raider = signers[5];
 
       // Get rid of this when https://github.com/nomiclabs/hardhat/issues/849 gets fixed.
-      this.loadFixture = createFixtureLoader(signers as Signer[] as Wallet[]);
+      this.loadFixture = waffle.createFixtureLoader(signers as Signer[] as Wallet[]);
     });
 
     hooks();

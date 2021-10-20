@@ -1,11 +1,11 @@
-import { BigNumber } from "@ethersproject/bignumber";
+import type { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { H_TOKEN_MATURITY_THREE_MONTHS } from "@hifi/constants";
 import { HTokenErrors } from "@hifi/errors";
 import { getNow } from "@hifi/helpers";
 import { expect } from "chai";
 
-import { HToken } from "../../../../src/types/HToken";
+import type { HToken } from "../../../../src/types/HToken";
 import { deployHToken } from "../../../shared/deployers";
 
 export function shouldBehaveLikeConstructor(): void {

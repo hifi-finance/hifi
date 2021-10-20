@@ -1,9 +1,9 @@
 import * as core from "@actions/core";
-import { StablecoinPriceFeed } from "@hifi/protocol/dist/types/StablecoinPriceFeed";
+import type { StablecoinPriceFeed } from "@hifi/protocol/dist/types/StablecoinPriceFeed";
 import { StablecoinPriceFeed__factory } from "@hifi/protocol/dist/types/factories/StablecoinPriceFeed__factory";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
-import { TaskArguments } from "hardhat/types";
+import type { TaskArguments } from "hardhat/types";
 
 import {
   SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS,

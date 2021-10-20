@@ -21,7 +21,7 @@ $ npm install @hifi/amm
 ## Usage
 
 The node package that you just installed contains both Solidity and JavaScript code. The former represents the smart contracts
-themselves; the latter, the Hardhat artifacts and the TypeChain bindings.
+themselves; the latter, the smart contract ABIs and the TypeChain bindings.
 
 ### Solidity
 
@@ -49,7 +49,7 @@ contract YourContract {
 ```js
 import { parseUnits } from "@ethersproject/units";
 import { getDefaultProvider } from "@ethersproject/providers";
-import { HifiPool__factory } from "@hifi/amm/dist/types/factories/HifiPool__factory";
+import type { HifiPool__factory } from "@hifi/amm/dist/types/factories/HifiPool__factory";
 
 async function getQuote() {
   const defaultProvider = getDefaultProvider();

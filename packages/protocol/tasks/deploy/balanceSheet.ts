@@ -1,8 +1,8 @@
 import * as core from "@actions/core";
 import { task, types } from "hardhat/config";
-import { TaskArguments } from "hardhat/types";
+import type { TaskArguments } from "hardhat/types";
 
-import { BalanceSheetV1 } from "../../src/types/BalanceSheetV1";
+import type { BalanceSheetV1 } from "../../src/types/BalanceSheetV1";
 import { BalanceSheetV1__factory } from "../../src/types/factories/BalanceSheetV1__factory";
 import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_BALANCE_SHEET } from "../constants";
 
