@@ -21,10 +21,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - Check zero edge cases in the `buyHToken` and `sellHToken` functions in the `HifiPool` contract.
 
-## Removed
-
-- `artifacts` from npm package.
-
 ## [1.5.0] - 2021-09-24
 
 ### Changed
