@@ -5,7 +5,7 @@ import { USDC } from "@hifi/helpers";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
 import forEach from "mocha-each";
-import { MAX_UD60x18 } from "prb-math.js";
+import { MAX_UD60x18 } from "prb-math";
 
 export function shouldBehaveLikeGetNormalizedUnderlyingReserves(): void {
   context("when there is no underlying in the pool", function () {

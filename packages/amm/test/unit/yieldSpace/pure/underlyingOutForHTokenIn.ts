@@ -5,7 +5,7 @@ import { getDaysInSeconds, getYearsInSeconds, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
 import forEach from "mocha-each";
-import { MAX_UD60x18, PRBMathUD60x18Errors, SCALE } from "prb-math.js";
+import { MAX_UD60x18, PRBMathUD60x18Errors, SCALE } from "prb-math";
 
 import { EPSILON, G2 } from "../../../shared/constants";
 import { getYieldExponent, outForIn } from "../../../shared/mirrors";

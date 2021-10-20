@@ -7,7 +7,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { fromBn, toBn } from "evm-bn";
 import forEach from "mocha-each";
-import { SCALE } from "prb-math.js";
+import { SCALE } from "prb-math";
 
 import { EPSILON } from "../../../shared/constants";
 import { getLatestBlockTimestamp } from "../../../shared/helpers";

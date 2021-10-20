@@ -5,7 +5,7 @@ import { BalanceSheetErrors } from "@hifi/errors";
 import { WBTC, hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
-import { mul } from "prb-math.js";
+import { mul } from "prb-math";
 
 import { getSeizableCollateralAmount } from "../../../shared/mirrors";
 

@@ -10,7 +10,7 @@ import {
   WBTC_PRICE_PRECISION_SCALAR,
 } from "@hifi/constants";
 import { getPrecisionScalar } from "@hifi/helpers";
-import { div, mul } from "prb-math.js";
+import { div, mul } from "prb-math";
 
 export function getHypotheticalAccountLiquidity(
   collateralAmounts: BigNumber[],

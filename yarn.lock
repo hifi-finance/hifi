@@ -992,8 +992,7 @@ __metadata:
     mathjs: ^9.5.0
     mocha: ^9.1.1
     mocha-each: ^2.0.1
-    prb-math: 2.3.0
-    prb-math.js: ^1.0.2
+    prb-math: 2.4.0
     prettier: ^2.4.1
     prettier-plugin-solidity: ^1.0.0-beta.18
     shelljs: ^0.8.4
@@ -1008,7 +1007,7 @@ __metadata:
     "@hifi/protocol": 1.6.0
     "@paulrberg/contracts": 3.6.1
     ethers: ^5.4.7
-    prb-math: 2.3.0
+    prb-math: 2.4.0
   languageName: unknown
   linkType: soft
 
@@ -1180,8 +1179,7 @@ __metadata:
     lodash: ^4.17.21
     mocha: ^9.1.1
     mocha-each: ^2.0.1
-    prb-math: 2.3.0
-    prb-math.js: ^1.0.2
+    prb-math: 2.4.0
     prettier: ^2.4.1
     prettier-plugin-solidity: ^1.0.0-beta.18
     shelljs: ^0.8.4
@@ -1196,7 +1194,7 @@ __metadata:
     "@openzeppelin/contracts-upgradeable": 4.3.2
     "@paulrberg/contracts": 3.6.1
     ethers: ^5.4.7
-    prb-math: 2.3.0
+    prb-math: 2.4.0
   languageName: unknown
   linkType: soft
 
@@ -11484,25 +11482,22 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"prb-math.js@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "prb-math.js@npm:1.0.2"
+"prb-math@npm:2.3.0, prb-math@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "prb-math@npm:2.3.0"
+  checksum: 1fffe85646ded1cebf669c55a95c59b8238b9faab4dfde54e2d779a2c48d50a199d2c3b3dcc89931421421755d185b6835a9788edff753c83136a38ba32bf9d7
+  languageName: node
+  linkType: hard
+
+"prb-math@npm:2.4.0":
+  version: 2.4.0
+  resolution: "prb-math@npm:2.4.0"
   dependencies:
     "@ethersproject/bignumber": ^5.4.2
     decimal.js: ^10.3.1
     evm-bn: ^1.0.1
     mathjs: ^9.5.0
-  peerDependencies:
-    "@ethersproject/bignumber": ^5.4.2
-    evm-bn: ^1.0.1
-  checksum: 9163a42f57fd6cf1c94f325dba1f2b7805a1648cb0a0897564f9e0bebd9b0752a3a03e0ccfff9af08255053d853e3196485e74a3a0129cf0bc551ed85ffb6d1b
-  languageName: node
-  linkType: hard
-
-"prb-math@npm:2.3.0, prb-math@npm:^2.3.0":
-  version: 2.3.0
-  resolution: "prb-math@npm:2.3.0"
-  checksum: 1fffe85646ded1cebf669c55a95c59b8238b9faab4dfde54e2d779a2c48d50a199d2c3b3dcc89931421421755d185b6835a9788edff753c83136a38ba32bf9d7
+  checksum: 62159113733275cfac1a56171370e62182b20b3b30100450ccac110e49251d14f54fb0eccf259287e491eae761f9201bedffec8a67ed7724e5e95ef2a3db0ee1
   languageName: node
   linkType: hard
 

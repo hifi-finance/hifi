@@ -4,7 +4,7 @@ import { YieldSpaceErrors } from "@hifi/errors";
 import { getDaysInSeconds, getHoursInSeconds, getYearsInSeconds } from "@hifi/helpers";
 import { expect } from "chai";
 import forEach from "mocha-each";
-import { SCALE } from "prb-math.js";
+import { SCALE } from "prb-math";
 
 import { CUTOFF_TTM, EPSILON, G1, G2 } from "../../../shared/constants";
 import { getYieldExponent } from "../../../shared/mirrors";
