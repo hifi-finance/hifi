@@ -8,31 +8,31 @@
     "url": "https://hifi.finance"
   },
   "dependencies": {
-    "@actions/core": "^1.5.0",
-    "@ethersproject/bignumber": "^5.4.2",
+    "@actions/core": "^1.6.0",
+    "@ethersproject/bignumber": "^5.5.0",
     "@hifi/amm": "workspace:*",
     "@hifi/flash-swap": "workspace:*",
     "@hifi/helpers": "workspace:*",
     "@hifi/protocol": "workspace:*",
     "@hifi/proxy-target": "workspace:*",
     "@nomiclabs/hardhat-ethers": "^2.0.2",
-    "hardhat": "^2.6.4"
+    "hardhat": "^2.6.6"
   },
   "devDependencies": {
-    "@ethersproject/abi": "^5.4.1",
-    "@ethersproject/bytes": "^5.4.0",
-    "@ethersproject/constants": "^5.4.0",
-    "@ethersproject/providers": "^5.4.5",
-    "@types/node": "^16.9.6",
-    "@typescript-eslint/eslint-plugin": "^4.31.2",
-    "@typescript-eslint/parser": "^4.31.2",
+    "@ethersproject/abi": "^5.5.0",
+    "@ethersproject/bytes": "^5.5.0",
+    "@ethersproject/constants": "^5.5.0",
+    "@ethersproject/providers": "^5.5.0",
+    "@types/node": "^16.11.1",
+    "@typescript-eslint/eslint-plugin": "^5.1.0",
+    "@typescript-eslint/parser": "^5.1.0",
     "dotenv": "^10.0.0",
-    "eslint": "^7.32.0",
+    "eslint": "^8.0.1",
     "eslint-config-prettier": "^8.3.0",
-    "ethers": "^5.4.7",
+    "ethers": "^5.5.1",
     "prettier": "^2.4.1",
-    "ts-node": "^10.2.1",
-    "typescript": "~4.4.3"
+    "ts-node": "^10.3.0",
+    "typescript": "^4.4.4"
   },
   "keywords": [
     "blockchain",
