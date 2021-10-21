@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { HTokenErrors } from "@hifi/errors";
 import { getNow } from "@hifi/helpers";
-import { USDC, getPrecisionScalar, hUSDC } from "@hifi/helpers";
+import { getPrecisionScalar, hUSDC } from "@hifi/helpers";
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
@@ -81,10 +81,26 @@ export function shouldBehaveLikeRedeem(): void {
           });
 
           context("when the underlying has 6 decimals", function () {
-            const underlyingAmount: BigNumber = USDC("100");
+            const underlyingAmount: BigNumber = toBn("100", 6);
 
             beforeEach(async function () {
               await this.contracts.hTokens[0].__godMode_setUnderlyingPrecisionScalar(getPrecisionScalar(6));
+              await this.mocks.usdc.mock.transfer.withArgs(maker.address, underlyingAmount).returns(true);
+            });
+
+            it("makes the redemption", async function () {
+              const oldUnderlyingTotalSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingReserve();
+              await this.contracts.hTokens[0].connect(maker).redeem(hTokenAmount);
+              const newUnderlyingTotalSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingReserve();
+              expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.add(underlyingAmount));
+            });
+          });
+
+          context("when the underlying has 1 decimal", function () {
+            const underlyingAmount: BigNumber = toBn("100", 1);
+
+            beforeEach(async function () {
+              await this.contracts.hTokens[0].__godMode_setUnderlyingPrecisionScalar(getPrecisionScalar(1));
               await this.mocks.usdc.mock.transfer.withArgs(maker.address, underlyingAmount).returns(true);
             });
 

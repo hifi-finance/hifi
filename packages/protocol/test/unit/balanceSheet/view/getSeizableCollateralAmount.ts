@@ -82,6 +82,25 @@ export function shouldBehaveLikeGetSeizableCollateralAmount(): void {
           );
         });
       });
+
+      context("when the collateral has 1 decimal", function () {
+        const collateralDecimals: BigNumber = BigNumber.from(1);
+
+        beforeEach(async function () {
+          await this.mocks.wbtc.mock.decimals.returns(collateralDecimals);
+        });
+
+        it.only("returns the correct amount", async function () {
+          const seizableCollateralAmount: BigNumber = await this.contracts.balanceSheet.getSeizableCollateralAmount(
+            this.mocks.hTokens[0].address,
+            repayAmount,
+            this.mocks.wbtc.address,
+          );
+          expect(seizableCollateralAmount).to.equal(
+            getSeizableCollateralAmount(repayAmount, NORMALIZED_WBTC_PRICE, collateralDecimals),
+          );
+        });
+      });
     });
   });
 }

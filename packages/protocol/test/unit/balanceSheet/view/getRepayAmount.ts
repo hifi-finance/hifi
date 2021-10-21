@@ -1,7 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { LIQUIDATION_INCENTIVES, NORMALIZED_WBTC_PRICE } from "@hifi/constants";
-import { WBTC } from "@hifi/helpers";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
 
@@ -49,7 +48,27 @@ export function shouldBehaveLikeGetRepayAmount(): void {
 
     context("when the collateral has 8 decimals", function () {
       const collateralDecimals: BigNumber = BigNumber.from(8);
-      const seizableCollateralAmount: BigNumber = WBTC("1");
+      const seizableCollateralAmount: BigNumber = toBn("1", 8);
+
+      beforeEach(async function () {
+        await this.mocks.wbtc.mock.decimals.returns(collateralDecimals);
+      });
+
+      it("returns the correct amount", async function () {
+        const repayAmount: BigNumber = await this.contracts.balanceSheet.getRepayAmount(
+          this.mocks.wbtc.address,
+          seizableCollateralAmount,
+          this.mocks.hTokens[0].address,
+        );
+        expect(repayAmount).to.equal(
+          getRepayAmount(seizableCollateralAmount, NORMALIZED_WBTC_PRICE, collateralDecimals),
+        );
+      });
+    });
+
+    context("when the collateral has 1 decimal", function () {
+      const collateralDecimals: BigNumber = BigNumber.from(1);
+      const seizableCollateralAmount: BigNumber = toBn("1", 1);
 
       beforeEach(async function () {
         await this.mocks.wbtc.mock.decimals.returns(collateralDecimals);
