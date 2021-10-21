@@ -143,6 +143,7 @@ contract BalanceSheetV1 is
     struct HypotheticalAccountLiquidityLocalVars {
         uint256 bondListLength;
         uint256 collateralAmount;
+        uint256 collateralDecimals;
         uint256 collateralListLength;
         uint256 collateralRatio;
         uint256 collateralValueUsd;
@@ -150,7 +151,6 @@ contract BalanceSheetV1 is
         uint256 debtValueUsd;
         uint256 normalizedCollateralAmount;
         uint256 normalizedCollateralPrice;
-        uint256 precisionScalar;
         uint256 totalDebtValueUsd;
         uint256 totalWeightedCollateralValueUsd;
         uint256 normalizedUnderlyingPrice;
@@ -182,11 +182,9 @@ contract BalanceSheetV1 is
             }
 
             // Normalize the collateral amount.
-            unchecked {
-                vars.precisionScalar = 10**(18 - collateral.decimals());
-            }
-            if (vars.precisionScalar != 1) {
-                vars.normalizedCollateralAmount = vars.collateralAmount * vars.precisionScalar;
+            vars.collateralDecimals = collateral.decimals();
+            if (vars.collateralDecimals != 18) {
+                vars.normalizedCollateralAmount = vars.collateralAmount.div(10**vars.collateralDecimals);
             } else {
                 vars.normalizedCollateralAmount = vars.collateralAmount;
             }
@@ -249,12 +247,9 @@ contract BalanceSheetV1 is
     ) public view override returns (uint256 repayAmount) {
         // Normalize the collateral amount.
         uint256 normalizedSeizableAmount;
-        uint256 collateralPrecisionScalar;
-        unchecked {
-            collateralPrecisionScalar = 10**(18 - collateral.decimals());
-        }
-        if (collateralPrecisionScalar != 1) {
-            normalizedSeizableAmount = seizableCollateralAmount * collateralPrecisionScalar;
+        uint256 collateralDecimals = collateral.decimals();
+        if (collateralDecimals != 18) {
+            normalizedSeizableAmount = seizableCollateralAmount.div(10**collateralDecimals);
         } else {
             normalizedSeizableAmount = seizableCollateralAmount;
         }
@@ -294,9 +289,9 @@ contract BalanceSheetV1 is
 
         // Denormalize the collateral amount.
         unchecked {
-            uint256 collateralPrecisionScalar = 10**(18 - collateral.decimals());
-            if (collateralPrecisionScalar != 1) {
-                seizableCollateralAmount = normalizedSeizableCollateralAmount / collateralPrecisionScalar;
+            uint256 collateralDecimals = collateral.decimals();
+            if (collateralDecimals != 18) {
+                seizableCollateralAmount = normalizedSeizableCollateralAmount.mul(10**collateralDecimals);
             } else {
                 seizableCollateralAmount = normalizedSeizableCollateralAmount;
             }
@@ -420,7 +415,7 @@ contract BalanceSheetV1 is
         }
 
         // After maturation, any vault can be liquidated, irrespective of account liquidity.
-        if (bond.isMatured() == false) {
+        if (!bond.isMatured()) {
             // Checks: the borrower has a shortfall of liquidity.
             (, uint256 shortfallLiquidity) = getCurrentAccountLiquidity(borrower);
             if (shortfallLiquidity == 0) {
