@@ -214,17 +214,30 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
         }
 
         // Liquidate borrow with the newly minted hTokens.
-        uint256 debtAmount = balanceSheet.getDebtAmount(borrower, bond);
         uint256 oldCollateralBalance = collateral.balanceOf(address(this));
-        balanceSheet.liquidateBorrow(
-            borrower,
-            bond,
-            mintedHTokenAmount > debtAmount ? debtAmount : mintedHTokenAmount,
-            collateral
-        );
+        liquidateBorrowInternal(borrower, bond, collateral, mintedHTokenAmount);
         uint256 newCollateralBalance = collateral.balanceOf(address(this));
         unchecked {
             seizedCollateralAmount = newCollateralBalance - oldCollateralBalance;
         }
+    }
+
+    /// @dev See the documentation for the public functions that call this internal function.
+    function liquidateBorrowInternal(
+        address borrower,
+        IHToken bond,
+        IErc20 collateral,
+        uint256 hTokenAmount
+    ) internal {
+        uint256 collateralAmount = balanceSheet.getCollateralAmount(borrower, collateral);
+        uint256 debtAmount = balanceSheet.getDebtAmount(borrower, bond);
+        uint256 hypotheticalRepayAmount = balanceSheet.getRepayAmount(collateral, collateralAmount, bond);
+        uint256 repayAmount = hypotheticalRepayAmount > debtAmount ? debtAmount : hypotheticalRepayAmount;
+        balanceSheet.liquidateBorrow(
+            borrower,
+            bond,
+            hTokenAmount > repayAmount ? repayAmount : hTokenAmount,
+            collateral
+        );
     }
 }
