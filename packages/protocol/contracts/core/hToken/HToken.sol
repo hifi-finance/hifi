@@ -189,30 +189,30 @@ contract HToken is
     }
 
     /// @inheritdoc IHToken
-    function supplyUnderlying(uint256 underlyingSupplyAmount) external override {
+    function supplyUnderlying(uint256 underlyingAmount) external override {
         // Checks: the zero edge case.
-        if (underlyingSupplyAmount == 0) {
+        if (underlyingAmount == 0) {
             revert HToken__SupplyUnderlyingZero();
         }
 
         // Effects: update storage.
-        totalUnderlyingReserve += underlyingSupplyAmount;
+        totalUnderlyingReserve += underlyingAmount;
 
         // Normalize the underlying amount to 18 decimals.
         uint256 hTokenAmount;
         if (underlyingPrecisionScalar != 1) {
-            hTokenAmount = underlyingSupplyAmount * underlyingPrecisionScalar;
+            hTokenAmount = underlyingAmount * underlyingPrecisionScalar;
         } else {
-            hTokenAmount = underlyingSupplyAmount;
+            hTokenAmount = underlyingAmount;
         }
 
         // Effects: mint the hTokens.
         mintInternal(msg.sender, hTokenAmount);
 
         // Interactions: perform the Erc20 transfer.
-        underlying.safeTransferFrom(msg.sender, address(this), underlyingSupplyAmount);
+        underlying.safeTransferFrom(msg.sender, address(this), underlyingAmount);
 
-        emit SupplyUnderlying(msg.sender, underlyingSupplyAmount, hTokenAmount);
+        emit SupplyUnderlying(msg.sender, underlyingAmount, hTokenAmount);
     }
 
     /// @inheritdoc IHToken
