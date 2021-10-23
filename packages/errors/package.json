@@ -38,7 +38,7 @@
     "url": "https://github.com/hifi-finance/hifi"
   },
   "scripts": {
-    "build:ts": "tsc --project ./tsconfig.json",
+    "build": "tsc --project ./tsconfig.json",
     "clean": "shx rm -rf ./dist ./tsconfig.tsbuildinfo",
     "clean:node_modules": "shx rm -rf ./node_modules",
     "lint": "yarn lint:ts && yarn prettier:check",

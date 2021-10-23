@@ -39,10 +39,13 @@ jobs:
         run: "yarn install --immutable"
 
       - name: "Build the TypeScript packages"
-        run: "yarn build:ts"
+        run: "yarn build"
 
       - name: "Compile the contracts and generate TypeChain bindings"
         run: "yarn compile:sol"
+
+      - name: "Build the TypeChain bindings"
+        run: "yarn build:types"
 
       - name: "Deploy HifiProxyTarget"
         id: "deploy"

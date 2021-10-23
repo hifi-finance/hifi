@@ -32,7 +32,7 @@ jobs:
         run: "yarn install --immutable"
 
       - name: "Build the TypeScript packages"
-        run: "yarn build:ts"
+        run: "yarn build"
 
       - name: "Lint Solidity and TypeScript code"
         run: "yarn workspace @hifi/amm lint"
@@ -67,7 +67,7 @@ jobs:
         run: "yarn install --immutable"
 
       - name: "Build the TypeScript packages"
-        run: "yarn build:ts"
+        run: "yarn build"
 
       - name: "Lint Solidity and TypeScript code"
         run: "yarn workspace @hifi/flash-swap lint"
@@ -102,7 +102,7 @@ jobs:
         run: "yarn install --immutable"
 
       - name: "Build the TypeScript packages"
-        run: "yarn build:ts"
+        run: "yarn build"
 
       - name: "Lint Solidity and TypeScript code"
         run: "yarn workspace @hifi/protocol lint"
@@ -137,7 +137,7 @@ jobs:
         run: "yarn install --immutable"
 
       - name: "Build the TypeScript packages"
-        run: "yarn build:ts"
+        run: "yarn build"
 
       - name: "Lint Solidity and TypeScript code"
         run: "yarn workspace @hifi/proxy-target lint"
