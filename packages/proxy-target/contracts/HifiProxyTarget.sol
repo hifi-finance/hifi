@@ -227,10 +227,10 @@ contract HifiProxyTarget is IHifiProxyTarget {
         // The LP tokens are now in the DSProxy, so we relay them to the end user.
         hifiPool.transfer(msg.sender, poolTokensMinted);
 
-        // "hTokenRequired" is greater or equal than "hTokenOut", because not all of "hTokenOut" was used in the mint.
+        // "hTokenOut" is greater or equal than "hTokenRequired", because not all of "hTokenOut" was used in the mint.
         // "normalizedUnderlyingRequired" was denormalized to "underlyingRequired", offsetting the trailing 12 digits.
         unchecked {
-            uint256 hTokenDelta = hTokenRequired - hTokenOut;
+            uint256 hTokenDelta = hTokenOut - hTokenRequired;
             hToken.transfer(msg.sender, hTokenDelta);
         }
     }
