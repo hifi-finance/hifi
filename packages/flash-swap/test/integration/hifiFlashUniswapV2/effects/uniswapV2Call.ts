@@ -32,6 +32,25 @@ function encodeCallData(this: Mocha.Context): string {
   return data;
 }
 
+async function getSeizableAndProfitCollateralAmounts(
+  this: Mocha.Context,
+  repayHUsdcAmount: BigNumber,
+  underlyingAmount: BigNumber,
+): Promise<{ expectedProfitWbtcAmount: BigNumber; seizableWbtcAmount: BigNumber }> {
+  const seizableWbtcAmount = await this.contracts.balanceSheet.getSeizableCollateralAmount(
+    this.contracts.hToken.address,
+    repayHUsdcAmount,
+    this.contracts.wbtc.address,
+  );
+  const repayWbtcAmount = await this.contracts.hifiFlashUniswapV2.getRepayCollateralAmount(
+    this.contracts.uniswapV2Pair.address,
+    this.contracts.usdc.address,
+    underlyingAmount,
+  );
+  const expectedProfitWbtcAmount = seizableWbtcAmount.sub(repayWbtcAmount);
+  return { expectedProfitWbtcAmount, seizableWbtcAmount };
+}
+
 async function getTokenAmounts(
   this: Mocha.Context,
   wbtcAmount: BigNumber,
@@ -219,79 +238,75 @@ export function shouldBehaveLikeUniswapV2Call(): void {
           });
 
           context("when the borrower has a liquidity shortfall", function () {
-            context("when the collateral ratio is lower than 110%", function () {
+            context("when the price given by the pair contract price is better than the oracle price", function () {
               beforeEach(async function () {
-                // Set the WBTC price to $10k to make the borrower's collateral ratio 100%.
-                await this.contracts.wbtcPriceFeed.setPrice(price("10000"));
+                // Set the WBTC price to $12.5k to make borrower's collateral ratio 125%.
+                await this.contracts.wbtcPriceFeed.setPrice(price("12500"));
+
+                // Burn 1m USDC from the pair contract. This makes the pair contract price 1 WBTC ~ 10k USDC.
+                await reducePoolReserves.call(this, Zero, USDC("1e6"));
               });
 
               it("reverts", async function () {
                 const to: string = this.contracts.hifiFlashUniswapV2.address;
-                // TODO: change the revert reason with a BalanceSheet error once Hardhat enables external custom errors.
                 await expect(
                   this.contracts.uniswapV2Pair
                     .connect(this.signers.liquidator)
                     .swap(token0Amount, token1Amount, to, data),
-                ).to.be.revertedWith(BalanceSheetErrors.LIQUIDATE_BORROW_INSUFFICIENT_COLLATERAL);
+                ).to.be.revertedWith(HifiFlashUniswapV2Errors.InsufficientProfit);
               });
             });
 
-            context("when the collateral ratio is lower than 150% but higher than 110%", function () {
-              beforeEach(async function () {
-                // Set the WBTC price to $12.5k to make borrower's collateral ratio 125%.
-                await this.contracts.wbtcPriceFeed.setPrice(price("12500"));
-              });
+            context("when the price given by the pair contract is the same as the oracle price", function () {
+              let expectedProfitWbtcAmount: BigNumber;
+              let seizableWbtcAmount: BigNumber;
 
-              context("when the price given by the pair contract price is better than the oracle price", function () {
+              context("when the collateral ratio is lower than 110%", function () {
+                const repayHUsdcAmount: BigNumber = hUSDC("9090.909090909090909090");
+
                 beforeEach(async function () {
-                  // Burn 1m USDC from the pair contract. This makes the pair contract price 1 WBTC ~ 10k USDC.
-                  await reducePoolReserves.call(this, Zero, USDC("1e6"));
+                  // Set the WBTC price to $10k to make the borrower's collateral ratio 100%.
+                  await this.contracts.wbtcPriceFeed.setPrice(price("10000"));
+
+                  // Calculate the amounts necessary for running the tests.
+                  const calculatesAmounts = await getSeizableAndProfitCollateralAmounts.call(
+                    this,
+                    repayHUsdcAmount,
+                    underlyingAmount,
+                  );
+                  expectedProfitWbtcAmount = calculatesAmounts.expectedProfitWbtcAmount;
+                  seizableWbtcAmount = calculatesAmounts.seizableWbtcAmount;
                 });
 
-                it("reverts", async function () {
+                it("flash swaps USDC via and makes a WBTC profit", async function () {
                   const to: string = this.contracts.hifiFlashUniswapV2.address;
-                  await expect(
-                    this.contracts.uniswapV2Pair
-                      .connect(this.signers.liquidator)
-                      .swap(token0Amount, token1Amount, to, data),
-                  ).to.be.revertedWith(HifiFlashUniswapV2Errors.InsufficientProfit);
+                  const preWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+                  await this.contracts.uniswapV2Pair
+                    .connect(this.signers.liquidator)
+                    .swap(token0Amount, token1Amount, to, data);
+                  const newWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+                  expect(newWbtcBalance.sub(expectedProfitWbtcAmount)).to.equal(preWbtcBalance);
                 });
               });
 
-              context("when the price given by the pair contract is the same as the oracle price", function () {
+              context("when the collateral ratio is lower than 150% but higher than 110%", function () {
                 const repayHUsdcAmount: BigNumber = hUSDC("10000");
-                let expectedProfitWbtcAmount: BigNumber;
-                let repayWbtcAmount: BigNumber;
-                let seizableWbtcAmount: BigNumber;
 
                 beforeEach(async function () {
+                  // Set the WBTC price to $12.5k to make borrower's collateral ratio 125%.
+                  await this.contracts.wbtcPriceFeed.setPrice(price("12500"));
+
                   // Burn 750k USDC from the pair contract, which makes the price 1 WBTC ~ 12.5k USDC.
                   await reducePoolReserves.call(this, Zero, USDC("75e4"));
 
                   // Calculate the amounts necessary for running the tests.
-                  seizableWbtcAmount = await this.contracts.balanceSheet.getSeizableCollateralAmount(
-                    this.contracts.hToken.address,
+                  const calculatesAmounts = await getSeizableAndProfitCollateralAmounts.call(
+                    this,
                     repayHUsdcAmount,
-                    this.contracts.wbtc.address,
-                  );
-                  repayWbtcAmount = await this.contracts.hifiFlashUniswapV2.getRepayCollateralAmount(
-                    this.contracts.uniswapV2Pair.address,
-                    this.contracts.usdc.address,
                     underlyingAmount,
                   );
-                  expectedProfitWbtcAmount = seizableWbtcAmount.sub(repayWbtcAmount);
-                });
-
-                context("initial order of tokens in the pair", function () {
-                  it("flash swaps USDC via and makes a WBTC profit", async function () {
-                    const to: string = this.contracts.hifiFlashUniswapV2.address;
-                    const preWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
-                    await this.contracts.uniswapV2Pair
-                      .connect(this.signers.liquidator)
-                      .swap(token0Amount, token1Amount, to, data);
-                    const newWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
-                    expect(newWbtcBalance.sub(expectedProfitWbtcAmount)).to.equal(preWbtcBalance);
-                  });
+                  expectedProfitWbtcAmount = calculatesAmounts.expectedProfitWbtcAmount;
+                  seizableWbtcAmount = calculatesAmounts.seizableWbtcAmount;
                 });
 
                 context("new order of tokens in the pair", function () {
@@ -323,12 +338,24 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                     const newWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
                     expect(newWbtcBalance.sub(expectedProfitWbtcAmount)).to.equal(preWbtcBalance);
                   });
+                });
+
+                context("initial order of tokens in the pair", function () {
+                  it("flash swaps USDC via and makes a WBTC profit", async function () {
+                    const to: string = this.contracts.hifiFlashUniswapV2.address;
+                    const preWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+                    await this.contracts.uniswapV2Pair
+                      .connect(this.signers.liquidator)
+                      .swap(token0Amount, token1Amount, to, data);
+                    const newWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+                    expect(newWbtcBalance.sub(expectedProfitWbtcAmount)).to.equal(preWbtcBalance);
+                  });
 
                   it("emits a FlashLiquidateBorrow event", async function () {
                     const to: string = this.contracts.hifiFlashUniswapV2.address;
                     const contractCall = this.contracts.uniswapV2Pair
                       .connect(this.signers.liquidator)
-                      .swap(localToken0Amount, localToken1Amount, to, data);
+                      .swap(token0Amount, token1Amount, to, data);
                     await expect(contractCall)
                       .to.emit(this.contracts.hifiFlashUniswapV2, "FlashLiquidateBorrow")
                       .withArgs(

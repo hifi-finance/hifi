@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.4;
 
+import "hardhat/console.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 import "@hifi/protocol/contracts/core/balanceSheet/IBalanceSheetV1.sol";
@@ -56,31 +57,6 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
     /// PUBLIC CONSTANT FUNCTIONS ////
 
     /// @inheritdoc IHifiFlashUniswapV2
-    function getRepayCollateralAmount(
-        IUniswapV2Pair pair,
-        IErc20 underlying,
-        uint256 underlyingAmount
-    ) public view override returns (uint256 repayCollateralAmount) {
-        // Depending upon which token is which, the reserves are returned in a different order.
-        address token0 = pair.token0();
-        uint112 collateralReserves;
-        uint112 underlyingReserves;
-        if (token0 == address(underlying)) {
-            (underlyingReserves, collateralReserves, ) = pair.getReserves();
-        } else {
-            (collateralReserves, underlyingReserves, ) = pair.getReserves();
-        }
-
-        // Note that we can safely use unchecked arithmetic here because the UniswapV2Pair.sol contract performs
-        // sanity checks on the amounts before calling the current contract.
-        unchecked {
-            uint256 numerator = collateralReserves * underlyingAmount * 1000;
-            uint256 denominator = (underlyingReserves - underlyingAmount) * 997;
-            repayCollateralAmount = numerator / denominator + 1;
-        }
-    }
-
-    /// @inheritdoc IHifiFlashUniswapV2
     function getCollateralAndUnderlyingAmount(
         IUniswapV2Pair pair,
         uint256 amount0,
@@ -106,7 +82,45 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
         }
     }
 
+    /// @inheritdoc IHifiFlashUniswapV2
+    function getRepayCollateralAmount(
+        IUniswapV2Pair pair,
+        IErc20 underlying,
+        uint256 underlyingAmount
+    ) public view override returns (uint256 repayCollateralAmount) {
+        // Depending upon which token is which, the reserves are returned in a different order.
+        address token0 = pair.token0();
+        uint112 collateralReserves;
+        uint112 underlyingReserves;
+        if (token0 == address(underlying)) {
+            (underlyingReserves, collateralReserves, ) = pair.getReserves();
+        } else {
+            (collateralReserves, underlyingReserves, ) = pair.getReserves();
+        }
+
+        // Note that we can safely use unchecked arithmetic here because the UniswapV2Pair.sol contract performs
+        // sanity checks on the amounts before calling the current contract.
+        unchecked {
+            uint256 numerator = collateralReserves * underlyingAmount * 1000;
+            uint256 denominator = (underlyingReserves - underlyingAmount) * 997;
+            repayCollateralAmount = numerator / denominator + 1;
+        }
+    }
+
     /// PUBLIC NON-CONSTANT FUNCTIONS ///
+
+    struct UniswapV2CallLocalVars {
+        IHToken bond;
+        address borrower;
+        IErc20 collateral;
+        uint256 minProfit;
+        uint256 mintedHTokenAmount;
+        uint256 profitCollateralAmount;
+        uint256 repayCollateralAmount;
+        uint256 seizedCollateralAmount;
+        IErc20 underlying;
+        uint256 underlyingAmount;
+    }
 
     /// @inheritdoc IUniswapV2Callee
     function uniswapV2Call(
@@ -115,51 +129,63 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
         uint256 amount1,
         bytes calldata data
     ) external override {
+        UniswapV2CallLocalVars memory vars;
+
         // Unpack the ABI encoded data passed by the UniswapV2Pair contract.
-        (address borrower, IHToken bond, uint256 minProfit) = abi.decode(data, (address, IHToken, uint256));
+        (vars.borrower, vars.bond, vars.minProfit) = abi.decode(data, (address, IHToken, uint256));
 
         // Figure out which token is the collateral and which token is the underlying.
-        IErc20 underlying = bond.underlying();
-        (IErc20 collateral, uint256 underlyingAmount) = getCollateralAndUnderlyingAmount(
+        vars.underlying = vars.bond.underlying();
+        (vars.collateral, vars.underlyingAmount) = getCollateralAndUnderlyingAmount(
             IUniswapV2Pair(msg.sender),
             amount0,
             amount1,
-            underlying
+            vars.underlying
         );
 
         // Check that the caller is a genuine UniswapV2Pair contract.
-        if (msg.sender != pairFor(address(underlying), address(collateral))) {
+        if (msg.sender != pairFor(address(vars.underlying), address(vars.collateral))) {
             revert HifiFlashUniswapV2__CallNotAuthorized(msg.sender);
         }
 
         // Mint hTokens and liquidate the borrower.
-        uint256 seizedCollateralAmount = mintAndLiquidateBorrow(borrower, bond, underlyingAmount, collateral);
+        vars.mintedHTokenAmount = mintHTokens(vars.bond, vars.underlyingAmount);
+        vars.seizedCollateralAmount = liquidateBorrow(
+            vars.borrower,
+            vars.bond,
+            vars.collateral,
+            vars.mintedHTokenAmount
+        );
 
         // Calculate the amount of collateral required to repay.
-        uint256 repayCollateralAmount = getRepayCollateralAmount(
+        vars.repayCollateralAmount = getRepayCollateralAmount(
             IUniswapV2Pair(msg.sender),
-            underlying,
-            underlyingAmount
+            vars.underlying,
+            vars.underlyingAmount
         );
-        if (seizedCollateralAmount <= repayCollateralAmount + minProfit) {
-            revert HifiFlashUniswapV2__InsufficientProfit(seizedCollateralAmount, repayCollateralAmount, minProfit);
+        if (vars.seizedCollateralAmount <= vars.repayCollateralAmount + vars.minProfit) {
+            revert HifiFlashUniswapV2__InsufficientProfit(
+                vars.seizedCollateralAmount,
+                vars.repayCollateralAmount,
+                vars.minProfit
+            );
         }
 
         // Pay back the loan.
-        collateral.safeTransfer(msg.sender, repayCollateralAmount);
+        vars.collateral.safeTransfer(msg.sender, vars.repayCollateralAmount);
 
         // Reap the profit.
-        uint256 profitCollateralAmount = seizedCollateralAmount - repayCollateralAmount;
-        collateral.safeTransfer(sender, profitCollateralAmount);
+        vars.profitCollateralAmount = vars.seizedCollateralAmount - vars.repayCollateralAmount;
+        vars.collateral.safeTransfer(sender, vars.profitCollateralAmount);
 
         // Emit an event.
         emit FlashLiquidateBorrow(
             sender,
-            borrower,
-            address(bond),
-            underlyingAmount,
-            seizedCollateralAmount,
-            profitCollateralAmount
+            vars.borrower,
+            address(vars.bond),
+            vars.underlyingAmount,
+            vars.seizedCollateralAmount,
+            vars.profitCollateralAmount
         );
     }
 
@@ -186,16 +212,36 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
 
     /// INTERNAL NON-CONSTANT FUNCTIONS ///
 
-    /// @dev Performs two operations:
-    ///   1. Supplies the underlying to the HToken contract to mint hTokens without taking on debt.
-    ///   2. Liquidates the borrower by transferring the underlying to the BalanceSheet. By doing this, the liquidator
-    /// receives collateral at a discount.
-    function mintAndLiquidateBorrow(
+    /// @dev Liquidates the borrower by transferring the underlying to the BalanceSheet. By doing this, the
+    /// liquidator receives collateral at a discount.
+    function liquidateBorrow(
         address borrower,
         IHToken bond,
-        uint256 underlyingAmount,
-        IErc20 collateral
+        IErc20 collateral,
+        uint256 mintedHTokenAmount
     ) internal returns (uint256 seizedCollateralAmount) {
+        uint256 debtAmount = balanceSheet.getDebtAmount(borrower, bond);
+        uint256 collateralAmount = balanceSheet.getCollateralAmount(borrower, collateral);
+        uint256 hypotheticalRepayAmount = balanceSheet.getRepayAmount(collateral, collateralAmount, bond);
+
+        // If the hypothetical repay amount is bigger than the debt amount, this is a multi-collateral vault.
+        // Otherwise, this is a multi-bond vault.
+        uint256 repayAmount = hypotheticalRepayAmount > debtAmount ? debtAmount : hypotheticalRepayAmount;
+
+        // Truncate the repay amount such that we keep the dust in this contract rather than the BalanceSheet.
+        uint256 truncatedRepayAmount = mintedHTokenAmount > repayAmount ? repayAmount : mintedHTokenAmount;
+
+        // Liquidate borrow.
+        uint256 oldCollateralBalance = collateral.balanceOf(address(this));
+        balanceSheet.liquidateBorrow(borrower, bond, truncatedRepayAmount, collateral);
+        uint256 newCollateralBalance = collateral.balanceOf(address(this));
+        unchecked {
+            seizedCollateralAmount = newCollateralBalance - oldCollateralBalance;
+        }
+    }
+
+    /// @dev Supplies the underlying to the HToken contract to mint hTokens without taking on debt.
+    function mintHTokens(IHToken bond, uint256 underlyingAmount) internal returns (uint256 mintedHTokenAmount) {
         IErc20 underlying = bond.underlying();
 
         // Allow the HToken contract to spend underlying if allowance not enough.
@@ -208,36 +254,8 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
         uint256 preHTokenBalance = bond.balanceOf(address(this));
         bond.supplyUnderlying(underlyingAmount);
         uint256 postHTokenBalance = bond.balanceOf(address(this));
-        uint256 mintedHTokenAmount;
         unchecked {
             mintedHTokenAmount = postHTokenBalance - preHTokenBalance;
         }
-
-        // Liquidate borrow with the newly minted hTokens.
-        uint256 oldCollateralBalance = collateral.balanceOf(address(this));
-        liquidateBorrowInternal(borrower, bond, collateral, mintedHTokenAmount);
-        uint256 newCollateralBalance = collateral.balanceOf(address(this));
-        unchecked {
-            seizedCollateralAmount = newCollateralBalance - oldCollateralBalance;
-        }
-    }
-
-    /// @dev See the documentation for the public functions that call this internal function.
-    function liquidateBorrowInternal(
-        address borrower,
-        IHToken bond,
-        IErc20 collateral,
-        uint256 hTokenAmount
-    ) internal {
-        uint256 collateralAmount = balanceSheet.getCollateralAmount(borrower, collateral);
-        uint256 debtAmount = balanceSheet.getDebtAmount(borrower, bond);
-        uint256 hypotheticalRepayAmount = balanceSheet.getRepayAmount(collateral, collateralAmount, bond);
-        uint256 repayAmount = hypotheticalRepayAmount > debtAmount ? debtAmount : hypotheticalRepayAmount;
-        balanceSheet.liquidateBorrow(
-            borrower,
-            bond,
-            hTokenAmount > repayAmount ? repayAmount : hTokenAmount,
-            collateral
-        );
     }
 }
