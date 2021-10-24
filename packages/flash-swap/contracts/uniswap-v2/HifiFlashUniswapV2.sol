@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.4;
 
-import "hardhat/console.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 import "@hifi/protocol/contracts/core/balanceSheet/IBalanceSheetV1.sol";
@@ -149,8 +148,8 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
         }
 
         // Mint hTokens and liquidate the borrower.
-        vars.mintedHTokenAmount = mintHTokens(vars.bond, vars.underlyingAmount);
-        vars.seizedCollateralAmount = liquidateBorrow(
+        vars.mintedHTokenAmount = mintHTokensInternal(vars.bond, vars.underlyingAmount);
+        vars.seizedCollateralAmount = liquidateBorrowInternal(
             vars.borrower,
             vars.bond,
             vars.collateral,
@@ -214,18 +213,20 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
 
     /// @dev Liquidates the borrower by transferring the underlying to the BalanceSheet. By doing this, the
     /// liquidator receives collateral at a discount.
-    function liquidateBorrow(
+    function liquidateBorrowInternal(
         address borrower,
         IHToken bond,
         IErc20 collateral,
         uint256 mintedHTokenAmount
     ) internal returns (uint256 seizedCollateralAmount) {
-        uint256 debtAmount = balanceSheet.getDebtAmount(borrower, bond);
         uint256 collateralAmount = balanceSheet.getCollateralAmount(borrower, collateral);
         uint256 hypotheticalRepayAmount = balanceSheet.getRepayAmount(collateral, collateralAmount, bond);
 
-        // If the hypothetical repay amount is bigger than the debt amount, this is a multi-collateral vault.
-        // Otherwise, this is a multi-bond vault.
+        // If the hypothetical repay amount is bigger than the debt amount, this could be a single-collateral multi-bond
+        // vault. Otherwise, it could be a multi-collateral single-bond vault. However, it is difficult to generalize
+        // for the multi-collateral and multi-bond situation. The repay amount could be either bigger, smaller, or even
+        // equal to the debt amount depending on the collateral and debt amount distribution.
+        uint256 debtAmount = balanceSheet.getDebtAmount(borrower, bond);
         uint256 repayAmount = hypotheticalRepayAmount > debtAmount ? debtAmount : hypotheticalRepayAmount;
 
         // Truncate the repay amount such that we keep the dust in this contract rather than the BalanceSheet.
@@ -241,7 +242,7 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
     }
 
     /// @dev Supplies the underlying to the HToken contract to mint hTokens without taking on debt.
-    function mintHTokens(IHToken bond, uint256 underlyingAmount) internal returns (uint256 mintedHTokenAmount) {
+    function mintHTokensInternal(IHToken bond, uint256 underlyingAmount) internal returns (uint256 mintedHTokenAmount) {
         IErc20 underlying = bond.underlying();
 
         // Allow the HToken contract to spend underlying if allowance not enough.
