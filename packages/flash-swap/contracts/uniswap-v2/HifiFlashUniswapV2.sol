@@ -58,6 +58,7 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
     /// @inheritdoc IHifiFlashUniswapV2
     function getCollateralAndUnderlyingAmount(
         IUniswapV2Pair pair,
+        RepayType repayType,
         uint256 amount0,
         uint256 amount1,
         IErc20 underlying
@@ -68,13 +69,13 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
             if (amount1 > 0) {
                 revert HifiFlashUniswapV2__FlashBorrowCollateral(amount1);
             }
-            collateral = IErc20(token1);
+            collateral = IErc20(repayType == RepayType.SINGLE_TOKEN ? token0 : token1);
             underlyingAmount = amount0;
         } else if (token1 == address(underlying)) {
             if (amount0 > 0) {
                 revert HifiFlashUniswapV2__FlashBorrowCollateral(amount0);
             }
-            collateral = IErc20(token0);
+            collateral = IErc20(repayType == RepayType.SINGLE_TOKEN ? token1 : token0);
             underlyingAmount = amount1;
         } else {
             revert HifiFlashUniswapV2__UnderlyingNotInPool(pair, token0, token1, underlying);
@@ -84,24 +85,36 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
     /// @inheritdoc IHifiFlashUniswapV2
     function getRepayCollateralAmount(
         IUniswapV2Pair pair,
+        RepayType repayType,
         IErc20 underlying,
         uint256 underlyingAmount
     ) public view override returns (uint256 repayCollateralAmount) {
-        // Depending upon which token is which, the reserves are returned in a different order.
-        address token0 = pair.token0();
-        uint112 collateralReserves;
-        uint112 underlyingReserves;
-        if (token0 == address(underlying)) {
-            (underlyingReserves, collateralReserves, ) = pair.getReserves();
+        uint256 numerator;
+        uint256 denominator;
+        if (repayType == RepayType.SINGLE_TOKEN) {
+            unchecked {
+                numerator = underlyingAmount * 1000;
+                denominator = 997;
+            }
         } else {
-            (collateralReserves, underlyingReserves, ) = pair.getReserves();
+            // Depending upon which token is which, the reserves are returned in a different order.
+            address token0 = pair.token0();
+            uint112 collateralReserves;
+            uint112 underlyingReserves;
+            if (token0 == address(underlying)) {
+                (underlyingReserves, collateralReserves, ) = pair.getReserves();
+            } else {
+                (collateralReserves, underlyingReserves, ) = pair.getReserves();
+            }
+            unchecked {
+                numerator = collateralReserves * underlyingAmount * 1000;
+                denominator = (underlyingReserves - underlyingAmount) * 997;
+            }
         }
 
         // Note that we can safely use unchecked arithmetic here because the UniswapV2Pair.sol contract performs
         // sanity checks on the amounts before calling the current contract.
         unchecked {
-            uint256 numerator = collateralReserves * underlyingAmount * 1000;
-            uint256 denominator = (underlyingReserves - underlyingAmount) * 997;
             repayCollateralAmount = numerator / denominator + 1;
         }
     }
@@ -116,7 +129,9 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
         uint256 mintedHTokenAmount;
         uint256 profitCollateralAmount;
         uint256 repayCollateralAmount;
+        RepayType repayType;
         uint256 seizedCollateralAmount;
+        address swapToken;
         IErc20 underlying;
         uint256 underlyingAmount;
     }
@@ -131,19 +146,27 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
         UniswapV2CallLocalVars memory vars;
 
         // Unpack the ABI encoded data passed by the UniswapV2Pair contract.
-        (vars.borrower, vars.bond, vars.minProfit) = abi.decode(data, (address, IHToken, uint256));
+        (vars.borrower, vars.bond, vars.minProfit, vars.repayType) = abi.decode(
+            data,
+            (address, IHToken, uint256, RepayType)
+        );
 
         // Figure out which token is the collateral and which token is the underlying.
         vars.underlying = vars.bond.underlying();
         (vars.collateral, vars.underlyingAmount) = getCollateralAndUnderlyingAmount(
             IUniswapV2Pair(msg.sender),
+            vars.repayType,
             amount0,
             amount1,
             vars.underlying
         );
 
+        vars.swapToken = address(vars.underlying) == IUniswapV2Pair(msg.sender).token0()
+            ? IUniswapV2Pair(msg.sender).token1()
+            : IUniswapV2Pair(msg.sender).token0();
+
         // Check that the caller is a genuine UniswapV2Pair contract.
-        if (msg.sender != pairFor(address(vars.underlying), address(vars.collateral))) {
+        if (msg.sender != pairFor(address(vars.underlying), vars.swapToken)) {
             revert HifiFlashUniswapV2__CallNotAuthorized(msg.sender);
         }
 
@@ -159,10 +182,15 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
         // Calculate the amount of collateral required to repay.
         vars.repayCollateralAmount = getRepayCollateralAmount(
             IUniswapV2Pair(msg.sender),
+            vars.repayType,
             vars.underlying,
             vars.underlyingAmount
         );
-        if (vars.seizedCollateralAmount <= vars.repayCollateralAmount + vars.minProfit) {
+
+        if (vars.seizedCollateralAmount > vars.repayCollateralAmount) {
+            vars.profitCollateralAmount = vars.seizedCollateralAmount - vars.repayCollateralAmount;
+        }
+        if (vars.profitCollateralAmount < vars.minProfit) {
             revert HifiFlashUniswapV2__InsufficientProfit(
                 vars.seizedCollateralAmount,
                 vars.repayCollateralAmount,
@@ -173,8 +201,7 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
         // Pay back the loan.
         vars.collateral.safeTransfer(msg.sender, vars.repayCollateralAmount);
 
-        // Reap the profit.
-        vars.profitCollateralAmount = vars.seizedCollateralAmount - vars.repayCollateralAmount;
+        // Reap the profit, if any.
         vars.collateral.safeTransfer(sender, vars.profitCollateralAmount);
 
         // Emit an event.

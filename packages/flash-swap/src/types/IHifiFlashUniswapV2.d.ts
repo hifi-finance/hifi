@@ -22,8 +22,8 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 interface IHifiFlashUniswapV2Interface extends ethers.utils.Interface {
   functions: {
     "balanceSheet()": FunctionFragment;
-    "getCollateralAndUnderlyingAmount(address,uint256,uint256,address)": FunctionFragment;
-    "getRepayCollateralAmount(address,address,uint256)": FunctionFragment;
+    "getCollateralAndUnderlyingAmount(address,uint8,uint256,uint256,address)": FunctionFragment;
+    "getRepayCollateralAmount(address,uint8,address,uint256)": FunctionFragment;
     "uniV2Factory()": FunctionFragment;
     "uniV2PairInitCodeHash()": FunctionFragment;
     "uniswapV2Call(address,uint256,uint256,bytes)": FunctionFragment;
@@ -35,11 +35,11 @@ interface IHifiFlashUniswapV2Interface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getCollateralAndUnderlyingAmount",
-    values: [string, BigNumberish, BigNumberish, string]
+    values: [string, BigNumberish, BigNumberish, BigNumberish, string]
   ): string;
   encodeFunctionData(
     functionFragment: "getRepayCollateralAmount",
-    values: [string, string, BigNumberish]
+    values: [string, BigNumberish, string, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "uniV2Factory",
@@ -145,6 +145,7 @@ export class IHifiFlashUniswapV2 extends BaseContract {
 
     getCollateralAndUnderlyingAmount(
       pair: string,
+      repayType: BigNumberish,
       amount0: BigNumberish,
       amount1: BigNumberish,
       underlying: string,
@@ -155,6 +156,7 @@ export class IHifiFlashUniswapV2 extends BaseContract {
 
     getRepayCollateralAmount(
       pair: string,
+      repayType: BigNumberish,
       underlying: string,
       underlyingAmount: BigNumberish,
       overrides?: CallOverrides
@@ -177,6 +179,7 @@ export class IHifiFlashUniswapV2 extends BaseContract {
 
   getCollateralAndUnderlyingAmount(
     pair: string,
+    repayType: BigNumberish,
     amount0: BigNumberish,
     amount1: BigNumberish,
     underlying: string,
@@ -187,6 +190,7 @@ export class IHifiFlashUniswapV2 extends BaseContract {
 
   getRepayCollateralAmount(
     pair: string,
+    repayType: BigNumberish,
     underlying: string,
     underlyingAmount: BigNumberish,
     overrides?: CallOverrides
@@ -209,6 +213,7 @@ export class IHifiFlashUniswapV2 extends BaseContract {
 
     getCollateralAndUnderlyingAmount(
       pair: string,
+      repayType: BigNumberish,
       amount0: BigNumberish,
       amount1: BigNumberish,
       underlying: string,
@@ -219,6 +224,7 @@ export class IHifiFlashUniswapV2 extends BaseContract {
 
     getRepayCollateralAmount(
       pair: string,
+      repayType: BigNumberish,
       underlying: string,
       underlyingAmount: BigNumberish,
       overrides?: CallOverrides
@@ -282,6 +288,7 @@ export class IHifiFlashUniswapV2 extends BaseContract {
 
     getCollateralAndUnderlyingAmount(
       pair: string,
+      repayType: BigNumberish,
       amount0: BigNumberish,
       amount1: BigNumberish,
       underlying: string,
@@ -290,6 +297,7 @@ export class IHifiFlashUniswapV2 extends BaseContract {
 
     getRepayCollateralAmount(
       pair: string,
+      repayType: BigNumberish,
       underlying: string,
       underlyingAmount: BigNumberish,
       overrides?: CallOverrides
@@ -313,6 +321,7 @@ export class IHifiFlashUniswapV2 extends BaseContract {
 
     getCollateralAndUnderlyingAmount(
       pair: string,
+      repayType: BigNumberish,
       amount0: BigNumberish,
       amount1: BigNumberish,
       underlying: string,
@@ -321,6 +330,7 @@ export class IHifiFlashUniswapV2 extends BaseContract {
 
     getRepayCollateralAmount(
       pair: string,
+      repayType: BigNumberish,
       underlying: string,
       underlyingAmount: BigNumberish,
       overrides?: CallOverrides

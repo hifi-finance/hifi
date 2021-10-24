@@ -1,6 +1,7 @@
 import { defaultAbiCoder } from "@ethersproject/abi";
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
+import { REPAY_TYPE } from "@hifi/constants";
 import { BalanceSheetErrors, HifiFlashUniswapV2Errors } from "@hifi/errors";
 import { USDC, WBTC, hUSDC, price } from "@hifi/helpers";
 import { expect } from "chai";
@@ -25,9 +26,9 @@ async function bumpPoolReserves(this: Mocha.Context, wbtcAmount: BigNumber, usdc
 }
 
 function encodeCallData(this: Mocha.Context): string {
-  const types = ["address", "address", "uint256"];
+  const types = ["address", "address", "uint256", "uint8"];
   const minProfit: string = String(WBTC("0.001"));
-  const values = [this.signers.borrower.address, this.contracts.hToken.address, minProfit];
+  const values = [this.signers.borrower.address, this.contracts.hToken.address, minProfit, REPAY_TYPE.MULTI_TOKEN];
   const data: string = defaultAbiCoder.encode(types, values);
   return data;
 }
@@ -44,6 +45,7 @@ async function getSeizableAndProfitCollateralAmounts(
   );
   const repayWbtcAmount = await this.contracts.hifiFlashUniswapV2.getRepayCollateralAmount(
     this.contracts.uniswapV2Pair.address,
+    REPAY_TYPE.MULTI_TOKEN,
     this.contracts.usdc.address,
     underlyingAmount,
   );
