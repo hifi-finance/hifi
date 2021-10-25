@@ -1437,7 +1437,7 @@ __metadata:
     "@ethersproject/providers": ^5.5.0
     "@hifi/errors": "workspace:*"
     "@hifi/helpers": "workspace:*"
-    "@hifi/protocol": 1.7.0
+    "@hifi/protocol": 1.7.1
     "@nomiclabs/hardhat-ethers": ^2.0.2
     "@nomiclabs/hardhat-etherscan": ^2.1.6
     "@nomiclabs/hardhat-waffle": ^2.0.1
@@ -1475,7 +1475,7 @@ __metadata:
     typechain: ^5.2.0
     typescript: ^4.4.4
   peerDependencies:
-    "@hifi/protocol": 1.7.0
+    "@hifi/protocol": 1.7.1
     "@paulrberg/contracts": 3.6.1
     "@uniswap/v2-core": 1.0.1
     ethers: ^5.5.1

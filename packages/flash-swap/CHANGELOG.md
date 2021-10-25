@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.1] - 2021-10-25
+
+### Changed
+
+- Load vars in struct in `uniswapV2Call` function in the `HifiFlashUniswapV2` contract.
+- Split the `mintAndLiquidateBorrow` function in two functions: `mintHTokensInternal` and `liquidateBorrowInternal`.
+- Upgrade to `@hifi/protocol` v1.7.1.
+
+### Fixed
+
+- Calculation of `repayAmount` in `liquidateBorrowInternal` function in the `HifiFlashUniswapV2` contract.
+
 ## [1.6.0] - 2021-10-20
 
 ### Changed
@@ -113,6 +125,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - First release of the package.
 
+[1.6.1]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.6.0...@hifi/flash-swap@1.6.1
 [1.6.0]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.5.0...@hifi/flash-swap@1.6.0
 [1.5.0]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.4.0...@hifi/flash-swap@1.5.0
 [1.4.0]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.3.1...@hifi/flash-swap@1.4.0
