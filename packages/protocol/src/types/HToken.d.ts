@@ -481,7 +481,7 @@ export class HToken extends BaseContract {
     ): Promise<ContractTransaction>;
 
     supplyUnderlying(
-      underlyingSupplyAmount: BigNumberish,
+      underlyingAmount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -614,7 +614,7 @@ export class HToken extends BaseContract {
   ): Promise<ContractTransaction>;
 
   supplyUnderlying(
-    underlyingSupplyAmount: BigNumberish,
+    underlyingAmount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -745,7 +745,7 @@ export class HToken extends BaseContract {
     ): Promise<void>;
 
     supplyUnderlying(
-      underlyingSupplyAmount: BigNumberish,
+      underlyingAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1053,7 +1053,7 @@ export class HToken extends BaseContract {
     ): Promise<BigNumber>;
 
     supplyUnderlying(
-      underlyingSupplyAmount: BigNumberish,
+      underlyingAmount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1193,7 +1193,7 @@ export class HToken extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     supplyUnderlying(
-      underlyingSupplyAmount: BigNumberish,
+      underlyingAmount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

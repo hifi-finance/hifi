@@ -90,7 +90,7 @@ export function shouldBehaveLikeGetSeizableCollateralAmount(): void {
           await this.mocks.wbtc.mock.decimals.returns(collateralDecimals);
         });
 
-        it.only("returns the correct amount", async function () {
+        it("returns the correct amount", async function () {
           const seizableCollateralAmount: BigNumber = await this.contracts.balanceSheet.getSeizableCollateralAmount(
             this.mocks.hTokens[0].address,
             repayAmount,
