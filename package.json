@@ -18,7 +18,7 @@
     "prettier-plugin-solidity": "^1.0.0-beta.18",
     "shx": "^0.3.3"
   },
-  "packageManager": "yarn@3.1.0-rc.6",
+  "packageManager": "yarn@3.1.0",
   "private": true,
   "resolutions": {
     "@ethersproject/wallet": "^5.5.0"
