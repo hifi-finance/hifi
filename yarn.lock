@@ -1309,23 +1309,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hifi/amm@npm:1.7.0":
-  version: 1.7.0
-  resolution: "@hifi/amm@npm:1.7.0"
+"@hifi/amm@npm:1.7.1":
+  version: 1.7.1
+  resolution: "@hifi/amm@npm:1.7.1"
   dependencies:
     "@ethersproject/abi": ^5.5.0
     "@ethersproject/bytes": ^5.5.0
     "@ethersproject/providers": ^5.5.0
-    "@hifi/protocol": 1.7.0
+    "@hifi/protocol": 1.7.1
     "@paulrberg/contracts": 3.6.1
     ethers: ^5.5.1
     prb-math: 2.4.0
   peerDependencies:
-    "@hifi/protocol": 1.7.0
+    "@hifi/protocol": 1.7.1
     "@paulrberg/contracts": 3.6.1
     ethers: ^5.5.1
     prb-math: 2.4.0
-  checksum: fb03a273e6c684d378d998ae1a42f9afac69b6feb7f54c305480614cbfbf71a377e2291fb15cdb3d7bd830660bf8a2fe5c016517e991bb41fc1970f9bd98d4f3
+  checksum: 985a8b243165c8906c3af3caa67d0a7c5a9cb34b366d48bb26663de636e0e2c6821e0cadf48d9ae341c72e52d4e689a121b712f1aacf47a1faea51a9a749417e
   languageName: node
   linkType: hard
 
@@ -1500,26 +1500,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hifi/protocol@npm:1.7.0":
-  version: 1.7.0
-  resolution: "@hifi/protocol@npm:1.7.0"
-  dependencies:
-    "@ethersproject/abi": ^5.5.0
-    "@ethersproject/bytes": ^5.5.0
-    "@ethersproject/providers": ^5.5.0
-    "@openzeppelin/contracts-upgradeable": 4.3.2
-    "@paulrberg/contracts": 3.6.1
-    ethers: ^5.5.1
-    prb-math: 2.4.0
-  peerDependencies:
-    "@openzeppelin/contracts-upgradeable": 4.3.2
-    "@paulrberg/contracts": 3.6.1
-    ethers: ^5.4.7
-    prb-math: 2.4.0
-  checksum: 0dc1bbc3523ab3e020f716dc0d4c8539898a3fd665ef6be25b2a473e8996471d60b56f181f3798f9f260c9b7620e27a2ab74faf407b2f4960c9ad4c3369a851f
-  languageName: node
-  linkType: hard
-
 "@hifi/protocol@npm:1.7.1":
   version: 1.7.1
   resolution: "@hifi/protocol@npm:1.7.1"
@@ -1609,9 +1589,9 @@ __metadata:
     "@ethersproject/abi": ^5.5.0
     "@ethersproject/bytes": ^5.5.0
     "@ethersproject/providers": ^5.5.0
-    "@hifi/amm": 1.7.0
+    "@hifi/amm": 1.7.1
     "@hifi/helpers": "workspace:*"
-    "@hifi/protocol": 1.7.0
+    "@hifi/protocol": 1.7.1
     "@nomiclabs/hardhat-etherscan": ^2.1.6
     "@paulrberg/contracts": 3.6.1
     "@typechain/ethers-v5": ^7.2.0
@@ -1638,8 +1618,8 @@ __metadata:
     typechain: ^5.2.0
     typescript: ^4.4.4
   peerDependencies:
-    "@hifi/amm": 1.7.0
-    "@hifi/protocol": 1.7.0
+    "@hifi/amm": 1.7.1
+    "@hifi/protocol": 1.7.1
     "@paulrberg/contracts": 3.6.1
     ethers: ^5.5.1
   languageName: unknown
