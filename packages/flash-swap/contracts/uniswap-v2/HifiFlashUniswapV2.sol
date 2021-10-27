@@ -131,6 +131,7 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
         uint256 repayCollateralAmount;
         RepayType repayType;
         uint256 seizedCollateralAmount;
+        uint256 swapFeeUnderlyingAmount;
         address swapToken;
         IErc20 underlying;
         uint256 underlyingAmount;
@@ -189,6 +190,21 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
 
         if (vars.seizedCollateralAmount > vars.repayCollateralAmount) {
             vars.profitCollateralAmount = vars.seizedCollateralAmount - vars.repayCollateralAmount;
+        } else if (address(vars.collateral) != address(vars.underlying)) {
+            uint112 collateralReserves;
+            uint112 underlyingReserves;
+            IUniswapV2Pair pair = IUniswapV2Pair(msg.sender);
+            if (pair.token0() == address(vars.underlying)) {
+                (underlyingReserves, collateralReserves, ) = pair.getReserves();
+            } else {
+                (collateralReserves, underlyingReserves, ) = pair.getReserves();
+            }
+            uint256 numerator;
+            uint256 denominator;
+            numerator = (vars.repayCollateralAmount - vars.seizedCollateralAmount) * underlyingReserves;
+            denominator = (collateralReserves + vars.seizedCollateralAmount);
+            vars.swapFeeUnderlyingAmount = numerator / denominator + 1;
+            vars.repayCollateralAmount = vars.seizedCollateralAmount;
         }
         if (vars.profitCollateralAmount < vars.minProfit) {
             revert HifiFlashUniswapV2__InsufficientProfit(
