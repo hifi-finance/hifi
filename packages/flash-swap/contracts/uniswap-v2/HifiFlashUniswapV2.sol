@@ -199,10 +199,9 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
             } else {
                 (collateralReserves, underlyingReserves, ) = pair.getReserves();
             }
-            uint256 numerator;
-            uint256 denominator;
-            numerator = (vars.repayCollateralAmount - vars.seizedCollateralAmount) * underlyingReserves;
-            denominator = (collateralReserves + vars.seizedCollateralAmount);
+            uint256 numerator = (vars.repayCollateralAmount - vars.seizedCollateralAmount) *
+                (underlyingReserves - vars.underlyingAmount);
+            uint256 denominator = collateralReserves;
             vars.swapFeeUnderlyingAmount = numerator / denominator + 1;
             vars.repayCollateralAmount = vars.seizedCollateralAmount;
         }
