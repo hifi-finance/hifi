@@ -97,15 +97,10 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
                 denominator = 997;
             }
         } else {
-            // Depending upon which token is which, the reserves are returned in a different order.
-            address token0 = pair.token0();
-            uint112 collateralReserves;
-            uint112 underlyingReserves;
-            if (token0 == address(underlying)) {
-                (underlyingReserves, collateralReserves, ) = pair.getReserves();
-            } else {
-                (collateralReserves, underlyingReserves, ) = pair.getReserves();
-            }
+            (uint112 collateralReserves, uint112 underlyingReserves) = getCollateralAndUnderlyingReservesInternal(
+                pair,
+                underlying
+            );
             unchecked {
                 numerator = collateralReserves * underlyingAmount * 1000;
                 denominator = (underlyingReserves - underlyingAmount) * 997;
@@ -167,7 +162,7 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
             : IUniswapV2Pair(msg.sender).token0();
 
         // Check that the caller is a genuine UniswapV2Pair contract.
-        if (msg.sender != pairFor(address(vars.underlying), vars.swapToken)) {
+        if (msg.sender != pairForInternal(address(vars.underlying), vars.swapToken)) {
             revert HifiFlashUniswapV2__CallNotAuthorized(msg.sender);
         }
 
@@ -191,14 +186,10 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
         if (vars.seizedCollateralAmount > vars.repayCollateralAmount) {
             vars.profitCollateralAmount = vars.seizedCollateralAmount - vars.repayCollateralAmount;
         } else if (address(vars.collateral) != address(vars.underlying)) {
-            uint112 collateralReserves;
-            uint112 underlyingReserves;
-            IUniswapV2Pair pair = IUniswapV2Pair(msg.sender);
-            if (pair.token0() == address(vars.underlying)) {
-                (underlyingReserves, collateralReserves, ) = pair.getReserves();
-            } else {
-                (collateralReserves, underlyingReserves, ) = pair.getReserves();
-            }
+            (uint112 collateralReserves, uint112 underlyingReserves) = getCollateralAndUnderlyingReservesInternal(
+                IUniswapV2Pair(msg.sender),
+                vars.underlying
+            );
             uint256 numerator = (vars.repayCollateralAmount - vars.seizedCollateralAmount) *
                 (underlyingReserves - vars.underlyingAmount);
             uint256 denominator = collateralReserves;
@@ -232,8 +223,22 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
 
     /// INTERNAL CONSTANT FUNCTIONS ///
 
+    /// @dev Returns collateral and underlying token reserves.
+    function getCollateralAndUnderlyingReservesInternal(IUniswapV2Pair pair, IErc20 underlying)
+        internal
+        view
+        returns (uint112 collateralReserves, uint112 underlyingReserves)
+    {
+        // Depending upon which token is which, the reserves are returned in a different order.
+        if (pair.token0() == address(underlying)) {
+            (underlyingReserves, collateralReserves, ) = pair.getReserves();
+        } else {
+            (collateralReserves, underlyingReserves, ) = pair.getReserves();
+        }
+    }
+
     /// @dev Calculates the CREATE2 address for a pair without making any external calls.
-    function pairFor(address tokenA, address tokenB) internal view returns (address pair) {
+    function pairForInternal(address tokenA, address tokenB) internal view returns (address pair) {
         (address token0, address token1) = tokenA < tokenB ? (tokenA, tokenB) : (tokenB, tokenA);
         pair = address(
             uint160(
