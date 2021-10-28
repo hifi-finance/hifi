@@ -184,18 +184,23 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
         );
 
         if (vars.seizedCollateralAmount > vars.repayCollateralAmount) {
-            vars.profitCollateralAmount = vars.seizedCollateralAmount - vars.repayCollateralAmount;
+            unchecked {
+                vars.profitCollateralAmount = vars.seizedCollateralAmount - vars.repayCollateralAmount;
+            }
         } else if (address(vars.collateral) != address(vars.underlying)) {
             (uint112 collateralReserves, uint112 underlyingReserves) = getCollateralAndUnderlyingReservesInternal(
                 IUniswapV2Pair(msg.sender),
                 vars.underlying
             );
-            uint256 numerator = (vars.repayCollateralAmount - vars.seizedCollateralAmount) *
-                (underlyingReserves - vars.underlyingAmount);
-            uint256 denominator = collateralReserves;
-            vars.swapFeeUnderlyingAmount = numerator / denominator + 1;
+            unchecked {
+                uint256 numerator = (vars.repayCollateralAmount - vars.seizedCollateralAmount) *
+                    (underlyingReserves - vars.underlyingAmount);
+                uint256 denominator = collateralReserves;
+                vars.swapFeeUnderlyingAmount = numerator / denominator + 1;
+            }
             vars.repayCollateralAmount = vars.seizedCollateralAmount;
         }
+
         if (vars.profitCollateralAmount < vars.minProfit) {
             revert HifiFlashUniswapV2__InsufficientProfit(
                 vars.seizedCollateralAmount,
@@ -223,7 +228,7 @@ contract HifiFlashUniswapV2 is IHifiFlashUniswapV2 {
 
     /// INTERNAL CONSTANT FUNCTIONS ///
 
-    /// @dev Returns collateral and underlying token reserves.
+    /// @dev Returns collateral and underlying token Uniswap V2 reserves.
     function getCollateralAndUnderlyingReservesInternal(IUniswapV2Pair pair, IErc20 underlying)
         internal
         view
