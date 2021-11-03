@@ -357,6 +357,18 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                     await this.contracts.uniswapV2Pair.sync();
                   });
 
+                  context("when wrong token is flash borrowed", function () {
+                    it("reverts", async function () {
+                      const { token0Amount, token1Amount } = await getTokenAmounts.call(this, WBTC("1"), Zero);
+                      const to: string = this.contracts.hifiFlashUniswapV2Underlying.address;
+                      await expect(
+                        this.contracts.uniswapV2Pair
+                          .connect(this.signers.raider)
+                          .swap(token0Amount, token1Amount, to, data),
+                      ).to.be.revertedWith(HifiFlashUniswapV2UnderlyingErrors.FlashBorrowWrongToken);
+                    });
+                  });
+
                   it("flash swaps USDC making no USDC profit and spending allocated USDC to pay swap fee", async function () {
                     const to: string = this.contracts.hifiFlashUniswapV2Underlying.address;
                     const preUsdcBalanceAccount = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
