@@ -25,26 +25,24 @@ async function bumpPoolReserves(this: Mocha.Context, wbtcAmount: BigNumber, usdc
 }
 
 function encodeCallData(this: Mocha.Context): string {
-  const types = ["address", "address", "uint256"];
-  const minProfit: string = String(USDC("0"));
-  const values = [this.signers.borrower.address, this.contracts.hToken.address, minProfit];
+  const types = ["address", "address"];
+  const values = [this.signers.borrower.address, this.contracts.hToken.address];
   const data: string = defaultAbiCoder.encode(types, values);
   return data;
 }
 
-async function getSeizableAndProfitCollateralAmounts(
+async function getSeizableAndRepayCollateralAmounts(
   this: Mocha.Context,
   repayHUsdcAmount: BigNumber,
   underlyingAmount: BigNumber,
-): Promise<{ expectedProfitUsdcAmount: BigNumber; seizableUsdcAmount: BigNumber }> {
+): Promise<{ expectedRepayUsdcAmount: BigNumber; seizableUsdcAmount: BigNumber }> {
   const seizableUsdcAmount = await this.contracts.balanceSheet.getSeizableCollateralAmount(
     this.contracts.hToken.address,
     repayHUsdcAmount,
     this.contracts.usdc.address,
   );
-  const repayUsdcAmount = await this.contracts.hifiFlashUniswapV2Underlying.getRepayCollateralAmount(underlyingAmount);
-  const expectedProfitUsdcAmount = seizableUsdcAmount.sub(repayUsdcAmount);
-  return { expectedProfitUsdcAmount, seizableUsdcAmount };
+  const expectedRepayUsdcAmount = underlyingAmount.mul(1000).div(997).add(1);
+  return { expectedRepayUsdcAmount, seizableUsdcAmount };
 }
 
 async function getTokenAmounts(
@@ -157,13 +155,13 @@ export function shouldBehaveLikeUniswapV2Call(): void {
       });
 
       context("when the underlying is in the pair contract", function () {
-        context("when collateral is flash borrowed", function () {
+        context("when wrong token is flash borrowed", function () {
           it("reverts", async function () {
             const { token0Amount, token1Amount } = await getTokenAmounts.call(this, WBTC("1"), Zero);
             const to: string = this.contracts.hifiFlashUniswapV2Underlying.address;
             await expect(
               this.contracts.uniswapV2Pair.connect(this.signers.raider).swap(token0Amount, token1Amount, to, data),
-            ).to.be.revertedWith(HifiFlashUniswapV2UnderlyingErrors.FlashBorrowCollateral);
+            ).to.be.revertedWith(HifiFlashUniswapV2UnderlyingErrors.FlashBorrowWrongToken);
           });
         });
 
@@ -270,23 +268,24 @@ export function shouldBehaveLikeUniswapV2Call(): void {
               await reducePoolReserves.call(this, Zero, USDC("1.75e6"));
             });
 
-            it("reverts", async function () {
-              const types = ["address", "address", "uint256"];
-              const minProfit: string = String(USDC("1"));
-              const values = [this.signers.borrower.address, this.contracts.hToken.address, minProfit];
-              const data: string = defaultAbiCoder.encode(types, values);
+            it("flash swaps USDC making no USDC profit and spending allocated USDC to pay swap fee", async function () {
               const to: string = this.contracts.hifiFlashUniswapV2Underlying.address;
-              await expect(
-                this.contracts.uniswapV2Pair
-                  .connect(this.signers.liquidator)
-                  .swap(token0Amount, token1Amount, to, data),
-              ).to.be.revertedWith(HifiFlashUniswapV2UnderlyingErrors.InsufficientProfit);
+              const preUsdcBalanceAccount = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
+              const preUsdcBalanceContract = await this.contracts.usdc.balanceOf(to);
+              await this.contracts.uniswapV2Pair
+                .connect(this.signers.liquidator)
+                .swap(token0Amount, token1Amount, to, data);
+              const newUsdcBalanceAccount = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
+              const newUsdcBalanceContract = await this.contracts.usdc.balanceOf(to);
+              expect(newUsdcBalanceAccount).to.equal(preUsdcBalanceAccount);
+              expect(preUsdcBalanceContract.sub(newUsdcBalanceContract)).to.equal(usdcRepayFeeAmount);
             });
           });
 
           context("when the borrower has a liquidity shortfall", function () {
             context("when the price given by the pair contract is the same as the oracle price", function () {
               let seizableUsdcAmount: BigNumber;
+              let expectedRepayUsdcAmount: BigNumber;
 
               context("when the collateral ratio is lower than 110%", function () {
                 const repayHUsdcAmount: BigNumber = hUSDC("9090.909090909090909090");
@@ -296,7 +295,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                   await this.contracts.wbtcPriceFeed.setPrice(price("10000"));
 
                   // Calculate the amounts necessary for running the tests.
-                  const calculatesAmounts = await getSeizableAndProfitCollateralAmounts.call(
+                  const calculatesAmounts = await getSeizableAndRepayCollateralAmounts.call(
                     this,
                     repayHUsdcAmount,
                     underlyingAmount,
@@ -329,12 +328,13 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                   await reducePoolReserves.call(this, Zero, USDC("1.5e6"));
 
                   // Calculate the amounts necessary for running the tests.
-                  const calculatesAmounts = await getSeizableAndProfitCollateralAmounts.call(
+                  const calculatesAmounts = await getSeizableAndRepayCollateralAmounts.call(
                     this,
                     repayHUsdcAmount,
                     underlyingAmount,
                   );
                   seizableUsdcAmount = calculatesAmounts.seizableUsdcAmount;
+                  expectedRepayUsdcAmount = calculatesAmounts.expectedRepayUsdcAmount;
                 });
 
                 context("new order of tokens in the pair", function () {
@@ -398,7 +398,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                         this.contracts.hToken.address,
                         underlyingAmount,
                         seizableUsdcAmount,
-                        USDC("0"),
+                        expectedRepayUsdcAmount,
                       );
                   });
                 });

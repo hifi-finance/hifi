@@ -13,15 +13,8 @@ import "./IUniswapV2Pair.sol";
 /// @notice Emitted when the caller is not the Uniswap V2 pair contract.
 error HifiFlashUniswapV2Underlying__CallNotAuthorized(address caller);
 
-/// @notice Emitted when the flash borrowed asset is the collateral instead of the underlying.
-error HifiFlashUniswapV2Underlying__FlashBorrowCollateral(uint256 collateralAmount);
-
-/// @notice Emitted when the liquidation does not yield a sufficient profit.
-error HifiFlashUniswapV2Underlying__InsufficientProfit(
-    uint256 seizedCollateralAmount,
-    uint256 repayCollateralAmount,
-    uint256 minProfit
-);
+/// @notice Emitted when the flash borrowed asset is the wrong token in the pair.
+error HifiFlashUniswapV2Underlying__FlashBorrowWrongToken(uint256 collateralAmount);
 
 /// @notice Emitted when neither the token0 nor the token1 is the underlying.
 error HifiFlashUniswapV2Underlying__UnderlyingNotInPool(
@@ -71,13 +64,13 @@ contract HifiFlashUniswapV2Underlying is IHifiFlashUniswapV2Underlying {
         address token1 = pair.token1();
         if (token0 == address(underlying)) {
             if (amount1 > 0) {
-                revert HifiFlashUniswapV2Underlying__FlashBorrowCollateral(amount1);
+                revert HifiFlashUniswapV2Underlying__FlashBorrowWrongToken(amount1);
             }
             collateral = IErc20(token0);
             underlyingAmount = amount0;
         } else if (token1 == address(underlying)) {
             if (amount0 > 0) {
-                revert HifiFlashUniswapV2Underlying__FlashBorrowCollateral(amount0);
+                revert HifiFlashUniswapV2Underlying__FlashBorrowWrongToken(amount0);
             }
             collateral = IErc20(token1);
             underlyingAmount = amount1;
@@ -108,9 +101,7 @@ contract HifiFlashUniswapV2Underlying is IHifiFlashUniswapV2Underlying {
         IHToken bond;
         address borrower;
         IErc20 collateral;
-        uint256 minProfit;
         uint256 mintedHTokenAmount;
-        uint256 profitCollateralAmount;
         uint256 repayCollateralAmount;
         uint256 seizedCollateralAmount;
         address swapToken;
@@ -128,7 +119,7 @@ contract HifiFlashUniswapV2Underlying is IHifiFlashUniswapV2Underlying {
         UniswapV2CallLocalVars memory vars;
 
         // Unpack the ABI encoded data passed by the UniswapV2Pair contract.
-        (vars.borrower, vars.bond, vars.minProfit) = abi.decode(data, (address, IHToken, uint256));
+        (vars.borrower, vars.bond) = abi.decode(data, (address, IHToken));
 
         // Figure out which token is the collateral and which token is the underlying.
         vars.underlying = vars.bond.underlying();
@@ -159,22 +150,9 @@ contract HifiFlashUniswapV2Underlying is IHifiFlashUniswapV2Underlying {
 
         // Calculate the amount of collateral required to repay.
         vars.repayCollateralAmount = getRepayCollateralAmount(vars.underlyingAmount);
-        if (vars.seizedCollateralAmount > vars.repayCollateralAmount) {
-            vars.profitCollateralAmount = vars.seizedCollateralAmount - vars.repayCollateralAmount;
-        }
-        if (vars.profitCollateralAmount < vars.minProfit) {
-            revert HifiFlashUniswapV2Underlying__InsufficientProfit(
-                vars.seizedCollateralAmount,
-                vars.repayCollateralAmount,
-                vars.minProfit
-            );
-        }
 
         // Pay back the loan.
         vars.collateral.safeTransfer(msg.sender, vars.repayCollateralAmount);
-
-        // Reap the profit, if any.
-        vars.collateral.safeTransfer(sender, vars.profitCollateralAmount);
 
         // Emit an event.
         emit FlashLiquidateBorrow(
@@ -183,7 +161,7 @@ contract HifiFlashUniswapV2Underlying is IHifiFlashUniswapV2Underlying {
             address(vars.bond),
             vars.underlyingAmount,
             vars.seizedCollateralAmount,
-            vars.profitCollateralAmount
+            vars.repayCollateralAmount
         );
     }
 

@@ -19,7 +19,7 @@ interface IHifiFlashUniswapV2Underlying is IUniswapV2Callee {
         address indexed bond,
         uint256 underlyingAmount,
         uint256 seizedCollateralAmount,
-        uint256 profitCollateralAmount
+        uint256 repayCollateralAmount
     );
 
     /// CONSTANT FUNCTIONS ///
@@ -54,8 +54,8 @@ interface IHifiFlashUniswapV2Underlying is IUniswapV2Callee {
     /// collateralRepayAmount =  ---------------------
     ///                                   997
     ///
-    /// @dev See "getAmountIn" and "getAmountOut" in UniswapV2Library.sol. Flash swaps that are repaid via the
-    /// corresponding pair token is akin to a normal swap, so the 0.3% LP fee applies.
+    /// @dev See "getAmountIn" and "getAmountOut" in UniswapV2Library.sol. Flash swaps are repaid via the
+    /// same borrowed pair token and the 0.3% LP fee applies.
     /// @param underlyingAmount The amount of underlying flash borrowed.
     /// @return collateralRepayAmount The minimum amount of collateral that must be repaid.
     function getRepayCollateralAmount(uint256 underlyingAmount) external view returns (uint256 collateralRepayAmount);
