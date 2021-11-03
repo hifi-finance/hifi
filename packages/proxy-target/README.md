@@ -59,7 +59,7 @@ import type { HifiProxyTarget__factory } from "@hifi/protocol/dist/types/factori
 
 async function depositCollateral() {
   const signer = "..."; // Get hold of an ethers.js Signer
-  const hifiProxyTarget = HifiProxyTarget__factory("0x...", signer); // Get the address from https://docs.hifi.finance
+  const hifiProxyTarget = new HifiProxyTarget__factory("0x...", signer); // Get the address from https://docs.hifi.finance
   const balanceSheet = "0x...";
   const collateral = "0x...";
   const depositAmount = parseUnits("100", 18);

@@ -53,7 +53,7 @@ import type { HifiPool__factory } from "@hifi/amm/dist/types/factories/HifiPool_
 
 async function getQuote() {
   const defaultProvider = getDefaultProvider();
-  const hifiPool = HifiPool__factory("0x...", defaultProvider); // Get the address from https://docs.hifi.finance
+  const hifiPool = new HifiPool__factory("0x...", defaultProvider); // Get the address from https://docs.hifi.finance
   const hTokenIn = parseUnits("100", 18);
   const underlyingOut = await hifiPool.getQuoteForSellingHToken(hTokenIn);
 }

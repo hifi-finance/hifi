@@ -59,7 +59,7 @@ import type { BalanceSheetV1__factory } from "@hifi/protocol/dist/types/factorie
 
 async function queryAccountLiquidity() {
   const defaultProvider = getDefaultProvider();
-  const balanceSheet = BalanceSheetV1__factory("0x...", defaultProvider); // Get the address from https://docs.hifi.finance
+  const balanceSheet = new BalanceSheetV1__factory("0x...", defaultProvider); // Get the address from https://docs.hifi.finance
   const user = "0x...";
   const accountLiquidity = await balanceSheet.getCurrentAccountLiquidity(user);
 }

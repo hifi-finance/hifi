@@ -43,7 +43,7 @@ import type { UniswapV2Pair__factory } from "@hifi/flash-swap/dist/types/factori
 
 async function flashSwap() {
   const defaultProvider = getDefaultProvider();
-  const pair = UniswapV2Pair__factory("0x...", defaultProvider);
+  const pair = new UniswapV2Pair__factory("0x...", defaultProvider);
 
   const token0Amount = parseUnits("100", 18);
   const token1Amount = parseUnits("0", 18);
