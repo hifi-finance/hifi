@@ -42,8 +42,10 @@ const config: HardhatUserConfig = {
     contracts: [
       "Erc20",
       "HifiFlashUniswapV2",
+      "HifiFlashUniswapV2Underlying",
       "IErc20",
       "IHifiFlashUniswapV2",
+      "IHifiFlashUniswapV2Underlying",
       "IUniswapV2Callee",
       "IUniswapV2Pair",
       "UniswapV2Pair",

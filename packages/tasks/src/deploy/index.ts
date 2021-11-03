@@ -1,5 +1,6 @@
 import "./chainlinkOperator";
 import "./hifiFlashUniswapV2";
+import "./hifiFlashUniswapV2Underlying";
 import "./hifiPoolRegistry";
 import "./hifiProxyTarget";
 import "./hToken";
