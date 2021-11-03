@@ -99,9 +99,11 @@ contract HifiFlashUniswapV2Underlying is IHifiFlashUniswapV2Underlying {
 
     struct UniswapV2CallLocalVars {
         IHToken bond;
+        address bot;
         address borrower;
         IErc20 collateral;
         uint256 mintedHTokenAmount;
+        uint256 overshootCollateralAmount;
         uint256 repayCollateralAmount;
         uint256 seizedCollateralAmount;
         address swapToken;
@@ -119,7 +121,7 @@ contract HifiFlashUniswapV2Underlying is IHifiFlashUniswapV2Underlying {
         UniswapV2CallLocalVars memory vars;
 
         // Unpack the ABI encoded data passed by the UniswapV2Pair contract.
-        (vars.borrower, vars.bond) = abi.decode(data, (address, IHToken));
+        (vars.borrower, vars.bond, vars.bot) = abi.decode(data, (address, IHToken, address));
 
         // Figure out which token is the collateral and which token is the underlying.
         vars.underlying = vars.bond.underlying();
@@ -150,6 +152,14 @@ contract HifiFlashUniswapV2Underlying is IHifiFlashUniswapV2Underlying {
 
         // Calculate the amount of collateral required to repay.
         vars.repayCollateralAmount = getRepayCollateralAmount(vars.underlyingAmount);
+
+        // The bot wallet compensates for any overshoot of collateral repay amount above seized amount.
+        if (vars.repayCollateralAmount > vars.seizedCollateralAmount) {
+            unchecked {
+                vars.overshootCollateralAmount = vars.repayCollateralAmount - vars.seizedCollateralAmount;
+            }
+            vars.collateral.safeTransferFrom(vars.bot, address(this), vars.overshootCollateralAmount);
+        }
 
         // Pay back the loan.
         vars.collateral.safeTransfer(msg.sender, vars.repayCollateralAmount);

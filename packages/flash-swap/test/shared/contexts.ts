@@ -18,6 +18,7 @@ export function baseContext(description: string, hooks: () => void): void {
       this.signers.borrower = signers[1];
       this.signers.liquidator = signers[2];
       this.signers.raider = signers[3];
+      this.signers.bot = signers[4];
 
       // Get rid of this when https://github.com/nomiclabs/hardhat/issues/849 gets fixed.
       this.loadFixture = createFixtureLoader(signers as Signer[] as Wallet[]);

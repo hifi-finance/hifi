@@ -25,8 +25,8 @@ async function bumpPoolReserves(this: Mocha.Context, wbtcAmount: BigNumber, usdc
 }
 
 function encodeCallData(this: Mocha.Context): string {
-  const types = ["address", "address"];
-  const values = [this.signers.borrower.address, this.contracts.hToken.address];
+  const types = ["address", "address", "address"];
+  const values = [this.signers.borrower.address, this.contracts.hToken.address, this.signers.bot.address];
   const data: string = defaultAbiCoder.encode(types, values);
   return data;
 }
@@ -226,11 +226,11 @@ export function shouldBehaveLikeUniswapV2Call(): void {
               .connect(this.signers.borrower)
               .approve(this.contracts.balanceSheet.address, wbtcDepositAmount);
 
-            // Minst USDC and send it to flash-swap to be used for Uniswap V2 fee repay
-            await this.contracts.usdc.__godMode_mint(
-              this.contracts.hifiFlashUniswapV2Underlying.address,
-              usdcRepayFeeAmount,
-            );
+            // Minst USDC to the bot wallet and approve the flash swap contract to spend it
+            await this.contracts.usdc.__godMode_mint(this.signers.bot.address, usdcRepayFeeAmount);
+            await this.contracts.usdc
+              .connect(this.signers.bot)
+              .approve(this.contracts.hifiFlashUniswapV2Underlying.address, usdcRepayFeeAmount);
 
             // Deposit the USDC in the BalanceSheet.
             await this.contracts.balanceSheet
@@ -271,14 +271,14 @@ export function shouldBehaveLikeUniswapV2Call(): void {
             it("flash swaps USDC making no USDC profit and spending allocated USDC to pay swap fee", async function () {
               const to: string = this.contracts.hifiFlashUniswapV2Underlying.address;
               const preUsdcBalanceAccount = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
-              const preUsdcBalanceContract = await this.contracts.usdc.balanceOf(to);
+              const preUsdcBalanceBot = await this.contracts.usdc.balanceOf(this.signers.bot.address);
               await this.contracts.uniswapV2Pair
                 .connect(this.signers.liquidator)
                 .swap(token0Amount, token1Amount, to, data);
               const newUsdcBalanceAccount = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
-              const newUsdcBalanceContract = await this.contracts.usdc.balanceOf(to);
+              const newUsdcBalanceBot = await this.contracts.usdc.balanceOf(this.signers.bot.address);
               expect(newUsdcBalanceAccount).to.equal(preUsdcBalanceAccount);
-              expect(preUsdcBalanceContract.sub(newUsdcBalanceContract)).to.equal(usdcRepayFeeAmount);
+              expect(preUsdcBalanceBot.sub(newUsdcBalanceBot)).to.equal(usdcRepayFeeAmount);
             });
           });
 
@@ -306,14 +306,14 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                 it("flash swaps USDC making no USDC profit and spending allocated USDC to pay swap fee", async function () {
                   const to: string = this.contracts.hifiFlashUniswapV2Underlying.address;
                   const preUsdcBalanceAccount = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
-                  const preUsdcBalanceContract = await this.contracts.usdc.balanceOf(to);
+                  const preUsdcBalanceBot = await this.contracts.usdc.balanceOf(this.signers.bot.address);
                   await this.contracts.uniswapV2Pair
                     .connect(this.signers.liquidator)
                     .swap(token0Amount, token1Amount, to, data);
                   const newUsdcBalanceAccount = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
-                  const newUsdcBalanceContract = await this.contracts.usdc.balanceOf(to);
+                  const newUsdcBalanceBot = await this.contracts.usdc.balanceOf(this.signers.bot.address);
                   expect(newUsdcBalanceAccount).to.equal(preUsdcBalanceAccount);
-                  expect(preUsdcBalanceContract.sub(newUsdcBalanceContract)).to.equal(usdcRepayFeeAmount);
+                  expect(preUsdcBalanceBot.sub(newUsdcBalanceBot)).to.equal(usdcRepayFeeAmount);
                 });
               });
 
@@ -360,14 +360,14 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                   it("flash swaps USDC making no USDC profit and spending allocated USDC to pay swap fee", async function () {
                     const to: string = this.contracts.hifiFlashUniswapV2Underlying.address;
                     const preUsdcBalanceAccount = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
-                    const preUsdcBalanceContract = await this.contracts.usdc.balanceOf(to);
+                    const preUsdcBalanceBot = await this.contracts.usdc.balanceOf(this.signers.bot.address);
                     await this.contracts.uniswapV2Pair
                       .connect(this.signers.liquidator)
                       .swap(localToken0Amount, localToken1Amount, to, data);
                     const newUsdcBalanceAccount = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
-                    const newUsdcBalanceContract = await this.contracts.usdc.balanceOf(to);
+                    const newUsdcBalanceBot = await this.contracts.usdc.balanceOf(this.signers.bot.address);
                     expect(newUsdcBalanceAccount).to.equal(preUsdcBalanceAccount);
-                    expect(preUsdcBalanceContract.sub(newUsdcBalanceContract)).to.equal(usdcRepayFeeAmount);
+                    expect(preUsdcBalanceBot.sub(newUsdcBalanceBot)).to.equal(usdcRepayFeeAmount);
                   });
                 });
 
@@ -375,14 +375,14 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                   it("flash swaps USDC making no USDC profit and spending allocated USDC to pay swap fee", async function () {
                     const to: string = this.contracts.hifiFlashUniswapV2Underlying.address;
                     const preUsdcBalanceAccount = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
-                    const preUsdcBalanceContract = await this.contracts.usdc.balanceOf(to);
+                    const preUsdcBalanceBot = await this.contracts.usdc.balanceOf(this.signers.bot.address);
                     await this.contracts.uniswapV2Pair
                       .connect(this.signers.liquidator)
                       .swap(token0Amount, token1Amount, to, data);
                     const newUsdcBalanceAccount = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
-                    const newUsdcBalanceContract = await this.contracts.usdc.balanceOf(to);
+                    const newUsdcBalanceBot = await this.contracts.usdc.balanceOf(this.signers.bot.address);
                     expect(newUsdcBalanceAccount).to.equal(preUsdcBalanceAccount);
-                    expect(preUsdcBalanceContract.sub(newUsdcBalanceContract)).to.equal(usdcRepayFeeAmount);
+                    expect(preUsdcBalanceBot.sub(newUsdcBalanceBot)).to.equal(usdcRepayFeeAmount);
                   });
 
                   it("emits a FlashLiquidateBorrow event", async function () {
