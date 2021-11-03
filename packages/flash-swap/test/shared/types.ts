@@ -7,6 +7,7 @@ import type { GodModeErc20 } from "../../src/types/GodModeErc20";
 import type { GodModeHToken } from "../../src/types/GodModeHToken";
 import type { GodModeUniswapV2Pair } from "../../src/types/GodModeUniswapV2Pair";
 import type { HifiFlashUniswapV2 } from "../../src/types/HifiFlashUniswapV2";
+import type { HifiFlashUniswapV2Underlying } from "../../src/types/HifiFlashUniswapV2Underlying";
 import type { MaliciousPair } from "../../src/types/MaliciousPair";
 import type { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
 
@@ -22,6 +23,7 @@ export interface Contracts {
   fintroller: FintrollerV1;
   hToken: GodModeHToken;
   hifiFlashUniswapV2: HifiFlashUniswapV2;
+  hifiFlashUniswapV2Underlying: HifiFlashUniswapV2Underlying;
   maliciousPair: MaliciousPair;
   oracle: ChainlinkOperator;
   usdc: GodModeErc20;

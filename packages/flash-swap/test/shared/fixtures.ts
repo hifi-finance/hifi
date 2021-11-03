@@ -14,6 +14,7 @@ import type { GodModeErc20 } from "../../src/types/GodModeErc20";
 import type { GodModeHToken } from "../../src/types/GodModeHToken";
 import type { GodModeUniswapV2Factory } from "../../src/types/GodModeUniswapV2Factory";
 import type { HifiFlashUniswapV2 } from "../../src/types/HifiFlashUniswapV2";
+import type { HifiFlashUniswapV2Underlying } from "../../src/types/HifiFlashUniswapV2Underlying";
 import type { MaliciousPair } from "../../src/types/MaliciousPair";
 import type { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
 import type { GodModeUniswapV2Pair } from "../../src/types/GodModeUniswapV2Pair";
@@ -23,6 +24,7 @@ type IntegrationFixtureReturnType = {
   balanceSheet: BalanceSheetV1;
   fintroller: FintrollerV1;
   hifiFlashUniswapV2: HifiFlashUniswapV2;
+  hifiFlashUniswapV2Underlying: HifiFlashUniswapV2Underlying;
   hToken: GodModeHToken;
   maliciousPair: MaliciousPair;
   uniswapV2Pair: GodModeUniswapV2Pair;
@@ -89,10 +91,20 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
     await waffle.deployContract(deployer, maliciousPairArtifact, [wbtc.address, usdc.address])
   );
 
-  const hifiFlashUniswapV2Artifact: Artifact = await artifacts.readArtifact("HifiFlashUniswapV2");
   const uniV2PairInitCodeHash: string = keccak256(godModeUniswapV2PairArtifact.bytecode);
+
+  const hifiFlashUniswapV2Artifact: Artifact = await artifacts.readArtifact("HifiFlashUniswapV2");
   const hifiFlashUniswapV2: HifiFlashUniswapV2 = <HifiFlashUniswapV2>(
     await waffle.deployContract(deployer, hifiFlashUniswapV2Artifact, [
+      balanceSheet.address,
+      uniswapV2Factory.address,
+      uniV2PairInitCodeHash,
+    ])
+  );
+
+  const hifiFlashUniswapV2UnderlyingArtifact: Artifact = await artifacts.readArtifact("HifiFlashUniswapV2Underlying");
+  const hifiFlashUniswapV2Underlying: HifiFlashUniswapV2Underlying = <HifiFlashUniswapV2Underlying>(
+    await waffle.deployContract(deployer, hifiFlashUniswapV2UnderlyingArtifact, [
       balanceSheet.address,
       uniswapV2Factory.address,
       uniV2PairInitCodeHash,
@@ -103,6 +115,7 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
     balanceSheet,
     fintroller,
     hifiFlashUniswapV2,
+    hifiFlashUniswapV2Underlying,
     hToken,
     maliciousPair,
     uniswapV2Pair,
