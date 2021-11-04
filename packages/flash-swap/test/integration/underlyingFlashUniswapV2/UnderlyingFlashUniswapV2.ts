@@ -19,9 +19,9 @@ export function integrationTestUnderlyingFlashUniswapV2(): void {
         wbtcPriceFeed,
       } = await this.loadFixture(integrationFixture);
       this.contracts.balanceSheet = balanceSheet;
+      this.contracts.collateralFlashUniswapV2 = collateralFlashUniswapV2;
       this.contracts.fintroller = fintroller;
       this.contracts.hToken = hToken;
-      this.contracts.collateralFlashUniswapV2 = collateralFlashUniswapV2;
       this.contracts.maliciousPair = maliciousPair;
       this.contracts.oracle = oracle;
       this.contracts.underlyingFlashUniswapV2 = underlyingFlashUniswapV2;

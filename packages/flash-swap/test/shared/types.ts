@@ -20,9 +20,9 @@ declare module "mocha" {
 
 export interface Contracts {
   balanceSheet: BalanceSheetV1;
+  collateralFlashUniswapV2: CollateralFlashUniswapV2;
   fintroller: FintrollerV1;
   hToken: GodModeHToken;
-  collateralFlashUniswapV2: CollateralFlashUniswapV2;
   maliciousPair: MaliciousPair;
   oracle: ChainlinkOperator;
   usdc: GodModeErc20;
