@@ -1,10 +1,10 @@
 import { defaultAbiCoder } from "@ethersproject/abi";
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
+import { LIQUIDATION_INCENTIVES } from "@hifi/constants";
 import { BalanceSheetErrors, UnderlyingFlashUniswapV2Errors } from "@hifi/errors";
 import { USDC, WBTC, hUSDC, price } from "@hifi/helpers";
 import { expect } from "chai";
-import { toBn } from "evm-bn";
 
 import type { GodModeErc20 } from "../../../../src/types/GodModeErc20";
 import { deployGodModeErc20 } from "../../../shared/deployers";
@@ -167,22 +167,20 @@ export function shouldBehaveLikeUniswapV2Call(): void {
 
         context("when underlying is flash borrowed", function () {
           const borrowAmount: BigNumber = hUSDC("10000");
-          const collateralAmount: BigNumber = Zero;
+          const collateralCeilingUsdc: BigNumber = USDC("1000000");
+          const collateralCeilingWbtc: BigNumber = WBTC("50");
           const debtCeiling: BigNumber = hUSDC("1e6");
-          const underlyingAmount: BigNumber = USDC("10000");
-          const usdcCollateralCeiling: BigNumber = USDC("1000000");
-          const usdcDepositAmount: BigNumber = USDC("10000");
-          const usdcLiquidationIncentive: BigNumber = toBn("1");
-          const usdcFeeAmount: BigNumber = USDC("30.090271");
-          const wbtcCollateralCeiling: BigNumber = WBTC("50");
-          const wbtcDepositAmount: BigNumber = WBTC("0.5");
-          const wbtcLiquidationIncentive: BigNumber = toBn("1.10");
+          const depositUsdcAmount: BigNumber = USDC("10000");
+          const depositWbtcAmount: BigNumber = WBTC("0.5");
+          const feeUsdcAmount: BigNumber = USDC("30.090271");
+          const swapUsdcAmount: BigNumber = USDC("10000");
+          const swapWbtcAmount: BigNumber = Zero;
 
           let token0Amount: BigNumber;
           let token1Amount: BigNumber;
 
           beforeEach(async function () {
-            const tokenAmounts = await getTokenAmounts.call(this, collateralAmount, underlyingAmount);
+            const tokenAmounts = await getTokenAmounts.call(this, swapWbtcAmount, swapUsdcAmount);
             token0Amount = tokenAmounts.token0Amount;
             token1Amount = tokenAmounts.token1Amount;
 
@@ -193,21 +191,23 @@ export function shouldBehaveLikeUniswapV2Call(): void {
             await this.contracts.fintroller.connect(this.signers.admin).listCollateral(this.contracts.usdc.address);
             await this.contracts.fintroller.connect(this.signers.admin).listCollateral(this.contracts.wbtc.address);
 
-            // Set the liquidation incentives.
+            // Set the liquidation incentive for USDC to 100%.
             await this.contracts.fintroller
               .connect(this.signers.admin)
-              .setLiquidationIncentive(this.contracts.usdc.address, usdcLiquidationIncentive);
+              .setLiquidationIncentive(this.contracts.usdc.address, LIQUIDATION_INCENTIVES.lowerBound);
+
+            // Set the liquidation incentive for WBTC to 110%.
             await this.contracts.fintroller
               .connect(this.signers.admin)
-              .setLiquidationIncentive(this.contracts.wbtc.address, wbtcLiquidationIncentive);
+              .setLiquidationIncentive(this.contracts.wbtc.address, LIQUIDATION_INCENTIVES.default);
 
             // Set the collateral ceilings.
             await this.contracts.fintroller
               .connect(this.signers.admin)
-              .setCollateralCeiling(this.contracts.usdc.address, usdcCollateralCeiling);
+              .setCollateralCeiling(this.contracts.usdc.address, collateralCeilingUsdc);
             await this.contracts.fintroller
               .connect(this.signers.admin)
-              .setCollateralCeiling(this.contracts.wbtc.address, wbtcCollateralCeiling);
+              .setCollateralCeiling(this.contracts.wbtc.address, collateralCeilingWbtc);
 
             // Set the debt ceiling.
             await this.contracts.fintroller
@@ -215,32 +215,32 @@ export function shouldBehaveLikeUniswapV2Call(): void {
               .setDebtCeiling(this.contracts.hToken.address, debtCeiling);
 
             // Mint USDC and approve the BalanceSheet to spend it.
-            await this.contracts.usdc.__godMode_mint(this.signers.borrower.address, usdcDepositAmount);
+            await this.contracts.usdc.__godMode_mint(this.signers.borrower.address, depositUsdcAmount);
             await this.contracts.usdc
               .connect(this.signers.borrower)
-              .approve(this.contracts.balanceSheet.address, usdcDepositAmount);
+              .approve(this.contracts.balanceSheet.address, depositUsdcAmount);
 
             // Mint WBTC and approve the BalanceSheet to spend it.
-            await this.contracts.wbtc.__godMode_mint(this.signers.borrower.address, wbtcDepositAmount);
+            await this.contracts.wbtc.__godMode_mint(this.signers.borrower.address, depositWbtcAmount);
             await this.contracts.wbtc
               .connect(this.signers.borrower)
-              .approve(this.contracts.balanceSheet.address, wbtcDepositAmount);
+              .approve(this.contracts.balanceSheet.address, depositWbtcAmount);
 
             // Mint USDC to the subsidizer wallet and approve the flash swap contract to spend it.
-            await this.contracts.usdc.__godMode_mint(this.signers.subsidizer.address, usdcFeeAmount);
+            await this.contracts.usdc.__godMode_mint(this.signers.subsidizer.address, feeUsdcAmount);
             await this.contracts.usdc
               .connect(this.signers.subsidizer)
-              .approve(this.contracts.underlyingFlashUniswapV2.address, usdcFeeAmount);
+              .approve(this.contracts.underlyingFlashUniswapV2.address, feeUsdcAmount);
 
             // Deposit the USDC in the BalanceSheet.
             await this.contracts.balanceSheet
               .connect(this.signers.borrower)
-              .depositCollateral(this.contracts.usdc.address, usdcDepositAmount);
+              .depositCollateral(this.contracts.usdc.address, depositUsdcAmount);
 
             // Deposit the WBTC in the BalanceSheet.
             await this.contracts.balanceSheet
               .connect(this.signers.borrower)
-              .depositCollateral(this.contracts.wbtc.address, wbtcDepositAmount);
+              .depositCollateral(this.contracts.wbtc.address, depositWbtcAmount);
 
             // Borrow hUSDC.
             await this.contracts.balanceSheet
@@ -278,7 +278,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
               const newUsdcBalanceAccount = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
               const newUsdcBalanceBot = await this.contracts.usdc.balanceOf(this.signers.subsidizer.address);
               expect(newUsdcBalanceAccount).to.equal(oldUsdcBalanceAccount);
-              expect(oldUsdcBalanceBot.sub(newUsdcBalanceBot)).to.equal(usdcFeeAmount);
+              expect(oldUsdcBalanceBot.sub(newUsdcBalanceBot)).to.equal(feeUsdcAmount);
             });
           });
 
@@ -298,7 +298,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                   const calculatesAmounts = await getSeizableAndRepayCollateralAmounts.call(
                     this,
                     repayHUsdcAmount,
-                    underlyingAmount,
+                    swapUsdcAmount,
                   );
                   seizableUsdcAmount = calculatesAmounts.seizableUsdcAmount;
                 });
@@ -313,7 +313,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                   const newUsdcBalanceAccount = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
                   const newUsdcBalanceBot = await this.contracts.usdc.balanceOf(this.signers.subsidizer.address);
                   expect(newUsdcBalanceAccount).to.equal(oldUsdcBalanceAccount);
-                  expect(oldUsdcBalanceBot.sub(newUsdcBalanceBot)).to.equal(usdcFeeAmount);
+                  expect(oldUsdcBalanceBot.sub(newUsdcBalanceBot)).to.equal(feeUsdcAmount);
                 });
               });
 
@@ -331,7 +331,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                   const calculatesAmounts = await getSeizableAndRepayCollateralAmounts.call(
                     this,
                     repayHUsdcAmount,
-                    underlyingAmount,
+                    swapUsdcAmount,
                   );
                   seizableUsdcAmount = calculatesAmounts.seizableUsdcAmount;
                   expectedRepayUsdcAmount = calculatesAmounts.expectedRepayUsdcAmount;
@@ -346,13 +346,13 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                     if (token0 == this.contracts.wbtc.address) {
                       await this.contracts.uniswapV2Pair.__godMode_setToken0(this.contracts.usdc.address);
                       await this.contracts.uniswapV2Pair.__godMode_setToken1(this.contracts.wbtc.address);
-                      localToken0Amount = underlyingAmount;
-                      localToken1Amount = collateralAmount;
+                      localToken0Amount = swapUsdcAmount;
+                      localToken1Amount = swapWbtcAmount;
                     } else {
                       await this.contracts.uniswapV2Pair.__godMode_setToken0(this.contracts.wbtc.address);
                       await this.contracts.uniswapV2Pair.__godMode_setToken1(this.contracts.usdc.address);
-                      localToken0Amount = collateralAmount;
-                      localToken1Amount = underlyingAmount;
+                      localToken0Amount = swapWbtcAmount;
+                      localToken1Amount = swapUsdcAmount;
                     }
                     await this.contracts.uniswapV2Pair.sync();
                   });
@@ -367,7 +367,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                     const newUsdcBalanceAccount = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
                     const newUsdcBalanceBot = await this.contracts.usdc.balanceOf(this.signers.subsidizer.address);
                     expect(newUsdcBalanceAccount).to.equal(oldUsdcBalanceAccount);
-                    expect(oldUsdcBalanceBot.sub(newUsdcBalanceBot)).to.equal(usdcFeeAmount);
+                    expect(oldUsdcBalanceBot.sub(newUsdcBalanceBot)).to.equal(feeUsdcAmount);
                   });
                 });
 
@@ -382,7 +382,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                     const newUsdcBalanceAccount = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
                     const newUsdcBalanceBot = await this.contracts.usdc.balanceOf(this.signers.subsidizer.address);
                     expect(newUsdcBalanceAccount).to.equal(oldUsdcBalanceAccount);
-                    expect(oldUsdcBalanceBot.sub(newUsdcBalanceBot)).to.equal(usdcFeeAmount);
+                    expect(oldUsdcBalanceBot.sub(newUsdcBalanceBot)).to.equal(feeUsdcAmount);
                   });
 
                   it("emits a FlashSwapUnderlyingAndLiquidateBorrow event", async function () {
@@ -396,7 +396,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                         this.signers.liquidator.address,
                         this.signers.borrower.address,
                         this.contracts.hToken.address,
-                        underlyingAmount,
+                        swapUsdcAmount,
                         seizableUsdcAmount,
                         expectedRepayUsdcAmount,
                       );
