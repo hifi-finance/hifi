@@ -13,13 +13,13 @@ import "./IUniswapV2Pair.sol";
 interface IUnderlyingFlashUniswapV2 is IUniswapV2Callee {
     /// EVENTS ///
 
-    event FlashLiquidateBorrow(
+    event FlashSwapUnderlyingAndLiquidateBorrow(
         address indexed liquidator,
         address indexed borrower,
         address indexed bond,
         uint256 underlyingAmount,
-        uint256 seizedCollateralAmount,
-        uint256 repayCollateralAmount
+        uint256 seizedUnderlyingAmount,
+        uint256 repayUnderlyingAmount
     );
 
     /// CONSTANT FUNCTIONS ///
@@ -27,7 +27,7 @@ interface IUnderlyingFlashUniswapV2 is IUniswapV2Callee {
     /// @notice The unique BalanceSheet contract associated with this contract.
     function balanceSheet() external view returns (IBalanceSheetV1);
 
-    /// @notice Compares the token addresses to find the collateral address and the underlying amount.
+    /// @notice Compares the token addresses to find the other token and the underlying amount.
     /// @dev See this StackExchange post: https://ethereum.stackexchange.com/q/102670/24693.
     ///
     /// Requirements:
@@ -39,26 +39,26 @@ interface IUnderlyingFlashUniswapV2 is IUniswapV2Callee {
     /// @param amount0 The amount of token0.
     /// @param amount1 The amount of token1.
     /// @param underlying The address of the underlying contract.
-    /// @return collateral The collateral contract.
+    /// @return otherToken The address of the other token contract.
     /// @return underlyingAmount The amount of underlying flash borrowed.
-    function getCollateralAndUnderlyingAmount(
+    function getOtherTokenAndUnderlyingAmount(
         IUniswapV2Pair pair,
         uint256 amount0,
         uint256 amount1,
         IErc20 underlying
-    ) external view returns (IErc20 collateral, uint256 underlyingAmount);
+    ) external view returns (IErc20 otherToken, uint256 underlyingAmount);
 
-    /// @notice Calculates the amount that must be repaid to Uniswap. The formula applied is:
+    /// @notice Calculates the amount of underlying that must be repaid to Uniswap. The formula applied is:
     ///
     ///                         underlyingAmount * 1000
-    /// collateralRepayAmount =  ---------------------
+    /// repayUnderlyingAmount =  ---------------------
     ///                                   997
     ///
     /// @dev See "getAmountIn" and "getAmountOut" in UniswapV2Library.sol. Flash swaps are repaid via the
     /// same borrowed pair token and the 0.3% LP fee applies.
     /// @param underlyingAmount The amount of underlying flash borrowed.
-    /// @return collateralRepayAmount The minimum amount of collateral that must be repaid.
-    function getRepayCollateralAmount(uint256 underlyingAmount) external view returns (uint256 collateralRepayAmount);
+    /// @return repayUnderlyingAmount The minimum amount of underlying that must be repaid.
+    function getRepayUnderlyingAmount(uint256 underlyingAmount) external view returns (uint256 repayUnderlyingAmount);
 
     /// @notice The address of the UniswapV2Factory contract.
     function uniV2Factory() external view returns (address);

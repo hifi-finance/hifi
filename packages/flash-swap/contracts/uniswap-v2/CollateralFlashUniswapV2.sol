@@ -15,7 +15,7 @@ import "./IUniswapV2Pair.sol";
 error CollateralFlashUniswapV2__CallNotAuthorized(address caller);
 
 /// @notice Emitted when the flash borrowed asset is the collateral instead of the underlying.
-error CollateralFlashUniswapV2__FlashBorrowCollateral(uint256 collateralAmount);
+error CollateralFlashUniswapV2__FlashBorrowCollateral();
 
 /// @notice Emitted when the liquidation does not yield a sufficient profit.
 error CollateralFlashUniswapV2__InsufficientProfit(
@@ -72,13 +72,13 @@ contract CollateralFlashUniswapV2 is ICollateralFlashUniswapV2 {
         address token1 = pair.token1();
         if (token0 == address(underlying)) {
             if (amount1 > 0) {
-                revert CollateralFlashUniswapV2__FlashBorrowCollateral(amount1);
+                revert CollateralFlashUniswapV2__FlashBorrowCollateral();
             }
             collateral = IErc20(token1);
             underlyingAmount = amount0;
         } else if (token1 == address(underlying)) {
             if (amount0 > 0) {
-                revert CollateralFlashUniswapV2__FlashBorrowCollateral(amount0);
+                revert CollateralFlashUniswapV2__FlashBorrowCollateral();
             }
             collateral = IErc20(token0);
             underlyingAmount = amount1;
@@ -188,7 +188,7 @@ contract CollateralFlashUniswapV2 is ICollateralFlashUniswapV2 {
         vars.collateral.safeTransfer(sender, vars.profitCollateralAmount);
 
         // Emit an event.
-        emit FlashLiquidateBorrow(
+        emit FlashSwapCollateralAndLiquidateBorrow(
             sender,
             vars.borrower,
             address(vars.bond),

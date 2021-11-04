@@ -7,6 +7,6 @@ export enum CollateralFlashUniswapV2Errors {
 
 export enum UnderlyingFlashUniswapV2Errors {
   CallNotAuthorized = "UnderlyingFlashUniswapV2__CallNotAuthorized",
-  FlashBorrowWrongToken = "UnderlyingFlashUniswapV2__FlashBorrowWrongToken",
+  FlashBorrowOtherToken = "UnderlyingFlashUniswapV2__FlashBorrowOtherToken",
   UnderlyingNotInPool = "UnderlyingFlashUniswapV2__UnderlyingNotInPool",
 }

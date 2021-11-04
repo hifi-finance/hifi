@@ -80,13 +80,15 @@ interface CollateralFlashUniswapV2Interface extends ethers.utils.Interface {
   ): Result;
 
   events: {
-    "FlashLiquidateBorrow(address,address,address,uint256,uint256,uint256)": EventFragment;
+    "FlashSwapCollateralAndLiquidateBorrow(address,address,address,uint256,uint256,uint256)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "FlashLiquidateBorrow"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "FlashSwapCollateralAndLiquidateBorrow"
+  ): EventFragment;
 }
 
-export type FlashLiquidateBorrowEvent = TypedEvent<
+export type FlashSwapCollateralAndLiquidateBorrowEvent = TypedEvent<
   [string, string, string, BigNumber, BigNumber, BigNumber] & {
     liquidator: string;
     borrower: string;
@@ -238,7 +240,7 @@ export class CollateralFlashUniswapV2 extends BaseContract {
   };
 
   filters: {
-    "FlashLiquidateBorrow(address,address,address,uint256,uint256,uint256)"(
+    "FlashSwapCollateralAndLiquidateBorrow(address,address,address,uint256,uint256,uint256)"(
       liquidator?: string | null,
       borrower?: string | null,
       bond?: string | null,
@@ -257,7 +259,7 @@ export class CollateralFlashUniswapV2 extends BaseContract {
       }
     >;
 
-    FlashLiquidateBorrow(
+    FlashSwapCollateralAndLiquidateBorrow(
       liquidator?: string | null,
       borrower?: string | null,
       bond?: string | null,

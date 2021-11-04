@@ -13,7 +13,7 @@ import "./IUniswapV2Pair.sol";
 interface ICollateralFlashUniswapV2 is IUniswapV2Callee {
     /// EVENTS ///
 
-    event FlashLiquidateBorrow(
+    event FlashSwapCollateralAndLiquidateBorrow(
         address indexed liquidator,
         address indexed borrower,
         address indexed bond,
@@ -48,10 +48,10 @@ interface ICollateralFlashUniswapV2 is IUniswapV2Callee {
         IErc20 underlying
     ) external view returns (IErc20 collateral, uint256 underlyingAmount);
 
-    /// @notice Calculates the amount that must be repaid to Uniswap. The formula applied is:
+    /// @notice Calculates the amount of collateral that must be repaid to Uniswap. The formula applied is:
     ///
     ///                         (collateralReserves * underlyingAmount) * 1000
-    /// collateralRepayAmount =  --------------------------------------------
+    /// repayCollateralAmount =  --------------------------------------------
     ///                            (usdcReserves - underlyingAmount) * 997
     ///
     /// @dev See "getAmountIn" and "getAmountOut" in UniswapV2Library.sol. Flash swaps that are repaid via the
@@ -59,12 +59,12 @@ interface ICollateralFlashUniswapV2 is IUniswapV2Callee {
     /// @param pair The Uniswap V2 pair contract.
     /// @param underlying The address of the underlying contract.
     /// @param underlyingAmount The amount of underlying flash borrowed.
-    /// @return collateralRepayAmount The minimum amount of collateral that must be repaid.
+    /// @return repayCollateralAmount The minimum amount of collateral that must be repaid.
     function getRepayCollateralAmount(
         IUniswapV2Pair pair,
         IErc20 underlying,
         uint256 underlyingAmount
-    ) external view returns (uint256 collateralRepayAmount);
+    ) external view returns (uint256 repayCollateralAmount);
 
     /// @notice The address of the UniswapV2Factory contract.
     function uniV2Factory() external view returns (address);

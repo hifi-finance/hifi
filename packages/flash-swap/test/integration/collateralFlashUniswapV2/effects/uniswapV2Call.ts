@@ -351,13 +351,13 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                     expect(newWbtcBalance.sub(expectedProfitWbtcAmount)).to.equal(preWbtcBalance);
                   });
 
-                  it("emits a FlashLiquidateBorrow event", async function () {
+                  it("emits a FlashSwapCollateralAndLiquidateBorrow event", async function () {
                     const to: string = this.contracts.collateralFlashUniswapV2.address;
                     const contractCall = this.contracts.uniswapV2Pair
                       .connect(this.signers.liquidator)
                       .swap(token0Amount, token1Amount, to, data);
                     await expect(contractCall)
-                      .to.emit(this.contracts.collateralFlashUniswapV2, "FlashLiquidateBorrow")
+                      .to.emit(this.contracts.collateralFlashUniswapV2, "FlashSwapCollateralAndLiquidateBorrow")
                       .withArgs(
                         this.signers.liquidator.address,
                         this.signers.borrower.address,

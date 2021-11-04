@@ -3,6 +3,7 @@ pragma solidity >=0.8.4;
 
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@hifi/protocol/contracts/core/balanceSheet/IBalanceSheetV1.sol";
+import "@hifi/protocol/contracts/core/hToken/IHToken.sol";
 
 /// @title FlashUtils
 /// @author Hifi
@@ -73,11 +74,11 @@ library FlashUtils {
         }
 
         // Mint hTokens.
-        uint256 preHTokenBalance = bond.balanceOf(address(this));
+        uint256 oldHTokenBalance = bond.balanceOf(address(this));
         bond.supplyUnderlying(underlyingAmount);
-        uint256 postHTokenBalance = bond.balanceOf(address(this));
+        uint256 newHTokenBalance = bond.balanceOf(address(this));
         unchecked {
-            mintedHTokenAmount = postHTokenBalance - preHTokenBalance;
+            mintedHTokenAmount = newHTokenBalance - oldHTokenBalance;
         }
     }
 }

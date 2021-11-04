@@ -38,5 +38,5 @@ export interface Signers {
   borrower: SignerWithAddress;
   liquidator: SignerWithAddress;
   raider: SignerWithAddress;
-  bot: SignerWithAddress;
+  subsidizer: SignerWithAddress;
 }

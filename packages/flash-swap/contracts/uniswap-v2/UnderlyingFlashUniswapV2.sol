@@ -14,8 +14,8 @@ import "./IUniswapV2Pair.sol";
 /// @notice Emitted when the caller is not the Uniswap V2 pair contract.
 error UnderlyingFlashUniswapV2__CallNotAuthorized(address caller);
 
-/// @notice Emitted when the flash borrowed asset is the wrong token in the pair.
-error UnderlyingFlashUniswapV2__FlashBorrowWrongToken(uint256 collateralAmount);
+/// @notice Emitted when the flash borrowed asset is the other token in the pair instead of the underlying.
+error UnderlyingFlashUniswapV2__FlashBorrowOtherToken();
 
 /// @notice Emitted when neither the token0 nor the token1 is the underlying.
 error UnderlyingFlashUniswapV2__UnderlyingNotInPool(
@@ -55,25 +55,25 @@ contract UnderlyingFlashUniswapV2 is IUnderlyingFlashUniswapV2 {
     /// PUBLIC CONSTANT FUNCTIONS ////
 
     /// @inheritdoc IUnderlyingFlashUniswapV2
-    function getCollateralAndUnderlyingAmount(
+    function getOtherTokenAndUnderlyingAmount(
         IUniswapV2Pair pair,
         uint256 amount0,
         uint256 amount1,
         IErc20 underlying
-    ) public view override returns (IErc20 collateral, uint256 underlyingAmount) {
+    ) public view override returns (IErc20 otherToken, uint256 underlyingAmount) {
         address token0 = pair.token0();
         address token1 = pair.token1();
         if (token0 == address(underlying)) {
             if (amount1 > 0) {
-                revert UnderlyingFlashUniswapV2__FlashBorrowWrongToken(amount1);
+                revert UnderlyingFlashUniswapV2__FlashBorrowOtherToken();
             }
-            collateral = IErc20(token0);
+            otherToken = IErc20(token1);
             underlyingAmount = amount0;
         } else if (token1 == address(underlying)) {
             if (amount0 > 0) {
-                revert UnderlyingFlashUniswapV2__FlashBorrowWrongToken(amount0);
+                revert UnderlyingFlashUniswapV2__FlashBorrowOtherToken();
             }
-            collateral = IErc20(token1);
+            otherToken = IErc20(token0);
             underlyingAmount = amount1;
         } else {
             revert UnderlyingFlashUniswapV2__UnderlyingNotInPool(pair, token0, token1, underlying);
@@ -81,18 +81,18 @@ contract UnderlyingFlashUniswapV2 is IUnderlyingFlashUniswapV2 {
     }
 
     /// @inheritdoc IUnderlyingFlashUniswapV2
-    function getRepayCollateralAmount(uint256 underlyingAmount)
+    function getRepayUnderlyingAmount(uint256 underlyingAmount)
         public
         pure
         override
-        returns (uint256 repayCollateralAmount)
+        returns (uint256 repayUnderlyingAmount)
     {
         // Note that we can safely use unchecked arithmetic here because the UniswapV2Pair.sol contract performs
         // sanity checks on the amounts before calling the current contract.
         unchecked {
             uint256 numerator = underlyingAmount * 1000;
             uint256 denominator = 997;
-            repayCollateralAmount = numerator / denominator + 1;
+            repayUnderlyingAmount = numerator / denominator + 1;
         }
     }
 
@@ -100,14 +100,13 @@ contract UnderlyingFlashUniswapV2 is IUnderlyingFlashUniswapV2 {
 
     struct UniswapV2CallLocalVars {
         IHToken bond;
-        address bot;
         address borrower;
-        IErc20 collateral;
         uint256 mintedHTokenAmount;
-        uint256 overshootCollateralAmount;
-        uint256 repayCollateralAmount;
-        uint256 seizedCollateralAmount;
-        address swapToken;
+        IErc20 otherToken;
+        uint256 repayUnderlyingAmount;
+        uint256 seizedUnderlyingAmount;
+        uint256 shortfallUnderlyingAmount;
+        address subsidizer;
         IErc20 underlying;
         uint256 underlyingAmount;
     }
@@ -122,61 +121,58 @@ contract UnderlyingFlashUniswapV2 is IUnderlyingFlashUniswapV2 {
         UniswapV2CallLocalVars memory vars;
 
         // Unpack the ABI encoded data passed by the UniswapV2Pair contract.
-        (vars.borrower, vars.bond, vars.bot) = abi.decode(data, (address, IHToken, address));
+        (vars.borrower, vars.bond, vars.subsidizer) = abi.decode(data, (address, IHToken, address));
 
         // Figure out which token is the collateral and which token is the underlying.
         vars.underlying = vars.bond.underlying();
-        (vars.collateral, vars.underlyingAmount) = getCollateralAndUnderlyingAmount(
+        (vars.otherToken, vars.underlyingAmount) = getOtherTokenAndUnderlyingAmount(
             IUniswapV2Pair(msg.sender),
             amount0,
             amount1,
             vars.underlying
         );
 
-        vars.swapToken = address(vars.underlying) == IUniswapV2Pair(msg.sender).token0()
-            ? IUniswapV2Pair(msg.sender).token1()
-            : IUniswapV2Pair(msg.sender).token0();
-
         // Check that the caller is a genuine UniswapV2Pair contract.
         if (
             msg.sender !=
-            FlashUtils.pairFor(uniV2Factory, uniV2PairInitCodeHash, address(vars.underlying), vars.swapToken)
+            FlashUtils.pairFor(uniV2Factory, uniV2PairInitCodeHash, address(vars.underlying), address(vars.otherToken))
         ) {
             revert UnderlyingFlashUniswapV2__CallNotAuthorized(msg.sender);
         }
 
         // Mint hTokens and liquidate the borrower.
         vars.mintedHTokenAmount = FlashUtils.mintHTokensInternal(vars.bond, vars.underlyingAmount);
-        vars.seizedCollateralAmount = FlashUtils.liquidateBorrowInternal(
+        vars.seizedUnderlyingAmount = FlashUtils.liquidateBorrowInternal(
             balanceSheet,
             vars.borrower,
             vars.bond,
-            vars.collateral,
+            vars.underlying,
             vars.mintedHTokenAmount
         );
 
-        // Calculate the amount of collateral required to repay.
-        vars.repayCollateralAmount = getRepayCollateralAmount(vars.underlyingAmount);
+        // Calculate the amount of underlying required to repay.
+        vars.repayUnderlyingAmount = getRepayUnderlyingAmount(vars.underlyingAmount);
 
-        // The bot wallet compensates for any overshoot of collateral repay amount above seized amount.
-        if (vars.repayCollateralAmount > vars.seizedCollateralAmount) {
+        // There is no incentive to liquidate underlying-backed vaults after the bond maturation. Thus the flash swap
+        // fee must be subsidized when the repay underlying amount is greater than the seized underlying amount.
+        if (vars.repayUnderlyingAmount > vars.seizedUnderlyingAmount) {
             unchecked {
-                vars.overshootCollateralAmount = vars.repayCollateralAmount - vars.seizedCollateralAmount;
+                vars.shortfallUnderlyingAmount = vars.repayUnderlyingAmount - vars.seizedUnderlyingAmount;
             }
-            vars.collateral.safeTransferFrom(vars.bot, address(this), vars.overshootCollateralAmount);
+            vars.underlying.safeTransferFrom(vars.subsidizer, address(this), vars.shortfallUnderlyingAmount);
         }
 
         // Pay back the loan.
-        vars.collateral.safeTransfer(msg.sender, vars.repayCollateralAmount);
+        vars.underlying.safeTransfer(msg.sender, vars.repayUnderlyingAmount);
 
         // Emit an event.
-        emit FlashLiquidateBorrow(
+        emit FlashSwapUnderlyingAndLiquidateBorrow(
             sender,
             vars.borrower,
             address(vars.bond),
             vars.underlyingAmount,
-            vars.seizedCollateralAmount,
-            vars.repayCollateralAmount
+            vars.seizedUnderlyingAmount,
+            vars.repayUnderlyingAmount
         );
     }
 }
