@@ -107,6 +107,7 @@ contract UnderlyingFlashUniswapV2 is IUnderlyingFlashUniswapV2 {
         uint256 seizedUnderlyingAmount;
         uint256 shortfallUnderlyingAmount;
         address subsidizer;
+        uint256 surplusUnderlyingAmount;
         IErc20 underlying;
         uint256 underlyingAmount;
     }
@@ -153,13 +154,19 @@ contract UnderlyingFlashUniswapV2 is IUnderlyingFlashUniswapV2 {
         // Calculate the amount of underlying required to repay.
         vars.repayUnderlyingAmount = getRepayUnderlyingAmount(vars.underlyingAmount);
 
-        // There is no incentive to liquidate underlying-backed vaults after the bond maturation. Thus the flash swap
-        // fee must be subsidized when the repay underlying amount is greater than the seized underlying amount.
+        // When the liquidation incentive is zero, there is no incentive to liquidate underlying-backed vaults post
+        // bond maturation. The flash swap fee must be subsidized when the repay underlying amount is greater than
+        // the seized underlying amount.
         if (vars.repayUnderlyingAmount > vars.seizedUnderlyingAmount) {
             unchecked {
                 vars.shortfallUnderlyingAmount = vars.repayUnderlyingAmount - vars.seizedUnderlyingAmount;
             }
             vars.underlying.safeTransferFrom(vars.subsidizer, address(this), vars.shortfallUnderlyingAmount);
+        } else if (vars.seizedUnderlyingAmount > vars.repayUnderlyingAmount) {
+            unchecked {
+                vars.surplusUnderlyingAmount = vars.seizedUnderlyingAmount - vars.repayUnderlyingAmount;
+            }
+            vars.underlying.safeTransfer(sender, vars.shortfallUnderlyingAmount);
         }
 
         // Pay back the loan.

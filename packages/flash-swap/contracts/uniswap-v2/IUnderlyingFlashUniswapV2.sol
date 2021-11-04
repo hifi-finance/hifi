@@ -54,8 +54,8 @@ interface IUnderlyingFlashUniswapV2 is IUniswapV2Callee {
     /// repayUnderlyingAmount =  ---------------------
     ///                                   997
     ///
-    /// @dev See "getAmountIn" and "getAmountOut" in UniswapV2Library.sol. Flash swaps are repaid via the
-    /// same borrowed pair token and the 0.3% LP fee applies.
+    /// @dev See "getAmountIn" and "getAmountOut" in UniswapV2Library.sol. Flash swaps can be repaid via the
+    /// same borrowed pair token but the 0.3% LP fee still applies.
     /// @param underlyingAmount The amount of underlying flash borrowed.
     /// @return repayUnderlyingAmount The minimum amount of underlying that must be repaid.
     function getRepayUnderlyingAmount(uint256 underlyingAmount) external view returns (uint256 repayUnderlyingAmount);
