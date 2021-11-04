@@ -1,7 +1,7 @@
 import { defaultAbiCoder } from "@ethersproject/abi";
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
-import { BalanceSheetErrors, HifiFlashUniswapV2UnderlyingErrors } from "@hifi/errors";
+import { BalanceSheetErrors, UnderlyingFlashUniswapV2Errors } from "@hifi/errors";
 import { USDC, WBTC, hUSDC, price } from "@hifi/helpers";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
@@ -87,7 +87,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
       const token1Amount: BigNumber = Zero;
       const data: string = "0x";
       await expect(
-        this.contracts.hifiFlashUniswapV2Underlying
+        this.contracts.underlyingFlashUniswapV2
           .connect(this.signers.raider)
           .uniswapV2Call(sender, token0Amount, token1Amount, data),
       ).to.be.reverted;
@@ -113,7 +113,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
       context("when the caller is an externally owned account", function () {
         it("reverts", async function () {
           await expect(
-            this.contracts.hifiFlashUniswapV2Underlying
+            this.contracts.underlyingFlashUniswapV2
               .connect(this.signers.raider)
               .uniswapV2Call(sender, token0Amount, token1Amount, data),
           ).to.be.revertedWith("function call to a non-contract account");
@@ -122,10 +122,10 @@ export function shouldBehaveLikeUniswapV2Call(): void {
 
       context("when the caller is a malicious pair", function () {
         it("reverts", async function () {
-          const to: string = this.contracts.hifiFlashUniswapV2Underlying.address;
+          const to: string = this.contracts.underlyingFlashUniswapV2.address;
           await expect(
             this.contracts.maliciousPair.connect(this.signers.raider).swap(token0Amount, token1Amount, to, data),
-          ).to.be.revertedWith(HifiFlashUniswapV2UnderlyingErrors.CallNotAuthorized);
+          ).to.be.revertedWith(UnderlyingFlashUniswapV2Errors.CallNotAuthorized);
         });
       });
     });
@@ -147,10 +147,10 @@ export function shouldBehaveLikeUniswapV2Call(): void {
           const { token0Amount, token1Amount } = await getTokenAmounts.call(this, Zero, USDC("10000"));
           const foo: GodModeErc20 = await deployGodModeErc20(this.signers.admin, "Foo", "FOO", BigNumber.from(18));
           await this.contracts.hToken.__godMode_setUnderlying(foo.address);
-          const to: string = this.contracts.hifiFlashUniswapV2Underlying.address;
+          const to: string = this.contracts.underlyingFlashUniswapV2.address;
           await expect(
             this.contracts.uniswapV2Pair.connect(this.signers.raider).swap(token0Amount, token1Amount, to, data),
-          ).to.be.revertedWith(HifiFlashUniswapV2UnderlyingErrors.UnderlyingNotInPool);
+          ).to.be.revertedWith(UnderlyingFlashUniswapV2Errors.UnderlyingNotInPool);
         });
       });
 
@@ -158,10 +158,10 @@ export function shouldBehaveLikeUniswapV2Call(): void {
         context("when wrong token is flash borrowed", function () {
           it("reverts", async function () {
             const { token0Amount, token1Amount } = await getTokenAmounts.call(this, WBTC("1"), Zero);
-            const to: string = this.contracts.hifiFlashUniswapV2Underlying.address;
+            const to: string = this.contracts.underlyingFlashUniswapV2.address;
             await expect(
               this.contracts.uniswapV2Pair.connect(this.signers.raider).swap(token0Amount, token1Amount, to, data),
-            ).to.be.revertedWith(HifiFlashUniswapV2UnderlyingErrors.FlashBorrowWrongToken);
+            ).to.be.revertedWith(UnderlyingFlashUniswapV2Errors.FlashBorrowWrongToken);
           });
         });
 
@@ -230,7 +230,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
             await this.contracts.usdc.__godMode_mint(this.signers.bot.address, usdcRepayFeeAmount);
             await this.contracts.usdc
               .connect(this.signers.bot)
-              .approve(this.contracts.hifiFlashUniswapV2Underlying.address, usdcRepayFeeAmount);
+              .approve(this.contracts.underlyingFlashUniswapV2.address, usdcRepayFeeAmount);
 
             // Deposit the USDC in the BalanceSheet.
             await this.contracts.balanceSheet
@@ -250,7 +250,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
 
           context("when the borrower does not have a liquidity shortfall", function () {
             it("reverts", async function () {
-              const to: string = this.contracts.hifiFlashUniswapV2Underlying.address;
+              const to: string = this.contracts.underlyingFlashUniswapV2.address;
               await expect(
                 this.contracts.uniswapV2Pair
                   .connect(this.signers.liquidator)
@@ -269,7 +269,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
             });
 
             it("flash swaps USDC making no USDC profit and spending allocated USDC to pay swap fee", async function () {
-              const to: string = this.contracts.hifiFlashUniswapV2Underlying.address;
+              const to: string = this.contracts.underlyingFlashUniswapV2.address;
               const preUsdcBalanceAccount = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
               const preUsdcBalanceBot = await this.contracts.usdc.balanceOf(this.signers.bot.address);
               await this.contracts.uniswapV2Pair
@@ -304,7 +304,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                 });
 
                 it("flash swaps USDC making no USDC profit and spending allocated USDC to pay swap fee", async function () {
-                  const to: string = this.contracts.hifiFlashUniswapV2Underlying.address;
+                  const to: string = this.contracts.underlyingFlashUniswapV2.address;
                   const preUsdcBalanceAccount = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
                   const preUsdcBalanceBot = await this.contracts.usdc.balanceOf(this.signers.bot.address);
                   await this.contracts.uniswapV2Pair
@@ -360,17 +360,17 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                   context("when wrong token is flash borrowed", function () {
                     it("reverts", async function () {
                       const { token0Amount, token1Amount } = await getTokenAmounts.call(this, WBTC("1"), Zero);
-                      const to: string = this.contracts.hifiFlashUniswapV2Underlying.address;
+                      const to: string = this.contracts.underlyingFlashUniswapV2.address;
                       await expect(
                         this.contracts.uniswapV2Pair
                           .connect(this.signers.raider)
                           .swap(token0Amount, token1Amount, to, data),
-                      ).to.be.revertedWith(HifiFlashUniswapV2UnderlyingErrors.FlashBorrowWrongToken);
+                      ).to.be.revertedWith(UnderlyingFlashUniswapV2Errors.FlashBorrowWrongToken);
                     });
                   });
 
                   it("flash swaps USDC making no USDC profit and spending allocated USDC to pay swap fee", async function () {
-                    const to: string = this.contracts.hifiFlashUniswapV2Underlying.address;
+                    const to: string = this.contracts.underlyingFlashUniswapV2.address;
                     const preUsdcBalanceAccount = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
                     const preUsdcBalanceBot = await this.contracts.usdc.balanceOf(this.signers.bot.address);
                     await this.contracts.uniswapV2Pair
@@ -385,7 +385,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
 
                 context("initial order of tokens in the pair", function () {
                   it("flash swaps USDC making no USDC profit and spending allocated USDC to pay swap fee", async function () {
-                    const to: string = this.contracts.hifiFlashUniswapV2Underlying.address;
+                    const to: string = this.contracts.underlyingFlashUniswapV2.address;
                     const preUsdcBalanceAccount = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
                     const preUsdcBalanceBot = await this.contracts.usdc.balanceOf(this.signers.bot.address);
                     await this.contracts.uniswapV2Pair
@@ -398,12 +398,12 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                   });
 
                   it("emits a FlashLiquidateBorrow event", async function () {
-                    const to: string = this.contracts.hifiFlashUniswapV2Underlying.address;
+                    const to: string = this.contracts.underlyingFlashUniswapV2.address;
                     const contractCall = this.contracts.uniswapV2Pair
                       .connect(this.signers.liquidator)
                       .swap(token0Amount, token1Amount, to, data);
                     await expect(contractCall)
-                      .to.emit(this.contracts.hifiFlashUniswapV2Underlying, "FlashLiquidateBorrow")
+                      .to.emit(this.contracts.underlyingFlashUniswapV2, "FlashLiquidateBorrow")
                       .withArgs(
                         this.signers.liquidator.address,
                         this.signers.borrower.address,

@@ -1,12 +1,12 @@
-export enum HifiFlashUniswapV2Errors {
-  CallNotAuthorized = "HifiFlashUniswapV2__CallNotAuthorized",
-  FlashBorrowCollateral = "HifiFlashUniswapV2__FlashBorrowCollateral",
-  InsufficientProfit = "HifiFlashUniswapV2__InsufficientProfit",
-  UnderlyingNotInPool = "HifiFlashUniswapV2__UnderlyingNotInPool",
+export enum CollateralFlashUniswapV2Errors {
+  CallNotAuthorized = "CollateralFlashUniswapV2__CallNotAuthorized",
+  FlashBorrowCollateral = "CollateralFlashUniswapV2__FlashBorrowCollateral",
+  InsufficientProfit = "CollateralFlashUniswapV2__InsufficientProfit",
+  UnderlyingNotInPool = "CollateralFlashUniswapV2__UnderlyingNotInPool",
 }
 
-export enum HifiFlashUniswapV2UnderlyingErrors {
-  CallNotAuthorized = "HifiFlashUniswapV2Underlying__CallNotAuthorized",
-  FlashBorrowWrongToken = "HifiFlashUniswapV2Underlying__FlashBorrowWrongToken",
-  UnderlyingNotInPool = "HifiFlashUniswapV2Underlying__UnderlyingNotInPool",
+export enum UnderlyingFlashUniswapV2Errors {
+  CallNotAuthorized = "UnderlyingFlashUniswapV2__CallNotAuthorized",
+  FlashBorrowWrongToken = "UnderlyingFlashUniswapV2__FlashBorrowWrongToken",
+  UnderlyingNotInPool = "UnderlyingFlashUniswapV2__UnderlyingNotInPool",
 }

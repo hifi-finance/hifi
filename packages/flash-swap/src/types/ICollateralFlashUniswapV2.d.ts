@@ -19,7 +19,7 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
-interface HifiFlashUniswapV2Interface extends ethers.utils.Interface {
+interface ICollateralFlashUniswapV2Interface extends ethers.utils.Interface {
   functions: {
     "balanceSheet()": FunctionFragment;
     "getCollateralAndUnderlyingAmount(address,uint256,uint256,address)": FunctionFragment;
@@ -97,7 +97,7 @@ export type FlashLiquidateBorrowEvent = TypedEvent<
   }
 >;
 
-export class HifiFlashUniswapV2 extends BaseContract {
+export class ICollateralFlashUniswapV2 extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -138,7 +138,7 @@ export class HifiFlashUniswapV2 extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: HifiFlashUniswapV2Interface;
+  interface: ICollateralFlashUniswapV2Interface;
 
   functions: {
     balanceSheet(overrides?: CallOverrides): Promise<[string]>;
@@ -158,7 +158,7 @@ export class HifiFlashUniswapV2 extends BaseContract {
       underlying: string,
       underlyingAmount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<[BigNumber] & { repayCollateralAmount: BigNumber }>;
+    ): Promise<[BigNumber] & { collateralRepayAmount: BigNumber }>;
 
     uniV2Factory(overrides?: CallOverrides): Promise<[string]>;
 

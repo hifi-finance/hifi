@@ -4,13 +4,9 @@ pragma solidity >=0.8.4;
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@hifi/protocol/contracts/core/balanceSheet/IBalanceSheetV1.sol";
 
-/// @title HifiFlashUniswapV2
+/// @title FlashUtils
 /// @author Hifi
-library HifiFlashUniswapV2Utils {
-    /// @dev The init code hash of the UniswapV2Pair contract. The same for all Uniswap v2 deployments.
-    bytes32 public constant UNI_V2_PAIR_INIT_CODE_HASH =
-        0x96e8ac4277198ff8b6f785478aa9a39f403cb768dd02cbee326c3e7da348845f;
-
+library FlashUtils {
     /// @dev Calculates the CREATE2 address for a pair without making any external calls.
     function pairFor(
         address uniV2Factory,

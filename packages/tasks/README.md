@@ -18,10 +18,10 @@ This package is not meant to be installed by any other package, not even a local
 yarn hardhat --network "..." deploy:contract:chainlink-operator
 ```
 
-### Deploy HifiFlashUniswapV2
+### Deploy CollateralFlashUniswapV2
 
 ```sh
-yarn hardhat --network "..." deploy:contract:hifi-flash-uniswap-v2 --balance-sheet "0x..." --uni-v2-factory "0x..." --uni-v2-pair-init-code-hash "0x..."
+yarn hardhat --network "..." deploy:contract:collateral-flash-uniswap-v2 --balance-sheet "0x..." --uni-v2-factory "0x..." --uni-v2-pair-init-code-hash "0x..."
 ```
 
 ### Deploy HifiPool
@@ -58,6 +58,12 @@ yarn hardhat --network "..." deploy:contract:simple-price-feed --description "..
 
 ```sh
 yarn hardhat --network "..." deploy:stablecoin-price-feed --price "..." --description "..."
+```
+
+### Deploy UnderlyingFlashUniswapV2
+
+```sh
+yarn hardhat --network "..." deploy:contract:underlying-flash-uniswap-v2 --balance-sheet "0x..." --uni-v2-factory "0x..." --uni-v2-pair-init-code-hash "0x..."
 ```
 
 ### Init AddLiquidity

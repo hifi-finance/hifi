@@ -6,11 +6,11 @@ import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Callee.sol";
 
 import "./IUniswapV2Pair.sol";
 
-/// @title IHifiFlashUniswapV2Underlying
+/// @title ICollateralFlashUniswapV2
 /// @author Hifi
-/// @notice Integration of Uniswap V2 flash swaps for liquidating underwater accounts in Hifi
-/// that are collateralized with underlying tokens.
-interface IHifiFlashUniswapV2Underlying is IUniswapV2Callee {
+/// @notice Integration of Uniswap V2 flash swaps for liquidating underwater accounts in Hifi.
+/// that are collateralized with non-underlying tokens.
+interface ICollateralFlashUniswapV2 is IUniswapV2Callee {
     /// EVENTS ///
 
     event FlashLiquidateBorrow(
@@ -19,7 +19,7 @@ interface IHifiFlashUniswapV2Underlying is IUniswapV2Callee {
         address indexed bond,
         uint256 underlyingAmount,
         uint256 seizedCollateralAmount,
-        uint256 repayCollateralAmount
+        uint256 profitCollateralAmount
     );
 
     /// CONSTANT FUNCTIONS ///
@@ -32,7 +32,7 @@ interface IHifiFlashUniswapV2Underlying is IUniswapV2Callee {
     ///
     /// Requirements:
     ///
-    /// - The amount of non-underlying flash borrowed must be zero.
+    /// - The amount of collateral flash borrowed must be zero.
     /// - The underlying must be one of the pair's tokens.
     ///
     /// @param pair The Uniswap V2 pair contract.
@@ -50,15 +50,21 @@ interface IHifiFlashUniswapV2Underlying is IUniswapV2Callee {
 
     /// @notice Calculates the amount that must be repaid to Uniswap. The formula applied is:
     ///
-    ///                         underlyingAmount * 1000
-    /// collateralRepayAmount =  ---------------------
-    ///                                   997
+    ///                         (collateralReserves * underlyingAmount) * 1000
+    /// collateralRepayAmount =  --------------------------------------------
+    ///                            (usdcReserves - underlyingAmount) * 997
     ///
-    /// @dev See "getAmountIn" and "getAmountOut" in UniswapV2Library.sol. Flash swaps are repaid via the
-    /// same borrowed pair token and the 0.3% LP fee applies.
+    /// @dev See "getAmountIn" and "getAmountOut" in UniswapV2Library.sol. Flash swaps that are repaid via the
+    /// corresponding pair token is akin to a normal swap, so the 0.3% LP fee applies.
+    /// @param pair The Uniswap V2 pair contract.
+    /// @param underlying The address of the underlying contract.
     /// @param underlyingAmount The amount of underlying flash borrowed.
     /// @return collateralRepayAmount The minimum amount of collateral that must be repaid.
-    function getRepayCollateralAmount(uint256 underlyingAmount) external view returns (uint256 collateralRepayAmount);
+    function getRepayCollateralAmount(
+        IUniswapV2Pair pair,
+        IErc20 underlying,
+        uint256 underlyingAmount
+    ) external view returns (uint256 collateralRepayAmount);
 
     /// @notice The address of the UniswapV2Factory contract.
     function uniV2Factory() external view returns (address);
