@@ -1,6 +1,6 @@
 import { defaultAbiCoder } from "@ethersproject/abi";
 import { BigNumber } from "@ethersproject/bignumber";
-import { Zero } from "@ethersproject/constants";
+import { MaxUint256, Zero } from "@ethersproject/constants";
 import { COLLATERAL_RATIOS, LIQUIDATION_INCENTIVES } from "@hifi/constants";
 import { BalanceSheetErrors, UnderlyingFlashUniswapV2Errors } from "@hifi/errors";
 import { USDC, WBTC, getNow, hUSDC, price } from "@hifi/helpers";
@@ -29,20 +29,6 @@ function encodeCallData(this: Mocha.Context): string {
   const values = [this.signers.borrower.address, this.contracts.hToken.address, this.signers.subsidizer.address];
   const data: string = defaultAbiCoder.encode(types, values);
   return data;
-}
-
-async function getSeizableAndRepayUnderlyingAmounts(
-  this: Mocha.Context,
-  repayAmount: BigNumber,
-  underlyingAmount: BigNumber,
-): Promise<{ expectedRepayUsdcAmount: BigNumber; seizableUsdcAmount: BigNumber }> {
-  const seizableUsdcAmount = await this.contracts.balanceSheet.getSeizableCollateralAmount(
-    this.contracts.hToken.address,
-    repayAmount,
-    this.contracts.usdc.address,
-  );
-  const expectedRepayUsdcAmount = underlyingAmount.mul(1000).div(997).add(1);
-  return { expectedRepayUsdcAmount, seizableUsdcAmount };
 }
 
 async function getTokenAmounts(
@@ -117,9 +103,6 @@ export function shouldBehaveLikeUniswapV2Call(): void {
 
     context("when the caller is the UniswapV2Pair contract", function () {
       beforeEach(async function () {
-        // Set the oracle price to 1 WBTC = $20k.
-        await this.contracts.wbtcPriceFeed.setPrice(price("20000"));
-
         // Set the oracle price to 1 USDC = $1.
         await this.contracts.usdcPriceFeed.setPrice(price("1"));
 
@@ -154,16 +137,18 @@ export function shouldBehaveLikeUniswapV2Call(): void {
           const borrowAmount: BigNumber = hUSDC("10000");
           const collateralCeiling: BigNumber = USDC("1e6");
           const debtCeiling: BigNumber = hUSDC("1e6");
-          const depositUsdcAmount: BigNumber = USDC("10000");
-          const feeUsdcAmount: BigNumber = USDC("30.090271");
-          const swapUsdcAmount: BigNumber = USDC("10000");
+          const depositUnderlyingAmount: BigNumber = USDC("10000");
+          const feeUnderlyingAmount: BigNumber = USDC("30.090271");
+          const repayHTokenAmount: BigNumber = hUSDC("10000");
+          const swapUnderlyingAmount: BigNumber = USDC("10000");
           const swapWbtcAmount: BigNumber = Zero;
 
           let token0Amount: BigNumber;
           let token1Amount: BigNumber;
 
           beforeEach(async function () {
-            const tokenAmounts = await getTokenAmounts.call(this, swapWbtcAmount, swapUsdcAmount);
+            // Calculate the amount necessary for running the tests.
+            const tokenAmounts = await getTokenAmounts.call(this, swapWbtcAmount, swapUnderlyingAmount);
             token0Amount = tokenAmounts.token0Amount;
             token1Amount = tokenAmounts.token1Amount;
 
@@ -178,7 +163,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
               .connect(this.signers.admin)
               .setCollateralRatio(this.contracts.usdc.address, COLLATERAL_RATIOS.lowerBound);
 
-            // Set the liquidation incentive for USDC to 0.
+            // Set the liquidation incentive to 0%.
             await this.contracts.fintroller
               .connect(this.signers.admin)
               .setLiquidationIncentive(this.contracts.usdc.address, LIQUIDATION_INCENTIVES.lowerBound);
@@ -194,21 +179,21 @@ export function shouldBehaveLikeUniswapV2Call(): void {
               .setDebtCeiling(this.contracts.hToken.address, debtCeiling);
 
             // Mint USDC and approve the BalanceSheet to spend it.
-            await this.contracts.usdc.__godMode_mint(this.signers.borrower.address, depositUsdcAmount);
+            await this.contracts.usdc.__godMode_mint(this.signers.borrower.address, depositUnderlyingAmount);
             await this.contracts.usdc
               .connect(this.signers.borrower)
-              .approve(this.contracts.balanceSheet.address, depositUsdcAmount);
+              .approve(this.contracts.balanceSheet.address, MaxUint256);
 
             // Mint USDC to the subsidizer wallet and approve the flash swap contract to spend it.
-            await this.contracts.usdc.__godMode_mint(this.signers.subsidizer.address, feeUsdcAmount);
+            await this.contracts.usdc.__godMode_mint(this.signers.subsidizer.address, feeUnderlyingAmount);
             await this.contracts.usdc
               .connect(this.signers.subsidizer)
-              .approve(this.contracts.underlyingFlashUniswapV2.address, feeUsdcAmount);
+              .approve(this.contracts.underlyingFlashUniswapV2.address, MaxUint256);
 
             // Deposit USDC in the BalanceSheet.
             await this.contracts.balanceSheet
               .connect(this.signers.borrower)
-              .depositCollateral(this.contracts.usdc.address, depositUsdcAmount);
+              .depositCollateral(this.contracts.usdc.address, depositUnderlyingAmount);
 
             // Borrow hUSDC.
             await this.contracts.balanceSheet
@@ -233,10 +218,72 @@ export function shouldBehaveLikeUniswapV2Call(): void {
               const oneHourAgo: BigNumber = getNow().sub(3600);
               await this.contracts.hToken.connect(this.signers.admin).__godMode_setMaturity(oneHourAgo);
             });
-
-            // context("when the repay underlying amount is less than the seized underlying amount", function () {});
-
             // context("when the repay underlying amount is equal to the seized underlying amount", function () {});
+
+            context("when the repay underlying amount is less than the seized underlying amount", function () {
+              let expectedProfitUnderlyingAmount: BigNumber;
+              let expectedRepayUnderlyingAmount: BigNumber;
+              let seizableUnderlyingAmount: BigNumber;
+
+              beforeEach(async function () {
+                // Mint 10% more USDC.
+                const addedUnderlyingAmount: BigNumber = depositUnderlyingAmount.div(10);
+                await this.contracts.usdc.__godMode_mint(this.signers.borrower.address, addedUnderlyingAmount);
+
+                // Deposit the USDC in the vault.
+                await this.contracts.balanceSheet
+                  .connect(this.signers.borrower)
+                  .depositCollateral(this.contracts.usdc.address, addedUnderlyingAmount);
+
+                // Set the liquidation incentive to 10%.
+                await this.contracts.fintroller
+                  .connect(this.signers.admin)
+                  .setLiquidationIncentive(this.contracts.usdc.address, LIQUIDATION_INCENTIVES.default);
+
+                // Calculate the amounts necessary for running the tests.
+                expectedRepayUnderlyingAmount = swapUnderlyingAmount.mul(1000).div(997).add(1);
+                seizableUnderlyingAmount = await this.contracts.balanceSheet.getSeizableCollateralAmount(
+                  this.contracts.hToken.address,
+                  repayHTokenAmount,
+                  this.contracts.usdc.address,
+                );
+                expectedProfitUnderlyingAmount = seizableUnderlyingAmount.sub(expectedRepayUnderlyingAmount);
+              });
+
+              it("flash swaps USDC via and makes a USDC profit", async function () {
+                const to: string = this.contracts.underlyingFlashUniswapV2.address;
+                const oldUsdcBalance = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
+                await this.contracts.uniswapV2Pair
+                  .connect(this.signers.liquidator)
+                  .swap(token0Amount, token1Amount, to, data);
+                const newUsdcBalance = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
+                console.log({
+                  oldUsdcBalance: oldUsdcBalance.toString(),
+                  expectedProfitUnderlyingAmount: expectedProfitUnderlyingAmount.toString(),
+                  newUsdcBalance: newUsdcBalance.toString(),
+                });
+                expect(newUsdcBalance.sub(expectedProfitUnderlyingAmount)).to.equal(oldUsdcBalance);
+              });
+
+              it("emits a FlashSwapUnderlyingAndLiquidateBorrow event", async function () {
+                const to: string = this.contracts.underlyingFlashUniswapV2.address;
+                const contractCall = this.contracts.uniswapV2Pair
+                  .connect(this.signers.liquidator)
+                  .swap(token0Amount, token1Amount, to, data);
+                await expect(contractCall)
+                  .to.emit(this.contracts.underlyingFlashUniswapV2, "FlashSwapUnderlyingAndLiquidateBorrow")
+                  .withArgs(
+                    this.signers.liquidator.address,
+                    this.signers.borrower.address,
+                    this.contracts.hToken.address,
+                    swapUnderlyingAmount,
+                    seizableUnderlyingAmount,
+                    expectedRepayUnderlyingAmount,
+                    Zero,
+                    expectedProfitUnderlyingAmount,
+                  );
+              });
+            });
 
             context("when the repay underlying amount is greater than the seized underlying amount", function () {
               context("new order of tokens in the UniswapV2Pair contract", function () {
@@ -245,16 +292,16 @@ export function shouldBehaveLikeUniswapV2Call(): void {
 
                 beforeEach(async function () {
                   const token0: string = await this.contracts.uniswapV2Pair.token0();
-                  if (token0 == this.contracts.wbtc.address) {
+                  if (token0 === this.contracts.wbtc.address) {
                     await this.contracts.uniswapV2Pair.__godMode_setToken0(this.contracts.usdc.address);
                     await this.contracts.uniswapV2Pair.__godMode_setToken1(this.contracts.wbtc.address);
-                    localToken0Amount = swapUsdcAmount;
+                    localToken0Amount = swapUnderlyingAmount;
                     localToken1Amount = swapWbtcAmount;
                   } else {
                     await this.contracts.uniswapV2Pair.__godMode_setToken0(this.contracts.wbtc.address);
                     await this.contracts.uniswapV2Pair.__godMode_setToken1(this.contracts.usdc.address);
                     localToken0Amount = swapWbtcAmount;
-                    localToken1Amount = swapUsdcAmount;
+                    localToken1Amount = swapUnderlyingAmount;
                   }
                   await this.contracts.uniswapV2Pair.sync();
                 });
@@ -269,24 +316,22 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                   const newLiquidatorUsdcBalance = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
                   const newSubsidizerUsdcBalance = await this.contracts.usdc.balanceOf(this.signers.subsidizer.address);
                   expect(newLiquidatorUsdcBalance).to.equal(oldLiquidatorUsdcBalance);
-                  expect(oldSubsidizerUsdcBalance.sub(newSubsidizerUsdcBalance)).to.equal(feeUsdcAmount);
+                  expect(oldSubsidizerUsdcBalance.sub(newSubsidizerUsdcBalance)).to.equal(feeUnderlyingAmount);
                 });
               });
 
               context("initial order of tokens in the UniswapV2Pair contract", function () {
-                let seizableUsdcAmount: BigNumber;
-                let expectedRepayUsdcAmount: BigNumber;
-                const repayAmount: BigNumber = hUSDC("10000");
+                let seizableUnderlyingAmount: BigNumber;
+                let expectedRepayUnderlyingAmount: BigNumber;
 
                 beforeEach(async function () {
                   // Calculate the amounts necessary for running the tests.
-                  const calculatesAmounts = await getSeizableAndRepayUnderlyingAmounts.call(
-                    this,
-                    repayAmount,
-                    swapUsdcAmount,
+                  expectedRepayUnderlyingAmount = swapUnderlyingAmount.mul(1000).div(997).add(1);
+                  seizableUnderlyingAmount = await this.contracts.balanceSheet.getSeizableCollateralAmount(
+                    this.contracts.hToken.address,
+                    repayHTokenAmount,
+                    this.contracts.usdc.address,
                   );
-                  seizableUsdcAmount = calculatesAmounts.seizableUsdcAmount;
-                  expectedRepayUsdcAmount = calculatesAmounts.expectedRepayUsdcAmount;
                 });
 
                 it("flash swaps USDC making no USDC profit and paying the flash swap fee", async function () {
@@ -299,7 +344,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                   const newLiquidatorUsdcBalance = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
                   const newSubsidizerUsdcBalance = await this.contracts.usdc.balanceOf(this.signers.subsidizer.address);
                   expect(newLiquidatorUsdcBalance).to.equal(oldLiquidatorUsdcBalance);
-                  expect(oldSubsidizerUsdcBalance.sub(newSubsidizerUsdcBalance)).to.equal(feeUsdcAmount);
+                  expect(oldSubsidizerUsdcBalance.sub(newSubsidizerUsdcBalance)).to.equal(feeUnderlyingAmount);
                 });
 
                 it("emits a FlashSwapUnderlyingAndLiquidateBorrow event", async function () {
@@ -313,9 +358,11 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                       this.signers.liquidator.address,
                       this.signers.borrower.address,
                       this.contracts.hToken.address,
-                      swapUsdcAmount,
-                      seizableUsdcAmount,
-                      expectedRepayUsdcAmount,
+                      swapUnderlyingAmount,
+                      seizableUnderlyingAmount,
+                      expectedRepayUnderlyingAmount,
+                      feeUnderlyingAmount,
+                      Zero,
                     );
                 });
               });

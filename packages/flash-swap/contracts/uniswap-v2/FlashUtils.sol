@@ -32,8 +32,7 @@ library FlashUtils {
         );
     }
 
-    /// @dev Liquidates the borrower by transferring the underlying to the BalanceSheet. By doing this, the
-    /// liquidator receives collateral at a discount.
+    /// @dev Liquidates the borrower, receiving collateral at a discount.
     function liquidateBorrowInternal(
         IBalanceSheetV1 balanceSheet,
         address borrower,
@@ -46,8 +45,8 @@ library FlashUtils {
 
         // If the hypothetical repay amount is bigger than the debt amount, this could be a single-collateral multi-bond
         // vault. Otherwise, it could be a multi-collateral single-bond vault. However, it is difficult to generalize
-        // for the multi-collateral and multi-bond situation. The repay amount could be either bigger, smaller, or even
-        // equal to the debt amount depending on the collateral and debt amount distribution.
+        // for the multi-collateral and multi-bond situation. The repay amount could be greater, smaller, or equal
+        // to the debt amount depending on the collateral and debt amount distribution.
         uint256 debtAmount = balanceSheet.getDebtAmount(borrower, bond);
         uint256 repayAmount = hypotheticalRepayAmount > debtAmount ? debtAmount : hypotheticalRepayAmount;
 

@@ -19,7 +19,9 @@ interface IUnderlyingFlashUniswapV2 is IUniswapV2Callee {
         address indexed bond,
         uint256 underlyingAmount,
         uint256 seizedUnderlyingAmount,
-        uint256 repayUnderlyingAmount
+        uint256 repayUnderlyingAmount,
+        uint256 profitUnderlyingAmount,
+        uint256 subsidizedUnderlyingAmount
     );
 
     /// CONSTANT FUNCTIONS ///

@@ -103,11 +103,11 @@ contract UnderlyingFlashUniswapV2 is IUnderlyingFlashUniswapV2 {
         address borrower;
         uint256 mintedHTokenAmount;
         IErc20 otherToken;
+        uint256 profitUnderlyingAmount;
         uint256 repayUnderlyingAmount;
         uint256 seizedUnderlyingAmount;
-        uint256 shortfallUnderlyingAmount;
+        uint256 subsidizedUnderlyingAmount;
         address subsidizer;
-        uint256 surplusUnderlyingAmount;
         IErc20 underlying;
         uint256 underlyingAmount;
     }
@@ -159,14 +159,14 @@ contract UnderlyingFlashUniswapV2 is IUnderlyingFlashUniswapV2 {
         // the seized underlying amount.
         if (vars.repayUnderlyingAmount > vars.seizedUnderlyingAmount) {
             unchecked {
-                vars.shortfallUnderlyingAmount = vars.repayUnderlyingAmount - vars.seizedUnderlyingAmount;
+                vars.subsidizedUnderlyingAmount = vars.repayUnderlyingAmount - vars.seizedUnderlyingAmount;
             }
-            vars.underlying.safeTransferFrom(vars.subsidizer, address(this), vars.shortfallUnderlyingAmount);
+            vars.underlying.safeTransferFrom(vars.subsidizer, address(this), vars.subsidizedUnderlyingAmount);
         } else if (vars.seizedUnderlyingAmount > vars.repayUnderlyingAmount) {
             unchecked {
-                vars.surplusUnderlyingAmount = vars.seizedUnderlyingAmount - vars.repayUnderlyingAmount;
+                vars.profitUnderlyingAmount = vars.seizedUnderlyingAmount - vars.repayUnderlyingAmount;
             }
-            vars.underlying.safeTransfer(sender, vars.shortfallUnderlyingAmount);
+            vars.underlying.safeTransfer(sender, vars.profitUnderlyingAmount);
         }
 
         // Pay back the loan.
@@ -179,7 +179,9 @@ contract UnderlyingFlashUniswapV2 is IUnderlyingFlashUniswapV2 {
             address(vars.bond),
             vars.underlyingAmount,
             vars.seizedUnderlyingAmount,
-            vars.repayUnderlyingAmount
+            vars.repayUnderlyingAmount,
+            vars.subsidizedUnderlyingAmount,
+            vars.profitUnderlyingAmount
         );
     }
 }
