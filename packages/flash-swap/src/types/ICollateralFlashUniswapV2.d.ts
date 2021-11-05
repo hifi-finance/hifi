@@ -19,7 +19,7 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
-interface HifiFlashUniswapV2Interface extends ethers.utils.Interface {
+interface ICollateralFlashUniswapV2Interface extends ethers.utils.Interface {
   functions: {
     "balanceSheet()": FunctionFragment;
     "getCollateralAndUnderlyingAmount(address,uint256,uint256,address)": FunctionFragment;
@@ -80,13 +80,15 @@ interface HifiFlashUniswapV2Interface extends ethers.utils.Interface {
   ): Result;
 
   events: {
-    "FlashLiquidateBorrow(address,address,address,uint256,uint256,uint256)": EventFragment;
+    "FlashSwapCollateralAndLiquidateBorrow(address,address,address,uint256,uint256,uint256)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "FlashLiquidateBorrow"): EventFragment;
+  getEvent(
+    nameOrSignatureOrTopic: "FlashSwapCollateralAndLiquidateBorrow"
+  ): EventFragment;
 }
 
-export type FlashLiquidateBorrowEvent = TypedEvent<
+export type FlashSwapCollateralAndLiquidateBorrowEvent = TypedEvent<
   [string, string, string, BigNumber, BigNumber, BigNumber] & {
     liquidator: string;
     borrower: string;
@@ -97,7 +99,7 @@ export type FlashLiquidateBorrowEvent = TypedEvent<
   }
 >;
 
-export class HifiFlashUniswapV2 extends BaseContract {
+export class ICollateralFlashUniswapV2 extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -138,7 +140,7 @@ export class HifiFlashUniswapV2 extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: HifiFlashUniswapV2Interface;
+  interface: ICollateralFlashUniswapV2Interface;
 
   functions: {
     balanceSheet(overrides?: CallOverrides): Promise<[string]>;
@@ -238,7 +240,7 @@ export class HifiFlashUniswapV2 extends BaseContract {
   };
 
   filters: {
-    "FlashLiquidateBorrow(address,address,address,uint256,uint256,uint256)"(
+    "FlashSwapCollateralAndLiquidateBorrow(address,address,address,uint256,uint256,uint256)"(
       liquidator?: string | null,
       borrower?: string | null,
       bond?: string | null,
@@ -257,7 +259,7 @@ export class HifiFlashUniswapV2 extends BaseContract {
       }
     >;
 
-    FlashLiquidateBorrow(
+    FlashSwapCollateralAndLiquidateBorrow(
       liquidator?: string | null,
       borrower?: string | null,
       bond?: string | null,

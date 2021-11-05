@@ -3,12 +3,13 @@ import type { ChainlinkOperator } from "@hifi/protocol/dist/types/ChainlinkOpera
 import type { FintrollerV1 } from "@hifi/protocol/dist/types/FintrollerV1";
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 
+import type { CollateralFlashUniswapV2 } from "../../src/types/CollateralFlashUniswapV2";
 import type { GodModeErc20 } from "../../src/types/GodModeErc20";
 import type { GodModeHToken } from "../../src/types/GodModeHToken";
 import type { GodModeUniswapV2Pair } from "../../src/types/GodModeUniswapV2Pair";
-import type { HifiFlashUniswapV2 } from "../../src/types/HifiFlashUniswapV2";
 import type { MaliciousPair } from "../../src/types/MaliciousPair";
 import type { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
+import type { UnderlyingFlashUniswapV2 } from "../../src/types/UnderlyingFlashUniswapV2";
 
 declare module "mocha" {
   export interface Context {
@@ -19,13 +20,14 @@ declare module "mocha" {
 
 export interface Contracts {
   balanceSheet: BalanceSheetV1;
+  collateralFlashUniswapV2: CollateralFlashUniswapV2;
   fintroller: FintrollerV1;
   hToken: GodModeHToken;
-  hifiFlashUniswapV2: HifiFlashUniswapV2;
   maliciousPair: MaliciousPair;
   oracle: ChainlinkOperator;
   usdc: GodModeErc20;
   usdcPriceFeed: SimplePriceFeed;
+  underlyingFlashUniswapV2: UnderlyingFlashUniswapV2;
   uniswapV2Pair: GodModeUniswapV2Pair;
   wbtc: GodModeErc20;
   wbtcPriceFeed: SimplePriceFeed;
@@ -36,4 +38,5 @@ export interface Signers {
   borrower: SignerWithAddress;
   liquidator: SignerWithAddress;
   raider: SignerWithAddress;
+  subsidizer: SignerWithAddress;
 }

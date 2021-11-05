@@ -21,4 +21,8 @@ contract GodModeHToken is HToken {
     function __godMode_setUnderlying(IErc20 newUnderlying) external {
         underlying = newUnderlying;
     }
+
+    function __godMode_setMaturity(uint256 newMaturity) external {
+        maturity = newMaturity;
+    }
 }

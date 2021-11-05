@@ -1,0 +1,76 @@
+name: "Deploy: UnderlyingFlashUniswapV2"
+
+env:
+  ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+  INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
+  MNEMONIC: ${{ secrets.MNEMONIC }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      balance-sheet:
+        description: "Address of the BalanceSheet contract"
+        required: true
+      chain:
+        description: "Chain name in lowercase"
+        required: true
+      confirmations:
+        default: "2"
+        description: "Number of block confirmations to wait before attempting verification"
+        required: false
+      ref:
+        default: "main"
+        description: "Git ref to checkout"
+        required: false
+      uni-v2-factory:
+        description: "Address of the UniswapV2Factory contract"
+        required: true
+      uni-v2-pair-init-code-hash:
+        description: "Init code hash of the UniswapV2Pair contract"
+        required: true
+
+jobs:
+  deploy-and-verify:
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Check out the repo"
+        uses: "actions/checkout@v2"
+        with:
+          ref: ${{ github.event.inputs.ref }}
+
+      - name: "Setup Node.js"
+        uses: "actions/setup-node@v2"
+        with:
+          cache: "yarn"
+          node-version: "16"
+
+      - name: "Install the dependencies"
+        run: "yarn install --immutable"
+
+      - name: "Build the TypeScript packages"
+        run: "yarn build"
+
+      - name: "Compile the contracts and generate TypeChain bindings"
+        run: "yarn compile:sol"
+
+      - name: "Build the TypeChain bindings"
+        run: "yarn build:types"
+
+      - name: "Deploy UnderlyingFlashUniswapV2"
+        id: deploy
+        run: >-
+          yarn workspace @hifi/tasks hardhat
+          deploy:contract:underlying-flash-uniswap-v2 --network "${{ github.event.inputs.chain }}"
+          --balance-sheet "${{ github.event.inputs.balance-sheet }}"
+          --uni-v2-factory "${{ github.event.inputs.uni-v2-factory }}"
+          --uni-v2-pair-init-code-hash "${{ github.event.inputs.uni-v2-pair-init-code-hash }}"
+          --confirmations "${{ github.event.inputs.confirmations }}"
+          --set-output true
+
+      - name: "Verify UnderlyingFlashUniswapV2"
+        run: >-
+          yarn workspace @hifi/flash-swap hardhat
+          verify "${{ steps.deploy.outputs.underlying-flash-uniswap-v2 }}" --network "${{ github.event.inputs.chain }}"
+          "${{ github.event.inputs.balance-sheet }}"
+          "${{ github.event.inputs.uni-v2-factory }}"
+          "${{ github.event.inputs.uni-v2-pair-init-code-hash }}"

@@ -1,6 +1,8 @@
 import { baseContext } from "../shared/contexts";
-import { integrationTestHifiFlashUniswapV2 } from "./hifiFlashUniswapV2/HifiFlashUniswapV2";
+import { integrationTestCollateralFlashUniswapV2 } from "./collateralFlashUniswapV2/CollateralFlashUniswapV2";
+import { integrationTestUnderlyingFlashUniswapV2 } from "./underlyingFlashUniswapV2/UnderlyingFlashUniswapV2";
 
 baseContext("Integration Tests", function () {
-  integrationTestHifiFlashUniswapV2();
+  integrationTestCollateralFlashUniswapV2();
+  integrationTestUnderlyingFlashUniswapV2();
 });

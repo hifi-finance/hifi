@@ -1,4 +1,4 @@
-name: "Deploy: HifiFlashUniswapV2"
+name: "Deploy: CollateralFlashUniswapV2"
 
 env:
   ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
@@ -56,21 +56,21 @@ jobs:
       - name: "Build the TypeChain bindings"
         run: "yarn build:types"
 
-      - name: "Deploy HifiFlashUniswapV2"
+      - name: "Deploy CollateralFlashUniswapV2"
         id: deploy
         run: >-
           yarn workspace @hifi/tasks hardhat
-          deploy:contract:hifi-flash-uniswap-v2 --network "${{ github.event.inputs.chain }}"
+          deploy:contract:collateral-flash-uniswap-v2 --network "${{ github.event.inputs.chain }}"
           --balance-sheet "${{ github.event.inputs.balance-sheet }}"
           --uni-v2-factory "${{ github.event.inputs.uni-v2-factory }}"
           --uni-v2-pair-init-code-hash "${{ github.event.inputs.uni-v2-pair-init-code-hash }}"
           --confirmations "${{ github.event.inputs.confirmations }}"
           --set-output true
 
-      - name: "Verify HifiFlashUniswapV2"
+      - name: "Verify CollateralFlashUniswapV2"
         run: >-
           yarn workspace @hifi/flash-swap hardhat
-          verify "${{ steps.deploy.outputs.hifi-flash-uniswap-v2 }}" --network "${{ github.event.inputs.chain }}"
+          verify "${{ steps.deploy.outputs.collateral-flash-uniswap-v2 }}" --network "${{ github.event.inputs.chain }}"
           "${{ github.event.inputs.balance-sheet }}"
           "${{ github.event.inputs.uni-v2-factory }}"
           "${{ github.event.inputs.uni-v2-pair-init-code-hash }}"

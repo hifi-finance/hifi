@@ -440,13 +440,13 @@ contract HifiProxyTarget is IHifiProxyTarget {
 
         // Redeem the hTokens.
         IErc20 underlying = hToken.underlying();
-        uint256 preUnderlyingBalance = underlying.balanceOf(address(this));
+        uint256 oldUnderlyingBalance = underlying.balanceOf(address(this));
         hToken.redeem(hTokenAmount);
 
         unchecked {
             // Calculate how much underlying was redeemed.
-            uint256 postUnderlyingBalance = underlying.balanceOf(address(this));
-            uint256 underlyingAmount = postUnderlyingBalance - preUnderlyingBalance;
+            uint256 newUnderlyingBalance = underlying.balanceOf(address(this));
+            uint256 underlyingAmount = newUnderlyingBalance - oldUnderlyingBalance;
 
             // The underlying is now in the DSProxy, so we relay it to the end user.
             underlying.safeTransfer(msg.sender, underlyingAmount);
@@ -477,14 +477,14 @@ contract HifiProxyTarget is IHifiProxyTarget {
         // Redeem the hTokens.
         IHToken hToken = hifiPool.hToken();
         IErc20 underlying = hToken.underlying();
-        uint256 preUnderlyingBalance = underlying.balanceOf(address(this));
+        uint256 oldUnderlyingBalance = underlying.balanceOf(address(this));
         hToken.redeem(hTokenReturned);
 
         // Calculate how much underlying was redeemed.
         uint256 underlyingAmount;
         unchecked {
-            uint256 postUnderlyingBalance = underlying.balanceOf(address(this));
-            underlyingAmount = postUnderlyingBalance - preUnderlyingBalance;
+            uint256 newUnderlyingBalance = underlying.balanceOf(address(this));
+            underlyingAmount = newUnderlyingBalance - oldUnderlyingBalance;
         }
 
         // Relay all the underlying it to the end user.
@@ -661,13 +661,13 @@ contract HifiProxyTarget is IHifiProxyTarget {
 
     /// @inheritdoc IHifiProxyTarget
     function supplyUnderlying(IHToken hToken, uint256 underlyingAmount) external override {
-        uint256 preHTokenBalance = hToken.balanceOf(address(this));
+        uint256 oldHTokenBalance = hToken.balanceOf(address(this));
         supplyUnderlyingInternal(hToken, underlyingAmount);
 
         unchecked {
             // Calculate how many hTokens were minted.
-            uint256 postHTokenBalance = hToken.balanceOf(address(this));
-            uint256 hTokenAmount = postHTokenBalance - preHTokenBalance;
+            uint256 newHTokenBalance = hToken.balanceOf(address(this));
+            uint256 hTokenAmount = newHTokenBalance - oldHTokenBalance;
 
             // The hTokens are now in the DSProxy, so we relay them to the end user.
             hToken.transfer(msg.sender, hTokenAmount);
@@ -680,13 +680,13 @@ contract HifiProxyTarget is IHifiProxyTarget {
         IBalanceSheetV1 balanceSheet,
         uint256 underlyingAmount
     ) external override {
-        uint256 preHTokenBalance = hToken.balanceOf(address(this));
+        uint256 oldHTokenBalance = hToken.balanceOf(address(this));
         supplyUnderlyingInternal(hToken, underlyingAmount);
 
         unchecked {
             // Calculate how many hTokens were minted.
-            uint256 postHTokenBalance = hToken.balanceOf(address(this));
-            uint256 hTokenAmount = postHTokenBalance - preHTokenBalance;
+            uint256 newHTokenBalance = hToken.balanceOf(address(this));
+            uint256 hTokenAmount = newHTokenBalance - oldHTokenBalance;
 
             // Use the newly minted hTokens to repay the debt.
             balanceSheet.repayBorrow(hToken, hTokenAmount);

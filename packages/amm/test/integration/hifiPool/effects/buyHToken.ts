@@ -21,14 +21,14 @@ async function testBuyHToken(
   const buyer: SignerWithAddress = this.signers.alice;
 
   // Call the buyHToken function and calculate the delta in the hToken balance.
-  const preHTokenBalance: BigNumber = await this.contracts.hToken.balanceOf(buyer.address);
-  const preUnderlyingBalance: BigNumber = await this.contracts.underlying.balanceOf(buyer.address);
+  const oldHTokenBalance: BigNumber = await this.contracts.hToken.balanceOf(buyer.address);
+  const oldUnderlyingBalance: BigNumber = await this.contracts.underlying.balanceOf(buyer.address);
   await this.contracts.hifiPool.connect(buyer).buyHToken(buyer.address, hTokenOut);
-  const postHTokenBalance: BigNumber = await this.contracts.hToken.balanceOf(buyer.address);
-  const postUnderlyingBalance: BigNumber = await this.contracts.underlying.balanceOf(buyer.address);
+  const newHTokenBalance: BigNumber = await this.contracts.hToken.balanceOf(buyer.address);
+  const newUnderlyingBalance: BigNumber = await this.contracts.underlying.balanceOf(buyer.address);
 
-  const actualHTokenOut: BigNumber = postHTokenBalance.sub(preHTokenBalance);
-  const actualUnderlyingIn: BigNumber = preUnderlyingBalance.sub(postUnderlyingBalance);
+  const actualHTokenOut: BigNumber = newHTokenBalance.sub(oldHTokenBalance);
+  const actualUnderlyingIn: BigNumber = oldUnderlyingBalance.sub(newUnderlyingBalance);
 
   // Calculate the expected value of the delta using the local mirror implementation.
   const timeToMaturity: BigNumber = H_TOKEN_MATURITY_ONE_YEAR.sub(await getLatestBlockTimestamp()).mul(SCALE);

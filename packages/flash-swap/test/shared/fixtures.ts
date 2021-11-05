@@ -13,7 +13,8 @@ import { GodModeUniswapV2Pair__factory } from "../../src/types/factories/GodMode
 import type { GodModeErc20 } from "../../src/types/GodModeErc20";
 import type { GodModeHToken } from "../../src/types/GodModeHToken";
 import type { GodModeUniswapV2Factory } from "../../src/types/GodModeUniswapV2Factory";
-import type { HifiFlashUniswapV2 } from "../../src/types/HifiFlashUniswapV2";
+import type { CollateralFlashUniswapV2 } from "../../src/types/CollateralFlashUniswapV2";
+import type { UnderlyingFlashUniswapV2 } from "../../src/types/UnderlyingFlashUniswapV2";
 import type { MaliciousPair } from "../../src/types/MaliciousPair";
 import type { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
 import type { GodModeUniswapV2Pair } from "../../src/types/GodModeUniswapV2Pair";
@@ -21,10 +22,11 @@ import { deployGodModeErc20 } from "./deployers";
 
 type IntegrationFixtureReturnType = {
   balanceSheet: BalanceSheetV1;
+  collateralFlashUniswapV2: CollateralFlashUniswapV2;
   fintroller: FintrollerV1;
-  hifiFlashUniswapV2: HifiFlashUniswapV2;
   hToken: GodModeHToken;
   maliciousPair: MaliciousPair;
+  underlyingFlashUniswapV2: UnderlyingFlashUniswapV2;
   uniswapV2Pair: GodModeUniswapV2Pair;
   usdc: GodModeErc20;
   usdcPriceFeed: SimplePriceFeed;
@@ -89,10 +91,20 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
     await waffle.deployContract(deployer, maliciousPairArtifact, [wbtc.address, usdc.address])
   );
 
-  const hifiFlashUniswapV2Artifact: Artifact = await artifacts.readArtifact("HifiFlashUniswapV2");
   const uniV2PairInitCodeHash: string = keccak256(godModeUniswapV2PairArtifact.bytecode);
-  const hifiFlashUniswapV2: HifiFlashUniswapV2 = <HifiFlashUniswapV2>(
-    await waffle.deployContract(deployer, hifiFlashUniswapV2Artifact, [
+
+  const collateralFlashUniswapV2Artifact: Artifact = await artifacts.readArtifact("CollateralFlashUniswapV2");
+  const collateralFlashUniswapV2: CollateralFlashUniswapV2 = <CollateralFlashUniswapV2>(
+    await waffle.deployContract(deployer, collateralFlashUniswapV2Artifact, [
+      balanceSheet.address,
+      uniswapV2Factory.address,
+      uniV2PairInitCodeHash,
+    ])
+  );
+
+  const underlyingFlashUniswapV2Artifact: Artifact = await artifacts.readArtifact("UnderlyingFlashUniswapV2");
+  const underlyingFlashUniswapV2: UnderlyingFlashUniswapV2 = <UnderlyingFlashUniswapV2>(
+    await waffle.deployContract(deployer, underlyingFlashUniswapV2Artifact, [
       balanceSheet.address,
       uniswapV2Factory.address,
       uniV2PairInitCodeHash,
@@ -101,10 +113,11 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
 
   return {
     balanceSheet,
+    collateralFlashUniswapV2,
     fintroller,
-    hifiFlashUniswapV2,
     hToken,
     maliciousPair,
+    underlyingFlashUniswapV2,
     uniswapV2Pair,
     usdc,
     usdcPriceFeed,

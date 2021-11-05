@@ -1,16 +1,16 @@
 import * as core from "@actions/core";
-import type { HifiFlashUniswapV2 } from "@hifi/flash-swap/dist/types/HifiFlashUniswapV2";
-import { HifiFlashUniswapV2__factory } from "@hifi/flash-swap/dist/types/factories/HifiFlashUniswapV2__factory";
+import type { UnderlyingFlashUniswapV2 } from "@hifi/flash-swap/dist/types/UnderlyingFlashUniswapV2";
+import { UnderlyingFlashUniswapV2__factory } from "@hifi/flash-swap/dist/types/factories/UnderlyingFlashUniswapV2__factory";
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
 import type { TaskArguments } from "hardhat/types";
 
 import {
   SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS,
-  TASK_DEPLOY_CONTRACT_HIFI_FLASH_UNISWAP_V2,
+  TASK_DEPLOY_CONTRACT_HIFI_FLASH_UNISWAP_V2_UNDERLYING,
 } from "../../helpers/constants";
 
-task(TASK_DEPLOY_CONTRACT_HIFI_FLASH_UNISWAP_V2)
+task(TASK_DEPLOY_CONTRACT_HIFI_FLASH_UNISWAP_V2_UNDERLYING)
   // Contract arguments
   .addParam("balanceSheet", "Address of the BalanceSheet contract")
   .addParam("uniV2Factory", "Address of the UniswapV2Factory contract")
@@ -21,9 +21,11 @@ task(TASK_DEPLOY_CONTRACT_HIFI_FLASH_UNISWAP_V2)
   .addOptionalParam("setOutput", "Set the contract address as an output in GitHub Actions", false, types.boolean)
   .setAction(async function (taskArgs: TaskArguments, { ethers, run }): Promise<string> {
     const signers: SignerWithAddress[] = await ethers.getSigners();
-    const hifiFlashUniswapV2Factory: HifiFlashUniswapV2__factory = new HifiFlashUniswapV2__factory(signers[0]);
-    const hifiFlashUniswapV2: HifiFlashUniswapV2 = <HifiFlashUniswapV2>(
-      await hifiFlashUniswapV2Factory.deploy(
+    const underlyingFlashUniswapV2Factory: UnderlyingFlashUniswapV2__factory = new UnderlyingFlashUniswapV2__factory(
+      signers[0],
+    );
+    const underlyingFlashUniswapV2: UnderlyingFlashUniswapV2 = <UnderlyingFlashUniswapV2>(
+      await underlyingFlashUniswapV2Factory.deploy(
         taskArgs.balanceSheet,
         taskArgs.uniV2Factory,
         taskArgs.uniV2PairInitCodeHash,
@@ -31,16 +33,16 @@ task(TASK_DEPLOY_CONTRACT_HIFI_FLASH_UNISWAP_V2)
     );
 
     await run(SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, {
-      contract: hifiFlashUniswapV2,
+      contract: underlyingFlashUniswapV2,
       confirmations: taskArgs.confirmations,
     });
 
     if (taskArgs.setOutput) {
-      core.setOutput("hifi-flash-uniswap-v2", hifiFlashUniswapV2.address);
+      core.setOutput("underlying-flash-uniswap-v2", underlyingFlashUniswapV2.address);
     }
     if (taskArgs.printAddress) {
-      console.table([{ name: "HifiFlashUniswapV2", address: hifiFlashUniswapV2.address }]);
+      console.table([{ name: "UnderlyingFlashUniswapV2", address: underlyingFlashUniswapV2.address }]);
     }
 
-    return hifiFlashUniswapV2.address;
+    return underlyingFlashUniswapV2.address;
   });
