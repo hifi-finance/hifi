@@ -360,17 +360,39 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                   await this.contracts.uniswapV2Pair.sync();
                 });
 
-                it("flash swaps USDC making no USDC profit and paying the flash swap fee", async function () {
-                  const to: string = this.contracts.underlyingFlashUniswapV2.address;
-                  const oldLiquidatorUsdcBalance = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
-                  const oldSubsidizerUsdcBalance = await this.contracts.usdc.balanceOf(this.signers.subsidizer.address);
-                  await this.contracts.uniswapV2Pair
-                    .connect(this.signers.liquidator)
-                    .swap(localToken0Amount, localToken1Amount, to, data);
-                  const newLiquidatorUsdcBalance = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
-                  const newSubsidizerUsdcBalance = await this.contracts.usdc.balanceOf(this.signers.subsidizer.address);
-                  expect(newLiquidatorUsdcBalance).to.equal(oldLiquidatorUsdcBalance);
-                  expect(oldSubsidizerUsdcBalance.sub(newSubsidizerUsdcBalance)).to.equal(feeUnderlyingAmount);
+                context("when the other token is flash borrowed", function () {
+                  it("reverts", async function () {
+                    const { token0Amount, token1Amount } = await getTokenAmounts.call(this, WBTC("1"), Zero);
+                    const to: string = this.contracts.underlyingFlashUniswapV2.address;
+                    await expect(
+                      this.contracts.uniswapV2Pair
+                        .connect(this.signers.raider)
+                        .swap(token0Amount, token1Amount, to, data),
+                    ).to.be.revertedWith(UnderlyingFlashUniswapV2Errors.FlashBorrowOtherToken);
+                  });
+                });
+
+                context("when the underlying is flash borrowed", function () {
+                  it("flash swaps USDC making no USDC profit and paying the flash swap fee", async function () {
+                    const to: string = this.contracts.underlyingFlashUniswapV2.address;
+                    const oldLiquidatorUsdcBalance = await this.contracts.usdc.balanceOf(
+                      this.signers.liquidator.address,
+                    );
+                    const oldSubsidizerUsdcBalance = await this.contracts.usdc.balanceOf(
+                      this.signers.subsidizer.address,
+                    );
+                    await this.contracts.uniswapV2Pair
+                      .connect(this.signers.liquidator)
+                      .swap(localToken0Amount, localToken1Amount, to, data);
+                    const newLiquidatorUsdcBalance = await this.contracts.usdc.balanceOf(
+                      this.signers.liquidator.address,
+                    );
+                    const newSubsidizerUsdcBalance = await this.contracts.usdc.balanceOf(
+                      this.signers.subsidizer.address,
+                    );
+                    expect(newLiquidatorUsdcBalance).to.equal(oldLiquidatorUsdcBalance);
+                    expect(oldSubsidizerUsdcBalance.sub(newSubsidizerUsdcBalance)).to.equal(feeUnderlyingAmount);
+                  });
                 });
               });
 
