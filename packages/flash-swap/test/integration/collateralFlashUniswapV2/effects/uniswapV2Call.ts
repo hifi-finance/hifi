@@ -1,7 +1,7 @@
 import { defaultAbiCoder } from "@ethersproject/abi";
 import { BigNumber } from "@ethersproject/bignumber";
-import { MaxUint256, Zero } from "@ethersproject/constants";
-import { LIQUIDATION_INCENTIVES } from "@hifi/constants";
+import { AddressZero, MaxUint256, Zero } from "@ethersproject/constants";
+import { COLLATERAL_RATIOS, LIQUIDATION_INCENTIVES } from "@hifi/constants";
 import { BalanceSheetErrors, CollateralFlashUniswapV2Errors } from "@hifi/errors";
 import { USDC, WBTC, hUSDC, price } from "@hifi/helpers";
 import { expect } from "chai";
@@ -24,31 +24,35 @@ async function increasePoolReserves(this: Mocha.Context, wbtcAmount: BigNumber, 
   await this.contracts.uniswapV2Pair.sync();
 }
 
-function encodeCallData(this: Mocha.Context): string {
-  const types = ["address", "address", "uint256"];
+function encodeCallData(this: Mocha.Context, subsidizer: string): string {
+  const types = ["address", "address", "uint256", "address"];
   const minProfit: string = String(WBTC("0.001"));
-  const values = [this.signers.borrower.address, this.contracts.hToken.address, minProfit];
+  const values = [this.signers.borrower.address, this.contracts.hToken.address, minProfit, subsidizer];
   const data: string = defaultAbiCoder.encode(types, values);
   return data;
 }
 
-async function getSeizableAndProfitCollateralAmounts(
+async function getSeizableRepayAndProfitCollateralAmounts(
   this: Mocha.Context,
   repayHTokenAmount: BigNumber,
   swapUnderlyingAmount: BigNumber,
-): Promise<{ expectedProfitCollateralAmount: BigNumber; seizableCollateralAmount: BigNumber }> {
+): Promise<{
+  expectedProfitCollateralAmount: BigNumber;
+  repayCollateralAmount: BigNumber;
+  seizableCollateralAmount: BigNumber;
+}> {
   const seizableCollateralAmount = await this.contracts.balanceSheet.getSeizableCollateralAmount(
     this.contracts.hToken.address,
     repayHTokenAmount,
     this.contracts.wbtc.address,
   );
-  const repayWbtcAmount = await this.contracts.collateralFlashUniswapV2.getRepayCollateralAmount(
+  const repayCollateralAmount = await this.contracts.collateralFlashUniswapV2.getRepayCollateralAmount(
     this.contracts.uniswapV2Pair.address,
     this.contracts.usdc.address,
     swapUnderlyingAmount,
   );
-  const expectedProfitCollateralAmount = seizableCollateralAmount.sub(repayWbtcAmount);
-  return { expectedProfitCollateralAmount, seizableCollateralAmount };
+  const expectedProfitCollateralAmount = seizableCollateralAmount.sub(repayCollateralAmount);
+  return { expectedProfitCollateralAmount, repayCollateralAmount, seizableCollateralAmount };
 }
 
 async function getTokenAmounts(
@@ -104,7 +108,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
     let data: string;
 
     beforeEach(function () {
-      data = encodeCallData.call(this);
+      data = encodeCallData.call(this, AddressZero);
     });
 
     context("when the caller is not the UniswapV2Pair contract", function () {
@@ -237,138 +241,328 @@ export function shouldBehaveLikeUniswapV2Call(): void {
           });
 
           context("when the borrower has a liquidity shortfall", function () {
-            context(
-              "when the price given by the UniswapV2Pair contract price is better than the oracle price",
-              function () {
+            context("when the liquidation is not subsidized", function () {
+              context(
+                "when the price given by the UniswapV2Pair contract price is better than the oracle price",
+                function () {
+                  beforeEach(async function () {
+                    // Set the WBTC price to $12.5k to make borrower's collateral ratio 125%.
+                    await this.contracts.wbtcPriceFeed.setPrice(price("12500"));
+
+                    // Burn 1m USDC from the pair contract. This makes the pair contract price 1 WBTC ~ 10k USDC.
+                    await reducePoolReserves.call(this, Zero, USDC("1e6"));
+                  });
+
+                  it("reverts", async function () {
+                    const to: string = this.contracts.collateralFlashUniswapV2.address;
+                    await expect(
+                      this.contracts.uniswapV2Pair
+                        .connect(this.signers.liquidator)
+                        .swap(token0Amount, token1Amount, to, data),
+                    ).to.be.revertedWith(CollateralFlashUniswapV2Errors.InsufficientProfit);
+                  });
+                },
+              );
+
+              context(
+                "when the price given by the UniswapV2Pair contract is the same as the oracle price",
+                function () {
+                  let expectedProfitCollateralAmount: BigNumber;
+                  let repayCollateralAmount: BigNumber;
+                  let seizableCollateralAmount: BigNumber;
+
+                  context("when the collateral ratio is lower than 110%", function () {
+                    const repayHTokenAmount: BigNumber = hUSDC("9090.909090909090909090");
+
+                    beforeEach(async function () {
+                      // Set the WBTC price to $10k to make the borrower's collateral ratio 100%.
+                      await this.contracts.wbtcPriceFeed.setPrice(price("10000"));
+
+                      // Calculate the amounts necessary for running the tests.
+                      const calculatedAmounts = await getSeizableRepayAndProfitCollateralAmounts.call(
+                        this,
+                        repayHTokenAmount,
+                        swapUnderlyingAmount,
+                      );
+                      expectedProfitCollateralAmount = calculatedAmounts.expectedProfitCollateralAmount;
+                      seizableCollateralAmount = calculatedAmounts.seizableCollateralAmount;
+                    });
+
+                    it("flash swaps USDC via and makes a WBTC profit", async function () {
+                      const to: string = this.contracts.collateralFlashUniswapV2.address;
+                      const preWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+                      await this.contracts.uniswapV2Pair
+                        .connect(this.signers.liquidator)
+                        .swap(token0Amount, token1Amount, to, data);
+                      const newWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+                      expect(newWbtcBalance.sub(expectedProfitCollateralAmount)).to.equal(preWbtcBalance);
+                    });
+                  });
+
+                  context("when the collateral ratio is lower than 150% but higher than 110%", function () {
+                    const repayHTokenAmount: BigNumber = hUSDC("10000");
+
+                    beforeEach(async function () {
+                      // Set the WBTC price to $12.5k to make borrower's collateral ratio 125%.
+                      await this.contracts.wbtcPriceFeed.setPrice(price("12500"));
+
+                      // Burn 750k USDC from the pair contract, which makes the price 1 WBTC ~ 12.5k USDC.
+                      await reducePoolReserves.call(this, Zero, USDC("75e4"));
+
+                      // Calculate the amounts necessary for running the tests.
+                      const calculatedAmounts = await getSeizableRepayAndProfitCollateralAmounts.call(
+                        this,
+                        repayHTokenAmount,
+                        swapUnderlyingAmount,
+                      );
+                      expectedProfitCollateralAmount = calculatedAmounts.expectedProfitCollateralAmount;
+                      repayCollateralAmount = calculatedAmounts.repayCollateralAmount;
+                      seizableCollateralAmount = calculatedAmounts.seizableCollateralAmount;
+                    });
+
+                    context("new order of tokens in the UniswapV2Pair contract", function () {
+                      let localToken0Amount: BigNumber;
+                      let localToken1Amount: BigNumber;
+
+                      beforeEach(async function () {
+                        const token0: string = await this.contracts.uniswapV2Pair.token0();
+                        if (token0 === this.contracts.wbtc.address) {
+                          await this.contracts.uniswapV2Pair.__godMode_setToken0(this.contracts.usdc.address);
+                          await this.contracts.uniswapV2Pair.__godMode_setToken1(this.contracts.wbtc.address);
+                          localToken0Amount = swapUnderlyingAmount;
+                          localToken1Amount = swapCollateralAmount;
+                        } else {
+                          await this.contracts.uniswapV2Pair.__godMode_setToken0(this.contracts.wbtc.address);
+                          await this.contracts.uniswapV2Pair.__godMode_setToken1(this.contracts.usdc.address);
+                          localToken0Amount = swapCollateralAmount;
+                          localToken1Amount = swapUnderlyingAmount;
+                        }
+                        await this.contracts.uniswapV2Pair.sync();
+                      });
+
+                      it("flash swaps USDC via and makes a WBTC profit", async function () {
+                        const to: string = this.contracts.collateralFlashUniswapV2.address;
+                        const oldWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+                        await this.contracts.uniswapV2Pair
+                          .connect(this.signers.liquidator)
+                          .swap(localToken0Amount, localToken1Amount, to, data);
+                        const newWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+                        expect(newWbtcBalance.sub(expectedProfitCollateralAmount)).to.equal(oldWbtcBalance);
+                      });
+                    });
+
+                    context("initial order of tokens in the UniswapV2Pair contract", function () {
+                      it("flash swaps USDC via and makes a WBTC profit", async function () {
+                        const to: string = this.contracts.collateralFlashUniswapV2.address;
+                        const oldWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+                        await this.contracts.uniswapV2Pair
+                          .connect(this.signers.liquidator)
+                          .swap(token0Amount, token1Amount, to, data);
+                        const newWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+                        expect(newWbtcBalance.sub(expectedProfitCollateralAmount)).to.equal(oldWbtcBalance);
+                      });
+
+                      it("emits a FlashSwapCollateralAndLiquidateBorrow event", async function () {
+                        const to: string = this.contracts.collateralFlashUniswapV2.address;
+                        const contractCall = this.contracts.uniswapV2Pair
+                          .connect(this.signers.liquidator)
+                          .swap(token0Amount, token1Amount, to, data);
+                        await expect(contractCall)
+                          .to.emit(this.contracts.collateralFlashUniswapV2, "FlashSwapCollateralAndLiquidateBorrow")
+                          .withArgs(
+                            this.signers.liquidator.address,
+                            this.signers.borrower.address,
+                            this.contracts.hToken.address,
+                            swapUnderlyingAmount,
+                            seizableCollateralAmount,
+                            repayCollateralAmount,
+                            Zero,
+                            expectedProfitCollateralAmount,
+                          );
+                      });
+                    });
+                  });
+                },
+              );
+            });
+
+            context("when the liquidation is subsidized", function () {
+              beforeEach(async function () {
+                data = encodeCallData.call(this, this.signers.subsidizer.address);
+
+                // TODO: correct fee amount
+                const feeCollateralAmount = WBTC("100");
+
+                // Mint WBTC to the subsidizer wallet and approve the flash swap contract to spend it.
+                await this.contracts.wbtc.__godMode_mint(this.signers.subsidizer.address, feeCollateralAmount);
+                await this.contracts.wbtc
+                  .connect(this.signers.subsidizer)
+                  .approve(this.contracts.collateralFlashUniswapV2.address, MaxUint256);
+              });
+
+              context("when the repay collateral amount is equal to the seized collateral amount", function () {
+                const repayHTokenAmount: BigNumber = hUSDC("10000");
+                let repayCollateralAmount: BigNumber;
+                let seizableCollateralAmount: BigNumber;
+
                 beforeEach(async function () {
-                  // Set the WBTC price to $12.5k to make borrower's collateral ratio 125%.
-                  await this.contracts.wbtcPriceFeed.setPrice(price("12500"));
+                  // Set the collateral ratio to 10,000%.
+                  await this.contracts.fintroller
+                    .connect(this.signers.admin)
+                    .setCollateralRatio(this.contracts.wbtc.address, COLLATERAL_RATIOS.upperBound);
 
-                  // Burn 1m USDC from the pair contract. This makes the pair contract price 1 WBTC ~ 10k USDC.
-                  await reducePoolReserves.call(this, Zero, USDC("1e6"));
-                });
-
-                it("reverts", async function () {
-                  const to: string = this.contracts.collateralFlashUniswapV2.address;
-                  await expect(
-                    this.contracts.uniswapV2Pair
-                      .connect(this.signers.liquidator)
-                      .swap(token0Amount, token1Amount, to, data),
-                  ).to.be.revertedWith(CollateralFlashUniswapV2Errors.InsufficientProfit);
-                });
-              },
-            );
-
-            context("when the price given by the UniswapV2Pair contract is the same as the oracle price", function () {
-              let expectedProfitCollateralAmount: BigNumber;
-              let seizableCollateralAmount: BigNumber;
-
-              context("when the collateral ratio is lower than 110%", function () {
-                const repayHTokenAmount: BigNumber = hUSDC("9090.909090909090909090");
-
-                beforeEach(async function () {
-                  // Set the WBTC price to $10k to make the borrower's collateral ratio 100%.
-                  await this.contracts.wbtcPriceFeed.setPrice(price("10000"));
+                  // Mint ~ 9.12 WBTC to the pair contract. This makes the pair contract price 1 WBTC ~ 18,328 USDC.
+                  await increasePoolReserves.call(this, WBTC("9.121649"), Zero);
 
                   // Calculate the amounts necessary for running the tests.
-                  const calculatedAmounts = await getSeizableAndProfitCollateralAmounts.call(
+                  const calculatedAmounts = await getSeizableRepayAndProfitCollateralAmounts.call(
+                    this,
+                    repayHTokenAmount,
+                    swapUnderlyingAmount,
+                  );
+                  repayCollateralAmount = calculatedAmounts.repayCollateralAmount;
+                  seizableCollateralAmount = calculatedAmounts.seizableCollateralAmount;
+                });
+
+                it("flash swaps USDC via and makes no WBTC profit", async function () {
+                  const to: string = this.contracts.collateralFlashUniswapV2.address;
+                  const oldWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+                  await this.contracts.uniswapV2Pair
+                    .connect(this.signers.liquidator)
+                    .swap(token0Amount, token1Amount, to, data);
+                  const newWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+                  expect(newWbtcBalance).to.equal(oldWbtcBalance);
+                });
+
+                it("emits a FlashSwapCollateralAndLiquidateBorrow event", async function () {
+                  const to: string = this.contracts.collateralFlashUniswapV2.address;
+                  const contractCall = this.contracts.uniswapV2Pair
+                    .connect(this.signers.liquidator)
+                    .swap(token0Amount, token1Amount, to, data);
+                  await expect(contractCall)
+                    .to.emit(this.contracts.collateralFlashUniswapV2, "FlashSwapCollateralAndLiquidateBorrow")
+                    .withArgs(
+                      this.signers.liquidator.address,
+                      this.signers.borrower.address,
+                      this.contracts.hToken.address,
+                      swapUnderlyingAmount,
+                      seizableCollateralAmount,
+                      repayCollateralAmount,
+                      Zero,
+                      Zero,
+                    );
+                });
+              });
+
+              context("when the repay collateral amount is less than the seized collateral amount", function () {
+                const repayHTokenAmount: BigNumber = hUSDC("10000");
+                let expectedProfitCollateralAmount: BigNumber;
+                let repayCollateralAmount: BigNumber;
+                let seizableCollateralAmount: BigNumber;
+
+                beforeEach(async function () {
+                  // Set the collateral ratio to 10,000%.
+                  await this.contracts.fintroller
+                    .connect(this.signers.admin)
+                    .setCollateralRatio(this.contracts.wbtc.address, COLLATERAL_RATIOS.upperBound);
+
+                  // Burn ~9.12 WBTC to the pair contract. This makes the pair contract price 1 WBTC ~ 22007.4416 USDC.
+                  await reducePoolReserves.call(this, WBTC("9.121649"), Zero);
+
+                  // Calculate the amounts necessary for running the tests.
+                  const calculatedAmounts = await getSeizableRepayAndProfitCollateralAmounts.call(
                     this,
                     repayHTokenAmount,
                     swapUnderlyingAmount,
                   );
                   expectedProfitCollateralAmount = calculatedAmounts.expectedProfitCollateralAmount;
+                  repayCollateralAmount = calculatedAmounts.repayCollateralAmount;
                   seizableCollateralAmount = calculatedAmounts.seizableCollateralAmount;
                 });
 
                 it("flash swaps USDC via and makes a WBTC profit", async function () {
                   const to: string = this.contracts.collateralFlashUniswapV2.address;
-                  const preWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+                  const oldWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
                   await this.contracts.uniswapV2Pair
                     .connect(this.signers.liquidator)
                     .swap(token0Amount, token1Amount, to, data);
                   const newWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
-                  expect(newWbtcBalance.sub(expectedProfitCollateralAmount)).to.equal(preWbtcBalance);
+                  expect(newWbtcBalance.sub(expectedProfitCollateralAmount)).to.equal(oldWbtcBalance);
+                });
+
+                it("emits a FlashSwapCollateralAndLiquidateBorrow event", async function () {
+                  const to: string = this.contracts.collateralFlashUniswapV2.address;
+                  const contractCall = this.contracts.uniswapV2Pair
+                    .connect(this.signers.liquidator)
+                    .swap(token0Amount, token1Amount, to, data);
+                  await expect(contractCall)
+                    .to.emit(this.contracts.collateralFlashUniswapV2, "FlashSwapCollateralAndLiquidateBorrow")
+                    .withArgs(
+                      this.signers.liquidator.address,
+                      this.signers.borrower.address,
+                      this.contracts.hToken.address,
+                      swapUnderlyingAmount,
+                      seizableCollateralAmount,
+                      repayCollateralAmount,
+                      Zero,
+                      expectedProfitCollateralAmount,
+                    );
                 });
               });
 
-              context("when the collateral ratio is lower than 150% but higher than 110%", function () {
+              context("when the repay collateral amount is greater than the seized collateral amount", function () {
                 const repayHTokenAmount: BigNumber = hUSDC("10000");
+                let repayCollateralAmount: BigNumber;
+                let seizableCollateralAmount: BigNumber;
+                let subsidizedCollateralAmount: BigNumber;
 
                 beforeEach(async function () {
-                  // Set the WBTC price to $12.5k to make borrower's collateral ratio 125%.
-                  await this.contracts.wbtcPriceFeed.setPrice(price("12500"));
+                  // Set the collateral ratio to 10,000%.
+                  await this.contracts.fintroller
+                    .connect(this.signers.admin)
+                    .setCollateralRatio(this.contracts.wbtc.address, COLLATERAL_RATIOS.upperBound);
 
-                  // Burn 750k USDC from the pair contract, which makes the price 1 WBTC ~ 12.5k USDC.
-                  await reducePoolReserves.call(this, Zero, USDC("75e4"));
+                  // Mint 20 WBTC to the pair contract. This makes the pair contract price 1 WBTC ~ 16,666 USDC.
+                  await increasePoolReserves.call(this, WBTC("20"), Zero);
 
                   // Calculate the amounts necessary for running the tests.
-                  const calculatedAmounts = await getSeizableAndProfitCollateralAmounts.call(
+                  const calculatedAmounts = await getSeizableRepayAndProfitCollateralAmounts.call(
                     this,
                     repayHTokenAmount,
                     swapUnderlyingAmount,
                   );
-                  expectedProfitCollateralAmount = calculatedAmounts.expectedProfitCollateralAmount;
+                  repayCollateralAmount = calculatedAmounts.repayCollateralAmount;
                   seizableCollateralAmount = calculatedAmounts.seizableCollateralAmount;
+                  subsidizedCollateralAmount = repayCollateralAmount.sub(seizableCollateralAmount);
                 });
 
-                context("new order of tokens in the UniswapV2Pair contract", function () {
-                  let localToken0Amount: BigNumber;
-                  let localToken1Amount: BigNumber;
-
-                  beforeEach(async function () {
-                    const token0: string = await this.contracts.uniswapV2Pair.token0();
-                    if (token0 === this.contracts.wbtc.address) {
-                      await this.contracts.uniswapV2Pair.__godMode_setToken0(this.contracts.usdc.address);
-                      await this.contracts.uniswapV2Pair.__godMode_setToken1(this.contracts.wbtc.address);
-                      localToken0Amount = swapUnderlyingAmount;
-                      localToken1Amount = swapCollateralAmount;
-                    } else {
-                      await this.contracts.uniswapV2Pair.__godMode_setToken0(this.contracts.wbtc.address);
-                      await this.contracts.uniswapV2Pair.__godMode_setToken1(this.contracts.usdc.address);
-                      localToken0Amount = swapCollateralAmount;
-                      localToken1Amount = swapUnderlyingAmount;
-                    }
-                    await this.contracts.uniswapV2Pair.sync();
-                  });
-
-                  it("flash swaps USDC via and makes a WBTC profit", async function () {
-                    const to: string = this.contracts.collateralFlashUniswapV2.address;
-                    const oldWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
-                    await this.contracts.uniswapV2Pair
-                      .connect(this.signers.liquidator)
-                      .swap(localToken0Amount, localToken1Amount, to, data);
-                    const newWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
-                    expect(newWbtcBalance.sub(expectedProfitCollateralAmount)).to.equal(oldWbtcBalance);
-                  });
+                it("flash swaps USDC via and makes no WBTC profit", async function () {
+                  const to: string = this.contracts.collateralFlashUniswapV2.address;
+                  const oldWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+                  await this.contracts.uniswapV2Pair
+                    .connect(this.signers.liquidator)
+                    .swap(token0Amount, token1Amount, to, data);
+                  const newWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+                  expect(newWbtcBalance).to.equal(oldWbtcBalance);
                 });
 
-                context("initial order of tokens in the UniswapV2Pair contract", function () {
-                  it("flash swaps USDC via and makes a WBTC profit", async function () {
-                    const to: string = this.contracts.collateralFlashUniswapV2.address;
-                    const oldWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
-                    await this.contracts.uniswapV2Pair
-                      .connect(this.signers.liquidator)
-                      .swap(token0Amount, token1Amount, to, data);
-                    const newWbtcBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
-                    expect(newWbtcBalance.sub(expectedProfitCollateralAmount)).to.equal(oldWbtcBalance);
-                  });
-
-                  it("emits a FlashSwapCollateralAndLiquidateBorrow event", async function () {
-                    const to: string = this.contracts.collateralFlashUniswapV2.address;
-                    const contractCall = this.contracts.uniswapV2Pair
-                      .connect(this.signers.liquidator)
-                      .swap(token0Amount, token1Amount, to, data);
-                    await expect(contractCall)
-                      .to.emit(this.contracts.collateralFlashUniswapV2, "FlashSwapCollateralAndLiquidateBorrow")
-                      .withArgs(
-                        this.signers.liquidator.address,
-                        this.signers.borrower.address,
-                        this.contracts.hToken.address,
-                        swapUnderlyingAmount,
-                        seizableCollateralAmount,
-                        expectedProfitCollateralAmount,
-                      );
-                  });
+                it("emits a FlashSwapCollateralAndLiquidateBorrow event", async function () {
+                  const to: string = this.contracts.collateralFlashUniswapV2.address;
+                  const contractCall = this.contracts.uniswapV2Pair
+                    .connect(this.signers.liquidator)
+                    .swap(token0Amount, token1Amount, to, data);
+                  await expect(contractCall)
+                    .to.emit(this.contracts.collateralFlashUniswapV2, "FlashSwapCollateralAndLiquidateBorrow")
+                    .withArgs(
+                      this.signers.liquidator.address,
+                      this.signers.borrower.address,
+                      this.contracts.hToken.address,
+                      swapUnderlyingAmount,
+                      seizableCollateralAmount,
+                      repayCollateralAmount,
+                      subsidizedCollateralAmount,
+                      Zero,
+                    );
                 });
               });
             });

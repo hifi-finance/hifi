@@ -123,6 +123,8 @@ contract CollateralFlashUniswapV2 is ICollateralFlashUniswapV2 {
         uint256 profitCollateralAmount;
         uint256 repayCollateralAmount;
         uint256 seizedCollateralAmount;
+        uint256 subsidizedCollateralAmount;
+        address subsidizer;
         IErc20 underlying;
         uint256 underlyingAmount;
     }
@@ -137,7 +139,10 @@ contract CollateralFlashUniswapV2 is ICollateralFlashUniswapV2 {
         UniswapV2CallLocalVars memory vars;
 
         // Unpack the ABI encoded data passed by the UniswapV2Pair contract.
-        (vars.borrower, vars.bond, vars.minProfit) = abi.decode(data, (address, IHToken, uint256));
+        (vars.borrower, vars.bond, vars.minProfit, vars.subsidizer) = abi.decode(
+            data,
+            (address, IHToken, uint256, address)
+        );
 
         // Figure out which token is the collateral and which token is the underlying.
         vars.underlying = vars.bond.underlying();
@@ -172,20 +177,36 @@ contract CollateralFlashUniswapV2 is ICollateralFlashUniswapV2 {
             vars.underlying,
             vars.underlyingAmount
         );
-        if (vars.seizedCollateralAmount <= vars.repayCollateralAmount + vars.minProfit) {
-            revert CollateralFlashUniswapV2__InsufficientProfit(
-                vars.seizedCollateralAmount,
-                vars.repayCollateralAmount,
-                vars.minProfit
-            );
+        // If no subsidizer is assigned, the liquidation should not be subsidized.
+        if (vars.subsidizer == address(0)) {
+            if (vars.seizedCollateralAmount <= vars.repayCollateralAmount + vars.minProfit) {
+                revert CollateralFlashUniswapV2__InsufficientProfit(
+                    vars.seizedCollateralAmount,
+                    vars.repayCollateralAmount,
+                    vars.minProfit
+                );
+            }
+        } else {
+            // The flash swap fee must be subsidized when the repay collateral amount is greater than
+            // the seized collateral amount.
+            if (vars.repayCollateralAmount > vars.seizedCollateralAmount) {
+                unchecked {
+                    vars.subsidizedCollateralAmount = vars.repayCollateralAmount - vars.seizedCollateralAmount;
+                }
+                vars.collateral.safeTransferFrom(vars.subsidizer, address(this), vars.subsidizedCollateralAmount);
+            }
         }
 
         // Pay back the loan.
         vars.collateral.safeTransfer(msg.sender, vars.repayCollateralAmount);
 
-        // Reap the profit.
-        vars.profitCollateralAmount = vars.seizedCollateralAmount - vars.repayCollateralAmount;
-        vars.collateral.safeTransfer(sender, vars.profitCollateralAmount);
+        // Reap the profit if the seized collateral amount is greater than the repay collateral amount.
+        if (vars.seizedCollateralAmount > vars.repayCollateralAmount) {
+            unchecked {
+                vars.profitCollateralAmount = vars.seizedCollateralAmount - vars.repayCollateralAmount;
+            }
+            vars.collateral.safeTransfer(sender, vars.profitCollateralAmount);
+        }
 
         // Emit an event.
         emit FlashSwapCollateralAndLiquidateBorrow(
@@ -194,6 +215,8 @@ contract CollateralFlashUniswapV2 is ICollateralFlashUniswapV2 {
             address(vars.bond),
             vars.underlyingAmount,
             vars.seizedCollateralAmount,
+            vars.repayCollateralAmount,
+            vars.subsidizedCollateralAmount,
             vars.profitCollateralAmount
         );
     }

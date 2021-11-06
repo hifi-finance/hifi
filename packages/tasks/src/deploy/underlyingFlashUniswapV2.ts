@@ -7,10 +7,10 @@ import type { TaskArguments } from "hardhat/types";
 
 import {
   SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS,
-  TASK_DEPLOY_CONTRACT_HIFI_FLASH_UNISWAP_V2_UNDERLYING,
+  TASK_DEPLOY_CONTRACT_UNDERLYING_FLASH_UNISWAP_V2,
 } from "../../helpers/constants";
 
-task(TASK_DEPLOY_CONTRACT_HIFI_FLASH_UNISWAP_V2_UNDERLYING)
+task(TASK_DEPLOY_CONTRACT_UNDERLYING_FLASH_UNISWAP_V2)
   // Contract arguments
   .addParam("balanceSheet", "Address of the BalanceSheet contract")
   .addParam("uniV2Factory", "Address of the UniswapV2Factory contract")
