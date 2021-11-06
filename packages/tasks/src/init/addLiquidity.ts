@@ -38,36 +38,44 @@ task(TASK_INIT_ADD_LIQUIDITY)
 
     // Stop if the signer does not have enough underlying.
     const underlyingBalance: BigNumber = await underlying.balanceOf(signer.address);
+    console.log("check underlying balance", underlyingBalance.toString());
     if (underlyingBalance.lt(totalUnderlyingAmount)) {
+      console.error("Stop if the signer does not have enough underlying.");
       return;
     }
 
     // Approve the pool contract to spend underlying if allowance not enough.
+    console.log("Approve the pool contract to spend underlying if allowance not enough.");
     const poolUnderlyingAllowance: BigNumber = await underlying.allowance(signer.address, hifiPool.address);
     if (poolUnderlyingAllowance.lt(poolUnderlyingAmount)) {
       await underlying.approve(hifiPool.address, MaxUint256);
     }
 
     // Add liquidity to the pool.
-    const addLiquidityTx = await hifiPool.mint(poolUnderlyingAmount);
+    console.log("Add underlying liquidity to the pool.", poolUnderlyingAmount.toString());
+    const addLiquidityTx = await hifiPool.mint(poolUnderlyingAmount, { gasLimit: 500000 });
     await addLiquidityTx.wait();
 
     // Load the hToken address.
+    console.log("Load the hToken address.");
     const hTokenAddress: string = await hifiPool.hToken();
 
     // Approve the hToken contract to spend underlying if allowance not enough.
+    console.log("Approve the hToken contract to spend underlying if allowance not enough.");
     const hTokenUnderlyingAllowance: BigNumber = await underlying.allowance(signer.address, hTokenAddress);
     if (hTokenUnderlyingAllowance.lt(supplyUnderlyingAmount)) {
       await underlying.approve(hTokenAddress, MaxUint256);
     }
 
     // Supply the underlying in exchange of hTokens.
+    console.log("Supply the underlying to mint hTokens.");
     const hTokenFactory: HToken__factory = new HToken__factory(signer);
     const hToken: HToken = <HToken>hTokenFactory.attach(hTokenAddress);
-    const supplyUnderlyingTx = await hToken.supplyUnderlying(supplyUnderlyingAmount);
+    const supplyUnderlyingTx = await hToken.supplyUnderlying(supplyUnderlyingAmount, { gasLimit: 500000 });
     await supplyUnderlyingTx.wait();
 
     // Approve the pool contract to spend underlying if allowance not enough.
+    console.log("Approve the pool contract to spend underlying if allowance not enough.");
     const poolHTokenAllowance: BigNumber = await hToken.allowance(signer.address, hifiPool.address);
     const hTokenAmount: BigNumber = supplyUnderlyingAmount.mul(await hifiPool.underlyingPrecisionScalar());
     if (poolHTokenAllowance.lt(hTokenAmount)) {
@@ -75,7 +83,8 @@ task(TASK_INIT_ADD_LIQUIDITY)
     }
 
     // Sell hTokens to the pool.
-    const sellHTokenTx = await hifiPool.sellHToken(signer.address, hTokenAmount);
+    console.log("Sell hTokens to the pool.");
+    const sellHTokenTx = await hifiPool.sellHToken(signer.address, hTokenAmount, { gasLimit: 500000 });
     await sellHTokenTx.wait();
 
     // Log the tx hashes in the console.
