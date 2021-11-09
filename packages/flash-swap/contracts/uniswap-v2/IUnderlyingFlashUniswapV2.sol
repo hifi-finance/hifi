@@ -14,14 +14,14 @@ interface IUnderlyingFlashUniswapV2 is IUniswapV2Callee {
     /// EVENTS ///
 
     event FlashSwapUnderlyingAndLiquidateBorrow(
-        address indexed liquidator,
+        address indexed subsidizer,
         address indexed borrower,
         address indexed bond,
         uint256 underlyingAmount,
-        uint256 seizedUnderlyingAmount,
+        uint256 seizeUnderlyingAmount,
         uint256 repayUnderlyingAmount,
-        uint256 profitUnderlyingAmount,
-        uint256 subsidizedUnderlyingAmount
+        uint256 subsidyUnderlyingAmount,
+        uint256 profitUnderlyingAmount
     );
 
     /// CONSTANT FUNCTIONS ///

@@ -1,6 +1,6 @@
 export enum CollateralFlashUniswapV2Errors {
   CallNotAuthorized = "CollateralFlashUniswapV2__CallNotAuthorized",
-  InsufficientProfit = "CollateralFlashUniswapV2__InsufficientProfit",
+  TurnoutNotSatisfied = "CollateralFlashUniswapV2__TurnoutNotSatisfied",
 }
 
 export enum FlashUtilsErrors {

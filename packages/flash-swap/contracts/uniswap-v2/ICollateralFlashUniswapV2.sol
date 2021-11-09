@@ -18,7 +18,9 @@ interface ICollateralFlashUniswapV2 is IUniswapV2Callee {
         address indexed borrower,
         address indexed bond,
         uint256 underlyingAmount,
-        uint256 seizedCollateralAmount,
+        uint256 seizeCollateralAmount,
+        uint256 repayCollateralAmount,
+        uint256 subsidyCollateralAmount,
         uint256 profitCollateralAmount
     );
 

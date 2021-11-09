@@ -90,14 +90,14 @@ export type FlashSwapUnderlyingAndLiquidateBorrowEvent = TypedEvent<
     BigNumber,
     BigNumber
   ] & {
-    liquidator: string;
+    subsidizer: string;
     borrower: string;
     bond: string;
     underlyingAmount: BigNumber;
-    seizedUnderlyingAmount: BigNumber;
+    seizeUnderlyingAmount: BigNumber;
     repayUnderlyingAmount: BigNumber;
+    subsidyUnderlyingAmount: BigNumber;
     profitUnderlyingAmount: BigNumber;
-    subsidizedUnderlyingAmount: BigNumber;
   }
 >;
 
@@ -207,14 +207,14 @@ export class IUnderlyingFlashUniswapV2 extends BaseContract {
 
   filters: {
     "FlashSwapUnderlyingAndLiquidateBorrow(address,address,address,uint256,uint256,uint256,uint256,uint256)"(
-      liquidator?: string | null,
+      subsidizer?: string | null,
       borrower?: string | null,
       bond?: string | null,
       underlyingAmount?: null,
-      seizedUnderlyingAmount?: null,
+      seizeUnderlyingAmount?: null,
       repayUnderlyingAmount?: null,
-      profitUnderlyingAmount?: null,
-      subsidizedUnderlyingAmount?: null
+      subsidyUnderlyingAmount?: null,
+      profitUnderlyingAmount?: null
     ): TypedEventFilter<
       [
         string,
@@ -227,26 +227,26 @@ export class IUnderlyingFlashUniswapV2 extends BaseContract {
         BigNumber
       ],
       {
-        liquidator: string;
+        subsidizer: string;
         borrower: string;
         bond: string;
         underlyingAmount: BigNumber;
-        seizedUnderlyingAmount: BigNumber;
+        seizeUnderlyingAmount: BigNumber;
         repayUnderlyingAmount: BigNumber;
+        subsidyUnderlyingAmount: BigNumber;
         profitUnderlyingAmount: BigNumber;
-        subsidizedUnderlyingAmount: BigNumber;
       }
     >;
 
     FlashSwapUnderlyingAndLiquidateBorrow(
-      liquidator?: string | null,
+      subsidizer?: string | null,
       borrower?: string | null,
       bond?: string | null,
       underlyingAmount?: null,
-      seizedUnderlyingAmount?: null,
+      seizeUnderlyingAmount?: null,
       repayUnderlyingAmount?: null,
-      profitUnderlyingAmount?: null,
-      subsidizedUnderlyingAmount?: null
+      subsidyUnderlyingAmount?: null,
+      profitUnderlyingAmount?: null
     ): TypedEventFilter<
       [
         string,
@@ -259,14 +259,14 @@ export class IUnderlyingFlashUniswapV2 extends BaseContract {
         BigNumber
       ],
       {
-        liquidator: string;
+        subsidizer: string;
         borrower: string;
         bond: string;
         underlyingAmount: BigNumber;
-        seizedUnderlyingAmount: BigNumber;
+        seizeUnderlyingAmount: BigNumber;
         repayUnderlyingAmount: BigNumber;
+        subsidyUnderlyingAmount: BigNumber;
         profitUnderlyingAmount: BigNumber;
-        subsidizedUnderlyingAmount: BigNumber;
       }
     >;
   };

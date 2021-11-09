@@ -52,8 +52,8 @@ async function collateralFlashSwap() {
 
   const borrower = "0x...";
   const hToken = "0x...";
-  const minProfit = parseUnits("1", 18);
-  const data = defaultAbiCoder.encode(["address", "address", "uint256"], [borrower, hToken, minProfit]);
+  const turnout = parseUnits("1", 18);
+  const data = defaultAbiCoder.encode(["address", "address", "uint256"], [borrower, hToken, turnout]);
 
   await pair.swap(token0Amount, token1Amount, to, data);
 }

@@ -67,9 +67,8 @@ contract UnderlyingFlashUniswapV2 is IUnderlyingFlashUniswapV2 {
         IErc20 otherToken;
         uint256 profitUnderlyingAmount;
         uint256 repayUnderlyingAmount;
-        uint256 seizedUnderlyingAmount;
-        uint256 subsidizedUnderlyingAmount;
-        address subsidizer;
+        uint256 seizeUnderlyingAmount;
+        uint256 subsidyUnderlyingAmount;
         IErc20 underlying;
         uint256 underlyingAmount;
     }
@@ -84,7 +83,7 @@ contract UnderlyingFlashUniswapV2 is IUnderlyingFlashUniswapV2 {
         UniswapV2CallLocalVars memory vars;
 
         // Unpack the ABI encoded data passed by the UniswapV2Pair contract.
-        (vars.borrower, vars.bond, vars.subsidizer) = abi.decode(data, (address, IHToken, address));
+        (vars.borrower, vars.bond) = abi.decode(data, (address, IHToken));
 
         // Figure out which token is the collateral and which token is the underlying.
         vars.underlying = vars.bond.underlying();
@@ -105,7 +104,7 @@ contract UnderlyingFlashUniswapV2 is IUnderlyingFlashUniswapV2 {
 
         // Mint hTokens and liquidate the borrower.
         vars.mintedHTokenAmount = FlashUtils.mintHTokensInternal(vars.bond, vars.underlyingAmount);
-        vars.seizedUnderlyingAmount = FlashUtils.liquidateBorrowInternal(
+        vars.seizeUnderlyingAmount = FlashUtils.liquidateBorrowInternal(
             balanceSheet,
             vars.borrower,
             vars.bond,
@@ -116,17 +115,17 @@ contract UnderlyingFlashUniswapV2 is IUnderlyingFlashUniswapV2 {
         // Calculate the amount of underlying required to repay.
         vars.repayUnderlyingAmount = getRepayUnderlyingAmount(vars.underlyingAmount);
 
-        // When the liquidation incentive is zero, there is no incentive to liquidate underlying-backed vaults post
-        // bond maturation. The flash swap fee must be subsidized when the repay underlying amount is greater than
-        // the seized underlying amount.
-        if (vars.repayUnderlyingAmount > vars.seizedUnderlyingAmount) {
+        // Transfer the subsidy collateral amount.
+        if (vars.repayUnderlyingAmount > vars.seizeUnderlyingAmount) {
             unchecked {
-                vars.subsidizedUnderlyingAmount = vars.repayUnderlyingAmount - vars.seizedUnderlyingAmount;
+                vars.subsidyUnderlyingAmount = vars.repayUnderlyingAmount - vars.seizeUnderlyingAmount;
             }
-            vars.underlying.safeTransferFrom(vars.subsidizer, address(this), vars.subsidizedUnderlyingAmount);
-        } else if (vars.seizedUnderlyingAmount > vars.repayUnderlyingAmount) {
+            vars.underlying.safeTransferFrom(sender, address(this), vars.subsidyUnderlyingAmount);
+        }
+        // Reap the profit.
+        else if (vars.seizeUnderlyingAmount > vars.repayUnderlyingAmount) {
             unchecked {
-                vars.profitUnderlyingAmount = vars.seizedUnderlyingAmount - vars.repayUnderlyingAmount;
+                vars.profitUnderlyingAmount = vars.seizeUnderlyingAmount - vars.repayUnderlyingAmount;
             }
             vars.underlying.safeTransfer(sender, vars.profitUnderlyingAmount);
         }
@@ -140,9 +139,9 @@ contract UnderlyingFlashUniswapV2 is IUnderlyingFlashUniswapV2 {
             vars.borrower,
             address(vars.bond),
             vars.underlyingAmount,
-            vars.seizedUnderlyingAmount,
+            vars.seizeUnderlyingAmount,
             vars.repayUnderlyingAmount,
-            vars.subsidizedUnderlyingAmount,
+            vars.subsidyUnderlyingAmount,
             vars.profitUnderlyingAmount
         );
     }

@@ -14,11 +14,12 @@ import "./IUniswapV2Pair.sol";
 /// @notice Emitted when the caller is not the Uniswap V2 pair contract.
 error CollateralFlashUniswapV2__CallNotAuthorized(address caller);
 
-/// @notice Emitted when the liquidation does not yield a sufficient profit.
-error CollateralFlashUniswapV2__InsufficientProfit(
-    uint256 seizedCollateralAmount,
+/// @notice Emitted when the liquidation either does not yield a sufficient profit or it costs more
+/// than what the subsidizer is willing to pay.
+error CollateralFlashUniswapV2__TurnoutNotSatisfied(
+    uint256 seizeCollateralAmount,
     uint256 repayCollateralAmount,
-    uint256 minProfit
+    int256 turnout
 );
 
 /// @title CollateralFlashUniswapV2
@@ -81,11 +82,12 @@ contract CollateralFlashUniswapV2 is ICollateralFlashUniswapV2 {
         IHToken bond;
         address borrower;
         IErc20 collateral;
-        uint256 minProfit;
         uint256 mintedHTokenAmount;
         uint256 profitCollateralAmount;
         uint256 repayCollateralAmount;
-        uint256 seizedCollateralAmount;
+        uint256 seizeCollateralAmount;
+        uint256 subsidyCollateralAmount;
+        int256 turnout;
         IErc20 underlying;
         uint256 underlyingAmount;
     }
@@ -100,7 +102,7 @@ contract CollateralFlashUniswapV2 is ICollateralFlashUniswapV2 {
         UniswapV2CallLocalVars memory vars;
 
         // Unpack the ABI encoded data passed by the UniswapV2Pair contract.
-        (vars.borrower, vars.bond, vars.minProfit) = abi.decode(data, (address, IHToken, uint256));
+        (vars.borrower, vars.bond, vars.turnout) = abi.decode(data, (address, IHToken, int256));
 
         // Figure out which token is the collateral and which token is the underlying.
         vars.underlying = vars.bond.underlying();
@@ -121,7 +123,7 @@ contract CollateralFlashUniswapV2 is ICollateralFlashUniswapV2 {
 
         // Mint hTokens and liquidate the borrower.
         vars.mintedHTokenAmount = FlashUtils.mintHTokensInternal(vars.bond, vars.underlyingAmount);
-        vars.seizedCollateralAmount = FlashUtils.liquidateBorrowInternal(
+        vars.seizeCollateralAmount = FlashUtils.liquidateBorrowInternal(
             balanceSheet,
             vars.borrower,
             vars.bond,
@@ -135,20 +137,34 @@ contract CollateralFlashUniswapV2 is ICollateralFlashUniswapV2 {
             vars.underlying,
             vars.underlyingAmount
         );
-        if (vars.seizedCollateralAmount <= vars.repayCollateralAmount + vars.minProfit) {
-            revert CollateralFlashUniswapV2__InsufficientProfit(
-                vars.seizedCollateralAmount,
+
+        // Note that "turnout" is a signed int. When its value is positive, it acts as a minimum profit.
+        // When it is negative, it acts as a maximum subsidy amount.
+        if (int256(vars.seizeCollateralAmount) <= int256(vars.repayCollateralAmount) + vars.turnout) {
+            revert CollateralFlashUniswapV2__TurnoutNotSatisfied(
+                vars.seizeCollateralAmount,
                 vars.repayCollateralAmount,
-                vars.minProfit
+                vars.turnout
             );
+        }
+
+        // Transfer the subsidy collateral amount.
+        if (vars.repayCollateralAmount > vars.seizeCollateralAmount) {
+            unchecked {
+                vars.subsidyCollateralAmount = vars.repayCollateralAmount - vars.seizeCollateralAmount;
+            }
+            vars.collateral.safeTransferFrom(sender, address(this), vars.subsidyCollateralAmount);
+        }
+        // Reap the profit.
+        else if (vars.seizeCollateralAmount > vars.repayCollateralAmount) {
+            unchecked {
+                vars.profitCollateralAmount = vars.seizeCollateralAmount - vars.repayCollateralAmount;
+            }
+            vars.collateral.safeTransfer(sender, vars.profitCollateralAmount);
         }
 
         // Pay back the loan.
         vars.collateral.safeTransfer(msg.sender, vars.repayCollateralAmount);
-
-        // Reap the profit.
-        vars.profitCollateralAmount = vars.seizedCollateralAmount - vars.repayCollateralAmount;
-        vars.collateral.safeTransfer(sender, vars.profitCollateralAmount);
 
         // Emit an event.
         emit FlashSwapCollateralAndLiquidateBorrow(
@@ -156,7 +172,9 @@ contract CollateralFlashUniswapV2 is ICollateralFlashUniswapV2 {
             vars.borrower,
             address(vars.bond),
             vars.underlyingAmount,
-            vars.seizedCollateralAmount,
+            vars.seizeCollateralAmount,
+            vars.repayCollateralAmount,
+            vars.subsidyCollateralAmount,
             vars.profitCollateralAmount
         );
     }

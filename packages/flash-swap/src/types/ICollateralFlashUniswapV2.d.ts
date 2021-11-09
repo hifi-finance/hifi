@@ -71,7 +71,7 @@ interface ICollateralFlashUniswapV2Interface extends ethers.utils.Interface {
   ): Result;
 
   events: {
-    "FlashSwapCollateralAndLiquidateBorrow(address,address,address,uint256,uint256,uint256)": EventFragment;
+    "FlashSwapCollateralAndLiquidateBorrow(address,address,address,uint256,uint256,uint256,uint256,uint256)": EventFragment;
   };
 
   getEvent(
@@ -80,12 +80,23 @@ interface ICollateralFlashUniswapV2Interface extends ethers.utils.Interface {
 }
 
 export type FlashSwapCollateralAndLiquidateBorrowEvent = TypedEvent<
-  [string, string, string, BigNumber, BigNumber, BigNumber] & {
+  [
+    string,
+    string,
+    string,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber,
+    BigNumber
+  ] & {
     liquidator: string;
     borrower: string;
     bond: string;
     underlyingAmount: BigNumber;
-    seizedCollateralAmount: BigNumber;
+    seizeCollateralAmount: BigNumber;
+    repayCollateralAmount: BigNumber;
+    subsidyCollateralAmount: BigNumber;
     profitCollateralAmount: BigNumber;
   }
 >;
@@ -201,21 +212,34 @@ export class ICollateralFlashUniswapV2 extends BaseContract {
   };
 
   filters: {
-    "FlashSwapCollateralAndLiquidateBorrow(address,address,address,uint256,uint256,uint256)"(
+    "FlashSwapCollateralAndLiquidateBorrow(address,address,address,uint256,uint256,uint256,uint256,uint256)"(
       liquidator?: string | null,
       borrower?: string | null,
       bond?: string | null,
       underlyingAmount?: null,
-      seizedCollateralAmount?: null,
+      seizeCollateralAmount?: null,
+      repayCollateralAmount?: null,
+      subsidyCollateralAmount?: null,
       profitCollateralAmount?: null
     ): TypedEventFilter<
-      [string, string, string, BigNumber, BigNumber, BigNumber],
+      [
+        string,
+        string,
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber
+      ],
       {
         liquidator: string;
         borrower: string;
         bond: string;
         underlyingAmount: BigNumber;
-        seizedCollateralAmount: BigNumber;
+        seizeCollateralAmount: BigNumber;
+        repayCollateralAmount: BigNumber;
+        subsidyCollateralAmount: BigNumber;
         profitCollateralAmount: BigNumber;
       }
     >;
@@ -225,16 +249,29 @@ export class ICollateralFlashUniswapV2 extends BaseContract {
       borrower?: string | null,
       bond?: string | null,
       underlyingAmount?: null,
-      seizedCollateralAmount?: null,
+      seizeCollateralAmount?: null,
+      repayCollateralAmount?: null,
+      subsidyCollateralAmount?: null,
       profitCollateralAmount?: null
     ): TypedEventFilter<
-      [string, string, string, BigNumber, BigNumber, BigNumber],
+      [
+        string,
+        string,
+        string,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber,
+        BigNumber
+      ],
       {
         liquidator: string;
         borrower: string;
         bond: string;
         underlyingAmount: BigNumber;
-        seizedCollateralAmount: BigNumber;
+        seizeCollateralAmount: BigNumber;
+        repayCollateralAmount: BigNumber;
+        subsidyCollateralAmount: BigNumber;
         profitCollateralAmount: BigNumber;
       }
     >;

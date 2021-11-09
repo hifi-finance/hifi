@@ -89,7 +89,7 @@ library FlashUtils {
         IHToken bond,
         IErc20 collateral,
         uint256 mintedHTokenAmount
-    ) internal returns (uint256 seizedCollateralAmount) {
+    ) internal returns (uint256 seizeCollateralAmount) {
         uint256 collateralAmount = balanceSheet.getCollateralAmount(borrower, collateral);
         uint256 hypotheticalRepayAmount = balanceSheet.getRepayAmount(collateral, collateralAmount, bond);
 
@@ -108,7 +108,7 @@ library FlashUtils {
         balanceSheet.liquidateBorrow(borrower, bond, truncatedRepayAmount, collateral);
         uint256 newCollateralBalance = collateral.balanceOf(address(this));
         unchecked {
-            seizedCollateralAmount = newCollateralBalance - oldCollateralBalance;
+            seizeCollateralAmount = newCollateralBalance - oldCollateralBalance;
         }
     }
 
