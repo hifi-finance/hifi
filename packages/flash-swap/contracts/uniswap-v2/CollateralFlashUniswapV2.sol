@@ -14,22 +14,11 @@ import "./IUniswapV2Pair.sol";
 /// @notice Emitted when the caller is not the Uniswap V2 pair contract.
 error CollateralFlashUniswapV2__CallNotAuthorized(address caller);
 
-/// @notice Emitted when the flash borrowed asset is the collateral instead of the underlying.
-error CollateralFlashUniswapV2__FlashBorrowCollateral();
-
 /// @notice Emitted when the liquidation does not yield a sufficient profit.
 error CollateralFlashUniswapV2__InsufficientProfit(
     uint256 seizedCollateralAmount,
     uint256 repayCollateralAmount,
     uint256 minProfit
-);
-
-/// @notice Emitted when neither the token0 nor the token1 is the underlying.
-error CollateralFlashUniswapV2__UnderlyingNotInPool(
-    IUniswapV2Pair pair,
-    address token0,
-    address token1,
-    IErc20 underlying
 );
 
 /// @title CollateralFlashUniswapV2
@@ -60,32 +49,6 @@ contract CollateralFlashUniswapV2 is ICollateralFlashUniswapV2 {
     }
 
     /// PUBLIC CONSTANT FUNCTIONS ////
-
-    /// @inheritdoc ICollateralFlashUniswapV2
-    function getCollateralAndUnderlyingAmount(
-        IUniswapV2Pair pair,
-        uint256 amount0,
-        uint256 amount1,
-        IErc20 underlying
-    ) public view override returns (IErc20 collateral, uint256 underlyingAmount) {
-        address token0 = pair.token0();
-        address token1 = pair.token1();
-        if (token0 == address(underlying)) {
-            if (amount1 > 0) {
-                revert CollateralFlashUniswapV2__FlashBorrowCollateral();
-            }
-            collateral = IErc20(token1);
-            underlyingAmount = amount0;
-        } else if (token1 == address(underlying)) {
-            if (amount0 > 0) {
-                revert CollateralFlashUniswapV2__FlashBorrowCollateral();
-            }
-            collateral = IErc20(token0);
-            underlyingAmount = amount1;
-        } else {
-            revert CollateralFlashUniswapV2__UnderlyingNotInPool(pair, token0, token1, underlying);
-        }
-    }
 
     /// @inheritdoc ICollateralFlashUniswapV2
     function getRepayCollateralAmount(
@@ -141,7 +104,7 @@ contract CollateralFlashUniswapV2 is ICollateralFlashUniswapV2 {
 
         // Figure out which token is the collateral and which token is the underlying.
         vars.underlying = vars.bond.underlying();
-        (vars.collateral, vars.underlyingAmount) = getCollateralAndUnderlyingAmount(
+        (vars.collateral, vars.underlyingAmount) = FlashUtils.getOtherTokenAndUnderlyingAmount(
             IUniswapV2Pair(msg.sender),
             amount0,
             amount1,

@@ -29,27 +29,6 @@ interface IUnderlyingFlashUniswapV2 is IUniswapV2Callee {
     /// @notice The unique BalanceSheet contract associated with this contract.
     function balanceSheet() external view returns (IBalanceSheetV1);
 
-    /// @notice Compares the token addresses to find the other token and the underlying amount.
-    /// @dev See this StackExchange post: https://ethereum.stackexchange.com/q/102670/24693.
-    ///
-    /// Requirements:
-    ///
-    /// - The amount of non-underlying flash borrowed must be zero.
-    /// - The underlying must be one of the pair's tokens.
-    ///
-    /// @param pair The Uniswap V2 pair contract.
-    /// @param amount0 The amount of token0.
-    /// @param amount1 The amount of token1.
-    /// @param underlying The address of the underlying contract.
-    /// @return otherToken The address of the other token contract.
-    /// @return underlyingAmount The amount of underlying flash borrowed.
-    function getOtherTokenAndUnderlyingAmount(
-        IUniswapV2Pair pair,
-        uint256 amount0,
-        uint256 amount1,
-        IErc20 underlying
-    ) external view returns (IErc20 otherToken, uint256 underlyingAmount);
-
     /// @notice Calculates the amount of underlying that must be repaid to Uniswap. The formula applied is:
     ///
     ///                         underlyingAmount * 1000

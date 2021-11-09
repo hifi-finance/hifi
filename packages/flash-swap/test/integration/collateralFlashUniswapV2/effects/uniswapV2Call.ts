@@ -2,7 +2,7 @@ import { defaultAbiCoder } from "@ethersproject/abi";
 import { BigNumber } from "@ethersproject/bignumber";
 import { MaxUint256, Zero } from "@ethersproject/constants";
 import { LIQUIDATION_INCENTIVES } from "@hifi/constants";
-import { BalanceSheetErrors, CollateralFlashUniswapV2Errors } from "@hifi/errors";
+import { BalanceSheetErrors, CollateralFlashUniswapV2Errors, FlashUtilsErrors } from "@hifi/errors";
 import { USDC, WBTC, hUSDC, price } from "@hifi/helpers";
 import { expect } from "chai";
 
@@ -156,7 +156,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
           const to: string = this.contracts.collateralFlashUniswapV2.address;
           await expect(
             this.contracts.uniswapV2Pair.connect(this.signers.raider).swap(token0Amount, token1Amount, to, data),
-          ).to.be.revertedWith(CollateralFlashUniswapV2Errors.UnderlyingNotInPool);
+          ).to.be.revertedWith(FlashUtilsErrors.UnderlyingNotInPool);
         });
       });
 
@@ -167,7 +167,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
             const to: string = this.contracts.collateralFlashUniswapV2.address;
             await expect(
               this.contracts.uniswapV2Pair.connect(this.signers.raider).swap(token0Amount, token1Amount, to, data),
-            ).to.be.revertedWith(CollateralFlashUniswapV2Errors.FlashBorrowCollateral);
+            ).to.be.revertedWith(FlashUtilsErrors.FlashBorrowOtherToken);
           });
         });
 

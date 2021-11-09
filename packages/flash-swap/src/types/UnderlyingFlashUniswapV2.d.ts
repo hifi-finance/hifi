@@ -22,7 +22,6 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 interface UnderlyingFlashUniswapV2Interface extends ethers.utils.Interface {
   functions: {
     "balanceSheet()": FunctionFragment;
-    "getOtherTokenAndUnderlyingAmount(address,uint256,uint256,address)": FunctionFragment;
     "getRepayUnderlyingAmount(uint256)": FunctionFragment;
     "uniV2Factory()": FunctionFragment;
     "uniV2PairInitCodeHash()": FunctionFragment;
@@ -32,10 +31,6 @@ interface UnderlyingFlashUniswapV2Interface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "balanceSheet",
     values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getOtherTokenAndUnderlyingAmount",
-    values: [string, BigNumberish, BigNumberish, string]
   ): string;
   encodeFunctionData(
     functionFragment: "getRepayUnderlyingAmount",
@@ -56,10 +51,6 @@ interface UnderlyingFlashUniswapV2Interface extends ethers.utils.Interface {
 
   decodeFunctionResult(
     functionFragment: "balanceSheet",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getOtherTokenAndUnderlyingAmount",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -156,16 +147,6 @@ export class UnderlyingFlashUniswapV2 extends BaseContract {
   functions: {
     balanceSheet(overrides?: CallOverrides): Promise<[string]>;
 
-    getOtherTokenAndUnderlyingAmount(
-      pair: string,
-      amount0: BigNumberish,
-      amount1: BigNumberish,
-      underlying: string,
-      overrides?: CallOverrides
-    ): Promise<
-      [string, BigNumber] & { otherToken: string; underlyingAmount: BigNumber }
-    >;
-
     getRepayUnderlyingAmount(
       underlyingAmount: BigNumberish,
       overrides?: CallOverrides
@@ -186,16 +167,6 @@ export class UnderlyingFlashUniswapV2 extends BaseContract {
 
   balanceSheet(overrides?: CallOverrides): Promise<string>;
 
-  getOtherTokenAndUnderlyingAmount(
-    pair: string,
-    amount0: BigNumberish,
-    amount1: BigNumberish,
-    underlying: string,
-    overrides?: CallOverrides
-  ): Promise<
-    [string, BigNumber] & { otherToken: string; underlyingAmount: BigNumber }
-  >;
-
   getRepayUnderlyingAmount(
     underlyingAmount: BigNumberish,
     overrides?: CallOverrides
@@ -215,16 +186,6 @@ export class UnderlyingFlashUniswapV2 extends BaseContract {
 
   callStatic: {
     balanceSheet(overrides?: CallOverrides): Promise<string>;
-
-    getOtherTokenAndUnderlyingAmount(
-      pair: string,
-      amount0: BigNumberish,
-      amount1: BigNumberish,
-      underlying: string,
-      overrides?: CallOverrides
-    ): Promise<
-      [string, BigNumber] & { otherToken: string; underlyingAmount: BigNumber }
-    >;
 
     getRepayUnderlyingAmount(
       underlyingAmount: BigNumberish,
@@ -313,14 +274,6 @@ export class UnderlyingFlashUniswapV2 extends BaseContract {
   estimateGas: {
     balanceSheet(overrides?: CallOverrides): Promise<BigNumber>;
 
-    getOtherTokenAndUnderlyingAmount(
-      pair: string,
-      amount0: BigNumberish,
-      amount1: BigNumberish,
-      underlying: string,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     getRepayUnderlyingAmount(
       underlyingAmount: BigNumberish,
       overrides?: CallOverrides
@@ -341,14 +294,6 @@ export class UnderlyingFlashUniswapV2 extends BaseContract {
 
   populateTransaction: {
     balanceSheet(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    getOtherTokenAndUnderlyingAmount(
-      pair: string,
-      amount0: BigNumberish,
-      amount1: BigNumberish,
-      underlying: string,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
 
     getRepayUnderlyingAmount(
       underlyingAmount: BigNumberish,

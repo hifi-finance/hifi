@@ -5,6 +5,17 @@ import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@hifi/protocol/contracts/core/balanceSheet/IBalanceSheetV1.sol";
 import "@hifi/protocol/contracts/core/hToken/IHToken.sol";
 
+import "./IUniswapV2Pair.sol";
+
+/// @notice Emitted when the caller is not the Uniswap V2 pair contract.
+error FlashUtils__CallNotAuthorized(address caller);
+
+/// @notice Emitted when the flash borrowed asset is the other token in the pair instead of the underlying.
+error FlashUtils__FlashBorrowOtherToken();
+
+/// @notice Emitted when neither the token0 nor the token1 is the underlying.
+error FlashUtils__UnderlyingNotInPool(IUniswapV2Pair pair, address token0, address token1, IErc20 underlying);
+
 /// @title FlashUtils
 /// @author Hifi
 library FlashUtils {
@@ -30,6 +41,45 @@ library FlashUtils {
                 )
             )
         );
+    }
+
+    /// @notice Compares the token addresses to find the other token and the underlying amount.
+    /// @dev See this StackExchange post: https://ethereum.stackexchange.com/q/102670/24693.
+    ///
+    /// Requirements:
+    ///
+    /// - The amount of non-underlying flash borrowed must be zero.
+    /// - The underlying must be one of the pair's tokens.
+    ///
+    /// @param pair The Uniswap V2 pair contract.
+    /// @param amount0 The amount of token0.
+    /// @param amount1 The amount of token1.
+    /// @param underlying The address of the underlying contract.
+    /// @return otherToken The address of the other token contract.
+    /// @return underlyingAmount The amount of underlying flash borrowed.
+    function getOtherTokenAndUnderlyingAmount(
+        IUniswapV2Pair pair,
+        uint256 amount0,
+        uint256 amount1,
+        IErc20 underlying
+    ) internal view returns (IErc20 otherToken, uint256 underlyingAmount) {
+        address token0 = pair.token0();
+        address token1 = pair.token1();
+        if (token0 == address(underlying)) {
+            if (amount1 > 0) {
+                revert FlashUtils__FlashBorrowOtherToken();
+            }
+            otherToken = IErc20(token1);
+            underlyingAmount = amount0;
+        } else if (token1 == address(underlying)) {
+            if (amount0 > 0) {
+                revert FlashUtils__FlashBorrowOtherToken();
+            }
+            otherToken = IErc20(token0);
+            underlyingAmount = amount1;
+        } else {
+            revert FlashUtils__UnderlyingNotInPool(pair, token0, token1, underlying);
+        }
     }
 
     /// @dev Liquidates the borrower, receiving collateral at a discount.

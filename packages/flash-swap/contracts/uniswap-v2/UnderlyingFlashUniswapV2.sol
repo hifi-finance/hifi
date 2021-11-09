@@ -9,21 +9,9 @@ import "@hifi/protocol/contracts/core/hToken/IHToken.sol";
 
 import "./FlashUtils.sol";
 import "./IUnderlyingFlashUniswapV2.sol";
-import "./IUniswapV2Pair.sol";
 
 /// @notice Emitted when the caller is not the Uniswap V2 pair contract.
 error UnderlyingFlashUniswapV2__CallNotAuthorized(address caller);
-
-/// @notice Emitted when the flash borrowed asset is the other token in the pair instead of the underlying.
-error UnderlyingFlashUniswapV2__FlashBorrowOtherToken();
-
-/// @notice Emitted when neither the token0 nor the token1 is the underlying.
-error UnderlyingFlashUniswapV2__UnderlyingNotInPool(
-    IUniswapV2Pair pair,
-    address token0,
-    address token1,
-    IErc20 underlying
-);
 
 /// @title UnderlyingFlashUniswapV2
 /// @author Hifi
@@ -53,32 +41,6 @@ contract UnderlyingFlashUniswapV2 is IUnderlyingFlashUniswapV2 {
     }
 
     /// PUBLIC CONSTANT FUNCTIONS ////
-
-    /// @inheritdoc IUnderlyingFlashUniswapV2
-    function getOtherTokenAndUnderlyingAmount(
-        IUniswapV2Pair pair,
-        uint256 amount0,
-        uint256 amount1,
-        IErc20 underlying
-    ) public view override returns (IErc20 otherToken, uint256 underlyingAmount) {
-        address token0 = pair.token0();
-        address token1 = pair.token1();
-        if (token0 == address(underlying)) {
-            if (amount1 > 0) {
-                revert UnderlyingFlashUniswapV2__FlashBorrowOtherToken();
-            }
-            otherToken = IErc20(token1);
-            underlyingAmount = amount0;
-        } else if (token1 == address(underlying)) {
-            if (amount0 > 0) {
-                revert UnderlyingFlashUniswapV2__FlashBorrowOtherToken();
-            }
-            otherToken = IErc20(token0);
-            underlyingAmount = amount1;
-        } else {
-            revert UnderlyingFlashUniswapV2__UnderlyingNotInPool(pair, token0, token1, underlying);
-        }
-    }
 
     /// @inheritdoc IUnderlyingFlashUniswapV2
     function getRepayUnderlyingAmount(uint256 underlyingAmount)
@@ -126,7 +88,7 @@ contract UnderlyingFlashUniswapV2 is IUnderlyingFlashUniswapV2 {
 
         // Figure out which token is the collateral and which token is the underlying.
         vars.underlying = vars.bond.underlying();
-        (vars.otherToken, vars.underlyingAmount) = getOtherTokenAndUnderlyingAmount(
+        (vars.otherToken, vars.underlyingAmount) = FlashUtils.getOtherTokenAndUnderlyingAmount(
             IUniswapV2Pair(msg.sender),
             amount0,
             amount1,
