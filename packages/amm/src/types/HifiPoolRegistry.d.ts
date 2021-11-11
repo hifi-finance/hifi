@@ -23,6 +23,7 @@ interface HifiPoolRegistryInterface extends ethers.utils.Interface {
   functions: {
     "_renounceOwnership()": FunctionFragment;
     "_transferOwnership(address)": FunctionFragment;
+    "c_0xca80f441(bytes32)": FunctionFragment;
     "owner()": FunctionFragment;
     "pools(address)": FunctionFragment;
     "trackPool(address)": FunctionFragment;
@@ -37,6 +38,10 @@ interface HifiPoolRegistryInterface extends ethers.utils.Interface {
     functionFragment: "_transferOwnership",
     values: [string]
   ): string;
+  encodeFunctionData(
+    functionFragment: "c_0xca80f441",
+    values: [BytesLike]
+  ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(functionFragment: "pools", values: [string]): string;
   encodeFunctionData(functionFragment: "trackPool", values: [string]): string;
@@ -48,6 +53,10 @@ interface HifiPoolRegistryInterface extends ethers.utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "_transferOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "c_0xca80f441",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
@@ -130,6 +139,11 @@ export class HifiPoolRegistry extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    c_0xca80f441(
+      c__0xca80f441: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[void]>;
+
     owner(overrides?: CallOverrides): Promise<[string]>;
 
     pools(arg0: string, overrides?: CallOverrides): Promise<[boolean]>;
@@ -154,6 +168,11 @@ export class HifiPoolRegistry extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  c_0xca80f441(
+    c__0xca80f441: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<void>;
+
   owner(overrides?: CallOverrides): Promise<string>;
 
   pools(arg0: string, overrides?: CallOverrides): Promise<boolean>;
@@ -173,6 +192,11 @@ export class HifiPoolRegistry extends BaseContract {
 
     _transferOwnership(
       newOwner: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    c_0xca80f441(
+      c__0xca80f441: BytesLike,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -229,6 +253,11 @@ export class HifiPoolRegistry extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    c_0xca80f441(
+      c__0xca80f441: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
     pools(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
@@ -252,6 +281,11 @@ export class HifiPoolRegistry extends BaseContract {
     _transferOwnership(
       newOwner: string,
       overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    c_0xca80f441(
+      c__0xca80f441: BytesLike,
+      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;

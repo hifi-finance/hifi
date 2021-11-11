@@ -1,5 +1,5 @@
 import * as core from "@actions/core";
-import type { CollateralFlashUniswapV2 } from "@hifi/flash-swap/dist/types/CollateralFlashUniswapV2";
+import type { FlashUniswapV2 } from "@hifi/flash-swap/dist/types/FlashUniswapV2";
 import { CollateralFlashUniswapV2__factory } from "@hifi/flash-swap/dist/types/factories/CollateralFlashUniswapV2__factory";
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
@@ -24,7 +24,7 @@ task(TASK_DEPLOY_CONTRACT_COLLATERAL_FLASH_UNISWAP_V2)
     const collateralFlashUniswapV2Factory: CollateralFlashUniswapV2__factory = new CollateralFlashUniswapV2__factory(
       signers[0],
     );
-    const collateralFlashUniswapV2: CollateralFlashUniswapV2 = <CollateralFlashUniswapV2>(
+    const collateralFlashUniswapV2: FlashUniswapV2 = <FlashUniswapV2>(
       await collateralFlashUniswapV2Factory.deploy(
         taskArgs.balanceSheet,
         taskArgs.uniV2Factory,
@@ -38,10 +38,10 @@ task(TASK_DEPLOY_CONTRACT_COLLATERAL_FLASH_UNISWAP_V2)
     });
 
     if (taskArgs.setOutput) {
-      core.setOutput("collateral-flash-uniswap-v2", collateralFlashUniswapV2.address);
+      core.setOutput("flash-uniswap-v2", collateralFlashUniswapV2.address);
     }
     if (taskArgs.printAddress) {
-      console.table([{ name: "CollateralFlashUniswapV2", address: collateralFlashUniswapV2.address }]);
+      console.table([{ name: "FlashUniswapV2", address: collateralFlashUniswapV2.address }]);
     }
 
     return collateralFlashUniswapV2.address;

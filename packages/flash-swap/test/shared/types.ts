@@ -3,7 +3,7 @@ import type { ChainlinkOperator } from "@hifi/protocol/dist/types/ChainlinkOpera
 import type { FintrollerV1 } from "@hifi/protocol/dist/types/FintrollerV1";
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 
-import type { CollateralFlashUniswapV2 } from "../../src/types/CollateralFlashUniswapV2";
+import type { FlashUniswapV2 } from "../../src/types/FlashUniswapV2";
 import type { GodModeErc20 } from "../../src/types/GodModeErc20";
 import type { GodModeHToken } from "../../src/types/GodModeHToken";
 import type { GodModeUniswapV2Pair } from "../../src/types/GodModeUniswapV2Pair";
@@ -20,8 +20,8 @@ declare module "mocha" {
 
 export interface Contracts {
   balanceSheet: BalanceSheetV1;
-  collateralFlashUniswapV2: CollateralFlashUniswapV2;
   fintroller: FintrollerV1;
+  flashUniswapV2: FlashUniswapV2;
   hToken: GodModeHToken;
   maliciousPair: MaliciousPair;
   oracle: ChainlinkOperator;

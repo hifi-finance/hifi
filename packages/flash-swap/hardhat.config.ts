@@ -41,13 +41,12 @@ const config: HardhatUserConfig = {
   packager: {
     contracts: [
       "Erc20",
-      "CollateralFlashUniswapV2",
+      "FlashUniswapV2",
       "ICollateralFlashUniswapV2",
       "IErc20",
-      "IUnderlyingFlashUniswapV2",
+      "IFlashUniswapV2",
       "IUniswapV2Callee",
       "IUniswapV2Pair",
-      "UnderlyingFlashUniswapV2",
       "UniswapV2Pair",
     ],
     includeFactories: true,

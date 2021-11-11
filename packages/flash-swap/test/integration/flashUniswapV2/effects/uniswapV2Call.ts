@@ -2,7 +2,7 @@ import { defaultAbiCoder } from "@ethersproject/abi";
 import { BigNumber } from "@ethersproject/bignumber";
 import { MaxUint256, Zero } from "@ethersproject/constants";
 import { LIQUIDATION_INCENTIVES } from "@hifi/constants";
-import { BalanceSheetErrors, CollateralFlashUniswapV2Errors, FlashUtilsErrors } from "@hifi/errors";
+import { BalanceSheetErrors, FlashUniswapV2Errors } from "@hifi/errors";
 import { USDC, WBTC, hUSDC, price } from "@hifi/helpers";
 import { expect } from "chai";
 
@@ -25,34 +25,37 @@ async function increasePoolReserves(this: Mocha.Context, wbtcAmount: BigNumber, 
 }
 
 function encodeCallData(this: Mocha.Context): string {
-  const types = ["address", "address", "uint256"];
+  const types = ["address", "address", "address", "uint256"];
+  const borrower: string = this.signers.borrower.address;
+  const bond: string = this.contracts.hToken.address;
+  const collateral: string = this.contracts.wbtc.address;
   const turnout: string = String(WBTC("0.001"));
-  const values = [this.signers.borrower.address, this.contracts.hToken.address, turnout];
+  const values = [borrower, bond, collateral, turnout];
   const data: string = defaultAbiCoder.encode(types, values);
   return data;
 }
 
-async function getSeizeAndRepayAndProfitCollateralAmounts(
+async function getSeizeAndRepayAndProfitAmounts(
   this: Mocha.Context,
   repayHTokenAmount: BigNumber,
   swapUnderlyingAmount: BigNumber,
 ): Promise<{
-  expectedProfitCollateralAmount: BigNumber;
-  repayCollateralAmount: BigNumber;
-  seizeCollateralAmount: BigNumber;
+  expectedProfitAmount: BigNumber;
+  repayAmount: BigNumber;
+  seizeAmount: BigNumber;
 }> {
-  const seizeCollateralAmount = await this.contracts.balanceSheet.getSeizableCollateralAmount(
+  const seizeAmount = await this.contracts.balanceSheet.getSeizableCollateralAmount(
     this.contracts.hToken.address,
     repayHTokenAmount,
     this.contracts.wbtc.address,
   );
-  const repayCollateralAmount = await this.contracts.collateralFlashUniswapV2.getRepayCollateralAmount(
+  const repayAmount = await this.contracts.flashUniswapV2.getRepayAmount(
     this.contracts.uniswapV2Pair.address,
     this.contracts.usdc.address,
     swapUnderlyingAmount,
   );
-  const expectedProfitCollateralAmount = seizeCollateralAmount.sub(repayCollateralAmount);
-  return { expectedProfitCollateralAmount, repayCollateralAmount, seizeCollateralAmount };
+  const expectedProfitAmount = seizeAmount.sub(repayAmount);
+  return { expectedProfitAmount, repayAmount, seizeAmount };
 }
 
 async function getTokenAmounts(
@@ -97,7 +100,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
       const token1Amount: BigNumber = Zero;
       const data: string = "0x";
       await expect(
-        this.contracts.collateralFlashUniswapV2
+        this.contracts.flashUniswapV2
           .connect(this.signers.raider)
           .uniswapV2Call(sender, token0Amount, token1Amount, data),
       ).to.be.reverted;
@@ -123,7 +126,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
       context("when the caller is an externally owned account", function () {
         it("reverts", async function () {
           await expect(
-            this.contracts.collateralFlashUniswapV2
+            this.contracts.flashUniswapV2
               .connect(this.signers.raider)
               .uniswapV2Call(sender, token0Amount, token1Amount, data),
           ).to.be.revertedWith("function call to a non-contract account");
@@ -132,10 +135,10 @@ export function shouldBehaveLikeUniswapV2Call(): void {
 
       context("when the caller is a malicious pair", function () {
         it("reverts", async function () {
-          const to: string = this.contracts.collateralFlashUniswapV2.address;
+          const to: string = this.contracts.flashUniswapV2.address;
           await expect(
             this.contracts.maliciousPair.connect(this.signers.raider).swap(token0Amount, token1Amount, to, data),
-          ).to.be.revertedWith(CollateralFlashUniswapV2Errors.CallNotAuthorized);
+          ).to.be.revertedWith(FlashUniswapV2Errors.CallNotAuthorized);
         });
       });
     });
@@ -157,10 +160,10 @@ export function shouldBehaveLikeUniswapV2Call(): void {
           const { token0Amount, token1Amount } = await getTokenAmounts.call(this, Zero, USDC("10000"));
           const foo: GodModeErc20 = await deployGodModeErc20(this.signers.admin, "Foo", "FOO", BigNumber.from(18));
           await this.contracts.hToken.__godMode_setUnderlying(foo.address);
-          const to: string = this.contracts.collateralFlashUniswapV2.address;
+          const to: string = this.contracts.flashUniswapV2.address;
           await expect(
             this.contracts.uniswapV2Pair.connect(this.signers.raider).swap(token0Amount, token1Amount, to, data),
-          ).to.be.revertedWith(FlashUtilsErrors.UnderlyingNotInPool);
+          ).to.be.revertedWith(FlashUniswapV2Errors.UnderlyingNotInPool);
         });
       });
 
@@ -168,10 +171,10 @@ export function shouldBehaveLikeUniswapV2Call(): void {
         context("when collateral is flash borrowed", function () {
           it("reverts", async function () {
             const { token0Amount, token1Amount } = await getTokenAmounts.call(this, WBTC("1"), Zero);
-            const to: string = this.contracts.collateralFlashUniswapV2.address;
+            const to: string = this.contracts.flashUniswapV2.address;
             await expect(
               this.contracts.uniswapV2Pair.connect(this.signers.raider).swap(token0Amount, token1Amount, to, data),
-            ).to.be.revertedWith(FlashUtilsErrors.FlashBorrowOtherToken);
+            ).to.be.revertedWith(FlashUniswapV2Errors.FlashBorrowOtherToken);
           });
         });
 
@@ -231,7 +234,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
 
           context("when the borrower does not have a liquidity shortfall", function () {
             it("reverts", async function () {
-              const to: string = this.contracts.collateralFlashUniswapV2.address;
+              const to: string = this.contracts.flashUniswapV2.address;
               await expect(
                 this.contracts.uniswapV2Pair
                   .connect(this.signers.liquidator)
@@ -240,7 +243,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
             });
           });
 
-          context("when the borrower has a liquidity shortfall", function () {
+          context.only("when the borrower has a liquidity shortfall", function () {
             context(
               "when the price given by the UniswapV2Pair contract price is better than the oracle price",
               function () {
@@ -253,20 +256,20 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                 });
 
                 it("reverts", async function () {
-                  const to: string = this.contracts.collateralFlashUniswapV2.address;
+                  const to: string = this.contracts.flashUniswapV2.address;
                   await expect(
                     this.contracts.uniswapV2Pair
                       .connect(this.signers.liquidator)
                       .swap(token0Amount, token1Amount, to, data),
-                  ).to.be.revertedWith(CollateralFlashUniswapV2Errors.TurnoutNotSatisfied);
+                  ).to.be.revertedWith(FlashUniswapV2Errors.TurnoutNotSatisfied);
                 });
               },
             );
 
             context("when the price given by the UniswapV2Pair contract is the same as the oracle price", function () {
-              let expectedProfitCollateralAmount: BigNumber;
-              let repayCollateralAmount: BigNumber;
-              let seizeCollateralAmount: BigNumber;
+              let expectedProfitAmount: BigNumber;
+              let repayAmount: BigNumber;
+              let seizeAmount: BigNumber;
 
               context("when the collateral ratio is lower than 110%", function () {
                 const repayHTokenAmount: BigNumber = hUSDC("9090.909090909090909090");
@@ -276,24 +279,24 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                   await this.contracts.wbtcPriceFeed.setPrice(price("10000"));
 
                   // Calculate the amounts necessary for running the tests.
-                  const calculatedAmounts = await getSeizeAndRepayAndProfitCollateralAmounts.call(
+                  const calculatedAmounts = await getSeizeAndRepayAndProfitAmounts.call(
                     this,
                     repayHTokenAmount,
                     swapUnderlyingAmount,
                   );
-                  expectedProfitCollateralAmount = calculatedAmounts.expectedProfitCollateralAmount;
-                  repayCollateralAmount = calculatedAmounts.repayCollateralAmount;
-                  seizeCollateralAmount = calculatedAmounts.seizeCollateralAmount;
+                  expectedProfitAmount = calculatedAmounts.expectedProfitAmount;
+                  repayAmount = calculatedAmounts.repayAmount;
+                  seizeAmount = calculatedAmounts.seizeAmount;
                 });
 
                 it("flash swaps USDC via and makes a WBTC profit", async function () {
-                  const to: string = this.contracts.collateralFlashUniswapV2.address;
+                  const to: string = this.contracts.flashUniswapV2.address;
                   const oldCollateralBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
                   await this.contracts.uniswapV2Pair
                     .connect(this.signers.liquidator)
                     .swap(token0Amount, token1Amount, to, data);
                   const newCollateralBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
-                  expect(newCollateralBalance.sub(expectedProfitCollateralAmount)).to.equal(oldCollateralBalance);
+                  expect(newCollateralBalance.sub(expectedProfitAmount)).to.equal(oldCollateralBalance);
                 });
               });
 
@@ -308,14 +311,14 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                   await reducePoolReserves.call(this, Zero, USDC("75e4"));
 
                   // Calculate the amounts necessary for running the tests.
-                  const calculatedAmounts = await getSeizeAndRepayAndProfitCollateralAmounts.call(
+                  const calculatedAmounts = await getSeizeAndRepayAndProfitAmounts.call(
                     this,
                     repayHTokenAmount,
                     swapUnderlyingAmount,
                   );
-                  expectedProfitCollateralAmount = calculatedAmounts.expectedProfitCollateralAmount;
-                  repayCollateralAmount = calculatedAmounts.repayCollateralAmount;
-                  seizeCollateralAmount = calculatedAmounts.seizeCollateralAmount;
+                  expectedProfitAmount = calculatedAmounts.expectedProfitAmount;
+                  repayAmount = calculatedAmounts.repayAmount;
+                  seizeAmount = calculatedAmounts.seizeAmount;
                 });
 
                 context("new order of tokens in the UniswapV2Pair contract", function () {
@@ -339,43 +342,43 @@ export function shouldBehaveLikeUniswapV2Call(): void {
                   });
 
                   it("flash swaps USDC via and makes a WBTC profit", async function () {
-                    const to: string = this.contracts.collateralFlashUniswapV2.address;
+                    const to: string = this.contracts.flashUniswapV2.address;
                     const oldCollateralBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
                     await this.contracts.uniswapV2Pair
                       .connect(this.signers.liquidator)
                       .swap(localToken0Amount, localToken1Amount, to, data);
                     const newCollateralBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
-                    expect(newCollateralBalance.sub(expectedProfitCollateralAmount)).to.equal(oldCollateralBalance);
+                    expect(newCollateralBalance.sub(expectedProfitAmount)).to.equal(oldCollateralBalance);
                   });
                 });
 
                 context("initial order of tokens in the UniswapV2Pair contract", function () {
                   it("flash swaps USDC via and makes a WBTC profit", async function () {
-                    const to: string = this.contracts.collateralFlashUniswapV2.address;
+                    const to: string = this.contracts.flashUniswapV2.address;
                     const oldCollateralBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
                     await this.contracts.uniswapV2Pair
                       .connect(this.signers.liquidator)
                       .swap(token0Amount, token1Amount, to, data);
                     const newCollateralBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
-                    expect(newCollateralBalance.sub(expectedProfitCollateralAmount)).to.equal(oldCollateralBalance);
+                    expect(newCollateralBalance.sub(expectedProfitAmount)).to.equal(oldCollateralBalance);
                   });
 
                   it("emits a FlashSwapCollateralAndLiquidateBorrow event", async function () {
-                    const to: string = this.contracts.collateralFlashUniswapV2.address;
+                    const to: string = this.contracts.flashUniswapV2.address;
                     const contractCall = this.contracts.uniswapV2Pair
                       .connect(this.signers.liquidator)
                       .swap(token0Amount, token1Amount, to, data);
                     await expect(contractCall)
-                      .to.emit(this.contracts.collateralFlashUniswapV2, "FlashSwapCollateralAndLiquidateBorrow")
+                      .to.emit(this.contracts.flashUniswapV2, "FlashSwapCollateralAndLiquidateBorrow")
                       .withArgs(
                         this.signers.liquidator.address,
                         this.signers.borrower.address,
                         this.contracts.hToken.address,
                         swapUnderlyingAmount,
-                        seizeCollateralAmount,
-                        repayCollateralAmount,
+                        seizeAmount,
+                        repayAmount,
                         Zero,
-                        expectedProfitCollateralAmount,
+                        expectedProfitAmount,
                       );
                   });
                 });

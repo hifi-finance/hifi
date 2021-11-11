@@ -28,7 +28,7 @@ themselves; the latter, the smart contract ABIs and the TypeChain bindings.
 
 You are not supposed to import the smart contracts. Instead, you should interact with the Uniswap pool
 directly. For example, with the [UniswapV2Pair](https://github.com/Uniswap/v2-core/blob/v1.0.1/contracts/UniswapV2Pair.sol)
-contract you would call the `swap` function. Then, Uniswap will forward the call to the `CollateralFlashUniswapV2`
+contract you would call the `swap` function. Then, Uniswap will forward the call to the `FlashUniswapV2`
 contract. You can read more about flash swaps work in Uniswap on
 [docs.uniswap.org](https://docs.uniswap.org/protocol/V2/concepts/core-concepts/flash-swaps).
 
@@ -48,7 +48,7 @@ async function collateralFlashSwap() {
 
   const token0Amount = parseUnits("100", 18);
   const token1Amount = parseUnits("0", 18);
-  const to = "0x..."; // Address of CollateralFlashUniswapV2, get it from https://docs.hifi.finance
+  const to = "0x..."; // Address of FlashUniswapV2, get it from https://docs.hifi.finance
 
   const borrower = "0x...";
   const hToken = "0x...";
