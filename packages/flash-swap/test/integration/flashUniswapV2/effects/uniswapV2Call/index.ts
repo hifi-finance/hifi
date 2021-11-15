@@ -8,11 +8,12 @@ import { expect } from "chai";
 import type { GodModeErc20 } from "../../../../../src/types/GodModeErc20";
 import { deployGodModeErc20 } from "../../../../shared/deployers";
 import { increasePoolReserves } from "../../../../shared/helpers";
-import { shouldBehaveLikeUnderlyingCollateral } from "./underlying";
+import { shouldBehaveLikeCollateralFlashSwap } from "./collateral";
+import { shouldBehaveLikeUnderlyingAsCollateralFlashSwap } from "./underlying";
 
 // import { shouldBehaveLikeWbtcAsCollateral } from "./wbtc";
 
-function encodeCallData(this: Mocha.Context): string {
+function getFlashSwapCallData(this: Mocha.Context): string {
   const types = ["address", "address", "address", "uint256"];
   const borrower: string = this.signers.borrower.address;
   const bond: string = this.contracts.hToken.address;
@@ -42,10 +43,10 @@ export function shouldBehaveLikeUniswapV2Call(): void {
     let data: string;
 
     beforeEach(function () {
-      data = encodeCallData.call(this);
+      data = getFlashSwapCallData.call(this);
     });
 
-    context("when the caller is not a UniswapV2Pair contract", function () {
+    context("when the caller is not the UniswapV2Pair contract", function () {
       const swapCollateralAmount: BigNumber = Zero;
       const swapUnderlyingAmount: BigNumber = Zero;
       let sender: string;
@@ -76,7 +77,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
       });
     });
 
-    context("when the caller is a UniswapV2Pair contract", function () {
+    context("when the caller is the UniswapV2Pair contract", function () {
       context("when the underlying is not part of the UniswapV2Pair contract", function () {
         beforeEach(async function () {
           await this.contracts.wbtcPriceFeed.setPrice(price("20000"));
@@ -117,8 +118,12 @@ export function shouldBehaveLikeUniswapV2Call(): void {
         });
 
         context("when underlying is flash borrowed", function () {
+          context("when not the underlying is used as collateral", function () {
+            shouldBehaveLikeCollateralFlashSwap();
+          });
+
           context("when the underlying is used as collateral", function () {
-            shouldBehaveLikeUnderlyingCollateral();
+            shouldBehaveLikeUnderlyingAsCollateralFlashSwap();
           });
         });
       });

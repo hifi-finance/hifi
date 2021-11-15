@@ -1,30 +1,5 @@
 import type { BigNumber } from "@ethersproject/bignumber";
 
-export async function getSeizeAndRepayAndProfitAmounts(
-  this: Mocha.Context,
-  collateral: string,
-  repayHTokenAmount: BigNumber,
-  swapUnderlyingAmount: BigNumber,
-): Promise<{
-  expectedProfitAmount: BigNumber;
-  repayAmount: BigNumber;
-  seizeAmount: BigNumber;
-}> {
-  const seizeAmount = await this.contracts.balanceSheet.getSeizableCollateralAmount(
-    this.contracts.hToken.address,
-    repayHTokenAmount,
-    this.contracts.wbtc.address,
-  );
-  const repayAmount = await this.contracts.flashUniswapV2.getRepayAmount(
-    this.contracts.uniswapV2Pair.address,
-    collateral,
-    this.contracts.usdc.address,
-    swapUnderlyingAmount,
-  );
-  const expectedProfitAmount = seizeAmount.sub(repayAmount);
-  return { expectedProfitAmount, repayAmount, seizeAmount };
-}
-
 export async function increasePoolReserves(
   this: Mocha.Context,
   wbtcAmount: BigNumber,

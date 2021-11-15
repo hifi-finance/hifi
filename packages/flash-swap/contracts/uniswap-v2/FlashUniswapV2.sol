@@ -141,13 +141,14 @@ contract FlashUniswapV2 is IFlashUniswapV2 {
             vars.underlyingAmount
         );
 
-        // Note that "turnout" is a signed int. When its value is positive, it acts as a minimum profit.
-        // When it is negative, it acts as a maximum subsidy amount.
+        // Note that "turnout" is a signed int. When it is negative, it acts as a maximum subsidy amount.
+        // When its value is positive, it acts as a minimum profit.
         if (int256(vars.seizeAmount) < int256(vars.repayAmount) + vars.turnout) {
             revert FlashUniswapV2__TurnoutNotSatisfied(vars.seizeAmount, vars.repayAmount, vars.turnout);
         }
 
         // Transfer the subsidy amount.
+
         if (vars.repayAmount > vars.seizeAmount) {
             unchecked {
                 vars.subsidyAmount = vars.repayAmount - vars.seizeAmount;

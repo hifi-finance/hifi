@@ -1,4 +1,3 @@
-import { MaxInt256 } from "@ethereum-waffle/provider/node_modules/@ethersproject/constants";
 import { defaultAbiCoder } from "@ethersproject/abi";
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
@@ -11,7 +10,7 @@ import { toBn } from "evm-bn";
 
 import { increasePoolReserves } from "../../../../shared/helpers";
 
-function encodeCallData(this: Mocha.Context, turnout: BigNumber): string {
+function getFlashSwapCallData(this: Mocha.Context, turnout: BigNumber): string {
   const types = ["address", "address", "address", "int256"];
   const borrower: string = this.signers.borrower.address;
   const bond: string = this.contracts.hToken.address;
@@ -21,12 +20,13 @@ function encodeCallData(this: Mocha.Context, turnout: BigNumber): string {
   return data;
 }
 
-export function shouldBehaveLikeUnderlyingCollateral(): void {
+export function shouldBehaveLikeUnderlyingAsCollateralFlashSwap(): void {
   const borrowAmount: BigNumber = hUSDC("10000");
   const collateralCeiling: BigNumber = USDC("1e6");
   const debtCeiling: BigNumber = hUSDC("1e6");
   const depositUnderlyingAmount: BigNumber = USDC("10000");
   const repayHTokenAmount: BigNumber = hUSDC("10000");
+  const repayUnderlyingAmount: BigNumber = USDC("10030.090271");
   const subsidyUnderlyingAmount: BigNumber = USDC("30.090271");
   const swapCollateralAmount: BigNumber = Zero;
   const swapUnderlyingAmount: BigNumber = USDC("10000");
@@ -64,14 +64,14 @@ export function shouldBehaveLikeUnderlyingCollateral(): void {
       .connect(this.signers.admin)
       .setDebtCeiling(this.contracts.hToken.address, debtCeiling);
 
-    // Mint USDC and approve the BalanceSheet to spend it.
+    // Mint USDC to the borrower's wallet and approve the BalanceSheet to spend it.
     await this.contracts.usdc.__godMode_mint(this.signers.borrower.address, depositUnderlyingAmount);
     await this.contracts.usdc.connect(this.signers.borrower).approve(this.contracts.balanceSheet.address, MaxUint256);
 
-    // Mint USDC to the subsidizer wallet and approve the flash swap contract to spend it.
-    await this.contracts.usdc.__godMode_mint(this.signers.subsidizer.address, subsidyUnderlyingAmount);
+    // Mint USDC to the liquidator's wallet and approve the flash swap contract to spend it.
+    await this.contracts.usdc.__godMode_mint(this.signers.liquidator.address, subsidyUnderlyingAmount);
     await this.contracts.usdc
-      .connect(this.signers.subsidizer)
+      .connect(this.signers.liquidator)
       .approve(this.contracts.flashUniswapV2.address, MaxUint256);
 
     // Deposit USDC in the BalanceSheet.
@@ -87,23 +87,23 @@ export function shouldBehaveLikeUnderlyingCollateral(): void {
 
   context("new order of tokens in the UniswapV2Pair contract", function () {
     beforeEach(async function () {
-      const oneHourAgo: BigNumber = getNow().sub(3600);
-      await this.contracts.hToken.connect(this.signers.admin).__godMode_setMaturity(oneHourAgo);
-
       await this.contracts.uniswapV2Pair.__godMode_setToken0(this.contracts.usdc.address);
       await this.contracts.uniswapV2Pair.__godMode_setToken1(this.contracts.wbtc.address);
       await this.contracts.uniswapV2Pair.sync();
+
+      const oneHourAgo: BigNumber = getNow().sub(3600);
+      await this.contracts.hToken.connect(this.signers.admin).__godMode_setMaturity(oneHourAgo);
     });
 
     it("flash swaps USDC, makes no USDC profit and subsidizes the flash swap fee", async function () {
       const to: string = this.contracts.flashUniswapV2.address;
-      const oldSubsidizerUnderlyingBalance = await this.contracts.usdc.balanceOf(this.signers.subsidizer.address);
-      const data: string = encodeCallData.call(this, subsidyUnderlyingAmount.mul(-1));
+      const oldUnderlyingBalance = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
+      const data: string = getFlashSwapCallData.call(this, subsidyUnderlyingAmount.mul(-1));
       await this.contracts.uniswapV2Pair
-        .connect(this.signers.subsidizer)
+        .connect(this.signers.liquidator)
         .swap(swapUnderlyingAmount, swapCollateralAmount, to, data);
-      const newSubsidizerUnderlyingBalance = await this.contracts.usdc.balanceOf(this.signers.subsidizer.address);
-      expect(oldSubsidizerUnderlyingBalance.sub(newSubsidizerUnderlyingBalance)).to.equal(subsidyUnderlyingAmount);
+      const newUnderlyingBalance = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
+      expect(oldUnderlyingBalance.sub(newUnderlyingBalance)).to.equal(subsidyUnderlyingAmount);
     });
   });
 
@@ -111,10 +111,10 @@ export function shouldBehaveLikeUnderlyingCollateral(): void {
     context("when the bond did not mature", function () {
       it("reverts", async function () {
         const to: string = this.contracts.flashUniswapV2.address;
-        const data: string = encodeCallData.call(this, subsidyUnderlyingAmount.mul(-1));
+        const data: string = getFlashSwapCallData.call(this, subsidyUnderlyingAmount.mul(-1));
         await expect(
           this.contracts.uniswapV2Pair
-            .connect(this.signers.subsidizer)
+            .connect(this.signers.liquidator)
             .swap(swapCollateralAmount, swapUnderlyingAmount, to, data),
         ).to.be.revertedWith(BalanceSheetErrors.NO_LIQUIDITY_SHORTFALL);
       });
@@ -126,7 +126,7 @@ export function shouldBehaveLikeUnderlyingCollateral(): void {
         await this.contracts.hToken.connect(this.signers.admin).__godMode_setMaturity(oneHourAgo);
       });
 
-      context("when the repay underlying amount is equal to the seized underlying amount", function () {
+      context("when the repay amount is equal to the seized amount", function () {
         const liquidationIncentive = toBn("1.003009027081243731");
 
         let data: string;
@@ -134,7 +134,7 @@ export function shouldBehaveLikeUnderlyingCollateral(): void {
         let seizeUnderlyingAmount: BigNumber;
 
         beforeEach(async function () {
-          data = encodeCallData.call(this, subsidyUnderlyingAmount.mul(-1));
+          data = getFlashSwapCallData.call(this, subsidyUnderlyingAmount.mul(-1));
 
           // Mint 0.3% more USDC.
           const addedUnderlyingAmount: BigNumber = swapUnderlyingAmount;
@@ -159,25 +159,25 @@ export function shouldBehaveLikeUnderlyingCollateral(): void {
           );
         });
 
-        it("flash swaps USDC via and makes no USDC profit", async function () {
+        it("flash swaps USDC and makes no USDC profit", async function () {
           const to: string = this.contracts.flashUniswapV2.address;
-          const oldUnderlyingBalance = await this.contracts.usdc.balanceOf(this.signers.subsidizer.address);
+          const oldUnderlyingBalance = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
           await this.contracts.uniswapV2Pair
-            .connect(this.signers.subsidizer)
+            .connect(this.signers.liquidator)
             .swap(swapCollateralAmount, swapUnderlyingAmount, to, data);
-          const newUnderlyingBalance = await this.contracts.usdc.balanceOf(this.signers.subsidizer.address);
+          const newUnderlyingBalance = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
           expect(newUnderlyingBalance).to.equal(oldUnderlyingBalance);
         });
 
         it("emits a FlashSwapAndLiquidateBorrow event", async function () {
           const to: string = this.contracts.flashUniswapV2.address;
           const contractCall = this.contracts.uniswapV2Pair
-            .connect(this.signers.subsidizer)
+            .connect(this.signers.liquidator)
             .swap(swapCollateralAmount, swapUnderlyingAmount, to, data);
           await expect(contractCall)
             .to.emit(this.contracts.flashUniswapV2, "FlashSwapAndLiquidateBorrow")
             .withArgs(
-              this.signers.subsidizer.address,
+              this.signers.liquidator.address,
               this.signers.borrower.address,
               this.contracts.hToken.address,
               swapUnderlyingAmount,
@@ -189,14 +189,16 @@ export function shouldBehaveLikeUnderlyingCollateral(): void {
         });
       });
 
-      context("when the repay underlying amount is less than the seized underlying amount", function () {
+      context("when the repay amount is greater than the seized amount", function () {
+        const seizeUnderlyingAmount: BigNumber = USDC("10000");
+
         context("when the turnout is not satisfied", function () {
           it("reverts", async function () {
             const to: string = this.contracts.flashUniswapV2.address;
-            const data = encodeCallData.call(this, subsidyUnderlyingAmount.sub(1).mul(-1));
+            const data = getFlashSwapCallData.call(this, subsidyUnderlyingAmount.sub(1).mul(-1));
             await expect(
               this.contracts.uniswapV2Pair
-                .connect(this.signers.subsidizer)
+                .connect(this.signers.liquidator)
                 .swap(swapCollateralAmount, swapUnderlyingAmount, to, data),
             ).to.be.revertedWith(FlashUniswapV2Errors.TURNOUT_NOT_SATISFIED);
           });
@@ -204,12 +206,63 @@ export function shouldBehaveLikeUnderlyingCollateral(): void {
 
         context("when the turnout is satisfied", function () {
           let data: string;
-          let expectedProfitUnderlyingAmount: BigNumber;
-          let expectedRepayUnderlyingAmount: BigNumber;
-          let seizeUnderlyingAmount: BigNumber;
 
           beforeEach(async function () {
-            data = encodeCallData.call(this, subsidyUnderlyingAmount.mul(-1));
+            data = getFlashSwapCallData.call(this, subsidyUnderlyingAmount.mul(-1));
+          });
+
+          it("flash swaps USDC, makes no USDC profit and subsidizes the flash swap fee", async function () {
+            const to: string = this.contracts.flashUniswapV2.address;
+            const oldUnderlyingBalance = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
+            await this.contracts.uniswapV2Pair
+              .connect(this.signers.liquidator)
+              .swap(swapCollateralAmount, swapUnderlyingAmount, to, data);
+            const newUnderlyingBalance = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
+            expect(oldUnderlyingBalance.sub(newUnderlyingBalance)).to.equal(subsidyUnderlyingAmount);
+          });
+
+          it("emits a FlashSwapAndLiquidateBorrow event", async function () {
+            const to: string = this.contracts.flashUniswapV2.address;
+            const contractCall = this.contracts.uniswapV2Pair
+              .connect(this.signers.liquidator)
+              .swap(swapCollateralAmount, swapUnderlyingAmount, to, data);
+            await expect(contractCall)
+              .to.emit(this.contracts.flashUniswapV2, "FlashSwapAndLiquidateBorrow")
+              .withArgs(
+                this.signers.liquidator.address,
+                this.signers.borrower.address,
+                this.contracts.hToken.address,
+                swapUnderlyingAmount,
+                seizeUnderlyingAmount,
+                repayUnderlyingAmount,
+                subsidyUnderlyingAmount,
+                Zero,
+              );
+          });
+        });
+      });
+
+      context("when the repay amount is less than the seized amount", function () {
+        const profitUnderlyingAmount: BigNumber = USDC("969.909729");
+        const seizeUnderlyingAmount: BigNumber = USDC("11000");
+
+        context("when the turnout is not satisfied", function () {
+          it("reverts", async function () {
+            const to: string = this.contracts.flashUniswapV2.address;
+            const data = getFlashSwapCallData.call(this, profitUnderlyingAmount.add(1));
+            await expect(
+              this.contracts.uniswapV2Pair
+                .connect(this.signers.liquidator)
+                .swap(swapCollateralAmount, swapUnderlyingAmount, to, data),
+            ).to.be.revertedWith(FlashUniswapV2Errors.TURNOUT_NOT_SATISFIED);
+          });
+        });
+
+        context("when the turnout is satisfied", function () {
+          let data: string;
+
+          beforeEach(async function () {
+            data = getFlashSwapCallData.call(this, subsidyUnderlyingAmount.mul(-1));
 
             // Mint 10% more USDC.
             const addedUnderlyingAmount: BigNumber = depositUnderlyingAmount.div(10);
@@ -224,106 +277,34 @@ export function shouldBehaveLikeUnderlyingCollateral(): void {
             await this.contracts.fintroller
               .connect(this.signers.admin)
               .setLiquidationIncentive(this.contracts.usdc.address, LIQUIDATION_INCENTIVES.default);
-
-            // Calculate the amounts necessary for running the tests.
-            expectedRepayUnderlyingAmount = swapUnderlyingAmount.mul(1000).div(997).add(1);
-            seizeUnderlyingAmount = await this.contracts.balanceSheet.getSeizableCollateralAmount(
-              this.contracts.hToken.address,
-              repayHTokenAmount,
-              this.contracts.usdc.address,
-            );
-            expectedProfitUnderlyingAmount = seizeUnderlyingAmount.sub(expectedRepayUnderlyingAmount);
           });
 
           it("flash swaps USDC and makes a USDC profit", async function () {
             const to: string = this.contracts.flashUniswapV2.address;
-            const oldUnderlyingBalance = await this.contracts.usdc.balanceOf(this.signers.subsidizer.address);
+            const oldUnderlyingBalance = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
             await this.contracts.uniswapV2Pair
-              .connect(this.signers.subsidizer)
+              .connect(this.signers.liquidator)
               .swap(swapCollateralAmount, swapUnderlyingAmount, to, data);
-            const newUnderlyingBalance = await this.contracts.usdc.balanceOf(this.signers.subsidizer.address);
-            expect(newUnderlyingBalance.sub(expectedProfitUnderlyingAmount)).to.equal(oldUnderlyingBalance);
+            const newUnderlyingBalance = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
+            expect(newUnderlyingBalance.sub(profitUnderlyingAmount)).to.equal(oldUnderlyingBalance);
           });
 
           it("emits a FlashSwapAndLiquidateBorrow event", async function () {
             const to: string = this.contracts.flashUniswapV2.address;
             const contractCall = this.contracts.uniswapV2Pair
-              .connect(this.signers.subsidizer)
+              .connect(this.signers.liquidator)
               .swap(swapCollateralAmount, swapUnderlyingAmount, to, data);
             await expect(contractCall)
               .to.emit(this.contracts.flashUniswapV2, "FlashSwapAndLiquidateBorrow")
               .withArgs(
-                this.signers.subsidizer.address,
+                this.signers.liquidator.address,
                 this.signers.borrower.address,
                 this.contracts.hToken.address,
                 swapUnderlyingAmount,
                 seizeUnderlyingAmount,
-                expectedRepayUnderlyingAmount,
+                repayUnderlyingAmount,
                 Zero,
-                expectedProfitUnderlyingAmount,
-              );
-          });
-        });
-      });
-
-      context("when the repay underlying amount is greater than the seized underlying amount", function () {
-        context("when the turnout is not satisfied", function () {
-          it("reverts", async function () {
-            const to: string = this.contracts.flashUniswapV2.address;
-            const data = encodeCallData.call(this, MaxInt256.div(2));
-            await expect(
-              this.contracts.uniswapV2Pair
-                .connect(this.signers.subsidizer)
-                .swap(swapCollateralAmount, swapUnderlyingAmount, to, data),
-            ).to.be.revertedWith(FlashUniswapV2Errors.TURNOUT_NOT_SATISFIED);
-          });
-        });
-
-        context("when the turnout is satisfied", function () {
-          let data: string;
-          let expectedRepayUnderlyingAmount: BigNumber;
-          let seizeUnderlyingAmount: BigNumber;
-
-          beforeEach(async function () {
-            data = encodeCallData.call(this, subsidyUnderlyingAmount.mul(-1));
-
-            // Calculate the amounts necessary for running the tests.
-            expectedRepayUnderlyingAmount = swapUnderlyingAmount.mul(1000).div(997).add(1);
-            seizeUnderlyingAmount = await this.contracts.balanceSheet.getSeizableCollateralAmount(
-              this.contracts.hToken.address,
-              repayHTokenAmount,
-              this.contracts.usdc.address,
-            );
-          });
-
-          it("flash swaps USDC, makes no USDC profit and subsidizes the flash swap fee", async function () {
-            const to: string = this.contracts.flashUniswapV2.address;
-            const oldSubsidizerUnderlyingBalance = await this.contracts.usdc.balanceOf(this.signers.subsidizer.address);
-            await this.contracts.uniswapV2Pair
-              .connect(this.signers.subsidizer)
-              .swap(swapCollateralAmount, swapUnderlyingAmount, to, data);
-            const newSubsidizerUnderlyingBalance = await this.contracts.usdc.balanceOf(this.signers.subsidizer.address);
-            expect(oldSubsidizerUnderlyingBalance.sub(newSubsidizerUnderlyingBalance)).to.equal(
-              subsidyUnderlyingAmount,
-            );
-          });
-
-          it("emits a FlashSwapAndLiquidateBorrow event", async function () {
-            const to: string = this.contracts.flashUniswapV2.address;
-            const contractCall = this.contracts.uniswapV2Pair
-              .connect(this.signers.subsidizer)
-              .swap(swapCollateralAmount, swapUnderlyingAmount, to, data);
-            await expect(contractCall)
-              .to.emit(this.contracts.flashUniswapV2, "FlashSwapAndLiquidateBorrow")
-              .withArgs(
-                this.signers.subsidizer.address,
-                this.signers.borrower.address,
-                this.contracts.hToken.address,
-                swapUnderlyingAmount,
-                seizeUnderlyingAmount,
-                expectedRepayUnderlyingAmount,
-                subsidyUnderlyingAmount,
-                Zero,
+                profitUnderlyingAmount,
               );
           });
         });
