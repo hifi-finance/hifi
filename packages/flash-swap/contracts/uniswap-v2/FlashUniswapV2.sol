@@ -55,25 +55,30 @@ contract FlashUniswapV2 is IFlashUniswapV2 {
     /// @inheritdoc IFlashUniswapV2
     function getRepayAmount(
         IUniswapV2Pair pair,
+        IErc20 collateral,
         IErc20 underlying,
         uint256 underlyingAmount
     ) public view override returns (uint256 repayAmount) {
-        // Depending upon which token is which, the reserves are returned in a different order.
-        address token0 = pair.token0();
-        uint112 otherTokenReserves;
-        uint112 underlyingReserves;
-
-        if (token0 == address(underlying)) {
-            (underlyingReserves, otherTokenReserves, ) = pair.getReserves();
-        } else {
-            (otherTokenReserves, underlyingReserves, ) = pair.getReserves();
-        }
-
-        // Note that we can safely use unchecked arithmetic here because the UniswapV2Pair.sol contract performs
-        // sanity checks on the amounts before calling the current contract.
         unchecked {
-            uint256 numerator = otherTokenReserves * underlyingAmount * 1000;
-            uint256 denominator = (underlyingReserves - underlyingAmount) * 997;
+            uint256 numerator;
+            uint256 denominator;
+            if (collateral != underlying) {
+                uint112 collateralReserves;
+                uint112 underlyingReserves;
+
+                address token0 = pair.token0();
+                if (token0 == address(underlying)) {
+                    (underlyingReserves, collateralReserves, ) = pair.getReserves();
+                } else {
+                    (collateralReserves, underlyingReserves, ) = pair.getReserves();
+                }
+
+                numerator = collateralReserves * underlyingAmount * 1000;
+                denominator = (underlyingReserves - underlyingAmount) * 997;
+            } else {
+                numerator = underlyingAmount * 1000;
+                denominator = 997;
+            }
             repayAmount = numerator / denominator + 1;
         }
     }
@@ -129,11 +134,16 @@ contract FlashUniswapV2 is IFlashUniswapV2 {
         vars.seizeAmount = liquidateBorrow(vars.borrower, vars.bond, vars.collateral, vars.mintedHTokenAmount);
 
         // Calculate the amount required to repay.
-        vars.repayAmount = getRepayAmount(IUniswapV2Pair(msg.sender), vars.collateral, vars.underlyingAmount);
+        vars.repayAmount = getRepayAmount(
+            IUniswapV2Pair(msg.sender),
+            vars.collateral,
+            vars.underlying,
+            vars.underlyingAmount
+        );
 
         // Note that "turnout" is a signed int. When its value is positive, it acts as a minimum profit.
         // When it is negative, it acts as a maximum subsidy amount.
-        if (int256(vars.seizeAmount) <= int256(vars.repayAmount) + vars.turnout) {
+        if (int256(vars.seizeAmount) < int256(vars.repayAmount) + vars.turnout) {
             revert FlashUniswapV2__TurnoutNotSatisfied(vars.seizeAmount, vars.repayAmount, vars.turnout);
         }
 

@@ -1,6 +1,6 @@
 export enum FlashUniswapV2Errors {
-  CallNotAuthorized = "FlashUniswapV2__CallNotAuthorized",
-  FlashBorrowOtherToken = "FlashUniswapV2__FlashBorrowOtherToken",
-  TurnoutNotSatisfied = "FlashUniswapV2__TurnoutNotSatisfied",
-  UnderlyingNotInPool = "FlashUniswapV2__UnderlyingNotInPool",
+  CALL_NOT_AUTHORIZED = "FlashUniswapV2__CallNotAuthorized",
+  FLASH_BORROW_OTHER_TOKEN = "FlashUniswapV2__FlashBorrowOtherToken",
+  TURNOUT_NOT_SATISFIED = "FlashUniswapV2__TurnoutNotSatisfied",
+  UNDERLYING_NOT_IN_POOL = "FlashUniswapV2__UnderlyingNotInPool",
 }

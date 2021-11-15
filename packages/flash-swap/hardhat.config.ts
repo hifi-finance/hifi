@@ -42,7 +42,6 @@ const config: HardhatUserConfig = {
     contracts: [
       "Erc20",
       "FlashUniswapV2",
-      "ICollateralFlashUniswapV2",
       "IErc20",
       "IFlashUniswapV2",
       "IUniswapV2Callee",

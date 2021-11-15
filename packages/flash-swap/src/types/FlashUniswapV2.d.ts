@@ -22,7 +22,7 @@ import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 interface FlashUniswapV2Interface extends ethers.utils.Interface {
   functions: {
     "balanceSheet()": FunctionFragment;
-    "getRepayAmount(address,address,uint256)": FunctionFragment;
+    "getRepayAmount(address,address,address,uint256)": FunctionFragment;
     "uniV2Factory()": FunctionFragment;
     "uniV2PairInitCodeHash()": FunctionFragment;
     "uniswapV2Call(address,uint256,uint256,bytes)": FunctionFragment;
@@ -34,7 +34,7 @@ interface FlashUniswapV2Interface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getRepayAmount",
-    values: [string, string, BigNumberish]
+    values: [string, string, string, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "uniV2Factory",
@@ -149,6 +149,7 @@ export class FlashUniswapV2 extends BaseContract {
 
     getRepayAmount(
       pair: string,
+      collateral: string,
       underlying: string,
       underlyingAmount: BigNumberish,
       overrides?: CallOverrides
@@ -171,6 +172,7 @@ export class FlashUniswapV2 extends BaseContract {
 
   getRepayAmount(
     pair: string,
+    collateral: string,
     underlying: string,
     underlyingAmount: BigNumberish,
     overrides?: CallOverrides
@@ -193,6 +195,7 @@ export class FlashUniswapV2 extends BaseContract {
 
     getRepayAmount(
       pair: string,
+      collateral: string,
       underlying: string,
       underlyingAmount: BigNumberish,
       overrides?: CallOverrides
@@ -282,6 +285,7 @@ export class FlashUniswapV2 extends BaseContract {
 
     getRepayAmount(
       pair: string,
+      collateral: string,
       underlying: string,
       underlyingAmount: BigNumberish,
       overrides?: CallOverrides
@@ -305,6 +309,7 @@ export class FlashUniswapV2 extends BaseContract {
 
     getRepayAmount(
       pair: string,
+      collateral: string,
       underlying: string,
       underlyingAmount: BigNumberish,
       overrides?: CallOverrides
