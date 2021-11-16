@@ -100,20 +100,48 @@ export function shouldBehaveLikeUniswapV2Call(): void {
 
       context("when the underlying is part of the UniswapV2Pair contract", function () {
         context("when the other token is flash borrowed", function () {
-          beforeEach(async function () {
-            await this.contracts.wbtcPriceFeed.setPrice(price("20000"));
-            await increasePoolReserves.call(this, WBTC("100"), USDC("2e6"));
+          context("new order of tokens in the UniswapV2Pair contract", function () {
+            beforeEach(async function () {
+              await this.contracts.uniswapV2Pair.__godMode_setToken0(this.contracts.usdc.address);
+              await this.contracts.uniswapV2Pair.__godMode_setToken1(this.contracts.wbtc.address);
+              await this.contracts.uniswapV2Pair.sync();
+            });
+
+            context("when the other token is flash borrowed", function () {
+              beforeEach(async function () {
+                await this.contracts.wbtcPriceFeed.setPrice(price("20000"));
+                await increasePoolReserves.call(this, WBTC("100"), USDC("2e6"));
+              });
+
+              it("reverts", async function () {
+                const swapCollateralAmount: BigNumber = WBTC("1");
+                const swapUnderlyingAmount: BigNumber = Zero;
+                const to: string = this.contracts.flashUniswapV2.address;
+                await expect(
+                  this.contracts.uniswapV2Pair
+                    .connect(this.signers.raider)
+                    .swap(swapUnderlyingAmount, swapCollateralAmount, to, data),
+                ).to.be.revertedWith(FlashUniswapV2Errors.FLASH_BORROW_OTHER_TOKEN);
+              });
+            });
           });
 
-          it("reverts", async function () {
-            const swapCollateralAmount: BigNumber = WBTC("1");
-            const swapUnderlyingAmount: BigNumber = Zero;
-            const to: string = this.contracts.flashUniswapV2.address;
-            await expect(
-              this.contracts.uniswapV2Pair
-                .connect(this.signers.raider)
-                .swap(swapCollateralAmount, swapUnderlyingAmount, to, data),
-            ).to.be.revertedWith(FlashUniswapV2Errors.FLASH_BORROW_OTHER_TOKEN);
+          context("initial order of tokens in the UniswapV2Pair contract", function () {
+            beforeEach(async function () {
+              await this.contracts.wbtcPriceFeed.setPrice(price("20000"));
+              await increasePoolReserves.call(this, WBTC("100"), USDC("2e6"));
+            });
+
+            it("reverts", async function () {
+              const swapCollateralAmount: BigNumber = WBTC("1");
+              const swapUnderlyingAmount: BigNumber = Zero;
+              const to: string = this.contracts.flashUniswapV2.address;
+              await expect(
+                this.contracts.uniswapV2Pair
+                  .connect(this.signers.raider)
+                  .swap(swapCollateralAmount, swapUnderlyingAmount, to, data),
+              ).to.be.revertedWith(FlashUniswapV2Errors.FLASH_BORROW_OTHER_TOKEN);
+            });
           });
         });
 
