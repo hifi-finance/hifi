@@ -24,8 +24,8 @@ export function shouldBehaveLikeCollateralFlashSwap(): void {
   const borrowAmount: BigNumber = hUSDC("10000");
   const collateralCeiling: BigNumber = USDC("1e6");
   const debtCeiling: BigNumber = hUSDC("1e6");
-  const profitCollateralAmount: BigNumber = WBTC("0.07112175"); // based on 125% collateralization ratio
   const depositCollateralAmount: BigNumber = WBTC("1");
+  const profitCollateralAmount: BigNumber = WBTC("0.07112175"); // based on 125% collateralization ratio
   const subsidyCollateralAmount: BigNumber = WBTC("0.01314044");
   const swapCollateralAmount: BigNumber = Zero;
   const swapUnderlyingAmount: BigNumber = USDC("10000");

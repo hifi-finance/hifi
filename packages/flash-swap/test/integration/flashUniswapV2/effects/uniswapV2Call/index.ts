@@ -11,8 +11,6 @@ import { increasePoolReserves } from "../../../../shared/helpers";
 import { shouldBehaveLikeCollateralFlashSwap } from "./collateral";
 import { shouldBehaveLikeUnderlyingAsCollateralFlashSwap } from "./underlying";
 
-// import { shouldBehaveLikeWbtcAsCollateral } from "./wbtc";
-
 function getFlashSwapCallData(this: Mocha.Context): string {
   const types = ["address", "address", "address", "uint256"];
   const borrower: string = this.signers.borrower.address;
