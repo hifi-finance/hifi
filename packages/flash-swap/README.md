@@ -42,7 +42,7 @@ import { getDefaultProvider } from "@ethersproject/providers";
 import { parseUnits } from "@ethersproject/units";
 import { UniswapV2Pair__factory } from "@hifi/flash-swap/dist/types/factories/UniswapV2Pair__factory";
 
-async function collateralFlashSwap() {
+async function flashSwap() {
   const defaultProvider = getDefaultProvider();
   const pair = new UniswapV2Pair__factory("0x...", defaultProvider);
 

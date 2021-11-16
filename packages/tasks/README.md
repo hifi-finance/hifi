@@ -60,12 +60,6 @@ yarn hardhat --network "..." deploy:contract:simple-price-feed --description "..
 yarn hardhat --network "..." deploy:stablecoin-price-feed --price "..." --description "..."
 ```
 
-### Deploy UnderlyingFlashUniswapV2
-
-```sh
-yarn hardhat --network "..." deploy:contract:underlying-flash-uniswap-v2 --balance-sheet "0x..." --uni-v2-factory "0x..." --uni-v2-pair-init-code-hash "0x..."
-```
-
 ### Init AddLiquidity
 
 ```sh

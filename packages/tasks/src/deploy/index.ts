@@ -1,10 +1,9 @@
 import "./chainlinkOperator";
-import "./collateralFlashUniswapV2";
+import "./flashUniswapV2";
 import "./hifiPoolRegistry";
 import "./hifiProxyTarget";
 import "./hToken";
 import "./hifiPool";
 import "./simplePriceFeed";
 import "./stablecoinPriceFeed";
-import "./underlyingFlashUniswapV2";
 import "./waitForConfirmations";
