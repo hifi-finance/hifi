@@ -9,7 +9,6 @@ import type { GodModeHToken } from "../../src/types/GodModeHToken";
 import type { GodModeUniswapV2Pair } from "../../src/types/GodModeUniswapV2Pair";
 import type { MaliciousPair } from "../../src/types/MaliciousPair";
 import type { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
-import type { UnderlyingFlashUniswapV2 } from "../../src/types/UnderlyingFlashUniswapV2";
 
 declare module "mocha" {
   export interface Context {
@@ -27,7 +26,6 @@ export interface Contracts {
   oracle: ChainlinkOperator;
   usdc: GodModeErc20;
   usdcPriceFeed: SimplePriceFeed;
-  underlyingFlashUniswapV2: UnderlyingFlashUniswapV2;
   uniswapV2Pair: GodModeUniswapV2Pair;
   wbtc: GodModeErc20;
   wbtcPriceFeed: SimplePriceFeed;

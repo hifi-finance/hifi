@@ -29,7 +29,6 @@ interface HifiPoolInterface extends ethers.utils.Interface {
     "burn(uint256)": FunctionFragment;
     "buyHToken(address,uint256)": FunctionFragment;
     "buyUnderlying(address,uint256)": FunctionFragment;
-    "c_0x60e8a3b8(bytes32)": FunctionFragment;
     "decimals()": FunctionFragment;
     "decreaseAllowance(address,uint256)": FunctionFragment;
     "getBurnOutputs(uint256)": FunctionFragment;
@@ -83,10 +82,6 @@ interface HifiPoolInterface extends ethers.utils.Interface {
   encodeFunctionData(
     functionFragment: "buyUnderlying",
     values: [string, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "c_0x60e8a3b8",
-    values: [BytesLike]
   ): string;
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
   encodeFunctionData(
@@ -192,10 +187,6 @@ interface HifiPoolInterface extends ethers.utils.Interface {
   decodeFunctionResult(functionFragment: "buyHToken", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "buyUnderlying",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "c_0x60e8a3b8",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
@@ -403,11 +394,6 @@ export class HifiPool extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    c_0x60e8a3b8(
-      c__0x60e8a3b8: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<[void]>;
-
     decimals(overrides?: CallOverrides): Promise<[number]>;
 
     decreaseAllowance(
@@ -564,11 +550,6 @@ export class HifiPool extends BaseContract {
     underlyingOut: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
-
-  c_0x60e8a3b8(
-    c__0x60e8a3b8: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<void>;
 
   decimals(overrides?: CallOverrides): Promise<number>;
 
@@ -729,11 +710,6 @@ export class HifiPool extends BaseContract {
       underlyingOut: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
-
-    c_0x60e8a3b8(
-      c__0x60e8a3b8: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
 
     decimals(overrides?: CallOverrides): Promise<number>;
 
@@ -1031,11 +1007,6 @@ export class HifiPool extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    c_0x60e8a3b8(
-      c__0x60e8a3b8: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
     decimals(overrides?: CallOverrides): Promise<BigNumber>;
 
     decreaseAllowance(
@@ -1183,11 +1154,6 @@ export class HifiPool extends BaseContract {
       to: string,
       underlyingOut: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    c_0x60e8a3b8(
-      c__0x60e8a3b8: BytesLike,
-      overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
