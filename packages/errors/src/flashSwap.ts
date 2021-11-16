@@ -1,13 +1,6 @@
-export enum CollateralFlashUniswapV2Errors {
-  CallNotAuthorized = "CollateralFlashUniswapV2__CallNotAuthorized",
-  InsufficientProfit = "CollateralFlashUniswapV2__InsufficientProfit",
-}
-
-export enum FlashUtilsErrors {
-  FlashBorrowOtherToken = "FlashUtils__FlashBorrowOtherToken",
-  UnderlyingNotInPool = "FlashUtils__UnderlyingNotInPool",
-}
-
-export enum UnderlyingFlashUniswapV2Errors {
-  CallNotAuthorized = "UnderlyingFlashUniswapV2__CallNotAuthorized",
+export enum FlashUniswapV2Errors {
+  CALL_NOT_AUTHORIZED = "FlashUniswapV2__CallNotAuthorized",
+  FLASH_BORROW_OTHER_TOKEN = "FlashUniswapV2__FlashBorrowOtherToken",
+  TURNOUT_NOT_SATISFIED = "FlashUniswapV2__TurnoutNotSatisfied",
+  UNDERLYING_NOT_IN_POOL = "FlashUniswapV2__UnderlyingNotInPool",
 }

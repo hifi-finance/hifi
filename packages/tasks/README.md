@@ -18,10 +18,10 @@ This package is not meant to be installed by any other package, not even a local
 yarn hardhat --network "..." deploy:contract:chainlink-operator
 ```
 
-### Deploy CollateralFlashUniswapV2
+### Deploy FlashUniswapV2
 
 ```sh
-yarn hardhat --network "..." deploy:contract:collateral-flash-uniswap-v2 --balance-sheet "0x..." --uni-v2-factory "0x..." --uni-v2-pair-init-code-hash "0x..."
+yarn hardhat --network "..." deploy:contract:flash-uniswap-v2 --balance-sheet "0x..." --uni-v2-factory "0x..." --uni-v2-pair-init-code-hash "0x..."
 ```
 
 ### Deploy HifiPool

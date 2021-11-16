@@ -19,10 +19,10 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import type { TypedEventFilter, TypedEvent, TypedListener } from "./common";
 
-interface UnderlyingFlashUniswapV2Interface extends ethers.utils.Interface {
+interface FlashUniswapV2Interface extends ethers.utils.Interface {
   functions: {
     "balanceSheet()": FunctionFragment;
-    "getRepayUnderlyingAmount(uint256)": FunctionFragment;
+    "getRepayAmount(address,address,address,uint256)": FunctionFragment;
     "uniV2Factory()": FunctionFragment;
     "uniV2PairInitCodeHash()": FunctionFragment;
     "uniswapV2Call(address,uint256,uint256,bytes)": FunctionFragment;
@@ -33,8 +33,8 @@ interface UnderlyingFlashUniswapV2Interface extends ethers.utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "getRepayUnderlyingAmount",
-    values: [BigNumberish]
+    functionFragment: "getRepayAmount",
+    values: [string, string, string, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "uniV2Factory",
@@ -54,7 +54,7 @@ interface UnderlyingFlashUniswapV2Interface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "getRepayUnderlyingAmount",
+    functionFragment: "getRepayAmount",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -71,15 +71,15 @@ interface UnderlyingFlashUniswapV2Interface extends ethers.utils.Interface {
   ): Result;
 
   events: {
-    "FlashSwapUnderlyingAndLiquidateBorrow(address,address,address,uint256,uint256,uint256,uint256,uint256)": EventFragment;
+    "FlashSwapAndLiquidateBorrow(address,address,address,uint256,uint256,uint256,uint256,uint256)": EventFragment;
   };
 
   getEvent(
-    nameOrSignatureOrTopic: "FlashSwapUnderlyingAndLiquidateBorrow"
+    nameOrSignatureOrTopic: "FlashSwapAndLiquidateBorrow"
   ): EventFragment;
 }
 
-export type FlashSwapUnderlyingAndLiquidateBorrowEvent = TypedEvent<
+export type FlashSwapAndLiquidateBorrowEvent = TypedEvent<
   [
     string,
     string,
@@ -94,14 +94,14 @@ export type FlashSwapUnderlyingAndLiquidateBorrowEvent = TypedEvent<
     borrower: string;
     bond: string;
     underlyingAmount: BigNumber;
-    seizedUnderlyingAmount: BigNumber;
-    repayUnderlyingAmount: BigNumber;
-    profitUnderlyingAmount: BigNumber;
-    subsidizedUnderlyingAmount: BigNumber;
+    seizeAmount: BigNumber;
+    repayAmount: BigNumber;
+    subsidyAmount: BigNumber;
+    profitAmount: BigNumber;
   }
 >;
 
-export class UnderlyingFlashUniswapV2 extends BaseContract {
+export class FlashUniswapV2 extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -142,15 +142,18 @@ export class UnderlyingFlashUniswapV2 extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: UnderlyingFlashUniswapV2Interface;
+  interface: FlashUniswapV2Interface;
 
   functions: {
     balanceSheet(overrides?: CallOverrides): Promise<[string]>;
 
-    getRepayUnderlyingAmount(
+    getRepayAmount(
+      pair: string,
+      collateral: string,
+      underlying: string,
       underlyingAmount: BigNumberish,
       overrides?: CallOverrides
-    ): Promise<[BigNumber] & { repayUnderlyingAmount: BigNumber }>;
+    ): Promise<[BigNumber] & { repayAmount: BigNumber }>;
 
     uniV2Factory(overrides?: CallOverrides): Promise<[string]>;
 
@@ -167,7 +170,10 @@ export class UnderlyingFlashUniswapV2 extends BaseContract {
 
   balanceSheet(overrides?: CallOverrides): Promise<string>;
 
-  getRepayUnderlyingAmount(
+  getRepayAmount(
+    pair: string,
+    collateral: string,
+    underlying: string,
     underlyingAmount: BigNumberish,
     overrides?: CallOverrides
   ): Promise<BigNumber>;
@@ -187,7 +193,10 @@ export class UnderlyingFlashUniswapV2 extends BaseContract {
   callStatic: {
     balanceSheet(overrides?: CallOverrides): Promise<string>;
 
-    getRepayUnderlyingAmount(
+    getRepayAmount(
+      pair: string,
+      collateral: string,
+      underlying: string,
       underlyingAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -206,15 +215,15 @@ export class UnderlyingFlashUniswapV2 extends BaseContract {
   };
 
   filters: {
-    "FlashSwapUnderlyingAndLiquidateBorrow(address,address,address,uint256,uint256,uint256,uint256,uint256)"(
+    "FlashSwapAndLiquidateBorrow(address,address,address,uint256,uint256,uint256,uint256,uint256)"(
       liquidator?: string | null,
       borrower?: string | null,
       bond?: string | null,
       underlyingAmount?: null,
-      seizedUnderlyingAmount?: null,
-      repayUnderlyingAmount?: null,
-      profitUnderlyingAmount?: null,
-      subsidizedUnderlyingAmount?: null
+      seizeAmount?: null,
+      repayAmount?: null,
+      subsidyAmount?: null,
+      profitAmount?: null
     ): TypedEventFilter<
       [
         string,
@@ -231,22 +240,22 @@ export class UnderlyingFlashUniswapV2 extends BaseContract {
         borrower: string;
         bond: string;
         underlyingAmount: BigNumber;
-        seizedUnderlyingAmount: BigNumber;
-        repayUnderlyingAmount: BigNumber;
-        profitUnderlyingAmount: BigNumber;
-        subsidizedUnderlyingAmount: BigNumber;
+        seizeAmount: BigNumber;
+        repayAmount: BigNumber;
+        subsidyAmount: BigNumber;
+        profitAmount: BigNumber;
       }
     >;
 
-    FlashSwapUnderlyingAndLiquidateBorrow(
+    FlashSwapAndLiquidateBorrow(
       liquidator?: string | null,
       borrower?: string | null,
       bond?: string | null,
       underlyingAmount?: null,
-      seizedUnderlyingAmount?: null,
-      repayUnderlyingAmount?: null,
-      profitUnderlyingAmount?: null,
-      subsidizedUnderlyingAmount?: null
+      seizeAmount?: null,
+      repayAmount?: null,
+      subsidyAmount?: null,
+      profitAmount?: null
     ): TypedEventFilter<
       [
         string,
@@ -263,10 +272,10 @@ export class UnderlyingFlashUniswapV2 extends BaseContract {
         borrower: string;
         bond: string;
         underlyingAmount: BigNumber;
-        seizedUnderlyingAmount: BigNumber;
-        repayUnderlyingAmount: BigNumber;
-        profitUnderlyingAmount: BigNumber;
-        subsidizedUnderlyingAmount: BigNumber;
+        seizeAmount: BigNumber;
+        repayAmount: BigNumber;
+        subsidyAmount: BigNumber;
+        profitAmount: BigNumber;
       }
     >;
   };
@@ -274,7 +283,10 @@ export class UnderlyingFlashUniswapV2 extends BaseContract {
   estimateGas: {
     balanceSheet(overrides?: CallOverrides): Promise<BigNumber>;
 
-    getRepayUnderlyingAmount(
+    getRepayAmount(
+      pair: string,
+      collateral: string,
+      underlying: string,
       underlyingAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
@@ -295,7 +307,10 @@ export class UnderlyingFlashUniswapV2 extends BaseContract {
   populateTransaction: {
     balanceSheet(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    getRepayUnderlyingAmount(
+    getRepayAmount(
+      pair: string,
+      collateral: string,
+      underlying: string,
       underlyingAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

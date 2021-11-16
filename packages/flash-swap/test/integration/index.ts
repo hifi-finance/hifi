@@ -1,8 +1,6 @@
 import { baseContext } from "../shared/contexts";
-import { integrationTestCollateralFlashUniswapV2 } from "./collateralFlashUniswapV2/CollateralFlashUniswapV2";
-import { integrationTestUnderlyingFlashUniswapV2 } from "./underlyingFlashUniswapV2/UnderlyingFlashUniswapV2";
+import { integrationTestFlashUniswapV2 } from "./flashUniswapV2/FlashUniswapV2";
 
 baseContext("Integration Tests", function () {
-  integrationTestCollateralFlashUniswapV2();
-  integrationTestUnderlyingFlashUniswapV2();
+  integrationTestFlashUniswapV2();
 });
