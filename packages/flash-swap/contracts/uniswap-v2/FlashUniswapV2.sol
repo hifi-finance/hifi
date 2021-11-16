@@ -148,7 +148,6 @@ contract FlashUniswapV2 is IFlashUniswapV2 {
         }
 
         // Transfer the subsidy amount.
-
         if (vars.repayAmount > vars.seizeAmount) {
             unchecked {
                 vars.subsidyAmount = vars.repayAmount - vars.seizeAmount;

@@ -25,7 +25,6 @@ export function shouldBehaveLikeUnderlyingAsCollateralFlashSwap(): void {
   const collateralCeiling: BigNumber = USDC("1e6");
   const debtCeiling: BigNumber = hUSDC("1e6");
   const depositUnderlyingAmount: BigNumber = USDC("10000");
-  const repayHTokenAmount: BigNumber = hUSDC("10000");
   const repayUnderlyingAmount: BigNumber = USDC("10030.090271");
   const subsidyUnderlyingAmount: BigNumber = USDC("30.090271");
   const swapCollateralAmount: BigNumber = Zero;
@@ -127,39 +126,29 @@ export function shouldBehaveLikeUnderlyingAsCollateralFlashSwap(): void {
       });
 
       context("when the repay amount is equal to the seized amount", function () {
-        const liquidationIncentive = toBn("1.003009027081243731");
+        const liquidationIncentive = toBn("1.0030090271");
+        const seizeUnderlyingAmount = USDC("10030.090271");
 
         let data: string;
-        let expectedRepayUnderlyingAmount: BigNumber;
-        let seizeUnderlyingAmount: BigNumber;
 
         beforeEach(async function () {
-          data = getFlashSwapCallData.call(this, subsidyUnderlyingAmount.mul(-1));
+          data = getFlashSwapCallData.call(this, Zero);
 
           // Mint 0.3% more USDC.
-          const addedUnderlyingAmount: BigNumber = swapUnderlyingAmount;
-          await this.contracts.usdc.__godMode_mint(this.signers.borrower.address, addedUnderlyingAmount);
+          await this.contracts.usdc.__godMode_mint(this.signers.borrower.address, subsidyUnderlyingAmount);
 
           // Deposit the newly minted USDC in the vault.
           await this.contracts.balanceSheet
             .connect(this.signers.borrower)
-            .depositCollateral(this.contracts.usdc.address, addedUnderlyingAmount);
+            .depositCollateral(this.contracts.usdc.address, subsidyUnderlyingAmount);
 
-          // Set the liquidation incentive to 0.3%.
+          // Set the liquidation incentive to ~0.3%.
           await this.contracts.fintroller
             .connect(this.signers.admin)
             .setLiquidationIncentive(this.contracts.usdc.address, liquidationIncentive);
-
-          // Calculate the amounts necessary for running the tests.
-          expectedRepayUnderlyingAmount = swapUnderlyingAmount.mul(1000).div(997).add(1);
-          seizeUnderlyingAmount = await this.contracts.balanceSheet.getSeizableCollateralAmount(
-            this.contracts.hToken.address,
-            repayHTokenAmount,
-            this.contracts.usdc.address,
-          );
         });
 
-        it("flash swaps USDC and makes no USDC profit", async function () {
+        it("flash swaps USDC", async function () {
           const to: string = this.contracts.flashUniswapV2.address;
           const oldUnderlyingBalance = await this.contracts.usdc.balanceOf(this.signers.liquidator.address);
           await this.contracts.uniswapV2Pair
@@ -182,7 +171,7 @@ export function shouldBehaveLikeUnderlyingAsCollateralFlashSwap(): void {
               this.contracts.hToken.address,
               swapUnderlyingAmount,
               seizeUnderlyingAmount,
-              expectedRepayUnderlyingAmount,
+              repayUnderlyingAmount,
               Zero,
               Zero,
             );
@@ -262,7 +251,7 @@ export function shouldBehaveLikeUnderlyingAsCollateralFlashSwap(): void {
           let data: string;
 
           beforeEach(async function () {
-            data = getFlashSwapCallData.call(this, subsidyUnderlyingAmount.mul(-1));
+            data = getFlashSwapCallData.call(this, profitUnderlyingAmount);
 
             // Mint 10% more USDC.
             const addedUnderlyingAmount: BigNumber = depositUnderlyingAmount.div(10);

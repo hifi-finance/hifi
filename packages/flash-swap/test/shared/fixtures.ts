@@ -21,8 +21,8 @@ import { deployGodModeErc20 } from "./deployers";
 
 type IntegrationFixtureReturnType = {
   balanceSheet: BalanceSheetV1;
-  flashUniswapV2: FlashUniswapV2;
   fintroller: FintrollerV1;
+  flashUniswapV2: FlashUniswapV2;
   hToken: GodModeHToken;
   maliciousPair: MaliciousPair;
   uniswapV2Pair: GodModeUniswapV2Pair;
