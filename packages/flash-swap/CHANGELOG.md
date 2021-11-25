@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2021-11-25
+
+### Added
+
+- Allow collateral flash swap fee to be subsidized.
+- Emit repay and subsidy amounts in the `FlashSwapCollateralAndLiquidateBorrow` event.
+
+### Changed
+
+- Generalize the computation in `getRepayAmount` to account for the case when the flash swap fee is paid in the same token.
+- Order functions alphabetically.
+- Polish the NatSpec comments.
+- Remove the "internal" suffix in the internal functions names.
+- Rename `FlashLiquidateBorrow` to `FlashSwapAndLiquidateBorrow`.
+- Rename `InsufficientProfit` to `TurnoutNotSatisfied`.
+- Rename `seizedCollateralAmount` to `seizeCollateralAmount`.
+- Rename `subsidizedUnderlyingAmount` to `subsidyUnderlyingAmount`.
+- Refactor the `getCollateralAndUnderlyingAmount` function to `getOtherTokenAndUnderlyingAmount`.
+- Refactor the `HifiFlashUniswapV2` contract to `FlashUniswapV2`.
+
 ## [1.6.1] - 2021-10-25
 
 ### Changed
@@ -125,6 +145,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - First release of the package.
 
+[1.6.1]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.6.1...@hifi/flash-swap@1.7.0
 [1.6.1]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.6.0...@hifi/flash-swap@1.6.1
 [1.6.0]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.5.0...@hifi/flash-swap@1.6.0
 [1.5.0]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.4.0...@hifi/flash-swap@1.5.0
