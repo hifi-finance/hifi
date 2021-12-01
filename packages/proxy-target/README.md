@@ -4,7 +4,7 @@ DSProxy target contract with stateless scripts.
 
 The build artifacts can be browsed via [unpkg.com](https://unpkg.com/browse/@hifi/proxy-target@latest/).
 
-## Install
+## Installation
 
 With yarn:
 
@@ -20,7 +20,7 @@ $ npm install @hifi/proxy-target
 
 ## Usage
 
-The node package that you just installed contains both Solidity and JavaScript code. The former represents the smart contracts
+The node package that you just installed contains both Solidity and JavaScript code. The former is the smart contracts
 themselves; the latter, the smart contract ABIs and the TypeChain bindings.
 
 ### Solidity
@@ -34,7 +34,7 @@ pragma solidity >=0.8.4;
 import "@hifi/proxy-target/contracts/IHifiProxyTarget.sol";
 
 contract YourContract {
-    // Get the address from https://docs.hifi.finance
+    // Find the address on https://docs.hifi.finance
     IHifiPool hifiProxyTarget = IHifiProxyTarget(0x...);
 
     function depositCollateral(IBalanceSheetV1 balanceSheet, IErc20 collateral, uint256 depositAmount)
@@ -53,13 +53,13 @@ This code snippet shows how to interact with a DSProxy contract that is already 
 deploy the DSProxy itself, refer to Maker's guide [Working with
 DSProxy](https://github.com/makerdao/developerguides/blob/master/devtools/working-with-dsproxy/working-with-dsproxy.md).
 
-```js
+```javascript
 import { parseUnits } from "@ethersproject/units";
 import { HifiProxyTarget__factory } from "@hifi/protocol/dist/types/factories/HifiProxyTarget__factory";
 
 async function depositCollateral() {
   const signer = "..."; // Get hold of an ethers.js Signer
-  const hifiProxyTarget = new HifiProxyTarget__factory("0x...", signer); // Get the address from https://docs.hifi.finance
+  const hifiProxyTarget = new HifiProxyTarget__factory("0x...", signer); // Find the address on https://docs.hifi.finance
   const balanceSheet = "0x...";
   const collateral = "0x...";
   const depositAmount = parseUnits("100", 18);

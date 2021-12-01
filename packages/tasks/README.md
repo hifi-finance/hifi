@@ -6,7 +6,7 @@ A note on the deploy tasks. This package cannot deploy upgradeable contracts, be
 [validates](https://github.com/OpenZeppelin/openzeppelin-upgrades/issues/402) the compiler cache before deploying the
 proxies.
 
-## Install
+## Installation
 
 This package is not meant to be installed by any other package, not even a local package in this monorepo.
 

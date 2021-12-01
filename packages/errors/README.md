@@ -3,7 +3,7 @@
 Errors emitted in the Hifi protocol. This is a private package, meaning that it can only be used by another package
 in this monorepo.
 
-## Install
+## Installation
 
 List this package as a dev dependency:
 
@@ -15,6 +15,6 @@ List this package as a dev dependency:
 
 ## Usage
 
-```ts
+```javascript
 import { BalanceSheetErrors } from "@hifi/errors";
 ```

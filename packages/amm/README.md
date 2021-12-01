@@ -1,10 +1,10 @@
 # Hifi AMM ![npm (scoped)](https://img.shields.io/npm/v/@hifi/amm)
 
-Dedicated AMM for market-making hTokens. This is based on the [Yield Space](https://yield.is/YieldSpace.pdf) whitepaper.
+Dedicated AMM for market-making hTokens, based on the [Yield Space](https://yield.is/YieldSpace.pdf) design.
 
 The build artifacts can be browsed via [unpkg.com](https://unpkg.com/browse/@hifi/amm@latest/).
 
-## Install
+## Installation
 
 With yarn:
 
@@ -20,7 +20,7 @@ $ npm install @hifi/amm
 
 ## Usage
 
-The node package that you just installed contains both Solidity and JavaScript code. The former represents the smart contracts
+The node package that you just installed contains both Solidity and JavaScript code. The former is the smart contracts
 themselves; the latter, the smart contract ABIs and the TypeChain bindings.
 
 ### Solidity
@@ -35,7 +35,7 @@ pragma solidity >=0.8.4;
 import "@hifi/amm/contracts/IHifiPool.sol";
 
 contract YourContract {
-    // Get the address from https://docs.hifi.finance
+    // Find the address on https://docs.hifi.finance
     IHifiPool hifiPool = IHifiPool(0x...);
 
     function getQuote(uint256 hTokenIn) external view returns (uint256 underlyingOut) {
@@ -46,14 +46,15 @@ contract YourContract {
 
 ### JavaScript
 
-```js
+```javascript
 import { parseUnits } from "@ethersproject/units";
 import { getDefaultProvider } from "@ethersproject/providers";
 import { HifiPool__factory } from "@hifi/amm/dist/types/factories/HifiPool__factory";
 
 async function getQuote() {
+  const hifiPoolABI = HifiPool__factory.abi;
   const defaultProvider = getDefaultProvider();
-  const hifiPool = new HifiPool__factory("0x...", defaultProvider); // Get the address from https://docs.hifi.finance
+  const hifiPool = new HifiPool__factory("0x...", defaultProvider); // Find the address on https://docs.hifi.finance
   const hTokenIn = parseUnits("100", 18);
   const underlyingOut = await hifiPool.getQuoteForSellingHToken(hTokenIn);
 }

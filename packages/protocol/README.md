@@ -1,10 +1,10 @@
 # Hifi Protocol ![npm (scoped)](https://img.shields.io/npm/v/@hifi/protocol)
 
-The core Hifi fixed-rate, fixed-term lending protocol. Hifi enables the creation of zero-coupon bonds on EVM-compatible chains.
+The core Hifi fixed-rate, fixed-term lending protocol. Hifi is a decentralized finance protocol that brings fixed-rate, fixed-term lending to Ethereum-based blockchains.
 
 The build artifacts can be browsed via [unpkg.com](https://unpkg.com/browse/@hifi/protocol@latest/).
 
-## Install
+## Installation
 
 With yarn:
 
@@ -20,7 +20,7 @@ $ npm install @hifi/protocol
 
 ## Usage
 
-The node package that you just installed contains both Solidity and JavaScript code. The former represents the smart contracts
+The node package that you just installed contains both Solidity and JavaScript code. The former is the smart contracts
 themselves; the latter, the smart contract ABIs and the TypeChain bindings.
 
 ### Solidity
@@ -35,7 +35,7 @@ pragma solidity >=0.8.4;
 import "@hifi/protocol/contracts/core/balanceSheet/IBalanceSheetV1.sol";
 
 contract YourContract {
-    // Get the address from https://docs.hifi.finance
+    // Find the address on https://docs.hifi.finance
     IBalanceSheetV1 balanceSheet = IBalanceSheetV1(0x...);
 
     function queryAccountLiquidity(address user) external view returns (uint256 excessLiquidity, shortfallLiquidity) {
@@ -49,17 +49,19 @@ contract YourContract {
     function queryDebtAmount(address user, IHToken hToken) external view returns (uint256 debtAmount) {
         debtAmount = balanceSheet.getDebtAmount(user, hToken);
     }
+}
 ```
 
 ### JavaScript
 
-```ts
+```javascript
 import { getDefaultProvider } from "@ethersproject/providers";
 import { BalanceSheetV1__factory } from "@hifi/protocol/dist/types/factories/BalanceSheet__factory";
 
 async function queryAccountLiquidity() {
+  const balanceSheetABI = BalanceSheetV1__factory.abi;
   const defaultProvider = getDefaultProvider();
-  const balanceSheet = new BalanceSheetV1__factory("0x...", defaultProvider); // Get the address from https://docs.hifi.finance
+  const balanceSheet = new BalanceSheetV1__factory("0x...", defaultProvider); // Find the address on https://docs.hifi.finance
   const user = "0x...";
   const accountLiquidity = await balanceSheet.getCurrentAccountLiquidity(user);
 }

@@ -3,7 +3,7 @@
 Constants shared across Hifi packages. This is a private package, meaning that it can only be used by another package
 in this monorepo.
 
-## Install
+## Installation
 
 List this package as a dev dependency:
 
@@ -15,6 +15,6 @@ List this package as a dev dependency:
 
 ## Usage
 
-```ts
+```javascript
 import { COLLATERAL_RATIOS } from "@hifi/constants";
 ```

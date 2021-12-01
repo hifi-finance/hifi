@@ -5,7 +5,7 @@ and its forks.
 
 The build artifacts can be browsed via [unpkg.com](https://unpkg.com/browse/@hifi/flash-swap@latest/).
 
-## Install
+## Installation
 
 With yarn:
 
@@ -21,14 +21,14 @@ $ npm install @hifi/flash-swap
 
 ## Usage
 
-The node package that you just installed contains both Solidity and JavaScript code. The former represents the smart contracts
+The node package that you just installed contains both Solidity and JavaScript code. The former is the smart contracts
 themselves; the latter, the smart contract ABIs and the TypeChain bindings.
 
 ### Solidity
 
 You are not supposed to import the smart contracts. Instead, you should interact with the Uniswap pool
 directly. For example, with the [UniswapV2Pair](https://github.com/Uniswap/v2-core/blob/v1.0.1/contracts/UniswapV2Pair.sol)
-contract you would call the `swap` function. Then, Uniswap will forward the call to the `FlashUniswapV2`
+contract you would call the `swap` function, and then Uniswap will forward the call to the `FlashUniswapV2`
 contract. You can read more about flash swaps work in Uniswap on
 [docs.uniswap.org](https://docs.uniswap.org/protocol/V2/concepts/core-concepts/flash-swaps).
 
@@ -36,7 +36,7 @@ contract. You can read more about flash swaps work in Uniswap on
 
 Example for Uniswap V2:
 
-```js
+```javascript
 import { defaultAbiCoder } from "@ethersproject/abi";
 import { getDefaultProvider } from "@ethersproject/providers";
 import { parseUnits } from "@ethersproject/units";
