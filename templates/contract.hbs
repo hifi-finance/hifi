@@ -1,13 +1,12 @@
 {{{natspec.userdoc}}}
+
 {{{natspec.devdoc}}}
 
 {{#if ownFunctions}}
-
 ## Functions
-
 {{/if}}
-{{#ownFunctions}}
 
+{{#ownFunctions}}
 ### {{name}}
 ```solidity
 function {{name}}(
@@ -57,4 +56,3 @@ function {{name}}(
 {{#natspec.params}}
 |`{{param}}`| {{#lookup ../args.types @index}}{{/lookup}} | {{{description}}}{{/natspec.params}}{{/if}}
 {{/ownEvents}}
-s

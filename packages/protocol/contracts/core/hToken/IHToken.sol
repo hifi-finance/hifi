@@ -48,7 +48,7 @@ interface IHToken is
 
     /// PUBLIC CONSTANT FUNCTIONS ///
 
-    /// @notice The unique BalanceSheet associated with this HToken.
+    /// @notice The unique BalanceSheet contract this hToken belongs to.
     /// @return The BalanceSheet contract.
     function balanceSheet() external view returns (IBalanceSheetV1);
 

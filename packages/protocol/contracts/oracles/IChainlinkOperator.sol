@@ -8,7 +8,7 @@ import "../external/chainlink/IAggregatorV3.sol";
 
 /// @title IChainlinkOperator
 /// @author Hifi
-/// @notice Manages USD-quoted Chainlink price feeds.
+/// @notice Aggregates the price feeds provided by Chainlink.
 interface IChainlinkOperator {
     /// STRUCTS ///
 
@@ -29,33 +29,6 @@ interface IChainlinkOperator {
     /// @param asset The related asset.
     /// @param feed The related feed.
     event SetFeed(IErc20 indexed asset, IAggregatorV3 indexed feed);
-
-    /// NON-CONSTANT FUNCTIONS ///
-
-    /// @notice Deletes a previously set Chainlink price feed.
-    ///
-    /// @dev Emits a {DeleteFeed} event.
-    ///
-    /// Requirements:
-    ///
-    /// - The caller must be the owner.
-    /// - The feed must have been previously set.
-    ///
-    /// @param symbol The Erc20 symbol of the asset to delete the feed for.
-    function deleteFeed(string memory symbol) external;
-
-    /// @notice Sets a Chainlink price feed.
-    ///
-    /// @dev It is not an error to set a feed twice. Emits a {SetFeed} event.
-    ///
-    /// Requirements:
-    ///
-    /// - The caller must be the owner.
-    /// - The number of decimals of the feed must be 8.
-    ///
-    /// @param asset The address of the Erc20 contract for which to get the price.
-    /// @param feed The address of the Chainlink price feed contract.
-    function setFeed(IErc20 asset, IAggregatorV3 feed) external;
 
     /// CONSTANT FUNCTIONS ///
 
@@ -90,7 +63,7 @@ interface IChainlinkOperator {
     /// - The price returned by the oracle cannot be zero.
     ///
     /// @param symbol The symbol to fetch the price for.
-    /// @return Price denominated in USD, with 8 decimals.
+    /// @return The price denominated in USD, with 8 decimals.
     function getPrice(string memory symbol) external view returns (uint256);
 
     /// @notice Chainlink price precision for USD-quoted data.
@@ -98,4 +71,31 @@ interface IChainlinkOperator {
 
     /// @notice The ratio between normalized precision (1e18) and the Chainlink price precision (1e8).
     function pricePrecisionScalar() external view returns (uint256);
+
+    /// NON-CONSTANT FUNCTIONS ///
+
+    /// @notice Deletes a previously set Chainlink price feed.
+    ///
+    /// @dev Emits a {DeleteFeed} event.
+    ///
+    /// Requirements:
+    ///
+    /// - The caller must be the owner.
+    /// - The feed must have been previously set.
+    ///
+    /// @param symbol The Erc20 symbol of the asset to delete the feed for.
+    function deleteFeed(string memory symbol) external;
+
+    /// @notice Sets a Chainlink price feed.
+    ///
+    /// @dev It is not an error to set a feed twice. Emits a {SetFeed} event.
+    ///
+    /// Requirements:
+    ///
+    /// - The caller must be the owner.
+    /// - The number of decimals of the feed must be 8.
+    ///
+    /// @param asset The address of the Erc20 contract for which to get the price.
+    /// @param feed The address of the Chainlink price feed contract.
+    function setFeed(IErc20 asset, IAggregatorV3 feed) external;
 }

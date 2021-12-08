@@ -102,7 +102,7 @@
     "clean:node_modules": "shx rm -rf ./node_modules",
     "compile:sol": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat compile",
     "coverage": "cross-env CODE_COVERAGE=true hardhat coverage --solcoverjs ./.solcover.js --temp artifacts --testfiles \"./test/**/*.ts\"",
-    "generate:docs": "solidity-docgen --input contracts --output docs --solc-module solc --templates ../../templates",
+    "generate:docs": "solidity-docgen --input contracts --output docs --solc-module solc --templates ../../templates && yarn prettier",
     "generate:types": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat typechain",
     "lint": "yarn lint:sol && yarn lint:ts && yarn prettier:check",
     "lint:sol": "solhint --config ./.solhint.json --ignore-path ../../.solhintignore --max-warnings 0 \"contracts/**/*.sol\"",
