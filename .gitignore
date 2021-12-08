@@ -15,6 +15,7 @@
 **/cache
 **/coverage
 **/dist
+**/docs
 **/lib
 **/multisol-*
 **/node_modules

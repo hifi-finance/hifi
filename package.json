@@ -34,6 +34,7 @@
     "lint": "yarn workspaces foreach --parallel run lint",
     "lint:ts": "yarn workspaces foreach --parallel run lint:ts",
     "lint:sol": "yarn workspaces foreach --parallel run lint:sol",
+    "generate:docs": "yarn workspaces foreach --parallel --verbose run generate:docs",
     "generate:types": "yarn workspaces foreach --parallel --verbose run generate:types",
     "prepare:types": "yarn workspaces foreach --parallel --verbose run prepare:types",
     "postinstall": "husky install",
