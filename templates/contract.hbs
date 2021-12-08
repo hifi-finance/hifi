@@ -40,11 +40,11 @@ function {{name}}(
 
 ### {{name}}
 ```solidity
-  event {{name}}(
+event {{name}}(
     {{#natspec.params}}
     {{#lookup ../args.types @index}}{{/lookup}} {{param}}{{#if @last}}{{else}},{{/if}}
     {{/natspec.params}}
-  )
+)
 ```
 {{#if natspec.userdoc}}{{natspec.userdoc}}{{/if}}
 {{#if natspec.devdoc}}{{natspec.devdoc}}{{/if}}

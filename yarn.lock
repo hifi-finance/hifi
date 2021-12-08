@@ -1470,11 +1470,9 @@ __metadata:
     prettier-plugin-solidity: ^1.0.0-beta.18
     shelljs: ^0.8.4
     shx: ^0.3.3
-    solc: 0.8.9
     solhint: ^3.3.6
     solhint-plugin-prettier: ^0.0.5
     solidity-coverage: ^0.7.17
-    solidity-docgen: ^0.5.16
     ts-node: ^10.4.0
     typechain: ^5.2.0
     typescript: ^4.4.4
@@ -1618,8 +1616,10 @@ __metadata:
     prettier-plugin-solidity: ^1.0.0-beta.18
     shelljs: ^0.8.4
     shx: ^0.3.3
+    solc: 0.8.9
     solhint: ^3.3.6
     solhint-plugin-prettier: ^0.0.5
+    solidity-docgen: ^0.5.16
     ts-node: ^10.4.0
     typechain: ^5.2.0
     typescript: ^4.4.4
