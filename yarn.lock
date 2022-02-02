@@ -59,6 +59,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@babel/runtime@npm:^7.16.7":
+  version: 7.16.7
+  resolution: "@babel/runtime@npm:7.16.7"
+  dependencies:
+    regenerator-runtime: ^0.13.4
+  checksum: 47912f0aaacd1cab2e2552aaf3e6eaffbcaf2d5ac9b07a89a12ac0d42029cb92c070b0d16f825e4277c4a34677c54d8ffe85e1f7c6feb57de58f700eec67ce2f
+  languageName: node
+  linkType: hard
+
 "@commitlint/cli@npm:^16.1.0":
   version: 16.1.0
   resolution: "@commitlint/cli@npm:16.1.0"
@@ -1509,10 +1518,10 @@ __metadata:
     hardhat-packager: ^1.2.1
     lint-staged: ^12.3.3
     lodash: ^4.17.21
-    mathjs: ^9.5.2
+    mathjs: ^10.1.1
     mocha: ^9.2.0
     mocha-each: ^2.0.1
-    prb-math: 2.4.0
+    prb-math: 2.4.3
     prettier: ^2.5.1
     prettier-plugin-solidity: ^1.0.0-beta.19
     shelljs: ^0.8.5
@@ -1529,7 +1538,7 @@ __metadata:
     "@hifi/protocol": 1.7.1
     "@paulrberg/contracts": 3.6.1
     ethers: ^5.5.1
-    prb-math: 2.4.0
+    prb-math: 2.4.3
   languageName: unknown
   linkType: soft
 
@@ -1704,7 +1713,7 @@ __metadata:
     lodash: ^4.17.21
     mocha: ^9.2.0
     mocha-each: ^2.0.1
-    prb-math: 2.4.0
+    prb-math: 2.4.3
     prettier: ^2.5.1
     prettier-plugin-solidity: ^1.0.0-beta.19
     shelljs: ^0.8.5
@@ -1721,7 +1730,7 @@ __metadata:
     "@openzeppelin/contracts-upgradeable": 4.3.2
     "@paulrberg/contracts": 3.6.1
     ethers: ^5.4.7
-    prb-math: 2.4.0
+    prb-math: 2.4.3
   languageName: unknown
   linkType: soft
 
@@ -7855,6 +7864,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"fraction.js@npm:^4.1.2":
+  version: 4.1.2
+  resolution: "fraction.js@npm:4.1.2"
+  checksum: a67eff2b599cb6546b77ce9c913bd0cccd646e1a525c793ba4e0bf5a399fc403f379227fca83423a6ea79d01e35c2f2b0f141ffa1d09e41377041268a53fb150
+  languageName: node
+  linkType: hard
+
 "fragment-cache@npm:^0.2.1":
   version: 0.2.1
   resolution: "fragment-cache@npm:0.2.1"
@@ -10794,6 +10810,25 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
+"mathjs@npm:^10.1.1":
+  version: 10.1.1
+  resolution: "mathjs@npm:10.1.1"
+  dependencies:
+    "@babel/runtime": ^7.16.7
+    complex.js: ^2.0.15
+    decimal.js: ^10.3.1
+    escape-latex: ^1.2.0
+    fraction.js: ^4.1.2
+    javascript-natural-sort: ^0.7.1
+    seedrandom: ^3.0.5
+    tiny-emitter: ^2.1.0
+    typed-function: ^2.0.0
+  bin:
+    mathjs: bin/cli.js
+  checksum: 048544208a1e7054314a0ba83fcfd359dcead7875d58799b01f0d39d822fae95aed65d98c2c7b2dc0ca47c15ed2d3171bcae79036ab6b4e4d76ee6ca5b927b4d
+  languageName: node
+  linkType: hard
+
 "mathjs@npm:^9.5.0":
   version: 9.5.0
   resolution: "mathjs@npm:9.5.0"
@@ -10810,25 +10845,6 @@ fsevents@~2.3.2:
   bin:
     mathjs: bin/cli.js
   checksum: 11ff735c5a000885f2aff09404a5fce586ccd0f04f77395495bbaff534ae900bb56fa2cedb847aac3648cdba90f009decf9b498e2a30b0131347757e13d4d4ed
-  languageName: node
-  linkType: hard
-
-"mathjs@npm:^9.5.2":
-  version: 9.5.2
-  resolution: "mathjs@npm:9.5.2"
-  dependencies:
-    "@babel/runtime": ^7.15.4
-    complex.js: ^2.0.15
-    decimal.js: ^10.3.1
-    escape-latex: ^1.2.0
-    fraction.js: ^4.1.1
-    javascript-natural-sort: ^0.7.1
-    seedrandom: ^3.0.5
-    tiny-emitter: ^2.1.0
-    typed-function: ^2.0.0
-  bin:
-    mathjs: bin/cli.js
-  checksum: 239e6920d425552478f5aee7e5d36e52c35f11faafea975419def1ab89c971e76e4a3f075f43d3410f20b53af7c0bfd63888ea404150b571ae14fb0b328bfc7d
   languageName: node
   linkType: hard
 
@@ -12462,6 +12478,22 @@ fsevents@~2.3.2:
     evm-bn: ^1.0.1
     mathjs: ^9.5.0
   checksum: 62159113733275cfac1a56171370e62182b20b3b30100450ccac110e49251d14f54fb0eccf259287e491eae761f9201bedffec8a67ed7724e5e95ef2a3db0ee1
+  languageName: node
+  linkType: hard
+
+"prb-math@npm:2.4.3":
+  version: 2.4.3
+  resolution: "prb-math@npm:2.4.3"
+  dependencies:
+    "@ethersproject/bignumber": ^5.5.0
+    decimal.js: ^10.3.1
+    evm-bn: ^1.1.1
+    mathjs: ^10.1.1
+  peerDependencies:
+    "@ethersproject/bignumber": 5.x
+    evm-bn: 1.x
+    mathjs: 10.x
+  checksum: 240accc9a2815e9f6fa862b16537d47134bf6435b450eaedc79f2898c29e2df0312a17504a5129951b53daa8e68d8021576a337237135cdc2e369197b0552d98
   languageName: node
   linkType: hard
 
