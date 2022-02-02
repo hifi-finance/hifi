@@ -25,11 +25,11 @@ interface IFlashUniswapV2 is IUniswapV2Callee {
 
     /// CONSTANT FUNCTIONS ///
 
-    /// @notice The Hifi balance sheet.
+    /// @notice The `BalanceSheet` contract.
     function balanceSheet() external view returns (IBalanceSheetV1);
 
     /// @notice Calculates the amount of that must be repaid to Uniswap. When the collateral is not the underlying,
-    /// the formula applied is:
+    /// The formula used is:
     ///
     ///                (otherTokenReserves * underlyingAmount) * 1000
     /// repayAmount = -----------------------------------------------
@@ -41,9 +41,8 @@ interface IFlashUniswapV2 is IUniswapV2Callee {
     /// repayAmount =  ---------------------
     ///                         997
     ///
-    ///
-    /// @dev See "getAmountIn" and "getAmountOut" in UniswapV2Library.sol. Flash swaps that are repaid via the
-    /// corresponding pair token is akin to a normal swap, so the 0.3% LP fee applies.
+    /// @dev See "getAmountIn" and "getAmountOut" in `UniswapV2Library`. Flash swaps that are repaid via the
+    /// corresponding pair token are akin to a normal swap, so the 0.3% LP fee applies.
     /// @param pair The Uniswap V2 pair contract.
     /// @param collateral The address of the collateral contract.
     /// @param underlying The address of the underlying contract.
