@@ -18,6 +18,7 @@ import type { FintrollerV1 } from "../../src/types/FintrollerV1";
 import type { GodModeBalanceSheet } from "../../src/types/GodModeBalanceSheet";
 import type { GodModeErc20 } from "../../src/types/GodModeErc20";
 import type { GodModeHToken } from "../../src/types/GodModeHToken";
+import type { IAggregatorV3 } from "../../src/types/IAggregatorV3";
 import type { OwnableUpgradeable } from "../../src/types/OwnableUpgradeable";
 import type { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
 import {

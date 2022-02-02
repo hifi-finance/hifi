@@ -8,17 +8,18 @@
     "url": "https://hifi.finance"
   },
   "devDependencies": {
-    "@commitlint/cli": "^13.2.1",
-    "@commitlint/config-conventional": "^13.2.0",
+    "@commitlint/cli": "^16.1.0",
+    "@commitlint/config-conventional": "^16.0.0",
     "commitizen": "^4.2.4",
     "cz-conventional-changelog": "^3.3.0",
     "husky": "^7.0.4",
-    "lint-staged": "^11.2.5",
-    "prettier": "^2.4.1",
-    "prettier-plugin-solidity": "^1.0.0-beta.18",
-    "shx": "^0.3.3"
+    "lint-staged": "^12.3.3",
+    "prettier": "^2.5.1",
+    "prettier-plugin-solidity": "^1.0.0-beta.19",
+    "shx": "^0.3.4"
   },
   "license": "LGPL-3.0-or-later",
+  "packageManager": "yarn@3.1.1",
   "private": true,
   "resolutions": {
     "@ethersproject/wallet": "^5.5.0"

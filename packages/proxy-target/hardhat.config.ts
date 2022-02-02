@@ -17,7 +17,13 @@ const infuraApiKey: string = getEnvVar("INFURA_API_KEY");
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
   etherscan: {
-    apiKey: getEnvVar("ETHERSCAN_API_KEY"),
+    apiKey: {
+      mainnet: getEnvVar("ETHERSCAN_API_KEY"),
+      goerli: getEnvVar("ETHERSCAN_API_KEY"),
+      polygon: getEnvVar("POLYGONSCAN_API_KEY"),
+      rinkeby: getEnvVar("ETHERSCAN_API_KEY"),
+      ropsten: getEnvVar("ETHERSCAN_API_KEY"),
+    },
   },
   networks: {
     hardhat: {

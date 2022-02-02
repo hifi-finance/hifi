@@ -9,7 +9,6 @@ import type { GodModeErc20 } from "../../src/types/GodModeErc20";
 import type { GodModeHToken } from "../../src/types/GodModeHToken";
 import type { OwnableUpgradeable } from "../../src/types/OwnableUpgradeable";
 import type { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
-import type { StablecoinPriceFeed } from "../../src/types/StablecoinPriceFeed";
 
 declare module "mocha" {
   interface Context {
@@ -27,7 +26,7 @@ export interface Contracts {
   oracle: ChainlinkOperator;
   ownableUpgradeable: OwnableUpgradeable;
   usdc: GodModeErc20;
-  usdcPriceFeed: StablecoinPriceFeed;
+  usdcPriceFeed: SimplePriceFeed;
   wbtc: GodModeErc20;
   wbtcPriceFeed: SimplePriceFeed;
 }

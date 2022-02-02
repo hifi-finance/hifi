@@ -104,19 +104,6 @@ export async function deployOwnableUpgradeable(): Promise<OwnableUpgradeable> {
   return ownableUpgradeable;
 }
 
-export async function deploySimplePriceFeed(
-  deployer: Signer,
-  description: string,
-  price: BigNumber,
-): Promise<SimplePriceFeed> {
-  const simplePriceFeedArtifact: Artifact = await artifacts.readArtifact("SimplePriceFeed");
-  const simplePriceFeed: SimplePriceFeed = <SimplePriceFeed>(
-    await deployContract(deployer, simplePriceFeedArtifact, [description], overrides)
-  );
-  await simplePriceFeed.setPrice(price);
-  return simplePriceFeed;
-}
-
 export async function deployUsdc(deployer: Signer): Promise<GodModeErc20> {
   const godModeErc20Artifact: Artifact = await artifacts.readArtifact("GodModeErc20");
   const usdc: GodModeErc20 = <GodModeErc20>(
