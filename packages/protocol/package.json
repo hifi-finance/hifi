@@ -105,7 +105,7 @@
     "clean": "shx rm -rf ./artifacts ./cache ./coverage.json ./docs ./tsconfig.prod.tsbuildinfo",
     "clean:node_modules": "shx rm -rf ./node_modules",
     "compile:sol": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat compile",
-    "coverage": "cross-env CODE_COVERAGE=true hardhat coverage --solcoverjs ./.solcover.js --temp artifacts --testfiles \"./test/{unit,integration}/**/*.ts\"",
+    "coverage": "cross-env CODE_COVERAGE=true hardhat coverage --solcoverjs ./.solcover.js --temp artifacts --testfiles \"test/{unit,integration}/**/*.ts\"",
     "generate:docs": "solidity-docgen --input contracts --output docs --solc-module solc --templates ../../templates && yarn prettier",
     "generate:types": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat typechain",
     "lint": "yarn lint:sol && yarn lint:ts && yarn prettier:check",
