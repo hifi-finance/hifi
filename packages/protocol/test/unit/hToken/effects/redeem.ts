@@ -1,4 +1,4 @@
-import { BigNumber } from "@ethersproject/bignumber";
+import type { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { HTokenErrors } from "@hifi/errors";
 import { getNow } from "@hifi/helpers";
@@ -6,6 +6,7 @@ import { getPrecisionScalar, hUSDC } from "@hifi/helpers";
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
+import forEach from "mocha-each";
 
 export function shouldBehaveLikeRedeem(): void {
   let maker: SignerWithAddress;
@@ -37,85 +38,44 @@ export function shouldBehaveLikeRedeem(): void {
     });
 
     context("when the amount to redeem is not zero", function () {
-      context("when the calculated underlying amount is zero", function () {
+      const underlyingAmount: BigNumber = toBn("100", 18);
+
+      context("when there is not enough liquidity", function () {
         it("reverts", async function () {
-          const tinyHTokenAmount: BigNumber = hUSDC("1e-7");
-          await expect(this.contracts.hTokens[0].connect(maker).redeem(tinyHTokenAmount)).to.be.revertedWith(
-            HTokenErrors.REDEEM_UNDERLYING_ZERO,
+          await expect(this.contracts.hTokens[0].connect(maker).redeem(underlyingAmount)).to.be.revertedWith(
+            HTokenErrors.REDEEM_INSUFFICIENT_LIQUIDITY,
           );
         });
       });
 
-      context("when the calculated underlying amount is not zero", function () {
-        const hTokenAmount: BigNumber = hUSDC("100");
-
-        context("when there is not enough liquidity", function () {
-          it("reverts", async function () {
-            await expect(this.contracts.hTokens[0].connect(maker).redeem(hTokenAmount)).to.be.revertedWith(
-              HTokenErrors.REDEEM_INSUFFICIENT_LIQUIDITY,
-            );
-          });
+      context("when there is enough liquidity", function () {
+        beforeEach(async function () {
+          await this.contracts.hTokens[0].__godMode_mint(maker.address, underlyingAmount);
+          const totalUnderlyingReserve: BigNumber = toBn("1e6", 18);
+          await this.contracts.hTokens[0].__godMode_setTotalUnderlyingReserve(totalUnderlyingReserve);
         });
 
-        context("when there is enough liquidity", function () {
+        const testSets: number[] = [18, 6, 1];
+        forEach(testSets).describe("when the underlying has %d decimals", function (decimals: number) {
+          const underlyingAmount: BigNumber = toBn("100", decimals);
+
           beforeEach(async function () {
-            await this.contracts.hTokens[0].__godMode_mint(maker.address, hTokenAmount);
-            const totalUnderlyingReserve: BigNumber = toBn("1e6", 18);
-            await this.contracts.hTokens[0].__godMode_setTotalUnderlyingReserve(totalUnderlyingReserve);
+            await this.contracts.hTokens[0].__godMode_setUnderlyingPrecisionScalar(getPrecisionScalar(decimals));
+            await this.mocks.usdc.mock.transfer.withArgs(maker.address, underlyingAmount).returns(true);
           });
 
-          context("when the underlying has 18 decimals", function () {
-            const localUnderlyingAmount: BigNumber = toBn("100", 18);
-
-            beforeEach(async function () {
-              await this.contracts.hTokens[0].__godMode_setUnderlyingPrecisionScalar(1);
-              await this.mocks.usdc.mock.transfer.withArgs(maker.address, localUnderlyingAmount).returns(true);
-            });
-
-            it("makes the redemption", async function () {
-              const oldUnderlyingTotalSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingReserve();
-              await this.contracts.hTokens[0].connect(maker).redeem(hTokenAmount);
-              const newUnderlyingTotalSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingReserve();
-              expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.add(localUnderlyingAmount));
-            });
+          it("makes the redemption", async function () {
+            const oldUnderlyingTotalSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingReserve();
+            await this.contracts.hTokens[0].connect(maker).redeem(underlyingAmount);
+            const newUnderlyingTotalSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingReserve();
+            expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.add(underlyingAmount));
           });
 
-          context("when the underlying has 6 decimals", function () {
-            const underlyingAmount: BigNumber = toBn("100", 6);
-
-            beforeEach(async function () {
-              await this.contracts.hTokens[0].__godMode_setUnderlyingPrecisionScalar(getPrecisionScalar(6));
-              await this.mocks.usdc.mock.transfer.withArgs(maker.address, underlyingAmount).returns(true);
-            });
-
-            it("makes the redemption", async function () {
-              const oldUnderlyingTotalSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingReserve();
-              await this.contracts.hTokens[0].connect(maker).redeem(hTokenAmount);
-              const newUnderlyingTotalSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingReserve();
-              expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.add(underlyingAmount));
-            });
-          });
-
-          context("when the underlying has 1 decimal", function () {
-            const underlyingAmount: BigNumber = toBn("100", 1);
-
-            beforeEach(async function () {
-              await this.contracts.hTokens[0].__godMode_setUnderlyingPrecisionScalar(getPrecisionScalar(1));
-              await this.mocks.usdc.mock.transfer.withArgs(maker.address, underlyingAmount).returns(true);
-            });
-
-            it("makes the redemption", async function () {
-              const oldUnderlyingTotalSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingReserve();
-              await this.contracts.hTokens[0].connect(maker).redeem(hTokenAmount);
-              const newUnderlyingTotalSupply: BigNumber = await this.contracts.hTokens[0].totalUnderlyingReserve();
-              expect(oldUnderlyingTotalSupply).to.equal(newUnderlyingTotalSupply.add(underlyingAmount));
-            });
-
-            it("emits a Redeem event", async function () {
-              await expect(this.contracts.hTokens[0].connect(maker).redeem(hTokenAmount))
-                .to.emit(this.contracts.hTokens[0], "Redeem")
-                .withArgs(maker.address, hTokenAmount, underlyingAmount);
-            });
+          it("emits a Redeem event", async function () {
+            const hTokenAmount = hUSDC("100");
+            await expect(this.contracts.hTokens[0].connect(maker).redeem(underlyingAmount))
+              .to.emit(this.contracts.hTokens[0], "Redeem")
+              .withArgs(maker.address, underlyingAmount, hTokenAmount);
           });
         });
       });

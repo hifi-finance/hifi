@@ -1,9 +1,10 @@
 import { shouldBehaveLikeConstructor } from "./deployment/constructor";
 import { shouldBehaveLikeBurn } from "./effects/burn";
+import { shouldBehaveLikeDepositUnderlying } from "./effects/depositUnderlying";
 import { shouldBehaveLikeMint } from "./effects/mint";
 import { shouldBehaveLikeRedeem } from "./effects/redeem";
 import { shouldBehaveLikeSetBalanceSheet } from "./effects/setBalanceSheet";
-import { shouldBehaveLikeSupplyUnderlying } from "./effects/supplyUnderlying";
+import { shouldBehaveLikeWithdrawUnderlying } from "./effects/withdrawUnderlying";
 import { shouldBehaveLikeBalanceSheetGetter } from "./view/balanceSheet";
 import { shouldBehaveLikeIsMatured } from "./view/isMatured";
 import { shouldBehaveLikeMaturityGetter } from "./view/maturity";
@@ -54,6 +55,10 @@ export function shouldBehaveLikeHToken(): void {
       shouldBehaveLikeBurn();
     });
 
+    describe("depositUnderlying", function () {
+      shouldBehaveLikeDepositUnderlying();
+    });
+
     describe("mint", function () {
       shouldBehaveLikeMint();
     });
@@ -66,8 +71,8 @@ export function shouldBehaveLikeHToken(): void {
       shouldBehaveLikeSetBalanceSheet();
     });
 
-    describe("supplyUnderlying", function () {
-      shouldBehaveLikeSupplyUnderlying();
+    describe("withdrawUnderlying", function () {
+      shouldBehaveLikeWithdrawUnderlying();
     });
   });
 }

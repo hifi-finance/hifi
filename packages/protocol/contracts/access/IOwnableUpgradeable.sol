@@ -11,6 +11,12 @@ interface IOwnableUpgradeable {
     /// @param newOwner The address of the new owner.
     event TransferOwnership(address indexed oldOwner, address indexed newOwner);
 
+    /// CONSTANT FUNCTIONS ///
+
+    /// @notice The address of the owner account or contract.
+    /// @return The address of the owner.
+    function owner() external view returns (address);
+
     /// NON-CONSTANT FUNCTIONS ///
 
     /// @notice Leaves the contract without an owner, so it will not be possible to call `onlyOwner`
@@ -28,10 +34,4 @@ interface IOwnableUpgradeable {
     /// called by the current owner.
     /// @param newOwner The account of the new owner.
     function _transferOwnership(address newOwner) external;
-
-    /// CONSTANT FUNCTIONS ///
-
-    /// @notice The address of the owner account or contract.
-    /// @return The address of the owner.
-    function owner() external view returns (address);
 }

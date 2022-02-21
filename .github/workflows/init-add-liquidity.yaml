@@ -22,7 +22,7 @@ on:
         description: "Git ref to checkout"
         required: false
       supply-underlying-amount:
-        description: "Amount of underlying to supply in exchange of hTokens"
+        description: "Amount of underlying to supply in exchange for hTokens"
         required: true
 
 jobs:
