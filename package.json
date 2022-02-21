@@ -45,5 +45,10 @@
   },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "dependencies": {
+    "@hifi/proxy-target": "workspace:^",
+    "ethereumjs-util": "^7.1.4",
+    "test-helpers": "^0.1.4"
+  }
 }
