@@ -32,11 +32,11 @@ errors](https://blog.soliditylang.org/2021/04/21/custom-errors/) instead of reas
 // SPDX-License-Identifier: Unlicense
 pragma solidity >=0.8.4;
 
-import "@hifi/protocol/contracts/core/balanceSheet/IBalanceSheetV1.sol";
+import "@hifi/protocol/contracts/core/balance-sheet/IBalanceSheetV2.sol";
 
 contract YourContract {
     // Find the address on https://docs.hifi.finance
-    IBalanceSheetV1 balanceSheet = IBalanceSheetV1(0x...);
+    IBalanceSheetV2 balanceSheet = IBalanceSheetV2(0x...);
 
     function queryAccountLiquidity(address user) external view returns (uint256 excessLiquidity, shortfallLiquidity) {
         (excessLiquidity, shortfallLiquidity) = balanceSheet.getCurrentAccountLiquidity(user);
@@ -56,12 +56,12 @@ contract YourContract {
 
 ```javascript
 import { getDefaultProvider } from "@ethersproject/providers";
-import { BalanceSheetV1__factory } from "@hifi/protocol/dist/types/factories/BalanceSheet__factory";
+import { BalanceSheetV2__factory } from "@hifi/protocol/dist/types/factories/BalanceSheetV2__factory";
 
 async function queryAccountLiquidity() {
-  const balanceSheetABI = BalanceSheetV1__factory.abi;
+  const balanceSheetABI = BalanceSheetV2__factory.abi;
   const defaultProvider = getDefaultProvider();
-  const balanceSheet = new BalanceSheetV1__factory("0x...", defaultProvider); // Find the address on https://docs.hifi.finance
+  const balanceSheet = new BalanceSheetV2__factory("0x...", defaultProvider); // Find the address on https://docs.hifi.finance
   const user = "0x...";
   const accountLiquidity = await balanceSheet.getCurrentAccountLiquidity(user);
 }

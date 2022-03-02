@@ -59,7 +59,7 @@ interface IChainlinkOperator {
     ///
     /// @dev Requirements:
     ///
-    /// - The feed must have been previously set.
+    /// - The feed must be set.
     /// - The price returned by the oracle cannot be zero.
     ///
     /// @param symbol The symbol to fetch the price for.
@@ -81,7 +81,7 @@ interface IChainlinkOperator {
     /// Requirements:
     ///
     /// - The caller must be the owner.
-    /// - The feed must have been previously set.
+    /// - The feed must be set already.
     ///
     /// @param symbol The Erc20 symbol of the asset to delete the feed for.
     function deleteFeed(string memory symbol) external;

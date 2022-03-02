@@ -7,11 +7,11 @@ export function shouldBehaveLikeGetBond(): void {
       const bond = await this.contracts.fintroller.getBond(this.mocks.hTokens[0].address);
       expect(bond.debtCeiling).to.equal(Zero);
       expect(bond.isBorrowAllowed).to.equal(false);
+      expect(bond.isDepositUnderlyingAllowed).to.equal(false);
       expect(bond.isLiquidateBorrowAllowed).to.equal(false);
       expect(bond.isListed).to.equal(false);
       expect(bond.isRedeemHTokenAllowed).to.equal(false);
       expect(bond.isRepayBorrowAllowed).to.equal(false);
-      expect(bond.isSupplyUnderlyingAllowed).to.equal(false);
     });
   });
 
@@ -24,11 +24,11 @@ export function shouldBehaveLikeGetBond(): void {
       const bond = await this.contracts.fintroller.getBond(this.mocks.hTokens[0].address);
       expect(bond.debtCeiling).to.equal(Zero);
       expect(bond.isBorrowAllowed).to.equal(true);
+      expect(bond.isDepositUnderlyingAllowed).to.equal(true);
       expect(bond.isLiquidateBorrowAllowed).to.equal(true);
       expect(bond.isListed).to.equal(true);
       expect(bond.isRedeemHTokenAllowed).to.equal(true);
       expect(bond.isRepayBorrowAllowed).to.equal(true);
-      expect(bond.isSupplyUnderlyingAllowed).to.equal(true);
     });
   });
 }

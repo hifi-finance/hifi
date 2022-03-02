@@ -1,6 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { DEFAULT_MAX_BONDS } from "@hifi/constants";
-import { OwnableUpgradeableErrors } from "@hifi/errors";
+import { OwnableErrors } from "@hifi/errors";
 import { expect } from "chai";
 
 export function shouldBehaveLikeSetMaxBonds(): void {
@@ -9,7 +9,7 @@ export function shouldBehaveLikeSetMaxBonds(): void {
   context("when the caller is not the owner", function () {
     it("reverts", async function () {
       await expect(this.contracts.fintroller.connect(this.signers.raider).setMaxBonds(newMaxBonds)).to.be.revertedWith(
-        OwnableUpgradeableErrors.NOT_OWNER,
+        OwnableErrors.NOT_OWNER,
       );
     });
   });

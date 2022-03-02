@@ -1,6 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
-import { FintrollerErrors, OwnableUpgradeableErrors } from "@hifi/errors";
+import { FintrollerErrors, OwnableErrors } from "@hifi/errors";
 import { hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 
@@ -13,7 +13,7 @@ export function shouldBehaveLikeSetDebtCeiling(): void {
         this.contracts.fintroller
           .connect(this.signers.raider)
           .setDebtCeiling(this.mocks.hTokens[0].address, newDebtCeiling),
-      ).to.be.revertedWith(OwnableUpgradeableErrors.NOT_OWNER);
+      ).to.be.revertedWith(OwnableErrors.NOT_OWNER);
     });
   });
 

@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { LIQUIDATION_INCENTIVES } from "@hifi/constants";
-import { FintrollerErrors, OwnableUpgradeableErrors } from "@hifi/errors";
+import { FintrollerErrors, OwnableErrors } from "@hifi/errors";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
 
@@ -16,7 +16,7 @@ export function shouldBehaveLikeSetLiquidationIncentive(): void {
         this.contracts.fintroller
           .connect(this.signers.raider)
           .setLiquidationIncentive(this.mocks.wbtc.address, newLiquidationIncentive),
-      ).to.be.revertedWith(OwnableUpgradeableErrors.NOT_OWNER);
+      ).to.be.revertedWith(OwnableErrors.NOT_OWNER);
     });
   });
 

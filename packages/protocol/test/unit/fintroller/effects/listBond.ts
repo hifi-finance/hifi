@@ -1,4 +1,4 @@
-import { OwnableUpgradeableErrors } from "@hifi/errors";
+import { OwnableErrors } from "@hifi/errors";
 import { expect } from "chai";
 
 export function shouldBehaveLikeListBond(): void {
@@ -6,7 +6,7 @@ export function shouldBehaveLikeListBond(): void {
     it("reverts", async function () {
       await expect(
         this.contracts.fintroller.connect(this.signers.raider).listBond(this.mocks.hTokens[0].address),
-      ).to.be.revertedWith(OwnableUpgradeableErrors.NOT_OWNER);
+      ).to.be.revertedWith(OwnableErrors.NOT_OWNER);
     });
   });
 

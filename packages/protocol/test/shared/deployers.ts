@@ -14,14 +14,9 @@ import {
   WBTC_SYMBOL,
 } from "@hifi/constants";
 import { getHTokenName, getHTokenSymbol, price } from "@hifi/helpers";
-import {
-  FintrollerV1__factory,
-  GodModeBalanceSheet__factory,
-  OwnableUpgradeable,
-  OwnableUpgradeable__factory,
-} from "../../src/types";
+import { GodModeBalanceSheet__factory, OwnableUpgradeable, OwnableUpgradeable__factory } from "../../src/types";
 import { ChainlinkOperator } from "../../src/types/ChainlinkOperator";
-import { FintrollerV1 } from "../../src/types/FintrollerV1";
+import { Fintroller } from "../../src/types/Fintroller";
 import { GodModeBalanceSheet } from "../../src/types/GodModeBalanceSheet";
 import { GodModeErc20 } from "../../src/types/GodModeErc20";
 import { GodModeHToken } from "../../src/types/GodModeHToken";
@@ -39,17 +34,18 @@ export async function deployChainlinkOperator(deployer: Signer): Promise<Chainli
   return chainlinkOperator;
 }
 
-export async function deployFintrollerV1(): Promise<FintrollerV1> {
-  const fintrollerV1Factory: FintrollerV1__factory = await ethers.getContractFactory("FintrollerV1");
-  const fintrollerV1: FintrollerV1 = <FintrollerV1>await upgrades.deployProxy(fintrollerV1Factory);
-  await fintrollerV1.deployed();
-  return fintrollerV1;
+export async function deployFintroller(deployer: Signer): Promise<Fintroller> {
+  const fintrollerArtifact: Artifact = await artifacts.readArtifact("Fintroller");
+  const fintroller: Fintroller = <Fintroller>await deployContract(deployer, fintrollerArtifact);
+  await fintroller.deployed();
+  return fintroller;
 }
 
 export async function deployHToken(
   deployer: Signer,
   maturity: BigNumber,
   balanceSheetAddress: string,
+  fintrollerAddress: string,
   underlyingAddress: string,
 ): Promise<HToken> {
   const hTokenArtifact: Artifact = await artifacts.readArtifact("HToken");
@@ -57,7 +53,14 @@ export async function deployHToken(
     await deployContract(
       deployer,
       hTokenArtifact,
-      [getHTokenName(maturity), getHTokenSymbol(maturity), maturity, balanceSheetAddress, underlyingAddress],
+      [
+        getHTokenName(maturity),
+        getHTokenSymbol(maturity),
+        maturity,
+        balanceSheetAddress,
+        fintrollerAddress,
+        underlyingAddress,
+      ],
       overrides,
     )
   );
@@ -81,6 +84,7 @@ export async function deployGodModeHToken(
   deployer: Signer,
   maturity: BigNumber,
   balanceSheetAddress: string,
+  fintrollerAddress: string,
   underlyingAddress: string,
 ): Promise<GodModeHToken> {
   const godModeHTokenArtifact: Artifact = await artifacts.readArtifact("GodModeHToken");
@@ -88,7 +92,14 @@ export async function deployGodModeHToken(
     await deployContract(
       deployer,
       godModeHTokenArtifact,
-      [getHTokenName(maturity), getHTokenSymbol(maturity), maturity, balanceSheetAddress, underlyingAddress],
+      [
+        getHTokenName(maturity),
+        getHTokenSymbol(maturity),
+        maturity,
+        balanceSheetAddress,
+        fintrollerAddress,
+        underlyingAddress,
+      ],
       overrides,
     )
   );

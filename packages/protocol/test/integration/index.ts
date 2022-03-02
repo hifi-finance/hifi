@@ -1,5 +1,5 @@
 import { baseContext } from "../shared/contexts";
-import { integrationTestBalanceSheet } from "./balanceSheet/BalanceSheet";
+import { integrationTestBalanceSheet } from "./balance-sheet/BalanceSheet";
 
 baseContext("Integration Tests", function () {
   integrationTestBalanceSheet();

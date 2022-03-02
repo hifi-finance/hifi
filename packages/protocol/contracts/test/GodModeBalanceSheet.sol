@@ -3,13 +3,13 @@ pragma solidity >=0.8.4;
 
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 
-import "../core/balanceSheet/BalanceSheetV1.sol";
-import "../core/hToken/IHToken.sol";
+import "../core/balance-sheet/BalanceSheetV2.sol";
+import "../core/h-token/IHToken.sol";
 
 /// @title GodModeBalanceSheet
 /// @author Hifi
 /// @dev Strictly for test purposes. Do not use in production.
-contract GodModeBalanceSheet is BalanceSheetV1 {
+contract GodModeBalanceSheet is BalanceSheetV2 {
     function __godMode_setBondList(address account, IHToken[] memory bondList) external {
         vaults[account].bondList = bondList;
     }

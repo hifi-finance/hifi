@@ -1,4 +1,3 @@
-import { shouldBehaveLikeUpgradeableProxy } from "./deployment/proxy";
 import { shouldBehaveLikeListBond } from "./effects/listBond";
 import { shouldBehaveLikeListCollateral } from "./effects/listCollateral";
 import { shouldBehaveLikeSetBorrowAllowed } from "./effects/setBorrowAllowed";
@@ -6,6 +5,7 @@ import { shouldBehaveLikeSetCollateralCeiling } from "./effects/setCollateralCei
 import { shouldBehaveLikeSetCollateralRatio } from "./effects/setCollateralRatio";
 import { shouldBehaveLikeSetDebtCeiling } from "./effects/setDebtCeiling";
 import { shouldBehaveLikeSetDepositCollateralAllowed } from "./effects/setDepositCollateralAllowed";
+import { shouldBehaveLikeSetDepositUnderlyingAllowed } from "./effects/setDepositUnderlyingAllowed";
 import { shouldBehaveLikeSetLiquidateBorrowAllowed } from "./effects/setLiquidateBorrowAllowed";
 import { shouldBehaveLikeSetLiquidationIncentive } from "./effects/setLiquidationIncentive";
 import { shouldBehaveLikeSetMaxBonds } from "./effects/setMaxBonds";
@@ -25,10 +25,6 @@ import { shouldBehaveLikeIsCollateralListed } from "./view/isCollateralListed";
 import { shouldBehaveLikeMaxBonds } from "./view/maxBonds";
 
 export function shouldBehaveLikeFintroller(): void {
-  describe("Deployment", function () {
-    shouldBehaveLikeUpgradeableProxy();
-  });
-
   describe("View Functions", function () {
     describe("getBond", function () {
       shouldBehaveLikeGetBond();
@@ -110,6 +106,10 @@ export function shouldBehaveLikeFintroller(): void {
 
     describe("setDepositCollateralAllowed", function () {
       shouldBehaveLikeSetDepositCollateralAllowed();
+    });
+
+    describe("setDepositUnderlyingAllowed", function () {
+      shouldBehaveLikeSetDepositUnderlyingAllowed();
     });
 
     describe("setLiquidateBorrowAllowed", function () {

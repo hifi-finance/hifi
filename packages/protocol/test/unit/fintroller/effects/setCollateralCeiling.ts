@@ -1,6 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
-import { FintrollerErrors, OwnableUpgradeableErrors } from "@hifi/errors";
+import { FintrollerErrors, OwnableErrors } from "@hifi/errors";
 import { WBTC } from "@hifi/helpers";
 import { expect } from "chai";
 
@@ -13,7 +13,7 @@ export function shouldBehaveLikeSetCollateralCeiling(): void {
         this.contracts.fintroller
           .connect(this.signers.raider)
           .setCollateralCeiling(this.mocks.wbtc.address, newCollateralCeiling),
-      ).to.be.revertedWith(OwnableUpgradeableErrors.NOT_OWNER);
+      ).to.be.revertedWith(OwnableErrors.NOT_OWNER);
     });
   });
 

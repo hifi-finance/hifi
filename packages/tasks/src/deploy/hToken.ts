@@ -12,7 +12,8 @@ task(TASK_DEPLOY_CONTRACT_H_TOKEN)
   .addParam("name", "ERC-20 name of the hToken")
   .addParam("symbol", "ERC-20 symbol of the hToken")
   .addParam("maturity", "Unix timestamp for when the hToken matures")
-  .addParam("balanceSheet", "Address of the BalanceSheet contract")
+  .addParam("balanceSheet", "Address of the BalanceSheet contract to connect to")
+  .addParam("fintroller", "Address of the Fintroller contract to connect to")
   .addParam("underlying", "Address of the underlying ERC-20 contract")
   // Developer settings
   .addOptionalParam("confirmations", "How many block confirmations to wait for", 0, types.int)
@@ -27,6 +28,7 @@ task(TASK_DEPLOY_CONTRACT_H_TOKEN)
         taskArgs.symbol,
         taskArgs.maturity,
         taskArgs.balanceSheet,
+        taskArgs.fintroller,
         taskArgs.underlying,
       )
     );

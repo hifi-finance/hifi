@@ -1,11 +1,13 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.4;
 
+import "@paulrberg/contracts/access/IOwnable.sol";
+
 import "./IHifiPool.sol";
 
 /// @title IHifiPoolRegistry
 /// @author Hifi
-interface IHifiPoolRegistry {
+interface IHifiPoolRegistry is IOwnable {
     /// EVENTS ///
 
     event TrackPool(IHifiPool indexed pool);
@@ -27,7 +29,7 @@ interface IHifiPoolRegistry {
     /// @dev Emits a {TrackPool} event.
     ///
     /// Requirements:
-    /// - The pool shouldn't have already been tracked.
+    /// - The pool shouldn't be tracked.
     ///
     /// @param pool The address of the pool to track.
     function trackPool(IHifiPool pool) external;
@@ -37,7 +39,7 @@ interface IHifiPoolRegistry {
     /// @dev Emits an {UntrackPool} event.
     ///
     /// Requirements:
-    /// - The pool should have been tracked.
+    /// - The pool should be tracked.
     ///
     /// @param pool The address of the pool to untrack
     function untrackPool(IHifiPool pool) external;
