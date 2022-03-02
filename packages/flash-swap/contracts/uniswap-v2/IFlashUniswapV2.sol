@@ -10,6 +10,21 @@ import "./IUniswapV2Pair.sol";
 /// @author Hifi
 /// @notice Integration of Uniswap V2 flash swaps for liquidating underwater accounts in Hifi.
 interface IFlashUniswapV2 is IUniswapV2Callee {
+    /// CUSTOM ERRORS ///
+
+    /// @notice Emitted when the caller is not the Uniswap V2 pair contract.
+    error FlashUniswapV2__CallNotAuthorized(address caller);
+
+    /// @notice Emitted when the flash borrowed asset is the other token in the pair instead of the underlying.
+    error FlashUniswapV2__FlashBorrowOtherToken();
+
+    /// @notice Emitted when the liquidation either does not yield a sufficient profit or it costs more
+    /// than what the subsidizer is willing to pay.
+    error FlashUniswapV2__TurnoutNotSatisfied(uint256 seizeAmount, uint256 repayAmount, int256 turnout);
+
+    /// @notice Emitted when neither the token0 nor the token1 is the underlying.
+    error FlashUniswapV2__UnderlyingNotInPool(IUniswapV2Pair pair, address token0, address token1, IErc20 underlying);
+
     /// EVENTS ///
 
     event FlashSwapAndLiquidateBorrow(

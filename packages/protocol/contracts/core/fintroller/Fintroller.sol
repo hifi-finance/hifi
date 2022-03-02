@@ -7,33 +7,6 @@ import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "./IFintroller.sol";
 import "../h-token/IHToken.sol";
 
-/// @notice Emitted when interacting with a bond that is not listed.
-error Fintroller__BondNotListed(IHToken bond);
-
-/// @notice Emitted when listing a collateral that has more than 18 decimals.
-error Fintroller__CollateralDecimalsOverflow(uint256 decimals);
-
-/// @notice Emitted when listing a collateral that has zero decimals.
-error Fintroller__CollateralDecimalsZero();
-
-/// @notice Emitted when interacting with a collateral that is not listed.
-error Fintroller__CollateralNotListed(IErc20 collateral);
-
-/// @notice Emitted when setting a new collateral ratio that is above the upper bound.
-error Fintroller__CollateralRatioOverflow(uint256 newCollateralRatio);
-
-/// @notice Emitted when setting a new collateral ratio that is below the lower bound.
-error Fintroller__CollateralRatioUnderflow(uint256 newCollateralRatio);
-
-/// @notice Emitted when setting a new debt ceiling that is below the total supply of hTokens.
-error Fintroller__DebtCeilingUnderflow(uint256 newDebtCeiling, uint256 totalSupply);
-
-/// @notice Emitted when setting a new liquidation incentive that is above the upper bound.
-error Fintroller__LiquidationIncentiveOverflow(uint256 newLiquidationIncentive);
-
-/// @notice Emitted when setting a new liquidation incentive that is below the lower bound.
-error Fintroller__LiquidationIncentiveUnderflow(uint256 newLiquidationIncentive);
-
 /// @notice Fintroller
 /// @author Hifi
 contract Fintroller is

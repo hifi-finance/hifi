@@ -8,6 +8,14 @@ import "./IHifiPool.sol";
 /// @title IHifiPoolRegistry
 /// @author Hifi
 interface IHifiPoolRegistry is IOwnable {
+    /// CUSTOM ERRORS ///
+
+    /// @notice Emitted when the pool to be tracked is already tracked.
+    error HifiPoolRegistry__PoolAlreadyTracked(IHifiPool pool);
+
+    /// @notice Emitted when the pool to be untracked is not tracked.
+    error HifiPoolRegistry__PoolNotTracked(IHifiPool pool);
+
     /// EVENTS ///
 
     event TrackPool(IHifiPool indexed pool);

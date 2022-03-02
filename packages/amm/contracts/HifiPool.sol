@@ -10,48 +10,6 @@ import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 import "./IHifiPool.sol";
 import "./math/YieldSpace.sol";
 
-/// @notice Emitted when the bond matured.
-error HifiPool__BondMatured();
-
-/// @notice Emitted when attempting to buy a zero amount of hTokens.
-error HifiPool__BuyHTokenZero();
-
-/// @notice Emitted when attempting to buy hTokens with a zero amount of underlying.
-error HifiPool__BuyHTokenUnderlyingZero();
-
-/// @notice Emitted when attempting to buy a zero amount of underlying.
-error HifiPool__BuyUnderlyingZero();
-
-/// @notice Emitted when offering zero underlying to mint LP tokens.
-error HifiPool__BurnZero();
-
-/// @notice Emitted when offering zero underlying to mint LP tokens.
-error HifiPool__MintZero();
-
-/// @notice Emitted when buying hTokens or selling underlying and the resultant hToken reserves would become
-/// smaller than the underlying reserves.
-error HifiPool__NegativeInterestRate(
-    uint256 virtualHTokenReserves,
-    uint256 hTokenOut,
-    uint256 normalizedUnderlyingReserves,
-    uint256 normalizedUnderlyingIn
-);
-
-/// @notice Emitted when attempting to sell a zero amount of hToken.
-error HifiPool__SellHTokenZero();
-
-/// @notice Emitted when attempting to sell hTokens in exchange for a zero amount of underlying.
-error HifiPool__SellHTokenUnderlyingZero();
-
-/// @notice Emitted when attempting to sell a zero amount of underlying.
-error HifiPool__SellUnderlyingZero();
-
-/// @notice Emitted when trying to convert a uint256 number that doesn't fit within int256.
-error HifiPool__ToInt256CastOverflow(uint256 number);
-
-/// @notice Emitted when the hToken balance added to the total supply of LP tokens overflows uint256.
-error HifiPool__VirtualHTokenReservesOverflow(uint256 hTokenBalance, uint256 totalSupply);
-
 /// @title HifiPool
 /// @author Hifi
 contract HifiPool is

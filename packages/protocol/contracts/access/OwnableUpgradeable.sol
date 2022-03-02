@@ -5,12 +5,6 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 
 import "./IOwnableUpgradeable.sol";
 
-/// @notice Emitted when the caller is not the owner.
-error OwnableUpgradeable__NotOwner(address owner, address caller);
-
-/// @notice Emitted when setting the owner to the zero address.
-error OwnableUpgradeable__OwnerZeroAddress();
-
 /// @title OwnableUpgradeable
 /// @author Hifi
 /// @dev Forked from OpenZeppelin

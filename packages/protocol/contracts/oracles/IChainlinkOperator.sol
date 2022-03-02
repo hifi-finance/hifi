@@ -10,13 +10,16 @@ import "../external/chainlink/IAggregatorV3.sol";
 /// @author Hifi
 /// @notice Aggregates the price feeds provided by Chainlink.
 interface IChainlinkOperator {
-    /// STRUCTS ///
+    /// CUSTOM ERRORS ///
 
-    struct Feed {
-        IErc20 asset;
-        IAggregatorV3 id;
-        bool isSet;
-    }
+    /// @notice Emitted when the decimal precision of the feed is not the same as the expected number.
+    error ChainlinkOperator__DecimalsMismatch(string symbol, uint256 decimals);
+
+    /// @notice Emitted when trying to interact with a feed not set yet.
+    error ChainlinkOperator__FeedNotSet(string symbol);
+
+    /// @notice Emitted when the price returned by the oracle is zero.
+    error ChainlinkOperator__PriceZero(string symbol);
 
     /// EVENTS ///
 
@@ -29,6 +32,14 @@ interface IChainlinkOperator {
     /// @param asset The related asset.
     /// @param feed The related feed.
     event SetFeed(IErc20 indexed asset, IAggregatorV3 indexed feed);
+
+    /// STRUCTS ///
+
+    struct Feed {
+        IErc20 asset;
+        IAggregatorV3 id;
+        bool isSet;
+    }
 
     /// CONSTANT FUNCTIONS ///
 

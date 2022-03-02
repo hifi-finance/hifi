@@ -4,6 +4,14 @@ pragma solidity >=0.8.4;
 /// @title IOwnableUpgradeable
 /// @author Hifi
 interface IOwnableUpgradeable {
+    /// CUSTOM ERRORS ///
+
+    /// @notice Emitted when the caller is not the owner.
+    error OwnableUpgradeable__NotOwner(address owner, address caller);
+
+    /// @notice Emitted when setting the owner to the zero address.
+    error OwnableUpgradeable__OwnerZeroAddress();
+
     /// EVENTS ///
 
     /// @notice Emitted when ownership is transferred.

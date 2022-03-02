@@ -6,12 +6,6 @@ import "@paulrberg/contracts/access/Ownable.sol";
 import "./IHifiPool.sol";
 import "./IHifiPoolRegistry.sol";
 
-/// @notice Emitted when the pool to be tracked is already tracked.
-error HifiPoolRegistry__PoolAlreadyTracked(IHifiPool pool);
-
-/// @notice Emitted when the pool to be untracked is not tracked.
-error HifiPoolRegistry__PoolNotTracked(IHifiPool pool);
-
 /// @title HifiPoolRegistry
 /// @author Hifi
 contract HifiPoolRegistry is

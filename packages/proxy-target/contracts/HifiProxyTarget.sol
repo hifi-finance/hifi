@@ -10,18 +10,6 @@ import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 import "./IHifiProxyTarget.sol";
 import "./external/WethInterface.sol";
 
-/// @notice Emitted when the hToken slippage is higher than what the user is willing to tolerate.
-error HifiProxyTarget__AddLiquidityHTokenSlippage(uint256 expectedHTokenRequired, uint256 actualHTokenRequired);
-
-/// @notice Emitted when the underlying slippage is higher than what the user is willing to tolerate.
-error HifiProxyTarget__AddLiquidityUnderlyingSlippage(
-    uint256 expectedUnderlyingRequired,
-    uint256 actualUnderlyingRequired
-);
-
-/// @notice Emitted when the slippage is higher than what the user is willing to tolerate.
-error HifiProxyTarget__TradeSlippage(uint256 expectedAmount, uint256 actualAmount);
-
 /// @title HifiProxyTarget
 /// @author Hifi
 contract HifiProxyTarget is IHifiProxyTarget {

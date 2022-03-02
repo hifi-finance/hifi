@@ -17,6 +17,47 @@ interface IHToken is
     IErc20Permit, // one dependency
     IErc20Recover // one dependency
 {
+    /// CUSTOM ERRORS ///
+
+    /// @notice Emitted when the bond matured.
+    error HToken__BondMatured(uint256 now, uint256 maturity);
+
+    /// @notice Emitted when the bond did not mature.
+    error HToken__BondNotMatured(uint256 now, uint256 maturity);
+
+    /// @notice Emitted when burning hTokens and the caller is not the BalanceSheet contract.
+    error HToken__BurnNotAuthorized(address caller);
+
+    /// @notice Emitted when underlying deposits are not allowed by the Fintroller contract.
+    error HToken__DepositUnderlyingNotAllowed();
+
+    /// @notice Emitted when depositing a zero amount of underlying.
+    error HToken__DepositUnderlyingZero();
+
+    /// @notice Emitted when the maturity is in the past.
+    error HToken__MaturityPassed(uint256 now, uint256 maturity);
+
+    /// @notice Emitted when minting hTokens and the caller is not the BalanceSheet contract.
+    error HToken__MintNotAuthorized(address caller);
+
+    /// @notice Emitted when redeeming more underlying that there is in the reserve.
+    error HToken__RedeemInsufficientLiquidity(uint256 underlyingAmount, uint256 totalUnderlyingReserve);
+
+    /// @notice Emitted when redeeming a zero amount of underlying.
+    error HToken__RedeemZero();
+
+    /// @notice Emitted when constructing the contract and the underlying has more than 18 decimals.
+    error HToken__UnderlyingDecimalsOverflow(uint256 decimals);
+
+    /// @notice Emitted when constructing the contract and the underlying has zero decimals.
+    error HToken__UnderlyingDecimalsZero();
+
+    /// @notice Emitted when withdrawing more underlying than there is available.
+    error HToken__WithdrawUnderlyingUnderflow(address depositor, uint256 availableAmount, uint256 underlyingAmount);
+
+    /// @notice Emitted when withdrawing a zero amount of underlying.
+    error HToken__WithdrawUnderlyingZero();
+
     /// EVENTS ///
 
     /// @notice Emitted when tokens are burnt.

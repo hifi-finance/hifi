@@ -6,15 +6,6 @@ import "@paulrberg/contracts/token/erc20/IErc20.sol";
 
 import "./IChainlinkOperator.sol";
 
-/// @notice Emitted when the decimal precision of the feed is not the same as the expected number.
-error ChainlinkOperator__DecimalsMismatch(string symbol, uint256 decimals);
-
-/// @notice Emitted when trying to interact with a feed not set yet.
-error ChainlinkOperator__FeedNotSet(string symbol);
-
-/// @notice Emitted when the price returned by the oracle is zero.
-error ChainlinkOperator__PriceZero(string symbol);
-
 /// @title ChainlinkOperator
 /// @author Hifi
 contract ChainlinkOperator is

@@ -12,6 +12,79 @@ import "../../oracles/IChainlinkOperator.sol";
 /// @author Hifi
 /// @notice Manages the collaterals and the debts for all users.
 interface IBalanceSheetV2 is IOwnableUpgradeable {
+    /// CUSTOM ERRORS ///
+
+    /// @notice Emitted when the bond matured.
+    error BalanceSheet__BondMatured(IHToken bond);
+
+    /// @notice Emitted when the account exceeds the maximum numbers of bonds permitted.
+    error BalanceSheet__BorrowMaxBonds(IHToken bond, uint256 newBondListLength, uint256 maxBonds);
+
+    /// @notice Emitted when borrows are not allowed by the Fintroller contract.
+    error BalanceSheet__BorrowNotAllowed(IHToken bond);
+
+    /// @notice Emitted when borrowing a zero amount of hTokens.
+    error BalanceSheet__BorrowZero();
+
+    /// @notice Emitted when the new collateral amount exceeds the collateral ceiling.
+    error BalanceSheet__CollateralCeilingOverflow(uint256 newTotalSupply, uint256 debtCeiling);
+
+    /// @notice Emitted when the new total amount of debt exceeds the debt ceiling.
+    error BalanceSheet__DebtCeilingOverflow(uint256 newCollateralAmount, uint256 debtCeiling);
+
+    /// @notice Emitted when collateral deposits are not allowed by the Fintroller contract.
+    error BalanceSheet__DepositCollateralNotAllowed(IErc20 collateral);
+
+    /// @notice Emitted when depositing a zero amount of collateral.
+    error BalanceSheet__DepositCollateralZero();
+
+    /// @notice Emitted when setting the Fintroller contract to the zero address.
+    error BalanceSheet__FintrollerZeroAddress();
+
+    /// @notice Emitted when there is not enough collateral to seize.
+    error BalanceSheet__LiquidateBorrowInsufficientCollateral(
+        address account,
+        uint256 vaultCollateralAmount,
+        uint256 seizableAmount
+    );
+
+    /// @notice Emitted when borrow liquidations are not allowed by the Fintroller contract.
+    error BalanceSheet__LiquidateBorrowNotAllowed(IHToken bond);
+
+    /// @notice Emitted when the borrower is liquidating themselves.
+    error BalanceSheet__LiquidateBorrowSelf(address account);
+
+    /// @notice Emitted when there is a liquidity shortfall.
+    error BalanceSheet__LiquidityShortfall(address account, uint256 shortfallLiquidity);
+
+    /// @notice Emitted when there is no liquidity shortfall.
+    error BalanceSheet__NoLiquidityShortfall(address account);
+
+    /// @notice Emitted when setting the oracle contract to the zero address.
+    error BalanceSheet__OracleZeroAddress();
+
+    /// @notice Emitted when the repayer does not have enough hTokens to repay the debt.
+    error BalanceSheet__RepayBorrowInsufficientBalance(IHToken bond, uint256 repayAmount, uint256 hTokenBalance);
+
+    /// @notice Emitted when repaying more debt than the borrower owes.
+    error BalanceSheet__RepayBorrowInsufficientDebt(IHToken bond, uint256 repayAmount, uint256 debtAmount);
+
+    /// @notice Emitted when borrow repays are not allowed by the Fintroller contract.
+    error BalanceSheet__RepayBorrowNotAllowed(IHToken bond);
+
+    /// @notice Emitted when repaying a borrow with a zero amount of hTokens.
+    error BalanceSheet__RepayBorrowZero();
+
+    /// @notice Emitted when withdrawing more collateral than there is in the vault.
+    error BalanceSheet__WithdrawCollateralUnderflow(
+        address account,
+        uint256 vaultCollateralAmount,
+        uint256 withdrawAmount
+    );
+
+    /// @notice Emitted when withdrawing a zero amount of collateral.
+    error BalanceSheet__WithdrawCollateralZero();
+
     /// EVENTS ///
 
     /// @notice Emitted when a borrow is made.

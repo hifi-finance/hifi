@@ -13,6 +13,20 @@ import "./external/WethInterface.sol";
 /// @notice DSProxy target contract with scripts for the Hifi protocol.
 /// @dev Meant to be used with a DSProxy contract via DELEGATECALL.
 interface IHifiProxyTarget {
+    /// CUSTOM ERRORS ///
+
+    /// @notice Emitted when the hToken slippage is higher than what the user is willing to tolerate.
+    error HifiProxyTarget__AddLiquidityHTokenSlippage(uint256 expectedHTokenRequired, uint256 actualHTokenRequired);
+
+    /// @notice Emitted when the underlying slippage is higher than what the user is willing to tolerate.
+    error HifiProxyTarget__AddLiquidityUnderlyingSlippage(
+        uint256 expectedUnderlyingRequired,
+        uint256 actualUnderlyingRequired
+    );
+
+    /// @notice Emitted when the slippage is higher than what the user is willing to tolerate.
+    error HifiProxyTarget__TradeSlippage(uint256 expectedAmount, uint256 actualAmount);
+
     /// EVENTS
 
     /// @notice Emitted when hTokens are borrowed and used to buy underlying.
