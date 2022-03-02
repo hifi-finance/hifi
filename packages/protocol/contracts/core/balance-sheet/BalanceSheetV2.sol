@@ -571,6 +571,6 @@ contract BalanceSheetV2 is
         bond.burn(payer, repayAmount);
 
         // Emit a RepayBorrow event.
-        emit RepayBorrow(borrower, payer, bond, repayAmount, newDebtAmount);
+        emit RepayBorrow(payer, borrower, bond, repayAmount, newDebtAmount);
     }
 }
