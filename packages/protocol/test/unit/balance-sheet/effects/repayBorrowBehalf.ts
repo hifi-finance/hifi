@@ -73,6 +73,22 @@ export function shouldBehaveLikeRepayBorrowBehalf(): void {
         );
         expect(debtAmount).to.equal(Zero);
       });
+
+      it("emits a RepayBorrow event", async function () {
+        await expect(
+          this.contracts.balanceSheet
+            .connect(this.signers.maker)
+            .repayBorrowBehalf(this.signers.borrower.address, this.mocks.hTokens[0].address, repayAmount),
+        )
+          .to.emit(this.contracts.balanceSheet, "RepayBorrow")
+          .withArgs(
+            this.signers.maker.address,
+            this.signers.borrower.address,
+            this.mocks.hTokens[0].address,
+            repayAmount,
+            Zero,
+          );
+      });
     });
   });
 }
