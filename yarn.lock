@@ -1435,6 +1435,7 @@ __metadata:
     "@nomiclabs/hardhat-ethers": ^2.0.5
     "@nomiclabs/hardhat-etherscan": ^3.0.1
     "@nomiclabs/hardhat-waffle": ^2.0.2
+    "@openzeppelin/contracts-upgradeable": 4.3.2
     "@paulrberg/contracts": 3.7.0
     "@typechain/ethers-v5": ^9.0.0
     "@typechain/hardhat": ^4.0.0
@@ -1530,6 +1531,7 @@ __metadata:
     "@nomiclabs/hardhat-ethers": ^2.0.5
     "@nomiclabs/hardhat-etherscan": ^3.0.1
     "@nomiclabs/hardhat-waffle": ^2.0.2
+    "@openzeppelin/contracts-upgradeable": 4.3.2
     "@paulrberg/contracts": 3.7.0
     "@typechain/ethers-v5": ^9.0.0
     "@typechain/hardhat": ^4.0.0
@@ -1626,7 +1628,7 @@ __metadata:
     "@nomiclabs/hardhat-ethers": ^2.0.5
     "@nomiclabs/hardhat-etherscan": ^3.0.1
     "@nomiclabs/hardhat-waffle": ^2.0.2
-    "@openzeppelin/contracts-upgradeable": 4.5.1
+    "@openzeppelin/contracts-upgradeable": 4.5.2
     "@openzeppelin/hardhat-upgrades": ^1.14.0
     "@paulrberg/contracts": 3.7.0
     "@typechain/ethers-v5": ^9.0.0
@@ -1666,7 +1668,7 @@ __metadata:
     typechain: ^7.0.0
     typescript: ^4.5.5
   peerDependencies:
-    "@openzeppelin/contracts-upgradeable": 4.3.2
+    "@openzeppelin/contracts-upgradeable": 4.5.2
     "@paulrberg/contracts": 3.7.0
     ethers: ^5.4.7
     prb-math: 2.4.3
@@ -1684,6 +1686,7 @@ __metadata:
     "@hifi/helpers": "workspace:*"
     "@hifi/protocol": 1.7.1
     "@nomiclabs/hardhat-etherscan": ^3.0.1
+    "@openzeppelin/contracts-upgradeable": 4.3.2
     "@paulrberg/contracts": 3.7.0
     "@typechain/ethers-v5": ^9.0.0
     "@typechain/hardhat": ^4.0.0
@@ -1977,10 +1980,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openzeppelin/contracts-upgradeable@npm:4.5.1":
-  version: 4.5.1
-  resolution: "@openzeppelin/contracts-upgradeable@npm:4.5.1"
-  checksum: 9dc0adeeae384e3b8bfa7d688f75020687ea19948b323f6a94c349b5aeeede6924289190f3a719144163e4048ddea29354a524943072a38d7dba891d2efceba2
+"@openzeppelin/contracts-upgradeable@npm:4.5.2":
+  version: 4.5.2
+  resolution: "@openzeppelin/contracts-upgradeable@npm:4.5.2"
+  checksum: bd6a12eb83d8e3194e0847ffb248a1063668e2bf723afd21066316090de9b02e95af6057086a95fa21b0d09a2ef0ea057459bb5f5645dfff298e59e8c3267692
   languageName: node
   linkType: hard
 

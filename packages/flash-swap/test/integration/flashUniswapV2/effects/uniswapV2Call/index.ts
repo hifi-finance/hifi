@@ -55,11 +55,14 @@ export function shouldBehaveLikeUniswapV2Call(): void {
 
       context("when the caller is an externally owned account", function () {
         it("reverts", async function () {
+          // See https://hardhat.org/hardhat-network/#automatic-error-messages
+          // See https://github.com/NomicFoundation/hardhat/issues/2451
+          const automaticErrorMessage = "function returned an unexpected amount of data";
           await expect(
             this.contracts.flashUniswapV2
               .connect(this.signers.raider)
               .uniswapV2Call(sender, swapCollateralAmount, swapUnderlyingAmount, data),
-          ).to.be.revertedWith("function call to a non-contract account");
+          ).to.be.revertedWith(automaticErrorMessage);
         });
       });
 
