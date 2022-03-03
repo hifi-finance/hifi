@@ -17,6 +17,7 @@ import { shouldBehaveLikeGetCollateralCeiling } from "./view/getCollateralCeilin
 import { shouldBehaveLikeGetCollateralRatio } from "./view/getCollateralRatio";
 import { shouldBehaveLikeGetDebtCeiling } from "./view/getDebtCeiling";
 import { shouldBehaveLikeGetDepositCollateralAllowed } from "./view/getDepositCollateralAllowed";
+import { shouldBehaveLikeGetDepositUnderlyingAllowed } from "./view/getDepositUnderlyingAllowed";
 import { shouldBehaveLikeGetLiquidateBorrowAllowed } from "./view/getLiquidateBorrowAllowed";
 import { shouldBehaveLikeGetLiquidationIncentive } from "./view/getLiquidationIncentive";
 import { shouldBehaveLikeGetRepayBorrowAllowed } from "./view/getRepayBorrowAllowed";
@@ -52,6 +53,10 @@ export function shouldBehaveLikeFintroller(): void {
 
     describe("getDepositCollateralAllowed", function () {
       shouldBehaveLikeGetDepositCollateralAllowed();
+    });
+
+    describe("getDepositUnderlyingAllowed", function () {
+      shouldBehaveLikeGetDepositUnderlyingAllowed();
     });
 
     describe("getLiquidateBorrowAllowed", function () {
