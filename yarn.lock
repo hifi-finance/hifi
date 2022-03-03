@@ -1640,7 +1640,6 @@ __metadata:
     "@typescript-eslint/eslint-plugin": ^5.12.0
     "@typescript-eslint/parser": ^5.12.0
     chai: ^4.3.6
-    copyfiles: ^2.4.1
     cross-env: ^7.0.3
     dotenv: ^16.0.0
     eslint: ^8.9.0

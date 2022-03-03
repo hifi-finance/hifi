@@ -1,7 +1,7 @@
 {
   "name": "@hifi/protocol",
   "description": "The core Hifi fixed-rate, fixed-term lending protocol",
-  "version": "1.7.1",
+  "version": "1.8.0",
   "author": {
     "name": "Hifi",
     "email": "contact@hifi.finance",
@@ -40,7 +40,6 @@
     "@typescript-eslint/eslint-plugin": "^5.12.0",
     "@typescript-eslint/parser": "^5.12.0",
     "chai": "^4.3.6",
-    "copyfiles": "^2.4.1",
     "cross-env": "^7.0.3",
     "dotenv": "^16.0.0",
     "eslint": "^8.9.0",
@@ -101,7 +100,7 @@
     "url": "https://github.com/hifi-finance/hifi"
   },
   "scripts": {
-    "build:types": "yarn prepare:types && tsc --project ./tsconfig.prod.json && copyfiles --up 1 \"./src/**/*.d.ts\" ./dist",
+    "build:types": "yarn prepare:types && tsc --project ./tsconfig.prod.json",
     "clean": "shx rm -rf ./artifacts ./cache ./coverage.json ./docs ./tsconfig.prod.tsbuildinfo",
     "clean:node_modules": "shx rm -rf ./node_modules",
     "compile:sol": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat compile",

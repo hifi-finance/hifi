@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2022-03-03
+
+### Added
+
+- Deposit underlying functionality in `HToken` and associated permissions in `Fintroller`.
+- Fintroller address as addition constructor argument in `HToken`.
+- New `BalanceSheetV2` contract, which upgrades `BalanceSheetV1`. This contract features a new `setFintroller` function.
+
+### Changed
+
+- Emit both current time and maturity time when reverting with the `BondNotMatured` custom error.
+- Improve wording in READMEa and NatSpec comments.
+- Mark the init function as `internal` in `OwnableUpgradeable`.
+- Move the custom errors in the smart contract interface files.
+- Rename the `__OwnableUpgradeable__init` function to `__Ownable_init`.
+- Turn the `Fintroller` into a non-upgradeable contract.
+- Upgrade to `@openzeppelin/contracts-upgradeable` v4.5.2.
+- Use hyphen-case instead of camelCase for directory names.
+- Use the latest `onlyInitializable` modifier instead of `initializer`
+- Use `underlyingAmount` instead of `hTokenAmount` in the `redeem` function in the `HToken`.
+
+### Fixed
+
+- Emit correct arguments in `RepayBorrow` event, fixing [#162](https://github.com/paulrberg/create-eth-app/issues/162))
+
+### Removed
+
+- All `*.d.ts` type files.
+- `SFintrollerV1` contract.
+- `supplyUnderlying` function in `HToken`.
+
 ## [1.7.1] - 2021-10-25
 
 ### Changed
@@ -96,6 +127,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Zero edge case in `getSeizableCollateralAmount` function.
 
+[1.8.0]: https://github.com/hifi-finance/hifi/compare/@hifi/protocol@1.7.1...@hifi/protocol@1.8.0
 [1.7.1]: https://github.com/hifi-finance/hifi/compare/@hifi/protocol@1.7.0...@hifi/protocol@1.7.1
 [1.7.0]: https://github.com/hifi-finance/hifi/compare/@hifi/protocol@1.6.0...@hifi/protocol@1.7.0
 [1.6.0]: https://github.com/hifi-finance/hifi/compare/@hifi/protocol@1.5.0...@hifi/protocol@1.6.0
