@@ -18,7 +18,7 @@ import type { Fintroller } from "../../src/types/Fintroller";
 import type { GodModeBalanceSheet } from "../../src/types/GodModeBalanceSheet";
 import type { GodModeErc20 } from "../../src/types/GodModeErc20";
 import type { GodModeHToken } from "../../src/types/GodModeHToken";
-import type { OwnableUpgradeable } from "../../src/types/OwnableUpgradeable";
+import type { GodModeOwnableUpgradeable } from "../../src/types/GodModeOwnableUpgradeable";
 import type { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
 import {
   deployChainlinkOperator,
@@ -190,10 +190,10 @@ export async function unitFixtureHToken(signers: Signer[]): Promise<UnitFixtureH
 }
 
 type UnitFixtureOwnableUpgradeable = {
-  ownableUpgradeable: OwnableUpgradeable;
+  ownableUpgradeable: GodModeOwnableUpgradeable;
 };
 
 export async function unitFixtureOwnableUpgradeable(): Promise<UnitFixtureOwnableUpgradeable> {
-  const ownableUpgradeable: OwnableUpgradeable = await deployOwnableUpgradeable();
+  const ownableUpgradeable: GodModeOwnableUpgradeable = await deployOwnableUpgradeable();
   return { ownableUpgradeable };
 }

@@ -32,7 +32,7 @@ contract OwnableUpgradeable is
 
     /// @notice The upgradeability variant of the contract constructor.
     /// @dev Sets the deployer as the initial owner.
-    function __OwnableUpgradeable__init() public initializer {
+    function __Ownable_init() internal initializer {
         owner = msg.sender;
         emit TransferOwnership(address(0), msg.sender);
     }

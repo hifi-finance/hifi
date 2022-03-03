@@ -1,5 +1,5 @@
 import type { Signer } from "@ethersproject/abstract-signer";
-import { BigNumber } from "@ethersproject/bignumber";
+import type { BigNumber } from "@ethersproject/bignumber";
 import { artifacts, ethers, upgrades, waffle } from "hardhat";
 import type { Artifact } from "hardhat/types";
 
@@ -14,14 +14,16 @@ import {
   WBTC_SYMBOL,
 } from "@hifi/constants";
 import { getHTokenName, getHTokenSymbol, price } from "@hifi/helpers";
-import { GodModeBalanceSheet__factory, OwnableUpgradeable, OwnableUpgradeable__factory } from "../../src/types";
-import { ChainlinkOperator } from "../../src/types/ChainlinkOperator";
-import { Fintroller } from "../../src/types/Fintroller";
-import { GodModeBalanceSheet } from "../../src/types/GodModeBalanceSheet";
-import { GodModeErc20 } from "../../src/types/GodModeErc20";
-import { GodModeHToken } from "../../src/types/GodModeHToken";
-import { HToken } from "../../src/types/HToken";
-import { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
+import type { GodModeBalanceSheet__factory } from "../../src/types/factories/GodModeBalanceSheet__factory";
+import type { GodModeOwnableUpgradeable__factory } from "../../src/types/factories/GodModeOwnableUpgradeable__factory";
+import type { ChainlinkOperator } from "../../src/types/ChainlinkOperator";
+import type { Fintroller } from "../../src/types/Fintroller";
+import type { GodModeBalanceSheet } from "../../src/types/GodModeBalanceSheet";
+import type { GodModeErc20 } from "../../src/types/GodModeErc20";
+import type { GodModeHToken } from "../../src/types/GodModeHToken";
+import type { GodModeOwnableUpgradeable } from "../../src/types/GodModeOwnableUpgradeable";
+import type { HToken } from "../../src/types/HToken";
+import type { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
 
 const { deployContract } = waffle;
 const overrides = { gasLimit: process.env.CODE_COVERAGE ? GAS_LIMITS.coverage : GAS_LIMITS.hardhat };
@@ -106,9 +108,11 @@ export async function deployGodModeHToken(
   return hToken;
 }
 
-export async function deployOwnableUpgradeable(): Promise<OwnableUpgradeable> {
-  const ownableUpgradeableFactory: OwnableUpgradeable__factory = await ethers.getContractFactory("OwnableUpgradeable");
-  const ownableUpgradeable: OwnableUpgradeable = <OwnableUpgradeable>(
+export async function deployOwnableUpgradeable(): Promise<GodModeOwnableUpgradeable> {
+  const ownableUpgradeableFactory: GodModeOwnableUpgradeable__factory = await ethers.getContractFactory(
+    "GodModeOwnableUpgradeable",
+  );
+  const ownableUpgradeable: GodModeOwnableUpgradeable = <GodModeOwnableUpgradeable>(
     await upgrades.deployProxy(ownableUpgradeableFactory)
   );
   await ownableUpgradeable.deployed();

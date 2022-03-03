@@ -4,7 +4,7 @@ import { expect } from "chai";
 
 export function shouldBehaveLikeRenounceOwnership(): void {
   beforeEach(async function () {
-    await this.contracts.ownableUpgradeable.connect(this.signers.admin).__OwnableUpgradeable__init();
+    await this.contracts.ownableUpgradeable.connect(this.signers.admin).__godMode_Ownable_init();
   });
 
   context("when the caller is not the owner", function () {

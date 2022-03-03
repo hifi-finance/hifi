@@ -30,7 +30,7 @@ contract BalanceSheetV2 is
     /// @param oracle_ The address of the oracle contract.
     function initialize(IFintroller fintroller_, IChainlinkOperator oracle_) public initializer {
         // Initialize the owner.
-        OwnableUpgradeable.__OwnableUpgradeable__init();
+        __Ownable_init();
 
         // Set the Fintroller contract.
         fintroller = fintroller_;

@@ -7,7 +7,7 @@ import type { Fintroller } from "../../src/types/Fintroller";
 import type { GodModeBalanceSheet } from "../../src/types/GodModeBalanceSheet";
 import type { GodModeErc20 } from "../../src/types/GodModeErc20";
 import type { GodModeHToken } from "../../src/types/GodModeHToken";
-import type { OwnableUpgradeable } from "../../src/types/OwnableUpgradeable";
+import type { GodModeOwnableUpgradeable } from "../../src/types/GodModeOwnableUpgradeable";
 import type { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
 
 declare module "mocha" {
@@ -24,7 +24,7 @@ export interface Contracts {
   fintroller: Fintroller;
   hTokens: GodModeHToken[];
   oracle: ChainlinkOperator;
-  ownableUpgradeable: OwnableUpgradeable;
+  ownableUpgradeable: GodModeOwnableUpgradeable;
   usdc: GodModeErc20;
   usdcPriceFeed: SimplePriceFeed;
   wbtc: GodModeErc20;

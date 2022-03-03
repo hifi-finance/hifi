@@ -11,7 +11,7 @@ export function shouldBehaveLikeOwnerGetter(): void {
 
   context("when the contract was initialized", function () {
     beforeEach(async function () {
-      await this.contracts.ownableUpgradeable.connect(this.signers.admin).__OwnableUpgradeable__init();
+      await this.contracts.ownableUpgradeable.connect(this.signers.admin).__godMode_Ownable_init();
     });
 
     it("returns the correct address", async function () {
