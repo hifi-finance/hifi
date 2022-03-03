@@ -6,23 +6,23 @@ import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "../access/OwnableUpgradeable.sol";
 import "../core/balance-sheet/SBalanceSheetV2.sol";
 
-/// @title IBalanceSheetV3
+/// @title IBalanceSheetUpgraded
 /// @author Hifi
-interface IBalanceSheetV3 {
+interface IBalanceSheetUpgraded {
     function getLastBlockNumber() external view returns (uint256);
 
     function setLastBlockNumber() external;
 }
 
-/// @title SBalanceSheetV2
+/// @title SBalanceSheetUpgraded
 /// @author Hifi
-abstract contract SBalanceSheetV3 is SBalanceSheetV2 {
+abstract contract SBalanceSheetUpgraded is SBalanceSheetV2 {
     uint256 public lastBlockNumber;
 }
 
-/// @title BalanceSheetV3
+/// @title BalanceSheetUpgraded
 /// @author Hifi
-contract BalanceSheetV3 is Initializable, OwnableUpgradeable, IBalanceSheetV3, SBalanceSheetV3 {
+contract BalanceSheetUpgraded is Initializable, OwnableUpgradeable, IBalanceSheetUpgraded, SBalanceSheetUpgraded {
     function getLastBlockNumber() external view override returns (uint256) {
         return lastBlockNumber;
     }
