@@ -7,6 +7,7 @@ import "hardhat-packager";
 import "solidity-coverage";
 
 import "./tasks/deploy";
+import "./tasks/prepare";
 
 import { resolve } from "path";
 
