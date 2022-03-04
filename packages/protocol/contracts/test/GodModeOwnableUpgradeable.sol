@@ -7,7 +7,7 @@ import "../access/OwnableUpgradeable.sol";
 /// @author Hifi
 /// @dev Strictly for test purposes. Do not use in production.
 contract GodModeOwnableUpgradeable is OwnableUpgradeable {
-    function __godMode_Ownable_init() public {
+    function __godMode_Ownable_init() public initializer {
         __Ownable_init();
     }
 }
