@@ -3,9 +3,8 @@ pragma solidity >=0.8.4;
 
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
-import "@hifi/protocol/contracts/core/balanceSheet/IBalanceSheetV1.sol";
-import "@hifi/protocol/contracts/core/balanceSheet/SBalanceSheetV1.sol";
-import "@hifi/protocol/contracts/core/hToken/IHToken.sol";
+import "@hifi/protocol/contracts/core/balance-sheet/IBalanceSheetV2.sol";
+import "@hifi/protocol/contracts/core/h-token/IHToken.sol";
 
 import "./IFlashUniswapV2.sol";
 import "./IUniswapV2Pair.sol";
@@ -18,7 +17,7 @@ contract FlashUniswapV2 is IFlashUniswapV2 {
     /// PUBLIC STORAGE ///
 
     /// @inheritdoc IFlashUniswapV2
-    IBalanceSheetV1 public override balanceSheet;
+    IBalanceSheetV2 public override balanceSheet;
 
     /// @inheritdoc IFlashUniswapV2
     address public override uniV2Factory;
@@ -28,11 +27,11 @@ contract FlashUniswapV2 is IFlashUniswapV2 {
 
     /// CONSTRUCTOR ///
     constructor(
-        IBalanceSheetV1 balanceSheet_,
+        IBalanceSheetV2 balanceSheet_,
         address uniV2Factory_,
         bytes32 uniV2PairInitCodeHash_
     ) {
-        balanceSheet = IBalanceSheetV1(balanceSheet_);
+        balanceSheet = IBalanceSheetV2(balanceSheet_);
         uniV2Factory = uniV2Factory_;
         uniV2PairInitCodeHash = uniV2PairInitCodeHash_;
     }
@@ -42,30 +41,22 @@ contract FlashUniswapV2 is IFlashUniswapV2 {
     /// @inheritdoc IFlashUniswapV2
     function getRepayAmount(
         IUniswapV2Pair pair,
-        IErc20 collateral,
         IErc20 underlying,
         uint256 underlyingAmount
     ) public view override returns (uint256 repayAmount) {
         unchecked {
-            uint256 numerator;
-            uint256 denominator;
-            if (collateral != underlying) {
-                uint112 collateralReserves;
-                uint112 underlyingReserves;
+            uint112 collateralReserves;
+            uint112 underlyingReserves;
 
-                address token0 = pair.token0();
-                if (token0 == address(underlying)) {
-                    (underlyingReserves, collateralReserves, ) = pair.getReserves();
-                } else {
-                    (collateralReserves, underlyingReserves, ) = pair.getReserves();
-                }
-
-                numerator = collateralReserves * underlyingAmount * 1000;
-                denominator = (underlyingReserves - underlyingAmount) * 997;
+            address token0 = pair.token0();
+            if (token0 == address(underlying)) {
+                (underlyingReserves, collateralReserves, ) = pair.getReserves();
             } else {
-                numerator = underlyingAmount * 1000;
-                denominator = 997;
+                (collateralReserves, underlyingReserves, ) = pair.getReserves();
             }
+
+            uint256 numerator = collateralReserves * underlyingAmount * 1000;
+            uint256 denominator = (underlyingReserves - underlyingAmount) * 997;
             repayAmount = numerator / denominator + 1;
         }
     }
@@ -77,7 +68,6 @@ contract FlashUniswapV2 is IFlashUniswapV2 {
         address borrower;
         IErc20 collateral;
         uint256 mintedHTokenAmount;
-        IErc20 otherToken;
         uint256 profitAmount;
         uint256 repayAmount;
         uint256 seizeAmount;
@@ -102,9 +92,13 @@ contract FlashUniswapV2 is IFlashUniswapV2 {
             (address, IHToken, IErc20, int256)
         );
 
-        // Figure out which token is which.
+        // This flash swap contract does not support liquidating vaults backed by underlying.
         vars.underlying = vars.bond.underlying();
-        (vars.otherToken, vars.underlyingAmount) = getOtherTokenAndUnderlyingAmount(
+        if (vars.collateral == vars.underlying) {
+            revert FlashUniswapV2__LiquidateUnderlyingBackedVault(vars.borrower, address(vars.underlying));
+        }
+
+        (vars.collateral, vars.underlyingAmount) = getCollateralAddressAndUnderlyingAmount(
             IUniswapV2Pair(msg.sender),
             amount0,
             amount1,
@@ -112,7 +106,7 @@ contract FlashUniswapV2 is IFlashUniswapV2 {
         );
 
         // Check that the caller is a genuine UniswapV2Pair contract.
-        if (msg.sender != pairFor(address(vars.underlying), address(vars.otherToken))) {
+        if (msg.sender != pairFor(address(vars.collateral), address(vars.underlying))) {
             revert FlashUniswapV2__CallNotAuthorized(msg.sender);
         }
 
@@ -121,12 +115,7 @@ contract FlashUniswapV2 is IFlashUniswapV2 {
         vars.seizeAmount = liquidateBorrow(vars.borrower, vars.bond, vars.collateral, vars.mintedHTokenAmount);
 
         // Calculate the amount required to repay.
-        vars.repayAmount = getRepayAmount(
-            IUniswapV2Pair(msg.sender),
-            vars.collateral,
-            vars.underlying,
-            vars.underlyingAmount
-        );
+        vars.repayAmount = getRepayAmount(IUniswapV2Pair(msg.sender), vars.underlying, vars.underlyingAmount);
 
         // Note that "turnout" is a signed int. When it is negative, it acts as a maximum subsidy amount.
         // When its value is positive, it acts as a minimum profit.
@@ -167,7 +156,7 @@ contract FlashUniswapV2 is IFlashUniswapV2 {
 
     /// INTERNAL CONSTANT FUNCTIONS ///
 
-    /// @notice Compares the token addresses to find the other token and the underlying amount.
+    /// @notice Compares the token addresses to find the collateral address and the underlying amount.
     /// @dev See this StackExchange post: https://ethereum.stackexchange.com/q/102670/24693.
     ///
     /// Requirements:
@@ -179,27 +168,27 @@ contract FlashUniswapV2 is IFlashUniswapV2 {
     /// @param amount0 The amount of token0.
     /// @param amount1 The amount of token1.
     /// @param underlying The address of the underlying contract.
-    /// @return otherToken The address of the other token contract.
+    /// @return collateral The address of the collateral contract.
     /// @return underlyingAmount The amount of underlying flash borrowed.
-    function getOtherTokenAndUnderlyingAmount(
+    function getCollateralAddressAndUnderlyingAmount(
         IUniswapV2Pair pair,
         uint256 amount0,
         uint256 amount1,
         IErc20 underlying
-    ) internal view returns (IErc20 otherToken, uint256 underlyingAmount) {
+    ) internal view returns (IErc20 collateral, uint256 underlyingAmount) {
         address token0 = pair.token0();
         address token1 = pair.token1();
         if (token0 == address(underlying)) {
             if (amount1 > 0) {
-                revert FlashUniswapV2__FlashBorrowOtherToken();
+                revert FlashUniswapV2__FlashBorrowCollateral(token1, token0);
             }
-            otherToken = IErc20(token1);
+            collateral = IErc20(token1);
             underlyingAmount = amount0;
         } else if (token1 == address(underlying)) {
             if (amount0 > 0) {
-                revert FlashUniswapV2__FlashBorrowOtherToken();
+                revert FlashUniswapV2__FlashBorrowCollateral(token0, token1);
             }
-            otherToken = IErc20(token0);
+            collateral = IErc20(token0);
             underlyingAmount = amount1;
         } else {
             revert FlashUniswapV2__UnderlyingNotInPool(pair, token0, token1, underlying);
@@ -256,7 +245,7 @@ contract FlashUniswapV2 is IFlashUniswapV2 {
         }
     }
 
-    /// @dev Supplies the underlying to the HToken contract to mint hTokens without taking on debt.
+    /// @dev Deposits the underlying in the HToken contract to mint hTokens on a one-to-one basis.
     function mintHTokens(IHToken bond, uint256 underlyingAmount) internal returns (uint256 mintedHTokenAmount) {
         IErc20 underlying = bond.underlying();
 
@@ -266,9 +255,9 @@ contract FlashUniswapV2 is IFlashUniswapV2 {
             underlying.approve(address(bond), type(uint256).max);
         }
 
-        // Mint hTokens.
+        // Deposit underlying to mint hTokens.
         uint256 oldHTokenBalance = bond.balanceOf(address(this));
-        bond.supplyUnderlying(underlyingAmount);
+        bond.depositUnderlying(underlyingAmount);
         uint256 newHTokenBalance = bond.balanceOf(address(this));
         unchecked {
             mintedHTokenAmount = newHTokenBalance - oldHTokenBalance;

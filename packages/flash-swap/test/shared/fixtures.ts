@@ -3,9 +3,9 @@ import { keccak256 } from "@ethersproject/keccak256";
 import { H_TOKEN_MATURITY_ONE_YEAR } from "@hifi/constants";
 import { USDC_DECIMALS, USDC_NAME, USDC_SYMBOL, WBTC_DECIMALS, WBTC_NAME, WBTC_SYMBOL } from "@hifi/constants";
 import { getHTokenName, getHTokenSymbol } from "@hifi/helpers";
-import type { BalanceSheetV1 } from "@hifi/protocol/dist/types/BalanceSheetV1";
+import type { BalanceSheetV2 } from "@hifi/protocol/dist/types/BalanceSheetV2";
 import type { ChainlinkOperator } from "@hifi/protocol/dist/types/ChainlinkOperator";
-import type { FintrollerV1 } from "@hifi/protocol/dist/types/FintrollerV1";
+import type { Fintroller } from "@hifi/protocol/dist/types/Fintroller";
 import { artifacts, waffle } from "hardhat";
 import type { Artifact } from "hardhat/types";
 
@@ -20,8 +20,8 @@ import type { GodModeUniswapV2Pair } from "../../src/types/GodModeUniswapV2Pair"
 import { deployGodModeErc20 } from "./deployers";
 
 type IntegrationFixtureReturnType = {
-  balanceSheet: BalanceSheetV1;
-  fintroller: FintrollerV1;
+  balanceSheet: BalanceSheetV2;
+  fintroller: Fintroller;
   flashUniswapV2: FlashUniswapV2;
   hToken: GodModeHToken;
   maliciousPair: MaliciousPair;
@@ -53,13 +53,12 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
   await oracle.setFeed(wbtc.address, wbtcPriceFeed.address);
   await oracle.setFeed(usdc.address, usdcPriceFeed.address);
 
-  const fintrollerV1Artifact: Artifact = await artifacts.readArtifact("FintrollerV1");
-  const fintroller: FintrollerV1 = <FintrollerV1>await waffle.deployContract(deployer, fintrollerV1Artifact, []);
-  await fintroller.connect(deployer).initialize();
+  const fintrollerArtifact: Artifact = await artifacts.readArtifact("Fintroller");
+  const fintroller: Fintroller = <Fintroller>await waffle.deployContract(deployer, fintrollerArtifact, []);
 
-  const balanceSheetV1Artifact: Artifact = await artifacts.readArtifact("BalanceSheetV1");
-  const balanceSheet: BalanceSheetV1 = <BalanceSheetV1>(
-    await waffle.deployContract(deployer, balanceSheetV1Artifact, [])
+  const balanceSheetV2Artifact: Artifact = await artifacts.readArtifact("BalanceSheetV2");
+  const balanceSheet: BalanceSheetV2 = <BalanceSheetV2>(
+    await waffle.deployContract(deployer, balanceSheetV2Artifact, [])
   );
   await balanceSheet.connect(deployer).initialize(fintroller.address, oracle.address);
 
@@ -70,6 +69,7 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
       getHTokenSymbol(H_TOKEN_MATURITY_ONE_YEAR),
       H_TOKEN_MATURITY_ONE_YEAR,
       balanceSheet.address,
+      fintroller.address,
       usdc.address,
     ])
   );

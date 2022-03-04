@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.8.4;
 
-import "@hifi/protocol/contracts/core/balanceSheet/IBalanceSheetV1.sol";
+import "@hifi/protocol/contracts/core/balance-sheet/IBalanceSheetV2.sol";
 import "@uniswap/v2-core/contracts/interfaces/IUniswapV2Callee.sol";
 
 import "./IUniswapV2Pair.sol";
@@ -15,8 +15,11 @@ interface IFlashUniswapV2 is IUniswapV2Callee {
     /// @notice Emitted when the caller is not the Uniswap V2 pair contract.
     error FlashUniswapV2__CallNotAuthorized(address caller);
 
-    /// @notice Emitted when the flash borrowed asset is the other token in the pair instead of the underlying.
-    error FlashUniswapV2__FlashBorrowOtherToken();
+    /// @notice Emitted when the flash borrowed asset is the collateral instead of the underlying.
+    error FlashUniswapV2__FlashBorrowCollateral(address collateral, address underlying);
+
+    /// @notice Emitted when liquidating a vault backed by underlying.
+    error FlashUniswapV2__LiquidateUnderlyingBackedVault(address borrower, address underlying);
 
     /// @notice Emitted when the liquidation either does not yield a sufficient profit or it costs more
     /// than what the subsidizer is willing to pay.
@@ -49,12 +52,12 @@ interface IFlashUniswapV2 is IUniswapV2Callee {
     /// CONSTANT FUNCTIONS ///
 
     /// @notice The `BalanceSheet` contract.
-    function balanceSheet() external view returns (IBalanceSheetV1);
+    function balanceSheet() external view returns (IBalanceSheetV2);
 
     /// @notice Calculates the amount of that must be repaid to Uniswap. When the collateral is not the underlying,
     /// The formula used is:
     ///
-    ///                (otherTokenReserves * underlyingAmount) * 1000
+    ///                (collateralReserves * underlyingAmount) * 1000
     /// repayAmount = -----------------------------------------------
     ///                (underlyingReserves - underlyingAmount) * 997
     ///
@@ -67,13 +70,11 @@ interface IFlashUniswapV2 is IUniswapV2Callee {
     /// @dev See "getAmountIn" and "getAmountOut" in `UniswapV2Library`. Flash swaps that are repaid via the
     /// corresponding pair token are akin to a normal swap, so the 0.3% LP fee applies.
     /// @param pair The Uniswap V2 pair contract.
-    /// @param collateral The address of the collateral contract.
     /// @param underlying The address of the underlying contract.
     /// @param underlyingAmount The amount of underlying flash borrowed.
     /// @return repayAmount The minimum amount that must be repaid.
     function getRepayAmount(
         IUniswapV2Pair pair,
-        IErc20 collateral,
         IErc20 underlying,
         uint256 underlyingAmount
     ) external view returns (uint256 repayAmount);

@@ -9,13 +9,11 @@ import type { GodModeErc20 } from "../../../../../src/types/GodModeErc20";
 import { deployGodModeErc20 } from "../../../../shared/deployers";
 import { increasePoolReserves } from "../../../../shared/helpers";
 import { shouldBehaveLikeCollateralFlashSwap } from "./collateral";
-import { shouldBehaveLikeUnderlyingAsCollateralFlashSwap } from "./underlying";
 
-function getFlashSwapCallData(this: Mocha.Context): string {
+function getFlashSwapCallData(this: Mocha.Context, collateral: string): string {
   const types = ["address", "address", "address", "uint256"];
   const borrower: string = this.signers.borrower.address;
   const bond: string = this.contracts.hToken.address;
-  const collateral: string = this.contracts.wbtc.address;
   const turnout: string = String(WBTC("0.001"));
   const values = [borrower, bond, collateral, turnout];
   const data: string = defaultAbiCoder.encode(types, values);
@@ -41,7 +39,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
     let data: string;
 
     beforeEach(function () {
-      data = getFlashSwapCallData.call(this);
+      data = getFlashSwapCallData.call(this, this.contracts.wbtc.address);
     });
 
     context("when the caller is not the UniswapV2Pair contract", function () {
@@ -100,52 +98,65 @@ export function shouldBehaveLikeUniswapV2Call(): void {
       });
 
       context("when the underlying is part of the UniswapV2Pair contract", function () {
-        context("when the other token is flash borrowed", function () {
-          beforeEach(async function () {
-            await this.contracts.wbtcPriceFeed.setPrice(price("20000"));
-            await increasePoolReserves.call(this, WBTC("100"), USDC("2e6"));
-          });
+        context("when the collateral is the same as the underlying", function () {
+          const swapCollateralAmount: BigNumber = Zero;
+          const swapUnderlyingAmount: BigNumber = Zero;
 
-          context("new order of tokens in the UniswapV2Pair contract", function () {
-            beforeEach(async function () {
-              await this.contracts.uniswapV2Pair.__godMode_setToken0(this.contracts.usdc.address);
-              await this.contracts.uniswapV2Pair.__godMode_setToken1(this.contracts.wbtc.address);
-              await this.contracts.uniswapV2Pair.sync();
-            });
-
-            it("reverts", async function () {
-              const swapCollateralAmount: BigNumber = WBTC("1");
-              const swapUnderlyingAmount: BigNumber = Zero;
-              const to: string = this.contracts.flashUniswapV2.address;
-              await expect(
-                this.contracts.uniswapV2Pair
-                  .connect(this.signers.raider)
-                  .swap(swapUnderlyingAmount, swapCollateralAmount, to, data),
-              ).to.be.revertedWith(FlashUniswapV2Errors.FLASH_BORROW_OTHER_TOKEN);
-            });
-          });
-
-          context("initial order of tokens in the UniswapV2Pair contract", function () {
-            it("reverts", async function () {
-              const swapCollateralAmount: BigNumber = WBTC("1");
-              const swapUnderlyingAmount: BigNumber = Zero;
-              const to: string = this.contracts.flashUniswapV2.address;
-              await expect(
-                this.contracts.uniswapV2Pair
-                  .connect(this.signers.raider)
-                  .swap(swapCollateralAmount, swapUnderlyingAmount, to, data),
-              ).to.be.revertedWith(FlashUniswapV2Errors.FLASH_BORROW_OTHER_TOKEN);
-            });
+          it("reverts", async function () {
+            const to: string = this.contracts.flashUniswapV2.address;
+            data = getFlashSwapCallData.call(this, this.contracts.usdc.address);
+            await expect(
+              this.contracts.maliciousPair
+                .connect(this.signers.raider)
+                .swap(swapCollateralAmount, swapUnderlyingAmount, to, data),
+            ).to.be.revertedWith(FlashUniswapV2Errors.LIQUIDATE_UNDERLYING_BACKED_VAULT);
           });
         });
 
-        context("when underlying is flash borrowed", function () {
-          context("when not the underlying is used as collateral", function () {
-            shouldBehaveLikeCollateralFlashSwap();
+        context("when the collateral is not the same as the underlying", function () {
+          context("when the collateral is flash borrowed", function () {
+            beforeEach(async function () {
+              await this.contracts.wbtcPriceFeed.setPrice(price("20000"));
+              await increasePoolReserves.call(this, WBTC("100"), USDC("2e6"));
+            });
+
+            context("new order of tokens in the UniswapV2Pair contract", function () {
+              beforeEach(async function () {
+                await this.contracts.uniswapV2Pair.__godMode_setToken0(this.contracts.usdc.address);
+                await this.contracts.uniswapV2Pair.__godMode_setToken1(this.contracts.wbtc.address);
+                await this.contracts.uniswapV2Pair.sync();
+              });
+
+              it("reverts", async function () {
+                const swapCollateralAmount: BigNumber = WBTC("1");
+                const swapUnderlyingAmount: BigNumber = Zero;
+                const to: string = this.contracts.flashUniswapV2.address;
+                await expect(
+                  this.contracts.uniswapV2Pair
+                    .connect(this.signers.raider)
+                    .swap(swapUnderlyingAmount, swapCollateralAmount, to, data),
+                ).to.be.revertedWith(FlashUniswapV2Errors.FLASH_BORROW_COLLATERAL);
+              });
+            });
+
+            context("initial order of tokens in the UniswapV2Pair contract", function () {
+              it("reverts", async function () {
+                const swapCollateralAmount: BigNumber = WBTC("1");
+                const swapUnderlyingAmount: BigNumber = Zero;
+                const to: string = this.contracts.flashUniswapV2.address;
+                await expect(
+                  this.contracts.uniswapV2Pair
+                    .connect(this.signers.raider)
+                    .swap(swapCollateralAmount, swapUnderlyingAmount, to, data),
+                ).to.be.revertedWith(FlashUniswapV2Errors.FLASH_BORROW_COLLATERAL);
+              });
+            });
           });
 
-          context("when the underlying is used as collateral", function () {
-            shouldBehaveLikeUnderlyingAsCollateralFlashSwap();
+          context("when the underlying is flash borrowed", function () {
+            context("when the collateral is not the same as the underlying", function () {
+              shouldBehaveLikeCollateralFlashSwap();
+            });
           });
         });
       });

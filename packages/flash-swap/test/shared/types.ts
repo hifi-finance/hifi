@@ -1,6 +1,6 @@
-import type { BalanceSheetV1 } from "@hifi/protocol/dist/types/BalanceSheetV1";
+import type { BalanceSheetV2 } from "@hifi/protocol/dist/types/BalanceSheetV2";
 import type { ChainlinkOperator } from "@hifi/protocol/dist/types/ChainlinkOperator";
-import type { FintrollerV1 } from "@hifi/protocol/dist/types/FintrollerV1";
+import type { Fintroller } from "@hifi/protocol/dist/types/Fintroller";
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 
 import type { FlashUniswapV2 } from "../../src/types/FlashUniswapV2";
@@ -18,8 +18,8 @@ declare module "mocha" {
 }
 
 export interface Contracts {
-  balanceSheet: BalanceSheetV1;
-  fintroller: FintrollerV1;
+  balanceSheet: BalanceSheetV2;
+  fintroller: Fintroller;
   flashUniswapV2: FlashUniswapV2;
   hToken: GodModeHToken;
   maliciousPair: MaliciousPair;
