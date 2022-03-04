@@ -1,7 +1,7 @@
 {
   "name": "@hifi/protocol",
   "description": "The core Hifi fixed-rate, fixed-term lending protocol",
-  "version": "1.8.1",
+  "version": "1.8.2",
   "author": {
     "name": "Hifi",
     "email": "contact@hifi.finance",
