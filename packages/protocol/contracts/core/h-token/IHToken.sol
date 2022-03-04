@@ -142,7 +142,6 @@ interface IHToken is
     ///
     /// - The Fintroller must allow this action to be performed.
     /// - The underlying amount to deposit cannot be zero.
-    /// - Can only be called before maturation.
     /// - The caller must have allowed this contract to spend `underlyingAmount` tokens.
     ///
     /// @param underlyingAmount The amount of underlying to deposit.

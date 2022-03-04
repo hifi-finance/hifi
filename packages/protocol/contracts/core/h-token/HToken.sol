@@ -131,11 +131,6 @@ contract HToken is
             revert HToken__DepositUnderlyingZero();
         }
 
-        // Checks: bond not matured.
-        if (isMatured()) {
-            revert HToken__BondMatured(block.timestamp, maturity);
-        }
-
         // Effects: update storage.
         totalUnderlyingReserve += underlyingAmount;
 
