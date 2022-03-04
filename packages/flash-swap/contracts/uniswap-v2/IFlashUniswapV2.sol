@@ -27,6 +27,14 @@ interface IFlashUniswapV2 is IUniswapV2Callee {
 
     /// EVENTS ///
 
+    /// @notice Emitted when a flash swap is made and an account is liquidated.
+    /// @param liquidator The address of the liquidator account.
+    /// @param borrower The address of the borrower account being liquidated.
+    /// @param bond The address of the hToken contract.
+    /// @param underlyingAmount The amount of underlying flash borrowed
+    /// @param repayAmount The amount of collateral that had to be repaid by the liquidator.
+    /// @param subsidyAmount The amount of collateral subsidized by the liquidator.
+    /// @param profitAmount The amount of collateral pocketed as profit by the liquidator.
     event FlashSwapAndLiquidateBorrow(
         address indexed liquidator,
         address indexed borrower,
