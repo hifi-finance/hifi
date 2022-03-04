@@ -2,8 +2,8 @@
 pragma solidity >=0.8.4;
 
 import "@hifi/amm/contracts/IHifiPool.sol";
-import "@hifi/protocol/contracts/core/balanceSheet/IBalanceSheetV1.sol";
-import "@hifi/protocol/contracts/core/hToken/IHToken.sol";
+import "@hifi/protocol/contracts/core/balance-sheet/IBalanceSheetV2.sol";
+import "@hifi/protocol/contracts/core/h-token/IHToken.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
 
@@ -52,7 +52,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
 
     /// @inheritdoc IHifiProxyTarget
     function borrowHToken(
-        IBalanceSheetV1 balanceSheet,
+        IBalanceSheetV2 balanceSheet,
         IHToken hToken,
         uint256 borrowAmount
     ) public override {
@@ -64,7 +64,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
 
     /// @inheritdoc IHifiProxyTarget
     function borrowHTokenAndAddLiquidity(
-        IBalanceSheetV1 balanceSheet,
+        IBalanceSheetV2 balanceSheet,
         IHifiPool hifiPool,
         uint256 maxBorrowAmount,
         uint256 underlyingOffered
@@ -98,7 +98,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
 
     /// @inheritdoc IHifiProxyTarget
     function borrowHTokenAndBuyUnderlying(
-        IBalanceSheetV1 balanceSheet,
+        IBalanceSheetV2 balanceSheet,
         IHifiPool hifiPool,
         uint256 maxBorrowAmount,
         uint256 underlyingOut
@@ -124,7 +124,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
 
     /// @inheritdoc IHifiProxyTarget
     function borrowHTokenAndSellHToken(
-        IBalanceSheetV1 balanceSheet,
+        IBalanceSheetV2 balanceSheet,
         IHifiPool hifiPool,
         uint256 borrowAmount,
         uint256 minUnderlyingOut
@@ -226,7 +226,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
     /// @inheritdoc IHifiProxyTarget
     function buyHTokenAndRepayBorrow(
         IHifiPool hifiPool,
-        IBalanceSheetV1 balanceSheet,
+        IBalanceSheetV2 balanceSheet,
         uint256 maxUnderlyingIn,
         uint256 hTokenOut
     ) external override {
@@ -332,7 +332,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
 
     /// @inheritdoc IHifiProxyTarget
     function depositCollateral(
-        IBalanceSheetV1 balanceSheet,
+        IBalanceSheetV2 balanceSheet,
         IErc20 collateral,
         uint256 depositAmount
     ) public override {
@@ -345,7 +345,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
 
     /// @inheritdoc IHifiProxyTarget
     function depositCollateralAndBorrowHToken(
-        IBalanceSheetV1 balanceSheet,
+        IBalanceSheetV2 balanceSheet,
         IErc20 collateral,
         IHToken hToken,
         uint256 depositAmount,
@@ -357,7 +357,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
 
     /// @inheritdoc IHifiProxyTarget
     function depositCollateralAndBorrowHTokenAndAddLiquidity(
-        IBalanceSheetV1 balanceSheet,
+        IBalanceSheetV2 balanceSheet,
         IErc20 collateral,
         IHifiPool hifiPool,
         uint256 depositAmount,
@@ -368,8 +368,36 @@ contract HifiProxyTarget is IHifiProxyTarget {
         borrowHTokenAndAddLiquidity(balanceSheet, hifiPool, maxBorrowAmount, underlyingOffered);
     }
 
-    function depositUnderlyingAsCollateralAndBorrowHTokenAndAddLiquidity(
-        IBalanceSheetV1 balanceSheet,
+    /// @inheritdoc IHifiProxyTarget
+    function depositCollateralAndBorrowHTokenAndSellHToken(
+        IBalanceSheetV2 balanceSheet,
+        IErc20 collateral,
+        IHifiPool hifiPool,
+        uint256 depositAmount,
+        uint256 borrowAmount,
+        uint256 minUnderlyingOut
+    ) external override {
+        depositCollateral(balanceSheet, collateral, depositAmount);
+        borrowHTokenAndSellHToken(balanceSheet, hifiPool, borrowAmount, minUnderlyingOut);
+    }
+
+    /// @inheritdoc IHifiProxyTarget
+    function depositUnderlying(IHToken hToken, uint256 underlyingAmount) external override {
+        uint256 oldHTokenBalance = hToken.balanceOf(address(this));
+        depositUnderlyingInternal(hToken, underlyingAmount);
+
+        unchecked {
+            // Calculate how many hTokens were minted.
+            uint256 newHTokenBalance = hToken.balanceOf(address(this));
+            uint256 hTokenAmount = newHTokenBalance - oldHTokenBalance;
+
+            // The hTokens are now in the DSProxy, so we relay them to the end user.
+            hToken.transfer(msg.sender, hTokenAmount);
+        }
+    }
+
+    /// @inheritdoc IHifiProxyTarget
+    function depositUnderlyingAndBorrowHTokenAndAddLiquidity(
         IHifiPool hifiPool,
         uint256 depositAmount,
         uint256 underlyingOffered
@@ -388,12 +416,9 @@ contract HifiProxyTarget is IHifiProxyTarget {
         uint256 totalUnderlyingAmount = depositAmount + underlyingOffered;
         underlying.safeTransferFrom(msg.sender, address(this), totalUnderlyingAmount);
 
-        // Deposit the underlying as collateral into the BalanceSheet contract.
-        depositCollateralInternal(balanceSheet, underlying, depositAmount);
-
-        // Borrow the hTokens.
+        // Deposit the underlying in the HToken contract to mint hTokens.
         IHToken hToken = hifiPool.hToken();
-        balanceSheet.borrow(hToken, hTokenRequired);
+        depositUnderlyingInternal(hToken, depositAmount);
 
         // Allow the HifiPool contract to spend underlying from the DSProxy.
         approveSpender(underlying, address(hifiPool), underlyingOffered);
@@ -409,36 +434,39 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function depositCollateralAndBorrowHTokenAndSellHToken(
-        IBalanceSheetV1 balanceSheet,
-        IErc20 collateral,
-        IHifiPool hifiPool,
-        uint256 depositAmount,
-        uint256 borrowAmount,
-        uint256 minUnderlyingOut
+    function depositUnderlyingAndRepayBorrow(
+        IHToken hToken,
+        IBalanceSheetV2 balanceSheet,
+        uint256 underlyingAmount
     ) external override {
-        depositCollateral(balanceSheet, collateral, depositAmount);
-        borrowHTokenAndSellHToken(balanceSheet, hifiPool, borrowAmount, minUnderlyingOut);
+        uint256 oldHTokenBalance = hToken.balanceOf(address(this));
+        depositUnderlyingInternal(hToken, underlyingAmount);
+
+        unchecked {
+            // Calculate how many hTokens were minted.
+            uint256 newHTokenBalance = hToken.balanceOf(address(this));
+            uint256 hTokenAmount = newHTokenBalance - oldHTokenBalance;
+
+            // Use the newly minted hTokens to repay the debt.
+            balanceSheet.repayBorrow(hToken, hTokenAmount);
+        }
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function redeemHToken(IHToken hToken, uint256 hTokenAmount) external override {
+    function redeem(
+        IHToken hToken,
+        uint256 hTokenAmount,
+        uint256 underlyingAmount
+    ) external override {
         // Transfer the hTokens to the DSProxy.
         hToken.transferFrom(msg.sender, address(this), hTokenAmount);
 
-        // Redeem the hTokens.
+        // Redeem the underlying.
         IErc20 underlying = hToken.underlying();
-        uint256 oldUnderlyingBalance = underlying.balanceOf(address(this));
-        hToken.redeem(hTokenAmount);
+        hToken.redeem(underlyingAmount);
 
-        unchecked {
-            // Calculate how much underlying was redeemed.
-            uint256 newUnderlyingBalance = underlying.balanceOf(address(this));
-            uint256 underlyingAmount = newUnderlyingBalance - oldUnderlyingBalance;
-
-            // The underlying is now in the DSProxy, so we relay it to the end user.
-            underlying.safeTransfer(msg.sender, underlyingAmount);
-        }
+        // The underlying is now in the DSProxy, so we relay it to the end user.
+        underlying.safeTransfer(msg.sender, underlyingAmount);
     }
 
     /// @inheritdoc IHifiProxyTarget
@@ -455,35 +483,29 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function removeLiquidityAndRedeemHToken(IHifiPool hifiPool, uint256 poolTokensBurned) external override {
+    function removeLiquidityAndRedeem(IHifiPool hifiPool, uint256 poolTokensBurned) external override {
         // Transfer the LP tokens to the DSProxy.
         hifiPool.transferFrom(msg.sender, address(this), poolTokensBurned);
 
         // Burn the LP tokens.
         (uint256 underlyingReturned, uint256 hTokenReturned) = hifiPool.burn(poolTokensBurned);
 
-        // Redeem the hTokens.
+        // Calculate how much underlying will be redeemed,
+        uint256 underlyingRedeemed = normalize(hTokenReturned, hifiPool.underlyingPrecisionScalar());
+
+        // Redeem the underlying.
         IHToken hToken = hifiPool.hToken();
-        IErc20 underlying = hToken.underlying();
-        uint256 oldUnderlyingBalance = underlying.balanceOf(address(this));
         hToken.redeem(hTokenReturned);
 
-        // Calculate how much underlying was redeemed.
-        uint256 underlyingAmount;
-        unchecked {
-            uint256 newUnderlyingBalance = underlying.balanceOf(address(this));
-            underlyingAmount = newUnderlyingBalance - oldUnderlyingBalance;
-        }
-
         // Relay all the underlying it to the end user.
-        uint256 totalUnderlyingAmount = underlyingReturned + underlyingAmount;
-        underlying.safeTransfer(msg.sender, totalUnderlyingAmount);
+        uint256 totalUnderlyingAmount = underlyingReturned + underlyingRedeemed;
+        hToken.underlying().safeTransfer(msg.sender, totalUnderlyingAmount);
     }
 
     /// @inheritdoc IHifiProxyTarget
     function removeLiquidityAndRepayBorrowAndWithdrawCollateral(
         IHifiPool hifiPool,
-        IBalanceSheetV1 balanceSheet,
+        IBalanceSheetV2 balanceSheet,
         IErc20 collateral,
         uint256 poolTokensBurned,
         uint256 repayAmount,
@@ -549,7 +571,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
 
     /// @inheritdoc IHifiProxyTarget
     function repayBorrow(
-        IBalanceSheetV1 balanceSheet,
+        IBalanceSheetV2 balanceSheet,
         IHToken hToken,
         uint256 repayAmount
     ) external override {
@@ -609,7 +631,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
     /// @inheritdoc IHifiProxyTarget
     function sellUnderlyingAndRepayBorrow(
         IHifiPool hifiPool,
-        IBalanceSheetV1 balanceSheet,
+        IBalanceSheetV2 balanceSheet,
         uint256 underlyingIn,
         uint256 minHTokenOut
     ) external override {
@@ -648,42 +670,8 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function supplyUnderlying(IHToken hToken, uint256 underlyingAmount) external override {
-        uint256 oldHTokenBalance = hToken.balanceOf(address(this));
-        supplyUnderlyingInternal(hToken, underlyingAmount);
-
-        unchecked {
-            // Calculate how many hTokens were minted.
-            uint256 newHTokenBalance = hToken.balanceOf(address(this));
-            uint256 hTokenAmount = newHTokenBalance - oldHTokenBalance;
-
-            // The hTokens are now in the DSProxy, so we relay them to the end user.
-            hToken.transfer(msg.sender, hTokenAmount);
-        }
-    }
-
-    /// @inheritdoc IHifiProxyTarget
-    function supplyUnderlyingAndRepayBorrow(
-        IHToken hToken,
-        IBalanceSheetV1 balanceSheet,
-        uint256 underlyingAmount
-    ) external override {
-        uint256 oldHTokenBalance = hToken.balanceOf(address(this));
-        supplyUnderlyingInternal(hToken, underlyingAmount);
-
-        unchecked {
-            // Calculate how many hTokens were minted.
-            uint256 newHTokenBalance = hToken.balanceOf(address(this));
-            uint256 hTokenAmount = newHTokenBalance - oldHTokenBalance;
-
-            // Use the newly minted hTokens to repay the debt.
-            balanceSheet.repayBorrow(hToken, hTokenAmount);
-        }
-    }
-
-    /// @inheritdoc IHifiProxyTarget
     function withdrawCollateral(
-        IBalanceSheetV1 balanceSheet,
+        IBalanceSheetV2 balanceSheet,
         IErc20 collateral,
         uint256 withdrawAmount
     ) public override {
@@ -694,7 +682,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function wrapEthAndDepositCollateral(WethInterface weth, IBalanceSheetV1 balanceSheet) public payable override {
+    function wrapEthAndDepositCollateral(WethInterface weth, IBalanceSheetV2 balanceSheet) public payable override {
         uint256 depositAmount = msg.value;
 
         // Convert the received ETH to WETH.
@@ -707,7 +695,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
     /// @inheritdoc IHifiProxyTarget
     function wrapEthAndDepositAndBorrowHTokenAndSellHToken(
         WethInterface weth,
-        IBalanceSheetV1 balanceSheet,
+        IBalanceSheetV2 balanceSheet,
         IHifiPool hifiPool,
         uint256 borrowAmount,
         uint256 minUnderlyingOut
@@ -752,19 +740,19 @@ contract HifiProxyTarget is IHifiProxyTarget {
 
     /// @dev See the documentation for the public functions that call this internal function.
     function depositCollateralInternal(
-        IBalanceSheetV1 balanceSheet,
+        IBalanceSheetV2 balanceSheet,
         IErc20 collateral,
-        uint256 depositAmount
+        uint256 collateralAmount
     ) internal {
         // Allow the BalanceSheet contract to spend collateral from the DSProxy.
-        approveSpender(collateral, address(balanceSheet), depositAmount);
+        approveSpender(collateral, address(balanceSheet), collateralAmount);
 
         // Deposit the collateral into the BalanceSheet contract.
-        balanceSheet.depositCollateral(collateral, depositAmount);
+        balanceSheet.depositCollateral(collateral, collateralAmount);
     }
 
     /// @dev See the documentation for the public functions that call this internal function.
-    function supplyUnderlyingInternal(IHToken hToken, uint256 underlyingAmount) internal {
+    function depositUnderlyingInternal(IHToken hToken, uint256 underlyingAmount) internal {
         //IRedemptionPool redemptionPool = hToken.redemptionPool();
         IErc20 underlying = hToken.underlying();
 
@@ -774,7 +762,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         // Allow the HToken contract to spend underlying from the DSProxy.
         approveSpender(underlying, address(hToken), underlyingAmount);
 
-        // Supply the underlying and mint hTokens.
-        hToken.supplyUnderlying(underlyingAmount);
+        // Deposit the underlying in the HToken contract to mint hTokens.
+        hToken.depositUnderlying(underlyingAmount);
     }
 }

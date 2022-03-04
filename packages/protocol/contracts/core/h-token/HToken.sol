@@ -180,7 +180,7 @@ contract HToken is
             revert HToken__RedeemInsufficientLiquidity(underlyingAmount, totalUnderlyingReserve);
         }
 
-        // Effects: decrease the remaining supply of underlying.
+        // Effects: decrease the reserves of underlying.
         totalUnderlyingReserve -= underlyingAmount;
 
         // Normalize the underlying amount to 18 decimals.
@@ -197,14 +197,14 @@ contract HToken is
 
     /// @inheritdoc IHToken
     function withdrawUnderlying(uint256 underlyingAmount) external override {
+        // Checks: after maturation, depositors should call the `redeem` function instead.
+        if (isMatured()) {
+            revert HToken__BondMatured(block.timestamp, maturity);
+        }
+
         // Checks: the zero edge case.
         if (underlyingAmount == 0) {
             revert HToken__WithdrawUnderlyingZero();
-        }
-
-        // Checks: bond not matured. Depositors should call the `redeem` function instead.
-        if (isMatured()) {
-            revert HToken__BondMatured(block.timestamp, maturity);
         }
 
         // Checks: the depositor has enough underlying.
