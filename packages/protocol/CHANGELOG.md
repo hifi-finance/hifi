@@ -16,7 +16,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 ### Changed
 
 - Emit both current time and maturity time when reverting with the `BondNotMatured` custom error.
-- Improve wording in READMEa and NatSpec comments.
+- Improve wording in README and NatSpec comments.
 - Mark the init function as `internal` in `OwnableUpgradeable`.
 - Move the custom errors in the smart contract interface files.
 - Rename the `__OwnableUpgradeable__init` function to `__Ownable_init`.

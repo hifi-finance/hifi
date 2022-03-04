@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.4;
 
-import "@hifi/protocol/contracts/core/hToken/IHToken.sol";
+import "@hifi/protocol/contracts/core/h-token/IHToken.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/IErc20Permit.sol";
 
@@ -54,6 +54,12 @@ interface IHifiPool is IErc20Permit {
 
     /// EVENTS ///
 
+    /// @notice Emitted when liquidity is added to the AMM.
+    /// @param maturity The maturity of the hToken.
+    /// @param provider The address of the liquidity provider.
+    /// @param underlyingAmount The amount of underlying provided.
+    /// @param hTokenAmount The amount of hTokens provided.
+    /// @param poolTokenAmount The amount of pool tokens minted.
     event AddLiquidity(
         uint256 maturity,
         address indexed provider,
@@ -62,6 +68,12 @@ interface IHifiPool is IErc20Permit {
         uint256 poolTokenAmount
     );
 
+    /// @notice Emitted when liquidity is removed from the AMM.
+    /// @param maturity The maturity of the hToken.
+    /// @param provider The address of the liquidity withdrawn.
+    /// @param underlyingAmount The amount of underlying withdrawn.
+    /// @param hTokenAmount The amount of hTokens provided.
+    /// @param poolTokenAmount The amount of pool tokens burned.
     event RemoveLiquidity(
         uint256 maturity,
         address indexed provider,
@@ -70,6 +82,12 @@ interface IHifiPool is IErc20Permit {
         uint256 poolTokenAmount
     );
 
+    /// @notice Emitted when a trade is made in the AMM.
+    /// @param maturity The maturity of the hToken.
+    /// @param from The account sending the tokens to the AMM.
+    /// @param to The account receiving the tokens from the AMM.
+    /// @param underlyingAmount The amount of underlying bought or sold.
+    /// @param hTokenAmount The amount of hTokens bought or sold.
     event Trade(
         uint256 maturity,
         address indexed from,

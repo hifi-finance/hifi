@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.4;
 
-import "@hifi/protocol/contracts/core/hToken/IHToken.sol";
+import "@hifi/protocol/contracts/core/h-token/IHToken.sol";
 import "@paulrberg/contracts/token/erc20/Erc20.sol";
 import "@paulrberg/contracts/token/erc20/IErc20.sol";
 import "@paulrberg/contracts/token/erc20/Erc20Permit.sol";
