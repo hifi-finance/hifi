@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2022-03-08
+
+### Added
+
+- An `underlyingAmount` argument to `redeem` function.
+
+### Changed
+
+- Improve wording in README and NatSpec comments.
+- Rewrite the proxy target to conform to the latest API of the Hifi protocol.
+- Upgrade to `@hifi/amm` v1.8.2.
+- Upgrade to `@hifi/protocol` v1.8.2.
+- Upgrade to `@openzeppelin/contracts-upgradeable` v4.5.2.
+- The `redeemHToken` function and its derivatives into `redeem`.
+- The `underlyingAsCollateral` wording into just `underlying`.
+- The `supplyUnderlying` function and its derivatives into `depositUnderlying`.
+
+### Removed
+
+- All `*.d.ts` type files.
+
 ## [1.6.1] - 2021-10-25
 
 ### Changed
@@ -133,6 +154,7 @@ YANKED.
 
 - First release of the package.
 
+[1.7.0]: https://github.com/hifi-finance/hifi/compare/@hifi/proxy-target@1.6.1...@hifi/proxy-target@1.7.0
 [1.6.1]: https://github.com/hifi-finance/hifi/compare/@hifi/proxy-target@1.6.0...@hifi/proxy-target@1.6.1
 [1.6.0]: https://github.com/hifi-finance/hifi/compare/@hifi/proxy-target@1.5.0...@hifi/proxy-target@1.6.0
 [1.5.0]: https://github.com/hifi-finance/hifi/compare/@hifi/proxy-target@1.4.0...@hifi/proxy-target@1.5.0
