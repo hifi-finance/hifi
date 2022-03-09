@@ -5,7 +5,7 @@ import { hUSDC } from "@hifi/helpers";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
 import forEach from "mocha-each";
-import { MAX_UD60x18 } from "prb-math";
+import { MAX_UD60x18 } from "@prb/math";
 
 export function shouldBehaveLikeGetVirtualHTokenReserves(): void {
   context("when there is no hToken in the pool", function () {

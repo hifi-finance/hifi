@@ -2,9 +2,9 @@
 pragma solidity >=0.8.4;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
-import "@paulrberg/contracts/token/erc20/IErc20.sol";
-import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
-import "prb-math/contracts/PRBMathUD60x18.sol";
+import "@prb/contracts/token/erc20/IErc20.sol";
+import "@prb/contracts/token/erc20/SafeErc20.sol";
+import "@prb/math/contracts/PRBMathUD60x18.sol";
 
 import "./IBalanceSheetV2.sol";
 import "./SBalanceSheetV2.sol";

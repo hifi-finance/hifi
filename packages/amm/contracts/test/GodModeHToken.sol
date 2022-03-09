@@ -4,7 +4,7 @@ pragma solidity >=0.8.4;
 import "@hifi/protocol/contracts/core/balance-sheet/IBalanceSheetV2.sol";
 import "@hifi/protocol/contracts/core/fintroller/IFintroller.sol";
 import "@hifi/protocol/contracts/core/h-token/HToken.sol";
-import "@paulrberg/contracts/token/erc20/IErc20.sol";
+import "@prb/contracts/token/erc20/IErc20.sol";
 
 /// @title GodModeHToken
 /// @author Hifi

@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.4;
 
-import "@paulrberg/contracts/access/Ownable.sol";
-import "@paulrberg/contracts/token/erc20/IErc20.sol";
+import "@prb/contracts/access/Ownable.sol";
+import "@prb/contracts/token/erc20/IErc20.sol";
 
 import "./IFintroller.sol";
 import "../h-token/IHToken.sol";

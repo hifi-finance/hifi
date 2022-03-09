@@ -2,8 +2,8 @@
 pragma solidity >=0.8.4;
 
 import "@hifi/protocol/contracts/core/h-token/IHToken.sol";
-import "@paulrberg/contracts/token/erc20/IErc20.sol";
-import "@paulrberg/contracts/token/erc20/IErc20Permit.sol";
+import "@prb/contracts/token/erc20/IErc20.sol";
+import "@prb/contracts/token/erc20/IErc20Permit.sol";
 
 /// @title IHifiPool
 /// @author Hifi

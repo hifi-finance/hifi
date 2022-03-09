@@ -1,5 +1,5 @@
 import type { BigNumber } from "@ethersproject/bignumber";
-import { SCALE, div, mul, pow } from "prb-math";
+import { SCALE, div, mul, pow } from "@prb/math";
 
 import { G1, G2, K } from "./constants";
 

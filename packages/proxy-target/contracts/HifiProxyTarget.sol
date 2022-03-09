@@ -4,8 +4,8 @@ pragma solidity >=0.8.4;
 import "@hifi/amm/contracts/IHifiPool.sol";
 import "@hifi/protocol/contracts/core/balance-sheet/IBalanceSheetV2.sol";
 import "@hifi/protocol/contracts/core/h-token/IHToken.sol";
-import "@paulrberg/contracts/token/erc20/IErc20.sol";
-import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
+import "@prb/contracts/token/erc20/IErc20.sol";
+import "@prb/contracts/token/erc20/SafeErc20.sol";
 
 import "./IHifiProxyTarget.sol";
 import "./external/WethInterface.sol";

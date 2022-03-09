@@ -2,10 +2,10 @@
 pragma solidity >=0.8.4;
 
 import "@hifi/protocol/contracts/core/h-token/IHToken.sol";
-import "@paulrberg/contracts/token/erc20/Erc20.sol";
-import "@paulrberg/contracts/token/erc20/IErc20.sol";
-import "@paulrberg/contracts/token/erc20/Erc20Permit.sol";
-import "@paulrberg/contracts/token/erc20/SafeErc20.sol";
+import "@prb/contracts/token/erc20/Erc20.sol";
+import "@prb/contracts/token/erc20/IErc20.sol";
+import "@prb/contracts/token/erc20/Erc20Permit.sol";
+import "@prb/contracts/token/erc20/SafeErc20.sol";
 
 import "./IHifiPool.sol";
 import "./math/YieldSpace.sol";
