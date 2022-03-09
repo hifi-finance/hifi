@@ -323,11 +323,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         uint256 deadline,
         bytes memory signatureUnderlying
     ) external override {
-        uint256 underlyingIn = hifiPool.getQuoteForBuyingHToken(hTokenOut);
-        uint256 underlyingRequired = getUnderlyingRequired(hifiPool, hTokenOut);
-        uint256 totalUnderlyingAmount = underlyingIn + underlyingRequired;
-
-        permitInternal(underlying, totalUnderlyingAmount, deadline, signatureUnderlying);
+        permitInternal(underlying, maxUnderlyingAmount, deadline, signatureUnderlying);
         buyHTokenAndAddLiquidity(hifiPool, hTokenOut, maxUnderlyingAmount);
     }
 
