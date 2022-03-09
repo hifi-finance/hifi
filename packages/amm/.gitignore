@@ -10,7 +10,11 @@ src/types/*
 !src/types/IHifiPool.ts
 !src/types/IHifiPoolRegistry.ts
 !src/types/IOwnable.ts
-!src/types/Ownable.ts
+!src/types/Ownable.ts\
+
+# factories
+!src/types/factories
+src/types/factories/*
 !src/types/factories/Erc20__factory.ts
 !src/types/factories/Erc20Permit__factory.ts
 !src/types/factories/HifiPool__factory.ts

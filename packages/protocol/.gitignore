@@ -19,6 +19,10 @@ src/types/*
 !src/types/OwnableUpgradeable.ts
 !src/types/SimplePriceFeed.ts
 !src/types/StablecoinPriceFeed.ts
+
+# factories
+!src/types/factories
+src/types/factories/*
 !src/types/factories/BalanceSheetV2__factory.ts
 !src/types/factories/ChainlinkOperator__factory.ts
 !src/types/factories/Erc20__factory.ts
