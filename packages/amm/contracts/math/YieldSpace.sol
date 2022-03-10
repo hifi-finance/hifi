@@ -1,43 +1,50 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 pragma solidity >=0.8.4;
 
-import "prb-math/contracts/PRBMathUD60x18.sol";
-
-/// @notice Emitted when selling underlying and the resultant hToken reserves would be too low.
-error YieldSpace__HTokenOutForUnderlyingInReservesFactorsUnderflow(
-    uint256 startingReservesFactor,
-    uint256 newNormalizedUnderlyingReservesFactor
-);
-
-/// @notice Emitted when the hToken reserves added to the hToken out overflows uint256.
-error YieldSpace__HTokenReservesOverflow(uint256 hTokenReserves, uint256 hTokenIn);
-
-/// @notice Emitted when there is not enough hTokens in the pool for how much should go out.
-error YieldSpace__HTokenReservesUnderflow(uint256 hTokenReserves, uint256 hTokenOut);
-
-/// @notice Emitted when the math calculations produce an underflow that in a pure mathematical sense
-/// should not exist.
-error YieldSpace__LossyPrecisionUnderflow(uint256 minuend, uint256 subtrahend);
-
-/// @notice Emitted when the time to maturity is beyond the cut-off point.
-error YieldSpace__TooFarFromMaturity(uint256 timeToMaturity);
-
-/// @notice Emitted when selling underlying and the resultant hToken reserves would be too low.
-error YieldSpace__UnderlyingOutForHTokenInReservesFactorsUnderflow(
-    uint256 startingReservesFactor,
-    uint256 newHTokenReservesFactor
-);
-
-/// @notice Emitted when the normalized underlying reserves added to the normalized underlying in overflows uint256.
-error YieldSpace__UnderlyingReservesOverflow(uint256 normalizedUnderlyingReserves, uint256 normalizedUnderlyingIn);
-
-/// @notice Emitted when there is not enough underlying in the pool for how much should go out.
-error YieldSpace__UnderlyingReservesUnderflow(uint256 normalizedUnderlyingReserves, uint256 normalizedUnderlyingOut);
+import "@prb/math/contracts/PRBMathUD60x18.sol";
 
 /// @title YieldSpace
 /// @author Hifi
 library YieldSpace {
     using PRBMathUD60x18 for uint256;
+
+    /// CUSTOM ERRORS ///
+
+    /// @notice Emitted when selling underlying and the resultant hToken reserves would be too low.
+    error YieldSpace__HTokenOutForUnderlyingInReservesFactorsUnderflow(
+        uint256 startingReservesFactor,
+        uint256 newNormalizedUnderlyingReservesFactor
+    );
+
+    /// @notice Emitted when the hToken reserves added to the hToken out overflows uint256.
+    error YieldSpace__HTokenReservesOverflow(uint256 hTokenReserves, uint256 hTokenIn);
+
+    /// @notice Emitted when there is not enough hTokens in the pool for how much should go out.
+    error YieldSpace__HTokenReservesUnderflow(uint256 hTokenReserves, uint256 hTokenOut);
+
+    /// @notice Emitted when the math calculations produce an underflow that in a pure mathematical sense
+    /// should not exist.
+    error YieldSpace__LossyPrecisionUnderflow(uint256 minuend, uint256 subtrahend);
+
+    /// @notice Emitted when the time to maturity is beyond the cut-off point.
+    error YieldSpace__TooFarFromMaturity(uint256 timeToMaturity);
+
+    /// @notice Emitted when selling underlying and the resultant hToken reserves would be too low.
+    error YieldSpace__UnderlyingOutForHTokenInReservesFactorsUnderflow(
+        uint256 startingReservesFactor,
+        uint256 newHTokenReservesFactor
+    );
+
+    /// @notice Emitted when the normalized underlying reserves added to the normalized underlying in overflows uint256.
+    error YieldSpace__UnderlyingReservesOverflow(uint256 normalizedUnderlyingReserves, uint256 normalizedUnderlyingIn);
+
+    /// @notice Emitted when there is not enough underlying in the pool for how much should go out.
+    error YieldSpace__UnderlyingReservesUnderflow(
+        uint256 normalizedUnderlyingReserves,
+        uint256 normalizedUnderlyingOut
+    );
+
+    /// INTERNAL STORAGE ///
 
     /// @notice The greatest time to maturity for which the g*t < 1 invariant holds, as an unsigned 60.18-decimal
     /// fixed-point number.

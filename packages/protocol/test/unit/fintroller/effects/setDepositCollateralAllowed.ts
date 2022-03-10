@@ -1,4 +1,4 @@
-import { FintrollerErrors, OwnableUpgradeableErrors } from "@hifi/errors";
+import { FintrollerErrors, OwnableErrors } from "@hifi/errors";
 import { expect } from "chai";
 
 export function shouldBehaveLikeSetDepositCollateralAllowed(): void {
@@ -8,7 +8,7 @@ export function shouldBehaveLikeSetDepositCollateralAllowed(): void {
         this.contracts.fintroller
           .connect(this.signers.raider)
           .setDepositCollateralAllowed(this.mocks.wbtc.address, true),
-      ).to.be.revertedWith(OwnableUpgradeableErrors.NOT_OWNER);
+      ).to.be.revertedWith(OwnableErrors.NOT_OWNER);
     });
   });
 

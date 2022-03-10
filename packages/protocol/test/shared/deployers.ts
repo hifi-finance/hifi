@@ -1,5 +1,5 @@
 import type { Signer } from "@ethersproject/abstract-signer";
-import { BigNumber } from "@ethersproject/bignumber";
+import type { BigNumber } from "@ethersproject/bignumber";
 import { artifacts, ethers, upgrades, waffle } from "hardhat";
 import type { Artifact } from "hardhat/types";
 
@@ -14,19 +14,16 @@ import {
   WBTC_SYMBOL,
 } from "@hifi/constants";
 import { getHTokenName, getHTokenSymbol, price } from "@hifi/helpers";
-import {
-  FintrollerV1__factory,
-  GodModeBalanceSheet__factory,
-  OwnableUpgradeable,
-  OwnableUpgradeable__factory,
-} from "../../src/types";
-import { ChainlinkOperator } from "../../src/types/ChainlinkOperator";
-import { FintrollerV1 } from "../../src/types/FintrollerV1";
-import { GodModeBalanceSheet } from "../../src/types/GodModeBalanceSheet";
-import { GodModeErc20 } from "../../src/types/GodModeErc20";
-import { GodModeHToken } from "../../src/types/GodModeHToken";
-import { HToken } from "../../src/types/HToken";
-import { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
+import type { GodModeBalanceSheet__factory } from "../../src/types/factories/GodModeBalanceSheet__factory";
+import type { GodModeOwnableUpgradeable__factory } from "../../src/types/factories/GodModeOwnableUpgradeable__factory";
+import type { ChainlinkOperator } from "../../src/types/ChainlinkOperator";
+import type { Fintroller } from "../../src/types/Fintroller";
+import type { GodModeBalanceSheet } from "../../src/types/GodModeBalanceSheet";
+import type { GodModeErc20 } from "../../src/types/GodModeErc20";
+import type { GodModeHToken } from "../../src/types/GodModeHToken";
+import type { GodModeOwnableUpgradeable } from "../../src/types/GodModeOwnableUpgradeable";
+import type { HToken } from "../../src/types/HToken";
+import type { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
 
 const { deployContract } = waffle;
 const overrides = { gasLimit: process.env.CODE_COVERAGE ? GAS_LIMITS.coverage : GAS_LIMITS.hardhat };
@@ -39,17 +36,18 @@ export async function deployChainlinkOperator(deployer: Signer): Promise<Chainli
   return chainlinkOperator;
 }
 
-export async function deployFintrollerV1(): Promise<FintrollerV1> {
-  const fintrollerV1Factory: FintrollerV1__factory = await ethers.getContractFactory("FintrollerV1");
-  const fintrollerV1: FintrollerV1 = <FintrollerV1>await upgrades.deployProxy(fintrollerV1Factory);
-  await fintrollerV1.deployed();
-  return fintrollerV1;
+export async function deployFintroller(deployer: Signer): Promise<Fintroller> {
+  const fintrollerArtifact: Artifact = await artifacts.readArtifact("Fintroller");
+  const fintroller: Fintroller = <Fintroller>await deployContract(deployer, fintrollerArtifact);
+  await fintroller.deployed();
+  return fintroller;
 }
 
 export async function deployHToken(
   deployer: Signer,
   maturity: BigNumber,
   balanceSheetAddress: string,
+  fintrollerAddress: string,
   underlyingAddress: string,
 ): Promise<HToken> {
   const hTokenArtifact: Artifact = await artifacts.readArtifact("HToken");
@@ -57,7 +55,14 @@ export async function deployHToken(
     await deployContract(
       deployer,
       hTokenArtifact,
-      [getHTokenName(maturity), getHTokenSymbol(maturity), maturity, balanceSheetAddress, underlyingAddress],
+      [
+        getHTokenName(maturity),
+        getHTokenSymbol(maturity),
+        maturity,
+        balanceSheetAddress,
+        fintrollerAddress,
+        underlyingAddress,
+      ],
       overrides,
     )
   );
@@ -81,6 +86,7 @@ export async function deployGodModeHToken(
   deployer: Signer,
   maturity: BigNumber,
   balanceSheetAddress: string,
+  fintrollerAddress: string,
   underlyingAddress: string,
 ): Promise<GodModeHToken> {
   const godModeHTokenArtifact: Artifact = await artifacts.readArtifact("GodModeHToken");
@@ -88,33 +94,29 @@ export async function deployGodModeHToken(
     await deployContract(
       deployer,
       godModeHTokenArtifact,
-      [getHTokenName(maturity), getHTokenSymbol(maturity), maturity, balanceSheetAddress, underlyingAddress],
+      [
+        getHTokenName(maturity),
+        getHTokenSymbol(maturity),
+        maturity,
+        balanceSheetAddress,
+        fintrollerAddress,
+        underlyingAddress,
+      ],
       overrides,
     )
   );
   return hToken;
 }
 
-export async function deployOwnableUpgradeable(): Promise<OwnableUpgradeable> {
-  const ownableUpgradeableFactory: OwnableUpgradeable__factory = await ethers.getContractFactory("OwnableUpgradeable");
-  const ownableUpgradeable: OwnableUpgradeable = <OwnableUpgradeable>(
+export async function deployOwnableUpgradeable(): Promise<GodModeOwnableUpgradeable> {
+  const ownableUpgradeableFactory: GodModeOwnableUpgradeable__factory = await ethers.getContractFactory(
+    "GodModeOwnableUpgradeable",
+  );
+  const ownableUpgradeable: GodModeOwnableUpgradeable = <GodModeOwnableUpgradeable>(
     await upgrades.deployProxy(ownableUpgradeableFactory)
   );
   await ownableUpgradeable.deployed();
   return ownableUpgradeable;
-}
-
-export async function deploySimplePriceFeed(
-  deployer: Signer,
-  description: string,
-  price: BigNumber,
-): Promise<SimplePriceFeed> {
-  const simplePriceFeedArtifact: Artifact = await artifacts.readArtifact("SimplePriceFeed");
-  const simplePriceFeed: SimplePriceFeed = <SimplePriceFeed>(
-    await deployContract(deployer, simplePriceFeedArtifact, [description], overrides)
-  );
-  await simplePriceFeed.setPrice(price);
-  return simplePriceFeed;
 }
 
 export async function deployUsdc(deployer: Signer): Promise<GodModeErc20> {

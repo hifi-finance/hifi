@@ -7,7 +7,7 @@ import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import { fromBn, toBn } from "evm-bn";
 import forEach from "mocha-each";
-import { SCALE } from "prb-math";
+import { SCALE } from "@prb/math";
 
 import { getLatestBlockTimestamp } from "../../../shared/helpers";
 import { getQuoteForBuyingHToken } from "../../../shared/mirrors";

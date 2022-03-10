@@ -7,6 +7,7 @@ import "hardhat-packager";
 import "solidity-coverage";
 
 import "./tasks/deploy";
+import "./tasks/prepare";
 
 import { resolve } from "path";
 
@@ -23,7 +24,13 @@ const mnemonic: string = getEnvVar("MNEMONIC");
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
   etherscan: {
-    apiKey: getEnvVar("ETHERSCAN_API_KEY"),
+    apiKey: {
+      mainnet: getEnvVar("ETHERSCAN_API_KEY"),
+      goerli: getEnvVar("ETHERSCAN_API_KEY"),
+      polygon: getEnvVar("POLYGONSCAN_API_KEY"),
+      rinkeby: getEnvVar("ETHERSCAN_API_KEY"),
+      ropsten: getEnvVar("ETHERSCAN_API_KEY"),
+    },
   },
   gasReporter: {
     currency: "USD",
@@ -53,18 +60,18 @@ const config: HardhatUserConfig = {
   },
   packager: {
     contracts: [
-      "BalanceSheetV1",
+      "BalanceSheetV2",
       "ChainlinkOperator",
       "Erc20",
       "Erc20Permit",
-      "FintrollerV1",
+      "Fintroller",
       "HToken",
       "IAggregatorV3",
-      "IBalanceSheetV1",
+      "IBalanceSheetV2",
       "IChainlinkOperator",
       "IErc20",
       "IErc20Permit",
-      "IFintrollerV1",
+      "IFintroller",
       "IHToken",
       "IOwnable",
       "IOwnableUpgradeable",
@@ -82,7 +89,7 @@ const config: HardhatUserConfig = {
     tests: "./test",
   },
   solidity: {
-    version: "0.8.9",
+    version: "0.8.12",
     settings: {
       metadata: {
         bytecodeHash: "none",

@@ -1,5 +1,5 @@
 import { defaultAbiCoder } from "@ethersproject/abi";
-import { BigNumber } from "@ethersproject/bignumber";
+import type { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { MaxUint256 } from "@ethersproject/constants";
 import { LIQUIDATION_INCENTIVES } from "@hifi/constants";

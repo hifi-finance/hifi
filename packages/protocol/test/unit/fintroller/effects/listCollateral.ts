@@ -1,5 +1,5 @@
 import { Zero } from "@ethersproject/constants";
-import { FintrollerErrors, OwnableUpgradeableErrors } from "@hifi/errors";
+import { FintrollerErrors, OwnableErrors } from "@hifi/errors";
 import { expect } from "chai";
 
 export function shouldBehaveLikeListCollateral(): void {
@@ -7,7 +7,7 @@ export function shouldBehaveLikeListCollateral(): void {
     it("reverts", async function () {
       await expect(
         this.contracts.fintroller.connect(this.signers.raider).listCollateral(this.mocks.wbtc.address),
-      ).to.be.revertedWith(OwnableUpgradeableErrors.NOT_OWNER);
+      ).to.be.revertedWith(OwnableErrors.NOT_OWNER);
     });
   });
 

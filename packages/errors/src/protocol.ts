@@ -7,6 +7,7 @@ export enum BalanceSheetErrors {
   DEBT_CEILING_OVERFLOW = "BalanceSheet__DebtCeilingOverflow",
   DEPOSIT_COLLATERAL_NOT_ALLOWED = "BalanceSheet__DepositCollateralNotAllowed",
   DEPOSIT_COLLATERAL_ZERO = "BalanceSheet__DepositCollateralZero",
+  FINTROLLER_ZERO_ADDRESS = "BalanceSheet__FintrollerZeroAddress",
   LIQUIDATE_BORROW_INSUFFICIENT_COLLATERAL = "BalanceSheet__LiquidateBorrowInsufficientCollateral",
   LIQUIDATE_BORROW_NOT_ALLOWED = "BalanceSheet__LiquidateBorrowNotAllowed",
   LIQUIDATE_BORROW_SELF = "BalanceSheet__LiquidateBorrowSelf",
@@ -40,16 +41,20 @@ export enum FintrollerErrors {
 }
 
 export enum HTokenErrors {
+  BOND_MATURED = "HToken__BondMatured",
   BOND_NOT_MATURED = "HToken__BondNotMatured",
   BURN_NOT_AUTHORIZED = "HToken__BurnNotAuthorized",
+  DEPOSIT_UNDERLYING_NOT_ALLOWED = "HToken__DepositUnderlyingNotAllowed",
+  DEPOSIT_UNDERLYING_ZERO = "HToken__DepositUnderlyingZero",
   MATURITY_PASSED = "HToken__MaturityPassed",
   MINT_NOT_AUTHORIZED = "HToken__MintNotAuthorized",
   REDEEM_INSUFFICIENT_LIQUIDITY = "HToken__RedeemInsufficientLiquidity",
   REDEEM_UNDERLYING_ZERO = "HToken__RedeemUnderlyingZero",
   REDEEM_ZERO = "HToken__RedeemZero",
-  SUPPLY_UNDERLYING_ZERO = "HToken__SupplyUnderlyingZero",
   UNDERLYING_DECIMALS_OVERFLOW = "HToken__UnderlyingDecimalsOverflow",
   UNDERLYING_DECIMALS_ZERO = "HToken__UnderlyingDecimalsZero",
+  WITHDRAW_UNDERLYING_UNDERFLOW = "HToken__WithdrawUnderlyingUnderflow",
+  WITHDRAW_UNDERLYING_ZERO = "HToken__WithdrawUnderlyingZero",
 }
 
 export enum OwnableUpgradeableErrors {

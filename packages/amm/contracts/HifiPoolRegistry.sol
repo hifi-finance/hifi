@@ -1,16 +1,10 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.4;
 
-import "@paulrberg/contracts/access/Ownable.sol";
+import "@prb/contracts/access/Ownable.sol";
 
 import "./IHifiPool.sol";
 import "./IHifiPoolRegistry.sol";
-
-/// @notice Emitted when the pool to be tracked is already tracked.
-error HifiPoolRegistry__PoolAlreadyTracked(IHifiPool pool);
-
-/// @notice Emitted when the pool to be untracked is not tracked.
-error HifiPoolRegistry__PoolNotTracked(IHifiPool pool);
 
 /// @title HifiPoolRegistry
 /// @author Hifi

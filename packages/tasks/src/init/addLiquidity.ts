@@ -16,7 +16,7 @@ task(TASK_INIT_ADD_LIQUIDITY)
   // Contract arguments
   .addParam("hifiPool", "Address of the HifiPool contract")
   .addParam("poolUnderlyingAmount", "Amount of underlying to add as liquidity in the pool")
-  .addParam("supplyUnderlyingAmount", "Amount of underlying to supply in exchange of hTokens")
+  .addParam("depositUnderlyingAmount", "Amount of underlying to supply in exchange for hTokens")
   // Developer settings
   .addOptionalParam("printTxHashes", "Print the tx hashes in the console", true, types.boolean)
   .setAction(async function (taskArgs: TaskArguments, { ethers }): Promise<void> {
@@ -33,8 +33,8 @@ task(TASK_INIT_ADD_LIQUIDITY)
 
     // Load the underlying amounts.
     const poolUnderlyingAmount: BigNumber = BigNumber.from(taskArgs.poolUnderlyingAmount);
-    const supplyUnderlyingAmount: BigNumber = BigNumber.from(taskArgs.supplyUnderlyingAmount);
-    const totalUnderlyingAmount: BigNumber = poolUnderlyingAmount.add(supplyUnderlyingAmount);
+    const depositUnderlyingAmount: BigNumber = BigNumber.from(taskArgs.depositUnderlyingAmount);
+    const totalUnderlyingAmount: BigNumber = poolUnderlyingAmount.add(depositUnderlyingAmount);
 
     // Stop if the signer does not have enough underlying.
     const underlyingBalance: BigNumber = await underlying.balanceOf(signer.address);
@@ -63,21 +63,21 @@ task(TASK_INIT_ADD_LIQUIDITY)
     // Approve the hToken contract to spend underlying if allowance not enough.
     console.log("Approving the hToken contract to spend underlying if allowance not enough ...");
     const hTokenUnderlyingAllowance: BigNumber = await underlying.allowance(signer.address, hTokenAddress);
-    if (hTokenUnderlyingAllowance.lt(supplyUnderlyingAmount)) {
+    if (hTokenUnderlyingAllowance.lt(depositUnderlyingAmount)) {
       await underlying.approve(hTokenAddress, MaxUint256);
     }
 
-    // Supply the underlying in exchange of hTokens.
+    // Supply the underlying in exchange for hTokens.
     console.log("Supplying the underlying to mint hTokens ...");
     const hTokenFactory: HToken__factory = new HToken__factory(signer);
     const hToken: HToken = <HToken>hTokenFactory.attach(hTokenAddress);
-    const supplyUnderlyingTx = await hToken.supplyUnderlying(supplyUnderlyingAmount, { gasLimit: 500000 });
+    const supplyUnderlyingTx = await hToken.supplyUnderlying(depositUnderlyingAmount, { gasLimit: 500000 });
     await supplyUnderlyingTx.wait();
 
     // Approve the pool contract to spend underlying if allowance not enough.
     console.log("Approving the pool contract to spend underlying if allowance not enough ...");
     const poolHTokenAllowance: BigNumber = await hToken.allowance(signer.address, hifiPool.address);
-    const hTokenAmount: BigNumber = supplyUnderlyingAmount.mul(await hifiPool.underlyingPrecisionScalar());
+    const hTokenAmount: BigNumber = depositUnderlyingAmount.mul(await hifiPool.underlyingPrecisionScalar());
     if (poolHTokenAllowance.lt(hTokenAmount)) {
       await hToken.approve(hifiPool.address, MaxUint256);
     }

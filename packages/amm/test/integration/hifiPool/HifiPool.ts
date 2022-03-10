@@ -1,4 +1,4 @@
-import { MAX_UD60x18 } from "prb-math";
+import { MAX_UD60x18 } from "@prb/math";
 
 import { integrationFixtureHifiPool } from "../../shared/fixtures";
 import { shouldBehaveLikeHifiPool } from "./HifiPool.behavior";

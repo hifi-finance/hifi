@@ -1,15 +1,65 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.4;
 
-import "@hifi/protocol/contracts/core/hToken/IHToken.sol";
-import "@paulrberg/contracts/token/erc20/IErc20.sol";
-import "@paulrberg/contracts/token/erc20/IErc20Permit.sol";
+import "@hifi/protocol/contracts/core/h-token/IHToken.sol";
+import "@prb/contracts/token/erc20/IErc20.sol";
+import "@prb/contracts/token/erc20/IErc20Permit.sol";
 
 /// @title IHifiPool
 /// @author Hifi
 interface IHifiPool is IErc20Permit {
+    /// CUSTOM ERRORS ///
+
+    /// @notice Emitted when the bond matured.
+    error HifiPool__BondMatured();
+
+    /// @notice Emitted when attempting to buy a zero amount of hTokens.
+    error HifiPool__BuyHTokenZero();
+
+    /// @notice Emitted when attempting to buy hTokens with a zero amount of underlying.
+    error HifiPool__BuyHTokenUnderlyingZero();
+
+    /// @notice Emitted when attempting to buy a zero amount of underlying.
+    error HifiPool__BuyUnderlyingZero();
+
+    /// @notice Emitted when offering zero underlying to mint LP tokens.
+    error HifiPool__BurnZero();
+
+    /// @notice Emitted when offering zero underlying to mint LP tokens.
+    error HifiPool__MintZero();
+
+    /// @notice Emitted when buying hTokens or selling underlying and the resultant hToken reserves would become
+    /// smaller than the underlying reserves.
+    error HifiPool__NegativeInterestRate(
+        uint256 virtualHTokenReserves,
+        uint256 hTokenOut,
+        uint256 normalizedUnderlyingReserves,
+        uint256 normalizedUnderlyingIn
+    );
+
+    /// @notice Emitted when attempting to sell a zero amount of hToken.
+    error HifiPool__SellHTokenZero();
+
+    /// @notice Emitted when attempting to sell hTokens in exchange for a zero amount of underlying.
+    error HifiPool__SellHTokenUnderlyingZero();
+
+    /// @notice Emitted when attempting to sell a zero amount of underlying.
+    error HifiPool__SellUnderlyingZero();
+
+    /// @notice Emitted when trying to convert a uint256 number that doesn't fit within int256.
+    error HifiPool__ToInt256CastOverflow(uint256 number);
+
+    /// @notice Emitted when the hToken balance added to the total supply of LP tokens overflows uint256.
+    error HifiPool__VirtualHTokenReservesOverflow(uint256 hTokenBalance, uint256 totalSupply);
+
     /// EVENTS ///
 
+    /// @notice Emitted when liquidity is added to the AMM.
+    /// @param maturity The maturity of the hToken.
+    /// @param provider The address of the liquidity provider.
+    /// @param underlyingAmount The amount of underlying provided.
+    /// @param hTokenAmount The amount of hTokens provided.
+    /// @param poolTokenAmount The amount of pool tokens minted.
     event AddLiquidity(
         uint256 maturity,
         address indexed provider,
@@ -18,6 +68,12 @@ interface IHifiPool is IErc20Permit {
         uint256 poolTokenAmount
     );
 
+    /// @notice Emitted when liquidity is removed from the AMM.
+    /// @param maturity The maturity of the hToken.
+    /// @param provider The address of the liquidity withdrawn.
+    /// @param underlyingAmount The amount of underlying withdrawn.
+    /// @param hTokenAmount The amount of hTokens provided.
+    /// @param poolTokenAmount The amount of pool tokens burned.
     event RemoveLiquidity(
         uint256 maturity,
         address indexed provider,
@@ -26,6 +82,12 @@ interface IHifiPool is IErc20Permit {
         uint256 poolTokenAmount
     );
 
+    /// @notice Emitted when a trade is made in the AMM.
+    /// @param maturity The maturity of the hToken.
+    /// @param from The account sending the tokens to the AMM.
+    /// @param to The account receiving the tokens from the AMM.
+    /// @param underlyingAmount The amount of underlying bought or sold.
+    /// @param hTokenAmount The amount of hTokens bought or sold.
     event Trade(
         uint256 maturity,
         address indexed from,

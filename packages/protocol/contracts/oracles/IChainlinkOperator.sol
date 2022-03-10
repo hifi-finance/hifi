@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.4;
 
-import "@paulrberg/contracts/token/erc20/IErc20.sol";
-import "@paulrberg/contracts/access/IOwnable.sol";
+import "@prb/contracts/token/erc20/IErc20.sol";
+import "@prb/contracts/access/IOwnable.sol";
 
 import "../external/chainlink/IAggregatorV3.sol";
 
@@ -10,13 +10,16 @@ import "../external/chainlink/IAggregatorV3.sol";
 /// @author Hifi
 /// @notice Aggregates the price feeds provided by Chainlink.
 interface IChainlinkOperator {
-    /// STRUCTS ///
+    /// CUSTOM ERRORS ///
 
-    struct Feed {
-        IErc20 asset;
-        IAggregatorV3 id;
-        bool isSet;
-    }
+    /// @notice Emitted when the decimal precision of the feed is not the same as the expected number.
+    error ChainlinkOperator__DecimalsMismatch(string symbol, uint256 decimals);
+
+    /// @notice Emitted when trying to interact with a feed not set yet.
+    error ChainlinkOperator__FeedNotSet(string symbol);
+
+    /// @notice Emitted when the price returned by the oracle is zero.
+    error ChainlinkOperator__PriceZero(string symbol);
 
     /// EVENTS ///
 
@@ -29,6 +32,14 @@ interface IChainlinkOperator {
     /// @param asset The related asset.
     /// @param feed The related feed.
     event SetFeed(IErc20 indexed asset, IAggregatorV3 indexed feed);
+
+    /// STRUCTS ///
+
+    struct Feed {
+        IErc20 asset;
+        IAggregatorV3 id;
+        bool isSet;
+    }
 
     /// CONSTANT FUNCTIONS ///
 
@@ -59,7 +70,7 @@ interface IChainlinkOperator {
     ///
     /// @dev Requirements:
     ///
-    /// - The feed must have been previously set.
+    /// - The feed must be set.
     /// - The price returned by the oracle cannot be zero.
     ///
     /// @param symbol The symbol to fetch the price for.
@@ -81,7 +92,7 @@ interface IChainlinkOperator {
     /// Requirements:
     ///
     /// - The caller must be the owner.
-    /// - The feed must have been previously set.
+    /// - The feed must be set already.
     ///
     /// @param symbol The Erc20 symbol of the asset to delete the feed for.
     function deleteFeed(string memory symbol) external;

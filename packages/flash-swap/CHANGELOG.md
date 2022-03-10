@@ -4,6 +4,20 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2022-03-04
+
+## Changed
+
+- Refer to "other token" as "collateral".
+- Rewrite `FlashSwapUniswapV2` to conform to latest API of the Hifi protocol.
+- Upgrade to `@hifi/protocol` v1.8.2.
+- Upgrade to `@openzeppelin/contracts-upgradeable` v4.5.2.
+
+## Removed
+
+- All `*.d.ts` type files.
+- Support for underlying-backed vaults in `FlashSwapUniswapV2`.
+
 ## [1.7.0] - 2021-11-25
 
 ### Added
@@ -145,7 +159,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - First release of the package.
 
-[1.6.1]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.6.1...@hifi/flash-swap@1.7.0
+[1.8.0]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.7.0...@hifi/flash-swap@1.8.0
+[1.7.0]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.6.1...@hifi/flash-swap@1.7.0
 [1.6.1]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.6.0...@hifi/flash-swap@1.6.1
 [1.6.0]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.5.0...@hifi/flash-swap@1.6.0
 [1.5.0]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.4.0...@hifi/flash-swap@1.5.0

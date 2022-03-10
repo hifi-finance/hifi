@@ -4,6 +4,7 @@ env:
   ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
   INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
   MNEMONIC: ${{ secrets.MNEMONIC }}
+  POLYGONSCAN_API_KEY: ${{ secrets.POLYGONSCAN_API_KEY }}
 
 on:
   workflow_dispatch:
@@ -42,12 +43,15 @@ jobs:
         run: "yarn build"
 
       - name: "Compile the contracts and generate TypeChain bindings"
-        run: "yarn workspace @hifi/protocol compile:sol"
+        run: "yarn compile:sol"
+
+      - name: "Build the TypeChain bindings"
+        run: "yarn build:types"
 
       - name: "Deploy Fintroller"
-        id: deploy
+        id: "deploy"
         run: >-
-          yarn workspace @hifi/protocol hardhat
+          yarn workspace @hifi/tasks hardhat
           deploy:contract:fintroller --network "${{ github.event.inputs.chain }}"
           --confirmations "${{ github.event.inputs.confirmations }}"
           --set-output true
@@ -55,4 +59,4 @@ jobs:
       - name: "Verify Fintroller"
         run: >-
           yarn workspace @hifi/protocol hardhat
-          verify "${{ steps.deploy.outputs.fintroller-implementation }}" --network "${{ github.event.inputs.chain }}"
+          verify "${{ steps.deploy.outputs.fintroller }}" --network "${{ github.event.inputs.chain }}"

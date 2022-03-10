@@ -2,7 +2,7 @@
 // solhint-disable func-name-mixedcase
 pragma solidity >=0.8.4;
 
-import "../core/hToken/HToken.sol";
+import "../core/h-token/HToken.sol";
 
 /// @title GodModeHToken
 /// @author Hifi
@@ -12,9 +12,10 @@ contract GodModeHToken is HToken {
         string memory name_,
         string memory symbol_,
         uint256 maturity_,
-        IBalanceSheetV1 balanceSheet_,
+        IBalanceSheetV2 balanceSheet_,
+        IFintroller fintroller_,
         IErc20 underlying_
-    ) HToken(name_, symbol_, maturity_, balanceSheet_, underlying_) {
+    ) HToken(name_, symbol_, maturity_, balanceSheet_, fintroller_, underlying_) {
         // solhint-disable-previous-line no-empty-blocks
     }
 

@@ -7,6 +7,10 @@ src/types/*
 !src/types/IUniswapV2Callee.d.ts
 !src/types/IUniswapV2Pair.d.ts
 !src/types/UniswapV2Pair.d.ts
+
+# factories
+!src/types/factories
+src/types/factories/*
 !src/types/factories/Erc20__factory.ts
 !src/types/factories/FlashUniswapV2__factory.ts
 !src/types/factories/IErc20__factory.ts

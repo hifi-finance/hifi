@@ -1,16 +1,20 @@
 # types
 src/types/*
-!src/types/common.d.ts
-!src/types/Erc20.d.ts
-!src/types/Erc20Permit.d.ts
-!src/types/HifiPool.d.ts
-!src/types/HifiPoolRegistry.d.ts
-!src/types/IErc20.d.ts
-!src/types/IErc20Permit.d.ts
-!src/types/IHifiPool.d.ts
-!src/types/IHifiPoolRegistry.d.ts
-!src/types/IOwnable.d.ts
-!src/types/Ownable.d.ts
+!src/types/common.ts
+!src/types/Erc20.ts
+!src/types/Erc20Permit.ts
+!src/types/HifiPool.ts
+!src/types/HifiPoolRegistry.ts
+!src/types/IErc20.ts
+!src/types/IErc20Permit.ts
+!src/types/IHifiPool.ts
+!src/types/IHifiPoolRegistry.ts
+!src/types/IOwnable.ts
+!src/types/Ownable.ts\
+
+# factories
+!src/types/factories
+src/types/factories/*
 !src/types/factories/Erc20__factory.ts
 !src/types/factories/Erc20Permit__factory.ts
 !src/types/factories/HifiPool__factory.ts

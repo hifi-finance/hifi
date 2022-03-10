@@ -14,15 +14,15 @@ import {
 import type { MockContract } from "ethereum-waffle";
 
 import type { ChainlinkOperator } from "../../src/types/ChainlinkOperator";
-import type { FintrollerV1 } from "../../src/types/FintrollerV1";
+import type { Fintroller } from "../../src/types/Fintroller";
 import type { GodModeBalanceSheet } from "../../src/types/GodModeBalanceSheet";
 import type { GodModeErc20 } from "../../src/types/GodModeErc20";
 import type { GodModeHToken } from "../../src/types/GodModeHToken";
-import type { OwnableUpgradeable } from "../../src/types/OwnableUpgradeable";
+import type { GodModeOwnableUpgradeable } from "../../src/types/GodModeOwnableUpgradeable";
 import type { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
 import {
   deployChainlinkOperator,
-  deployFintrollerV1,
+  deployFintroller,
   deployGodModeBalanceSheet,
   deployGodModeHToken,
   deployOwnableUpgradeable,
@@ -44,7 +44,7 @@ import {
 
 type IntegrationFixtureReturnType = {
   balanceSheet: GodModeBalanceSheet;
-  fintroller: FintrollerV1;
+  fintroller: Fintroller;
   hTokens: GodModeHToken[];
   oracle: ChainlinkOperator;
   usdc: GodModeErc20;
@@ -66,13 +66,14 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
   await oracle.setFeed(usdc.address, usdcPriceFeed.address);
   await oracle.setFeed(wbtc.address, wbtcPriceFeed.address);
 
-  const fintroller: FintrollerV1 = await deployFintrollerV1();
+  const fintroller: Fintroller = await deployFintroller(deployer);
   const balanceSheet: GodModeBalanceSheet = await deployGodModeBalanceSheet(fintroller.address, oracle.address);
   await balanceSheet.connect(deployer).setOracle(oracle.address);
   const hToken: GodModeHToken = await deployGodModeHToken(
     deployer,
     H_TOKEN_MATURITY_THREE_MONTHS,
     balanceSheet.address,
+    fintroller.address,
     usdc.address,
   );
 
@@ -146,14 +147,14 @@ export async function unitFixtureChainlinkOperator(signers: Signer[]): Promise<U
 }
 
 type UnitFixtureFintrollerReturnType = {
-  fintroller: FintrollerV1;
+  fintroller: Fintroller;
   hTokens: MockContract[];
   wbtc: MockContract;
 };
 
 export async function unitFixtureFintroller(signers: Signer[]): Promise<UnitFixtureFintrollerReturnType> {
   const deployer: Signer = signers[0];
-  const fintroller: FintrollerV1 = await deployFintrollerV1();
+  const fintroller: Fintroller = await deployFintroller(deployer);
   const hToken: MockContract = await deployMockHToken(deployer, H_TOKEN_MATURITY_THREE_MONTHS);
   const wbtc: MockContract = await deployMockWbtc(deployer);
   return { fintroller, hTokens: [hToken], wbtc };
@@ -161,6 +162,7 @@ export async function unitFixtureFintroller(signers: Signer[]): Promise<UnitFixt
 
 type UnitFixtureHTokenReturnType = {
   balanceSheet: MockContract;
+  fintroller: MockContract;
   hTokens: GodModeHToken[];
   oracle: MockContract;
   usdc: MockContract;
@@ -173,22 +175,25 @@ export async function unitFixtureHToken(signers: Signer[]): Promise<UnitFixtureH
   const balanceSheet: MockContract = await deployMockBalanceSheet(deployer);
   await balanceSheet.mock.oracle.returns(oracle.address);
 
+  const fintroller: MockContract = await deployMockFintroller(deployer);
+
   const usdc: MockContract = await deployMockUsdc(deployer);
   const hToken: GodModeHToken = await deployGodModeHToken(
     deployer,
     H_TOKEN_MATURITY_THREE_MONTHS,
     balanceSheet.address,
+    fintroller.address,
     usdc.address,
   );
 
-  return { balanceSheet, oracle, hTokens: [hToken], usdc };
+  return { balanceSheet, fintroller, oracle, hTokens: [hToken], usdc };
 }
 
 type UnitFixtureOwnableUpgradeable = {
-  ownableUpgradeable: OwnableUpgradeable;
+  ownableUpgradeable: GodModeOwnableUpgradeable;
 };
 
 export async function unitFixtureOwnableUpgradeable(): Promise<UnitFixtureOwnableUpgradeable> {
-  const ownableUpgradeable: OwnableUpgradeable = await deployOwnableUpgradeable();
+  const ownableUpgradeable: GodModeOwnableUpgradeable = await deployOwnableUpgradeable();
   return { ownableUpgradeable };
 }

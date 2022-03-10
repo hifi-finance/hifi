@@ -22,9 +22,9 @@ import type { Artifact } from "hardhat/types";
 const { deployMockContract } = hre.waffle;
 
 export async function deployMockBalanceSheet(deployer: Signer): Promise<MockContract> {
-  const balanceSheetV1Artifact: Artifact = await hre.artifacts.readArtifact("BalanceSheetV1");
-  const balanceSheetV1: MockContract = await deployMockContract(deployer, balanceSheetV1Artifact.abi);
-  return balanceSheetV1;
+  const balanceSheetV2Artifact: Artifact = await hre.artifacts.readArtifact("BalanceSheetV2");
+  const balanceSheetV2: MockContract = await deployMockContract(deployer, balanceSheetV2Artifact.abi);
+  return balanceSheetV2;
 }
 
 export async function deployMockChainlinkOperator(deployer: Signer): Promise<MockContract> {
@@ -49,9 +49,9 @@ export async function deployMockErc20(
 }
 
 export async function deployMockFintroller(deployer: Signer): Promise<MockContract> {
-  const fintrollerV1Artifact: Artifact = await hre.artifacts.readArtifact("FintrollerV1");
-  const fintrollerV1: MockContract = await deployMockContract(deployer, fintrollerV1Artifact.abi);
-  return fintrollerV1;
+  const fintrollerArtifact: Artifact = await hre.artifacts.readArtifact("Fintroller");
+  const fintroller: MockContract = await deployMockContract(deployer, fintrollerArtifact.abi);
+  return fintroller;
 }
 
 export async function deployMockHToken(deployer: Signer, maturity: BigNumber): Promise<MockContract> {
