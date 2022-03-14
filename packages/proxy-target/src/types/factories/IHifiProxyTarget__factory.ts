@@ -134,6 +134,49 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "contract IHifiPool",
+        name: "hifiPool",
+        type: "address",
+      },
+      {
+        internalType: "contract IErc20Permit",
+        name: "underlying",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "underlyingOffered",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxHTokenRequired",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "signatureHToken",
+        type: "bytes",
+      },
+      {
+        internalType: "bytes",
+        name: "signatureUnderlying",
+        type: "bytes",
+      },
+    ],
+    name: "addLiquidityWithSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "contract IBalanceSheetV2",
         name: "balanceSheet",
         type: "address",
@@ -178,6 +221,49 @@ const _abi = [
       },
     ],
     name: "borrowHTokenAndAddLiquidity",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IBalanceSheetV2",
+        name: "balanceSheet",
+        type: "address",
+      },
+      {
+        internalType: "contract IHifiPool",
+        name: "hifiPool",
+        type: "address",
+      },
+      {
+        internalType: "contract IErc20Permit",
+        name: "underlying",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "maxBorrowAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "underlyingOffered",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "signatureUnderlying",
+        type: "bytes",
+      },
+    ],
+    name: "borrowHTokenAndAddLiquidityWithSignature",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -292,6 +378,44 @@ const _abi = [
         type: "address",
       },
       {
+        internalType: "contract IErc20Permit",
+        name: "underlying",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "hTokenOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxUnderlyingAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "signatureUnderlying",
+        type: "bytes",
+      },
+    ],
+    name: "buyHTokenAndAddLiquidityWithSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IHifiPool",
+        name: "hifiPool",
+        type: "address",
+      },
+      {
         internalType: "contract IBalanceSheetV2",
         name: "balanceSheet",
         type: "address",
@@ -308,6 +432,87 @@ const _abi = [
       },
     ],
     name: "buyHTokenAndRepayBorrow",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IHifiPool",
+        name: "hifiPool",
+        type: "address",
+      },
+      {
+        internalType: "contract IErc20Permit",
+        name: "underlying",
+        type: "address",
+      },
+      {
+        internalType: "contract IBalanceSheetV2",
+        name: "balanceSheet",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "maxUnderlyingIn",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "hTokenOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "signatureUnderlying",
+        type: "bytes",
+      },
+    ],
+    name: "buyHTokenAndRepayBorrowWithSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IHifiPool",
+        name: "hifiPool",
+        type: "address",
+      },
+      {
+        internalType: "contract IErc20Permit",
+        name: "underlying",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "hTokenOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxUnderlyingIn",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "signatureUnderlying",
+        type: "bytes",
+      },
+    ],
+    name: "buyHTokenWithSignature",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -354,6 +559,72 @@ const _abi = [
       },
     ],
     name: "buyUnderlyingAndAddLiquidity",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IHifiPool",
+        name: "hifiPool",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "maxHTokenAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "underlyingOffered",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "signatureHToken",
+        type: "bytes",
+      },
+    ],
+    name: "buyUnderlyingAndAddLiquidityWithSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IHifiPool",
+        name: "hifiPool",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "underlyingOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxHTokenIn",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "signatureHToken",
+        type: "bytes",
+      },
+    ],
+    name: "buyUnderlyingWithSignature",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -460,6 +731,64 @@ const _abi = [
         type: "address",
       },
       {
+        internalType: "contract IErc20Permit",
+        name: "collateral",
+        type: "address",
+      },
+      {
+        internalType: "contract IErc20Permit",
+        name: "underlying",
+        type: "address",
+      },
+      {
+        internalType: "contract IHifiPool",
+        name: "hifiPool",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "depositAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxBorrowAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "underlyingOffered",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "signatureCollateral",
+        type: "bytes",
+      },
+      {
+        internalType: "bytes",
+        name: "signatureUnderlying",
+        type: "bytes",
+      },
+    ],
+    name: "depositCollateralAndBorrowHTokenAndAddLiquidityWithSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IBalanceSheetV2",
+        name: "balanceSheet",
+        type: "address",
+      },
+      {
         internalType: "contract IErc20",
         name: "collateral",
         type: "address",
@@ -486,6 +815,130 @@ const _abi = [
       },
     ],
     name: "depositCollateralAndBorrowHTokenAndSellHToken",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IBalanceSheetV2",
+        name: "balanceSheet",
+        type: "address",
+      },
+      {
+        internalType: "contract IErc20Permit",
+        name: "collateral",
+        type: "address",
+      },
+      {
+        internalType: "contract IHifiPool",
+        name: "hifiPool",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "depositAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "borrowAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "minUnderlyingOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "signatureCollateral",
+        type: "bytes",
+      },
+    ],
+    name: "depositCollateralAndBorrowHTokenAndSellHTokenWithSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IBalanceSheetV2",
+        name: "balanceSheet",
+        type: "address",
+      },
+      {
+        internalType: "contract IErc20Permit",
+        name: "collateral",
+        type: "address",
+      },
+      {
+        internalType: "contract IHToken",
+        name: "hToken",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "depositAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "borrowAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "signatureCollateral",
+        type: "bytes",
+      },
+    ],
+    name: "depositCollateralAndBorrowHTokenWithSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IBalanceSheetV2",
+        name: "balanceSheet",
+        type: "address",
+      },
+      {
+        internalType: "contract IErc20Permit",
+        name: "collateral",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "depositAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "signatureCollateral",
+        type: "bytes",
+      },
+    ],
+    name: "depositCollateralWithSignature",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -534,6 +987,44 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "contract IErc20Permit",
+        name: "underlying",
+        type: "address",
+      },
+      {
+        internalType: "contract IHifiPool",
+        name: "hifiPool",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "depositAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "underlyingOffered",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "signatureUnderlying",
+        type: "bytes",
+      },
+    ],
+    name: "depositUnderlyingAndBorrowHTokenAndAddLiquidityWithSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "contract IHToken",
         name: "hToken",
         type: "address",
@@ -562,6 +1053,77 @@ const _abi = [
         type: "address",
       },
       {
+        internalType: "contract IErc20Permit",
+        name: "underlying",
+        type: "address",
+      },
+      {
+        internalType: "contract IBalanceSheetV2",
+        name: "balanceSheet",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "underlyingAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "signatureUnderlying",
+        type: "bytes",
+      },
+    ],
+    name: "depositUnderlyingAndRepayBorrowWithSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IHToken",
+        name: "hToken",
+        type: "address",
+      },
+      {
+        internalType: "contract IErc20Permit",
+        name: "underlying",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "underlyingAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "signatureUnderlying",
+        type: "bytes",
+      },
+    ],
+    name: "depositUnderlyingWithSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IHToken",
+        name: "hToken",
+        type: "address",
+      },
+      {
         internalType: "uint256",
         name: "hTokenAmount",
         type: "uint256",
@@ -573,6 +1135,39 @@ const _abi = [
       },
     ],
     name: "redeem",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IHToken",
+        name: "hToken",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "hTokenAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "underlyingAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "signatureHToken",
+        type: "bytes",
+      },
+    ],
+    name: "redeemWithSignature",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -609,6 +1204,34 @@ const _abi = [
       },
     ],
     name: "removeLiquidityAndRedeem",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IHifiPool",
+        name: "hifiPool",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "poolTokensBurned",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "signatureLPToken",
+        type: "bytes",
+      },
+    ],
+    name: "removeLiquidityAndRedeemWithSignature",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -659,6 +1282,54 @@ const _abi = [
         type: "address",
       },
       {
+        internalType: "contract IBalanceSheetV2",
+        name: "balanceSheet",
+        type: "address",
+      },
+      {
+        internalType: "contract IErc20",
+        name: "collateral",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "poolTokensBurned",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "repayAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "withdrawAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "signatureLPToken",
+        type: "bytes",
+      },
+    ],
+    name: "removeLiquidityAndRepayBorrowAndWithdrawCollateralWithSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IHifiPool",
+        name: "hifiPool",
+        type: "address",
+      },
+      {
         internalType: "uint256",
         name: "poolTokensBurned",
         type: "uint256",
@@ -670,6 +1341,67 @@ const _abi = [
       },
     ],
     name: "removeLiquidityAndSellHToken",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IHifiPool",
+        name: "hifiPool",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "poolTokensBurned",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "minUnderlyingOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "signatureLPToken",
+        type: "bytes",
+      },
+    ],
+    name: "removeLiquidityAndSellHTokenWithSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IHifiPool",
+        name: "hifiPool",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "poolTokensBurned",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "signatureLPToken",
+        type: "bytes",
+      },
+    ],
+    name: "removeLiquidityWithSignature",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -700,6 +1432,39 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "contract IBalanceSheetV2",
+        name: "balanceSheet",
+        type: "address",
+      },
+      {
+        internalType: "contract IHToken",
+        name: "hToken",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "repayAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "signatureHToken",
+        type: "bytes",
+      },
+    ],
+    name: "repayBorrowWithSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
         internalType: "contract IHifiPool",
         name: "hifiPool",
         type: "address",
@@ -716,6 +1481,39 @@ const _abi = [
       },
     ],
     name: "sellHToken",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IHifiPool",
+        name: "hifiPool",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "hTokenIn",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "minUnderlyingOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "signatureHToken",
+        type: "bytes",
+      },
+    ],
+    name: "sellHTokenWithSignature",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
@@ -767,6 +1565,87 @@ const _abi = [
       },
     ],
     name: "sellUnderlyingAndRepayBorrow",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IHifiPool",
+        name: "hifiPool",
+        type: "address",
+      },
+      {
+        internalType: "contract IErc20Permit",
+        name: "underlying",
+        type: "address",
+      },
+      {
+        internalType: "contract IBalanceSheetV2",
+        name: "balanceSheet",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "underlyingIn",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "minHTokenOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "signatureUnderlying",
+        type: "bytes",
+      },
+    ],
+    name: "sellUnderlyingAndRepayBorrowWithSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IHifiPool",
+        name: "hifiPool",
+        type: "address",
+      },
+      {
+        internalType: "contract IErc20Permit",
+        name: "underlying",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "underlyingIn",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "minHTokenOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "signatureUnderlying",
+        type: "bytes",
+      },
+    ],
+    name: "sellUnderlyingWithSignature",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
