@@ -46,13 +46,17 @@ export interface IHifiProxyTargetInterface extends utils.Interface {
     "depositCollateralAndBorrowHTokenAndSellHTokenWithSignature(address,address,address,uint256,uint256,uint256,uint256,bytes)": FunctionFragment;
     "depositCollateralAndBorrowHTokenWithSignature(address,address,address,uint256,uint256,uint256,bytes)": FunctionFragment;
     "depositCollateralWithSignature(address,address,uint256,uint256,bytes)": FunctionFragment;
-    "depositUnderlyingAsCollateralAndBorrowHTokenAndAddLiquidity(address,address,uint256,uint256)": FunctionFragment;
-    "depositUnderlyingAsCollateralAndBorrowHTokenAndAddLiquidityWithSignature(address,address,address,uint256,uint256,uint256,bytes)": FunctionFragment;
-    "redeemHToken(address,uint256)": FunctionFragment;
-    "redeemHTokenWithSignature(address,uint256,uint256,bytes)": FunctionFragment;
+    "depositUnderlying(address,uint256)": FunctionFragment;
+    "depositUnderlyingAndBorrowHTokenAndAddLiquidity(address,uint256,uint256)": FunctionFragment;
+    "depositUnderlyingAndBorrowHTokenAndAddLiquidityWithSignature(address,address,uint256,uint256,uint256,bytes)": FunctionFragment;
+    "depositUnderlyingAndRepayBorrow(address,address,uint256)": FunctionFragment;
+    "depositUnderlyingAndRepayBorrowWithSignature(address,address,address,uint256,uint256,bytes)": FunctionFragment;
+    "depositUnderlyingWithSignature(address,address,uint256,uint256,bytes)": FunctionFragment;
+    "redeem(address,uint256,uint256)": FunctionFragment;
+    "redeemWithSignature(address,uint256,uint256,uint256,bytes)": FunctionFragment;
     "removeLiquidity(address,uint256)": FunctionFragment;
-    "removeLiquidityAndRedeemHToken(address,uint256)": FunctionFragment;
-    "removeLiquidityAndRedeemHTokenWithSignature(address,uint256,uint256,bytes)": FunctionFragment;
+    "removeLiquidityAndRedeem(address,uint256)": FunctionFragment;
+    "removeLiquidityAndRedeemWithSignature(address,uint256,uint256,bytes)": FunctionFragment;
     "removeLiquidityAndRepayBorrowAndWithdrawCollateral(address,address,address,uint256,uint256,uint256)": FunctionFragment;
     "removeLiquidityAndRepayBorrowAndWithdrawCollateralWithSignature(address,address,address,uint256,uint256,uint256,uint256,bytes)": FunctionFragment;
     "removeLiquidityAndSellHToken(address,uint256,uint256)": FunctionFragment;
@@ -66,10 +70,6 @@ export interface IHifiProxyTargetInterface extends utils.Interface {
     "sellUnderlyingAndRepayBorrow(address,address,uint256,uint256)": FunctionFragment;
     "sellUnderlyingAndRepayBorrowWithSignature(address,address,address,uint256,uint256,uint256,bytes)": FunctionFragment;
     "sellUnderlyingWithSignature(address,address,uint256,uint256,uint256,bytes)": FunctionFragment;
-    "supplyUnderlying(address,uint256)": FunctionFragment;
-    "supplyUnderlyingAndRepayBorrow(address,address,uint256)": FunctionFragment;
-    "supplyUnderlyingAndRepayBorrowWithSignature(address,address,address,uint256,uint256,bytes)": FunctionFragment;
-    "supplyUnderlyingWithSignature(address,address,uint256,uint256,bytes)": FunctionFragment;
     "withdrawCollateral(address,address,uint256)": FunctionFragment;
     "wrapEthAndDepositAndBorrowHTokenAndSellHToken(address,address,address,uint256,uint256)": FunctionFragment;
     "wrapEthAndDepositCollateral(address,address)": FunctionFragment;
@@ -242,13 +242,16 @@ export interface IHifiProxyTargetInterface extends utils.Interface {
     values: [string, string, BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "depositUnderlyingAsCollateralAndBorrowHTokenAndAddLiquidity",
-    values: [string, string, BigNumberish, BigNumberish]
+    functionFragment: "depositUnderlying",
+    values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "depositUnderlyingAsCollateralAndBorrowHTokenAndAddLiquidityWithSignature",
+    functionFragment: "depositUnderlyingAndBorrowHTokenAndAddLiquidity",
+    values: [string, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "depositUnderlyingAndBorrowHTokenAndAddLiquidityWithSignature",
     values: [
-      string,
       string,
       string,
       BigNumberish,
@@ -258,23 +261,35 @@ export interface IHifiProxyTargetInterface extends utils.Interface {
     ]
   ): string;
   encodeFunctionData(
-    functionFragment: "redeemHToken",
-    values: [string, BigNumberish]
+    functionFragment: "depositUnderlyingAndRepayBorrow",
+    values: [string, string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "redeemHTokenWithSignature",
-    values: [string, BigNumberish, BigNumberish, BytesLike]
+    functionFragment: "depositUnderlyingAndRepayBorrowWithSignature",
+    values: [string, string, string, BigNumberish, BigNumberish, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "depositUnderlyingWithSignature",
+    values: [string, string, BigNumberish, BigNumberish, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "redeem",
+    values: [string, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "redeemWithSignature",
+    values: [string, BigNumberish, BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "removeLiquidity",
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "removeLiquidityAndRedeemHToken",
+    functionFragment: "removeLiquidityAndRedeem",
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "removeLiquidityAndRedeemHTokenWithSignature",
+    functionFragment: "removeLiquidityAndRedeemWithSignature",
     values: [string, BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
@@ -352,22 +367,6 @@ export interface IHifiProxyTargetInterface extends utils.Interface {
       BigNumberish,
       BytesLike
     ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "supplyUnderlying",
-    values: [string, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "supplyUnderlyingAndRepayBorrow",
-    values: [string, string, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "supplyUnderlyingAndRepayBorrowWithSignature",
-    values: [string, string, string, BigNumberish, BigNumberish, BytesLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "supplyUnderlyingWithSignature",
-    values: [string, string, BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "withdrawCollateral",
@@ -480,19 +479,32 @@ export interface IHifiProxyTargetInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "depositUnderlyingAsCollateralAndBorrowHTokenAndAddLiquidity",
+    functionFragment: "depositUnderlying",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "depositUnderlyingAsCollateralAndBorrowHTokenAndAddLiquidityWithSignature",
+    functionFragment: "depositUnderlyingAndBorrowHTokenAndAddLiquidity",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "redeemHToken",
+    functionFragment: "depositUnderlyingAndBorrowHTokenAndAddLiquidityWithSignature",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "redeemHTokenWithSignature",
+    functionFragment: "depositUnderlyingAndRepayBorrow",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "depositUnderlyingAndRepayBorrowWithSignature",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "depositUnderlyingWithSignature",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "redeem", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "redeemWithSignature",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -500,11 +512,11 @@ export interface IHifiProxyTargetInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "removeLiquidityAndRedeemHToken",
+    functionFragment: "removeLiquidityAndRedeem",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "removeLiquidityAndRedeemHTokenWithSignature",
+    functionFragment: "removeLiquidityAndRedeemWithSignature",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -554,22 +566,6 @@ export interface IHifiProxyTargetInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "sellUnderlyingWithSignature",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "supplyUnderlying",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "supplyUnderlyingAndRepayBorrow",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "supplyUnderlyingAndRepayBorrowWithSignature",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "supplyUnderlyingWithSignature",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -867,16 +863,20 @@ export interface IHifiProxyTarget extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    depositUnderlyingAsCollateralAndBorrowHTokenAndAddLiquidity(
-      balanceSheet: string,
+    depositUnderlying(
+      hToken: string,
+      underlyingAmount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    depositUnderlyingAndBorrowHTokenAndAddLiquidity(
       hifiPool: string,
       depositAmount: BigNumberish,
       underlyingOffered: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    depositUnderlyingAsCollateralAndBorrowHTokenAndAddLiquidityWithSignature(
-      balanceSheet: string,
+    depositUnderlyingAndBorrowHTokenAndAddLiquidityWithSignature(
       underlying: string,
       hifiPool: string,
       depositAmount: BigNumberish,
@@ -886,15 +886,43 @@ export interface IHifiProxyTarget extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    redeemHToken(
+    depositUnderlyingAndRepayBorrow(
       hToken: string,
-      hTokenAmount: BigNumberish,
+      balanceSheet: string,
+      underlyingAmount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    redeemHTokenWithSignature(
+    depositUnderlyingAndRepayBorrowWithSignature(
+      hToken: string,
+      underlying: string,
+      balanceSheet: string,
+      underlyingAmount: BigNumberish,
+      deadline: BigNumberish,
+      signatureUnderlying: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    depositUnderlyingWithSignature(
+      hToken: string,
+      underlying: string,
+      underlyingAmount: BigNumberish,
+      deadline: BigNumberish,
+      signatureUnderlying: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    redeem(
       hToken: string,
       hTokenAmount: BigNumberish,
+      underlyingAmount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    redeemWithSignature(
+      hToken: string,
+      hTokenAmount: BigNumberish,
+      underlyingAmount: BigNumberish,
       deadline: BigNumberish,
       signatureHToken: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -906,13 +934,13 @@ export interface IHifiProxyTarget extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    removeLiquidityAndRedeemHToken(
+    removeLiquidityAndRedeem(
       hifiPool: string,
       poolTokensBurned: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    removeLiquidityAndRedeemHTokenWithSignature(
+    removeLiquidityAndRedeemWithSignature(
       hifiPool: string,
       poolTokensBurned: BigNumberish,
       deadline: BigNumberish,
@@ -1029,38 +1057,6 @@ export interface IHifiProxyTarget extends BaseContract {
       underlying: string,
       underlyingIn: BigNumberish,
       minHTokenOut: BigNumberish,
-      deadline: BigNumberish,
-      signatureUnderlying: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    supplyUnderlying(
-      hToken: string,
-      underlyingAmount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    supplyUnderlyingAndRepayBorrow(
-      hToken: string,
-      balanceSheet: string,
-      underlyingAmount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    supplyUnderlyingAndRepayBorrowWithSignature(
-      hToken: string,
-      underlying: string,
-      balanceSheet: string,
-      underlyingAmount: BigNumberish,
-      deadline: BigNumberish,
-      signatureUnderlying: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    supplyUnderlyingWithSignature(
-      hToken: string,
-      underlying: string,
-      underlyingAmount: BigNumberish,
       deadline: BigNumberish,
       signatureUnderlying: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1316,16 +1312,20 @@ export interface IHifiProxyTarget extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  depositUnderlyingAsCollateralAndBorrowHTokenAndAddLiquidity(
-    balanceSheet: string,
+  depositUnderlying(
+    hToken: string,
+    underlyingAmount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  depositUnderlyingAndBorrowHTokenAndAddLiquidity(
     hifiPool: string,
     depositAmount: BigNumberish,
     underlyingOffered: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  depositUnderlyingAsCollateralAndBorrowHTokenAndAddLiquidityWithSignature(
-    balanceSheet: string,
+  depositUnderlyingAndBorrowHTokenAndAddLiquidityWithSignature(
     underlying: string,
     hifiPool: string,
     depositAmount: BigNumberish,
@@ -1335,15 +1335,43 @@ export interface IHifiProxyTarget extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  redeemHToken(
+  depositUnderlyingAndRepayBorrow(
     hToken: string,
-    hTokenAmount: BigNumberish,
+    balanceSheet: string,
+    underlyingAmount: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  redeemHTokenWithSignature(
+  depositUnderlyingAndRepayBorrowWithSignature(
+    hToken: string,
+    underlying: string,
+    balanceSheet: string,
+    underlyingAmount: BigNumberish,
+    deadline: BigNumberish,
+    signatureUnderlying: BytesLike,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  depositUnderlyingWithSignature(
+    hToken: string,
+    underlying: string,
+    underlyingAmount: BigNumberish,
+    deadline: BigNumberish,
+    signatureUnderlying: BytesLike,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  redeem(
     hToken: string,
     hTokenAmount: BigNumberish,
+    underlyingAmount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  redeemWithSignature(
+    hToken: string,
+    hTokenAmount: BigNumberish,
+    underlyingAmount: BigNumberish,
     deadline: BigNumberish,
     signatureHToken: BytesLike,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -1355,13 +1383,13 @@ export interface IHifiProxyTarget extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  removeLiquidityAndRedeemHToken(
+  removeLiquidityAndRedeem(
     hifiPool: string,
     poolTokensBurned: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  removeLiquidityAndRedeemHTokenWithSignature(
+  removeLiquidityAndRedeemWithSignature(
     hifiPool: string,
     poolTokensBurned: BigNumberish,
     deadline: BigNumberish,
@@ -1478,38 +1506,6 @@ export interface IHifiProxyTarget extends BaseContract {
     underlying: string,
     underlyingIn: BigNumberish,
     minHTokenOut: BigNumberish,
-    deadline: BigNumberish,
-    signatureUnderlying: BytesLike,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  supplyUnderlying(
-    hToken: string,
-    underlyingAmount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  supplyUnderlyingAndRepayBorrow(
-    hToken: string,
-    balanceSheet: string,
-    underlyingAmount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  supplyUnderlyingAndRepayBorrowWithSignature(
-    hToken: string,
-    underlying: string,
-    balanceSheet: string,
-    underlyingAmount: BigNumberish,
-    deadline: BigNumberish,
-    signatureUnderlying: BytesLike,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  supplyUnderlyingWithSignature(
-    hToken: string,
-    underlying: string,
-    underlyingAmount: BigNumberish,
     deadline: BigNumberish,
     signatureUnderlying: BytesLike,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -1765,16 +1761,20 @@ export interface IHifiProxyTarget extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    depositUnderlyingAsCollateralAndBorrowHTokenAndAddLiquidity(
-      balanceSheet: string,
+    depositUnderlying(
+      hToken: string,
+      underlyingAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    depositUnderlyingAndBorrowHTokenAndAddLiquidity(
       hifiPool: string,
       depositAmount: BigNumberish,
       underlyingOffered: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    depositUnderlyingAsCollateralAndBorrowHTokenAndAddLiquidityWithSignature(
-      balanceSheet: string,
+    depositUnderlyingAndBorrowHTokenAndAddLiquidityWithSignature(
       underlying: string,
       hifiPool: string,
       depositAmount: BigNumberish,
@@ -1784,15 +1784,43 @@ export interface IHifiProxyTarget extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    redeemHToken(
+    depositUnderlyingAndRepayBorrow(
       hToken: string,
-      hTokenAmount: BigNumberish,
+      balanceSheet: string,
+      underlyingAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    redeemHTokenWithSignature(
+    depositUnderlyingAndRepayBorrowWithSignature(
+      hToken: string,
+      underlying: string,
+      balanceSheet: string,
+      underlyingAmount: BigNumberish,
+      deadline: BigNumberish,
+      signatureUnderlying: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    depositUnderlyingWithSignature(
+      hToken: string,
+      underlying: string,
+      underlyingAmount: BigNumberish,
+      deadline: BigNumberish,
+      signatureUnderlying: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    redeem(
       hToken: string,
       hTokenAmount: BigNumberish,
+      underlyingAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    redeemWithSignature(
+      hToken: string,
+      hTokenAmount: BigNumberish,
+      underlyingAmount: BigNumberish,
       deadline: BigNumberish,
       signatureHToken: BytesLike,
       overrides?: CallOverrides
@@ -1804,13 +1832,13 @@ export interface IHifiProxyTarget extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    removeLiquidityAndRedeemHToken(
+    removeLiquidityAndRedeem(
       hifiPool: string,
       poolTokensBurned: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    removeLiquidityAndRedeemHTokenWithSignature(
+    removeLiquidityAndRedeemWithSignature(
       hifiPool: string,
       poolTokensBurned: BigNumberish,
       deadline: BigNumberish,
@@ -1927,38 +1955,6 @@ export interface IHifiProxyTarget extends BaseContract {
       underlying: string,
       underlyingIn: BigNumberish,
       minHTokenOut: BigNumberish,
-      deadline: BigNumberish,
-      signatureUnderlying: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    supplyUnderlying(
-      hToken: string,
-      underlyingAmount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    supplyUnderlyingAndRepayBorrow(
-      hToken: string,
-      balanceSheet: string,
-      underlyingAmount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    supplyUnderlyingAndRepayBorrowWithSignature(
-      hToken: string,
-      underlying: string,
-      balanceSheet: string,
-      underlyingAmount: BigNumberish,
-      deadline: BigNumberish,
-      signatureUnderlying: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    supplyUnderlyingWithSignature(
-      hToken: string,
-      underlying: string,
-      underlyingAmount: BigNumberish,
       deadline: BigNumberish,
       signatureUnderlying: BytesLike,
       overrides?: CallOverrides
@@ -2239,16 +2235,20 @@ export interface IHifiProxyTarget extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    depositUnderlyingAsCollateralAndBorrowHTokenAndAddLiquidity(
-      balanceSheet: string,
+    depositUnderlying(
+      hToken: string,
+      underlyingAmount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    depositUnderlyingAndBorrowHTokenAndAddLiquidity(
       hifiPool: string,
       depositAmount: BigNumberish,
       underlyingOffered: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    depositUnderlyingAsCollateralAndBorrowHTokenAndAddLiquidityWithSignature(
-      balanceSheet: string,
+    depositUnderlyingAndBorrowHTokenAndAddLiquidityWithSignature(
       underlying: string,
       hifiPool: string,
       depositAmount: BigNumberish,
@@ -2258,15 +2258,43 @@ export interface IHifiProxyTarget extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    redeemHToken(
+    depositUnderlyingAndRepayBorrow(
       hToken: string,
-      hTokenAmount: BigNumberish,
+      balanceSheet: string,
+      underlyingAmount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    redeemHTokenWithSignature(
+    depositUnderlyingAndRepayBorrowWithSignature(
+      hToken: string,
+      underlying: string,
+      balanceSheet: string,
+      underlyingAmount: BigNumberish,
+      deadline: BigNumberish,
+      signatureUnderlying: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    depositUnderlyingWithSignature(
+      hToken: string,
+      underlying: string,
+      underlyingAmount: BigNumberish,
+      deadline: BigNumberish,
+      signatureUnderlying: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    redeem(
       hToken: string,
       hTokenAmount: BigNumberish,
+      underlyingAmount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    redeemWithSignature(
+      hToken: string,
+      hTokenAmount: BigNumberish,
+      underlyingAmount: BigNumberish,
       deadline: BigNumberish,
       signatureHToken: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -2278,13 +2306,13 @@ export interface IHifiProxyTarget extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    removeLiquidityAndRedeemHToken(
+    removeLiquidityAndRedeem(
       hifiPool: string,
       poolTokensBurned: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    removeLiquidityAndRedeemHTokenWithSignature(
+    removeLiquidityAndRedeemWithSignature(
       hifiPool: string,
       poolTokensBurned: BigNumberish,
       deadline: BigNumberish,
@@ -2401,38 +2429,6 @@ export interface IHifiProxyTarget extends BaseContract {
       underlying: string,
       underlyingIn: BigNumberish,
       minHTokenOut: BigNumberish,
-      deadline: BigNumberish,
-      signatureUnderlying: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    supplyUnderlying(
-      hToken: string,
-      underlyingAmount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    supplyUnderlyingAndRepayBorrow(
-      hToken: string,
-      balanceSheet: string,
-      underlyingAmount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    supplyUnderlyingAndRepayBorrowWithSignature(
-      hToken: string,
-      underlying: string,
-      balanceSheet: string,
-      underlyingAmount: BigNumberish,
-      deadline: BigNumberish,
-      signatureUnderlying: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    supplyUnderlyingWithSignature(
-      hToken: string,
-      underlying: string,
-      underlyingAmount: BigNumberish,
       deadline: BigNumberish,
       signatureUnderlying: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -2689,16 +2685,20 @@ export interface IHifiProxyTarget extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    depositUnderlyingAsCollateralAndBorrowHTokenAndAddLiquidity(
-      balanceSheet: string,
+    depositUnderlying(
+      hToken: string,
+      underlyingAmount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    depositUnderlyingAndBorrowHTokenAndAddLiquidity(
       hifiPool: string,
       depositAmount: BigNumberish,
       underlyingOffered: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    depositUnderlyingAsCollateralAndBorrowHTokenAndAddLiquidityWithSignature(
-      balanceSheet: string,
+    depositUnderlyingAndBorrowHTokenAndAddLiquidityWithSignature(
       underlying: string,
       hifiPool: string,
       depositAmount: BigNumberish,
@@ -2708,15 +2708,43 @@ export interface IHifiProxyTarget extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    redeemHToken(
+    depositUnderlyingAndRepayBorrow(
       hToken: string,
-      hTokenAmount: BigNumberish,
+      balanceSheet: string,
+      underlyingAmount: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    redeemHTokenWithSignature(
+    depositUnderlyingAndRepayBorrowWithSignature(
+      hToken: string,
+      underlying: string,
+      balanceSheet: string,
+      underlyingAmount: BigNumberish,
+      deadline: BigNumberish,
+      signatureUnderlying: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    depositUnderlyingWithSignature(
+      hToken: string,
+      underlying: string,
+      underlyingAmount: BigNumberish,
+      deadline: BigNumberish,
+      signatureUnderlying: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    redeem(
       hToken: string,
       hTokenAmount: BigNumberish,
+      underlyingAmount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    redeemWithSignature(
+      hToken: string,
+      hTokenAmount: BigNumberish,
+      underlyingAmount: BigNumberish,
       deadline: BigNumberish,
       signatureHToken: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -2728,13 +2756,13 @@ export interface IHifiProxyTarget extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    removeLiquidityAndRedeemHToken(
+    removeLiquidityAndRedeem(
       hifiPool: string,
       poolTokensBurned: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    removeLiquidityAndRedeemHTokenWithSignature(
+    removeLiquidityAndRedeemWithSignature(
       hifiPool: string,
       poolTokensBurned: BigNumberish,
       deadline: BigNumberish,
@@ -2851,38 +2879,6 @@ export interface IHifiProxyTarget extends BaseContract {
       underlying: string,
       underlyingIn: BigNumberish,
       minHTokenOut: BigNumberish,
-      deadline: BigNumberish,
-      signatureUnderlying: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    supplyUnderlying(
-      hToken: string,
-      underlyingAmount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    supplyUnderlyingAndRepayBorrow(
-      hToken: string,
-      balanceSheet: string,
-      underlyingAmount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    supplyUnderlyingAndRepayBorrowWithSignature(
-      hToken: string,
-      underlying: string,
-      balanceSheet: string,
-      underlyingAmount: BigNumberish,
-      deadline: BigNumberish,
-      signatureUnderlying: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    supplyUnderlyingWithSignature(
-      hToken: string,
-      underlying: string,
-      underlyingAmount: BigNumberish,
       deadline: BigNumberish,
       signatureUnderlying: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
