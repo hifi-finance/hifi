@@ -71,8 +71,8 @@ task(TASK_INIT_ADD_LIQUIDITY)
     console.log("Supplying the underlying to mint hTokens ...");
     const hTokenFactory: HToken__factory = new HToken__factory(signer);
     const hToken: HToken = <HToken>hTokenFactory.attach(hTokenAddress);
-    const supplyUnderlyingTx = await hToken.supplyUnderlying(depositUnderlyingAmount, { gasLimit: 500000 });
-    await supplyUnderlyingTx.wait();
+    const depositUnderlyingTx = await hToken.depositUnderlying(depositUnderlyingAmount, { gasLimit: 500000 });
+    await depositUnderlyingTx.wait();
 
     // Approve the pool contract to spend underlying if allowance not enough.
     console.log("Approving the pool contract to spend underlying if allowance not enough ...");
@@ -90,7 +90,7 @@ task(TASK_INIT_ADD_LIQUIDITY)
     // Log the tx hashes in the console.
     if (taskArgs.printTxHashes) {
       console.table([
-        ["Supply Underlying", supplyUnderlyingTx.hash],
+        ["Deposit Underlying", depositUnderlyingTx.hash],
         ["Add Liquidity", addLiquidityTx.hash],
         ["Sell HToken", sellHTokenTx.hash],
       ]);
