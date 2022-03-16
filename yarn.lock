@@ -1358,6 +1358,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hifi/amm@npm:1.9.1":
+  version: 1.9.1
+  resolution: "@hifi/amm@npm:1.9.1"
+  dependencies:
+    "@ethersproject/abi": ^5.5.0
+    "@ethersproject/bytes": ^5.5.0
+    "@ethersproject/providers": ^5.5.3
+    "@hifi/protocol": 1.9.0
+    "@openzeppelin/contracts-upgradeable": 4.5.2
+    "@prb/contracts": 3.8.0
+    "@prb/math": 2.5.0
+    ethers: ^5.5.4
+  peerDependencies:
+    "@hifi/protocol": 1.9.0
+    "@prb/contracts": 3.8.0
+    "@prb/math": 2.5.0
+    ethers: ^5.5.4
+  checksum: 36715c0e1fb4b0c5676987ee7fbec73ca44830ef2231d8d8fdef8a26941f2d9811e0724bceb66aac42f5f8220be82d75102e9151edd07d5839bab4223efa797e
+  languageName: node
+  linkType: hard
+
 "@hifi/amm@workspace:*, @hifi/amm@workspace:packages/amm":
   version: 0.0.0-use.local
   resolution: "@hifi/amm@workspace:packages/amm"
@@ -1621,9 +1642,9 @@ __metadata:
     "@ethersproject/abi": ^5.5.0
     "@ethersproject/bytes": ^5.5.0
     "@ethersproject/providers": ^5.5.3
-    "@hifi/amm": "workspace:*"
+    "@hifi/amm": 1.9.1
     "@hifi/helpers": "workspace:*"
-    "@hifi/protocol": "workspace:*"
+    "@hifi/protocol": 1.9.0
     "@nomiclabs/hardhat-etherscan": ^3.0.1
     "@openzeppelin/contracts-upgradeable": 4.5.2
     "@prb/contracts": 3.8.0
@@ -1652,8 +1673,8 @@ __metadata:
     typechain: ^7.0.0
     typescript: ^4.5.5
   peerDependencies:
-    "@hifi/amm": "workspace:*"
-    "@hifi/protocol": "workspace:*"
+    "@hifi/amm": 1.9.1
+    "@hifi/protocol": 1.9.0
     "@prb/contracts": 3.8.0
     ethers: ^5.5.4
   languageName: unknown
