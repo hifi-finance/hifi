@@ -84,7 +84,7 @@
     "smart-contracts",
     "solidity"
   ],
-  "license": "LGPL-3.0-or-later",
+  "license": "BUSL-1.1",
   "peerDependencies": {
     "@openzeppelin/contracts-upgradeable": "4.5.2",
     "@prb/contracts": "3.8.0",

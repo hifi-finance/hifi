@@ -85,7 +85,7 @@
     "smart-contracts",
     "solidity"
   ],
-  "license": "LGPL-3.0-or-later",
+  "license": "BUSL-1.1",
   "peerDependencies": {
     "@hifi/protocol": "workspace:*",
     "@prb/contracts": "3.8.0",

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LGPL-3.0-or-later
+// SPDX-License-Identifier: UNLICENSED
 // solhint-disable func-name-mixedcase
 pragma solidity =0.5.16;
 
