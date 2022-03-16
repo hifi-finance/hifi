@@ -1,7 +1,7 @@
 {
   "name": "@hifi/amm",
   "description": "Dedicated AMM for market-making hTokens",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "author": {
     "name": "Hifi",
     "email": "contact@hifi.finance",
@@ -87,7 +87,7 @@
   ],
   "license": "BUSL-1.1",
   "peerDependencies": {
-    "@hifi/protocol": "workspace:*",
+    "@hifi/protocol": "1.9.0",
     "@prb/contracts": "3.8.0",
     "@prb/math": "2.5.0",
     "ethers": "^5.5.4"

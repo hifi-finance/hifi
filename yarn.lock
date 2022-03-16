@@ -1416,7 +1416,7 @@ __metadata:
     typechain: ^7.0.0
     typescript: ^4.5.5
   peerDependencies:
-    "@hifi/protocol": "workspace:*"
+    "@hifi/protocol": 1.9.0
     "@prb/contracts": 3.8.0
     "@prb/math": 2.5.0
     ethers: ^5.5.4
