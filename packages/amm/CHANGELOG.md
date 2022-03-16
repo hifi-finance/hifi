@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2022-03-16
+
+### Changed
+
+- Change the `amount` argument to `value` in the `permit` function of the `Erc20Permit` contract.
+- Change the license from LGPL v3 to BUSL v1.1.
+- Switch from `@paulrberg/contracts` to `@prb/contracts`.
+- Switch from `prb-math` to `@prb/math`.
+- Upgrade to `@hifi/protocol` v1.9.0.
+
 ## [1.8.2] - 2022-03-04
 
 ### Changed
@@ -160,6 +170,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - First release of the package.
 
+[1.9.0]: https://github.com/hifi-finance/hifi/compare/@hifi/amm@1.8.2...@hifi/amm@1.9.0
 [1.8.2]: https://github.com/hifi-finance/hifi/compare/@hifi/amm@1.8.1...@hifi/amm@1.8.2
 [1.8.1]: https://github.com/hifi-finance/hifi/compare/@hifi/amm@1.8.0...@hifi/amm@1.8.1
 [1.8.0]: https://github.com/hifi-finance/hifi/compare/@hifi/amm@1.7.1...@hifi/amm@1.8.0

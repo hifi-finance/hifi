@@ -1373,7 +1373,7 @@ __metadata:
     "@hifi/constants": "workspace:*"
     "@hifi/errors": "workspace:*"
     "@hifi/helpers": "workspace:*"
-    "@hifi/protocol": "workspace:*"
+    "@hifi/protocol": 1.9.0
     "@nomiclabs/hardhat-ethers": ^2.0.5
     "@nomiclabs/hardhat-etherscan": ^3.0.1
     "@nomiclabs/hardhat-waffle": ^2.0.2
@@ -1530,6 +1530,26 @@ __metadata:
     typescript: ^4.5.5
   languageName: unknown
   linkType: soft
+
+"@hifi/protocol@npm:1.9.0":
+  version: 1.9.0
+  resolution: "@hifi/protocol@npm:1.9.0"
+  dependencies:
+    "@ethersproject/abi": ^5.5.0
+    "@ethersproject/bytes": ^5.5.0
+    "@ethersproject/providers": ^5.5.3
+    "@openzeppelin/contracts-upgradeable": 4.5.2
+    "@prb/contracts": 3.8.0
+    "@prb/math": 2.5.0
+    ethers: ^5.5.4
+  peerDependencies:
+    "@openzeppelin/contracts-upgradeable": 4.5.2
+    "@prb/contracts": 3.8.0
+    "@prb/math": 2.5.0
+    ethers: ^5.4.7
+  checksum: 54785043e187b136c53df74e54ea906ed490255bd9b2910a6c90a3e9fa886e11b3ff918741252ffc021d0805b8d69f1326c123affef03f1f02cdfecbf23089c5
+  languageName: node
+  linkType: hard
 
 "@hifi/protocol@workspace:*, @hifi/protocol@workspace:packages/protocol":
   version: 0.0.0-use.local

@@ -1,7 +1,7 @@
 {
   "name": "@hifi/amm",
   "description": "Dedicated AMM for market-making hTokens",
-  "version": "1.8.2",
+  "version": "1.9.0",
   "author": {
     "name": "Hifi",
     "email": "contact@hifi.finance",
@@ -14,7 +14,7 @@
     "@ethersproject/abi": "^5.5.0",
     "@ethersproject/bytes": "^5.5.0",
     "@ethersproject/providers": "^5.5.3",
-    "@hifi/protocol": "workspace:*",
+    "@hifi/protocol": "1.9.0",
     "@openzeppelin/contracts-upgradeable": "4.5.2",
     "@prb/contracts": "3.8.0",
     "@prb/math": "2.5.0",
