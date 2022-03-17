@@ -1626,7 +1626,8 @@ __metadata:
     "@hifi/amm": 1.9.1
     "@hifi/helpers": "workspace:*"
     "@hifi/protocol": 1.9.0
-    "@nomiclabs/hardhat-etherscan": ^3.0.1
+    "@nomiclabs/hardhat-ethers": ^2.0.5
+    "@nomiclabs/hardhat-etherscan": ^3.0.3
     "@openzeppelin/contracts-upgradeable": 4.5.2
     "@prb/contracts": 3.8.0
     "@typechain/ethers-v5": ^9.0.0
@@ -1743,6 +1744,23 @@ __metadata:
   peerDependencies:
     hardhat: ^2.0.4
   checksum: 4ccb34df2f4aa3cfcbcd8eb87029abe8937f295f25c0c61c2ce8c42a77a9011d34c8f6e143b4a5096601909b28dbb7c8b2479158519a94074cd5ef9b396a328e
+  languageName: node
+  linkType: hard
+
+"@nomiclabs/hardhat-etherscan@npm:^3.0.3":
+  version: 3.0.3
+  resolution: "@nomiclabs/hardhat-etherscan@npm:3.0.3"
+  dependencies:
+    "@ethersproject/abi": ^5.1.2
+    "@ethersproject/address": ^5.0.2
+    cbor: ^5.0.2
+    debug: ^4.1.1
+    fs-extra: ^7.0.1
+    semver: ^6.3.0
+    undici: ^4.14.1
+  peerDependencies:
+    hardhat: ^2.0.4
+  checksum: 6ce0856ad989c4cff5c90f7673d80fb7778ac1941db2bdf0998afca31c2439ed2e840fbad123a6f5958768243179af33a56f7b45919a598c8361b9a7cfdbaea6
   languageName: node
   linkType: hard
 
@@ -15249,6 +15267,13 @@ typescript@^4.4.3:
   version: 1.9.1
   resolution: "underscore@npm:1.9.1"
   checksum: bee6f587661a6a9ca2f77e611896141e0287af51d8ca6034b11d0d4163ddbdd181a9720078ddbe94d265b7694f4880bc7f4c2ad260cfb8985ee2f9adcf13df03
+  languageName: node
+  linkType: hard
+
+"undici@npm:^4.14.1":
+  version: 4.15.1
+  resolution: "undici@npm:4.15.1"
+  checksum: 13b264d4966de105e211e1ca9433e2d8be5fcfe85e4cafea6b97c4685df3364bc8bc9e9b27796ce400e8a1e45e92a65b1453fcb499557e4f5c013af18f194852
   languageName: node
   linkType: hard
 
