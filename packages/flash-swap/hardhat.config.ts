@@ -4,6 +4,8 @@ import "@typechain/hardhat";
 import "hardhat-packager";
 import "solidity-coverage";
 
+import "./tasks/deploy";
+
 import { resolve } from "path";
 
 import { getChainConfig, getEnvVar } from "@hifi/helpers";

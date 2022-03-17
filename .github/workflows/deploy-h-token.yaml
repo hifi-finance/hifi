@@ -69,7 +69,7 @@ jobs:
       - name: "Deploy HToken"
         id: "deploy"
         run: >-
-          yarn workspace @hifi/tasks hardhat
+          yarn workspace @hifi/protocol hardhat
           deploy:contract:h-token --network "${{ github.event.inputs.chain }}"
           --balance-sheet "${{ github.event.inputs.balance-sheet }}"
           --fintroller "${{ github.event.inputs.fintroller }}"
@@ -78,15 +78,5 @@ jobs:
           --symbol "${{ github.event.inputs.symbol }}"
           --underlying "${{ github.event.inputs.underlying }}"
           --confirmations "${{ github.event.inputs.confirmations }}"
-          --set-output true
-
-      - name: "Verify HToken"
-        run: >-
-          yarn workspace @hifi/protocol hardhat
-          verify "${{ steps.deploy.outputs.h-token }}" --network "${{ github.event.inputs.chain }}"
-          "${{ github.event.inputs.name }}"
-          "${{ github.event.inputs.symbol }}"
-          "${{ github.event.inputs.maturity }}"
-          "${{ github.event.inputs.balance-sheet }}"
-          "${{ github.event.inputs.fintroller }}"
-          "${{ github.event.inputs.underlying }}"
+          --print true
+          --verify true

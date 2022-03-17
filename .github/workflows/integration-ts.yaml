@@ -14,7 +14,6 @@ jobs:
     outputs:
       constants: ${{ steps.diff.outputs.constants }}
       helpers: ${{ steps.diff.outputs.helpers }}
-      tasks: ${{ steps.diff.outputs.tasks }}
     steps:
       - name: "Check out the repo"
         uses: "actions/checkout@v2"
@@ -28,8 +27,6 @@ jobs:
               - "packages/constants/**"
             helpers:
               - "packages/helpers/**"
-            tasks:
-              - "packages/tasks/**"
 
   integration-constants:
     if: ${{ needs.diff.outputs.constants == 'true' }}
@@ -74,22 +71,3 @@ jobs:
 
       - name: "Build the package"
         run: "yarn workspace @hifi/helpers build"
-
-  integration-tasks:
-    if: ${{ needs.diff.outputs.tasks == 'true' }}
-    runs-on: "ubuntu-latest"
-    steps:
-      - name: "Check out the repo"
-        uses: "actions/checkout@v2"
-
-      - name: "Install Node.js"
-        uses: "actions/setup-node@v2"
-        with:
-          cache: "yarn"
-          node-version: "16"
-
-      - name: "Install the dependencies"
-        run: "yarn install --immutable"
-
-      - name: "Lint the code"
-        run: "yarn workspace @hifi/tasks lint"

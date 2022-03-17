@@ -1,14 +1,10 @@
-import * as core from "@actions/core";
 import type { StablecoinPriceFeed } from "@hifi/protocol/dist/types/StablecoinPriceFeed";
 import { StablecoinPriceFeed__factory } from "@hifi/protocol/dist/types/factories/StablecoinPriceFeed__factory";
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
 import type { TaskArguments } from "hardhat/types";
 
-import {
-  SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS,
-  TASK_DEPLOY_CONTRACT_STABLECOIN_PRICE_FEED,
-} from "../../helpers/constants";
+import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_STABLECOIN_PRICE_FEED } from "../constants";
 
 task(TASK_DEPLOY_CONTRACT_STABLECOIN_PRICE_FEED)
   // Contract arguments
@@ -16,8 +12,8 @@ task(TASK_DEPLOY_CONTRACT_STABLECOIN_PRICE_FEED)
   .addParam("description", "Description of the price feed")
   // Developer settings
   .addOptionalParam("confirmations", "How many block confirmations to wait for", 2, types.int)
-  .addOptionalParam("printAddress", "Print the address in the console", true, types.boolean)
-  .addOptionalParam("setOutput", "Set the contract address as an output in GitHub Actions", false, types.boolean)
+  .addOptionalParam("print", "Print the address in the console", true, types.boolean)
+  .addOptionalParam("verify", "Verify the contract on Etherscan", false, types.boolean)
   .setAction(async function (taskArgs: TaskArguments, { ethers, run }): Promise<string> {
     const signers: SignerWithAddress[] = await ethers.getSigners();
     const stablecoinPriceFeedFactory: StablecoinPriceFeed__factory = new StablecoinPriceFeed__factory(signers[0]);
@@ -30,11 +26,20 @@ task(TASK_DEPLOY_CONTRACT_STABLECOIN_PRICE_FEED)
       confirmations: taskArgs.confirmations,
     });
 
-    if (taskArgs.setOutput) {
-      core.setOutput("stablecoin-price-feed", stablecoinPriceFeed.address);
-    }
-    if (taskArgs.printAddress) {
+    if (taskArgs.print) {
       console.table([{ name: "StablecoinPriceFeed", address: stablecoinPriceFeed.address }]);
     }
+
+    if (taskArgs.verify) {
+      try {
+        await run("verify:verify", {
+          address: stablecoinPriceFeed.address,
+          constructorArguments: [taskArgs.price, taskArgs.description],
+        });
+      } catch (error) {
+        console.error("Error while verifying contract:", error);
+      }
+    }
+
     return stablecoinPriceFeed.address;
   });

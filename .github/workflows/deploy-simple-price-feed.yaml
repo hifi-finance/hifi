@@ -54,13 +54,9 @@ jobs:
       - name: "Deploy SimplePriceFeed"
         id: "deploy"
         run: >-
-          yarn workspace @hifi/tasks hardhat
+          yarn workspace @hifi/protocol hardhat
           deploy:contract:simple-price-feed --network "${{ github.event.inputs.chain }}"
           --description "${{ github.event.inputs.description }}"
           --confirmations "${{ github.event.inputs.confirmations }}"
+          --print true
           --set-output true
-
-      - name: "Verify SimplePriceFeed"
-        run: >-
-          yarn workspace @hifi/protocol hardhat
-          verify "${{ steps.deploy.outputs.simple-price-feed }}" --network "${{ github.event.inputs.chain }}"

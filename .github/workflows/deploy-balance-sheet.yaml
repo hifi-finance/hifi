@@ -59,9 +59,5 @@ jobs:
           --fintroller "${{ github.event.inputs.fintroller }}"
           --oracle "${{ github.event.inputs.oracle }}"
           --confirmations "${{ github.event.inputs.confirmations }}"
-          --set-output true
-
-      - name: "Verify BalanceSheet"
-        run: >-
-          yarn workspace @hifi/protocol hardhat
-          verify "${{ steps.deploy.outputs.balance-sheet-implementation }}" --network "${{ github.event.inputs.chain }}"
+          --print true
+          --verify true

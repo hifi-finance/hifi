@@ -10,7 +10,7 @@ import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
 import type { TaskArguments } from "hardhat/types";
 
-import { TASK_INIT_ADD_LIQUIDITY } from "../../helpers/constants";
+import { TASK_INIT_ADD_LIQUIDITY } from "../constants";
 
 task(TASK_INIT_ADD_LIQUIDITY)
   // Contract arguments

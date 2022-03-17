@@ -20,7 +20,6 @@
     "ethers": "^5.5.4"
   },
   "devDependencies": {
-    "@actions/core": "^1.6.0",
     "@ethersproject/abstract-signer": "^5.5.0",
     "@ethersproject/bignumber": "^5.5.0",
     "@ethersproject/wallet": "^5.5.0",

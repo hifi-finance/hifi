@@ -63,17 +63,11 @@ jobs:
       - name: "Deploy HifiPool"
         id: "deploy"
         run: >-
-          yarn workspace @hifi/tasks hardhat
+          yarn workspace @hifi/amm hardhat
           deploy:contract:hifi-pool --network "${{ github.event.inputs.chain }}"
           --h-token "${{ github.event.inputs.h-token }}"
           --hifi-pool-registry "${{ github.event.inputs.hifi-pool-registry }}"
           --name "${{ github.event.inputs.name }}"
           --symbol "${{ github.event.inputs.symbol }}"
-
-      - name: "Verify HifiPool"
-        run: >-
-          yarn workspace @hifi/amm hardhat
-          verify "${{ steps.deploy.outputs.hifi-pool }}" --network "${{ github.event.inputs.chain }}"
-          "${{ github.event.inputs.name }}"
-          "${{ github.event.inputs.symbol }}"
-          "${{ github.event.inputs.h-token }}"
+          --print true
+          --verify true

@@ -56,7 +56,7 @@ jobs:
       - name: "Add liquidity"
         id: "init"
         run: >-
-          yarn workspace @hifi/tasks hardhat
+          yarn workspace @hifi/amm hardhat
           init:add-liquidity --network "${{ github.event.inputs.chain }}"
           --hifi-pool "${{ github.event.inputs.hifi-pool }}"
           --pool-underlying-amount "${{ github.event.inputs.pool-underlying-amount }}"

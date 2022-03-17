@@ -1,4 +1,3 @@
-import * as core from "@actions/core";
 import { task, types } from "hardhat/config";
 import type { TaskArguments } from "hardhat/types";
 
@@ -12,8 +11,8 @@ task(TASK_DEPLOY_CONTRACT_BALANCE_SHEET)
   .addParam("oracle", "The address of the oracle contract")
   // Developer settings
   .addOptionalParam("confirmations", "How many block confirmations to wait for", 2, types.int)
-  .addOptionalParam("printAddress", "Print the address in the console", true, types.boolean)
-  .addOptionalParam("setOutput", "Set the contract address as an output in GitHub Actions", false, types.boolean)
+  .addOptionalParam("print", "Print the address in the console", true, types.boolean)
+  .addOptionalParam("verify", "Verify the contract on Etherscan", false, types.boolean)
   .setAction(async function (taskArgs: TaskArguments, { ethers, run, upgrades }) {
     const balanceSheetV2Factory: BalanceSheetV2__factory = <BalanceSheetV2__factory>(
       await ethers.getContractFactory("BalanceSheetV2")
@@ -30,15 +29,22 @@ task(TASK_DEPLOY_CONTRACT_BALANCE_SHEET)
     const balanceSheetImplementation: string = await upgrades.erc1967.getImplementationAddress(
       balanceSheetProxy.address,
     );
-    if (taskArgs.setOutput) {
-      core.setOutput("balance-sheet-proxy", balanceSheetProxy.address);
-      core.setOutput("balance-sheet-implementation", balanceSheetImplementation);
-    }
-    if (taskArgs.printAddress) {
+    if (taskArgs.print) {
       console.table([
         { name: "BalanceSheet:Proxy", address: balanceSheetProxy.address },
         { name: "BalanceSheet:Implementation", address: balanceSheetImplementation },
       ]);
+    }
+
+    if (taskArgs.verify) {
+      try {
+        await run("verify:verify", {
+          address: balanceSheetImplementation,
+          constructorArgs: [],
+        });
+      } catch (error) {
+        console.error("Error while verifying contract:", error);
+      }
     }
 
     return {

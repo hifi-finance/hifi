@@ -60,18 +60,11 @@ jobs:
       - name: "Deploy FlashUniswapV2"
         id: deploy
         run: >-
-          yarn workspace @hifi/tasks hardhat
+          yarn workspace @hifi/flash-swap hardhat
           deploy:contract:flash-uniswap-v2 --network "${{ github.event.inputs.chain }}"
           --balance-sheet "${{ github.event.inputs.balance-sheet }}"
           --uni-v2-factory "${{ github.event.inputs.uni-v2-factory }}"
           --uni-v2-pair-init-code-hash "${{ github.event.inputs.uni-v2-pair-init-code-hash }}"
           --confirmations "${{ github.event.inputs.confirmations }}"
-          --set-output true
-
-      - name: "Verify FlashUniswapV2"
-        run: >-
-          yarn workspace @hifi/flash-swap hardhat
-          verify "${{ steps.deploy.outputs.flash-uniswap-v2 }}" --network "${{ github.event.inputs.chain }}"
-          "${{ github.event.inputs.balance-sheet }}"
-          "${{ github.event.inputs.uni-v2-factory }}"
-          "${{ github.event.inputs.uni-v2-pair-init-code-hash }}"
+          --print true
+          --verify true

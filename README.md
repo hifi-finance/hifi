@@ -22,7 +22,6 @@ associated to each package for detailed usage instructions.
 | ---------------------------------------- | -------------------------------------------- |
 | [`@hifi/constants`](/packages/constants) | Constants shared across Hifi packages        |
 | [`@hifi/helpers`](/packages/helpers)     | Helper functions shared across Hifi packages |
-| [`@hifi/tasks`](/packages/tasks)         | Hardhat tasks for the Hifi smart contracts   |
 
 ## Contributing
 

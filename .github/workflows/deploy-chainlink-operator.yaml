@@ -51,12 +51,8 @@ jobs:
       - name: "Deploy ChainlinkOperator"
         id: "deploy"
         run: >-
-          yarn workspace @hifi/tasks hardhat
+          yarn workspace @hifi/protocol hardhat
           deploy:contract:chainlink-operator --network "${{ github.event.inputs.chain }}"
           --confirmations "${{ github.event.inputs.confirmations }}"
-          --set-output true
-
-      - name: "Verify ChainlinkOperator"
-        run: >-
-          yarn workspace @hifi/protocol hardhat
-          verify "${{ steps.deploy.outputs.chainlink-operator }}" --network "${{ github.event.inputs.chain }}"
+          --print true
+          --verify true

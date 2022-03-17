@@ -2,6 +2,8 @@ import "@nomiclabs/hardhat-etherscan";
 import "@typechain/hardhat";
 import "hardhat-packager";
 
+import "./tasks/deploy";
+
 import { resolve } from "path";
 
 import { getChainConfig, getEnvVar } from "@hifi/helpers";

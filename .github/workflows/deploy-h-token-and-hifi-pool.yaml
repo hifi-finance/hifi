@@ -69,7 +69,7 @@ jobs:
       - name: "Deploy HToken"
         id: "deploy-h-token"
         run: >-
-          yarn workspace @hifi/tasks hardhat
+          yarn workspace @hifi/protocol hardhat
           deploy:contract:h-token --network "${{ github.event.inputs.chain }}"
           --balance-sheet "${{ github.event.inputs.balance-sheet }}"
           --maturity "${{ github.event.inputs.h-token-maturity }}"
@@ -77,34 +77,18 @@ jobs:
           --symbol "${{ github.event.inputs.h-token-symbol }}"
           --underlying "${{ github.event.inputs.underlying }}"
           --confirmations "${{ github.event.inputs.confirmations }}"
-          --set-output true
-
-      - name: "Verify HToken"
-        run: >-
-          yarn workspace @hifi/protocol hardhat
-          verify "${{ steps.deploy-h-token.outputs.h-token }}" --network "${{ github.event.inputs.chain }}"
-          "${{ github.event.inputs.h-token-name }}"
-          "${{ github.event.inputs.h-token-symbol }}"
-          "${{ github.event.inputs.h-token-maturity }}"
-          "${{ github.event.inputs.balance-sheet }}"
-          "${{ github.event.inputs.underlying }}"
+          --print true
+          --verify true
 
       - name: "Deploy HifiPool"
         id: "deploy-hifi-pool"
         run: >-
-          yarn workspace @hifi/tasks hardhat
+          yarn workspace @hifi/amm hardhat
           deploy:contract:hifi-pool --network "${{ github.event.inputs.chain }}"
           --h-token "${{ steps.deploy-h-token.outputs.h-token }}"
           --hifi-pool-registry "${{ github.event.inputs.hifi-pool-registry }}"
           --name "${{ github.event.inputs.h-token-name }} Pool"
           --symbol "${{ github.event.inputs.h-token-symbol }}LP"
           --confirmations "${{ github.event.inputs.confirmations }}"
-          --set-output true
-
-      - name: "Verify HifiPool"
-        run: >-
-          yarn workspace @hifi/amm hardhat
-          verify "${{ steps.deploy-hifi-pool.outputs.hifi-pool }}" --network "${{ github.event.inputs.chain }}"
-          "${{ github.event.inputs.h-token-name }} Pool"
-          "${{ github.event.inputs.h-token-symbol }}LP"
-          "${{ steps.deploy-h-token.outputs.h-token }}"
+          --print true
+          --verify true
