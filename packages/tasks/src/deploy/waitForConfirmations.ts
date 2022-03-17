@@ -4,7 +4,7 @@ import { TaskArguments } from "hardhat/types";
 import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS } from "../../helpers/constants";
 
 subtask(SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS)
-  .addParam("confirmations", "How many block confirmations to wait for", 0, types.int)
+  .addParam("confirmations", "How many block confirmations to wait for", 2, types.int)
   .addParam("contract", "Contract whose deployment to wait for", undefined, types.any)
   .setAction(async function (taskArgs: TaskArguments): Promise<void> {
     if (taskArgs.confirmations === 0) {

@@ -16,7 +16,7 @@ task(TASK_DEPLOY_CONTRACT_HIFI_POOL)
   .addParam("hToken", "Address of the HToken contract")
   .addParam("hifiPoolRegistry", "Address of the HifiPoolRegistry contract")
   // Developer settings
-  .addOptionalParam("confirmations", "How many block confirmations to wait for", 0, types.int)
+  .addOptionalParam("confirmations", "How many block confirmations to wait for", 2, types.int)
   .addOptionalParam("printAddress", "Print the address in the console", true, types.boolean)
   .addOptionalParam("setOutput", "Set the contract address as an output in GitHub Actions", false, types.boolean)
   .setAction(async function (taskArgs: TaskArguments, { ethers }): Promise<string> {

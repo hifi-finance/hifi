@@ -13,7 +13,7 @@ task(TASK_DEPLOY_CONTRACT_FLASH_UNISWAP_V2)
   .addParam("uniV2Factory", "Address of the UniswapV2Factory contract")
   .addParam("uniV2PairInitCodeHash", "Init code hash of the UniswapV2Pair contract")
   // Developer settings
-  .addOptionalParam("confirmations", "How many block confirmations to wait for", 0, types.int)
+  .addOptionalParam("confirmations", "How many block confirmations to wait for", 2, types.int)
   .addOptionalParam("printAddress", "Print the address in the console", true, types.boolean)
   .addOptionalParam("setOutput", "Set the contract address as an output in GitHub Actions", false, types.boolean)
   .setAction(async function (taskArgs: TaskArguments, { ethers, run }): Promise<string> {
