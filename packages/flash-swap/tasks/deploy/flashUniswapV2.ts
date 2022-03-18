@@ -1,9 +1,9 @@
-import type { FlashUniswapV2 } from "@hifi/flash-swap/dist/types/FlashUniswapV2";
-import { FlashUniswapV2__factory } from "@hifi/flash-swap/dist/types/factories/FlashUniswapV2__factory";
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
 import type { TaskArguments } from "hardhat/types";
 
+import { FlashUniswapV2__factory } from "../../src/types/factories/FlashUniswapV2__factory";
+import type { FlashUniswapV2 } from "../../src/types/FlashUniswapV2";
 import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_FLASH_UNISWAP_V2 } from "../constants";
 
 task(TASK_DEPLOY_CONTRACT_FLASH_UNISWAP_V2)

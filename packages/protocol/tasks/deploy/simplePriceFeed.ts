@@ -1,9 +1,9 @@
-import type { SimplePriceFeed } from "@hifi/protocol/dist/types/SimplePriceFeed";
-import { SimplePriceFeed__factory } from "@hifi/protocol/dist/types/factories/SimplePriceFeed__factory";
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
 import type { TaskArguments } from "hardhat/types";
 
+import { SimplePriceFeed__factory } from "../../src/types/factories/SimplePriceFeed__factory";
+import type { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
 import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_SIMPLE_PRICE_FEED } from "../constants";
 
 task(TASK_DEPLOY_CONTRACT_SIMPLE_PRICE_FEED)

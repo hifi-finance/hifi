@@ -1,12 +1,12 @@
 import { task, types } from "hardhat/config";
 import type { TaskArguments } from "hardhat/types";
-import { HifiPool__factory } from "@hifi/amm/dist/types/factories/HifiPool__factory";
-import { HifiPoolRegistry__factory } from "@hifi/amm/dist/types/factories/HifiPoolRegistry__factory";
-import { HifiPool } from "@hifi/amm/dist/types/HifiPool";
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 
 import { TASK_DEPLOY_CONTRACT_HIFI_POOL } from "../constants";
-import { HifiPoolRegistry } from "@hifi/amm/dist/types/HifiPoolRegistry";
+import { HifiPoolRegistry } from "../../src/types/HifiPoolRegistry";
+import { HifiPool__factory } from "../../src/types/factories/HifiPool__factory";
+import { HifiPoolRegistry__factory } from "../../src/types/factories/HifiPoolRegistry__factory";
+import { HifiPool } from "../../src/types/HifiPool";
 
 task(TASK_DEPLOY_CONTRACT_HIFI_POOL)
   // Contract arguments
