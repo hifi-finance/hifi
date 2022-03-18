@@ -274,6 +274,109 @@
           }
         }
       }
+    },
+    "758247beb0b5e4a5bc47c9db4b3b10676b7e8017ef1c82b0654201f9bbcad00f": {
+      "address": "0x8BEb1B7CB703890BAEb14D014432699E57447590",
+      "txHash": "0xb3d1887e5269b717d336a2344951d1509374b39a7ffe349c68335e18e4164978",
+      "layout": {
+        "storage": [
+          {
+            "contract": "Initializable",
+            "label": "_initialized",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:39"
+          },
+          {
+            "contract": "Initializable",
+            "label": "_initializing",
+            "type": "t_bool",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:44"
+          },
+          {
+            "contract": "OwnableUpgradeable",
+            "label": "owner",
+            "type": "t_address",
+            "src": "contracts/access/OwnableUpgradeable.sol:19"
+          },
+          {
+            "contract": "SBalanceSheetV1",
+            "label": "fintroller",
+            "type": "t_contract(IFintroller)7772",
+            "src": "contracts/core/balance-sheet/SBalanceSheetV1.sol:26"
+          },
+          {
+            "contract": "SBalanceSheetV1",
+            "label": "oracle",
+            "type": "t_contract(IChainlinkOperator)8908",
+            "src": "contracts/core/balance-sheet/SBalanceSheetV1.sol:29"
+          },
+          {
+            "contract": "SBalanceSheetV1",
+            "label": "vaults",
+            "type": "t_mapping(t_address,t_struct(Vault)6455_storage)",
+            "src": "contracts/core/balance-sheet/SBalanceSheetV1.sol:32"
+          }
+        ],
+        "types": {
+          "t_contract(IFintroller)7772": {
+            "label": "contract IFintroller"
+          },
+          "t_contract(IChainlinkOperator)8908": {
+            "label": "contract IChainlinkOperator"
+          },
+          "t_mapping(t_address,t_struct(Vault)6455_storage)": {
+            "label": "mapping(address => struct SBalanceSheetV1.Vault)"
+          },
+          "t_address": {
+            "label": "address"
+          },
+          "t_struct(Vault)6455_storage": {
+            "label": "struct SBalanceSheetV1.Vault",
+            "members": [
+              {
+                "label": "bondList",
+                "type": "t_array(t_contract(IHToken)8516)dyn_storage"
+              },
+              {
+                "label": "collateralAmounts",
+                "type": "t_mapping(t_contract(IErc20)1477,t_uint256)"
+              },
+              {
+                "label": "collateralList",
+                "type": "t_array(t_contract(IErc20)1477)dyn_storage"
+              },
+              {
+                "label": "debtAmounts",
+                "type": "t_mapping(t_contract(IHToken)8516,t_uint256)"
+              }
+            ]
+          },
+          "t_array(t_contract(IHToken)8516)dyn_storage": {
+            "label": "contract IHToken[]"
+          },
+          "t_contract(IHToken)8516": {
+            "label": "contract IHToken"
+          },
+          "t_mapping(t_contract(IErc20)1477,t_uint256)": {
+            "label": "mapping(contract IErc20 => uint256)"
+          },
+          "t_contract(IErc20)1477": {
+            "label": "contract IErc20"
+          },
+          "t_uint256": {
+            "label": "uint256"
+          },
+          "t_array(t_contract(IErc20)1477)dyn_storage": {
+            "label": "contract IErc20[]"
+          },
+          "t_mapping(t_contract(IHToken)8516,t_uint256)": {
+            "label": "mapping(contract IHToken => uint256)"
+          },
+          "t_bool": {
+            "label": "bool"
+          }
+        }
+      }
     }
   }
 }
