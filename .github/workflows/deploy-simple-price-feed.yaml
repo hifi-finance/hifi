@@ -59,4 +59,4 @@ jobs:
           --description "${{ github.event.inputs.description }}"
           --confirmations "${{ github.event.inputs.confirmations }}"
           --print true
-          --set-output true
+          --verify true
