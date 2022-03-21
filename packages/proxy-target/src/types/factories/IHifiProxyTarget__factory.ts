@@ -139,11 +139,6 @@ const _abi = [
         type: "address",
       },
       {
-        internalType: "contract IErc20Permit",
-        name: "underlying",
-        type: "address",
-      },
-      {
         internalType: "uint256",
         name: "underlyingOffered",
         type: "uint256",
@@ -235,11 +230,6 @@ const _abi = [
       {
         internalType: "contract IHifiPool",
         name: "hifiPool",
-        type: "address",
-      },
-      {
-        internalType: "contract IErc20Permit",
-        name: "underlying",
         type: "address",
       },
       {
@@ -378,11 +368,6 @@ const _abi = [
         type: "address",
       },
       {
-        internalType: "contract IErc20Permit",
-        name: "underlying",
-        type: "address",
-      },
-      {
         internalType: "uint256",
         name: "hTokenOut",
         type: "uint256",
@@ -444,11 +429,6 @@ const _abi = [
         type: "address",
       },
       {
-        internalType: "contract IErc20Permit",
-        name: "underlying",
-        type: "address",
-      },
-      {
         internalType: "contract IBalanceSheetV2",
         name: "balanceSheet",
         type: "address",
@@ -484,11 +464,6 @@ const _abi = [
       {
         internalType: "contract IHifiPool",
         name: "hifiPool",
-        type: "address",
-      },
-      {
-        internalType: "contract IErc20Permit",
-        name: "underlying",
         type: "address",
       },
       {
@@ -733,11 +708,6 @@ const _abi = [
       {
         internalType: "contract IErc20Permit",
         name: "collateral",
-        type: "address",
-      },
-      {
-        internalType: "contract IErc20Permit",
-        name: "underlying",
         type: "address",
       },
       {
@@ -987,11 +957,6 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "contract IErc20Permit",
-        name: "underlying",
-        type: "address",
-      },
-      {
         internalType: "contract IHifiPool",
         name: "hifiPool",
         type: "address",
@@ -1053,11 +1018,6 @@ const _abi = [
         type: "address",
       },
       {
-        internalType: "contract IErc20Permit",
-        name: "underlying",
-        type: "address",
-      },
-      {
         internalType: "contract IBalanceSheetV2",
         name: "balanceSheet",
         type: "address",
@@ -1088,11 +1048,6 @@ const _abi = [
       {
         internalType: "contract IHToken",
         name: "hToken",
-        type: "address",
-      },
-      {
-        internalType: "contract IErc20Permit",
-        name: "underlying",
         type: "address",
       },
       {
@@ -1577,11 +1532,6 @@ const _abi = [
         type: "address",
       },
       {
-        internalType: "contract IErc20Permit",
-        name: "underlying",
-        type: "address",
-      },
-      {
         internalType: "contract IBalanceSheetV2",
         name: "balanceSheet",
         type: "address",
@@ -1617,11 +1567,6 @@ const _abi = [
       {
         internalType: "contract IHifiPool",
         name: "hifiPool",
-        type: "address",
-      },
-      {
-        internalType: "contract IErc20Permit",
-        name: "underlying",
         type: "address",
       },
       {

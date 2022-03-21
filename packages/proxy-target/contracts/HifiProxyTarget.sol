@@ -51,18 +51,17 @@ contract HifiProxyTarget is IHifiProxyTarget {
         hifiPool.transfer(msg.sender, poolTokensMinted);
     }
 
+    /// @inheritdoc IHifiProxyTarget
     function addLiquidityWithSignature(
         IHifiPool hifiPool,
-        IErc20Permit underlying,
         uint256 underlyingOffered,
         uint256 maxHTokenRequired,
         uint256 deadline,
         bytes memory signatureHToken,
         bytes memory signatureUnderlying
     ) external override {
-        IHToken hToken = hifiPool.hToken();
-        permitInternal(underlying, underlyingOffered, deadline, signatureUnderlying);
-        permitInternal(hToken, maxHTokenRequired, deadline, signatureHToken);
+        permitInternal(IErc20Permit(address(hifiPool.underlying())), underlyingOffered, deadline, signatureUnderlying);
+        permitInternal(hifiPool.hToken(), maxHTokenRequired, deadline, signatureHToken);
         addLiquidity(hifiPool, underlyingOffered, maxHTokenRequired);
     }
 
@@ -116,13 +115,12 @@ contract HifiProxyTarget is IHifiProxyTarget {
     function borrowHTokenAndAddLiquidityWithSignature(
         IBalanceSheetV2 balanceSheet,
         IHifiPool hifiPool,
-        IErc20Permit underlying,
         uint256 maxBorrowAmount,
         uint256 underlyingOffered,
         uint256 deadline,
         bytes memory signatureUnderlying
     ) public override {
-        permitInternal(underlying, underlyingOffered, deadline, signatureUnderlying);
+        permitInternal(IErc20Permit(address(hifiPool.underlying())), underlyingOffered, deadline, signatureUnderlying);
         borrowHTokenAndAddLiquidity(balanceSheet, hifiPool, maxBorrowAmount, underlyingOffered);
     }
 
@@ -291,41 +289,45 @@ contract HifiProxyTarget is IHifiProxyTarget {
         }
     }
 
+    /// @inheritdoc IHifiProxyTarget
     function buyHTokenWithSignature(
         IHifiPool hifiPool,
-        IErc20Permit underlying,
         uint256 hTokenOut,
         uint256 maxUnderlyingIn,
         uint256 deadline,
         bytes memory signatureUnderlying
     ) public override {
-        permitInternal(underlying, maxUnderlyingIn, deadline, signatureUnderlying);
+        permitInternal(IErc20Permit(address(hifiPool.underlying())), maxUnderlyingIn, deadline, signatureUnderlying);
         buyHToken(hifiPool, hTokenOut, maxUnderlyingIn);
     }
 
+    /// @inheritdoc IHifiProxyTarget
     function buyHTokenAndAddLiquidityWithSignature(
         IHifiPool hifiPool,
-        IErc20Permit underlying,
         uint256 hTokenOut,
         uint256 maxUnderlyingAmount,
         uint256 deadline,
         bytes memory signatureUnderlying
     ) external override {
-        permitInternal(underlying, maxUnderlyingAmount, deadline, signatureUnderlying);
+        permitInternal(
+            IErc20Permit(address(hifiPool.underlying())),
+            maxUnderlyingAmount,
+            deadline,
+            signatureUnderlying
+        );
         buyHTokenAndAddLiquidity(hifiPool, hTokenOut, maxUnderlyingAmount);
     }
 
+    /// @inheritdoc IHifiProxyTarget
     function buyHTokenAndRepayBorrowWithSignature(
         IHifiPool hifiPool,
-        IErc20Permit underlying,
         IBalanceSheetV2 balanceSheet,
         uint256 maxUnderlyingIn,
         uint256 hTokenOut,
         uint256 deadline,
         bytes memory signatureUnderlying
     ) external override {
-        permitInternal(underlying, maxUnderlyingIn, deadline, signatureUnderlying);
-
+        permitInternal(IErc20Permit(address(hifiPool.underlying())), maxUnderlyingIn, deadline, signatureUnderlying);
         buyHTokenAndRepayBorrow(hifiPool, balanceSheet, maxUnderlyingIn, hTokenOut);
     }
 
@@ -403,11 +405,11 @@ contract HifiProxyTarget is IHifiProxyTarget {
         uint256 deadline,
         bytes memory signatureHToken
     ) external override {
-        IHToken hToken = hifiPool.hToken();
-        permitInternal(hToken, maxHTokenIn, deadline, signatureHToken);
+        permitInternal(hifiPool.hToken(), maxHTokenIn, deadline, signatureHToken);
         buyUnderlying(hifiPool, underlyingOut, maxHTokenIn);
     }
 
+    /// @inheritdoc IHifiProxyTarget
     function buyUnderlyingAndAddLiquidityWithSignature(
         IHifiPool hifiPool,
         uint256 maxHTokenAmount,
@@ -415,8 +417,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         uint256 deadline,
         bytes memory signatureHToken
     ) external override {
-        IHToken hToken = hifiPool.hToken();
-        permitInternal(hToken, maxHTokenAmount, deadline, signatureHToken);
+        permitInternal(hifiPool.hToken(), maxHTokenAmount, deadline, signatureHToken);
         buyUnderlyingAndAddLiquidity(hifiPool, maxHTokenAmount, underlyingOffered);
     }
 
@@ -523,6 +524,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         hifiPool.transfer(msg.sender, poolTokensMinted);
     }
 
+    /// @inheritdoc IHifiProxyTarget
     function depositUnderlyingAndRepayBorrow(
         IHToken hToken,
         IBalanceSheetV2 balanceSheet,
@@ -553,6 +555,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         depositCollateral(balanceSheet, collateral, depositAmount);
     }
 
+    /// @inheritdoc IHifiProxyTarget
     function depositCollateralAndBorrowHTokenWithSignature(
         IBalanceSheetV2 balanceSheet,
         IErc20Permit collateral,
@@ -570,7 +573,6 @@ contract HifiProxyTarget is IHifiProxyTarget {
     function depositCollateralAndBorrowHTokenAndAddLiquidityWithSignature(
         IBalanceSheetV2 balanceSheet,
         IErc20Permit collateral,
-        IErc20Permit underlying,
         IHifiPool hifiPool,
         uint256 depositAmount,
         uint256 maxBorrowAmount,
@@ -580,8 +582,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         bytes memory signatureUnderlying
     ) external override {
         permitInternal(collateral, depositAmount, deadline, signatureCollateral);
-        permitInternal(underlying, underlyingOffered, deadline, signatureUnderlying);
-
+        permitInternal(IErc20Permit(address(hifiPool.underlying())), underlyingOffered, deadline, signatureUnderlying);
         depositCollateralAndBorrowHTokenAndAddLiquidity(
             balanceSheet,
             collateral,
@@ -617,18 +618,16 @@ contract HifiProxyTarget is IHifiProxyTarget {
     /// @inheritdoc IHifiProxyTarget
     function depositUnderlyingWithSignature(
         IHToken hToken,
-        IErc20Permit underlying,
         uint256 underlyingAmount,
         uint256 deadline,
         bytes memory signatureUnderlying
     ) external override {
-        permitInternal(underlying, underlyingAmount, deadline, signatureUnderlying);
+        permitInternal(IErc20Permit(address(hToken.underlying())), underlyingAmount, deadline, signatureUnderlying);
         depositUnderlying(hToken, underlyingAmount);
     }
 
     /// @inheritdoc IHifiProxyTarget
     function depositUnderlyingAndBorrowHTokenAndAddLiquidityWithSignature(
-        IErc20Permit underlying,
         IHifiPool hifiPool,
         uint256 depositAmount,
         uint256 underlyingOffered,
@@ -636,7 +635,12 @@ contract HifiProxyTarget is IHifiProxyTarget {
         bytes memory signatureUnderlying
     ) external override {
         uint256 totalUnderlyingAmount = depositAmount + underlyingOffered;
-        permitInternal(underlying, totalUnderlyingAmount, deadline, signatureUnderlying);
+        permitInternal(
+            IErc20Permit(address(hifiPool.underlying())),
+            totalUnderlyingAmount,
+            deadline,
+            signatureUnderlying
+        );
 
         depositUnderlyingAndBorrowHTokenAndAddLiquidity(hifiPool, depositAmount, underlyingOffered);
     }
@@ -644,13 +648,12 @@ contract HifiProxyTarget is IHifiProxyTarget {
     /// @inheritdoc IHifiProxyTarget
     function depositUnderlyingAndRepayBorrowWithSignature(
         IHToken hToken,
-        IErc20Permit underlying,
         IBalanceSheetV2 balanceSheet,
         uint256 underlyingAmount,
         uint256 deadline,
         bytes memory signatureUnderlying
     ) external override {
-        permitInternal(underlying, underlyingAmount, deadline, signatureUnderlying);
+        permitInternal(IErc20Permit(address(hToken.underlying())), underlyingAmount, deadline, signatureUnderlying);
         depositUnderlyingAndRepayBorrow(hToken, balanceSheet, underlyingAmount);
     }
 
@@ -968,27 +971,25 @@ contract HifiProxyTarget is IHifiProxyTarget {
     /// @inheritdoc IHifiProxyTarget
     function sellUnderlyingWithSignature(
         IHifiPool hifiPool,
-        IErc20Permit underlying,
         uint256 underlyingIn,
         uint256 minHTokenOut,
         uint256 deadline,
         bytes memory signatureUnderlying
     ) external override {
-        permitInternal(underlying, underlyingIn, deadline, signatureUnderlying);
+        permitInternal(IErc20Permit(address(hifiPool.underlying())), underlyingIn, deadline, signatureUnderlying);
         sellUnderlying(hifiPool, underlyingIn, minHTokenOut);
     }
 
     /// @inheritdoc IHifiProxyTarget
     function sellUnderlyingAndRepayBorrowWithSignature(
         IHifiPool hifiPool,
-        IErc20Permit underlying,
         IBalanceSheetV2 balanceSheet,
         uint256 underlyingIn,
         uint256 minHTokenOut,
         uint256 deadline,
         bytes memory signatureUnderlying
     ) external override {
-        permitInternal(underlying, underlyingIn, deadline, signatureUnderlying);
+        permitInternal(IErc20Permit(address(hifiPool.underlying())), underlyingIn, deadline, signatureUnderlying);
         sellUnderlyingAndRepayBorrow(hifiPool, balanceSheet, underlyingIn, minHTokenOut);
     }
 
@@ -1115,8 +1116,8 @@ contract HifiProxyTarget is IHifiProxyTarget {
             bytes32 s;
             uint8 v;
 
+            // solhint-disable-next-line no-inline-assembly
             assembly {
-                // solhint-disable-previous-line no-inline-assembly
                 r := mload(add(signature, 0x20))
                 s := mload(add(signature, 0x40))
                 v := byte(0, mload(add(signature, 0x60)))
