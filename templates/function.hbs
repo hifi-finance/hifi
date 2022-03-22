@@ -1,11 +1,11 @@
 {{h}} {{name}}
 
 ```solidity
-function {{name}}(
+function {{name}}({{#if params}}
     {{#each params}}
     {{type}} {{name}}{{#if @last}}{{else}},{{/if}}
     {{/each}}
-) {{visibility}}{{#if returns}} returns ({{printParams returns}}){{/if}}
+{{/if}}) {{visibility}}{{#if returns}} returns ({{printParams returns}}){{/if}}
 ```
 
 {{#if natspec.notice}}
