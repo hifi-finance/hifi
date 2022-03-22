@@ -3,10 +3,11 @@ import "@nomiclabs/hardhat-waffle";
 import "@typechain/hardhat";
 import "hardhat-packager";
 import "solidity-coverage";
+import "solidity-docgen";
 
 import "./tasks/deploy";
 
-import { resolve } from "path";
+import { relative, resolve } from "path";
 
 import { getChainConfig, getEnvVar } from "@hifi/helpers";
 import { config as dotenvConfig } from "dotenv";
@@ -20,6 +21,14 @@ const mnemonic: string = getEnvVar("MNEMONIC");
 
 const config: HardhatUserConfig = {
   defaultNetwork: "hardhat",
+  docgen: {
+    templates: "../../templates",
+    pages: (_item, file) => {
+      return file.absolutePath.startsWith("contracts")
+        ? relative("contracts", file.absolutePath).replace(".sol", ".md")
+        : undefined;
+    },
+  },
   etherscan: {
     apiKey: {
       mainnet: getEnvVar("ETHERSCAN_API_KEY"),
