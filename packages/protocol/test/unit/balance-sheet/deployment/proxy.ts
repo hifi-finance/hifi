@@ -2,8 +2,8 @@ import type { BigNumber } from "@ethersproject/bignumber";
 import { expect } from "chai";
 import { ethers, upgrades } from "hardhat";
 
-import type { BalanceSheetUpgraded__factory } from "../../../../src/types/factories/BalanceSheetUpgraded__factory";
 import type { BalanceSheetUpgraded } from "../../../../src/types/BalanceSheetUpgraded";
+import type { BalanceSheetUpgraded__factory } from "../../../../src/types/factories/BalanceSheetUpgraded__factory";
 
 export function shouldBehaveLikeUpgradeableProxy(): void {
   let balanceSheetUpgraded: BalanceSheetUpgraded;

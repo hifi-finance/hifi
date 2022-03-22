@@ -2,8 +2,8 @@ import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
 import type { TaskArguments } from "hardhat/types";
 
-import { Fintroller__factory } from "../../src/types/factories/Fintroller__factory";
 import type { Fintroller } from "../../src/types/Fintroller";
+import { Fintroller__factory } from "../../src/types/factories/Fintroller__factory";
 import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_FINTROLLER } from "../constants";
 
 task(TASK_DEPLOY_CONTRACT_FINTROLLER)

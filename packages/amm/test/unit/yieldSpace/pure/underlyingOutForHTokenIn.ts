@@ -2,10 +2,10 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { One, Zero } from "@ethersproject/constants";
 import { YieldSpaceErrors } from "@hifi/errors";
 import { getDaysInSeconds, getYearsInSeconds, hUSDC } from "@hifi/helpers";
+import { MAX_UD60x18, PRBMathUD60x18Errors, SCALE } from "@prb/math";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
 import forEach from "mocha-each";
-import { MAX_UD60x18, PRBMathUD60x18Errors, SCALE } from "@prb/math";
 
 import { EPSILON, G2 } from "../../../shared/constants";
 import { getYieldExponent, outForIn } from "../../../shared/mirrors";

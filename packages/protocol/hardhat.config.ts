@@ -1,21 +1,19 @@
+import { GAS_LIMITS } from "@hifi/constants";
+import { getChainConfig, getEnvVar } from "@hifi/helpers";
 import "@nomiclabs/hardhat-etherscan";
 import "@nomiclabs/hardhat-waffle";
 import "@openzeppelin/hardhat-upgrades";
 import "@typechain/hardhat";
+import { config as dotenvConfig } from "dotenv";
 import "hardhat-gas-reporter";
 import "hardhat-packager";
+import type { HardhatUserConfig } from "hardhat/types";
+import { relative, resolve } from "path";
 import "solidity-coverage";
 import "solidity-docgen";
 
 import "./tasks/deploy";
 import "./tasks/prepare";
-
-import { relative, resolve } from "path";
-
-import { GAS_LIMITS } from "@hifi/constants";
-import { getChainConfig, getEnvVar } from "@hifi/helpers";
-import { config as dotenvConfig } from "dotenv";
-import type { HardhatUserConfig } from "hardhat/types";
 
 dotenvConfig({ path: resolve(__dirname, "..", "..", ".env") });
 

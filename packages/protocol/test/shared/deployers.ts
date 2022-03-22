@@ -1,8 +1,5 @@
 import type { Signer } from "@ethersproject/abstract-signer";
 import type { BigNumber } from "@ethersproject/bignumber";
-import { artifacts, ethers, upgrades, waffle } from "hardhat";
-import type { Artifact } from "hardhat/types";
-
 import {
   GAS_LIMITS,
   USDC_DECIMALS,
@@ -14,8 +11,9 @@ import {
   WBTC_SYMBOL,
 } from "@hifi/constants";
 import { getHTokenName, getHTokenSymbol, price } from "@hifi/helpers";
-import type { GodModeBalanceSheet__factory } from "../../src/types/factories/GodModeBalanceSheet__factory";
-import type { GodModeOwnableUpgradeable__factory } from "../../src/types/factories/GodModeOwnableUpgradeable__factory";
+import { artifacts, ethers, upgrades, waffle } from "hardhat";
+import type { Artifact } from "hardhat/types";
+
 import type { ChainlinkOperator } from "../../src/types/ChainlinkOperator";
 import type { Fintroller } from "../../src/types/Fintroller";
 import type { GodModeBalanceSheet } from "../../src/types/GodModeBalanceSheet";
@@ -24,6 +22,8 @@ import type { GodModeHToken } from "../../src/types/GodModeHToken";
 import type { GodModeOwnableUpgradeable } from "../../src/types/GodModeOwnableUpgradeable";
 import type { HToken } from "../../src/types/HToken";
 import type { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
+import type { GodModeBalanceSheet__factory } from "../../src/types/factories/GodModeBalanceSheet__factory";
+import type { GodModeOwnableUpgradeable__factory } from "../../src/types/factories/GodModeOwnableUpgradeable__factory";
 
 const { deployContract } = waffle;
 const overrides = { gasLimit: process.env.CODE_COVERAGE ? GAS_LIMITS.coverage : GAS_LIMITS.hardhat };

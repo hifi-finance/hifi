@@ -1,16 +1,14 @@
+import { getChainConfig, getEnvVar } from "@hifi/helpers";
 import "@nomiclabs/hardhat-ethers";
 import "@nomiclabs/hardhat-etherscan";
 import "@typechain/hardhat";
+import { config as dotenvConfig } from "dotenv";
 import "hardhat-packager";
+import type { HardhatUserConfig } from "hardhat/config";
+import { relative, resolve } from "path";
 import "solidity-docgen";
 
 import "./tasks/deploy";
-
-import { relative, resolve } from "path";
-
-import { getChainConfig, getEnvVar } from "@hifi/helpers";
-import { config as dotenvConfig } from "dotenv";
-import type { HardhatUserConfig } from "hardhat/config";
 
 dotenvConfig({ path: resolve(__dirname, "..", "..", ".env") });
 

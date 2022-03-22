@@ -4,10 +4,10 @@ import { H_TOKEN_MATURITY_ONE_YEAR, USDC_PRICE_PRECISION_SCALAR } from "@hifi/co
 import { HifiPoolErrors, YieldSpaceErrors } from "@hifi/errors";
 import { USDC, getNow } from "@hifi/helpers";
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { SCALE } from "@prb/math";
 import { expect } from "chai";
 import { fromBn, toBn } from "evm-bn";
 import forEach from "mocha-each";
-import { SCALE } from "@prb/math";
 
 import { EPSILON } from "../../../shared/constants";
 import { getLatestBlockTimestamp } from "../../../shared/helpers";

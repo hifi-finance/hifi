@@ -1,11 +1,10 @@
+import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
 import type { TaskArguments } from "hardhat/types";
-import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-
-import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_H_TOKEN } from "../constants";
 
 import type { HToken } from "../../src/types/HToken";
 import { HToken__factory } from "../../src/types/factories/HToken__factory";
+import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_H_TOKEN } from "../constants";
 
 task(TASK_DEPLOY_CONTRACT_H_TOKEN)
   // Contract arguments

@@ -4,9 +4,9 @@ import { artifacts, waffle } from "hardhat";
 import type { Artifact } from "hardhat/types";
 
 import type { GodModeErc20 } from "../../src/types/GodModeErc20";
+import type { GodModeHToken } from "../../src/types/GodModeHToken";
 import type { GodModeHifiPool } from "../../src/types/GodModeHifiPool";
 import type { GodModeHifiPoolRegistry } from "../../src/types/GodModeHifiPoolRegistry";
-import type { GodModeHToken } from "../../src/types/GodModeHToken";
 import type { YieldSpaceMock } from "../../src/types/YieldSpaceMock";
 import { deployGodModeHToken, deployGodModeHifiPool, deployGodModeHifiPoolRegistry, deployUsdc } from "./deployers";
 import { deployMockHToken, deployMockHifiPool, deployMockUsdc } from "./mocks";

@@ -2,10 +2,10 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { One, Zero } from "@ethersproject/constants";
 import { HifiPoolErrors } from "@hifi/errors";
 import { hUSDC } from "@hifi/helpers";
+import { MAX_UD60x18 } from "@prb/math";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
 import forEach from "mocha-each";
-import { MAX_UD60x18 } from "@prb/math";
 
 export function shouldBehaveLikeGetVirtualHTokenReserves(): void {
   context("when there is no hToken in the pool", function () {

@@ -1,13 +1,13 @@
 import type { Signer } from "@ethersproject/abstract-signer";
+import { H_TOKEN_MATURITY_ONE_YEAR, USDC_DECIMALS, USDC_NAME, USDC_SYMBOL } from "@hifi/constants";
+import { getHTokenName, getHTokenSymbol, getHifiPoolName, getHifiPoolSymbol } from "@hifi/helpers";
 import { artifacts, waffle } from "hardhat";
 import type { Artifact } from "hardhat/types";
 
-import { H_TOKEN_MATURITY_ONE_YEAR, USDC_DECIMALS, USDC_NAME, USDC_SYMBOL } from "@hifi/constants";
-import type { GodModeHifiPoolRegistry } from "../../src/types/GodModeHifiPoolRegistry";
-import type { GodModeHToken } from "../../src/types/GodModeHToken";
 import type { GodModeErc20 } from "../../src/types/GodModeErc20";
+import type { GodModeHToken } from "../../src/types/GodModeHToken";
 import type { GodModeHifiPool } from "../../src/types/GodModeHifiPool";
-import { getHTokenName, getHifiPoolName, getHTokenSymbol, getHifiPoolSymbol } from "@hifi/helpers";
+import type { GodModeHifiPoolRegistry } from "../../src/types/GodModeHifiPoolRegistry";
 
 export async function deployUsdc(deployer: Signer): Promise<GodModeErc20> {
   const godModeErc20Artifact: Artifact = await artifacts.readArtifact("GodModeErc20");

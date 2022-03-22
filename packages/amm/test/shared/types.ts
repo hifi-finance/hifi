@@ -3,9 +3,9 @@ import type { Fixture } from "ethereum-waffle";
 import type { MockContract } from "ethereum-waffle";
 
 import type { GodModeErc20 } from "../../src/types/GodModeErc20";
+import type { GodModeHToken } from "../../src/types/GodModeHToken";
 import type { GodModeHifiPool } from "../../src/types/GodModeHifiPool";
 import type { GodModeHifiPoolRegistry } from "../../src/types/GodModeHifiPoolRegistry";
-import type { GodModeHToken } from "../../src/types/GodModeHToken";
 import type { YieldSpaceMock } from "../../src/types/YieldSpaceMock";
 
 declare module "mocha" {

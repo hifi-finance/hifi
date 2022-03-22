@@ -1,10 +1,10 @@
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
-import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_HIFI_PROXY_TARGET } from "../constants";
 import { TaskArguments } from "hardhat/types";
 
 import { HifiProxyTarget } from "../../src/types/HifiProxyTarget";
 import { HifiProxyTarget__factory } from "../../src/types/factories/HifiProxyTarget__factory";
+import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_HIFI_PROXY_TARGET } from "../constants";
 
 task(TASK_DEPLOY_CONTRACT_HIFI_PROXY_TARGET)
   .addOptionalParam("confirmations", "How many block confirmations to wait for", 2, types.int)

@@ -9,14 +9,14 @@ import type { Fintroller } from "@hifi/protocol/dist/types/Fintroller";
 import { artifacts, waffle } from "hardhat";
 import type { Artifact } from "hardhat/types";
 
-import { GodModeUniswapV2Pair__factory } from "../../src/types/factories/GodModeUniswapV2Pair__factory";
+import type { FlashUniswapV2 } from "../../src/types/FlashUniswapV2";
 import type { GodModeErc20 } from "../../src/types/GodModeErc20";
 import type { GodModeHToken } from "../../src/types/GodModeHToken";
 import type { GodModeUniswapV2Factory } from "../../src/types/GodModeUniswapV2Factory";
-import type { FlashUniswapV2 } from "../../src/types/FlashUniswapV2";
+import type { GodModeUniswapV2Pair } from "../../src/types/GodModeUniswapV2Pair";
 import type { MaliciousPair } from "../../src/types/MaliciousPair";
 import type { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
-import type { GodModeUniswapV2Pair } from "../../src/types/GodModeUniswapV2Pair";
+import { GodModeUniswapV2Pair__factory } from "../../src/types/factories/GodModeUniswapV2Pair__factory";
 import { deployGodModeErc20 } from "./deployers";
 
 type IntegrationFixtureReturnType = {

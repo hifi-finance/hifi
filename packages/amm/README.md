@@ -47,8 +47,8 @@ contract YourContract {
 ### JavaScript
 
 ```javascript
-import { parseUnits } from "@ethersproject/units";
 import { getDefaultProvider } from "@ethersproject/providers";
+import { parseUnits } from "@ethersproject/units";
 import { HifiPool__factory } from "@hifi/amm/dist/types/factories/HifiPool__factory";
 
 async function getQuote() {

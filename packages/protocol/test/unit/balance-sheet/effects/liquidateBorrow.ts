@@ -3,9 +3,9 @@ import { Zero } from "@ethersproject/constants";
 import { COLLATERAL_RATIOS, LIQUIDATION_INCENTIVES, WBTC_SYMBOL } from "@hifi/constants";
 import { BalanceSheetErrors } from "@hifi/errors";
 import { WBTC, hUSDC } from "@hifi/helpers";
+import { mul } from "@prb/math";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
-import { mul } from "@prb/math";
 
 import { getSeizableCollateralAmount } from "../../../shared/mirrors";
 

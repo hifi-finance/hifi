@@ -2,10 +2,10 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
 import { USDC_PRICE_PRECISION_SCALAR } from "@hifi/constants";
 import { USDC } from "@hifi/helpers";
+import { MAX_UD60x18 } from "@prb/math";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
 import forEach from "mocha-each";
-import { MAX_UD60x18 } from "@prb/math";
 
 export function shouldBehaveLikeGetNormalizedUnderlyingReserves(): void {
   context("when there is no underlying in the pool", function () {

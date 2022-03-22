@@ -2,9 +2,10 @@ import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
 import type { TaskArguments } from "hardhat/types";
 
-import { StablecoinPriceFeed__factory } from "../../src/types/factories/StablecoinPriceFeed__factory";
 import type { StablecoinPriceFeed } from "../../src/types/StablecoinPriceFeed";
+import { StablecoinPriceFeed__factory } from "../../src/types/factories/StablecoinPriceFeed__factory";
 import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_STABLECOIN_PRICE_FEED } from "../constants";
+
 task(TASK_DEPLOY_CONTRACT_STABLECOIN_PRICE_FEED)
   // Contract arguments
   .addParam("price", "Immutable price of the stablecoin, with 8 decimals of precision")
