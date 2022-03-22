@@ -184,22 +184,6 @@ interface IHifiProxyTarget {
         uint256 maxUnderlyingAmount
     ) external;
 
-    /// @notice Buys hTokens with underlying and repays the borrow.
-    ///
-    /// @dev Requirements:
-    /// - The caller must have allowed the DSProxy to spend `maxUnderlyingIn` tokens.
-    ///
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param maxUnderlyingIn The maximum amount of underlying that the user is willing to pay.
-    /// @param hTokenOut The exact amount of hTokens to buy and the amount to repay and the maximum amount to repay.
-    function buyHTokenAndRepayBorrow(
-        IHifiPool hifiPool,
-        IBalanceSheetV2 balanceSheet,
-        uint256 maxUnderlyingIn,
-        uint256 hTokenOut
-    ) external;
-
     /// @notice Buys hTokens and adds liquidity to the AMM using EIP-2612 signatures.
     ///
     /// Requirements:
@@ -217,6 +201,22 @@ interface IHifiProxyTarget {
         uint256 maxUnderlyingAmount,
         uint256 deadline,
         bytes memory signatureUnderlying
+    ) external;
+
+    /// @notice Buys hTokens with underlying and repays the borrow.
+    ///
+    /// @dev Requirements:
+    /// - The caller must have allowed the DSProxy to spend `maxUnderlyingIn` tokens.
+    ///
+    /// @param hifiPool The address of the HifiPool contract.
+    /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param maxUnderlyingIn The maximum amount of underlying that the user is willing to pay.
+    /// @param hTokenOut The exact amount of hTokens to buy and the amount to repay and the maximum amount to repay.
+    function buyHTokenAndRepayBorrow(
+        IHifiPool hifiPool,
+        IBalanceSheetV2 balanceSheet,
+        uint256 maxUnderlyingIn,
+        uint256 hTokenOut
     ) external;
 
     /// @notice Buys hTokens with underlying and repays the borrow.
@@ -286,6 +286,24 @@ interface IHifiProxyTarget {
         uint256 underlyingOffered
     ) external;
 
+    /// @notice Buys underlying and adds liquidity to the AMM.
+    ///
+    /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend
+    /// `maxHTokenAmount` tokens for the given `deadline` and the caller's current nonce.
+    ///
+    /// @param hifiPool The address of the HifiPool contract.
+    /// @param maxHTokenAmount maxHTokenAmount The maximum amount of hTokens that the user is willing to invest.
+    /// @param underlyingOffered The amount of underlying to invest.
+    /// @param deadline The deadline beyond which the signature is not valid anymore.
+    /// @param signatureHToken The packed signature for the hToken.
+    function buyUnderlyingAndAddLiquidityWithSignature(
+        IHifiPool hifiPool,
+        uint256 maxHTokenAmount,
+        uint256 underlyingOffered,
+        uint256 deadline,
+        bytes memory signatureHToken
+    ) external;
+
     /// @notice Buys underlying with hTokens using EIP-2612 signatures.
     ///
     /// Requirements:
@@ -301,24 +319,6 @@ interface IHifiProxyTarget {
         IHifiPool hifiPool,
         uint256 underlyingOut,
         uint256 maxHTokenIn,
-        uint256 deadline,
-        bytes memory signatureHToken
-    ) external;
-
-    /// @notice Buys underlying and adds liquidity to the AMM.
-    ///
-    /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend
-    /// `maxHTokenAmount` tokens for the given `deadline` and the caller's current nonce.
-    ///
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param maxHTokenAmount maxHTokenAmount The maximum amount of hTokens that the user is willing to invest.
-    /// @param underlyingOffered The amount of underlying to invest.
-    /// @param deadline The deadline beyond which the signature is not valid anymore.
-    /// @param signatureHToken The packed signature for the hToken.
-    function buyUnderlyingAndAddLiquidityWithSignature(
-        IHifiPool hifiPool,
-        uint256 maxHTokenAmount,
-        uint256 underlyingOffered,
         uint256 deadline,
         bytes memory signatureHToken
     ) external;
@@ -375,106 +375,6 @@ interface IHifiProxyTarget {
         uint256 underlyingOffered
     ) external;
 
-    /// @notice Deposits collateral into the vault, borrows hTokens and sells them.
-    ///
-    /// Requirements:
-    /// - The caller must have allowed the DSProxy to spend `collateralAmount` tokens.
-    ///
-    /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param collateral The address of the collateral contract.
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param depositAmount The amount of collateral to deposit.
-    /// @param borrowAmount The exact amount of hTokens to borrow.
-    /// @param minUnderlyingOut The minimum amount of underlying that the user is willing to accept.
-    function depositCollateralAndBorrowHTokenAndSellHToken(
-        IBalanceSheetV2 balanceSheet,
-        IErc20 collateral,
-        IHifiPool hifiPool,
-        uint256 depositAmount,
-        uint256 borrowAmount,
-        uint256 minUnderlyingOut
-    ) external;
-
-    /// @notice Deposits the underlying in the HToken contract to mint hTokens.
-    ///
-    /// @dev Requirements:
-    /// - The caller must have allowed the DSProxy to spend `underlyingAmount` tokens.
-    ///
-    /// @param hToken The address of the HToken contract.
-    /// @param underlyingAmount The amount of underlying to deposit.
-    function depositUnderlying(IHToken hToken, uint256 underlyingAmount) external;
-
-    /// @notice Deposits underlying in the HToken contract to mint hTokens, borrows hTokens and adds liquidity
-    /// to the AMM.
-    ///
-    /// Requirements:
-    /// - The caller must have allowed the DSProxy to spend `depositAmount + underlyingOffered` tokens.
-    ///
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param depositAmount The amount of underlying to deposit as collateral.
-    /// @param underlyingOffered The amount of underlying to invest.
-    function depositUnderlyingAndBorrowHTokenAndAddLiquidity(
-        IHifiPool hifiPool,
-        uint256 depositAmount,
-        uint256 underlyingOffered
-    ) external;
-
-    /// @notice Deposits underlying in the HToken contract to mint hTokens, and repays the borrow.
-    ///
-    /// @dev Requirements:
-    /// - The caller must have allowed the DSProxy to spend `underlyingAmount` tokens.
-    ///
-    /// @param hToken The address of the HToken contract.
-    /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param underlyingAmount The amount of underlying to deposit.
-    function depositUnderlyingAndRepayBorrow(
-        IHToken hToken,
-        IBalanceSheetV2 balanceSheet,
-        uint256 underlyingAmount
-    ) external;
-
-    /// @notice Deposits collateral into the vault using EIP-2612 signatures.
-    ///
-    /// @dev Requirements:
-    /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend
-    /// `depositAmount` tokens for the given `deadline` and the caller's current nonce.
-    ///
-    /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param collateral The address of the collateral contract.
-    /// @param depositAmount The amount of collateral to deposit.
-    /// @param deadline The deadline beyond which the signature is not valid anymore.
-    /// @param signatureCollateral The packed signature for the collateral.
-    function depositCollateralWithSignature(
-        IBalanceSheetV2 balanceSheet,
-        IErc20Permit collateral,
-        uint256 depositAmount,
-        uint256 deadline,
-        bytes memory signatureCollateral
-    ) external;
-
-    /// @notice Deposits collateral into the vault and borrows hTokens using EIP-2612 signatures.
-    ///
-    /// Requirements:
-    /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend
-    /// `depositAmount` `collateral` tokens for the given `deadline` and the caller's current nonce.
-    ///
-    /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param collateral The address of the collateral contract.
-    /// @param hToken The address of the HToken contract.
-    /// @param depositAmount The amount of collateral to deposit.
-    /// @param borrowAmount The amount of hTokens to borrow.
-    /// @param deadline The deadline beyond which the signature is not valid anymore.
-    /// @param signatureCollateral The packed signature for the collateral.
-    function depositCollateralAndBorrowHTokenWithSignature(
-        IBalanceSheetV2 balanceSheet,
-        IErc20Permit collateral,
-        IHToken hToken,
-        uint256 depositAmount,
-        uint256 borrowAmount,
-        uint256 deadline,
-        bytes memory signatureCollateral
-    ) external;
-
     /// @notice Deposits collateral into the vault, borrows hTokens and adds liquidity to the AMM using EIP-2612
     /// signatures.
     ///
@@ -506,6 +406,26 @@ interface IHifiProxyTarget {
     /// @notice Deposits collateral into the vault, borrows hTokens and sells them.
     ///
     /// Requirements:
+    /// - The caller must have allowed the DSProxy to spend `collateralAmount` tokens.
+    ///
+    /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param collateral The address of the collateral contract.
+    /// @param hifiPool The address of the HifiPool contract.
+    /// @param depositAmount The amount of collateral to deposit.
+    /// @param borrowAmount The exact amount of hTokens to borrow.
+    /// @param minUnderlyingOut The minimum amount of underlying that the user is willing to accept.
+    function depositCollateralAndBorrowHTokenAndSellHToken(
+        IBalanceSheetV2 balanceSheet,
+        IErc20 collateral,
+        IHifiPool hifiPool,
+        uint256 depositAmount,
+        uint256 borrowAmount,
+        uint256 minUnderlyingOut
+    ) external;
+
+    /// @notice Deposits collateral into the vault, borrows hTokens and sells them.
+    ///
+    /// Requirements:
     /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend `collateralAmount`
     /// and `underlyingAmount` for the given `deadline` and the caller's current nonce.
     ///
@@ -528,21 +448,70 @@ interface IHifiProxyTarget {
         bytes memory signatureCollateral
     ) external;
 
-    /// @notice Supplies the underlying to mint hTokens using EIP-2612 signatures.
+    /// @notice Deposits collateral into the vault and borrows hTokens using EIP-2612 signatures.
+    ///
+    /// Requirements:
+    /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend
+    /// `depositAmount` `collateral` tokens for the given `deadline` and the caller's current nonce.
+    ///
+    /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param collateral The address of the collateral contract.
+    /// @param hToken The address of the HToken contract.
+    /// @param depositAmount The amount of collateral to deposit.
+    /// @param borrowAmount The amount of hTokens to borrow.
+    /// @param deadline The deadline beyond which the signature is not valid anymore.
+    /// @param signatureCollateral The packed signature for the collateral.
+    function depositCollateralAndBorrowHTokenWithSignature(
+        IBalanceSheetV2 balanceSheet,
+        IErc20Permit collateral,
+        IHToken hToken,
+        uint256 depositAmount,
+        uint256 borrowAmount,
+        uint256 deadline,
+        bytes memory signatureCollateral
+    ) external;
+
+    /// @notice Deposits collateral into the vault using EIP-2612 signatures.
     ///
     /// @dev Requirements:
-    /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend `underlyingAmount`
-    ///   for the given `deadline` and the caller's current nonce.
+    /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend
+    /// `depositAmount` tokens for the given `deadline` and the caller's current nonce.
+    ///
+    /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param collateral The address of the collateral contract.
+    /// @param depositAmount The amount of collateral to deposit.
+    /// @param deadline The deadline beyond which the signature is not valid anymore.
+    /// @param signatureCollateral The packed signature for the collateral.
+    function depositCollateralWithSignature(
+        IBalanceSheetV2 balanceSheet,
+        IErc20Permit collateral,
+        uint256 depositAmount,
+        uint256 deadline,
+        bytes memory signatureCollateral
+    ) external;
+
+    /// @notice Deposits the underlying in the HToken contract to mint hTokens.
+    ///
+    /// @dev Requirements:
+    /// - The caller must have allowed the DSProxy to spend `underlyingAmount` tokens.
     ///
     /// @param hToken The address of the HToken contract.
-    /// @param underlyingAmount The amount of underlying to supply.
-    /// @param deadline The deadline beyond which the signature is not valid anymore.
-    /// @param signatureUnderlying The packed signature for the underlying.
-    function depositUnderlyingWithSignature(
-        IHToken hToken,
-        uint256 underlyingAmount,
-        uint256 deadline,
-        bytes memory signatureUnderlying
+    /// @param underlyingAmount The amount of underlying to deposit.
+    function depositUnderlying(IHToken hToken, uint256 underlyingAmount) external;
+
+    /// @notice Deposits underlying in the HToken contract to mint hTokens, borrows hTokens and adds liquidity
+    /// to the AMM.
+    ///
+    /// Requirements:
+    /// - The caller must have allowed the DSProxy to spend `depositAmount + underlyingOffered` tokens.
+    ///
+    /// @param hifiPool The address of the HifiPool contract.
+    /// @param depositAmount The amount of underlying to deposit as collateral.
+    /// @param underlyingOffered The amount of underlying to invest.
+    function depositUnderlyingAndBorrowHTokenAndAddLiquidity(
+        IHifiPool hifiPool,
+        uint256 depositAmount,
+        uint256 underlyingOffered
     ) external;
 
     /// @notice Deposits underlying as collateral into the vault, borrows hTokens and adds liquidity to the AMM using
@@ -565,6 +534,20 @@ interface IHifiProxyTarget {
         bytes memory signatureUnderlying
     ) external;
 
+    /// @notice Deposits underlying in the HToken contract to mint hTokens, and repays the borrow.
+    ///
+    /// @dev Requirements:
+    /// - The caller must have allowed the DSProxy to spend `underlyingAmount` tokens.
+    ///
+    /// @param hToken The address of the HToken contract.
+    /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param underlyingAmount The amount of underlying to deposit.
+    function depositUnderlyingAndRepayBorrow(
+        IHToken hToken,
+        IBalanceSheetV2 balanceSheet,
+        uint256 underlyingAmount
+    ) external;
+
     /// @notice Supplies underlying to mint hTokens and repay the hToken borrow using EIP-2612 signatures.
     ///
     /// @dev Requirements:
@@ -579,6 +562,23 @@ interface IHifiProxyTarget {
     function depositUnderlyingAndRepayBorrowWithSignature(
         IHToken hToken,
         IBalanceSheetV2 balanceSheet,
+        uint256 underlyingAmount,
+        uint256 deadline,
+        bytes memory signatureUnderlying
+    ) external;
+
+    /// @notice Supplies the underlying to mint hTokens using EIP-2612 signatures.
+    ///
+    /// @dev Requirements:
+    /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend `underlyingAmount`
+    ///   for the given `deadline` and the caller's current nonce.
+    ///
+    /// @param hToken The address of the HToken contract.
+    /// @param underlyingAmount The amount of underlying to supply.
+    /// @param deadline The deadline beyond which the signature is not valid anymore.
+    /// @param signatureUnderlying The packed signature for the underlying.
+    function depositUnderlyingWithSignature(
+        IHToken hToken,
         uint256 underlyingAmount,
         uint256 deadline,
         bytes memory signatureUnderlying
@@ -636,6 +636,23 @@ interface IHifiProxyTarget {
     /// @param poolTokensBurned The amount of LP tokens to burn.
     function removeLiquidityAndRedeem(IHifiPool hifiPool, uint256 poolTokensBurned) external;
 
+    /// @notice Removes liquidity from the AMM, and redeems all hTokens for the underlying using EIP-2612 signatures.
+    ///
+    /// @dev Requirements:
+    /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend `poolTokensBurned`
+    ///  for the given `deadline` and the caller's current nonce.
+    ///
+    /// @param hifiPool The address of the HifiPool contract.
+    /// @param poolTokensBurned The amount of LP tokens to burn.
+    /// @param deadline The deadline beyond which the signature is not valid anymore.
+    /// @param signatureLPToken The packed signature for LP tokens.
+    function removeLiquidityAndRedeemWithSignature(
+        IHifiPool hifiPool,
+        uint256 poolTokensBurned,
+        uint256 deadline,
+        bytes memory signatureLPToken
+    ) external;
+
     /// @notice Removes liquidity from the AMM, repays the borrow and withdraws collateral.
     ///
     /// @dev Requirements:
@@ -654,54 +671,6 @@ interface IHifiProxyTarget {
         uint256 poolTokensBurned,
         uint256 repayAmount,
         uint256 withdrawAmount
-    ) external;
-
-    /// @notice Removes liquidity from the AMM, and sells all hTokens for the underlying.
-    ///
-    /// @dev Requirements:
-    /// - The caller must have allowed the DSProxy to spend `poolTokensBurned` tokens.
-    ///
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param poolTokensBurned The amount of LP tokens to burn.
-    /// @param minUnderlyingOut The minimum amount of underlying that the user is willing to accept.
-    function removeLiquidityAndSellHToken(
-        IHifiPool hifiPool,
-        uint256 poolTokensBurned,
-        uint256 minUnderlyingOut
-    ) external;
-
-    /// @notice Removes liquidity from the AMM using EIP-2612 signatures.
-    ///
-    /// @dev Requirements:
-    /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend `poolTokensBurned`
-    ///  for the given `deadline` and the caller's current nonce.
-    ///
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param poolTokensBurned The amount of LP tokens to burn.
-    /// @param deadline The deadline beyond which the signature is not valid anymore.
-    /// @param signatureLPToken The packed signature for LP tokens.
-    function removeLiquidityWithSignature(
-        IHifiPool hifiPool,
-        uint256 poolTokensBurned,
-        uint256 deadline,
-        bytes memory signatureLPToken
-    ) external;
-
-    /// @notice Removes liquidity from the AMM, and redeems all hTokens for the underlying using EIP-2612 signatures.
-    ///
-    /// @dev Requirements:
-    /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend `poolTokensBurned`
-    ///  for the given `deadline` and the caller's current nonce.
-    ///
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param poolTokensBurned The amount of LP tokens to burn.
-    /// @param deadline The deadline beyond which the signature is not valid anymore.
-    /// @param signatureLPToken The packed signature for LP tokens.
-    function removeLiquidityAndRedeemWithSignature(
-        IHifiPool hifiPool,
-        uint256 poolTokensBurned,
-        uint256 deadline,
-        bytes memory signatureLPToken
     ) external;
 
     /// @notice Removes liquidity from the AMM, repays the borrow and withdraws collateral using EIP-2612 signatures.
@@ -729,6 +698,20 @@ interface IHifiProxyTarget {
         bytes memory signatureLPToken
     ) external;
 
+    /// @notice Removes liquidity from the AMM, and sells all hTokens for the underlying.
+    ///
+    /// @dev Requirements:
+    /// - The caller must have allowed the DSProxy to spend `poolTokensBurned` tokens.
+    ///
+    /// @param hifiPool The address of the HifiPool contract.
+    /// @param poolTokensBurned The amount of LP tokens to burn.
+    /// @param minUnderlyingOut The minimum amount of underlying that the user is willing to accept.
+    function removeLiquidityAndSellHToken(
+        IHifiPool hifiPool,
+        uint256 poolTokensBurned,
+        uint256 minUnderlyingOut
+    ) external;
+
     /// @notice Removes liquidity from the AMM, and sells all hTokens for underlying using EIP-2612 signatures.
     ///
     /// @dev Requirements:
@@ -744,6 +727,23 @@ interface IHifiProxyTarget {
         IHifiPool hifiPool,
         uint256 poolTokensBurned,
         uint256 minUnderlyingOut,
+        uint256 deadline,
+        bytes memory signatureLPToken
+    ) external;
+
+    /// @notice Removes liquidity from the AMM using EIP-2612 signatures.
+    ///
+    /// @dev Requirements:
+    /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend `poolTokensBurned`
+    ///  for the given `deadline` and the caller's current nonce.
+    ///
+    /// @param hifiPool The address of the HifiPool contract.
+    /// @param poolTokensBurned The amount of LP tokens to burn.
+    /// @param deadline The deadline beyond which the signature is not valid anymore.
+    /// @param signatureLPToken The packed signature for LP tokens.
+    function removeLiquidityWithSignature(
+        IHifiPool hifiPool,
+        uint256 poolTokensBurned,
         uint256 deadline,
         bytes memory signatureLPToken
     ) external;
@@ -845,25 +845,6 @@ interface IHifiProxyTarget {
         uint256 minHTokenOut
     ) external;
 
-    /// @notice Sells underlying for hTokens using EIP-2612 signatures.
-    ///
-    /// Requirements:
-    /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend `underlyingIn`
-    ///   for the given `deadline` and the caller's current nonce.
-    ///
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param underlyingIn The exact amount of underlying that the user wants to sell.
-    /// @param minHTokenOut The minimum amount of hTokens that the user is willing to accept.
-    /// @param deadline The deadline beyond which the signature is not valid anymore.
-    /// @param signatureUnderlying The packed signature for the underlying.
-    function sellUnderlyingWithSignature(
-        IHifiPool hifiPool,
-        uint256 underlyingIn,
-        uint256 minHTokenOut,
-        uint256 deadline,
-        bytes memory signatureUnderlying
-    ) external;
-
     /// @notice Sells underlying for hTokens, then uses them to repay the hToken borrow using EIP-2612 signatures.
     ///
     /// @dev Requirements:
@@ -880,6 +861,25 @@ interface IHifiProxyTarget {
     function sellUnderlyingAndRepayBorrowWithSignature(
         IHifiPool hifiPool,
         IBalanceSheetV2 balanceSheet,
+        uint256 underlyingIn,
+        uint256 minHTokenOut,
+        uint256 deadline,
+        bytes memory signatureUnderlying
+    ) external;
+
+    /// @notice Sells underlying for hTokens using EIP-2612 signatures.
+    ///
+    /// Requirements:
+    /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend `underlyingIn`
+    ///   for the given `deadline` and the caller's current nonce.
+    ///
+    /// @param hifiPool The address of the HifiPool contract.
+    /// @param underlyingIn The exact amount of underlying that the user wants to sell.
+    /// @param minHTokenOut The minimum amount of hTokens that the user is willing to accept.
+    /// @param deadline The deadline beyond which the signature is not valid anymore.
+    /// @param signatureUnderlying The packed signature for the underlying.
+    function sellUnderlyingWithSignature(
+        IHifiPool hifiPool,
         uint256 underlyingIn,
         uint256 minHTokenOut,
         uint256 deadline,

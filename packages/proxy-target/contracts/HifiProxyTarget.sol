@@ -290,18 +290,6 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function buyHTokenWithSignature(
-        IHifiPool hifiPool,
-        uint256 hTokenOut,
-        uint256 maxUnderlyingIn,
-        uint256 deadline,
-        bytes memory signatureUnderlying
-    ) public override {
-        permitInternal(IErc20Permit(address(hifiPool.underlying())), maxUnderlyingIn, deadline, signatureUnderlying);
-        buyHToken(hifiPool, hTokenOut, maxUnderlyingIn);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
     function buyHTokenAndAddLiquidityWithSignature(
         IHifiPool hifiPool,
         uint256 hTokenOut,
@@ -329,6 +317,18 @@ contract HifiProxyTarget is IHifiProxyTarget {
     ) external override {
         permitInternal(IErc20Permit(address(hifiPool.underlying())), maxUnderlyingIn, deadline, signatureUnderlying);
         buyHTokenAndRepayBorrow(hifiPool, balanceSheet, maxUnderlyingIn, hTokenOut);
+    }
+
+    /// @inheritdoc IHifiProxyTarget
+    function buyHTokenWithSignature(
+        IHifiPool hifiPool,
+        uint256 hTokenOut,
+        uint256 maxUnderlyingIn,
+        uint256 deadline,
+        bytes memory signatureUnderlying
+    ) public override {
+        permitInternal(IErc20Permit(address(hifiPool.underlying())), maxUnderlyingIn, deadline, signatureUnderlying);
+        buyHToken(hifiPool, hTokenOut, maxUnderlyingIn);
     }
 
     /// @inheritdoc IHifiProxyTarget
@@ -460,6 +460,30 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
+    function depositCollateralAndBorrowHTokenAndAddLiquidityWithSignature(
+        IBalanceSheetV2 balanceSheet,
+        IErc20Permit collateral,
+        IHifiPool hifiPool,
+        uint256 depositAmount,
+        uint256 maxBorrowAmount,
+        uint256 underlyingOffered,
+        uint256 deadline,
+        bytes memory signatureCollateral,
+        bytes memory signatureUnderlying
+    ) external override {
+        permitInternal(collateral, depositAmount, deadline, signatureCollateral);
+        permitInternal(IErc20Permit(address(hifiPool.underlying())), underlyingOffered, deadline, signatureUnderlying);
+        depositCollateralAndBorrowHTokenAndAddLiquidity(
+            balanceSheet,
+            collateral,
+            hifiPool,
+            depositAmount,
+            maxBorrowAmount,
+            underlyingOffered
+        );
+    }
+
+    /// @inheritdoc IHifiProxyTarget
     function depositCollateralAndBorrowHTokenAndSellHToken(
         IBalanceSheetV2 balanceSheet,
         IErc20 collateral,
@@ -470,6 +494,54 @@ contract HifiProxyTarget is IHifiProxyTarget {
     ) public override {
         depositCollateral(balanceSheet, collateral, depositAmount);
         borrowHTokenAndSellHToken(balanceSheet, hifiPool, borrowAmount, minUnderlyingOut);
+    }
+
+    /// @inheritdoc IHifiProxyTarget
+    function depositCollateralAndBorrowHTokenAndSellHTokenWithSignature(
+        IBalanceSheetV2 balanceSheet,
+        IErc20Permit collateral,
+        IHifiPool hifiPool,
+        uint256 depositAmount,
+        uint256 borrowAmount,
+        uint256 minUnderlyingOut,
+        uint256 deadline,
+        bytes memory signatureCollateral
+    ) external override {
+        permitInternal(collateral, depositAmount, deadline, signatureCollateral);
+        depositCollateralAndBorrowHTokenAndSellHToken(
+            balanceSheet,
+            collateral,
+            hifiPool,
+            depositAmount,
+            borrowAmount,
+            minUnderlyingOut
+        );
+    }
+
+    /// @inheritdoc IHifiProxyTarget
+    function depositCollateralAndBorrowHTokenWithSignature(
+        IBalanceSheetV2 balanceSheet,
+        IErc20Permit collateral,
+        IHToken hToken,
+        uint256 depositAmount,
+        uint256 borrowAmount,
+        uint256 deadline,
+        bytes memory signatureCollateral
+    ) external override {
+        permitInternal(collateral, depositAmount, deadline, signatureCollateral);
+        depositCollateralAndBorrowHToken(balanceSheet, collateral, hToken, depositAmount, borrowAmount);
+    }
+
+    /// @inheritdoc IHifiProxyTarget
+    function depositCollateralWithSignature(
+        IBalanceSheetV2 balanceSheet,
+        IErc20Permit collateral,
+        uint256 depositAmount,
+        uint256 deadline,
+        bytes memory signatureCollateral
+    ) external override {
+        permitInternal(collateral, depositAmount, deadline, signatureCollateral);
+        depositCollateral(balanceSheet, collateral, depositAmount);
     }
 
     /// @inheritdoc IHifiProxyTarget
@@ -525,108 +597,6 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function depositUnderlyingAndRepayBorrow(
-        IHToken hToken,
-        IBalanceSheetV2 balanceSheet,
-        uint256 underlyingAmount
-    ) public override {
-        uint256 oldHTokenBalance = hToken.balanceOf(address(this));
-        depositUnderlyingInternal(hToken, underlyingAmount);
-
-        unchecked {
-            // Calculate how many hTokens were minted.
-            uint256 newHTokenBalance = hToken.balanceOf(address(this));
-            uint256 hTokenAmount = newHTokenBalance - oldHTokenBalance;
-
-            // Use the newly minted hTokens to repay the debt.
-            balanceSheet.repayBorrow(hToken, hTokenAmount);
-        }
-    }
-
-    /// @inheritdoc IHifiProxyTarget
-    function depositCollateralWithSignature(
-        IBalanceSheetV2 balanceSheet,
-        IErc20Permit collateral,
-        uint256 depositAmount,
-        uint256 deadline,
-        bytes memory signatureCollateral
-    ) external override {
-        permitInternal(collateral, depositAmount, deadline, signatureCollateral);
-        depositCollateral(balanceSheet, collateral, depositAmount);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
-    function depositCollateralAndBorrowHTokenWithSignature(
-        IBalanceSheetV2 balanceSheet,
-        IErc20Permit collateral,
-        IHToken hToken,
-        uint256 depositAmount,
-        uint256 borrowAmount,
-        uint256 deadline,
-        bytes memory signatureCollateral
-    ) external override {
-        permitInternal(collateral, depositAmount, deadline, signatureCollateral);
-        depositCollateralAndBorrowHToken(balanceSheet, collateral, hToken, depositAmount, borrowAmount);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
-    function depositCollateralAndBorrowHTokenAndAddLiquidityWithSignature(
-        IBalanceSheetV2 balanceSheet,
-        IErc20Permit collateral,
-        IHifiPool hifiPool,
-        uint256 depositAmount,
-        uint256 maxBorrowAmount,
-        uint256 underlyingOffered,
-        uint256 deadline,
-        bytes memory signatureCollateral,
-        bytes memory signatureUnderlying
-    ) external override {
-        permitInternal(collateral, depositAmount, deadline, signatureCollateral);
-        permitInternal(IErc20Permit(address(hifiPool.underlying())), underlyingOffered, deadline, signatureUnderlying);
-        depositCollateralAndBorrowHTokenAndAddLiquidity(
-            balanceSheet,
-            collateral,
-            hifiPool,
-            depositAmount,
-            maxBorrowAmount,
-            underlyingOffered
-        );
-    }
-
-    /// @inheritdoc IHifiProxyTarget
-    function depositCollateralAndBorrowHTokenAndSellHTokenWithSignature(
-        IBalanceSheetV2 balanceSheet,
-        IErc20Permit collateral,
-        IHifiPool hifiPool,
-        uint256 depositAmount,
-        uint256 borrowAmount,
-        uint256 minUnderlyingOut,
-        uint256 deadline,
-        bytes memory signatureCollateral
-    ) external override {
-        permitInternal(collateral, depositAmount, deadline, signatureCollateral);
-        depositCollateralAndBorrowHTokenAndSellHToken(
-            balanceSheet,
-            collateral,
-            hifiPool,
-            depositAmount,
-            borrowAmount,
-            minUnderlyingOut
-        );
-    }
-
-    /// @inheritdoc IHifiProxyTarget
-    function depositUnderlyingWithSignature(
-        IHToken hToken,
-        uint256 underlyingAmount,
-        uint256 deadline,
-        bytes memory signatureUnderlying
-    ) external override {
-        permitInternal(IErc20Permit(address(hToken.underlying())), underlyingAmount, deadline, signatureUnderlying);
-        depositUnderlying(hToken, underlyingAmount);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
     function depositUnderlyingAndBorrowHTokenAndAddLiquidityWithSignature(
         IHifiPool hifiPool,
         uint256 depositAmount,
@@ -646,6 +616,25 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
+    function depositUnderlyingAndRepayBorrow(
+        IHToken hToken,
+        IBalanceSheetV2 balanceSheet,
+        uint256 underlyingAmount
+    ) public override {
+        uint256 oldHTokenBalance = hToken.balanceOf(address(this));
+        depositUnderlyingInternal(hToken, underlyingAmount);
+
+        unchecked {
+            // Calculate how many hTokens were minted.
+            uint256 newHTokenBalance = hToken.balanceOf(address(this));
+            uint256 hTokenAmount = newHTokenBalance - oldHTokenBalance;
+
+            // Use the newly minted hTokens to repay the debt.
+            balanceSheet.repayBorrow(hToken, hTokenAmount);
+        }
+    }
+
+    /// @inheritdoc IHifiProxyTarget
     function depositUnderlyingAndRepayBorrowWithSignature(
         IHToken hToken,
         IBalanceSheetV2 balanceSheet,
@@ -655,6 +644,17 @@ contract HifiProxyTarget is IHifiProxyTarget {
     ) external override {
         permitInternal(IErc20Permit(address(hToken.underlying())), underlyingAmount, deadline, signatureUnderlying);
         depositUnderlyingAndRepayBorrow(hToken, balanceSheet, underlyingAmount);
+    }
+
+    /// @inheritdoc IHifiProxyTarget
+    function depositUnderlyingWithSignature(
+        IHToken hToken,
+        uint256 underlyingAmount,
+        uint256 deadline,
+        bytes memory signatureUnderlying
+    ) external override {
+        permitInternal(IErc20Permit(address(hToken.underlying())), underlyingAmount, deadline, signatureUnderlying);
+        depositUnderlying(hToken, underlyingAmount);
     }
 
     /// @inheritdoc IHifiProxyTarget
@@ -759,6 +759,39 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
+    function removeLiquidityAndRepayBorrowAndWithdrawCollateralWithSignature(
+        IHifiPool hifiPool,
+        IBalanceSheetV2 balanceSheet,
+        IErc20 collateral,
+        uint256 poolTokensBurned,
+        uint256 repayAmount,
+        uint256 withdrawAmount,
+        uint256 deadline,
+        bytes memory signatureLPToken
+    ) external override {
+        permitInternal(hifiPool, poolTokensBurned, deadline, signatureLPToken);
+        removeLiquidityAndRepayBorrowAndWithdrawCollateral(
+            hifiPool,
+            balanceSheet,
+            collateral,
+            poolTokensBurned,
+            repayAmount,
+            withdrawAmount
+        );
+    }
+
+    /// @inheritdoc IHifiProxyTarget
+    function removeLiquidityAndRedeemWithSignature(
+        IHifiPool hifiPool,
+        uint256 poolTokensBurned,
+        uint256 deadline,
+        bytes memory signatureLPToken
+    ) external override {
+        permitInternal(hifiPool, poolTokensBurned, deadline, signatureLPToken);
+        removeLiquidityAndRedeem(hifiPool, poolTokensBurned);
+    }
+
+    /// @inheritdoc IHifiProxyTarget
     function removeLiquidityAndSellHToken(
         IHifiPool hifiPool,
         uint256 poolTokensBurned,
@@ -787,50 +820,6 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function removeLiquidityWithSignature(
-        IHifiPool hifiPool,
-        uint256 poolTokensBurned,
-        uint256 deadline,
-        bytes memory signatureLPToken
-    ) external override {
-        permitInternal(hifiPool, poolTokensBurned, deadline, signatureLPToken);
-        removeLiquidity(hifiPool, poolTokensBurned);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
-    function removeLiquidityAndRedeemWithSignature(
-        IHifiPool hifiPool,
-        uint256 poolTokensBurned,
-        uint256 deadline,
-        bytes memory signatureLPToken
-    ) external override {
-        permitInternal(hifiPool, poolTokensBurned, deadline, signatureLPToken);
-        removeLiquidityAndRedeem(hifiPool, poolTokensBurned);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
-    function removeLiquidityAndRepayBorrowAndWithdrawCollateralWithSignature(
-        IHifiPool hifiPool,
-        IBalanceSheetV2 balanceSheet,
-        IErc20 collateral,
-        uint256 poolTokensBurned,
-        uint256 repayAmount,
-        uint256 withdrawAmount,
-        uint256 deadline,
-        bytes memory signatureLPToken
-    ) external override {
-        permitInternal(hifiPool, poolTokensBurned, deadline, signatureLPToken);
-        removeLiquidityAndRepayBorrowAndWithdrawCollateral(
-            hifiPool,
-            balanceSheet,
-            collateral,
-            poolTokensBurned,
-            repayAmount,
-            withdrawAmount
-        );
-    }
-
-    /// @inheritdoc IHifiProxyTarget
     function removeLiquidityAndSellHTokenWithSignature(
         IHifiPool hifiPool,
         uint256 poolTokensBurned,
@@ -840,6 +829,17 @@ contract HifiProxyTarget is IHifiProxyTarget {
     ) external override {
         permitInternal(hifiPool, poolTokensBurned, deadline, signatureLPToken);
         removeLiquidityAndSellHToken(hifiPool, poolTokensBurned, minUnderlyingOut);
+    }
+
+    /// @inheritdoc IHifiProxyTarget
+    function removeLiquidityWithSignature(
+        IHifiPool hifiPool,
+        uint256 poolTokensBurned,
+        uint256 deadline,
+        bytes memory signatureLPToken
+    ) external override {
+        permitInternal(hifiPool, poolTokensBurned, deadline, signatureLPToken);
+        removeLiquidity(hifiPool, poolTokensBurned);
     }
 
     /// @inheritdoc IHifiProxyTarget
@@ -969,18 +969,6 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function sellUnderlyingWithSignature(
-        IHifiPool hifiPool,
-        uint256 underlyingIn,
-        uint256 minHTokenOut,
-        uint256 deadline,
-        bytes memory signatureUnderlying
-    ) external override {
-        permitInternal(IErc20Permit(address(hifiPool.underlying())), underlyingIn, deadline, signatureUnderlying);
-        sellUnderlying(hifiPool, underlyingIn, minHTokenOut);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
     function sellUnderlyingAndRepayBorrowWithSignature(
         IHifiPool hifiPool,
         IBalanceSheetV2 balanceSheet,
@@ -991,6 +979,18 @@ contract HifiProxyTarget is IHifiProxyTarget {
     ) external override {
         permitInternal(IErc20Permit(address(hifiPool.underlying())), underlyingIn, deadline, signatureUnderlying);
         sellUnderlyingAndRepayBorrow(hifiPool, balanceSheet, underlyingIn, minHTokenOut);
+    }
+
+    /// @inheritdoc IHifiProxyTarget
+    function sellUnderlyingWithSignature(
+        IHifiPool hifiPool,
+        uint256 underlyingIn,
+        uint256 minHTokenOut,
+        uint256 deadline,
+        bytes memory signatureUnderlying
+    ) external override {
+        permitInternal(IErc20Permit(address(hifiPool.underlying())), underlyingIn, deadline, signatureUnderlying);
+        sellUnderlying(hifiPool, underlyingIn, minHTokenOut);
     }
 
     /// @inheritdoc IHifiProxyTarget
