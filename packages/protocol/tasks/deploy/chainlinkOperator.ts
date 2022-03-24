@@ -9,7 +9,7 @@ import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_CHAINLINK_O
 task(TASK_DEPLOY_CONTRACT_CHAINLINK_OPERATOR)
   .addOptionalParam("confirmations", "How many block confirmations to wait for", 2, types.int)
   .addOptionalParam("print", "Print the address in the console", true, types.boolean)
-  .addOptionalParam("verify", "Verify the contract on Etherscan", false, types.boolean)
+  .addOptionalParam("verify", "Verify the contract on Etherscan", true, types.boolean)
   .setAction(async function (taskArgs: TaskArguments, { ethers, run }): Promise<string> {
     const signers: SignerWithAddress[] = await ethers.getSigners();
     const chainlinkOperatorFactory: ChainlinkOperator__factory = new ChainlinkOperator__factory(signers[0]);

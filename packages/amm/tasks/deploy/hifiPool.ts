@@ -17,7 +17,7 @@ task(TASK_DEPLOY_CONTRACT_HIFI_POOL)
   // Developer settings
   .addOptionalParam("confirmations", "How many block confirmations to wait for", 2, types.int)
   .addOptionalParam("print", "Print the address in the console", true, types.boolean)
-  .addOptionalParam("verify", "Verify the contract on Etherscan", false, types.boolean)
+  .addOptionalParam("verify", "Verify the contract on Etherscan", true, types.boolean)
   .setAction(async function (taskArgs: TaskArguments, { ethers, run }): Promise<string> {
     const signers: SignerWithAddress[] = await ethers.getSigners();
     const hifiPoolFactory: HifiPool__factory = new HifiPool__factory(signers[0]);

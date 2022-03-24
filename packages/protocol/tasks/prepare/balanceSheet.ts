@@ -10,7 +10,7 @@ task(TASK_PREPARE_UPGRADE_BALANCE_SHEET)
   // Developer settings
   .addOptionalParam("confirmations", "How many block confirmations to wait for", 2, types.int)
   .addOptionalParam("print", "Print the address in the console", true, types.boolean)
-  .addOptionalParam("verify", "Verify the contract on Etherscan", false, types.boolean)
+  .addOptionalParam("verify", "Verify the contract on Etherscan", true, types.boolean)
   .setAction(async function (taskArgs: TaskArguments, { ethers, run, upgrades }) {
     const balanceSheetV2Factory: BalanceSheetV2__factory = <BalanceSheetV2__factory>(
       await ethers.getContractFactory("BalanceSheetV2")
