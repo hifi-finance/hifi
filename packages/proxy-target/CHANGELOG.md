@@ -8,8 +8,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ### Changed
 
-### Changed
-
 - Refactor the directory trees in the generated types.
 - Refactor the ethers factories as per the latest typechain output.
 - Upgrade to the latest ethers packages.
