@@ -1,5 +1,6 @@
 # types
 src/types/*
+!src/types/common.ts
 !src/types/contracts
 src/types/contracts/*
 !src/types/contracts/core
@@ -35,7 +36,6 @@ src/types/contracts/oracles/*
 # factories
 !src/types/factories
 src/types/factories/*
-
 !src/types/factories/contracts
 src/types/factories/contracts/*
 
