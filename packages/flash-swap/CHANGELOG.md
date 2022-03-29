@@ -2,7 +2,21 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic
+Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.10.0] - 2022-03-29
+
+### Changed
+
+- Refactor the directory trees in the generated types.
+- Refactor the ethers factories as per the latest typechain output.
+- Upgrade to the latest ethers packages.
+- Upgrade to `@hifi/protocol` v1.10.0.
+
+### Removed
+
+- Remove types for `Erc20`.
 
 ## [1.9.0] - 2022-03-16
 
@@ -166,6 +180,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - First release of the package.
 
+[1.10.0]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.9.0...@hifi/flash-swap@1.10.0
 [1.9.0]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.8.0...@hifi/flash-swap@1.9.0
 [1.8.0]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.7.0...@hifi/flash-swap@1.8.0
 [1.7.0]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.6.1...@hifi/flash-swap@1.7.0

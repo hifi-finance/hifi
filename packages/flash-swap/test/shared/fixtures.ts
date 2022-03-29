@@ -3,9 +3,9 @@ import { keccak256 } from "@ethersproject/keccak256";
 import { H_TOKEN_MATURITY_ONE_YEAR } from "@hifi/constants";
 import { USDC_DECIMALS, USDC_NAME, USDC_SYMBOL, WBTC_DECIMALS, WBTC_NAME, WBTC_SYMBOL } from "@hifi/constants";
 import { getHTokenName, getHTokenSymbol } from "@hifi/helpers";
-import type { BalanceSheetV2 } from "@hifi/protocol/dist/types/BalanceSheetV2";
-import type { ChainlinkOperator } from "@hifi/protocol/dist/types/ChainlinkOperator";
-import type { Fintroller } from "@hifi/protocol/dist/types/Fintroller";
+import type { BalanceSheetV2 } from "@hifi/protocol/dist/types/contracts/core/balance-sheet/BalanceSheetV2";
+import type { Fintroller } from "@hifi/protocol/dist/types/contracts/core/fintroller/Fintroller";
+import type { ChainlinkOperator } from "@hifi/protocol/dist/types/contracts/oracles/ChainlinkOperator";
 import { artifacts, waffle } from "hardhat";
 import type { Artifact } from "hardhat/types";
 

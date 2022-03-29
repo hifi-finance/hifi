@@ -45,15 +45,7 @@ const config: HardhatUserConfig = {
     ropsten: getChainConfig("ropsten", infuraApiKey, mnemonic),
   },
   packager: {
-    contracts: [
-      "Erc20",
-      "FlashUniswapV2",
-      "IErc20",
-      "IFlashUniswapV2",
-      "IUniswapV2Callee",
-      "IUniswapV2Pair",
-      "UniswapV2Pair",
-    ],
+    contracts: ["FlashUniswapV2", "IFlashUniswapV2", "IUniswapV2Callee", "IUniswapV2Pair", "UniswapV2Pair"],
     includeFactories: true,
   },
   paths: {
