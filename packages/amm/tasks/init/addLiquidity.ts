@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { MaxUint256 } from "@ethersproject/constants";
-import type { HToken } from "@hifi/protocol/dist/types/HToken";
-import { HToken__factory } from "@hifi/protocol/dist/types/factories/HToken__factory";
+import type { HToken } from "@hifi/protocol/dist/types/contracts/core/h-token/HToken";
+import { HToken__factory } from "@hifi/protocol/dist/types/factories/contracts/core/h-token/HToken__factory";
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
 import type { TaskArguments } from "hardhat/types";
