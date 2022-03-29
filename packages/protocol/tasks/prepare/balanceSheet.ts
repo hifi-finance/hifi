@@ -1,7 +1,7 @@
 import { task, types } from "hardhat/config";
 import type { TaskArguments } from "hardhat/types";
 
-import { BalanceSheetV2__factory } from "../../src/types/factories/BalanceSheetV2__factory";
+import { BalanceSheetV2__factory } from "../../src/types/factories/contracts/core/balance-sheet/BalanceSheetV2__factory";
 import { TASK_PREPARE_UPGRADE_BALANCE_SHEET } from "../constants";
 
 task(TASK_PREPARE_UPGRADE_BALANCE_SHEET)

@@ -2,8 +2,8 @@ import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
 import type { TaskArguments } from "hardhat/types";
 
-import type { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
-import { SimplePriceFeed__factory } from "../../src/types/factories/SimplePriceFeed__factory";
+import type { SimplePriceFeed } from "../../src/types/contracts/oracles/SimplePriceFeed";
+import { SimplePriceFeed__factory } from "../../src/types/factories/contracts/oracles/SimplePriceFeed__factory";
 import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_SIMPLE_PRICE_FEED } from "../constants";
 
 task(TASK_DEPLOY_CONTRACT_SIMPLE_PRICE_FEED)

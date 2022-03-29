@@ -3,7 +3,7 @@ import type { BigNumber } from "@ethersproject/bignumber";
 import { artifacts, waffle } from "hardhat";
 import type { Artifact } from "hardhat/types";
 
-import type { GodModeErc20 } from "../../src/types/GodModeErc20";
+import type { GodModeErc20 } from "../../src/types/contracts/test/GodModeErc20";
 
 export async function deployGodModeErc20(
   deployer: Signer,

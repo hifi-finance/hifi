@@ -5,7 +5,6 @@ import { FlashUniswapV2Errors } from "@hifi/errors";
 import { USDC, WBTC, price } from "@hifi/helpers";
 import { expect } from "chai";
 
-import type { GodModeErc20 } from "../../../../../src/types/GodModeErc20";
 import { deployGodModeErc20 } from "../../../../shared/deployers";
 import { increasePoolReserves } from "../../../../shared/helpers";
 import { shouldBehaveLikeCollateralFlashSwap } from "./collateral";
@@ -86,7 +85,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
         it("reverts", async function () {
           const swapCollateralAmount: BigNumber = Zero;
           const swapUnderlyingAmount: BigNumber = USDC("10000");
-          const foo: GodModeErc20 = await deployGodModeErc20(this.signers.admin, "Foo", "FOO", BigNumber.from(18));
+          const foo = await deployGodModeErc20(this.signers.admin, "Foo", "FOO", BigNumber.from(18));
           await this.contracts.hToken.__godMode_setUnderlying(foo.address);
           const to: string = this.contracts.flashUniswapV2.address;
           await expect(

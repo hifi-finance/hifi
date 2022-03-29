@@ -1,8 +1,8 @@
 import { task, types } from "hardhat/config";
 import type { TaskArguments } from "hardhat/types";
 
-import type { BalanceSheetV2 } from "../../src/types/BalanceSheetV2";
-import { BalanceSheetV2__factory } from "../../src/types/factories/BalanceSheetV2__factory";
+import type { BalanceSheetV2 } from "../../src/types/contracts/core/balance-sheet/BalanceSheetV2";
+import { BalanceSheetV2__factory } from "../../src/types/factories/contracts/core/balance-sheet/BalanceSheetV2__factory";
 import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_BALANCE_SHEET } from "../constants";
 
 task(TASK_DEPLOY_CONTRACT_BALANCE_SHEET)
