@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.0] - 2022-03-29
+
+### Changed
+
+- Refactor the directory trees in the generated types.
+- Refactor the ethers factories as per the latest typechain output.
+- Upgrade to the latest ethers packages.
+
 ## [1.9.0] - 2022-03-16
 
 ### Changed
@@ -148,6 +156,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Zero edge case in `getSeizableCollateralAmount` function.
 
+[1.10.0]: https://github.com/hifi-finance/hifi/compare/@hifi/protocol@1.8.2...@hifi/protocol@1.10.0
 [1.9.0]: https://github.com/hifi-finance/hifi/compare/@hifi/protocol@1.8.2...@hifi/protocol@1.9.0
 [1.8.2]: https://github.com/hifi-finance/hifi/compare/@hifi/protocol@1.8.1...@hifi/protocol@1.8.2
 [1.8.1]: https://github.com/hifi-finance/hifi/compare/@hifi/protocol@1.8.0...@hifi/protocol@1.8.1
