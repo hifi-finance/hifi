@@ -13,6 +13,10 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 - Refactor the ethers factories as per the latest typechain output.
 - Upgrade to the latest ethers packages.
 
+### Removed
+
+- Remove types for `Erc20`, `Erc20Permit`, `IAggregatorV3` and `Ownable`.
+
 ## [1.9.0] - 2022-03-16
 
 ### Changed
