@@ -3,12 +3,12 @@ import type { ChainlinkOperator } from "@hifi/protocol/dist/types/ChainlinkOpera
 import type { Fintroller } from "@hifi/protocol/dist/types/Fintroller";
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signer-with-address";
 
-import type { FlashUniswapV2 } from "../../src/types/FlashUniswapV2";
-import type { GodModeErc20 } from "../../src/types/GodModeErc20";
-import type { GodModeHToken } from "../../src/types/GodModeHToken";
-import type { GodModeUniswapV2Pair } from "../../src/types/GodModeUniswapV2Pair";
-import type { MaliciousPair } from "../../src/types/MaliciousPair";
-import type { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
+import type { GodModeErc20 } from "../../src/types/contracts/test/GodModeErc20";
+import type { GodModeHToken } from "../../src/types/contracts/test/GodModeHToken";
+import type { SimplePriceFeed } from "../../src/types/contracts/test/SimplePriceFeed";
+import type { FlashUniswapV2 } from "../../src/types/contracts/uniswap-v2/FlashUniswapV2";
+import type { GodModeUniswapV2Pair } from "../../src/types/contracts/uniswap-v2/test/GodModeUniswapV2Pair";
+import type { MaliciousPair } from "../../src/types/contracts/uniswap-v2/test/MaliciousPair";
 
 declare module "mocha" {
   export interface Context {

@@ -6,10 +6,10 @@ import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
 import type { TaskArguments } from "hardhat/types";
 
-import type { Erc20 } from "../../src/types/Erc20";
-import type { HifiPool } from "../../src/types/HifiPool";
-import { Erc20__factory } from "../../src/types/factories/Erc20__factory";
-import { HifiPool__factory } from "../../src/types/factories/HifiPool__factory";
+import type { Erc20 } from "../../src/types/@prb/contracts/token/erc20/Erc20";
+import type { HifiPool } from "../../src/types/contracts/HifiPool";
+import { Erc20__factory } from "../../src/types/factories/@prb/contracts/token/erc20/Erc20__factory";
+import { HifiPool__factory } from "../../src/types/factories/contracts/HifiPool__factory";
 import { TASK_INIT_ADD_LIQUIDITY } from "../constants";
 
 task(TASK_INIT_ADD_LIQUIDITY)

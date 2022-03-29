@@ -9,14 +9,14 @@ import type { Fintroller } from "@hifi/protocol/dist/types/Fintroller";
 import { artifacts, waffle } from "hardhat";
 import type { Artifact } from "hardhat/types";
 
-import type { FlashUniswapV2 } from "../../src/types/FlashUniswapV2";
-import type { GodModeErc20 } from "../../src/types/GodModeErc20";
-import type { GodModeHToken } from "../../src/types/GodModeHToken";
-import type { GodModeUniswapV2Factory } from "../../src/types/GodModeUniswapV2Factory";
-import type { GodModeUniswapV2Pair } from "../../src/types/GodModeUniswapV2Pair";
-import type { MaliciousPair } from "../../src/types/MaliciousPair";
-import type { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
-import { GodModeUniswapV2Pair__factory } from "../../src/types/factories/GodModeUniswapV2Pair__factory";
+import type { GodModeErc20 } from "../../src/types/contracts/test/GodModeErc20";
+import type { GodModeHToken } from "../../src/types/contracts/test/GodModeHToken";
+import type { SimplePriceFeed } from "../../src/types/contracts/test/SimplePriceFeed";
+import type { FlashUniswapV2 } from "../../src/types/contracts/uniswap-v2/FlashUniswapV2";
+import type { GodModeUniswapV2Factory } from "../../src/types/contracts/uniswap-v2/test/GodModeUniswapV2Factory";
+import type { GodModeUniswapV2Pair } from "../../src/types/contracts/uniswap-v2/test/GodModeUniswapV2Pair";
+import type { MaliciousPair } from "../../src/types/contracts/uniswap-v2/test/MaliciousPair";
+import { GodModeUniswapV2Pair__factory } from "../../src/types/factories/contracts/uniswap-v2/test/GodModeUniswapV2Pair__factory";
 import { deployGodModeErc20 } from "./deployers";
 
 type IntegrationFixtureReturnType = {

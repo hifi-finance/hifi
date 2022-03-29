@@ -2,8 +2,8 @@ import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
 import { TaskArguments } from "hardhat/types";
 
-import { HifiProxyTarget } from "../../src/types/HifiProxyTarget";
-import { HifiProxyTarget__factory } from "../../src/types/factories/HifiProxyTarget__factory";
+import { HifiProxyTarget } from "../../src/types/contracts/HifiProxyTarget";
+import { HifiProxyTarget__factory } from "../../src/types/factories/contracts/HifiProxyTarget__factory";
 import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_HIFI_PROXY_TARGET } from "../constants";
 
 task(TASK_DEPLOY_CONTRACT_HIFI_PROXY_TARGET)

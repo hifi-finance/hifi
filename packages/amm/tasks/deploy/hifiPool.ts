@@ -2,10 +2,10 @@ import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
 import type { TaskArguments } from "hardhat/types";
 
-import { HifiPool } from "../../src/types/HifiPool";
-import { HifiPoolRegistry } from "../../src/types/HifiPoolRegistry";
-import { HifiPoolRegistry__factory } from "../../src/types/factories/HifiPoolRegistry__factory";
-import { HifiPool__factory } from "../../src/types/factories/HifiPool__factory";
+import { HifiPool } from "../../src/types/contracts/HifiPool";
+import { HifiPoolRegistry } from "../../src/types/contracts/HifiPoolRegistry";
+import { HifiPoolRegistry__factory } from "../../src/types/factories/contracts/HifiPoolRegistry__factory";
+import { HifiPool__factory } from "../../src/types/factories/contracts/HifiPool__factory";
 import { TASK_DEPLOY_CONTRACT_HIFI_POOL } from "../constants";
 
 task(TASK_DEPLOY_CONTRACT_HIFI_POOL)

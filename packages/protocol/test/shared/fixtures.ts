@@ -13,13 +13,13 @@ import {
 } from "@hifi/constants";
 import type { MockContract } from "ethereum-waffle";
 
-import type { ChainlinkOperator } from "../../src/types/ChainlinkOperator";
-import type { Fintroller } from "../../src/types/Fintroller";
-import type { GodModeBalanceSheet } from "../../src/types/GodModeBalanceSheet";
-import type { GodModeErc20 } from "../../src/types/GodModeErc20";
-import type { GodModeHToken } from "../../src/types/GodModeHToken";
-import type { GodModeOwnableUpgradeable } from "../../src/types/GodModeOwnableUpgradeable";
-import type { SimplePriceFeed } from "../../src/types/SimplePriceFeed";
+import type { Fintroller } from "../../src/types/contracts/core/fintroller/Fintroller";
+import type { ChainlinkOperator } from "../../src/types/contracts/oracles/ChainlinkOperator";
+import type { SimplePriceFeed } from "../../src/types/contracts/oracles/SimplePriceFeed";
+import type { GodModeBalanceSheet } from "../../src/types/contracts/test/GodModeBalanceSheet";
+import type { GodModeErc20 } from "../../src/types/contracts/test/GodModeErc20";
+import type { GodModeHToken } from "../../src/types/contracts/test/GodModeHToken";
+import type { GodModeOwnableUpgradeable } from "../../src/types/contracts/test/GodModeOwnableUpgradeable";
 import {
   deployChainlinkOperator,
   deployFintroller,

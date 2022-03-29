@@ -4,7 +4,7 @@ import { getPrecisionScalar } from "@hifi/helpers";
 import { expect } from "chai";
 import forEach from "mocha-each";
 
-import type { HToken } from "../../../../src/types/HToken";
+import type { HToken } from "../../../../src/types/contracts/core/h-token/HToken";
 import { deployHToken } from "../../../shared/deployers";
 
 export function shouldBehaveLikeUnderlyingPrecisionScalarGetter(): void {

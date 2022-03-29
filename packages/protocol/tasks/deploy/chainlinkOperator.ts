@@ -2,8 +2,8 @@ import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
 import type { TaskArguments } from "hardhat/types";
 
-import type { ChainlinkOperator } from "../../src/types/ChainlinkOperator";
-import { ChainlinkOperator__factory } from "../../src/types/factories/ChainlinkOperator__factory";
+import type { ChainlinkOperator } from "../../src/types/contracts/oracles/ChainlinkOperator";
+import { ChainlinkOperator__factory } from "../../src/types/factories/contracts/oracles/ChainlinkOperator__factory";
 import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_CHAINLINK_OPERATOR } from "../constants";
 
 task(TASK_DEPLOY_CONTRACT_CHAINLINK_OPERATOR)
