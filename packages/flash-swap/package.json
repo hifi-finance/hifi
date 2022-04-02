@@ -56,6 +56,7 @@
     "solhint": "^3.3.7",
     "solhint-plugin-prettier": "^0.0.5",
     "solidity-coverage": "^0.7.20",
+    "solidity-docgen": "^0.6.0-beta.8",
     "ts-node": "^10.7.0",
     "typechain": "^8.0.0",
     "typescript": "^4.6.3"
@@ -100,6 +101,7 @@
     "clean:node_modules": "shx rm -rf ./node_modules",
     "compile:sol": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat compile",
     "coverage": "cross-env CODE_COVERAGE=true hardhat coverage --solcoverjs ./.solcover.js --temp artifacts --testfiles \"test/**/*.ts\"",
+    "generate:docs": "hardhat docgen && yarn prettier",
     "generate:types": "cross-env TS_NODE_TRANSPILE_ONLY=true hardhat typechain",
     "lint": "yarn lint:sol && yarn lint:ts && yarn prettier:check",
     "lint:sol": "solhint --config ./.solhint.json --ignore-path ../../.solhintignore --max-warnings 0 \"contracts/**/*.sol\"",
