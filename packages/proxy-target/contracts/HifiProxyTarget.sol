@@ -581,7 +581,12 @@ contract HifiProxyTarget is IHifiProxyTarget {
 
         // Deposit the underlying in the HToken contract to mint hTokens.
         IHToken hToken = hifiPool.hToken();
-        depositUnderlyingInternal(hToken, depositAmount);
+
+        // Allow the HToken contract to spend underlying from the DSProxy.
+        approveSpender(underlying, address(hToken), depositAmount);
+
+        // Deposit the underlying in the HToken contract to mint hTokens.
+        hToken.depositUnderlying(depositAmount);
 
         // Allow the HifiPool contract to spend underlying from the DSProxy.
         approveSpender(underlying, address(hifiPool), underlyingOffered);
@@ -1077,7 +1082,6 @@ contract HifiProxyTarget is IHifiProxyTarget {
 
     /// @dev See the documentation for the public functions that call this internal function.
     function depositUnderlyingInternal(IHToken hToken, uint256 underlyingAmount) internal {
-        //IRedemptionPool redemptionPool = hToken.redemptionPool();
         IErc20 underlying = hToken.underlying();
 
         // Transfer the underlying to the DSProxy.
