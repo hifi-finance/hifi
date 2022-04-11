@@ -56,7 +56,7 @@ contract YourContract {
 
 ```javascript
 import { getDefaultProvider } from "@ethersproject/providers";
-import type { BalanceSheetV2__factory } from "@hifi/protocol/dist/types/factories/BalanceSheetV2__factory";
+import type { BalanceSheetV2__factory } from "@hifi/protocol/dist/types/factories/contracts/core/balance-sheet/BalanceSheetV2__factory";
 
 async function queryAccountLiquidity() {
   const balanceSheetABI = BalanceSheetV2__factory.abi;
