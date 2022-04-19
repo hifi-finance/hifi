@@ -71,6 +71,8 @@ export interface IHifiProxyTargetInterface extends utils.Interface {
     "removeLiquidityAndRepayBorrowAndWithdrawCollateralWithSignature(address,address,address,uint256,uint256,uint256,uint256,bytes)": FunctionFragment;
     "removeLiquidityAndSellHToken(address,uint256,uint256)": FunctionFragment;
     "removeLiquidityAndSellHTokenWithSignature(address,uint256,uint256,uint256,bytes)": FunctionFragment;
+    "removeLiquidityAndWithdrawUnderlying(address,uint256,uint256)": FunctionFragment;
+    "removeLiquidityAndWithdrawUnderlyingWithSignature(address,uint256,uint256,uint256,bytes)": FunctionFragment;
     "removeLiquidityWithSignature(address,uint256,uint256,bytes)": FunctionFragment;
     "repayBorrow(address,address,uint256)": FunctionFragment;
     "repayBorrowWithSignature(address,address,uint256,uint256,bytes)": FunctionFragment;
@@ -127,6 +129,8 @@ export interface IHifiProxyTargetInterface extends utils.Interface {
       | "removeLiquidityAndRepayBorrowAndWithdrawCollateralWithSignature"
       | "removeLiquidityAndSellHToken"
       | "removeLiquidityAndSellHTokenWithSignature"
+      | "removeLiquidityAndWithdrawUnderlying"
+      | "removeLiquidityAndWithdrawUnderlyingWithSignature"
       | "removeLiquidityWithSignature"
       | "repayBorrow"
       | "repayBorrowWithSignature"
@@ -359,6 +363,14 @@ export interface IHifiProxyTargetInterface extends utils.Interface {
     values: [string, BigNumberish, BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
+    functionFragment: "removeLiquidityAndWithdrawUnderlying",
+    values: [string, BigNumberish, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "removeLiquidityAndWithdrawUnderlyingWithSignature",
+    values: [string, BigNumberish, BigNumberish, BigNumberish, BytesLike]
+  ): string;
+  encodeFunctionData(
     functionFragment: "removeLiquidityWithSignature",
     values: [string, BigNumberish, BigNumberish, BytesLike]
   ): string;
@@ -566,6 +578,14 @@ export interface IHifiProxyTargetInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "removeLiquidityAndSellHTokenWithSignature",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "removeLiquidityAndWithdrawUnderlying",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "removeLiquidityAndWithdrawUnderlyingWithSignature",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -1019,6 +1039,22 @@ export interface IHifiProxyTarget extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    removeLiquidityAndWithdrawUnderlying(
+      hifiPool: string,
+      poolTokensBurned: BigNumberish,
+      withdrawAmount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    removeLiquidityAndWithdrawUnderlyingWithSignature(
+      hifiPool: string,
+      poolTokensBurned: BigNumberish,
+      withdrawAmount: BigNumberish,
+      deadline: BigNumberish,
+      signatureLPToken: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     removeLiquidityWithSignature(
       hifiPool: string,
       poolTokensBurned: BigNumberish,
@@ -1457,6 +1493,22 @@ export interface IHifiProxyTarget extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  removeLiquidityAndWithdrawUnderlying(
+    hifiPool: string,
+    poolTokensBurned: BigNumberish,
+    withdrawAmount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  removeLiquidityAndWithdrawUnderlyingWithSignature(
+    hifiPool: string,
+    poolTokensBurned: BigNumberish,
+    withdrawAmount: BigNumberish,
+    deadline: BigNumberish,
+    signatureLPToken: BytesLike,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
   removeLiquidityWithSignature(
     hifiPool: string,
     poolTokensBurned: BigNumberish,
@@ -1890,6 +1942,22 @@ export interface IHifiProxyTarget extends BaseContract {
       hifiPool: string,
       poolTokensBurned: BigNumberish,
       minUnderlyingOut: BigNumberish,
+      deadline: BigNumberish,
+      signatureLPToken: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    removeLiquidityAndWithdrawUnderlying(
+      hifiPool: string,
+      poolTokensBurned: BigNumberish,
+      withdrawAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    removeLiquidityAndWithdrawUnderlyingWithSignature(
+      hifiPool: string,
+      poolTokensBurned: BigNumberish,
+      withdrawAmount: BigNumberish,
       deadline: BigNumberish,
       signatureLPToken: BytesLike,
       overrides?: CallOverrides
@@ -2358,6 +2426,22 @@ export interface IHifiProxyTarget extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    removeLiquidityAndWithdrawUnderlying(
+      hifiPool: string,
+      poolTokensBurned: BigNumberish,
+      withdrawAmount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    removeLiquidityAndWithdrawUnderlyingWithSignature(
+      hifiPool: string,
+      poolTokensBurned: BigNumberish,
+      withdrawAmount: BigNumberish,
+      deadline: BigNumberish,
+      signatureLPToken: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     removeLiquidityWithSignature(
       hifiPool: string,
       poolTokensBurned: BigNumberish,
@@ -2792,6 +2876,22 @@ export interface IHifiProxyTarget extends BaseContract {
       hifiPool: string,
       poolTokensBurned: BigNumberish,
       minUnderlyingOut: BigNumberish,
+      deadline: BigNumberish,
+      signatureLPToken: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    removeLiquidityAndWithdrawUnderlying(
+      hifiPool: string,
+      poolTokensBurned: BigNumberish,
+      withdrawAmount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    removeLiquidityAndWithdrawUnderlyingWithSignature(
+      hifiPool: string,
+      poolTokensBurned: BigNumberish,
+      withdrawAmount: BigNumberish,
       deadline: BigNumberish,
       signatureLPToken: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }

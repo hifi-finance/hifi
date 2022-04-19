@@ -837,6 +837,49 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
+    function removeLiquidityAndWithdrawUnderlying(
+        IHifiPool hifiPool,
+        uint256 poolTokensBurned,
+        uint256 withdrawAmount
+    ) public override {
+        // Transfer the LP tokens to the DSProxy.
+        hifiPool.transferFrom(msg.sender, address(this), poolTokensBurned);
+
+        // Burn the LP tokens.
+        (uint256 underlyingReturned, uint256 hTokenReturned) = hifiPool.burn(poolTokensBurned);
+
+        // Normalize the underlying amount to 18 decimals.
+        uint256 hTokenAmount = normalize(withdrawAmount, hifiPool.underlyingPrecisionScalar());
+
+        // Withdraw underlying in exchange for hTokens.
+        IHToken hToken = hifiPool.hToken();
+        hToken.withdrawUnderlying(withdrawAmount);
+
+        // Relay any remaining hTokens to the end user.
+        unchecked {
+            uint256 hTokenDelta = hTokenReturned - hTokenAmount;
+            if (hTokenDelta > 0) {
+                hToken.transfer(msg.sender, hTokenDelta);
+            }
+        }
+        // Relay all the underlying it to the end user.
+        uint256 totalUnderlyingAmount = underlyingReturned + withdrawAmount;
+        hToken.underlying().safeTransfer(msg.sender, totalUnderlyingAmount);
+    }
+
+    /// @inheritdoc IHifiProxyTarget
+    function removeLiquidityAndWithdrawUnderlyingWithSignature(
+        IHifiPool hifiPool,
+        uint256 poolTokensBurned,
+        uint256 withdrawAmount,
+        uint256 deadline,
+        bytes memory signatureLPToken
+    ) public {
+        permitInternal(hifiPool, poolTokensBurned, deadline, signatureLPToken);
+        removeLiquidityAndWithdrawUnderlying(hifiPool, poolTokensBurned, withdrawAmount);
+    }
+
+    /// @inheritdoc IHifiProxyTarget
     function removeLiquidityWithSignature(
         IHifiPool hifiPool,
         uint256 poolTokensBurned,

@@ -731,6 +731,40 @@ interface IHifiProxyTarget {
         bytes memory signatureLPToken
     ) external;
 
+    /// @notice Removes liquidity from the AMM, and withdraws underlying in exchange for hTokens.
+    ///
+    /// @dev Requirements:
+    /// - The caller must have allowed the DSProxy to spend `poolTokensBurned` tokens.
+    /// - Can only be called before maturation.
+    ///
+    /// @param hifiPool The address of the HifiPool contract.
+    /// @param poolTokensBurned The amount of LP tokens to burn.
+    /// @param withdrawAmount  The amount of underlying to withdraw in exchange for hTokens.
+    function removeLiquidityAndWithdrawUnderlying(
+        IHifiPool hifiPool,
+        uint256 poolTokensBurned,
+        uint256 withdrawAmount
+    ) external;
+
+    /// @notice Removes liquidity from the AMM, and withdraws underlying using EIP-2612 signatures..
+    ///
+    /// @dev Requirements:
+    /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend `poolTokensBurned`
+    ///  for the given `deadline` and the caller's current nonce.
+    ///
+    /// @param hifiPool The address of the HifiPool contract.
+    /// @param poolTokensBurned The amount of LP tokens to burn.
+    /// @param withdrawAmount  The amount of underlying to withdraw in exchange for hTokens.
+    /// @param deadline The deadline beyond which the signature is not valid anymore.
+    /// @param signatureLPToken The packed signature for LP tokens.
+    function removeLiquidityAndWithdrawUnderlyingWithSignature(
+        IHifiPool hifiPool,
+        uint256 poolTokensBurned,
+        uint256 withdrawAmount,
+        uint256 deadline,
+        bytes memory signatureLPToken
+    ) external;
+
     /// @notice Removes liquidity from the AMM using EIP-2612 signatures.
     ///
     /// @dev Requirements:

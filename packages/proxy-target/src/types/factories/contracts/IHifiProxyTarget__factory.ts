@@ -1348,6 +1348,62 @@ const _abi = [
       },
       {
         internalType: "uint256",
+        name: "withdrawAmount",
+        type: "uint256",
+      },
+    ],
+    name: "removeLiquidityAndWithdrawUnderlying",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IHifiPool",
+        name: "hifiPool",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "poolTokensBurned",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "withdrawAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "deadline",
+        type: "uint256",
+      },
+      {
+        internalType: "bytes",
+        name: "signatureLPToken",
+        type: "bytes",
+      },
+    ],
+    name: "removeLiquidityAndWithdrawUnderlyingWithSignature",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "contract IHifiPool",
+        name: "hifiPool",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "poolTokensBurned",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
         name: "deadline",
         type: "uint256",
       },
