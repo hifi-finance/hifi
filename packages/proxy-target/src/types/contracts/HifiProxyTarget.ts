@@ -67,8 +67,6 @@ export interface HifiProxyTargetInterface extends utils.Interface {
     "removeLiquidity(address,uint256)": FunctionFragment;
     "removeLiquidityAndRedeem(address,uint256)": FunctionFragment;
     "removeLiquidityAndRedeemWithSignature(address,uint256,uint256,bytes)": FunctionFragment;
-    "removeLiquidityAndRepayBorrowAndWithdrawCollateral(address,address,address,uint256,uint256,uint256)": FunctionFragment;
-    "removeLiquidityAndRepayBorrowAndWithdrawCollateralWithSignature(address,address,address,uint256,uint256,uint256,uint256,bytes)": FunctionFragment;
     "removeLiquidityAndSellHToken(address,uint256,uint256)": FunctionFragment;
     "removeLiquidityAndSellHTokenWithSignature(address,uint256,uint256,uint256,bytes)": FunctionFragment;
     "removeLiquidityAndWithdrawUnderlying(address,uint256,uint256)": FunctionFragment;
@@ -125,8 +123,6 @@ export interface HifiProxyTargetInterface extends utils.Interface {
       | "removeLiquidity"
       | "removeLiquidityAndRedeem"
       | "removeLiquidityAndRedeemWithSignature"
-      | "removeLiquidityAndRepayBorrowAndWithdrawCollateral"
-      | "removeLiquidityAndRepayBorrowAndWithdrawCollateralWithSignature"
       | "removeLiquidityAndSellHToken"
       | "removeLiquidityAndSellHTokenWithSignature"
       | "removeLiquidityAndWithdrawUnderlying"
@@ -338,23 +334,6 @@ export interface HifiProxyTargetInterface extends utils.Interface {
     values: [string, BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "removeLiquidityAndRepayBorrowAndWithdrawCollateral",
-    values: [string, string, string, BigNumberish, BigNumberish, BigNumberish]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "removeLiquidityAndRepayBorrowAndWithdrawCollateralWithSignature",
-    values: [
-      string,
-      string,
-      string,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish,
-      BigNumberish,
-      BytesLike
-    ]
-  ): string;
-  encodeFunctionData(
     functionFragment: "removeLiquidityAndSellHToken",
     values: [string, BigNumberish, BigNumberish]
   ): string;
@@ -562,14 +541,6 @@ export interface HifiProxyTargetInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "removeLiquidityAndRedeemWithSignature",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "removeLiquidityAndRepayBorrowAndWithdrawCollateral",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "removeLiquidityAndRepayBorrowAndWithdrawCollateralWithSignature",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -996,28 +967,6 @@ export interface HifiProxyTarget extends BaseContract {
     removeLiquidityAndRedeemWithSignature(
       hifiPool: string,
       poolTokensBurned: BigNumberish,
-      deadline: BigNumberish,
-      signatureLPToken: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    removeLiquidityAndRepayBorrowAndWithdrawCollateral(
-      hifiPool: string,
-      balanceSheet: string,
-      collateral: string,
-      poolTokensBurned: BigNumberish,
-      repayAmount: BigNumberish,
-      withdrawAmount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    removeLiquidityAndRepayBorrowAndWithdrawCollateralWithSignature(
-      hifiPool: string,
-      balanceSheet: string,
-      collateral: string,
-      poolTokensBurned: BigNumberish,
-      repayAmount: BigNumberish,
-      withdrawAmount: BigNumberish,
       deadline: BigNumberish,
       signatureLPToken: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1455,28 +1404,6 @@ export interface HifiProxyTarget extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  removeLiquidityAndRepayBorrowAndWithdrawCollateral(
-    hifiPool: string,
-    balanceSheet: string,
-    collateral: string,
-    poolTokensBurned: BigNumberish,
-    repayAmount: BigNumberish,
-    withdrawAmount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  removeLiquidityAndRepayBorrowAndWithdrawCollateralWithSignature(
-    hifiPool: string,
-    balanceSheet: string,
-    collateral: string,
-    poolTokensBurned: BigNumberish,
-    repayAmount: BigNumberish,
-    withdrawAmount: BigNumberish,
-    deadline: BigNumberish,
-    signatureLPToken: BytesLike,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   removeLiquidityAndSellHToken(
     hifiPool: string,
     poolTokensBurned: BigNumberish,
@@ -1904,28 +1831,6 @@ export interface HifiProxyTarget extends BaseContract {
     removeLiquidityAndRedeemWithSignature(
       hifiPool: string,
       poolTokensBurned: BigNumberish,
-      deadline: BigNumberish,
-      signatureLPToken: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    removeLiquidityAndRepayBorrowAndWithdrawCollateral(
-      hifiPool: string,
-      balanceSheet: string,
-      collateral: string,
-      poolTokensBurned: BigNumberish,
-      repayAmount: BigNumberish,
-      withdrawAmount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    removeLiquidityAndRepayBorrowAndWithdrawCollateralWithSignature(
-      hifiPool: string,
-      balanceSheet: string,
-      collateral: string,
-      poolTokensBurned: BigNumberish,
-      repayAmount: BigNumberish,
-      withdrawAmount: BigNumberish,
       deadline: BigNumberish,
       signatureLPToken: BytesLike,
       overrides?: CallOverrides
@@ -2388,28 +2293,6 @@ export interface HifiProxyTarget extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    removeLiquidityAndRepayBorrowAndWithdrawCollateral(
-      hifiPool: string,
-      balanceSheet: string,
-      collateral: string,
-      poolTokensBurned: BigNumberish,
-      repayAmount: BigNumberish,
-      withdrawAmount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    removeLiquidityAndRepayBorrowAndWithdrawCollateralWithSignature(
-      hifiPool: string,
-      balanceSheet: string,
-      collateral: string,
-      poolTokensBurned: BigNumberish,
-      repayAmount: BigNumberish,
-      withdrawAmount: BigNumberish,
-      deadline: BigNumberish,
-      signatureLPToken: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     removeLiquidityAndSellHToken(
       hifiPool: string,
       poolTokensBurned: BigNumberish,
@@ -2838,28 +2721,6 @@ export interface HifiProxyTarget extends BaseContract {
     removeLiquidityAndRedeemWithSignature(
       hifiPool: string,
       poolTokensBurned: BigNumberish,
-      deadline: BigNumberish,
-      signatureLPToken: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    removeLiquidityAndRepayBorrowAndWithdrawCollateral(
-      hifiPool: string,
-      balanceSheet: string,
-      collateral: string,
-      poolTokensBurned: BigNumberish,
-      repayAmount: BigNumberish,
-      withdrawAmount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    removeLiquidityAndRepayBorrowAndWithdrawCollateralWithSignature(
-      hifiPool: string,
-      balanceSheet: string,
-      collateral: string,
-      poolTokensBurned: BigNumberish,
-      repayAmount: BigNumberish,
-      withdrawAmount: BigNumberish,
       deadline: BigNumberish,
       signatureLPToken: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }

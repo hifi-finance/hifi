@@ -653,51 +653,6 @@ interface IHifiProxyTarget {
         bytes memory signatureLPToken
     ) external;
 
-    /// @notice Removes liquidity from the AMM, repays the borrow and withdraws collateral.
-    ///
-    /// @dev Requirements:
-    /// - The caller must have allowed the DSProxy to spend `poolTokensBurned` tokens.
-    ///
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param collateral The address of the collateral contract.
-    /// @param poolTokensBurned The amount of LP tokens to burn.
-    /// @param repayAmount The amount of hTokens to repay.
-    /// @param withdrawAmount The amount of collateral to withdraw.
-    function removeLiquidityAndRepayBorrowAndWithdrawCollateral(
-        IHifiPool hifiPool,
-        IBalanceSheetV2 balanceSheet,
-        IErc20 collateral,
-        uint256 poolTokensBurned,
-        uint256 repayAmount,
-        uint256 withdrawAmount
-    ) external;
-
-    /// @notice Removes liquidity from the AMM, repays the borrow and withdraws collateral using EIP-2612 signatures.
-    ///
-    /// @dev Requirements:
-    /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend `poolTokensBurned`
-    ///  for the given `deadline` and the caller's current nonce.
-    ///
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param collateral The address of the collateral contract.
-    /// @param poolTokensBurned The amount of LP tokens to burn.
-    /// @param repayAmount The amount of hTokens to repay.
-    /// @param withdrawAmount The amount of collateral to withdraw.
-    /// @param deadline The deadline beyond which the signature is not valid anymore.
-    /// @param signatureLPToken The packed signature for LP tokens.
-    function removeLiquidityAndRepayBorrowAndWithdrawCollateralWithSignature(
-        IHifiPool hifiPool,
-        IBalanceSheetV2 balanceSheet,
-        IErc20 collateral,
-        uint256 poolTokensBurned,
-        uint256 repayAmount,
-        uint256 withdrawAmount,
-        uint256 deadline,
-        bytes memory signatureLPToken
-    ) external;
-
     /// @notice Removes liquidity from the AMM, and sells all hTokens for the underlying.
     ///
     /// @dev Requirements:
