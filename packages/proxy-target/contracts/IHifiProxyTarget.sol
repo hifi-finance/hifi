@@ -499,7 +499,7 @@ interface IHifiProxyTarget {
     /// @param underlyingAmount The amount of underlying to deposit.
     function depositUnderlying(IHToken hToken, uint256 underlyingAmount) external;
 
-    /// @notice Deposits underlying in the HToken contract to mint hTokens, borrows hTokens and adds liquidity
+    /// @notice Deposits underlying in the HToken contract to mint hTokens, and adds liquidity
     /// to the AMM.
     ///
     /// Requirements:
@@ -508,13 +508,13 @@ interface IHifiProxyTarget {
     /// @param hifiPool The address of the HifiPool contract.
     /// @param depositAmount The amount of underlying to deposit as collateral.
     /// @param underlyingOffered The amount of underlying to invest.
-    function depositUnderlyingAndBorrowHTokenAndAddLiquidity(
+    function depositUnderlyingAndMintHTokenAndAddLiquidity(
         IHifiPool hifiPool,
         uint256 depositAmount,
         uint256 underlyingOffered
     ) external;
 
-    /// @notice Deposits underlying as collateral into the vault, borrows hTokens and adds liquidity to the AMM using
+    /// @notice Deposits underlying as collateral into the vault, and adds liquidity to the AMM using
     /// EIP-2612 signatures.
     ///
     /// Requirements:
@@ -526,7 +526,7 @@ interface IHifiProxyTarget {
     /// @param underlyingOffered The amount of underlying to invest.
     /// @param deadline The deadline beyond which the signature is not valid anymore.
     /// @param signatureUnderlying The packed signature for the underlying.
-    function depositUnderlyingAndBorrowHTokenAndAddLiquidityWithSignature(
+    function depositUnderlyingAndMintHTokenAndAddLiquidityWithSignature(
         IHifiPool hifiPool,
         uint256 depositAmount,
         uint256 underlyingOffered,

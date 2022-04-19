@@ -57,8 +57,8 @@ export interface HifiProxyTargetInterface extends utils.Interface {
     "depositCollateralAndBorrowHTokenWithSignature(address,address,address,uint256,uint256,uint256,bytes)": FunctionFragment;
     "depositCollateralWithSignature(address,address,uint256,uint256,bytes)": FunctionFragment;
     "depositUnderlying(address,uint256)": FunctionFragment;
-    "depositUnderlyingAndBorrowHTokenAndAddLiquidity(address,uint256,uint256)": FunctionFragment;
-    "depositUnderlyingAndBorrowHTokenAndAddLiquidityWithSignature(address,uint256,uint256,uint256,bytes)": FunctionFragment;
+    "depositUnderlyingAndMintHTokenAndAddLiquidity(address,uint256,uint256)": FunctionFragment;
+    "depositUnderlyingAndMintHTokenAndAddLiquidityWithSignature(address,uint256,uint256,uint256,bytes)": FunctionFragment;
     "depositUnderlyingAndRepayBorrow(address,address,uint256)": FunctionFragment;
     "depositUnderlyingAndRepayBorrowWithSignature(address,address,uint256,uint256,bytes)": FunctionFragment;
     "depositUnderlyingWithSignature(address,uint256,uint256,bytes)": FunctionFragment;
@@ -115,8 +115,8 @@ export interface HifiProxyTargetInterface extends utils.Interface {
       | "depositCollateralAndBorrowHTokenWithSignature"
       | "depositCollateralWithSignature"
       | "depositUnderlying"
-      | "depositUnderlyingAndBorrowHTokenAndAddLiquidity"
-      | "depositUnderlyingAndBorrowHTokenAndAddLiquidityWithSignature"
+      | "depositUnderlyingAndMintHTokenAndAddLiquidity"
+      | "depositUnderlyingAndMintHTokenAndAddLiquidityWithSignature"
       | "depositUnderlyingAndRepayBorrow"
       | "depositUnderlyingAndRepayBorrowWithSignature"
       | "depositUnderlyingWithSignature"
@@ -298,11 +298,11 @@ export interface HifiProxyTargetInterface extends utils.Interface {
     values: [string, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "depositUnderlyingAndBorrowHTokenAndAddLiquidity",
+    functionFragment: "depositUnderlyingAndMintHTokenAndAddLiquidity",
     values: [string, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
-    functionFragment: "depositUnderlyingAndBorrowHTokenAndAddLiquidityWithSignature",
+    functionFragment: "depositUnderlyingAndMintHTokenAndAddLiquidityWithSignature",
     values: [string, BigNumberish, BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
@@ -528,11 +528,11 @@ export interface HifiProxyTargetInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "depositUnderlyingAndBorrowHTokenAndAddLiquidity",
+    functionFragment: "depositUnderlyingAndMintHTokenAndAddLiquidity",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "depositUnderlyingAndBorrowHTokenAndAddLiquidityWithSignature",
+    functionFragment: "depositUnderlyingAndMintHTokenAndAddLiquidityWithSignature",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -925,14 +925,14 @@ export interface HifiProxyTarget extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    depositUnderlyingAndBorrowHTokenAndAddLiquidity(
+    depositUnderlyingAndMintHTokenAndAddLiquidity(
       hifiPool: string,
       depositAmount: BigNumberish,
       underlyingOffered: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    depositUnderlyingAndBorrowHTokenAndAddLiquidityWithSignature(
+    depositUnderlyingAndMintHTokenAndAddLiquidityWithSignature(
       hifiPool: string,
       depositAmount: BigNumberish,
       underlyingOffered: BigNumberish,
@@ -1379,14 +1379,14 @@ export interface HifiProxyTarget extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  depositUnderlyingAndBorrowHTokenAndAddLiquidity(
+  depositUnderlyingAndMintHTokenAndAddLiquidity(
     hifiPool: string,
     depositAmount: BigNumberish,
     underlyingOffered: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  depositUnderlyingAndBorrowHTokenAndAddLiquidityWithSignature(
+  depositUnderlyingAndMintHTokenAndAddLiquidityWithSignature(
     hifiPool: string,
     depositAmount: BigNumberish,
     underlyingOffered: BigNumberish,
@@ -1833,14 +1833,14 @@ export interface HifiProxyTarget extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    depositUnderlyingAndBorrowHTokenAndAddLiquidity(
+    depositUnderlyingAndMintHTokenAndAddLiquidity(
       hifiPool: string,
       depositAmount: BigNumberish,
       underlyingOffered: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    depositUnderlyingAndBorrowHTokenAndAddLiquidityWithSignature(
+    depositUnderlyingAndMintHTokenAndAddLiquidityWithSignature(
       hifiPool: string,
       depositAmount: BigNumberish,
       underlyingOffered: BigNumberish,
@@ -2312,14 +2312,14 @@ export interface HifiProxyTarget extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    depositUnderlyingAndBorrowHTokenAndAddLiquidity(
+    depositUnderlyingAndMintHTokenAndAddLiquidity(
       hifiPool: string,
       depositAmount: BigNumberish,
       underlyingOffered: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    depositUnderlyingAndBorrowHTokenAndAddLiquidityWithSignature(
+    depositUnderlyingAndMintHTokenAndAddLiquidityWithSignature(
       hifiPool: string,
       depositAmount: BigNumberish,
       underlyingOffered: BigNumberish,
@@ -2767,14 +2767,14 @@ export interface HifiProxyTarget extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    depositUnderlyingAndBorrowHTokenAndAddLiquidity(
+    depositUnderlyingAndMintHTokenAndAddLiquidity(
       hifiPool: string,
       depositAmount: BigNumberish,
       underlyingOffered: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    depositUnderlyingAndBorrowHTokenAndAddLiquidityWithSignature(
+    depositUnderlyingAndMintHTokenAndAddLiquidityWithSignature(
       hifiPool: string,
       depositAmount: BigNumberish,
       underlyingOffered: BigNumberish,

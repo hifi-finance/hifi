@@ -560,7 +560,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function depositUnderlyingAndBorrowHTokenAndAddLiquidity(
+    function depositUnderlyingAndMintHTokenAndAddLiquidity(
         IHifiPool hifiPool,
         uint256 depositAmount,
         uint256 underlyingOffered
@@ -602,7 +602,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function depositUnderlyingAndBorrowHTokenAndAddLiquidityWithSignature(
+    function depositUnderlyingAndMintHTokenAndAddLiquidityWithSignature(
         IHifiPool hifiPool,
         uint256 depositAmount,
         uint256 underlyingOffered,
@@ -617,7 +617,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
             signatureUnderlying
         );
 
-        depositUnderlyingAndBorrowHTokenAndAddLiquidity(hifiPool, depositAmount, underlyingOffered);
+        depositUnderlyingAndMintHTokenAndAddLiquidity(hifiPool, depositAmount, underlyingOffered);
     }
 
     /// @inheritdoc IHifiProxyTarget
