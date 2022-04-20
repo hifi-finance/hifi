@@ -801,6 +801,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
                 hToken.transfer(msg.sender, hTokenDelta);
             }
         }
+
         // Relay all the underlying it to the end user.
         uint256 totalUnderlyingAmount = underlyingReturned + withdrawAmount;
         hToken.underlying().safeTransfer(msg.sender, totalUnderlyingAmount);

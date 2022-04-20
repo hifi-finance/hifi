@@ -499,8 +499,7 @@ interface IHifiProxyTarget {
     /// @param underlyingAmount The amount of underlying to deposit.
     function depositUnderlying(IHToken hToken, uint256 underlyingAmount) external;
 
-    /// @notice Deposits underlying in the HToken contract to mint hTokens, and adds liquidity
-    /// to the AMM.
+    /// @notice Deposits underlying in the HToken contract to mint hTokens, and adds liquidity to the AMM.
     ///
     /// Requirements:
     /// - The caller must have allowed the DSProxy to spend `depositAmount + underlyingOffered` tokens.
@@ -514,7 +513,7 @@ interface IHifiProxyTarget {
         uint256 underlyingOffered
     ) external;
 
-    /// @notice Deposits underlying as collateral into the vault, and adds liquidity to the AMM using
+    /// @notice Deposits underlying in the HToken contract to mint hTokens, and adds liquidity to the AMM using
     /// EIP-2612 signatures.
     ///
     /// Requirements:
@@ -701,7 +700,7 @@ interface IHifiProxyTarget {
         uint256 withdrawAmount
     ) external;
 
-    /// @notice Removes liquidity from the AMM, and withdraws underlying using EIP-2612 signatures..
+    /// @notice Removes liquidity from the AMM, and withdraws underlying in exchange for hTokens using EIP-2612 signatures.
     ///
     /// @dev Requirements:
     /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend `poolTokensBurned`
