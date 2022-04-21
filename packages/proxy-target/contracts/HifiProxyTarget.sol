@@ -560,7 +560,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function depositUnderlyingAndBorrowHTokenAndAddLiquidity(
+    function depositUnderlyingAndMintHTokenAndAddLiquidity(
         IHifiPool hifiPool,
         uint256 depositAmount,
         uint256 underlyingOffered
@@ -602,7 +602,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function depositUnderlyingAndBorrowHTokenAndAddLiquidityWithSignature(
+    function depositUnderlyingAndMintHTokenAndAddLiquidityWithSignature(
         IHifiPool hifiPool,
         uint256 depositAmount,
         uint256 underlyingOffered,
@@ -617,7 +617,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
             signatureUnderlying
         );
 
-        depositUnderlyingAndBorrowHTokenAndAddLiquidity(hifiPool, depositAmount, underlyingOffered);
+        depositUnderlyingAndMintHTokenAndAddLiquidity(hifiPool, depositAmount, underlyingOffered);
     }
 
     /// @inheritdoc IHifiProxyTarget
@@ -725,67 +725,6 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function removeLiquidityAndRepayBorrowAndWithdrawCollateral(
-        IHifiPool hifiPool,
-        IBalanceSheetV2 balanceSheet,
-        IErc20 collateral,
-        uint256 poolTokensBurned,
-        uint256 repayAmount,
-        uint256 withdrawAmount
-    ) public override {
-        // Transfer the LP tokens to the DSProxy.
-        hifiPool.transferFrom(msg.sender, address(this), poolTokensBurned);
-
-        // Burn the LP tokens.
-        (uint256 underlyingReturned, uint256 hTokenReturned) = hifiPool.burn(poolTokensBurned);
-
-        // Repay the borrow.
-        IHToken hToken = hifiPool.hToken();
-        balanceSheet.repayBorrow(hToken, repayAmount);
-
-        // Relay any remaining hTokens to the end user.
-        if (hTokenReturned > repayAmount) {
-            unchecked {
-                uint256 hTokenDelta = hTokenReturned - repayAmount;
-                hToken.transfer(msg.sender, hTokenDelta);
-            }
-        }
-
-        // Withdraw the collateral and relay the underlying to the end user.
-        IErc20 underlying = hifiPool.underlying();
-        if (collateral == underlying) {
-            balanceSheet.withdrawCollateral(collateral, withdrawAmount);
-            uint256 totalUnderlyingAmount = underlyingReturned + withdrawAmount;
-            underlying.safeTransfer(msg.sender, totalUnderlyingAmount);
-        } else {
-            withdrawCollateral(balanceSheet, collateral, withdrawAmount);
-            underlying.safeTransfer(msg.sender, underlyingReturned);
-        }
-    }
-
-    /// @inheritdoc IHifiProxyTarget
-    function removeLiquidityAndRepayBorrowAndWithdrawCollateralWithSignature(
-        IHifiPool hifiPool,
-        IBalanceSheetV2 balanceSheet,
-        IErc20 collateral,
-        uint256 poolTokensBurned,
-        uint256 repayAmount,
-        uint256 withdrawAmount,
-        uint256 deadline,
-        bytes memory signatureLPToken
-    ) external override {
-        permitInternal(hifiPool, poolTokensBurned, deadline, signatureLPToken);
-        removeLiquidityAndRepayBorrowAndWithdrawCollateral(
-            hifiPool,
-            balanceSheet,
-            collateral,
-            poolTokensBurned,
-            repayAmount,
-            withdrawAmount
-        );
-    }
-
-    /// @inheritdoc IHifiProxyTarget
     function removeLiquidityAndRedeemWithSignature(
         IHifiPool hifiPool,
         uint256 poolTokensBurned,
@@ -834,6 +773,50 @@ contract HifiProxyTarget is IHifiProxyTarget {
     ) external override {
         permitInternal(hifiPool, poolTokensBurned, deadline, signatureLPToken);
         removeLiquidityAndSellHToken(hifiPool, poolTokensBurned, minUnderlyingOut);
+    }
+
+    /// @inheritdoc IHifiProxyTarget
+    function removeLiquidityAndWithdrawUnderlying(
+        IHifiPool hifiPool,
+        uint256 poolTokensBurned,
+        uint256 withdrawAmount
+    ) public override {
+        // Transfer the LP tokens to the DSProxy.
+        hifiPool.transferFrom(msg.sender, address(this), poolTokensBurned);
+
+        // Burn the LP tokens.
+        (uint256 underlyingReturned, uint256 hTokenReturned) = hifiPool.burn(poolTokensBurned);
+
+        // Normalize the underlying amount to 18 decimals.
+        uint256 hTokenAmount = normalize(withdrawAmount, hifiPool.underlyingPrecisionScalar());
+
+        // Withdraw underlying in exchange for hTokens.
+        IHToken hToken = hifiPool.hToken();
+        hToken.withdrawUnderlying(withdrawAmount);
+
+        // Relay any remaining hTokens to the end user.
+        if (hTokenReturned > hTokenAmount) {
+            unchecked {
+                uint256 hTokenDelta = hTokenReturned - hTokenAmount;
+                hToken.transfer(msg.sender, hTokenDelta);
+            }
+        }
+
+        // Relay all the underlying it to the end user.
+        uint256 totalUnderlyingAmount = underlyingReturned + withdrawAmount;
+        hToken.underlying().safeTransfer(msg.sender, totalUnderlyingAmount);
+    }
+
+    /// @inheritdoc IHifiProxyTarget
+    function removeLiquidityAndWithdrawUnderlyingWithSignature(
+        IHifiPool hifiPool,
+        uint256 poolTokensBurned,
+        uint256 withdrawAmount,
+        uint256 deadline,
+        bytes memory signatureLPToken
+    ) public {
+        permitInternal(hifiPool, poolTokensBurned, deadline, signatureLPToken);
+        removeLiquidityAndWithdrawUnderlying(hifiPool, poolTokensBurned, withdrawAmount);
     }
 
     /// @inheritdoc IHifiProxyTarget
