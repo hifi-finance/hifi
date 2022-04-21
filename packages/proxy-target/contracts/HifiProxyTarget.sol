@@ -795,9 +795,9 @@ contract HifiProxyTarget is IHifiProxyTarget {
         hToken.withdrawUnderlying(withdrawAmount);
 
         // Relay any remaining hTokens to the end user.
-        unchecked {
-            uint256 hTokenDelta = hTokenReturned - hTokenAmount;
-            if (hTokenDelta > 0) {
+        if (hTokenReturned > hTokenAmount) {
+            unchecked {
+                uint256 hTokenDelta = hTokenReturned - hTokenAmount;
                 hToken.transfer(msg.sender, hTokenDelta);
             }
         }
