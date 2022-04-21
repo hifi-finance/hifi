@@ -693,7 +693,7 @@ interface IHifiProxyTarget {
     ///
     /// @param hifiPool The address of the HifiPool contract.
     /// @param poolTokensBurned The amount of LP tokens to burn.
-    /// @param withdrawAmount  The amount of underlying to withdraw in exchange for hTokens.
+    /// @param withdrawAmount The amount of underlying to withdraw in exchange for hTokens.
     function removeLiquidityAndWithdrawUnderlying(
         IHifiPool hifiPool,
         uint256 poolTokensBurned,
@@ -708,7 +708,7 @@ interface IHifiProxyTarget {
     ///
     /// @param hifiPool The address of the HifiPool contract.
     /// @param poolTokensBurned The amount of LP tokens to burn.
-    /// @param withdrawAmount  The amount of underlying to withdraw in exchange for hTokens.
+    /// @param withdrawAmount The amount of underlying to withdraw in exchange for hTokens.
     /// @param deadline The deadline beyond which the signature is not valid anymore.
     /// @param signatureLPToken The packed signature for LP tokens.
     function removeLiquidityAndWithdrawUnderlyingWithSignature(
@@ -896,7 +896,7 @@ interface IHifiProxyTarget {
     ///
     /// @param weth The address of the WETH contract.
     /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param hifiPool  The address of the HifiPool contract.
+    /// @param hifiPool The address of the HifiPool contract.
     /// @param borrowAmount The exact amount of hTokens to borrow and sell for underlying.
     /// @param minUnderlyingOut The minimum amount of underlying that the user is willing to accept.
     function wrapEthAndDepositAndBorrowHTokenAndSellHToken(
