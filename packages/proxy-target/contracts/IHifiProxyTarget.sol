@@ -505,7 +505,7 @@ interface IHifiProxyTarget {
     /// - The caller must have allowed the DSProxy to spend `depositAmount + underlyingOffered` tokens.
     ///
     /// @param hifiPool The address of the HifiPool contract.
-    /// @param depositAmount The amount of underlying to deposit as collateral.
+    /// @param depositAmount The amount of underlying to deposit to mint equivalent amount of hTokens.
     /// @param underlyingOffered The amount of underlying to invest.
     function depositUnderlyingAndMintHTokenAndAddLiquidity(
         IHifiPool hifiPool,
@@ -700,7 +700,8 @@ interface IHifiProxyTarget {
         uint256 withdrawAmount
     ) external;
 
-    /// @notice Removes liquidity from the AMM, and withdraws underlying in exchange for hTokens using EIP-2612 signatures.
+    /// @notice Removes liquidity from the AMM, and withdraws underlying in exchange for hTokens
+    /// using EIP-2612 signatures.
     ///
     /// @dev Requirements:
     /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend `poolTokensBurned`
