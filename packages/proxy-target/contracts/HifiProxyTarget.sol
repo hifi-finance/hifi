@@ -713,15 +713,25 @@ contract HifiProxyTarget is IHifiProxyTarget {
         (uint256 underlyingReturned, uint256 hTokenReturned) = hifiPool.burn(poolTokensBurned);
 
         // Calculate how much underlying will be redeemed,
-        uint256 underlyingRedeemed = normalize(hTokenReturned, hifiPool.underlyingPrecisionScalar());
+        uint256 underlyingRedeemed = denormalize(hTokenReturned, hifiPool.underlyingPrecisionScalar());
 
         // Redeem the underlying.
         IHToken hToken = hifiPool.hToken();
-        hToken.redeem(hTokenReturned);
+        hToken.redeem(underlyingRedeemed);
 
         // Relay all the underlying it to the end user.
         uint256 totalUnderlyingAmount = underlyingReturned + underlyingRedeemed;
         hToken.underlying().safeTransfer(msg.sender, totalUnderlyingAmount);
+
+        // Relay hTokens to the end user.
+        // "hTokenReturned" was denormalized to "underlyingRedeemed", offsetting the trailing 12 digits.
+        if (hTokenReturned > underlyingRedeemed) {
+            unchecked {
+                uint256 hTokenDelta = hTokenReturned -
+                    normalize(underlyingRedeemed, hifiPool.underlyingPrecisionScalar());
+                hToken.transfer(msg.sender, hTokenDelta);
+            }
+        }
     }
 
     /// @inheritdoc IHifiProxyTarget
