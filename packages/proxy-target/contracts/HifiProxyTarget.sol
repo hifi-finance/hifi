@@ -565,13 +565,13 @@ contract HifiProxyTarget is IHifiProxyTarget {
         uint256 depositAmount,
         uint256 underlyingOffered
     ) public override {
-        // When the underlying moonlights as the collateral, the user can borrow on a one-to-one basis.
-        uint256 maxBorrowAmount = normalize(depositAmount, hifiPool.underlyingPrecisionScalar());
+        // Calculate how many hTokens will be minted.
+        uint256 hTokenMinted = normalize(depositAmount, hifiPool.underlyingPrecisionScalar());
 
         // Ensure that we are within the user's slippage tolerance.
         (uint256 hTokenRequired, ) = hifiPool.getMintInputs(underlyingOffered);
-        if (hTokenRequired > maxBorrowAmount) {
-            revert HifiProxyTarget__AddLiquidityHTokenSlippage(maxBorrowAmount, hTokenRequired);
+        if (hTokenRequired > hTokenMinted) {
+            revert HifiProxyTarget__AddLiquidityHTokenSlippage(hTokenMinted, hTokenRequired);
         }
 
         // Transfer the underlying to the DSProxy.
@@ -599,6 +599,14 @@ contract HifiProxyTarget is IHifiProxyTarget {
 
         // The LP tokens are now in the DSProxy, so we relay them to the end user.
         hifiPool.transfer(msg.sender, poolTokensMinted);
+
+        // Relay any remaining hTokens to the end user.
+        if (hTokenMinted > hTokenRequired) {
+            unchecked {
+                uint256 hTokenDelta = hTokenMinted - hTokenRequired;
+                hToken.transfer(msg.sender, hTokenDelta);
+            }
+        }
     }
 
     /// @inheritdoc IHifiProxyTarget
