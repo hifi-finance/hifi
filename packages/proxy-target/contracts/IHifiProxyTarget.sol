@@ -521,7 +521,7 @@ interface IHifiProxyTarget {
     ///  `depositAmount + underlyingOffered` for the given `deadline` and the caller's current nonce.
     ///
     /// @param hifiPool The address of the HifiPool contract.
-    /// @param depositAmount The amount of underlying to deposit as collateral.
+    /// @param depositAmount The amount of underlying to deposit to mint equivalent amount of hTokens.
     /// @param underlyingOffered The amount of underlying to invest.
     /// @param deadline The deadline beyond which the signature is not valid anymore.
     /// @param signatureUnderlying The packed signature for the underlying.
