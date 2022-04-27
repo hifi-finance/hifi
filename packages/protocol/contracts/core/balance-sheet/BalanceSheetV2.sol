@@ -128,7 +128,7 @@ contract BalanceSheetV2 is
             // Grab the normalized USD price of the collateral.
             vars.normalizedCollateralPrice = oracle.getNormalizedPrice(collateral.symbol());
 
-            // Calculate the USD value of the collateral amount;
+            // Calculate the USD value of the collateral amount.
             vars.collateralValueUsd = vars.normalizedCollateralAmount.mul(vars.normalizedCollateralPrice);
 
             // Calculate the USD value of the weighted collateral by dividing the USD value of the collateral amount
@@ -157,7 +157,7 @@ contract BalanceSheetV2 is
             // Grab the normalized USD price of the underlying.
             vars.normalizedUnderlyingPrice = oracle.getNormalizedPrice(bond.underlying().symbol());
 
-            // Calculate the USD value of the collateral amount;
+            // Calculate the USD value of the collateral amount.
             vars.debtValueUsd = vars.debtAmount.mul(vars.normalizedUnderlyingPrice);
 
             // Add the previously calculated USD value to the totals.
