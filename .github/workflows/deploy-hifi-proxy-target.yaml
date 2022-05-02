@@ -46,7 +46,7 @@ jobs:
         run: "yarn compile:sol"
 
       - name: "Build the TypeChain bindings"
-        run: "yarn build:types"
+        run: "yarn generate:types"
 
       - name: "Deploy HifiProxyTarget"
         id: "deploy"
