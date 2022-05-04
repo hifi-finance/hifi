@@ -90,7 +90,7 @@
     "lint:sol": "solhint --config ../../.solhint.json --ignore-path ../../.solhintignore --max-warnings 0 \"contracts/**/*.sol\"",
     "lint:ts": "eslint --config ../../.eslintrc.yaml --ignore-path ../../.eslintignore --ext .js,.ts .",
     "prepack": "yarn build:types",
-    "prepare:types": "yarn hardhat prepare-package",
+    "prepare:types": "yarn generate:types && yarn hardhat prepare-package",
     "prettier": "prettier --config ../../.prettierrc.js --ignore-path ../../.prettierignore --write \"**/*.{js,json,md,sol,ts}\"",
     "prettier:check": "prettier --check --config ../../.prettierrc.js --ignore-path ../../.prettierignore \"**/*.{js,json,md,sol,ts}\""
   }
