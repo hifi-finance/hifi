@@ -1,7 +1,7 @@
 {
   "name": "@hifi/proxy-target",
   "description": "DSProxy target contract with stateless scripts",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "author": {
     "name": "Hifi",
     "email": "contact@hifi.finance",

@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2022-05-06
+
+### Changed
+
+- Replace `depositUnderlyingAndBorrowHTokenAndAddLiquidity` function with `depositUnderlyingAndMintHTokenAndAddLiquidity` function.
+- Replace `removeLiquidityAndRepayBorrowAndWithdrawCollateral` function with `removeLiquidityAndWithdrawUnderlying` function.
+- Upgrade to `solidity-docgen` v0.6.0-beta.8.
+
+### Fixed
+
+- `underlyingRedeemed` calculations in `removeLiquidityAndRedeem` function.
+- Add missing remaining hToken relay logic in `removeLiquidityAndRedeem` function.
+
 ## [1.8.0] - 2022-03-29
 
 ### Changed
@@ -11,7 +24,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Refactor the directory trees in the generated types.
 - Refactor the ethers factories as per the latest typechain output.
 - Upgrade to the latest ethers packages.
-- Upgrade to `@hifi/amm` v1.10.1.
+- Upgrade to `@hifi/amm` v1.10.0.
 - Upgrade to `@hifi/protocol` v1.10.0.
 
 ### Removed
@@ -175,6 +188,7 @@ YANKED.
 
 - First release of the package.
 
+[1.9.0]: https://github.com/hifi-finance/hifi/compare/@hifi/proxy-target@1.8.0...@hifi/proxy-target@1.9.0
 [1.8.0]: https://github.com/hifi-finance/hifi/compare/@hifi/proxy-target@1.7.1...@hifi/proxy-target@1.8.0
 [1.7.1]: https://github.com/hifi-finance/hifi/compare/@hifi/proxy-target@1.7.0...@hifi/proxy-target@1.7.1
 [1.7.0]: https://github.com/hifi-finance/hifi/compare/@hifi/proxy-target@1.6.1...@hifi/proxy-target@1.7.0
