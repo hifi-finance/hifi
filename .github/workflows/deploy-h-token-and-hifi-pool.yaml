@@ -19,6 +19,9 @@ on:
         default: "2"
         description: "Number of block confirmations to wait before attempting verification"
         required: false
+      fintroller:
+        description: "Address of the Fintroller contract"
+        required: true
       h-token-maturity:
         description: "Unix timestamp for when the hToken matures"
         required: true
@@ -72,6 +75,7 @@ jobs:
           yarn workspace @hifi/protocol hardhat
           deploy:contract:h-token --network "${{ github.event.inputs.chain }}"
           --balance-sheet "${{ github.event.inputs.balance-sheet }}"
+          --fintroller "${{ github.event.inputs.fintroller }}"
           --maturity "${{ github.event.inputs.h-token-maturity }}"
           --name "${{ github.event.inputs.h-token-name }}"
           --symbol "${{ github.event.inputs.h-token-symbol }}"
