@@ -8,6 +8,7 @@
     "url": "https://hifi.finance"
   },
   "devDependencies": {
+    "@actions/core": "^1.8.0",
     "@commitlint/cli": "^16.2.3",
     "@commitlint/config-conventional": "^16.2.1",
     "@trivago/prettier-plugin-sort-imports": "^3.2.0",

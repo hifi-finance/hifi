@@ -1,3 +1,4 @@
+import { setOutput } from "@actions/core";
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { task, types } from "hardhat/config";
 import type { TaskArguments } from "hardhat/types";
@@ -17,6 +18,7 @@ task(TASK_DEPLOY_CONTRACT_H_TOKEN)
   // Developer settings
   .addOptionalParam("confirmations", "How many block confirmations to wait for", 2, types.int)
   .addOptionalParam("print", "Print the address in the console", true, types.boolean)
+  .addOptionalParam("setOutput", "Set the contract address as an output in GitHub Actions", false, types.boolean)
   .addOptionalParam("verify", "Verify the contract on Etherscan", true, types.boolean)
   .setAction(async function (taskArgs: TaskArguments, { ethers, run }): Promise<string> {
     const signers: SignerWithAddress[] = await ethers.getSigners();
@@ -36,6 +38,10 @@ task(TASK_DEPLOY_CONTRACT_H_TOKEN)
 
     if (taskArgs.print) {
       console.table([{ name: "HToken", address: hToken.address }]);
+    }
+
+    if (taskArgs.setOutput) {
+      setOutput("h-token", hToken.address);
     }
 
     if (taskArgs.verify) {

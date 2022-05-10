@@ -82,6 +82,7 @@ jobs:
           --underlying "${{ github.event.inputs.underlying }}"
           --confirmations "${{ github.event.inputs.confirmations }}"
           --print true
+          --set-output true
           --verify true
 
       - name: "Deploy HifiPool"
