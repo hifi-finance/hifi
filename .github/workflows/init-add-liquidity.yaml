@@ -22,7 +22,7 @@ on:
         default: "main"
         description: "Git ref to checkout"
         required: false
-      supply-underlying-amount:
+      deposit-underlying-amount:
         description: "Amount of underlying to supply in exchange for hTokens"
         required: true
 
@@ -60,4 +60,4 @@ jobs:
           init:add-liquidity --network "${{ github.event.inputs.chain }}"
           --hifi-pool "${{ github.event.inputs.hifi-pool }}"
           --pool-underlying-amount "${{ github.event.inputs.pool-underlying-amount }}"
-          --supply-underlying-amount "${{ github.event.inputs.supply-underlying-amount }}"
+          --deposit-underlying-amount "${{ github.event.inputs.deposit-underlying-amount }}"
