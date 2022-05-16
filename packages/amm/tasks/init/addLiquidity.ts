@@ -14,9 +14,9 @@ import { TASK_INIT_ADD_LIQUIDITY } from "../constants";
 
 task(TASK_INIT_ADD_LIQUIDITY)
   // Contract arguments
+  .addParam("depositUnderlyingAmount", "Amount of underlying to supply in exchange for hTokens")
   .addParam("hifiPool", "Address of the HifiPool contract")
   .addParam("poolUnderlyingAmount", "Amount of underlying to add as liquidity in the pool")
-  .addParam("depositUnderlyingAmount", "Amount of underlying to supply in exchange for hTokens")
   // Developer settings
   .addOptionalParam("printTxHashes", "Print the tx hashes in the console", true, types.boolean)
   .setAction(async function (taskArgs: TaskArguments, { ethers }): Promise<void> {
@@ -32,8 +32,8 @@ task(TASK_INIT_ADD_LIQUIDITY)
     const underlying: Erc20 = <Erc20>erc20Factory.attach(underlyingAddress);
 
     // Load the underlying amounts.
-    const poolUnderlyingAmount: BigNumber = BigNumber.from(taskArgs.poolUnderlyingAmount);
     const depositUnderlyingAmount: BigNumber = BigNumber.from(taskArgs.depositUnderlyingAmount);
+    const poolUnderlyingAmount: BigNumber = BigNumber.from(taskArgs.poolUnderlyingAmount);
     const totalUnderlyingAmount: BigNumber = poolUnderlyingAmount.add(depositUnderlyingAmount);
 
     // Stop if the signer does not have enough underlying.
