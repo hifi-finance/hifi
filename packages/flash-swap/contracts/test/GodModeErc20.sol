@@ -26,6 +26,18 @@ contract GodModeErc20 is Erc20 {
 
     /// PUBLIC NON-CONSTANT FUNCTIONS ///
 
+    /// @notice Sets `approveAmount` as the allowance of `spender` over `holder`'s tokens.
+    /// @param holder The account whose tokens to approve.
+    /// @param spender The account for which to approve the tokens.
+    /// @param approveAmount The amount of tokens to approve.
+    function __godMode_approve(
+        address holder,
+        address spender,
+        uint256 approveAmount
+    ) external {
+        approveInternal(holder, spender, approveAmount);
+    }
+
     /// @notice Destroys `burnAmount` tokens from `holder`, reducing the token supply.
     /// @param holder The account whose tokens to burn.
     /// @param burnAmount The amount of tokens to destroy.

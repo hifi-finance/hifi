@@ -92,15 +92,48 @@ export function shouldBehaveLikeCollateralFlashSwap(): void {
       await reducePoolReserves.call(this, Zero, USDC("75e4"));
     });
 
-    it("flash swaps USDC and makes a WBTC profit", async function () {
-      const to: string = this.contracts.flashUniswapV2.address;
-      const oldCollateralBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
-      const data: string = getFlashSwapCallData.call(this);
-      await this.contracts.uniswapV2Pair
-        .connect(this.signers.liquidator)
-        .swap(swapUnderlyingAmount, swapCollateralAmount, to, data);
-      const newCollateralBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
-      expect(newCollateralBalance.sub(profitCollateralAmount)).to.equal(oldCollateralBalance);
+    context("when the bond does not have enough allowance to spend underlying from flash swap contract", function () {
+      beforeEach(async function () {
+        // Set bond's allowance of the flash swap contract's underlying to 0.
+        await this.contracts.usdc.__godMode_approve(
+          this.contracts.flashUniswapV2.address,
+          this.contracts.hToken.address,
+          "0",
+        );
+      });
+
+      it("flash swaps USDC and makes a WBTC profit", async function () {
+        const to: string = this.contracts.flashUniswapV2.address;
+        const oldCollateralBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+        const data: string = getFlashSwapCallData.call(this);
+        await this.contracts.uniswapV2Pair
+          .connect(this.signers.liquidator)
+          .swap(swapUnderlyingAmount, swapCollateralAmount, to, data);
+        const newCollateralBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+        expect(newCollateralBalance.sub(profitCollateralAmount)).to.equal(oldCollateralBalance);
+      });
+    });
+
+    context("when the bond has enough allowance to spend underlying from flash swap contract", function () {
+      beforeEach(async function () {
+        // Approve the bond to spend an infinite amount underlying from the flash swap contract.
+        await this.contracts.usdc.__godMode_approve(
+          this.contracts.flashUniswapV2.address,
+          this.contracts.hToken.address,
+          MaxUint256,
+        );
+      });
+
+      it("flash swaps USDC and makes a WBTC profit", async function () {
+        const to: string = this.contracts.flashUniswapV2.address;
+        const oldCollateralBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+        const data: string = getFlashSwapCallData.call(this);
+        await this.contracts.uniswapV2Pair
+          .connect(this.signers.liquidator)
+          .swap(swapUnderlyingAmount, swapCollateralAmount, to, data);
+        const newCollateralBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+        expect(newCollateralBalance.sub(profitCollateralAmount)).to.equal(oldCollateralBalance);
+      });
     });
   });
 

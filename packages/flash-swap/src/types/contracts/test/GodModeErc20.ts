@@ -30,6 +30,7 @@ import type {
 
 export interface GodModeErc20Interface extends utils.Interface {
   functions: {
+    "__godMode_approve(address,address,uint256)": FunctionFragment;
     "__godMode_burn(address,uint256)": FunctionFragment;
     "__godMode_mint(address,uint256)": FunctionFragment;
     "allowance(address,address)": FunctionFragment;
@@ -47,6 +48,7 @@ export interface GodModeErc20Interface extends utils.Interface {
 
   getFunction(
     nameOrSignatureOrTopic:
+      | "__godMode_approve"
       | "__godMode_burn"
       | "__godMode_mint"
       | "allowance"
@@ -62,6 +64,10 @@ export interface GodModeErc20Interface extends utils.Interface {
       | "transferFrom"
   ): FunctionFragment;
 
+  encodeFunctionData(
+    functionFragment: "__godMode_approve",
+    values: [string, string, BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "__godMode_burn",
     values: [string, BigNumberish]
@@ -103,6 +109,10 @@ export interface GodModeErc20Interface extends utils.Interface {
     values: [string, string, BigNumberish]
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "__godMode_approve",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "__godMode_burn",
     data: BytesLike
@@ -215,6 +225,13 @@ export interface GodModeErc20 extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    __godMode_approve(
+      holder: string,
+      spender: string,
+      approveAmount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     __godMode_burn(
       holder: string,
       burnAmount: BigNumberish,
@@ -274,6 +291,13 @@ export interface GodModeErc20 extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
+
+  __godMode_approve(
+    holder: string,
+    spender: string,
+    approveAmount: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   __godMode_burn(
     holder: string,
@@ -335,6 +359,13 @@ export interface GodModeErc20 extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    __godMode_approve(
+      holder: string,
+      spender: string,
+      approveAmount: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     __godMode_burn(
       holder: string,
       burnAmount: BigNumberish,
@@ -432,6 +463,13 @@ export interface GodModeErc20 extends BaseContract {
   };
 
   estimateGas: {
+    __godMode_approve(
+      holder: string,
+      spender: string,
+      approveAmount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     __godMode_burn(
       holder: string,
       burnAmount: BigNumberish,
@@ -493,6 +531,13 @@ export interface GodModeErc20 extends BaseContract {
   };
 
   populateTransaction: {
+    __godMode_approve(
+      holder: string,
+      spender: string,
+      approveAmount: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     __godMode_burn(
       holder: string,
       burnAmount: BigNumberish,
