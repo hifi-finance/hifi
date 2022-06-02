@@ -637,13 +637,27 @@ contract HifiProxyTarget is IHifiProxyTarget {
         uint256 oldHTokenBalance = hToken.balanceOf(address(this));
         depositUnderlyingInternal(hToken, underlyingAmount);
 
+        // Calculate how many hTokens were minted.
+        uint256 newHTokenBalance = hToken.balanceOf(address(this));
+        uint256 hTokenAmount;
         unchecked {
-            // Calculate how many hTokens were minted.
-            uint256 newHTokenBalance = hToken.balanceOf(address(this));
-            uint256 hTokenAmount = newHTokenBalance - oldHTokenBalance;
+            hTokenAmount = newHTokenBalance - oldHTokenBalance;
+        }
 
-            // Use the newly minted hTokens to repay the debt.
+        // Query the amount of debt that the user owes.
+        uint256 debtAmount = balanceSheet.getDebtAmount(address(this), hToken);
+
+        // Use the recently minted hTokens to repay the borrow.
+        if (debtAmount >= hTokenAmount) {
             balanceSheet.repayBorrow(hToken, hTokenAmount);
+        } else {
+            balanceSheet.repayBorrow(hToken, debtAmount);
+
+            // Relay any remaining hTokens to the end user.
+            unchecked {
+                uint256 hTokenDelta = hTokenAmount - debtAmount;
+                hToken.transfer(msg.sender, hTokenDelta);
+            }
         }
     }
 
