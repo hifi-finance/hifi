@@ -62,4 +62,4 @@ async function getQuote() {
 
 ## License
 
-[LGPL v3](./LICENSE.md) © Mainframe Group Inc.
+[BUSL v1.1](./LICENSE.md) © Mainframe Group Inc.

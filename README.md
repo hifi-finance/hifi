@@ -61,4 +61,4 @@ For security concerns, please email [security@hifi.finance](mailto:security@hifi
 
 ## License
 
-[LGPL v3](./LICENSE.md) © Mainframe Group Inc.
+[BUSL v1.1](./LICENSE.md) © Mainframe Group Inc.

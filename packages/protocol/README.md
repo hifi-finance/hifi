@@ -69,4 +69,4 @@ async function queryAccountLiquidity() {
 
 ## License
 
-[LGPL v3](./LICENSE.md) © Mainframe Group Inc.
+[BUSL 1.1](./LICENSE.md) © Mainframe Group Inc.
