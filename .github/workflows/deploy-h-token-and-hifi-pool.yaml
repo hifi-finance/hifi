@@ -34,6 +34,10 @@ on:
       hifi-pool-registry:
         description: "Address of the HifiPoolRegistry contract"
         required: true
+      new-owner:
+        default: ""
+        description: "Address of new owner to set the deployed hToken contract to"
+        required: false
       ref:
         default: "main"
         description: "Git ref to checkout"
@@ -78,6 +82,7 @@ jobs:
           --fintroller "${{ github.event.inputs.fintroller }}"
           --maturity "${{ github.event.inputs.h-token-maturity }}"
           --name "${{ github.event.inputs.h-token-name }}"
+          --new-owner "${{ github.event.inputs.new-owner }}"
           --symbol "${{ github.event.inputs.h-token-symbol }}"
           --underlying "${{ github.event.inputs.underlying }}"
           --confirmations "${{ github.event.inputs.confirmations }}"

@@ -11,6 +11,7 @@ task(TASK_DEPLOY_CONTRACT_BALANCE_SHEET)
   .addParam("oracle", "The address of the oracle contract")
   // Developer settings
   .addOptionalParam("confirmations", "How many block confirmations to wait for", 2, types.int)
+  .addOptionalParam("newOwner", "The address of new owner to set the deployed contract to", null, types.string)
   .addOptionalParam("print", "Print the address in the console", true, types.boolean)
   .addOptionalParam("verify", "Verify the contract on Etherscan", true, types.boolean)
   .setAction(async function (taskArgs: TaskArguments, { ethers, run, upgrades }) {
@@ -44,6 +45,14 @@ task(TASK_DEPLOY_CONTRACT_BALANCE_SHEET)
         });
       } catch (error) {
         console.error("Error while verifying contract:", error);
+      }
+    }
+
+    if (taskArgs.newOwner) {
+      try {
+        await balanceSheetProxy._transferOwnership(taskArgs.newOwner);
+      } catch (error) {
+        console.error("Error while transferring ownership:", error);
       }
     }
 

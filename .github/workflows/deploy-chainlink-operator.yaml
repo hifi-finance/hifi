@@ -16,6 +16,10 @@ on:
         default: "2"
         description: "Number of block confirmations to wait before attempting verification"
         required: false
+      new-owner:
+        default: ""
+        description: "Address of new owner to set the deployed contract to"
+        required: false
       ref:
         default: "main"
         description: "Git ref to checkout"
@@ -54,5 +58,6 @@ jobs:
           yarn workspace @hifi/protocol hardhat
           deploy:contract:chainlink-operator --network "${{ github.event.inputs.chain }}"
           --confirmations "${{ github.event.inputs.confirmations }}"
+          --new-owner "${{ github.event.inputs.new-owner }}"
           --print true
           --verify true

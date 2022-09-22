@@ -19,6 +19,10 @@ on:
       fintroller:
         description: "Address of the Fintroller contract"
         required: true
+      new-owner:
+        default: ""
+        description: "Address of new owner to set the deployed contract to"
+        required: false
       oracle:
         description: "Address of the oracle contract"
         required: true
@@ -57,6 +61,7 @@ jobs:
           yarn workspace @hifi/protocol hardhat
           deploy:contract:balance-sheet --network "${{ github.event.inputs.chain }}"
           --fintroller "${{ github.event.inputs.fintroller }}"
+          --new-owner "${{ github.event.inputs.new-owner }}"
           --oracle "${{ github.event.inputs.oracle }}"
           --confirmations "${{ github.event.inputs.confirmations }}"
           --print true
