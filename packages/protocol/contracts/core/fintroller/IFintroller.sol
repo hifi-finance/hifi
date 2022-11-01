@@ -123,12 +123,6 @@ interface IFintroller is IOwnable {
     /// @param newMaxBonds The address of the new max bonds value.
     event SetMaxBonds(address indexed owner, uint256 oldMaxBonds, uint256 newMaxBonds);
 
-    /// @notice Emitted when the redeem permission is updated.
-    /// @param owner The address of the contract owner.
-    /// @param bond The related HToken.
-    /// @param state True if redeeming is allowed.
-    event SetRedeemAllowed(address indexed owner, IHToken indexed bond, bool state);
-
     /// @notice Emitted when the repay borrow permission is updated.
     /// @param owner The address of the contract owner.
     /// @param bond The related HToken.
@@ -143,7 +137,6 @@ interface IFintroller is IOwnable {
         bool isDepositUnderlyingAllowed;
         bool isLiquidateBorrowAllowed;
         bool isListed;
-        bool isRedeemHTokenAllowed;
         bool isRepayBorrowAllowed;
     }
 

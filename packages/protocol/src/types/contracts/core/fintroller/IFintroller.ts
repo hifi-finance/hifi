@@ -35,13 +35,11 @@ export declare namespace IFintroller {
     isDepositUnderlyingAllowed: boolean;
     isLiquidateBorrowAllowed: boolean;
     isListed: boolean;
-    isRedeemHTokenAllowed: boolean;
     isRepayBorrowAllowed: boolean;
   };
 
   export type BondStructOutput = [
     BigNumber,
-    boolean,
     boolean,
     boolean,
     boolean,
@@ -53,7 +51,6 @@ export declare namespace IFintroller {
     isDepositUnderlyingAllowed: boolean;
     isLiquidateBorrowAllowed: boolean;
     isListed: boolean;
-    isRedeemHTokenAllowed: boolean;
     isRepayBorrowAllowed: boolean;
   };
 
@@ -368,7 +365,6 @@ export interface IFintrollerInterface extends utils.Interface {
     "SetLiquidateBorrowAllowed(address,address,bool)": EventFragment;
     "SetLiquidationIncentive(address,address,uint256,uint256)": EventFragment;
     "SetMaxBonds(address,uint256,uint256)": EventFragment;
-    "SetRedeemAllowed(address,address,bool)": EventFragment;
     "SetRepayBorrowAllowed(address,address,bool)": EventFragment;
     "TransferOwnership(address,address)": EventFragment;
   };
@@ -388,7 +384,6 @@ export interface IFintrollerInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "SetLiquidateBorrowAllowed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetLiquidationIncentive"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetMaxBonds"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "SetRedeemAllowed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetRepayBorrowAllowed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TransferOwnership"): EventFragment;
 }
@@ -530,19 +525,6 @@ export type SetMaxBondsEvent = TypedEvent<
 >;
 
 export type SetMaxBondsEventFilter = TypedEventFilter<SetMaxBondsEvent>;
-
-export interface SetRedeemAllowedEventObject {
-  owner: string;
-  bond: string;
-  state: boolean;
-}
-export type SetRedeemAllowedEvent = TypedEvent<
-  [string, string, boolean],
-  SetRedeemAllowedEventObject
->;
-
-export type SetRedeemAllowedEventFilter =
-  TypedEventFilter<SetRedeemAllowedEvent>;
 
 export interface SetRepayBorrowAllowedEventObject {
   owner: string;
@@ -1136,17 +1118,6 @@ export interface IFintroller extends BaseContract {
       oldMaxBonds?: null,
       newMaxBonds?: null
     ): SetMaxBondsEventFilter;
-
-    "SetRedeemAllowed(address,address,bool)"(
-      owner?: string | null,
-      bond?: string | null,
-      state?: null
-    ): SetRedeemAllowedEventFilter;
-    SetRedeemAllowed(
-      owner?: string | null,
-      bond?: string | null,
-      state?: null
-    ): SetRedeemAllowedEventFilter;
 
     "SetRepayBorrowAllowed(address,address,bool)"(
       owner?: string | null,

@@ -148,7 +148,6 @@ contract Fintroller is
             isDepositUnderlyingAllowed: true,
             isLiquidateBorrowAllowed: true,
             isListed: true,
-            isRedeemHTokenAllowed: true,
             isRepayBorrowAllowed: true
         });
         emit ListBond(owner, bond);

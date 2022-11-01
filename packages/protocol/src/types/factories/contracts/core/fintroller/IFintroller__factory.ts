@@ -418,31 +418,6 @@ const _abi = [
         type: "bool",
       },
     ],
-    name: "SetRedeemAllowed",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "owner",
-        type: "address",
-      },
-      {
-        indexed: true,
-        internalType: "contract IHToken",
-        name: "bond",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "bool",
-        name: "state",
-        type: "bool",
-      },
-    ],
     name: "SetRepayBorrowAllowed",
     type: "event",
   },
@@ -520,11 +495,6 @@ const _abi = [
           {
             internalType: "bool",
             name: "isListed",
-            type: "bool",
-          },
-          {
-            internalType: "bool",
-            name: "isRedeemHTokenAllowed",
             type: "bool",
           },
           {
