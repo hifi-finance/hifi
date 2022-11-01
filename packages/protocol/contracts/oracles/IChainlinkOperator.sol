@@ -18,6 +18,9 @@ interface IChainlinkOperator {
     /// @notice Emitted when trying to interact with a feed not set yet.
     error ChainlinkOperator__FeedNotSet(string symbol);
 
+    /// @notice Emitted when the latest price update timestamp returned by the oracle is too old.
+    error ChainlinkOperator__PriceStale(string symbol);
+
     /// @notice Emitted when the price returned by the oracle is zero.
     error ChainlinkOperator__PriceZero(string symbol);
 
@@ -32,6 +35,11 @@ interface IChainlinkOperator {
     /// @param asset The related asset.
     /// @param feed The related feed.
     event SetFeed(IErc20 indexed asset, IAggregatorV3 indexed feed);
+
+    /// @notice Emitted when the Chainlink price staleness threshold is set.
+    /// @param oldPriceStalenessThreshold The old Chainlink price staleness threshold.
+    /// @param newPriceStalenessThreshold The new Chainlink price staleness threshold.
+    event SetPriceStalenessThreshold(uint256 oldPriceStalenessThreshold, uint256 newPriceStalenessThreshold);
 
     /// STRUCTS ///
 
@@ -83,6 +91,9 @@ interface IChainlinkOperator {
     /// @notice The ratio between normalized precision (1e18) and the Chainlink price precision (1e8).
     function pricePrecisionScalar() external view returns (uint256);
 
+    /// @notice The Chainlink price staleness threshold.
+    function priceStalenessThreshold() external view returns (uint256);
+
     /// NON-CONSTANT FUNCTIONS ///
 
     /// @notice Deletes a previously set Chainlink price feed.
@@ -109,4 +120,15 @@ interface IChainlinkOperator {
     /// @param asset The address of the Erc20 contract for which to get the price.
     /// @param feed The address of the Chainlink price feed contract.
     function setFeed(IErc20 asset, IAggregatorV3 feed) external;
+
+    /// @notice Sets the Chainlink price staleness threshold.
+    ///
+    /// @dev Emits a {SetPriceStalenessThreshold} event.
+    ///
+    /// Requirements:
+    ///
+    /// - The caller must be the owner.
+    ///
+    /// @param newPriceStalenessThreshold The new Chainlink price staleness threshold.
+    function setPriceStalenessThreshold(uint256 newPriceStalenessThreshold) external;
 }

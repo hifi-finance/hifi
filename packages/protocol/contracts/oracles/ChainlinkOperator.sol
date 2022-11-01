@@ -23,8 +23,11 @@ contract ChainlinkOperator is
     /// @inheritdoc IChainlinkOperator
     uint256 public constant override pricePrecisionScalar = 1.0e10;
 
+    /// @inheritdoc IChainlinkOperator
+    uint256 public override priceStalenessThreshold;
+
     constructor() Ownable() {
-        // solhint-disable-previous-line no-empty-blocks
+        priceStalenessThreshold = 1 days;
     }
 
     /// CONSTANT FUNCTIONS ///
@@ -55,7 +58,10 @@ contract ChainlinkOperator is
         if (!feeds[symbol].isSet) {
             revert ChainlinkOperator__FeedNotSet(symbol);
         }
-        (, int256 intPrice, , , ) = IAggregatorV3(feeds[symbol].id).latestRoundData();
+        (, int256 intPrice, , uint256 latestUpdateTimestamp, ) = IAggregatorV3(feeds[symbol].id).latestRoundData();
+        if (block.timestamp - latestUpdateTimestamp > priceStalenessThreshold) {
+            revert ChainlinkOperator__PriceStale(symbol);
+        }
         uint256 price = uint256(intPrice);
         if (price == 0) {
             revert ChainlinkOperator__PriceZero(symbol);
@@ -94,5 +100,14 @@ contract ChainlinkOperator is
         feeds[symbol] = Feed({ asset: asset, id: feed, isSet: true });
 
         emit SetFeed(asset, feed);
+    }
+
+    /// @inheritdoc IChainlinkOperator
+    function setPriceStalenessThreshold(uint256 newPriceStalenessThreshold) external override onlyOwner {
+        // Effects: update storage.
+        uint256 oldPriceStalenessThreshold = priceStalenessThreshold;
+        priceStalenessThreshold = newPriceStalenessThreshold;
+
+        emit SetPriceStalenessThreshold(oldPriceStalenessThreshold, newPriceStalenessThreshold);
     }
 }
