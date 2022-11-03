@@ -320,6 +320,14 @@ contract BalanceSheetV2 is
         // Effects: add the collateral to the redundant list, if this is the first time collateral is added.
         uint256 collateralAmount = vaults[msg.sender].collateralAmounts[collateral];
         if (collateralAmount == 0) {
+            // Checks: below max collaterals limit.
+            unchecked {
+                uint256 newCollateralListLength = vaults[msg.sender].collateralList.length + 1;
+                uint256 maxCollaterals = fintroller.maxCollaterals();
+                if (newCollateralListLength > maxCollaterals) {
+                    revert BalanceSheet__DepositMaxCollaterals(collateral, newCollateralListLength, maxCollaterals);
+                }
+            }
             vaults[msg.sender].collateralList.push(collateral);
         }
 

@@ -20,6 +20,13 @@ interface IBalanceSheetV2 is IOwnableUpgradeable {
     /// @notice Emitted when the account exceeds the maximum numbers of bonds permitted.
     error BalanceSheet__BorrowMaxBonds(IHToken bond, uint256 newBondListLength, uint256 maxBonds);
 
+    /// @notice Emitted when the account exceeds the maximum numbers of collateral permitted.
+    error BalanceSheet__DepositMaxCollaterals(
+        IErc20 collateral,
+        uint256 newCollateralListLength,
+        uint256 maxCollaterals
+    );
+
     /// @notice Emitted when borrows are not allowed by the Fintroller contract.
     error BalanceSheet__BorrowNotAllowed(IHToken bond);
 

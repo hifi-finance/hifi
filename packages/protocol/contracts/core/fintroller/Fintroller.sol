@@ -18,6 +18,9 @@ contract Fintroller is
     /// @inheritdoc IFintroller
     uint256 public override maxBonds;
 
+    /// @inheritdoc IFintroller
+    uint256 public override maxCollaterals;
+
     /// INTERNAL STORAGE ///
 
     /// @dev The threshold below which the collateral ratio cannot be set, equivalent to 100%.
@@ -34,6 +37,9 @@ contract Fintroller is
 
     /// @dev The default maximum number of bond markets a single account can enter.
     uint256 internal constant DEFAULT_MAX_BONDS = 10;
+
+    /// @dev The default maximum number of collaterals a single account can deposit.
+    uint256 internal constant DEFAULT_MAX_COLLATERALS = 10;
 
     /// @dev The threshold below which the liquidation incentive cannot be set, equivalent to 100%.
     uint256 internal constant LIQUIDATION_INCENTIVE_LOWER_BOUND = 1.0e18;
@@ -52,6 +58,9 @@ contract Fintroller is
     constructor() Ownable() {
         // Set the max bonds limit.
         maxBonds = DEFAULT_MAX_BONDS;
+
+        // Set the max collaterals limit
+        maxCollaterals = DEFAULT_MAX_COLLATERALS;
     }
 
     /// PUBLIC CONSTANT FUNCTIONS ///
@@ -295,6 +304,13 @@ contract Fintroller is
         uint256 oldMaxBonds = maxBonds;
         maxBonds = newMaxBonds;
         emit SetMaxBonds(owner, oldMaxBonds, newMaxBonds);
+    }
+
+    /// @inheritdoc IFintroller
+    function setMaxCollaterals(uint256 newMaxCollaterals) external override onlyOwner {
+        uint256 oldMaxCollaterals = maxCollaterals;
+        maxCollaterals = newMaxCollaterals;
+        emit SetMaxCollaterals(owner, oldMaxCollaterals, newMaxCollaterals);
     }
 
     /// @inheritdoc IFintroller

@@ -406,6 +406,31 @@ const _abi = [
         type: "address",
       },
       {
+        indexed: false,
+        internalType: "uint256",
+        name: "oldMaxCollaterals",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "newMaxCollaterals",
+        type: "uint256",
+      },
+    ],
+    name: "SetMaxCollaterals",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: "address",
+        name: "owner",
+        type: "address",
+      },
+      {
         indexed: true,
         internalType: "contract IHToken",
         name: "bond",
@@ -807,6 +832,19 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "maxCollaterals",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "owner",
     outputs: [
       {
@@ -971,6 +1009,19 @@ const _abi = [
       },
     ],
     name: "setMaxBonds",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "newMaxCollaterals",
+        type: "uint256",
+      },
+    ],
+    name: "setMaxCollaterals",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

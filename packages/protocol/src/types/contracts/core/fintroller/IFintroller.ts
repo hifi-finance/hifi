@@ -97,6 +97,7 @@ export interface IFintrollerInterface extends utils.Interface {
     "listBond(address)": FunctionFragment;
     "listCollateral(address)": FunctionFragment;
     "maxBonds()": FunctionFragment;
+    "maxCollaterals()": FunctionFragment;
     "owner()": FunctionFragment;
     "setBorrowAllowed(address,bool)": FunctionFragment;
     "setCollateralCeiling(address,uint256)": FunctionFragment;
@@ -107,6 +108,7 @@ export interface IFintrollerInterface extends utils.Interface {
     "setLiquidateBorrowAllowed(address,bool)": FunctionFragment;
     "setLiquidationIncentive(address,uint256)": FunctionFragment;
     "setMaxBonds(uint256)": FunctionFragment;
+    "setMaxCollaterals(uint256)": FunctionFragment;
     "setRepayBorrowAllowed(address,bool)": FunctionFragment;
   };
 
@@ -130,6 +132,7 @@ export interface IFintrollerInterface extends utils.Interface {
       | "listBond"
       | "listCollateral"
       | "maxBonds"
+      | "maxCollaterals"
       | "owner"
       | "setBorrowAllowed"
       | "setCollateralCeiling"
@@ -140,6 +143,7 @@ export interface IFintrollerInterface extends utils.Interface {
       | "setLiquidateBorrowAllowed"
       | "setLiquidationIncentive"
       | "setMaxBonds"
+      | "setMaxCollaterals"
       | "setRepayBorrowAllowed"
   ): FunctionFragment;
 
@@ -206,6 +210,10 @@ export interface IFintrollerInterface extends utils.Interface {
     values: [string]
   ): string;
   encodeFunctionData(functionFragment: "maxBonds", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "maxCollaterals",
+    values?: undefined
+  ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "setBorrowAllowed",
@@ -241,6 +249,10 @@ export interface IFintrollerInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "setMaxBonds",
+    values: [BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setMaxCollaterals",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
@@ -311,6 +323,10 @@ export interface IFintrollerInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "maxBonds", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "maxCollaterals",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setBorrowAllowed",
@@ -349,6 +365,10 @@ export interface IFintrollerInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "setMaxCollaterals",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "setRepayBorrowAllowed",
     data: BytesLike
   ): Result;
@@ -365,6 +385,7 @@ export interface IFintrollerInterface extends utils.Interface {
     "SetLiquidateBorrowAllowed(address,address,bool)": EventFragment;
     "SetLiquidationIncentive(address,address,uint256,uint256)": EventFragment;
     "SetMaxBonds(address,uint256,uint256)": EventFragment;
+    "SetMaxCollaterals(address,uint256,uint256)": EventFragment;
     "SetRepayBorrowAllowed(address,address,bool)": EventFragment;
     "TransferOwnership(address,address)": EventFragment;
   };
@@ -384,6 +405,7 @@ export interface IFintrollerInterface extends utils.Interface {
   getEvent(nameOrSignatureOrTopic: "SetLiquidateBorrowAllowed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetLiquidationIncentive"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetMaxBonds"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SetMaxCollaterals"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetRepayBorrowAllowed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TransferOwnership"): EventFragment;
 }
@@ -526,6 +548,19 @@ export type SetMaxBondsEvent = TypedEvent<
 
 export type SetMaxBondsEventFilter = TypedEventFilter<SetMaxBondsEvent>;
 
+export interface SetMaxCollateralsEventObject {
+  owner: string;
+  oldMaxCollaterals: BigNumber;
+  newMaxCollaterals: BigNumber;
+}
+export type SetMaxCollateralsEvent = TypedEvent<
+  [string, BigNumber, BigNumber],
+  SetMaxCollateralsEventObject
+>;
+
+export type SetMaxCollateralsEventFilter =
+  TypedEventFilter<SetMaxCollateralsEvent>;
+
 export interface SetRepayBorrowAllowedEventObject {
   owner: string;
   bond: string;
@@ -661,6 +696,8 @@ export interface IFintroller extends BaseContract {
 
     maxBonds(overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    maxCollaterals(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     owner(overrides?: CallOverrides): Promise<[string]>;
 
     setBorrowAllowed(
@@ -713,6 +750,11 @@ export interface IFintroller extends BaseContract {
 
     setMaxBonds(
       newMaxBonds: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setMaxCollaterals(
+      newMaxCollaterals: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
@@ -800,6 +842,8 @@ export interface IFintroller extends BaseContract {
 
   maxBonds(overrides?: CallOverrides): Promise<BigNumber>;
 
+  maxCollaterals(overrides?: CallOverrides): Promise<BigNumber>;
+
   owner(overrides?: CallOverrides): Promise<string>;
 
   setBorrowAllowed(
@@ -852,6 +896,11 @@ export interface IFintroller extends BaseContract {
 
   setMaxBonds(
     newMaxBonds: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setMaxCollaterals(
+    newMaxCollaterals: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -934,6 +983,8 @@ export interface IFintroller extends BaseContract {
 
     maxBonds(overrides?: CallOverrides): Promise<BigNumber>;
 
+    maxCollaterals(overrides?: CallOverrides): Promise<BigNumber>;
+
     owner(overrides?: CallOverrides): Promise<string>;
 
     setBorrowAllowed(
@@ -986,6 +1037,11 @@ export interface IFintroller extends BaseContract {
 
     setMaxBonds(
       newMaxBonds: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setMaxCollaterals(
+      newMaxCollaterals: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
@@ -1119,6 +1175,17 @@ export interface IFintroller extends BaseContract {
       newMaxBonds?: null
     ): SetMaxBondsEventFilter;
 
+    "SetMaxCollaterals(address,uint256,uint256)"(
+      owner?: string | null,
+      oldMaxCollaterals?: null,
+      newMaxCollaterals?: null
+    ): SetMaxCollateralsEventFilter;
+    SetMaxCollaterals(
+      owner?: string | null,
+      oldMaxCollaterals?: null,
+      newMaxCollaterals?: null
+    ): SetMaxCollateralsEventFilter;
+
     "SetRepayBorrowAllowed(address,address,bool)"(
       owner?: string | null,
       bond?: string | null,
@@ -1218,6 +1285,8 @@ export interface IFintroller extends BaseContract {
 
     maxBonds(overrides?: CallOverrides): Promise<BigNumber>;
 
+    maxCollaterals(overrides?: CallOverrides): Promise<BigNumber>;
+
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
     setBorrowAllowed(
@@ -1270,6 +1339,11 @@ export interface IFintroller extends BaseContract {
 
     setMaxBonds(
       newMaxBonds: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setMaxCollaterals(
+      newMaxCollaterals: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -1367,6 +1441,8 @@ export interface IFintroller extends BaseContract {
 
     maxBonds(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    maxCollaterals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     setBorrowAllowed(
@@ -1419,6 +1495,11 @@ export interface IFintroller extends BaseContract {
 
     setMaxBonds(
       newMaxBonds: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setMaxCollaterals(
+      newMaxCollaterals: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 

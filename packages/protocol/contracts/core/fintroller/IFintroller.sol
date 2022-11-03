@@ -123,6 +123,12 @@ interface IFintroller is IOwnable {
     /// @param newMaxBonds The address of the new max bonds value.
     event SetMaxBonds(address indexed owner, uint256 oldMaxBonds, uint256 newMaxBonds);
 
+    /// @notice Emitted when a new max collaterals value is set.
+    /// @param owner The address indexed owner.
+    /// @param oldMaxCollaterals The address of the old max collaterals value.
+    /// @param newMaxCollaterals The address of the new max collaterals value.
+    event SetMaxCollaterals(address indexed owner, uint256 oldMaxCollaterals, uint256 newMaxCollaterals);
+
     /// @notice Emitted when the repay borrow permission is updated.
     /// @param owner The address of the contract owner.
     /// @param bond The related HToken.
@@ -228,6 +234,9 @@ interface IFintroller is IOwnable {
 
     /// @notice Returns the maximum number of bond markets a single account can enter.
     function maxBonds() external view returns (uint256);
+
+    /// @notice Returns the maximum number of Collaterals a single account can deposit.
+    function maxCollaterals() external view returns (uint256);
 
     /// NON-CONSTANT FUNCTIONS ///
 
@@ -367,6 +376,16 @@ interface IFintroller is IOwnable {
     ///
     /// @param newMaxBonds New max bonds value.
     function setMaxBonds(uint256 newMaxBonds) external;
+
+    /// @notice Sets max collaterals value, which controls how many collaterals a single account can deposit.
+    ///
+    /// @dev Emits a {SetMaxCollaterals} event.
+    ///
+    /// Requirements:
+    /// - The caller must be the owner.
+    ///
+    /// @param newMaxCollaterals New max collaterals value.
+    function setMaxCollaterals(uint256 newMaxCollaterals) external;
 
     /// @notice Updates the state of the permission accessed by the hToken before a repay borrow.
     ///
