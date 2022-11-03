@@ -412,7 +412,7 @@ contract BalanceSheetV2 is
         address borrower,
         IHToken bond,
         uint256 repayAmount
-    ) external override {
+    ) external override onlyOwner {
         repayBorrowInternal(msg.sender, borrower, bond, repayAmount);
     }
 
