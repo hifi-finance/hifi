@@ -17,16 +17,35 @@ interface IHifiProxyTarget {
     /// CUSTOM ERRORS ///
 
     /// @notice Emitted when the hToken slippage is higher than what the user is willing to tolerate.
-    error HifiProxyTarget__AddLiquidityHTokenSlippage(uint256 expectedHTokenRequired, uint256 actualHTokenRequired);
+    error HifiProxyTarget__AddLiquidityHTokenSlippage(
+        uint256 minHTokenRequired,
+        uint256 maxHTokenRequired,
+        uint256 actualHTokenRequired
+    );
+
+    /// @notice Emitted when the hToken slippage is higher than what the user is willing to tolerate.
+    error HifiProxyTarget__RemoveLiquidityHTokenSlippage(
+        uint256 minHTokenRequired,
+        uint256 maxHTokenRequired,
+        uint256 actualHTokenRequired
+    );
 
     /// @notice Emitted when the underlying slippage is higher than what the user is willing to tolerate.
     error HifiProxyTarget__AddLiquidityUnderlyingSlippage(
-        uint256 expectedUnderlyingRequired,
+        uint256 minUnderlyingRequired,
+        uint256 maxUnderlyingRequired,
+        uint256 actualUnderlyingRequired
+    );
+
+    /// @notice Emitted when the underlying slippage is higher than what the user is willing to tolerate.
+    error HifiProxyTarget__RemoveLiquidityUnderlyingSlippage(
+        uint256 minUnderlyingRequired,
+        uint256 maxUnderlyingRequired,
         uint256 actualUnderlyingRequired
     );
 
     /// @notice Emitted when the slippage is higher than what the user is willing to tolerate.
-    error HifiProxyTarget__TradeSlippage(uint256 expectedAmount, uint256 actualAmount);
+    error HifiProxyTarget__TradeSlippage(uint256 minAmount, uint256 maxAmount, uint256 actualAmount);
 
     /// EVENTS
 
@@ -51,10 +70,12 @@ interface IHifiProxyTarget {
     ///
     /// @param hifiPool The address of the HifiPool contract.
     /// @param underlyingOffered The amount of underlying to invest.
+    /// @param minHTokenRequired The minimum amount of hTokens that the user is willing to accept.
     /// @param maxHTokenRequired The maximum amount of hTokens that the user is willing to accept.
     function addLiquidity(
         IHifiPool hifiPool,
         uint256 underlyingOffered,
+        uint256 minHTokenRequired,
         uint256 maxHTokenRequired
     ) external;
 
@@ -66,6 +87,7 @@ interface IHifiProxyTarget {
     ///
     /// @param hifiPool The address of the HifiPool contract.
     /// @param underlyingOffered The amount of underlying to invest.
+    /// @param minHTokenRequired The minimum amount of hTokens that the user is willing to accept.
     /// @param maxHTokenRequired The maximum amount of hTokens that the user is willing to accept.
     /// @param deadline The deadline beyond which the signatures are not valid anymore.
     /// @param signatureHToken The packed signature for the hToken.
@@ -73,6 +95,7 @@ interface IHifiProxyTarget {
     function addLiquidityWithSignature(
         IHifiPool hifiPool,
         uint256 underlyingOffered,
+        uint256 minHTokenRequired,
         uint256 maxHTokenRequired,
         uint256 deadline,
         bytes memory signatureHToken,
@@ -101,6 +124,7 @@ interface IHifiProxyTarget {
     function borrowHTokenAndAddLiquidity(
         IBalanceSheetV2 balanceSheet,
         IHifiPool hifiPool,
+        uint256 minBorrowAmount,
         uint256 maxBorrowAmount,
         uint256 underlyingOffered
     ) external;
@@ -120,6 +144,7 @@ interface IHifiProxyTarget {
     function borrowHTokenAndAddLiquidityWithSignature(
         IBalanceSheetV2 balanceSheet,
         IHifiPool hifiPool,
+        uint256 minBorrowAmount,
         uint256 maxBorrowAmount,
         uint256 underlyingOffered,
         uint256 deadline,
@@ -132,11 +157,13 @@ interface IHifiProxyTarget {
     ///
     /// @param balanceSheet The address of the BalanceSheet contract.
     /// @param hifiPool The address of the HifiPool contract.
-    /// @param maxBorrowAmount The amount of hTokens to borrow and the max amount that the user is willing to pay.
+    /// @param minBorrowAmount The min amount that the user is willing to pay.
+    /// @param maxBorrowAmount The max amount that the user is willing to pay.
     /// @param underlyingOut The exact amount of underlying that the user wants to buy.
     function borrowHTokenAndBuyUnderlying(
         IBalanceSheetV2 balanceSheet,
         IHifiPool hifiPool,
+        uint256 minBorrowAmount,
         uint256 maxBorrowAmount,
         uint256 underlyingOut
     ) external;
@@ -181,6 +208,7 @@ interface IHifiProxyTarget {
     function buyHTokenAndAddLiquidity(
         IHifiPool hifiPool,
         uint256 hTokenOut,
+        uint256 minUnderlyingAmount,
         uint256 maxUnderlyingAmount
     ) external;
 
@@ -198,6 +226,7 @@ interface IHifiProxyTarget {
     function buyHTokenAndAddLiquidityWithSignature(
         IHifiPool hifiPool,
         uint256 hTokenOut,
+        uint256 minUnderlyingAmount,
         uint256 maxUnderlyingAmount,
         uint256 deadline,
         bytes memory signatureUnderlying
@@ -210,11 +239,13 @@ interface IHifiProxyTarget {
     ///
     /// @param hifiPool The address of the HifiPool contract.
     /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param minUnderlyingIn The minimum amount of underlying that the user is willing to pay.
     /// @param maxUnderlyingIn The maximum amount of underlying that the user is willing to pay.
     /// @param hTokenOut The exact amount of hTokens to buy and the amount to repay and the maximum amount to repay.
     function buyHTokenAndRepayBorrow(
         IHifiPool hifiPool,
         IBalanceSheetV2 balanceSheet,
+        uint256 minUnderlyingIn,
         uint256 maxUnderlyingIn,
         uint256 hTokenOut
     ) external;
@@ -227,6 +258,7 @@ interface IHifiProxyTarget {
     ///
     /// @param hifiPool The address of the HifiPool contract.
     /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param minUnderlyingIn The minimum amount of underlying that the user is willing to pay.
     /// @param maxUnderlyingIn The maximum amount of underlying that the user is willing to pay.
     /// @param hTokenOut The exact amount of hTokens to buy and the amount to repay and the maximum amount to repay.
     /// @param deadline The deadline beyond which the signature is not valid anymore.
@@ -234,6 +266,7 @@ interface IHifiProxyTarget {
     function buyHTokenAndRepayBorrowWithSignature(
         IHifiPool hifiPool,
         IBalanceSheetV2 balanceSheet,
+        uint256 minUnderlyingIn,
         uint256 maxUnderlyingIn,
         uint256 hTokenOut,
         uint256 deadline,
@@ -266,10 +299,12 @@ interface IHifiProxyTarget {
     ///
     /// @param hifiPool The address of the HifiPool contract.
     /// @param underlyingOut The exact amount of underlying that the user wants to buy.
+    /// @param minHTokenin The minimum amount of hTokens that the user is willing to pay.
     /// @param maxHTokenIn The maximum amount of hTokens that the user is willing to pay.
     function buyUnderlying(
         IHifiPool hifiPool,
         uint256 underlyingOut,
+        uint256 minHTokenin,
         uint256 maxHTokenIn
     ) external;
 
@@ -278,10 +313,12 @@ interface IHifiProxyTarget {
     /// - The caller must have allowed DSProxy to spend `maxHTokenAmount` tokens.
     ///
     /// @param hifiPool The address of the HifiPool contract.
-    /// @param maxHTokenAmount maxHTokenAmount The maximum amount of hTokens that the user is willing to invest.
+    /// @param minHTokenAmount The minimum amount of hTokens that the user is willing to invest.
+    /// @param maxHTokenAmount The maximum amount of hTokens that the user is willing to invest.
     /// @param underlyingOffered The amount of underlying to invest.
     function buyUnderlyingAndAddLiquidity(
         IHifiPool hifiPool,
+        uint256 minHTokenAmount,
         uint256 maxHTokenAmount,
         uint256 underlyingOffered
     ) external;
@@ -292,12 +329,14 @@ interface IHifiProxyTarget {
     /// `maxHTokenAmount` tokens for the given `deadline` and the caller's current nonce.
     ///
     /// @param hifiPool The address of the HifiPool contract.
-    /// @param maxHTokenAmount maxHTokenAmount The maximum amount of hTokens that the user is willing to invest.
+    /// @param minHTokenAmount The minimum amount of hTokens that the user is willing to invest.
+    /// @param maxHTokenAmount The maximum amount of hTokens that the user is willing to invest.
     /// @param underlyingOffered The amount of underlying to invest.
     /// @param deadline The deadline beyond which the signature is not valid anymore.
     /// @param signatureHToken The packed signature for the hToken.
     function buyUnderlyingAndAddLiquidityWithSignature(
         IHifiPool hifiPool,
+        uint256 minHTokenAmount,
         uint256 maxHTokenAmount,
         uint256 underlyingOffered,
         uint256 deadline,
@@ -312,12 +351,14 @@ interface IHifiProxyTarget {
     ///
     /// @param hifiPool The address of the HifiPool contract.
     /// @param underlyingOut The exact amount of underlying that the user wants to buy.
+    /// @param minHTokenIn The minimum amount of hTokens that the user is willing to pay.
     /// @param maxHTokenIn The maximum amount of hTokens that the user is willing to pay.
     /// @param deadline The deadline beyond which the signature is not valid anymore.
     /// @param signatureHToken The packed signature for the hToken.
     function buyUnderlyingWithSignature(
         IHifiPool hifiPool,
         uint256 underlyingOut,
+        uint256 minHTokenIn,
         uint256 maxHTokenIn,
         uint256 deadline,
         bytes memory signatureHToken
@@ -364,13 +405,15 @@ interface IHifiProxyTarget {
     /// @param collateral The address of the collateral contract.
     /// @param hifiPool The address of the HifiPool contract.
     /// @param depositAmount The amount of collateral to deposit.
-    /// @param maxBorrowAmount The amount of hTokens to borrow and the max amount that the user is willing to invest.
+    /// @param minBorrowAmount The min amount that the user is willing to invest.
+    /// @param maxBorrowAmount The max amount that the user is willing to invest.
     /// @param underlyingOffered The amount of underlying to invest.
     function depositCollateralAndBorrowHTokenAndAddLiquidity(
         IBalanceSheetV2 balanceSheet,
         IErc20 collateral,
         IHifiPool hifiPool,
         uint256 depositAmount,
+        uint256 minBorrowAmount,
         uint256 maxBorrowAmount,
         uint256 underlyingOffered
     ) external;
@@ -386,7 +429,8 @@ interface IHifiProxyTarget {
     /// @param collateral The address of the collateral contract.
     /// @param hifiPool The address of the HifiPool contract.
     /// @param depositAmount The amount of collateral to deposit.
-    /// @param maxBorrowAmount The amount of hTokens to borrow and the max amount that the user is willing to invest.
+    /// @param minBorrowAmount The min amount that the user is willing to invest.
+    /// @param maxBorrowAmount The max amount that the user is willing to invest.
     /// @param underlyingOffered The amount of underlying to invest.
     /// @param deadline The deadline beyond which the signatures are not valid anymore.
     /// @param signatureCollateral The packed signature for the collateral.
@@ -396,6 +440,7 @@ interface IHifiProxyTarget {
         IErc20Permit collateral,
         IHifiPool hifiPool,
         uint256 depositAmount,
+        uint256 minBorrowAmount,
         uint256 maxBorrowAmount,
         uint256 underlyingOffered,
         uint256 deadline,
@@ -506,10 +551,14 @@ interface IHifiProxyTarget {
     ///
     /// @param hifiPool The address of the HifiPool contract.
     /// @param depositAmount The amount of underlying to deposit to mint equivalent amount of hTokens.
+    /// @param minHTokenRequired The minimum amount of hToken to get for underlying.
+    /// @param maxHTokenRequired The maximum amount of hToken to get for underlying.
     /// @param underlyingOffered The amount of underlying to invest.
     function depositUnderlyingAndMintHTokenAndAddLiquidity(
         IHifiPool hifiPool,
         uint256 depositAmount,
+        uint256 minHTokenRequired,
+        uint256 maxHTokenRequired,
         uint256 underlyingOffered
     ) external;
 
@@ -522,12 +571,16 @@ interface IHifiProxyTarget {
     ///
     /// @param hifiPool The address of the HifiPool contract.
     /// @param depositAmount The amount of underlying to deposit to mint equivalent amount of hTokens.
+    /// @param minHTokenRequired The minimum amount of hToken to get for underlying.
+    /// @param maxHTokenRequired The maximum amount of hToken to get for underlying.
     /// @param underlyingOffered The amount of underlying to invest.
     /// @param deadline The deadline beyond which the signature is not valid anymore.
     /// @param signatureUnderlying The packed signature for the underlying.
     function depositUnderlyingAndMintHTokenAndAddLiquidityWithSignature(
         IHifiPool hifiPool,
         uint256 depositAmount,
+        uint256 minHTokenRequired,
+        uint256 maxHTokenRequired,
         uint256 underlyingOffered,
         uint256 deadline,
         bytes memory signatureUnderlying
@@ -623,7 +676,18 @@ interface IHifiProxyTarget {
     ///
     /// @param hifiPool The address of the HifiPool contract.
     /// @param poolTokensBurned The amount of LP tokens to burn.
-    function removeLiquidity(IHifiPool hifiPool, uint256 poolTokensBurned) external;
+    /// @param minUnderlyingOut the minimum amount of underlying token that the user is willing to get
+    /// @param maxUnderlyingOut the maximum amount of underlying token that the user is willing to get
+    /// @param minHTokenOut the minimum amount of hToken that the user is willing to get
+    /// @param maxHTokenOut the maximum amount of hToken that the user is willing to get
+    function removeLiquidity(
+        IHifiPool hifiPool,
+        uint256 poolTokensBurned,
+        uint256 minUnderlyingOut,
+        uint256 maxUnderlyingOut,
+        uint256 minHTokenOut,
+        uint256 maxHTokenOut
+    ) external;
 
     /// @notice Removes liquidity from the AMM and redeems underlying in exchange for all hTokens
     /// retrieved from the AMM.
@@ -633,7 +697,18 @@ interface IHifiProxyTarget {
     ///
     /// @param hifiPool The address of the HifiPool contract.
     /// @param poolTokensBurned The amount of LP tokens to burn.
-    function removeLiquidityAndRedeem(IHifiPool hifiPool, uint256 poolTokensBurned) external;
+    /// @param minUnderlyingOut the minimum amount of underlying token that the user is willing to get
+    /// @param maxUnderlyingOut the maximum amount of underlying token that the user is willing to get
+    /// @param minHTokenOut the minimum amount of hToken that the user is willing to get
+    /// @param maxHTokenOut the maximum amount of hToken that the user is willing to get
+    function removeLiquidityAndRedeem(
+        IHifiPool hifiPool,
+        uint256 poolTokensBurned,
+        uint256 minUnderlyingOut,
+        uint256 maxUnderlyingOut,
+        uint256 minHTokenOut,
+        uint256 maxHTokenOut
+    ) external;
 
     /// @notice Removes liquidity from the AMM, and redeems all hTokens for the underlying using EIP-2612 signatures.
     ///
@@ -643,11 +718,19 @@ interface IHifiProxyTarget {
     ///
     /// @param hifiPool The address of the HifiPool contract.
     /// @param poolTokensBurned The amount of LP tokens to burn.
+    /// @param minUnderlyingOut the minimum amount of underlying token that the user is willing to get
+    /// @param maxUnderlyingOut the maximum amount of underlying token that the user is willing to get
+    /// @param minHTokenOut the minimum amount of hToken that the user is willing to get
+    /// @param maxHTokenOut the maximum amount of hToken that the user is willing to get
     /// @param deadline The deadline beyond which the signature is not valid anymore.
     /// @param signatureLPToken The packed signature for LP tokens.
     function removeLiquidityAndRedeemWithSignature(
         IHifiPool hifiPool,
         uint256 poolTokensBurned,
+        uint256 minUnderlyingOut,
+        uint256 maxUnderlyingOut,
+        uint256 minHTokenOut,
+        uint256 maxHTokenOut,
         uint256 deadline,
         bytes memory signatureLPToken
     ) external;
@@ -660,10 +743,12 @@ interface IHifiProxyTarget {
     /// @param hifiPool The address of the HifiPool contract.
     /// @param poolTokensBurned The amount of LP tokens to burn.
     /// @param minUnderlyingOut The minimum amount of underlying that the user is willing to accept.
+    /// @param maxUnderlyingOut The maximum amount of underlying that the user is willing to accept.
     function removeLiquidityAndSellHToken(
         IHifiPool hifiPool,
         uint256 poolTokensBurned,
-        uint256 minUnderlyingOut
+        uint256 minUnderlyingOut,
+        uint256 maxUnderlyingOut
     ) external;
 
     /// @notice Removes liquidity from the AMM, and sells all hTokens for underlying using EIP-2612 signatures.
@@ -681,6 +766,7 @@ interface IHifiProxyTarget {
         IHifiPool hifiPool,
         uint256 poolTokensBurned,
         uint256 minUnderlyingOut,
+        uint256 maxUnderlyingOut,
         uint256 deadline,
         bytes memory signatureLPToken
     ) external;
@@ -694,10 +780,18 @@ interface IHifiProxyTarget {
     /// @param hifiPool The address of the HifiPool contract.
     /// @param poolTokensBurned The amount of LP tokens to burn.
     /// @param withdrawAmount The amount of underlying to withdraw in exchange for hTokens.
+    /// @param minUnderlyingOut the minimum amount of underlying token that the user is willing to get
+    /// @param maxUnderlyingOut the maximum amount of underlying token that the user is willing to get
+    /// @param minHTokenOut the minimum amount of hToken that the user is willing to get
+    /// @param maxHTokenOut the maximum amount of hToken that the user is willing to get
     function removeLiquidityAndWithdrawUnderlying(
         IHifiPool hifiPool,
         uint256 poolTokensBurned,
-        uint256 withdrawAmount
+        uint256 withdrawAmount,
+        uint256 minUnderlyingOut,
+        uint256 maxUnderlyingOut,
+        uint256 minHTokenOut,
+        uint256 maxHTokenOut
     ) external;
 
     /// @notice Removes liquidity from the AMM, and withdraws underlying in exchange for hTokens
@@ -716,6 +810,10 @@ interface IHifiProxyTarget {
         IHifiPool hifiPool,
         uint256 poolTokensBurned,
         uint256 withdrawAmount,
+        uint256 minUnderlyingOut,
+        uint256 maxUnderlyingOut,
+        uint256 minHTokenOut,
+        uint256 maxHTokenOut,
         uint256 deadline,
         bytes memory signatureLPToken
     ) external;
@@ -728,11 +826,19 @@ interface IHifiProxyTarget {
     ///
     /// @param hifiPool The address of the HifiPool contract.
     /// @param poolTokensBurned The amount of LP tokens to burn.
+    /// @param minUnderlyingOut the minimum amount of underlying token that the user is willing to get
+    /// @param maxUnderlyingOut the maximum amount of underlying token that the user is willing to get
+    /// @param minHTokenOut the minimum amount of hToken that the user is willing to get
+    /// @param maxHTokenOut the maximum amount of hToken that the user is willing to get
     /// @param deadline The deadline beyond which the signature is not valid anymore.
     /// @param signatureLPToken The packed signature for LP tokens.
     function removeLiquidityWithSignature(
         IHifiPool hifiPool,
         uint256 poolTokensBurned,
+        uint256 minUnderlyingOut,
+        uint256 maxUnderlyingOut,
+        uint256 minHTokenOut,
+        uint256 maxHTokenOut,
         uint256 deadline,
         bytes memory signatureLPToken
     ) external;

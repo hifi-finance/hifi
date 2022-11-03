@@ -15,7 +15,12 @@ const _abi = [
     inputs: [
       {
         internalType: "uint256",
-        name: "expectedHTokenRequired",
+        name: "minHTokenRequired",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxHTokenRequired",
         type: "uint256",
       },
       {
@@ -31,7 +36,12 @@ const _abi = [
     inputs: [
       {
         internalType: "uint256",
-        name: "expectedUnderlyingRequired",
+        name: "minUnderlyingRequired",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxUnderlyingRequired",
         type: "uint256",
       },
       {
@@ -47,7 +57,54 @@ const _abi = [
     inputs: [
       {
         internalType: "uint256",
-        name: "expectedAmount",
+        name: "minHTokenRequired",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxHTokenRequired",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "actualHTokenRequired",
+        type: "uint256",
+      },
+    ],
+    name: "HifiProxyTarget__RemoveLiquidityHTokenSlippage",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "minUnderlyingRequired",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxUnderlyingRequired",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "actualUnderlyingRequired",
+        type: "uint256",
+      },
+    ],
+    name: "HifiProxyTarget__RemoveLiquidityUnderlyingSlippage",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "minAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxAmount",
         type: "uint256",
       },
       {
@@ -123,6 +180,11 @@ const _abi = [
       },
       {
         internalType: "uint256",
+        name: "minHTokenRequired",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
         name: "maxHTokenRequired",
         type: "uint256",
       },
@@ -142,6 +204,11 @@ const _abi = [
       {
         internalType: "uint256",
         name: "underlyingOffered",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "minHTokenRequired",
         type: "uint256",
       },
       {
@@ -207,6 +274,11 @@ const _abi = [
       },
       {
         internalType: "uint256",
+        name: "minBorrowAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
         name: "maxBorrowAmount",
         type: "uint256",
       },
@@ -232,6 +304,11 @@ const _abi = [
         internalType: "contract IHifiPool",
         name: "hifiPool",
         type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "minBorrowAmount",
+        type: "uint256",
       },
       {
         internalType: "uint256",
@@ -270,6 +347,11 @@ const _abi = [
         internalType: "contract IHifiPool",
         name: "hifiPool",
         type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "minBorrowAmount",
+        type: "uint256",
       },
       {
         internalType: "uint256",
@@ -352,6 +434,11 @@ const _abi = [
       },
       {
         internalType: "uint256",
+        name: "minUnderlyingAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
         name: "maxUnderlyingAmount",
         type: "uint256",
       },
@@ -371,6 +458,11 @@ const _abi = [
       {
         internalType: "uint256",
         name: "hTokenOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "minUnderlyingAmount",
         type: "uint256",
       },
       {
@@ -408,6 +500,11 @@ const _abi = [
       },
       {
         internalType: "uint256",
+        name: "minUnderlyingIn",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
         name: "maxUnderlyingIn",
         type: "uint256",
       },
@@ -433,6 +530,11 @@ const _abi = [
         internalType: "contract IBalanceSheetV2",
         name: "balanceSheet",
         type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "minUnderlyingIn",
+        type: "uint256",
       },
       {
         internalType: "uint256",
@@ -507,6 +609,11 @@ const _abi = [
       },
       {
         internalType: "uint256",
+        name: "minHTokenin",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
         name: "maxHTokenIn",
         type: "uint256",
       },
@@ -522,6 +629,11 @@ const _abi = [
         internalType: "contract IHifiPool",
         name: "hifiPool",
         type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "minHTokenAmount",
+        type: "uint256",
       },
       {
         internalType: "uint256",
@@ -545,6 +657,11 @@ const _abi = [
         internalType: "contract IHifiPool",
         name: "hifiPool",
         type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "minHTokenAmount",
+        type: "uint256",
       },
       {
         internalType: "uint256",
@@ -582,6 +699,11 @@ const _abi = [
       {
         internalType: "uint256",
         name: "underlyingOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "minHTokenIn",
         type: "uint256",
       },
       {
@@ -685,6 +807,11 @@ const _abi = [
       },
       {
         internalType: "uint256",
+        name: "minBorrowAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
         name: "maxBorrowAmount",
         type: "uint256",
       },
@@ -719,6 +846,11 @@ const _abi = [
       {
         internalType: "uint256",
         name: "depositAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "minBorrowAmount",
         type: "uint256",
       },
       {
@@ -946,6 +1078,16 @@ const _abi = [
       },
       {
         internalType: "uint256",
+        name: "minHTokenRequired",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxHTokenRequired",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
         name: "underlyingOffered",
         type: "uint256",
       },
@@ -965,6 +1107,16 @@ const _abi = [
       {
         internalType: "uint256",
         name: "depositAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "minHTokenRequired",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxHTokenRequired",
         type: "uint256",
       },
       {
@@ -1140,6 +1292,26 @@ const _abi = [
         name: "poolTokensBurned",
         type: "uint256",
       },
+      {
+        internalType: "uint256",
+        name: "minUnderlyingOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxUnderlyingOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "minHTokenOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxHTokenOut",
+        type: "uint256",
+      },
     ],
     name: "removeLiquidity",
     outputs: [],
@@ -1158,6 +1330,26 @@ const _abi = [
         name: "poolTokensBurned",
         type: "uint256",
       },
+      {
+        internalType: "uint256",
+        name: "minUnderlyingOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxUnderlyingOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "minHTokenOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxHTokenOut",
+        type: "uint256",
+      },
     ],
     name: "removeLiquidityAndRedeem",
     outputs: [],
@@ -1174,6 +1366,26 @@ const _abi = [
       {
         internalType: "uint256",
         name: "poolTokensBurned",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "minUnderlyingOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxUnderlyingOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "minHTokenOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxHTokenOut",
         type: "uint256",
       },
       {
@@ -1209,6 +1421,11 @@ const _abi = [
         name: "minUnderlyingOut",
         type: "uint256",
       },
+      {
+        internalType: "uint256",
+        name: "maxUnderlyingOut",
+        type: "uint256",
+      },
     ],
     name: "removeLiquidityAndSellHToken",
     outputs: [],
@@ -1230,6 +1447,11 @@ const _abi = [
       {
         internalType: "uint256",
         name: "minUnderlyingOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxUnderlyingOut",
         type: "uint256",
       },
       {
@@ -1265,6 +1487,26 @@ const _abi = [
         name: "withdrawAmount",
         type: "uint256",
       },
+      {
+        internalType: "uint256",
+        name: "minUnderlyingOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxUnderlyingOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "minHTokenOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxHTokenOut",
+        type: "uint256",
+      },
     ],
     name: "removeLiquidityAndWithdrawUnderlying",
     outputs: [],
@@ -1286,6 +1528,26 @@ const _abi = [
       {
         internalType: "uint256",
         name: "withdrawAmount",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "minUnderlyingOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxUnderlyingOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "minHTokenOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxHTokenOut",
         type: "uint256",
       },
       {
@@ -1314,6 +1576,26 @@ const _abi = [
       {
         internalType: "uint256",
         name: "poolTokensBurned",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "minUnderlyingOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxUnderlyingOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "minHTokenOut",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxHTokenOut",
         type: "uint256",
       },
       {
