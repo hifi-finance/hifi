@@ -190,6 +190,11 @@ contract Fintroller is
         if (!bonds[bond].isListed) {
             revert Fintroller__BondNotListed(bond);
         }
+
+        if (state && !bonds[bond].isLiquidateBorrowAllowed) {
+            revert Fintroller__BondBorrowAllowedWithLiquidateBorrowDisallowed();
+        }
+
         bonds[bond].isBorrowAllowed = state;
         emit SetBorrowAllowed(owner, bond, state);
     }
@@ -221,6 +226,9 @@ contract Fintroller is
         }
         if (newCollateralRatio < COLLATERAL_RATIO_LOWER_BOUND) {
             revert Fintroller__CollateralRatioUnderflow(newCollateralRatio);
+        }
+        if (newCollateralRatio < collaterals[collateral].liquidationIncentive) {
+            revert Fintroller__CollateralRatioBelowLiquidationIncentive(newCollateralRatio);
         }
 
         // Effects: update storage.
@@ -273,6 +281,14 @@ contract Fintroller is
         if (!bonds[bond].isListed) {
             revert Fintroller__BondNotListed(bond);
         }
+
+        if (state && !bonds[bond].isRepayBorrowAllowed) {
+            revert Fintroller__BondLiquidateBorrowAllowedWithRepayBorrowDisallowed();
+        }
+        if (!state && bonds[bond].isBorrowAllowed) {
+            revert Fintroller__BondLiquidateBorrowDisallowedWithBorrowAllowed();
+        }
+
         bonds[bond].isLiquidateBorrowAllowed = state;
         emit SetLiquidateBorrowAllowed(owner, bond, state);
     }
@@ -290,6 +306,9 @@ contract Fintroller is
         }
         if (newLiquidationIncentive < LIQUIDATION_INCENTIVE_LOWER_BOUND) {
             revert Fintroller__LiquidationIncentiveUnderflow(newLiquidationIncentive);
+        }
+        if (newLiquidationIncentive > collaterals[collateral].ratio) {
+            revert Fintroller__LiquidationIncentiveAboveCollateralRatio(newLiquidationIncentive);
         }
 
         // Effects: update storage.
@@ -318,6 +337,11 @@ contract Fintroller is
         if (!bonds[bond].isListed) {
             revert Fintroller__BondNotListed(bond);
         }
+
+        if (!state && bonds[bond].isLiquidateBorrowAllowed) {
+            revert Fintroller__BondRepayBorrowDisallowedWithLiquidateBorrowAllowed();
+        }
+
         bonds[bond].isRepayBorrowAllowed = state;
         emit SetRepayBorrowAllowed(owner, bond, state);
     }

@@ -12,6 +12,21 @@ import { Contract, Signer, utils } from "ethers";
 
 const _abi = [
   {
+    inputs: [],
+    name: "Fintroller__BondBorrowAllowedWithLiquidateBorrowDisallowed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Fintroller__BondLiquidateBorrowAllowedWithRepayBorrowDisallowed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Fintroller__BondLiquidateBorrowDisallowedWithBorrowAllowed",
+    type: "error",
+  },
+  {
     inputs: [
       {
         internalType: "contract IHToken",
@@ -20,6 +35,11 @@ const _abi = [
       },
     ],
     name: "Fintroller__BondNotListed",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "Fintroller__BondRepayBorrowDisallowedWithLiquidateBorrowAllowed",
     type: "error",
   },
   {
@@ -47,6 +67,17 @@ const _abi = [
       },
     ],
     name: "Fintroller__CollateralNotListed",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "newCollateralRatio",
+        type: "uint256",
+      },
+    ],
+    name: "Fintroller__CollateralRatioBelowLiquidationIncentive",
     type: "error",
   },
   {
@@ -85,6 +116,17 @@ const _abi = [
       },
     ],
     name: "Fintroller__DebtCeilingUnderflow",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "newLiquidationIncentive",
+        type: "uint256",
+      },
+    ],
+    name: "Fintroller__LiquidationIncentiveAboveCollateralRatio",
     type: "error",
   },
   {

@@ -15,6 +15,18 @@ interface IFintroller is IOwnable {
     /// @notice Emitted when interacting with a bond that is not listed.
     error Fintroller__BondNotListed(IHToken bond);
 
+    /// @notice Emitted when allowing borrow for a bond when liquidate borrow is disallowed.
+    error Fintroller__BondBorrowAllowedWithLiquidateBorrowDisallowed();
+
+    /// @notice Emitted when allowing liquidate borrow for a bond when repay borrow is disallowed.
+    error Fintroller__BondLiquidateBorrowAllowedWithRepayBorrowDisallowed();
+
+    /// @notice Emitted when disallowing liquidate borrow for a bond when borrow is allowed.
+    error Fintroller__BondLiquidateBorrowDisallowedWithBorrowAllowed();
+
+    /// @notice Emitted when disallowing repay borrow for a bond when liquidate borrow is allowed.
+    error Fintroller__BondRepayBorrowDisallowedWithLiquidateBorrowAllowed();
+
     /// @notice Emitted when listing a collateral that has more than 18 decimals.
     error Fintroller__CollateralDecimalsOverflow(uint256 decimals);
 
@@ -24,6 +36,9 @@ interface IFintroller is IOwnable {
     /// @notice Emitted when interacting with a collateral that is not listed.
     error Fintroller__CollateralNotListed(IErc20 collateral);
 
+    /// @notice Emitted when setting a new collateral ratio that is below the liquidation incentive
+    error Fintroller__CollateralRatioBelowLiquidationIncentive(uint256 newCollateralRatio);
+
     /// @notice Emitted when setting a new collateral ratio that is above the upper bound.
     error Fintroller__CollateralRatioOverflow(uint256 newCollateralRatio);
 
@@ -32,6 +47,9 @@ interface IFintroller is IOwnable {
 
     /// @notice Emitted when setting a new debt ceiling that is below the total supply of hTokens.
     error Fintroller__DebtCeilingUnderflow(uint256 newDebtCeiling, uint256 totalSupply);
+
+    /// @notice Emitted when setting a new liquidation incentive that is higher than the collateral ratio.
+    error Fintroller__LiquidationIncentiveAboveCollateralRatio(uint256 newLiquidationIncentive);
 
     /// @notice Emitted when setting a new liquidation incentive that is above the upper bound.
     error Fintroller__LiquidationIncentiveOverflow(uint256 newLiquidationIncentive);

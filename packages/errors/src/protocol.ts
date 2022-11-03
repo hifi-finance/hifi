@@ -29,13 +29,19 @@ export enum ChainlinkOperatorErrors {
 }
 
 export enum FintrollerErrors {
+  BOND_BORROW_ALLOWED_WITH_LIQUIDATE_BORROW_DISALLOWED = "Fintroller__BondBorrowAllowedWithLiquidateBorrowDisallowed",
+  BOND_LIQUIDATE_BORROW_ALLOWED_WITH_REPAY_BORROW_DISALLOWED = "Fintroller__BondLiquidateBorrowAllowedWithRepayBorrowDisallowed",
+  BOND_LIQUIDATE_BORROW_DISALLOWED_WITH_BORROW_ALLOWED = "Fintroller__BondLiquidateBorrowDisallowedWithBorrowAllowed",
   BOND_NOT_LISTED = "Fintroller__BondNotListed",
+  BOND_REPAY_BORROW_DISALLOWED_WITH_LIQUIDATE_BORROW_ALLOWED = "Fintroller__BondRepayBorrowDisallowedWithLiquidateBorrowAllowed",
   COLLATERAL_DECIMALS_OVERFLOW = "Fintroller__CollateralDecimalsOverflow",
   COLLATERAL_DECIMALS_ZERO = "Fintroller__CollateralDecimalsZero",
   COLLATERAL_NOT_LISTED = "Fintroller__CollateralNotListed",
+  COLLATERAL_RATIO_BELOW_LIQUIDATION_INCENTIVE = "Fintroller__CollateralRatioBelowLiquidationIncentive",
   COLLATERAL_RATIO_OVERFLOW = "Fintroller__CollateralRatioOverflow",
   COLLATERAL_RATIO_UNDERFLOW = "Fintroller__CollateralRatioUnderflow",
   DEBT_CEILING_UNDERFLOW = "Fintroller__DebtCeilingUnderflow",
+  LIQUIDATION_INCENTIVE_ABOVE_COLLATERAL_RATIO = "Fintroller__LiquidationIncentiveAboveCollateralRatio",
   LIQUIDATION_INCENTIVE_OVERFLOW = "Fintroller__LiquidationIncentiveOverflow",
   LIQUIDATION_INCENTIVE_UNDERFLOW = "Fintroller__LiquidationIncentiveUnderflow",
 }
