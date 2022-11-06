@@ -917,24 +917,6 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "contract IHToken",
-        name: "hToken",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "underlyingAmount",
-        type: "uint256",
-      },
-    ],
-    name: "depositUnderlying",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
         internalType: "contract IHifiPool",
         name: "hifiPool",
         type: "address",
@@ -1040,34 +1022,6 @@ const _abi = [
       },
     ],
     name: "depositUnderlyingAndRepayBorrowWithSignature",
-    outputs: [],
-    stateMutability: "nonpayable",
-    type: "function",
-  },
-  {
-    inputs: [
-      {
-        internalType: "contract IHToken",
-        name: "hToken",
-        type: "address",
-      },
-      {
-        internalType: "uint256",
-        name: "underlyingAmount",
-        type: "uint256",
-      },
-      {
-        internalType: "uint256",
-        name: "deadline",
-        type: "uint256",
-      },
-      {
-        internalType: "bytes",
-        name: "signatureUnderlying",
-        type: "bytes",
-      },
-    ],
-    name: "depositUnderlyingWithSignature",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

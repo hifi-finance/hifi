@@ -545,21 +545,6 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function depositUnderlying(IHToken hToken, uint256 underlyingAmount) public override {
-        uint256 oldHTokenBalance = hToken.balanceOf(address(this));
-        depositUnderlyingInternal(hToken, underlyingAmount);
-
-        unchecked {
-            // Calculate how many hTokens were minted.
-            uint256 newHTokenBalance = hToken.balanceOf(address(this));
-            uint256 hTokenAmount = newHTokenBalance - oldHTokenBalance;
-
-            // The hTokens are now in the DSProxy, so we relay them to the end user.
-            hToken.transfer(msg.sender, hTokenAmount);
-        }
-    }
-
-    /// @inheritdoc IHifiProxyTarget
     function depositUnderlyingAndMintHTokenAndAddLiquidity(
         IHifiPool hifiPool,
         uint256 depositAmount,
@@ -671,17 +656,6 @@ contract HifiProxyTarget is IHifiProxyTarget {
     ) external override {
         permitInternal(IErc20Permit(address(hToken.underlying())), underlyingAmount, deadline, signatureUnderlying);
         depositUnderlyingAndRepayBorrow(hToken, balanceSheet, underlyingAmount);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
-    function depositUnderlyingWithSignature(
-        IHToken hToken,
-        uint256 underlyingAmount,
-        uint256 deadline,
-        bytes memory signatureUnderlying
-    ) external override {
-        permitInternal(IErc20Permit(address(hToken.underlying())), underlyingAmount, deadline, signatureUnderlying);
-        depositUnderlying(hToken, underlyingAmount);
     }
 
     /// @inheritdoc IHifiProxyTarget

@@ -56,12 +56,10 @@ export interface IHifiProxyTargetInterface extends utils.Interface {
     "depositCollateralAndBorrowHTokenAndSellHTokenWithSignature(address,address,address,uint256,uint256,uint256,uint256,bytes)": FunctionFragment;
     "depositCollateralAndBorrowHTokenWithSignature(address,address,address,uint256,uint256,uint256,bytes)": FunctionFragment;
     "depositCollateralWithSignature(address,address,uint256,uint256,bytes)": FunctionFragment;
-    "depositUnderlying(address,uint256)": FunctionFragment;
     "depositUnderlyingAndMintHTokenAndAddLiquidity(address,uint256,uint256)": FunctionFragment;
     "depositUnderlyingAndMintHTokenAndAddLiquidityWithSignature(address,uint256,uint256,uint256,bytes)": FunctionFragment;
     "depositUnderlyingAndRepayBorrow(address,address,uint256)": FunctionFragment;
     "depositUnderlyingAndRepayBorrowWithSignature(address,address,uint256,uint256,bytes)": FunctionFragment;
-    "depositUnderlyingWithSignature(address,uint256,uint256,bytes)": FunctionFragment;
     "redeem(address,uint256,uint256)": FunctionFragment;
     "redeemWithSignature(address,uint256,uint256,uint256,bytes)": FunctionFragment;
     "removeLiquidity(address,uint256)": FunctionFragment;
@@ -112,12 +110,10 @@ export interface IHifiProxyTargetInterface extends utils.Interface {
       | "depositCollateralAndBorrowHTokenAndSellHTokenWithSignature"
       | "depositCollateralAndBorrowHTokenWithSignature"
       | "depositCollateralWithSignature"
-      | "depositUnderlying"
       | "depositUnderlyingAndMintHTokenAndAddLiquidity"
       | "depositUnderlyingAndMintHTokenAndAddLiquidityWithSignature"
       | "depositUnderlyingAndRepayBorrow"
       | "depositUnderlyingAndRepayBorrowWithSignature"
-      | "depositUnderlyingWithSignature"
       | "redeem"
       | "redeemWithSignature"
       | "removeLiquidity"
@@ -290,10 +286,6 @@ export interface IHifiProxyTargetInterface extends utils.Interface {
     values: [string, string, BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
-    functionFragment: "depositUnderlying",
-    values: [string, BigNumberish]
-  ): string;
-  encodeFunctionData(
     functionFragment: "depositUnderlyingAndMintHTokenAndAddLiquidity",
     values: [string, BigNumberish, BigNumberish]
   ): string;
@@ -308,10 +300,6 @@ export interface IHifiProxyTargetInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "depositUnderlyingAndRepayBorrowWithSignature",
     values: [string, string, BigNumberish, BigNumberish, BytesLike]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "depositUnderlyingWithSignature",
-    values: [string, BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "redeem",
@@ -503,10 +491,6 @@ export interface IHifiProxyTargetInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "depositUnderlying",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
     functionFragment: "depositUnderlyingAndMintHTokenAndAddLiquidity",
     data: BytesLike
   ): Result;
@@ -520,10 +504,6 @@ export interface IHifiProxyTargetInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "depositUnderlyingAndRepayBorrowWithSignature",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "depositUnderlyingWithSignature",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "redeem", data: BytesLike): Result;
@@ -890,12 +870,6 @@ export interface IHifiProxyTarget extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
-    depositUnderlying(
-      hToken: string,
-      underlyingAmount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
     depositUnderlyingAndMintHTokenAndAddLiquidity(
       hifiPool: string,
       depositAmount: BigNumberish,
@@ -922,14 +896,6 @@ export interface IHifiProxyTarget extends BaseContract {
     depositUnderlyingAndRepayBorrowWithSignature(
       hToken: string,
       balanceSheet: string,
-      underlyingAmount: BigNumberish,
-      deadline: BigNumberish,
-      signatureUnderlying: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<ContractTransaction>;
-
-    depositUnderlyingWithSignature(
-      hToken: string,
       underlyingAmount: BigNumberish,
       deadline: BigNumberish,
       signatureUnderlying: BytesLike,
@@ -1322,12 +1288,6 @@ export interface IHifiProxyTarget extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
-  depositUnderlying(
-    hToken: string,
-    underlyingAmount: BigNumberish,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
   depositUnderlyingAndMintHTokenAndAddLiquidity(
     hifiPool: string,
     depositAmount: BigNumberish,
@@ -1354,14 +1314,6 @@ export interface IHifiProxyTarget extends BaseContract {
   depositUnderlyingAndRepayBorrowWithSignature(
     hToken: string,
     balanceSheet: string,
-    underlyingAmount: BigNumberish,
-    deadline: BigNumberish,
-    signatureUnderlying: BytesLike,
-    overrides?: Overrides & { from?: string | Promise<string> }
-  ): Promise<ContractTransaction>;
-
-  depositUnderlyingWithSignature(
-    hToken: string,
     underlyingAmount: BigNumberish,
     deadline: BigNumberish,
     signatureUnderlying: BytesLike,
@@ -1754,12 +1706,6 @@ export interface IHifiProxyTarget extends BaseContract {
       overrides?: CallOverrides
     ): Promise<void>;
 
-    depositUnderlying(
-      hToken: string,
-      underlyingAmount: BigNumberish,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
     depositUnderlyingAndMintHTokenAndAddLiquidity(
       hifiPool: string,
       depositAmount: BigNumberish,
@@ -1786,14 +1732,6 @@ export interface IHifiProxyTarget extends BaseContract {
     depositUnderlyingAndRepayBorrowWithSignature(
       hToken: string,
       balanceSheet: string,
-      underlyingAmount: BigNumberish,
-      deadline: BigNumberish,
-      signatureUnderlying: BytesLike,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    depositUnderlyingWithSignature(
-      hToken: string,
       underlyingAmount: BigNumberish,
       deadline: BigNumberish,
       signatureUnderlying: BytesLike,
@@ -2211,12 +2149,6 @@ export interface IHifiProxyTarget extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    depositUnderlying(
-      hToken: string,
-      underlyingAmount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
     depositUnderlyingAndMintHTokenAndAddLiquidity(
       hifiPool: string,
       depositAmount: BigNumberish,
@@ -2243,14 +2175,6 @@ export interface IHifiProxyTarget extends BaseContract {
     depositUnderlyingAndRepayBorrowWithSignature(
       hToken: string,
       balanceSheet: string,
-      underlyingAmount: BigNumberish,
-      deadline: BigNumberish,
-      signatureUnderlying: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<BigNumber>;
-
-    depositUnderlyingWithSignature(
-      hToken: string,
       underlyingAmount: BigNumberish,
       deadline: BigNumberish,
       signatureUnderlying: BytesLike,
@@ -2644,12 +2568,6 @@ export interface IHifiProxyTarget extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
-    depositUnderlying(
-      hToken: string,
-      underlyingAmount: BigNumberish,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
     depositUnderlyingAndMintHTokenAndAddLiquidity(
       hifiPool: string,
       depositAmount: BigNumberish,
@@ -2676,14 +2594,6 @@ export interface IHifiProxyTarget extends BaseContract {
     depositUnderlyingAndRepayBorrowWithSignature(
       hToken: string,
       balanceSheet: string,
-      underlyingAmount: BigNumberish,
-      deadline: BigNumberish,
-      signatureUnderlying: BytesLike,
-      overrides?: Overrides & { from?: string | Promise<string> }
-    ): Promise<PopulatedTransaction>;
-
-    depositUnderlyingWithSignature(
-      hToken: string,
       underlyingAmount: BigNumberish,
       deadline: BigNumberish,
       signatureUnderlying: BytesLike,
