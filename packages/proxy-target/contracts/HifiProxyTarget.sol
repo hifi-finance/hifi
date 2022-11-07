@@ -939,7 +939,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
 
         // Transfer the underlying to the DSProxy.
         IErc20 underlying = hifiPool.underlying();
-        underlying.transferFrom(msg.sender, address(this), underlyingIn);
+        underlying.safeTransferFrom(msg.sender, address(this), underlyingIn);
 
         // Allow the HifiPool contract to spend underlying from the DSProxy.
         approveSpender(underlying, address(hifiPool), underlyingIn);
@@ -963,7 +963,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
 
         // Transfer the underlying to the DSProxy.
         IErc20 underlying = hifiPool.underlying();
-        underlying.transferFrom(msg.sender, address(this), underlyingIn);
+        underlying.safeTransferFrom(msg.sender, address(this), underlyingIn);
 
         // Allow the HifiPool contract to spend underlying from the DSProxy.
         approveSpender(underlying, address(hifiPool), underlyingIn);
