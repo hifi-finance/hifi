@@ -18,11 +18,11 @@ interface IChainlinkOperator {
     /// @notice Emitted when trying to interact with a feed not set yet.
     error ChainlinkOperator__FeedNotSet(string symbol);
 
+    /// @notice Emitted when the price returned by the oracle is less than or equal to zero.
+    error ChainlinkOperator__PriceLessThanOrEqualToZero(string symbol);
+
     /// @notice Emitted when the latest price update timestamp returned by the oracle is too old.
     error ChainlinkOperator__PriceStale(string symbol);
-
-    /// @notice Emitted when the price returned by the oracle is zero.
-    error ChainlinkOperator__PriceZero(string symbol);
 
     /// EVENTS ///
 

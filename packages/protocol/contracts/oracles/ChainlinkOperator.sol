@@ -62,10 +62,10 @@ contract ChainlinkOperator is
         if (block.timestamp - latestUpdateTimestamp > priceStalenessThreshold) {
             revert ChainlinkOperator__PriceStale(symbol);
         }
-        uint256 price = uint256(intPrice);
-        if (price == 0) {
-            revert ChainlinkOperator__PriceZero(symbol);
+        if (intPrice <= 0) {
+            revert ChainlinkOperator__PriceLessThanOrEqualToZero(symbol);
         }
+        uint256 price = uint256(intPrice);
         return price;
     }
 

@@ -46,7 +46,7 @@ const _abi = [
         type: "string",
       },
     ],
-    name: "ChainlinkOperator__PriceStale",
+    name: "ChainlinkOperator__PriceLessThanOrEqualToZero",
     type: "error",
   },
   {
@@ -57,7 +57,7 @@ const _abi = [
         type: "string",
       },
     ],
-    name: "ChainlinkOperator__PriceZero",
+    name: "ChainlinkOperator__PriceStale",
     type: "error",
   },
   {
