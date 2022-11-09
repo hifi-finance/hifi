@@ -18,6 +18,11 @@ contract OwnableUpgradeable is
     /// @inheritdoc IOwnableUpgradeable
     address public override owner;
 
+    /// PRIVATE STORAGE ///
+
+    /// @dev Empty reserved space in storage.
+    uint256[50] private __gap;
+
     /// MODIFIERS ///
 
     /// @notice Throws if called by any account other than the owner.
