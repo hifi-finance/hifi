@@ -35,6 +35,11 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "HifiPool__MintMinimumLiquidity",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "HifiPool__MintZero",
     type: "error",
   },
@@ -278,6 +283,19 @@ const _abi = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "MINIMUM_LIQUIDITY",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "pure",
     type: "function",
   },
   {

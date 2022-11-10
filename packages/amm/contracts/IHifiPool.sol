@@ -25,6 +25,9 @@ interface IHifiPool is IErc20Permit {
     /// @notice Emitted when offering zero underlying to mint LP tokens.
     error HifiPool__BurnZero();
 
+    /// @notice Emitted when first LP is not offering minimum underlying to mint minimum LP tokens.
+    error HifiPool__MintMinimumLiquidity();
+
     /// @notice Emitted when offering zero underlying to mint LP tokens.
     error HifiPool__MintZero();
 
@@ -97,6 +100,9 @@ interface IHifiPool is IErc20Permit {
     );
 
     /// PUBLIC CONSTANT FUNCTIONS ///
+
+    /// @notice The minimum amount of LP tokens which are permanently locked.
+    function MINIMUM_LIQUIDITY() external pure returns (uint256);
 
     /// @notice Quotes how much underlying would be required to buy `hTokenOut` hToken.
     ///

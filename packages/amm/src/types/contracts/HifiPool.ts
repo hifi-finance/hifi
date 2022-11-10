@@ -31,6 +31,7 @@ import type {
 export interface HifiPoolInterface extends utils.Interface {
   functions: {
     "DOMAIN_SEPARATOR()": FunctionFragment;
+    "MINIMUM_LIQUIDITY()": FunctionFragment;
     "PERMIT_TYPEHASH()": FunctionFragment;
     "allowance(address,address)": FunctionFragment;
     "approve(address,uint256)": FunctionFragment;
@@ -69,6 +70,7 @@ export interface HifiPoolInterface extends utils.Interface {
   getFunction(
     nameOrSignatureOrTopic:
       | "DOMAIN_SEPARATOR"
+      | "MINIMUM_LIQUIDITY"
       | "PERMIT_TYPEHASH"
       | "allowance"
       | "approve"
@@ -106,6 +108,10 @@ export interface HifiPoolInterface extends utils.Interface {
 
   encodeFunctionData(
     functionFragment: "DOMAIN_SEPARATOR",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "MINIMUM_LIQUIDITY",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -221,6 +227,10 @@ export interface HifiPoolInterface extends utils.Interface {
 
   decodeFunctionResult(
     functionFragment: "DOMAIN_SEPARATOR",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "MINIMUM_LIQUIDITY",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -415,6 +425,8 @@ export interface HifiPool extends BaseContract {
   functions: {
     DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<[string]>;
 
+    MINIMUM_LIQUIDITY(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<[string]>;
 
     allowance(
@@ -572,6 +584,8 @@ export interface HifiPool extends BaseContract {
 
   DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<string>;
 
+  MINIMUM_LIQUIDITY(overrides?: CallOverrides): Promise<BigNumber>;
+
   PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<string>;
 
   allowance(
@@ -726,6 +740,8 @@ export interface HifiPool extends BaseContract {
 
   callStatic: {
     DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<string>;
+
+    MINIMUM_LIQUIDITY(overrides?: CallOverrides): Promise<BigNumber>;
 
     PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<string>;
 
@@ -957,6 +973,8 @@ export interface HifiPool extends BaseContract {
   estimateGas: {
     DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<BigNumber>;
 
+    MINIMUM_LIQUIDITY(overrides?: CallOverrides): Promise<BigNumber>;
+
     PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<BigNumber>;
 
     allowance(
@@ -1102,6 +1120,8 @@ export interface HifiPool extends BaseContract {
 
   populateTransaction: {
     DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    MINIMUM_LIQUIDITY(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

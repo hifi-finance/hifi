@@ -31,6 +31,7 @@ import type {
 export interface GodModeHifiPoolInterface extends utils.Interface {
   functions: {
     "DOMAIN_SEPARATOR()": FunctionFragment;
+    "MINIMUM_LIQUIDITY()": FunctionFragment;
     "PERMIT_TYPEHASH()": FunctionFragment;
     "__godMode_mint(uint256)": FunctionFragment;
     "__godMode_setMaturity(uint256)": FunctionFragment;
@@ -74,6 +75,7 @@ export interface GodModeHifiPoolInterface extends utils.Interface {
   getFunction(
     nameOrSignatureOrTopic:
       | "DOMAIN_SEPARATOR"
+      | "MINIMUM_LIQUIDITY"
       | "PERMIT_TYPEHASH"
       | "__godMode_mint"
       | "__godMode_setMaturity"
@@ -116,6 +118,10 @@ export interface GodModeHifiPoolInterface extends utils.Interface {
 
   encodeFunctionData(
     functionFragment: "DOMAIN_SEPARATOR",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "MINIMUM_LIQUIDITY",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -251,6 +257,10 @@ export interface GodModeHifiPoolInterface extends utils.Interface {
 
   decodeFunctionResult(
     functionFragment: "DOMAIN_SEPARATOR",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "MINIMUM_LIQUIDITY",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -465,6 +475,8 @@ export interface GodModeHifiPool extends BaseContract {
   functions: {
     DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<[string]>;
 
+    MINIMUM_LIQUIDITY(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<[string]>;
 
     __godMode_mint(
@@ -647,6 +659,8 @@ export interface GodModeHifiPool extends BaseContract {
 
   DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<string>;
 
+  MINIMUM_LIQUIDITY(overrides?: CallOverrides): Promise<BigNumber>;
+
   PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<string>;
 
   __godMode_mint(
@@ -826,6 +840,8 @@ export interface GodModeHifiPool extends BaseContract {
 
   callStatic: {
     DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<string>;
+
+    MINIMUM_LIQUIDITY(overrides?: CallOverrides): Promise<BigNumber>;
 
     PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<string>;
 
@@ -1082,6 +1098,8 @@ export interface GodModeHifiPool extends BaseContract {
   estimateGas: {
     DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<BigNumber>;
 
+    MINIMUM_LIQUIDITY(overrides?: CallOverrides): Promise<BigNumber>;
+
     PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<BigNumber>;
 
     __godMode_mint(
@@ -1252,6 +1270,8 @@ export interface GodModeHifiPool extends BaseContract {
 
   populateTransaction: {
     DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    MINIMUM_LIQUIDITY(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

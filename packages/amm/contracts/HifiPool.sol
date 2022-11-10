@@ -31,6 +31,9 @@ contract HifiPool is
     /// @inheritdoc IHifiPool
     uint256 public override underlyingPrecisionScalar;
 
+    /// @inheritdoc IHifiPool
+    uint256 public constant override MINIMUM_LIQUIDITY = 10**3;
+
     /// @dev Trading can only occur prior to maturity.
     modifier isBeforeMaturity() {
         if (block.timestamp >= maturity) {
@@ -283,6 +286,14 @@ contract HifiPool is
         (hTokenRequired, poolTokensMinted) = getMintInputs(underlyingOffered);
 
         // Effects
+        if (totalSupply == 0) {
+            if (poolTokensMinted < MINIMUM_LIQUIDITY) {
+                revert HifiPool__MintMinimumLiquidity();
+            }
+            poolTokensMinted -= MINIMUM_LIQUIDITY;
+            // Permanently lock the first minimum liquidity tokens.
+            mintInternal(address(1), MINIMUM_LIQUIDITY);
+        }
         mintInternal(msg.sender, poolTokensMinted);
 
         // Interactions
