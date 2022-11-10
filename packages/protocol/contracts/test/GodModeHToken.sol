@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 // solhint-disable func-name-mixedcase
-pragma solidity >=0.8.4;
+pragma solidity ^0.8.4;
 
 import "../core/h-token/HToken.sol";
 

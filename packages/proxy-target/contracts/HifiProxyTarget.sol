@@ -1,5 +1,5 @@
 /// SPDX-License-Identifier: LGPL-3.0-or-later
-pragma solidity >=0.8.4;
+pragma solidity ^0.8.4;
 
 import "@hifi/amm/contracts/IHifiPool.sol";
 import "@hifi/protocol/contracts/core/balance-sheet/IBalanceSheetV2.sol";

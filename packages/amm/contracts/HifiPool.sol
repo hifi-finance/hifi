@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
-pragma solidity >=0.8.4;
+pragma solidity ^0.8.4;
 
 import "@hifi/protocol/contracts/core/h-token/IHToken.sol";
 import "@prb/contracts/token/erc20/Erc20.sol";
