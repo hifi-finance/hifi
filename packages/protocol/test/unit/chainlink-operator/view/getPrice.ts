@@ -3,6 +3,7 @@ import { Zero } from "@ethersproject/constants";
 import { WBTC_PRICE, WBTC_SYMBOL } from "@hifi/constants";
 import { ChainlinkOperatorErrors } from "@hifi/errors";
 import { expect } from "chai";
+import hre from "hardhat";
 
 export function shouldBehaveLikeGetPrice(): void {
   context("when the feed is not set", function () {
@@ -25,14 +26,15 @@ export function shouldBehaveLikeGetPrice(): void {
 
       it("reverts", async function () {
         await expect(this.contracts.oracle.getPrice(WBTC_SYMBOL)).to.be.revertedWith(
-          ChainlinkOperatorErrors.PRICE_ZERO,
+          ChainlinkOperatorErrors.PRICE_LESS_THAN_OR_EQUAL_TO_ZERO,
         );
       });
     });
 
     context("when the price is not zero", function () {
       beforeEach(async function () {
-        await this.mocks.wbtcPriceFeed.mock.latestRoundData.returns(Zero, WBTC_PRICE, Zero, Zero, Zero);
+        const { timestamp } = await hre.ethers.provider.getBlock("latest");
+        await this.mocks.wbtcPriceFeed.mock.latestRoundData.returns(Zero, WBTC_PRICE, Zero, timestamp, Zero);
       });
 
       it("returns the price", async function () {

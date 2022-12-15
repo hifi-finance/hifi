@@ -14,12 +14,12 @@ import { getHTokenName, getHTokenSymbol, price } from "@hifi/helpers";
 import { artifacts, ethers, upgrades, waffle } from "hardhat";
 import type { Artifact } from "hardhat/types";
 
-import type { Fintroller } from "../../src/types/contracts/core/fintroller/Fintroller";
 import type { HToken } from "../../src/types/contracts/core/h-token/HToken";
 import type { ChainlinkOperator } from "../../src/types/contracts/oracles/ChainlinkOperator";
 import type { SimplePriceFeed } from "../../src/types/contracts/oracles/SimplePriceFeed";
 import type { GodModeBalanceSheet } from "../../src/types/contracts/test/GodModeBalanceSheet";
 import type { GodModeErc20 } from "../../src/types/contracts/test/GodModeErc20";
+import type { GodModeFintroller } from "../../src/types/contracts/test/GodModeFintroller";
 import type { GodModeHToken } from "../../src/types/contracts/test/GodModeHToken";
 import type { GodModeOwnableUpgradeable } from "../../src/types/contracts/test/GodModeOwnableUpgradeable";
 import type { GodModeBalanceSheet__factory } from "../../src/types/factories/contracts/test/GodModeBalanceSheet__factory";
@@ -34,13 +34,6 @@ export async function deployChainlinkOperator(deployer: Signer): Promise<Chainli
     await deployContract(deployer, chainlinkOperatorArtifact, [], overrides)
   );
   return chainlinkOperator;
-}
-
-export async function deployFintroller(deployer: Signer): Promise<Fintroller> {
-  const fintrollerArtifact: Artifact = await artifacts.readArtifact("Fintroller");
-  const fintroller: Fintroller = <Fintroller>await deployContract(deployer, fintrollerArtifact);
-  await fintroller.deployed();
-  return fintroller;
 }
 
 export async function deployHToken(
@@ -80,6 +73,13 @@ export async function deployGodModeBalanceSheet(
     await upgrades.deployProxy(godModeBalanceSheetFactory, [fintrollerAddress, oracleAddress])
   );
   return balanceSheet;
+}
+
+export async function deployGodModeFintroller(deployer: Signer): Promise<GodModeFintroller> {
+  const fintrollerArtifact: Artifact = await artifacts.readArtifact("GodModeFintroller");
+  const fintroller: GodModeFintroller = <GodModeFintroller>await deployContract(deployer, fintrollerArtifact);
+  await fintroller.deployed();
+  return fintroller;
 }
 
 export async function deployGodModeHToken(

@@ -38,14 +38,40 @@ export function shouldBehaveLikeSetLiquidateBorrowAllowed(): void {
         expect(newState).to.equal(true);
       });
 
-      it("sets the value to false", async function () {
-        await this.contracts.fintroller
-          .connect(this.signers.admin)
-          .setLiquidateBorrowAllowed(this.mocks.hTokens[0].address, false);
-        const newState: boolean = await this.contracts.fintroller.getLiquidateBorrowAllowed(
-          this.mocks.hTokens[0].address,
-        );
-        expect(newState).to.equal(false);
+      context("sets the value to false", async function () {
+        context("when borrow is allowed", function () {
+          beforeEach(async function () {
+            await this.contracts.fintroller
+              .connect(this.signers.admin)
+              .__godMode_setBorrowAllowed(this.mocks.hTokens[0].address, true);
+          });
+
+          it("reverts", async function () {
+            await expect(
+              this.contracts.fintroller
+                .connect(this.signers.admin)
+                .setLiquidateBorrowAllowed(this.mocks.hTokens[0].address, false),
+            ).to.be.revertedWith(FintrollerErrors.BOND_LIQUIDATE_BORROW_DISALLOWED_WITH_BORROW_ALLOWED);
+          });
+        });
+
+        context("when borrow is disallowed", function () {
+          beforeEach(async function () {
+            await this.contracts.fintroller
+              .connect(this.signers.admin)
+              .__godMode_setBorrowAllowed(this.mocks.hTokens[0].address, false);
+          });
+
+          it("succeeds", async function () {
+            await this.contracts.fintroller
+              .connect(this.signers.admin)
+              .setLiquidateBorrowAllowed(this.mocks.hTokens[0].address, false);
+            const newState: boolean = await this.contracts.fintroller.getLiquidateBorrowAllowed(
+              this.mocks.hTokens[0].address,
+            );
+            expect(newState).to.equal(false);
+          });
+        });
       });
 
       it("emits a SetLiquidateBorrowAllowed event", async function () {

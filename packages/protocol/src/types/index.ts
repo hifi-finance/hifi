@@ -66,6 +66,8 @@ export type { GodModeBalanceSheet } from "./contracts/test/GodModeBalanceSheet";
 export { GodModeBalanceSheet__factory } from "./factories/contracts/test/GodModeBalanceSheet__factory";
 export type { GodModeErc20 } from "./contracts/test/GodModeErc20";
 export { GodModeErc20__factory } from "./factories/contracts/test/GodModeErc20__factory";
+export type { GodModeFintroller } from "./contracts/test/GodModeFintroller";
+export { GodModeFintroller__factory } from "./factories/contracts/test/GodModeFintroller__factory";
 export type { GodModeHToken } from "./contracts/test/GodModeHToken";
 export { GodModeHToken__factory } from "./factories/contracts/test/GodModeHToken__factory";
 export type { GodModeOwnableUpgradeable } from "./contracts/test/GodModeOwnableUpgradeable";

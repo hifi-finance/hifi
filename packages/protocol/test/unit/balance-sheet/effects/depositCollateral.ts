@@ -72,6 +72,7 @@ export function shouldBehaveLikeDepositCollateral(): void {
           await this.mocks.wbtc.mock.transferFrom
             .withArgs(borrower.address, this.contracts.balanceSheet.address, depositAmounts[0])
             .returns(true);
+          await this.mocks.fintroller.mock.maxCollaterals.returns(10);
         });
 
         context("when it is the first collateral deposit of the user", function () {

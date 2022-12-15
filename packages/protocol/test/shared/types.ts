@@ -2,11 +2,11 @@ import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/dist/src/signe
 import type { MockContract } from "ethereum-waffle";
 import type { Fixture } from "ethereum-waffle";
 
-import type { Fintroller } from "../../src/types/contracts/core/fintroller/Fintroller";
 import type { ChainlinkOperator } from "../../src/types/contracts/oracles/ChainlinkOperator";
 import type { SimplePriceFeed } from "../../src/types/contracts/oracles/SimplePriceFeed";
 import type { GodModeBalanceSheet } from "../../src/types/contracts/test/GodModeBalanceSheet";
 import type { GodModeErc20 } from "../../src/types/contracts/test/GodModeErc20";
+import type { GodModeFintroller } from "../../src/types/contracts/test/GodModeFintroller";
 import type { GodModeHToken } from "../../src/types/contracts/test/GodModeHToken";
 import type { GodModeOwnableUpgradeable } from "../../src/types/contracts/test/GodModeOwnableUpgradeable";
 
@@ -21,7 +21,7 @@ declare module "mocha" {
 
 export interface Contracts {
   balanceSheet: GodModeBalanceSheet;
-  fintroller: Fintroller;
+  fintroller: GodModeFintroller;
   hTokens: GodModeHToken[];
   oracle: ChainlinkOperator;
   ownableUpgradeable: GodModeOwnableUpgradeable;
