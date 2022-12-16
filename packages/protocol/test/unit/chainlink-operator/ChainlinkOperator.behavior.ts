@@ -1,5 +1,6 @@
 import { shouldBehaveLikeDeleteFeed } from "./effects/deleteFeed";
 import { shouldBehaveLikeSetFeed } from "./effects/setFeed";
+import { shouldBehaveLikeSetPriceStalenessThreshold } from "./effects/setPriceStalenessThreshold";
 import { shouldBehaveLikeGetFeed } from "./view/getFeed";
 import { shouldBehaveLikeGetNormalizedPrice } from "./view/getNormalizedPrice";
 import { shouldBehaveLikeGetPrice } from "./view/getPrice";
@@ -26,6 +27,10 @@ export function shouldBehaveLikeChainlinkOperator(): void {
 
     describe("setFeed", function () {
       shouldBehaveLikeSetFeed();
+    });
+
+    describe("setPriceStalenessThreshold", function () {
+      shouldBehaveLikeSetPriceStalenessThreshold();
     });
   });
 }

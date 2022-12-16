@@ -4,5 +4,6 @@
 export * as balanceSheetUpgradedSol from "./BalanceSheetUpgraded.sol";
 export { GodModeBalanceSheet__factory } from "./GodModeBalanceSheet__factory";
 export { GodModeErc20__factory } from "./GodModeErc20__factory";
+export { GodModeFintroller__factory } from "./GodModeFintroller__factory";
 export { GodModeHToken__factory } from "./GodModeHToken__factory";
 export { GodModeOwnableUpgradeable__factory } from "./GodModeOwnableUpgradeable__factory";

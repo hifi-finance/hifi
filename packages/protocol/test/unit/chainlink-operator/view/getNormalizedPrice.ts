@@ -1,8 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { MaxInt256, Zero } from "@ethersproject/constants";
-import { NORMALIZED_WBTC_PRICE, WBTC_SYMBOL } from "@hifi/constants";
+import { NORMALIZED_WBTC_PRICE, WBTC_PRICE, WBTC_SYMBOL } from "@hifi/constants";
 import { ChainlinkOperatorErrors } from "@hifi/errors";
 import { expect } from "chai";
+import hre from "hardhat";
 
 export function shouldBehaveLikeGetNormalizedPrice(): void {
   context("when the feed is not set", function () {
@@ -22,7 +23,8 @@ export function shouldBehaveLikeGetNormalizedPrice(): void {
 
     context("when the multiplication overflows uint256", function () {
       beforeEach(async function () {
-        await this.mocks.wbtcPriceFeed.mock.latestRoundData.returns(Zero, MaxInt256, Zero, Zero, Zero);
+        const { timestamp }: { timestamp: number } = await hre.ethers.provider.getBlock("latest");
+        await this.mocks.wbtcPriceFeed.mock.latestRoundData.returns(Zero, MaxInt256, Zero, timestamp, Zero);
       });
 
       it("reverts", async function () {
@@ -31,6 +33,11 @@ export function shouldBehaveLikeGetNormalizedPrice(): void {
     });
 
     context("when the multiplication does not overflow uint256", function () {
+      beforeEach(async function () {
+        const { timestamp }: { timestamp: number } = await hre.ethers.provider.getBlock("latest");
+        await this.mocks.wbtcPriceFeed.mock.latestRoundData.returns(Zero, WBTC_PRICE, Zero, timestamp, Zero);
+      });
+
       it("returns the normalized price", async function () {
         const normalizedPrice: BigNumber = await this.contracts.oracle.getNormalizedPrice(WBTC_SYMBOL);
         expect(normalizedPrice).to.equal(NORMALIZED_WBTC_PRICE);

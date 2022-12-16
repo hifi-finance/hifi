@@ -125,6 +125,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.GodModeErc20__factory>;
     getContractFactory(
+      name: "GodModeFintroller",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.GodModeFintroller__factory>;
+    getContractFactory(
       name: "GodModeHToken",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.GodModeHToken__factory>;
@@ -273,6 +277,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.GodModeErc20>;
+    getContractAt(
+      name: "GodModeFintroller",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.GodModeFintroller>;
     getContractAt(
       name: "GodModeHToken",
       address: string,

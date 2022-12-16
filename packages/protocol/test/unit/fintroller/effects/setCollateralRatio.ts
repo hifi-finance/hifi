@@ -1,6 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
-import { COLLATERAL_RATIOS } from "@hifi/constants";
+import { COLLATERAL_RATIOS, LIQUIDATION_INCENTIVES } from "@hifi/constants";
 import { FintrollerErrors, OwnableErrors } from "@hifi/errors";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
@@ -9,6 +9,7 @@ export function shouldBehaveLikeSetCollateralRatio(): void {
   const newCollateralRatio: BigNumber = toBn("1.75");
   const overflowCollateralRatio: BigNumber = COLLATERAL_RATIOS.upperBound.add(1);
   const underflowCollateralRatio: BigNumber = COLLATERAL_RATIOS.lowerBound.sub(1);
+  const liquidationIncentive: BigNumber = LIQUIDATION_INCENTIVES.default;
 
   context("when the caller is not the owner", function () {
     it("reverts", async function () {
@@ -62,6 +63,16 @@ export function shouldBehaveLikeSetCollateralRatio(): void {
                 .connect(this.signers.admin)
                 .setCollateralRatio(this.mocks.wbtc.address, underflowCollateralRatio),
             ).to.be.revertedWith(FintrollerErrors.COLLATERAL_RATIO_UNDERFLOW);
+          });
+        });
+
+        context("when the collateral ratio is below the liquidation incentive", function () {
+          it("reverts", async function () {
+            await expect(
+              this.contracts.fintroller
+                .connect(this.signers.admin)
+                .setCollateralRatio(this.mocks.wbtc.address, liquidationIncentive.sub(1)),
+            ).to.be.revertedWith(FintrollerErrors.COLLATERAL_RATIO_BELOW_LIQUIDATION_INCENTIVE);
           });
         });
       });

@@ -1,5 +1,6 @@
 import type { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
+import { DEFAULT_MAX_COLLATERALS } from "@hifi/constants";
 import { BalanceSheetErrors } from "@hifi/errors";
 import { WBTC } from "@hifi/helpers";
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
@@ -72,6 +73,7 @@ export function shouldBehaveLikeDepositCollateral(): void {
           await this.mocks.wbtc.mock.transferFrom
             .withArgs(borrower.address, this.contracts.balanceSheet.address, depositAmounts[0])
             .returns(true);
+          await this.mocks.fintroller.mock.maxCollaterals.returns(DEFAULT_MAX_COLLATERALS);
         });
 
         context("when it is the first collateral deposit of the user", function () {

@@ -8,5 +8,6 @@ import type * as balanceSheetUpgradedSol from "./BalanceSheetUpgraded.sol";
 export type { balanceSheetUpgradedSol };
 export type { GodModeBalanceSheet } from "./GodModeBalanceSheet";
 export type { GodModeErc20 } from "./GodModeErc20";
+export type { GodModeFintroller } from "./GodModeFintroller";
 export type { GodModeHToken } from "./GodModeHToken";
 export type { GodModeOwnableUpgradeable } from "./GodModeOwnableUpgradeable";

@@ -25,7 +25,8 @@ export enum BalanceSheetErrors {
 export enum ChainlinkOperatorErrors {
   DECIMALS_MISMATCH = "ChainlinkOperator__DecimalsMismatch",
   FEED_NOT_SET = "ChainlinkOperator__FeedNotSet",
-  PRICE_ZERO = "ChainlinkOperator__PriceZero",
+  PRICE_LESS_THAN_OR_EQUAL_TO_ZERO = "ChainlinkOperator__PriceLessThanOrEqualToZero",
+  PRICE_STALE = "ChainlinkOperator__PriceStale",
 }
 
 export enum FintrollerErrors {

@@ -10,8 +10,6 @@ export function shouldBehaveLikeGetBond(): void {
       expect(bond.isDepositUnderlyingAllowed).to.equal(false);
       expect(bond.isLiquidateBorrowAllowed).to.equal(false);
       expect(bond.isListed).to.equal(false);
-      expect(bond.isRedeemHTokenAllowed).to.equal(false);
-      expect(bond.isRepayBorrowAllowed).to.equal(false);
     });
   });
 
@@ -27,8 +25,6 @@ export function shouldBehaveLikeGetBond(): void {
       expect(bond.isDepositUnderlyingAllowed).to.equal(true);
       expect(bond.isLiquidateBorrowAllowed).to.equal(true);
       expect(bond.isListed).to.equal(true);
-      expect(bond.isRedeemHTokenAllowed).to.equal(true);
-      expect(bond.isRepayBorrowAllowed).to.equal(true);
     });
   });
 }

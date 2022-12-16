@@ -9,6 +9,7 @@ import { shouldBehaveLikeSetDepositUnderlyingAllowed } from "./effects/setDeposi
 import { shouldBehaveLikeSetLiquidateBorrowAllowed } from "./effects/setLiquidateBorrowAllowed";
 import { shouldBehaveLikeSetLiquidationIncentive } from "./effects/setLiquidationIncentive";
 import { shouldBehaveLikeSetMaxBonds } from "./effects/setMaxBonds";
+import { shouldBehaveLikeSetMaxCollaterals } from "./effects/setMaxCollaterals";
 import { shouldBehaveLikeSetRepayBorrowAllowed } from "./effects/setRepayBorrowAllowed";
 import { shouldBehaveLikeGetBond } from "./view/getBond";
 import { shouldBehaveLikeGetBorrowAllowed } from "./view/getBorrowAllowed";
@@ -127,6 +128,10 @@ export function shouldBehaveLikeFintroller(): void {
 
     describe("setMaxBonds", function () {
       shouldBehaveLikeSetMaxBonds();
+    });
+
+    describe("setMaxCollaterals", function () {
+      shouldBehaveLikeSetMaxCollaterals();
     });
 
     describe("setRepayBorrowAllowed", function () {
