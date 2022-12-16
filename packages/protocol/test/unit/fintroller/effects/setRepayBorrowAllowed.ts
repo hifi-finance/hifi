@@ -36,13 +36,6 @@ export function shouldBehaveLikeSetRepayBorrowAllowed(): void {
         expect(newState).to.equal(true);
       });
 
-      // it("sets the value to false", async function () {
-      //   await this.contracts.fintroller
-      //     .connect(this.signers.admin)
-      //     .setRepayBorrowAllowed(this.mocks.hTokens[0].address, false);
-      //   const newState: boolean = await this.contracts.fintroller.getRepayBorrowAllowed(this.mocks.hTokens[0].address);
-      //   expect(newState).to.equal(false);
-      // });
       context("sets the value to false", async function () {
         context("when liquidateBorrow is allowed", function () {
           beforeEach(async function () {

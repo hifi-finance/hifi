@@ -1,5 +1,5 @@
 import { BigNumber } from "@ethersproject/bignumber";
-import { Zero } from "@ethersproject/constants";
+import { NegativeOne, Zero } from "@ethersproject/constants";
 import { WBTC_PRICE, WBTC_SYMBOL } from "@hifi/constants";
 import { ChainlinkOperatorErrors } from "@hifi/errors";
 import { expect } from "chai";
@@ -19,9 +19,22 @@ export function shouldBehaveLikeGetPrice(): void {
         .setFeed(this.mocks.wbtc.address, this.mocks.wbtcPriceFeed.address);
     });
 
+    context("when the price is stale", function () {
+      beforeEach(async function () {
+        await this.mocks.wbtcPriceFeed.mock.latestRoundData.returns(Zero, NegativeOne, Zero, Zero, Zero);
+      });
+
+      it("reverts", async function () {
+        await expect(this.contracts.oracle.getPrice(WBTC_SYMBOL)).to.be.revertedWith(
+          ChainlinkOperatorErrors.PRICE_STALE,
+        );
+      });
+    });
+
     context("when the price is zero", function () {
       beforeEach(async function () {
-        await this.mocks.wbtcPriceFeed.mock.latestRoundData.returns(Zero, Zero, Zero, Zero, Zero);
+        const { timestamp }: { timestamp: number } = await hre.ethers.provider.getBlock("latest");
+        await this.mocks.wbtcPriceFeed.mock.latestRoundData.returns(Zero, Zero, Zero, timestamp, Zero);
       });
 
       it("reverts", async function () {
@@ -33,7 +46,7 @@ export function shouldBehaveLikeGetPrice(): void {
 
     context("when the price is not zero", function () {
       beforeEach(async function () {
-        const { timestamp } = await hre.ethers.provider.getBlock("latest");
+        const { timestamp }: { timestamp: number } = await hre.ethers.provider.getBlock("latest");
         await this.mocks.wbtcPriceFeed.mock.latestRoundData.returns(Zero, WBTC_PRICE, Zero, timestamp, Zero);
       });
 

@@ -28,14 +28,40 @@ export function shouldBehaveLikeSetLiquidateBorrowAllowed(): void {
         await this.contracts.fintroller.connect(this.signers.admin).listBond(this.mocks.hTokens[0].address);
       });
 
-      it("sets the value to true", async function () {
-        await this.contracts.fintroller
-          .connect(this.signers.admin)
-          .setLiquidateBorrowAllowed(this.mocks.hTokens[0].address, true);
-        const newState: boolean = await this.contracts.fintroller.getLiquidateBorrowAllowed(
-          this.mocks.hTokens[0].address,
-        );
-        expect(newState).to.equal(true);
+      context("sets the value to true", async function () {
+        context("when repay borrow is allowed", function () {
+          beforeEach(async function () {
+            await this.contracts.fintroller
+              .connect(this.signers.admin)
+              .__godMode_setRepayBorrowAllowed(this.mocks.hTokens[0].address, true);
+          });
+
+          it("succeeds", async function () {
+            await this.contracts.fintroller
+              .connect(this.signers.admin)
+              .setLiquidateBorrowAllowed(this.mocks.hTokens[0].address, true);
+            const newState: boolean = await this.contracts.fintroller.getLiquidateBorrowAllowed(
+              this.mocks.hTokens[0].address,
+            );
+            expect(newState).to.equal(true);
+          });
+        });
+
+        context("when repay borrow is disallowed", function () {
+          beforeEach(async function () {
+            await this.contracts.fintroller
+              .connect(this.signers.admin)
+              .__godMode_setRepayBorrowAllowed(this.mocks.hTokens[0].address, false);
+          });
+
+          it("reverts", async function () {
+            await expect(
+              this.contracts.fintroller
+                .connect(this.signers.admin)
+                .setLiquidateBorrowAllowed(this.mocks.hTokens[0].address, true),
+            ).to.be.revertedWith(FintrollerErrors.BOND_LIQUIDATE_BORROW_ALLOWED_WITH_REPAY_BORROW_DISALLOWED);
+          });
+        });
       });
 
       context("sets the value to false", async function () {

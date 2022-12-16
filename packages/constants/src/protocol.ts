@@ -25,6 +25,7 @@ export const COLLATERAL_RATIOS = {
   weth: toBn("1.50"),
 };
 export const DEFAULT_MAX_BONDS: BigNumber = BigNumber.from(10);
+export const DEFAULT_MAX_COLLATERALS: BigNumber = BigNumber.from(10);
 export const H_TOKEN_DECIMALS: BigNumber = BigNumber.from(18);
 export const H_TOKEN_MATURITY_ONE_YEAR: BigNumber = getNow().add(getYearsInSeconds(1));
 export const H_TOKEN_MATURITY_THREE_MONTHS: BigNumber = getNow().add(getDaysInSeconds(90));

@@ -23,7 +23,7 @@ export function shouldBehaveLikeGetNormalizedPrice(): void {
 
     context("when the multiplication overflows uint256", function () {
       beforeEach(async function () {
-        const { timestamp } = await hre.ethers.provider.getBlock("latest");
+        const { timestamp }: { timestamp: number } = await hre.ethers.provider.getBlock("latest");
         await this.mocks.wbtcPriceFeed.mock.latestRoundData.returns(Zero, MaxInt256, Zero, timestamp, Zero);
       });
 
@@ -34,7 +34,7 @@ export function shouldBehaveLikeGetNormalizedPrice(): void {
 
     context("when the multiplication does not overflow uint256", function () {
       beforeEach(async function () {
-        const { timestamp } = await hre.ethers.provider.getBlock("latest");
+        const { timestamp }: { timestamp: number } = await hre.ethers.provider.getBlock("latest");
         await this.mocks.wbtcPriceFeed.mock.latestRoundData.returns(Zero, WBTC_PRICE, Zero, timestamp, Zero);
       });
 

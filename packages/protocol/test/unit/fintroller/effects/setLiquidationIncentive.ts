@@ -66,6 +66,20 @@ export function shouldBehaveLikeSetLiquidationIncentive(): void {
             ).to.be.revertedWith(FintrollerErrors.LIQUIDATION_INCENTIVE_UNDERFLOW);
           });
         });
+
+        context("when the liquidation incentive is above the collateral ratio", function () {
+          beforeEach(async function () {
+            await this.contracts.fintroller.setCollateralRatio(this.mocks.wbtc.address, newLiquidationIncentive);
+          });
+
+          it("reverts", async function () {
+            await expect(
+              this.contracts.fintroller
+                .connect(this.signers.admin)
+                .setLiquidationIncentive(this.mocks.wbtc.address, newLiquidationIncentive.add(1)),
+            ).to.be.revertedWith(FintrollerErrors.LIQUIDATION_INCENTIVE_ABOVE_COLLATERAL_RATIO);
+          });
+        });
       });
 
       context("when the liquidation incentive is valid", function () {
