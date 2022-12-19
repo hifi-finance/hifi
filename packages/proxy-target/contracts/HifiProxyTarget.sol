@@ -119,7 +119,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         uint256 underlyingOffered,
         uint256 deadline,
         bytes memory signatureUnderlying
-    ) public override {
+    ) external override {
         permitInternal(IErc20Permit(address(hifiPool.underlying())), underlyingOffered, deadline, signatureUnderlying);
         borrowHTokenAndAddLiquidity(balanceSheet, hifiPool, maxBorrowAmount, underlyingOffered);
     }
@@ -326,7 +326,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         uint256 maxUnderlyingIn,
         uint256 deadline,
         bytes memory signatureUnderlying
-    ) public override {
+    ) external override {
         permitInternal(IErc20Permit(address(hifiPool.underlying())), maxUnderlyingIn, deadline, signatureUnderlying);
         buyHToken(hifiPool, hTokenOut, maxUnderlyingIn);
     }
@@ -821,7 +821,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         uint256 withdrawAmount,
         uint256 deadline,
         bytes memory signatureLPToken
-    ) public {
+    ) public override {
         permitInternal(hifiPool, poolTokensBurned, deadline, signatureLPToken);
         removeLiquidityAndWithdrawUnderlying(hifiPool, poolTokensBurned, withdrawAmount);
     }
@@ -993,7 +993,7 @@ contract HifiProxyTarget is IHifiProxyTarget {
         IBalanceSheetV2 balanceSheet,
         IErc20 collateral,
         uint256 withdrawAmount
-    ) public override {
+    ) external override {
         balanceSheet.withdrawCollateral(collateral, withdrawAmount);
 
         // The collateral is now in the DSProxy, so we relay it to the end user.
