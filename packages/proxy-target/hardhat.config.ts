@@ -48,6 +48,7 @@ const config: HardhatUserConfig = {
       url: "http://localhost:8545",
     },
     goerli: getChainConfig("goerli", infuraApiKey, mnemonic),
+    mainnet: getChainConfig("mainnet", infuraApiKey, mnemonic),
     "polygon-mainnet": getChainConfig("polygon-mainnet", infuraApiKey, mnemonic),
     rinkeby: getChainConfig("rinkeby", infuraApiKey, mnemonic),
     ropsten: getChainConfig("ropsten", infuraApiKey, mnemonic),
