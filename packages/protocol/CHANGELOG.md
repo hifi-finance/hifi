@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.0] - 2023-01-04
+
+### Changed
+
+- Upgrade to `solidity-docgen` v0.6.0-beta.8.
+- Correct punctuation in comments.
+- Fix referenced license in README.
+
+### Fixed
+
+- Respond to audit finding regarding ability to redeem even when Fintroller disallows redemption (QSP-4).
+- Respond to audit finding regarding insufficient price feed validation (QSP-7).
+- Respond to audit finding regarding unbounded iteration on collateral assets (QSP-9).
+- Respond to audit finding regarding denial of service on repayments and liquidations (QSP-1).
+- Respond to audit finding regarding inconsistent configuration on fintroller (QSP-8).
+- Respond to audit finding regarding no storage gap declared on `OwnableUpgradeable` (QSP-16).
+- Respond to audit finding regarding unlocked pragma (QSP-23).
+- Respond to audit finding regarding unsafe casts (QSP-20).
+
 ## [1.10.0] - 2022-03-29
 
 ### Changed
@@ -160,7 +179,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 - Zero edge case in `getSeizableCollateralAmount` function.
 
-[1.10.0]: https://github.com/hifi-finance/hifi/compare/@hifi/protocol@1.8.2...@hifi/protocol@1.10.0
+[1.11.0]: https://github.com/hifi-finance/hifi/compare/@hifi/protocol@1.10.0...@hifi/protocol@1.11.0
+[1.10.0]: https://github.com/hifi-finance/hifi/compare/@hifi/protocol@1.9.0...@hifi/protocol@1.10.0
 [1.9.0]: https://github.com/hifi-finance/hifi/compare/@hifi/protocol@1.8.2...@hifi/protocol@1.9.0
 [1.8.2]: https://github.com/hifi-finance/hifi/compare/@hifi/protocol@1.8.1...@hifi/protocol@1.8.2
 [1.8.1]: https://github.com/hifi-finance/hifi/compare/@hifi/protocol@1.8.0...@hifi/protocol@1.8.1
