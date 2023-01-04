@@ -18,6 +18,7 @@ import type { Listener, Provider } from "@ethersproject/providers";
 import type {
   BaseContract,
   BigNumber,
+  BigNumberish,
   BytesLike,
   CallOverrides,
   ContractTransaction,
@@ -38,7 +39,9 @@ export interface ChainlinkOperatorInterface extends utils.Interface {
     "owner()": FunctionFragment;
     "pricePrecision()": FunctionFragment;
     "pricePrecisionScalar()": FunctionFragment;
+    "priceStalenessThreshold()": FunctionFragment;
     "setFeed(address,address)": FunctionFragment;
+    "setPriceStalenessThreshold(uint256)": FunctionFragment;
   };
 
   getFunction(
@@ -52,7 +55,9 @@ export interface ChainlinkOperatorInterface extends utils.Interface {
       | "owner"
       | "pricePrecision"
       | "pricePrecisionScalar"
+      | "priceStalenessThreshold"
       | "setFeed"
+      | "setPriceStalenessThreshold"
   ): FunctionFragment;
 
   encodeFunctionData(
@@ -80,8 +85,16 @@ export interface ChainlinkOperatorInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "priceStalenessThreshold",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "setFeed",
     values: [string, string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setPriceStalenessThreshold",
+    values: [BigNumberish]
   ): string;
 
   decodeFunctionResult(
@@ -108,16 +121,26 @@ export interface ChainlinkOperatorInterface extends utils.Interface {
     functionFragment: "pricePrecisionScalar",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(
+    functionFragment: "priceStalenessThreshold",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "setFeed", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setPriceStalenessThreshold",
+    data: BytesLike
+  ): Result;
 
   events: {
     "DeleteFeed(address,address)": EventFragment;
     "SetFeed(address,address)": EventFragment;
+    "SetPriceStalenessThreshold(uint256,uint256)": EventFragment;
     "TransferOwnership(address,address)": EventFragment;
   };
 
   getEvent(nameOrSignatureOrTopic: "DeleteFeed"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "SetFeed"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "SetPriceStalenessThreshold"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "TransferOwnership"): EventFragment;
 }
 
@@ -139,6 +162,18 @@ export interface SetFeedEventObject {
 export type SetFeedEvent = TypedEvent<[string, string], SetFeedEventObject>;
 
 export type SetFeedEventFilter = TypedEventFilter<SetFeedEvent>;
+
+export interface SetPriceStalenessThresholdEventObject {
+  oldPriceStalenessThreshold: BigNumber;
+  newPriceStalenessThreshold: BigNumber;
+}
+export type SetPriceStalenessThresholdEvent = TypedEvent<
+  [BigNumber, BigNumber],
+  SetPriceStalenessThresholdEventObject
+>;
+
+export type SetPriceStalenessThresholdEventFilter =
+  TypedEventFilter<SetPriceStalenessThresholdEvent>;
 
 export interface TransferOwnershipEventObject {
   oldOwner: string;
@@ -211,9 +246,16 @@ export interface ChainlinkOperator extends BaseContract {
 
     pricePrecisionScalar(overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    priceStalenessThreshold(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     setFeed(
       asset: string,
       feed: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    setPriceStalenessThreshold(
+      newPriceStalenessThreshold: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
   };
@@ -250,9 +292,16 @@ export interface ChainlinkOperator extends BaseContract {
 
   pricePrecisionScalar(overrides?: CallOverrides): Promise<BigNumber>;
 
+  priceStalenessThreshold(overrides?: CallOverrides): Promise<BigNumber>;
+
   setFeed(
     asset: string,
     feed: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  setPriceStalenessThreshold(
+    newPriceStalenessThreshold: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
@@ -284,9 +333,16 @@ export interface ChainlinkOperator extends BaseContract {
 
     pricePrecisionScalar(overrides?: CallOverrides): Promise<BigNumber>;
 
+    priceStalenessThreshold(overrides?: CallOverrides): Promise<BigNumber>;
+
     setFeed(
       asset: string,
       feed: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    setPriceStalenessThreshold(
+      newPriceStalenessThreshold: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
   };
@@ -306,6 +362,15 @@ export interface ChainlinkOperator extends BaseContract {
       feed?: string | null
     ): SetFeedEventFilter;
     SetFeed(asset?: string | null, feed?: string | null): SetFeedEventFilter;
+
+    "SetPriceStalenessThreshold(uint256,uint256)"(
+      oldPriceStalenessThreshold?: null,
+      newPriceStalenessThreshold?: null
+    ): SetPriceStalenessThresholdEventFilter;
+    SetPriceStalenessThreshold(
+      oldPriceStalenessThreshold?: null,
+      newPriceStalenessThreshold?: null
+    ): SetPriceStalenessThresholdEventFilter;
 
     "TransferOwnership(address,address)"(
       oldOwner?: string | null,
@@ -347,9 +412,16 @@ export interface ChainlinkOperator extends BaseContract {
 
     pricePrecisionScalar(overrides?: CallOverrides): Promise<BigNumber>;
 
+    priceStalenessThreshold(overrides?: CallOverrides): Promise<BigNumber>;
+
     setFeed(
       asset: string,
       feed: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    setPriceStalenessThreshold(
+      newPriceStalenessThreshold: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
@@ -392,9 +464,18 @@ export interface ChainlinkOperator extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    priceStalenessThreshold(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     setFeed(
       asset: string,
       feed: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    setPriceStalenessThreshold(
+      newPriceStalenessThreshold: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };
