@@ -1911,14 +1911,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@hifi/amm@npm:1.10.0":
-  version: 1.10.0
-  resolution: "@hifi/amm@npm:1.10.0"
+"@hifi/amm@npm:1.11.0":
+  version: 1.11.0
+  resolution: "@hifi/amm@npm:1.11.0"
   dependencies:
     "@ethersproject/abi": ^5.6.0
     "@ethersproject/bytes": ^5.6.1
     "@ethersproject/providers": ^5.6.2
-    "@hifi/protocol": 1.10.0
+    "@hifi/protocol": 1.11.0
     "@openzeppelin/contracts-upgradeable": 4.5.2
     "@prb/contracts": 3.8.1
     "@prb/math": 2.5.0
@@ -1928,7 +1928,7 @@ __metadata:
     "@prb/contracts": 3.8.0
     "@prb/math": 2.5.0
     ethers: ^5.6.2
-  checksum: 8b8569bf8c63b3edd46af4dd71b139dbbefb266835859df0b52678d26ab400ce31a83ea1b7f4e503eab59022942cebf08eb2f6e5e78c3560bc7879a59ecc1e2e
+  checksum: 4faf5d874e4ba063403e56d3380e2a6c5a4dabece90ec968e8e8a0f6f83c58fd69673687d0bc5a823c748e10e2d4341e09c9b01eb20a16322757496923a5f007
   languageName: node
   linkType: hard
 
@@ -2105,26 +2105,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@hifi/protocol@npm:1.10.0":
-  version: 1.10.0
-  resolution: "@hifi/protocol@npm:1.10.0"
-  dependencies:
-    "@ethersproject/abi": ^5.6.0
-    "@ethersproject/bytes": ^5.6.1
-    "@ethersproject/providers": ^5.6.2
-    "@openzeppelin/contracts-upgradeable": 4.5.2
-    "@prb/contracts": 3.8.1
-    "@prb/math": 2.5.0
-    ethers: ^5.6.2
-  peerDependencies:
-    "@openzeppelin/contracts-upgradeable": 4.5.2
-    "@prb/contracts": 3.8.0
-    "@prb/math": 2.5.0
-    ethers: ^5.6.2
-  checksum: 8f2f2d59e8bedca17e545d89d1539dfff68eee2fd938e35441cd40e3fd00aed758100175883fdb57ab640544e67451ca545ec622920463294d84eeed9f5e87e3
-  languageName: node
-  linkType: hard
-
 "@hifi/protocol@npm:1.11.0":
   version: 1.11.0
   resolution: "@hifi/protocol@npm:1.11.0"
@@ -2213,7 +2193,7 @@ __metadata:
     "@ethersproject/abi": ^5.6.0
     "@ethersproject/bytes": ^5.6.1
     "@ethersproject/providers": ^5.6.2
-    "@hifi/amm": 1.10.0
+    "@hifi/amm": 1.11.0
     "@hifi/helpers": "workspace:*"
     "@hifi/protocol": 1.11.0
     "@nomiclabs/hardhat-ethers": ^2.0.5
