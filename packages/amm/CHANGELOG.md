@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.1] - 2023-01-04
+
+### Changed
+
+- Upgrade to `solidity-docgen` v0.6.0-beta.8.
+- Fix referenced license in README.
+
+### Fixed
+
+- Respond to audit finding regarding unlocked pragma (QSP-23).
+
 ## [1.10.0] - 2022-03-29
 
 ### Changed
@@ -189,6 +200,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 - First release of the package.
 
+[1.10.1]: https://github.com/hifi-finance/hifi/compare/@hifi/amm@1.10.0...@hifi/amm@1.10.1
 [1.10.0]: https://github.com/hifi-finance/hifi/compare/@hifi/amm@1.9.1...@hifi/amm@1.10.0
 [1.9.1]: https://github.com/hifi-finance/hifi/compare/@hifi/amm@1.9.0...@hifi/amm@1.9.1
 [1.9.0]: https://github.com/hifi-finance/hifi/compare/@hifi/amm@1.8.2...@hifi/amm@1.9.0
