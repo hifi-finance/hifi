@@ -4,6 +4,21 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.0] - 2023-01-04
+
+### Changed
+
+- Add missing "override" specifier to `removeLiquidityAndWithdrawUnderlyingWithSignature`.
+- Use "external" modifier instead of "public", where applicable.
+- Upgrade to `@hifi/protocol` v1.11.0.
+- Upgrade to `@hifi/amm` v1.11.0.
+
+### Fixed
+
+- Respond to audit finding regarding usage of `transfer` instead of `safeTransfer` (QSP-14).
+- Respond to audit finding regarding `depositUnderlying()` can result in temporarily stuck funds (QSP-6).
+- Respond to audit finding regarding unlocked pragma (QSP-23).
+
 ## [1.10.0] - 2022-08-18
 
 ### Changed
@@ -198,6 +213,7 @@ YANKED.
 
 - First release of the package.
 
+[1.11.0]: https://github.com/hifi-finance/hifi/compare/@hifi/proxy-target@1.10.0...@hifi/proxy-target@1.11.0
 [1.10.0]: https://github.com/hifi-finance/hifi/compare/@hifi/proxy-target@1.9.0...@hifi/proxy-target@1.10.0
 [1.9.0]: https://github.com/hifi-finance/hifi/compare/@hifi/proxy-target@1.8.0...@hifi/proxy-target@1.9.0
 [1.8.0]: https://github.com/hifi-finance/hifi/compare/@hifi/proxy-target@1.7.1...@hifi/proxy-target@1.8.0
