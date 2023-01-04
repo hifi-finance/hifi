@@ -1,0 +1,164 @@
+{
+  "manifestVersion": "3.2",
+  "admin": {
+    "address": "0x025E32aD3491cc1CB8934c41B5059A216AFf08c4",
+    "txHash": "0x7f2fbb9cbf9be92094ded0e51a0dc10e264f0cdcfec4057632d6e21a4ffb2997"
+  },
+  "proxies": [
+    {
+      "address": "0x452467A37f7A0c1EA8432A52b8bbe3Cc31E9513b",
+      "txHash": "0xd355458a944d306f265ee19ff8425fd458a965226bf5596b53c67642b78c5358",
+      "kind": "transparent"
+    }
+  ],
+  "impls": {
+    "971f57895a92d2307f473fedab11360dc51c1864b75f36efe42015549a17f2ca": {
+      "address": "0x783c0B27871Fcc9cE8B52Cca392Ee4dfa573BF5E",
+      "txHash": "0x7a6394d6a1e53be149b640c2c43ddadc67f5fb432845f59d40f78db25ff2d38d",
+      "layout": {
+        "storage": [
+          {
+            "label": "_initialized",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:39"
+          },
+          {
+            "label": "_initializing",
+            "offset": 1,
+            "slot": "0",
+            "type": "t_bool",
+            "contract": "Initializable",
+            "src": "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol:44"
+          },
+          {
+            "label": "owner",
+            "offset": 2,
+            "slot": "0",
+            "type": "t_address",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts/access/OwnableUpgradeable.sol:19"
+          },
+          {
+            "label": "__gap",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_array(t_uint256)50_storage",
+            "contract": "OwnableUpgradeable",
+            "src": "contracts/access/OwnableUpgradeable.sol:24"
+          },
+          {
+            "label": "fintroller",
+            "offset": 0,
+            "slot": "51",
+            "type": "t_contract(IFintroller)7956",
+            "contract": "SBalanceSheetV1",
+            "src": "contracts/core/balance-sheet/SBalanceSheetV1.sol:26"
+          },
+          {
+            "label": "oracle",
+            "offset": 0,
+            "slot": "52",
+            "type": "t_contract(IChainlinkOperator)9161",
+            "contract": "SBalanceSheetV1",
+            "src": "contracts/core/balance-sheet/SBalanceSheetV1.sol:29"
+          },
+          {
+            "label": "vaults",
+            "offset": 0,
+            "slot": "53",
+            "type": "t_mapping(t_address,t_struct(Vault)6501_storage)",
+            "contract": "SBalanceSheetV1",
+            "src": "contracts/core/balance-sheet/SBalanceSheetV1.sol:32"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_array(t_contract(IErc20)1477)dyn_storage": {
+            "label": "contract IErc20[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_contract(IHToken)8700)dyn_storage": {
+            "label": "contract IHToken[]",
+            "numberOfBytes": "32"
+          },
+          "t_array(t_uint256)50_storage": {
+            "label": "uint256[50]",
+            "numberOfBytes": "1600"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_contract(IChainlinkOperator)9161": {
+            "label": "contract IChainlinkOperator",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IErc20)1477": {
+            "label": "contract IErc20",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IFintroller)7956": {
+            "label": "contract IFintroller",
+            "numberOfBytes": "20"
+          },
+          "t_contract(IHToken)8700": {
+            "label": "contract IHToken",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_struct(Vault)6501_storage)": {
+            "label": "mapping(address => struct SBalanceSheetV1.Vault)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_contract(IErc20)1477,t_uint256)": {
+            "label": "mapping(contract IErc20 => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_contract(IHToken)8700,t_uint256)": {
+            "label": "mapping(contract IHToken => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Vault)6501_storage": {
+            "label": "struct SBalanceSheetV1.Vault",
+            "members": [
+              {
+                "label": "bondList",
+                "type": "t_array(t_contract(IHToken)8700)dyn_storage",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "collateralAmounts",
+                "type": "t_mapping(t_contract(IErc20)1477,t_uint256)",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "collateralList",
+                "type": "t_array(t_contract(IErc20)1477)dyn_storage",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "debtAmounts",
+                "type": "t_mapping(t_contract(IHToken)8700,t_uint256)",
+                "offset": 0,
+                "slot": "3"
+              }
+            ],
+            "numberOfBytes": "128"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        }
+      }
+    }
+  }
+}
