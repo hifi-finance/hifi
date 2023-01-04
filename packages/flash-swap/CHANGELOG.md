@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.0] - 2023-01-04
+
+### Changed
+
+- Upgrade to `solidity-docgen` v0.6.0-beta.8.
+- Upgrade to `@hifi/protocol` v1.11.0.
+
+### Fixed
+
+- Respond to audit finding regarding unlocked pragma (QSP-23).
+
 ## [1.10.0] - 2022-03-29
 
 ### Changed
@@ -180,6 +191,7 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 - First release of the package.
 
+[1.11.0]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.10.0...@hifi/flash-swap@1.11.0
 [1.10.0]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.9.0...@hifi/flash-swap@1.10.0
 [1.9.0]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.8.0...@hifi/flash-swap@1.9.0
 [1.8.0]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.7.0...@hifi/flash-swap@1.8.0
