@@ -108,6 +108,27 @@ const _abi = [
     type: "error",
   },
   {
+    inputs: [
+      {
+        internalType: "contract IErc20",
+        name: "collateral",
+        type: "address",
+      },
+      {
+        internalType: "uint256",
+        name: "newCollateralListLength",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "maxCollaterals",
+        type: "uint256",
+      },
+    ],
+    name: "BalanceSheet__DepositMaxCollaterals",
+    type: "error",
+  },
+  {
     inputs: [],
     name: "BalanceSheet__FintrollerZeroAddress",
     type: "error",

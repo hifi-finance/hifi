@@ -46,7 +46,18 @@ const _abi = [
         type: "string",
       },
     ],
-    name: "ChainlinkOperator__PriceZero",
+    name: "ChainlinkOperator__PriceLessThanOrEqualToZero",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "string",
+        name: "symbol",
+        type: "string",
+      },
+    ],
+    name: "ChainlinkOperator__PriceStale",
     type: "error",
   },
   {
@@ -85,6 +96,25 @@ const _abi = [
       },
     ],
     name: "SetFeed",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "oldPriceStalenessThreshold",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "newPriceStalenessThreshold",
+        type: "uint256",
+      },
+    ],
+    name: "SetPriceStalenessThreshold",
     type: "event",
   },
   {
@@ -194,6 +224,19 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "priceStalenessThreshold",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "contract IErc20",
@@ -207,6 +250,19 @@ const _abi = [
       },
     ],
     name: "setFeed",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "newPriceStalenessThreshold",
+        type: "uint256",
+      },
+    ],
+    name: "setPriceStalenessThreshold",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
