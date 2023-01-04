@@ -15,7 +15,7 @@
     "@ethersproject/bytes": "^5.6.1",
     "@ethersproject/providers": "^5.6.2",
     "@hifi/amm": "1.10.0",
-    "@hifi/protocol": "1.10.0",
+    "@hifi/protocol": "1.11.0",
     "@openzeppelin/contracts-upgradeable": "4.5.2",
     "@prb/contracts": "3.8.1",
     "ethers": "^5.6.2"

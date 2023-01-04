@@ -1947,7 +1947,7 @@ __metadata:
     "@hifi/constants": "workspace:*"
     "@hifi/errors": "workspace:*"
     "@hifi/helpers": "workspace:*"
-    "@hifi/protocol": 1.10.0
+    "@hifi/protocol": 1.11.0
     "@nomiclabs/hardhat-ethers": ^2.0.5
     "@nomiclabs/hardhat-etherscan": ^3.0.3
     "@nomiclabs/hardhat-waffle": ^2.0.3
@@ -2041,7 +2041,7 @@ __metadata:
     "@ethersproject/providers": ^5.6.2
     "@hifi/errors": "workspace:*"
     "@hifi/helpers": "workspace:*"
-    "@hifi/protocol": 1.10.0
+    "@hifi/protocol": 1.11.0
     "@nomiclabs/hardhat-ethers": ^2.0.5
     "@nomiclabs/hardhat-etherscan": ^3.0.3
     "@nomiclabs/hardhat-waffle": ^2.0.3
@@ -2125,6 +2125,26 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hifi/protocol@npm:1.11.0":
+  version: 1.11.0
+  resolution: "@hifi/protocol@npm:1.11.0"
+  dependencies:
+    "@ethersproject/abi": ^5.6.0
+    "@ethersproject/bytes": ^5.6.1
+    "@ethersproject/providers": ^5.6.2
+    "@openzeppelin/contracts-upgradeable": 4.5.2
+    "@prb/contracts": 3.8.1
+    "@prb/math": 2.5.0
+    ethers: ^5.6.2
+  peerDependencies:
+    "@openzeppelin/contracts-upgradeable": 4.5.2
+    "@prb/contracts": 3.8.0
+    "@prb/math": 2.5.0
+    ethers: ^5.6.2
+  checksum: 113e505790f0f27e15b266bae45257819b55fe6bcdc7430f70a70b1b58450fd8cfe998320c93555fdc91bf4a37c1dd71ec725fd527857804434936e3a118a83c
+  languageName: node
+  linkType: hard
+
 "@hifi/protocol@workspace:packages/protocol":
   version: 0.0.0-use.local
   resolution: "@hifi/protocol@workspace:packages/protocol"
@@ -2195,7 +2215,7 @@ __metadata:
     "@ethersproject/providers": ^5.6.2
     "@hifi/amm": 1.10.0
     "@hifi/helpers": "workspace:*"
-    "@hifi/protocol": 1.10.0
+    "@hifi/protocol": 1.11.0
     "@nomiclabs/hardhat-ethers": ^2.0.5
     "@nomiclabs/hardhat-etherscan": ^3.0.3
     "@openzeppelin/contracts-upgradeable": 4.5.2
