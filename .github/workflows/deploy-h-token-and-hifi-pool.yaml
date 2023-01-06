@@ -38,10 +38,6 @@ on:
         default: ""
         description: "Address of new owner to set the deployed hToken contract to"
         required: false
-      ref:
-        default: "main"
-        description: "Git ref to checkout"
-        required: false
       underlying:
         description: "Address of the underlying ERC-20 contract"
         required: true
@@ -53,7 +49,7 @@ jobs:
       - name: "Check out the repo"
         uses: "actions/checkout@v2"
         with:
-          ref: ${{ github.event.inputs.ref }}
+          ref: "main"
 
       - name: "Setup Node.js"
         uses: "actions/setup-node@v2"
