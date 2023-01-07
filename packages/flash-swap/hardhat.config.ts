@@ -55,7 +55,18 @@ const config: HardhatUserConfig = {
     ropsten: getChainConfig("ropsten", infuraApiKey, mnemonic),
   },
   packager: {
-    contracts: ["FlashUniswapV2", "IFlashUniswapV2", "IUniswapV2Callee", "IUniswapV2Pair", "UniswapV2Pair"],
+    contracts: [
+      "FlashUniswapV2",
+      "FlashUniswapV3",
+      "IFlashUniswapV2",
+      "IFlashUniswapV3",
+      "IUniswapV2Callee",
+      "IUniswapV3FlashCallback",
+      "IUniswapV2Pair",
+      "IUniswapV3Pool",
+      "UniswapV2Pair",
+      "UniswapV3Pool",
+    ],
     includeFactories: true,
   },
   paths: {
@@ -76,6 +87,15 @@ const config: HardhatUserConfig = {
         },
       },
       {
+        version: "0.7.6",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 800,
+          },
+        },
+      },
+      {
         version: "0.8.12",
         settings: {
           metadata: {
@@ -88,6 +108,17 @@ const config: HardhatUserConfig = {
         },
       },
     ],
+    overrides: {
+      "@uniswap/v3-core/contracts/libraries/TickBitmap.sol": {
+        version: "0.7.6",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 800,
+          },
+        },
+      },
+    },
   },
   typechain: {
     outDir: "src/types",
