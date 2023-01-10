@@ -865,6 +865,16 @@ interface IHifiProxyTarget {
     /// @param balanceSheet The address of the BalanceSheet contract.
     function wrapEthAndDepositCollateral(WethInterface weth, IBalanceSheetV2 balanceSheet) external payable;
 
+    /// @notice Withdraws WETH from the vault and unwraps it into ETH.
+    /// @param weth The address of the WETH contract.
+    /// @param balanceSheet The address of the BalanceSheet contract.
+    /// @param withdrawAmount The amount of WETH to withdraw.
+    function withdrawCollateralAndUnwrapWeth(
+        WethInterface weth,
+        IBalanceSheetV2 balanceSheet,
+        uint256 withdrawAmount
+    ) external;
+
     /// @notice Wraps ETH into WETH, deposits collateral into the vault, borrows hTokens and sells them.
     ///
     /// @dev This is a payable function so it can receive ETH transfers.

@@ -1012,6 +1012,21 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
+    function withdrawCollateralAndUnwrapWeth(
+        WethInterface weth,
+        IBalanceSheetV2 balanceSheet,
+        uint256 withdrawAmount
+    ) public override {
+        balanceSheet.withdrawCollateral(IErc20(address(weth)), withdrawAmount);
+
+        // Convert the received WETH to ETH.
+        weth.withdraw(withdrawAmount);
+
+        // The ETH is now in the DSProxy, so we relay it to the end user.
+        payable(msg.sender).transfer(withdrawAmount);
+    }
+
+    /// @inheritdoc IHifiProxyTarget
     function wrapEthAndDepositAndBorrowHTokenAndSellHToken(
         WethInterface weth,
         IBalanceSheetV2 balanceSheet,
