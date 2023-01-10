@@ -19,8 +19,36 @@ interface IFlashUniswapV3 is IUniswapV3FlashCallback {
     /// @notice Emitted when liquidating a vault backed by underlying.
     error FlashUniswapV3__LiquidateUnderlyingBackedVault(address borrower, address underlying);
 
+    /// @notice Emitted when the liquidation either does not yield a sufficient profit or it costs more
+    /// than what the subsidizer is willing to pay.
+    error FlashUniswapV3__TurnoutNotSatisfied(uint256 seizeAmount, uint256 sellAmount, int256 turnout);
+
     /// @notice Emitted when neither the token0 nor the token1 is the underlying.
     error FlashUniswapV3__UnderlyingNotInPool(address pool, address token0, address token1, address underlying);
+
+    /// EVENTS ///
+
+    /// @notice Emitted when a flash loan is made and an account is liquidated.
+    /// @param liquidator The address of the liquidator account.
+    /// @param borrower The address of the borrower account being liquidated.
+    /// @param bond The address of the hToken contract.
+    /// @param underlyingAmount The amount of underlying flash borrowed.
+    /// @param seizeAmount The amount of collateral seized.
+    /// @param sellAmount The amount of collateral sold.
+    /// @param repayAmount The amount of underlying that had to be repaid by the liquidator.
+    /// @param subsidyAmount The amount of collateral subsidized by the liquidator.
+    /// @param profitAmount The amount of collateral pocketed as profit by the liquidator.
+    event FlashLoanAndLiquidateBorrow(
+        address indexed liquidator,
+        address indexed borrower,
+        address indexed bond,
+        uint256 underlyingAmount,
+        uint256 seizeAmount,
+        uint256 sellAmount,
+        uint256 repayAmount,
+        uint256 subsidyAmount,
+        uint256 profitAmount
+    );
 
     /// STRUCTS ///
 
@@ -29,6 +57,7 @@ interface IFlashUniswapV3 is IUniswapV3FlashCallback {
         IHToken bond;
         address collateral;
         uint24 poolFee;
+        int256 turnout;
         uint256 underlyingAmount;
     }
 
@@ -40,6 +69,8 @@ interface IFlashUniswapV3 is IUniswapV3FlashCallback {
         address collateral;
         PoolAddress.PoolKey poolKey;
         address sender;
+        int256 turnout;
+        address underlying;
         uint256 underlyingAmount;
     }
 
@@ -50,6 +81,12 @@ interface IFlashUniswapV3 is IUniswapV3FlashCallback {
 
     /// @notice The address of the UniswapV3Factory contract.
     function uniV3Factory() external view returns (address);
+
+    /// @notice The address of the Uniswap V3 Quoter contract.
+    function uniV3Quoter() external view returns (address);
+
+    /// @notice The address of the Uniswap V3 SwapRouter contract.
+    function uniV3SwapRouter() external view returns (address);
 
     /// NON-CONSTANT FUNCTIONS ///
 

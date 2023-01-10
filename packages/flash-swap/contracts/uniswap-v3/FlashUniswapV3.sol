@@ -4,6 +4,8 @@ pragma solidity ^0.8.4;
 import "@prb/contracts/token/erc20/IErc20.sol";
 import "@prb/contracts/token/erc20/SafeErc20.sol";
 import "@hifi/protocol/contracts/core/balance-sheet/IBalanceSheetV2.sol";
+import "@uniswap/v3-periphery/contracts/interfaces/IQuoter.sol";
+import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
 
 import "./IFlashUniswapV3.sol";
 import "./IUniswapV3Pool.sol";
@@ -22,10 +24,23 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
     /// @inheritdoc IFlashUniswapV3
     address public immutable override uniV3Factory;
 
+    /// @inheritdoc IFlashUniswapV3
+    address public immutable override uniV3Quoter;
+
+    /// @inheritdoc IFlashUniswapV3
+    address public immutable override uniV3SwapRouter;
+
     /// CONSTRUCTOR ///
-    constructor(IBalanceSheetV2 balanceSheet_, address uniV3Factory_) {
+    constructor(
+        IBalanceSheetV2 balanceSheet_,
+        address uniV3Factory_,
+        address uniV3Quoter_,
+        address uniV3SwapRouter_
+    ) {
         balanceSheet = IBalanceSheetV2(balanceSheet_);
         uniV3Factory = uniV3Factory_;
+        uniV3Quoter = uniV3Quoter_;
+        uniV3SwapRouter = uniV3SwapRouter_;
     }
 
     struct FlashLiquidateLocalVars {
@@ -75,10 +90,21 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
                     collateral: params.collateral,
                     poolKey: vars.poolKey,
                     sender: msg.sender,
+                    turnout: params.turnout,
+                    underlying: vars.underlying,
                     underlyingAmount: params.underlyingAmount
                 })
             )
         });
+    }
+
+    struct UniswapV3FlashCallbackLocalVars {
+        uint256 mintedHTokenAmount;
+        uint256 profitAmount;
+        uint256 repayAmount;
+        uint256 seizeAmount;
+        uint256 sellAmount;
+        uint256 subsidyAmount;
     }
 
     /// @inheritdoc IUniswapV3FlashCallback
@@ -87,7 +113,86 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
         uint256 fee1,
         bytes calldata data
     ) external override {
-        // TODO: implement
+        UniswapV3FlashCallbackLocalVars memory vars;
+
+        // Unpack the ABI encoded data passed by the UniswapV3Pool contract.
+        UniswapV3FlashCallbackParams memory params = abi.decode(data, (UniswapV3FlashCallbackParams));
+
+        // Check that the caller is a genuine UniswapV3Pool contract.
+        if (msg.sender != poolFor(params.poolKey)) {
+            revert FlashUniswapV3__CallNotAuthorized(msg.sender);
+        }
+
+        // Mint hTokens and liquidate the borrower.
+        vars.mintedHTokenAmount = mintHTokens({ bond: params.bond, underlyingAmount: params.underlyingAmount });
+        vars.seizeAmount = liquidateBorrow({
+            borrower: params.borrower,
+            bond: params.bond,
+            collateral: IErc20(params.collateral),
+            mintedHTokenAmount: vars.mintedHTokenAmount
+        });
+
+        // Calculate the amount of underlying required to repay.
+        vars.repayAmount = params.poolKey.token0 == params.underlying ? params.amount0 + fee0 : params.amount1 + fee1;
+
+        // Calculate the amount of collateral required to sell.
+        vars.sellAmount = IQuoter(uniV3Quoter).quoteExactOutputSingle({
+            tokenIn: params.collateral,
+            tokenOut: params.underlying,
+            fee: params.poolKey.fee,
+            amountOut: vars.repayAmount,
+            sqrtPriceLimitX96: 0
+        });
+
+        // Note that "turnout" is a signed int. When it is negative, it acts as a maximum subsidy amount.
+        // When its value is positive, it acts as a minimum profit.
+        if (int256(vars.seizeAmount) < int256(vars.sellAmount) + params.turnout) {
+            revert FlashUniswapV3__TurnoutNotSatisfied(vars.seizeAmount, vars.sellAmount, params.turnout);
+        }
+
+        // Transfer the subsidy amount.
+        if (vars.sellAmount > vars.seizeAmount) {
+            unchecked {
+                vars.subsidyAmount = vars.sellAmount - vars.seizeAmount;
+            }
+            IErc20(params.collateral).safeTransferFrom(params.sender, address(this), vars.subsidyAmount);
+        }
+        // Or reap the profit.
+        else if (vars.seizeAmount > vars.sellAmount) {
+            unchecked {
+                vars.profitAmount = vars.seizeAmount - vars.sellAmount;
+            }
+            IErc20(params.collateral).safeTransfer(params.sender, vars.profitAmount);
+        }
+
+        // Sell the remaining collateral to pay back the loan.
+        IErc20(params.collateral).approve({ spender: uniV3SwapRouter, amount: vars.sellAmount });
+        ISwapRouter(uniV3SwapRouter).exactOutputSingle(
+            ISwapRouter.ExactOutputSingleParams({
+                tokenIn: params.collateral,
+                tokenOut: params.underlying,
+                fee: params.poolKey.fee,
+                recipient: address(this),
+                deadline: block.timestamp,
+                amountOut: vars.repayAmount,
+                amountInMaximum: vars.sellAmount,
+                sqrtPriceLimitX96: 0
+            })
+        );
+        IErc20(params.underlying).safeTransfer(msg.sender, vars.repayAmount);
+
+        // Emit an event.
+        emit FlashLoanAndLiquidateBorrow({
+            liquidator: params.sender,
+            borrower: params.borrower,
+            bond: address(params.bond),
+            underlyingAmount: params.underlyingAmount,
+            seizeAmount: vars.seizeAmount,
+            sellAmount: vars.sellAmount,
+            repayAmount: vars.repayAmount,
+            subsidyAmount: vars.subsidyAmount,
+            profitAmount: vars.profitAmount
+        });
     }
 
     /// INTERNAL CONSTANT FUNCTIONS ///
