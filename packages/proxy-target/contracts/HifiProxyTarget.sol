@@ -71,55 +71,6 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function buyHTokenAndAddLiquidity(
-        IHifiPool hifiPool,
-        uint256 hTokenOut,
-        uint256 maxUnderlyingAmount
-    ) public override {
-        // Transfer the underlying to the DSProxy.
-        IErc20 underlying = hifiPool.underlying();
-        uint256 underlyingIn = hifiPool.getQuoteForBuyingHToken(hTokenOut);
-        underlying.safeTransferFrom(msg.sender, address(this), underlyingIn);
-
-        // Allow the HifiPool contract to spend underlying from the DSProxy.
-        approveSpender(underlying, address(hifiPool), underlyingIn);
-
-        // Buy the hTokens.
-        hifiPool.buyHToken(address(this), hTokenOut);
-
-        // Calculate how much underlying is required to provide "hTokenOut" liquidity to the AMM.
-        IHToken hToken = hifiPool.hToken();
-        uint256 underlyingRequired = getUnderlyingRequired(hifiPool, hTokenOut);
-
-        // Ensure that we are within the user's slippage tolerance.
-        uint256 totalUnderlyingAmount = underlyingIn + underlyingRequired;
-        if (totalUnderlyingAmount > maxUnderlyingAmount) {
-            revert HifiProxyTarget__AddLiquidityUnderlyingSlippage(maxUnderlyingAmount, totalUnderlyingAmount);
-        }
-
-        // Transfer the underlying to the DSProxy.
-        underlying.safeTransferFrom(msg.sender, address(this), underlyingRequired);
-
-        // Allow the HifiPool contract to spend hTokens from the DSProxy.
-        approveSpender(underlying, address(hifiPool), underlyingRequired);
-        approveSpender(hToken, address(hifiPool), hTokenOut);
-
-        // Add liquidity to the AMM.
-        (uint256 hTokenRequired, ) = hifiPool.getMintInputs(underlyingRequired);
-        uint256 poolTokensMinted = hifiPool.mint(underlyingRequired);
-
-        // The LP tokens are now in the DSProxy, so we relay them to the end user.
-        hifiPool.transfer(msg.sender, poolTokensMinted);
-
-        // "hTokenOut" is greater or equal than "hTokenRequired", because not all of "hTokenOut" was used in the mint.
-        // "normalizedUnderlyingRequired" was denormalized to "underlyingRequired", offsetting the trailing 12 digits.
-        unchecked {
-            uint256 hTokenDelta = hTokenOut - hTokenRequired;
-            hToken.transfer(msg.sender, hTokenDelta);
-        }
-    }
-
-    /// @inheritdoc IHifiProxyTarget
     function buyHTokenAndRepayBorrow(
         IHifiPool hifiPool,
         IBalanceSheetV2 balanceSheet,
@@ -158,23 +109,6 @@ contract HifiProxyTarget is IHifiProxyTarget {
                 hToken.transfer(msg.sender, hTokenDelta);
             }
         }
-    }
-
-    /// @inheritdoc IHifiProxyTarget
-    function buyHTokenAndAddLiquidityWithSignature(
-        IHifiPool hifiPool,
-        uint256 hTokenOut,
-        uint256 maxUnderlyingAmount,
-        uint256 deadline,
-        bytes memory signatureUnderlying
-    ) external override {
-        permitInternal(
-            IErc20Permit(address(hifiPool.underlying())),
-            maxUnderlyingAmount,
-            deadline,
-            signatureUnderlying
-        );
-        buyHTokenAndAddLiquidity(hifiPool, hTokenOut, maxUnderlyingAmount);
     }
 
     /// @inheritdoc IHifiProxyTarget
