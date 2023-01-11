@@ -219,6 +219,51 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
+    function depositUnderlyingAndRepayBorrow(
+        IHToken hToken,
+        IBalanceSheetV2 balanceSheet,
+        uint256 underlyingAmount
+    ) public override {
+        uint256 oldHTokenBalance = hToken.balanceOf(address(this));
+        depositUnderlyingInternal(hToken, underlyingAmount);
+
+        // Calculate how many hTokens were minted.
+        uint256 newHTokenBalance = hToken.balanceOf(address(this));
+        uint256 hTokenAmount;
+        unchecked {
+            hTokenAmount = newHTokenBalance - oldHTokenBalance;
+        }
+
+        // Query the amount of debt that the user owes.
+        uint256 debtAmount = balanceSheet.getDebtAmount(address(this), hToken);
+
+        // Use the recently minted hTokens to repay the borrow.
+        if (debtAmount >= hTokenAmount) {
+            balanceSheet.repayBorrow(hToken, hTokenAmount);
+        } else {
+            balanceSheet.repayBorrow(hToken, debtAmount);
+
+            // Relay any remaining hTokens to the end user.
+            unchecked {
+                uint256 hTokenDelta = hTokenAmount - debtAmount;
+                hToken.transfer(msg.sender, hTokenDelta);
+            }
+        }
+    }
+
+    /// @inheritdoc IHifiProxyTarget
+    function depositUnderlyingAndRepayBorrowWithSignature(
+        IHToken hToken,
+        IBalanceSheetV2 balanceSheet,
+        uint256 underlyingAmount,
+        uint256 deadline,
+        bytes memory signatureUnderlying
+    ) external override {
+        permitInternal(IErc20Permit(address(hToken.underlying())), underlyingAmount, deadline, signatureUnderlying);
+        depositUnderlyingAndRepayBorrow(hToken, balanceSheet, underlyingAmount);
+    }
+
+    /// @inheritdoc IHifiProxyTarget
     function redeem(
         IHToken hToken,
         uint256 hTokenAmount,
