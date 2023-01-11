@@ -111,20 +111,6 @@ interface IHifiProxyTarget {
         bytes memory signatureUnderlying
     ) external;
 
-    /// @notice Buys underlying with hTokens.
-    ///
-    /// Requirements:
-    /// - The caller must have allowed DSProxy to spend `maxHTokenIn` tokens.
-    ///
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param underlyingOut The exact amount of underlying that the user wants to buy.
-    /// @param maxHTokenIn The maximum amount of hTokens that the user is willing to pay.
-    function buyUnderlying(
-        IHifiPool hifiPool,
-        uint256 underlyingOut,
-        uint256 maxHTokenIn
-    ) external;
-
     /// @notice Buys underlying and adds liquidity to the AMM.
     ///
     /// - The caller must have allowed DSProxy to spend `maxHTokenAmount` tokens.
@@ -152,25 +138,6 @@ interface IHifiProxyTarget {
         IHifiPool hifiPool,
         uint256 maxHTokenAmount,
         uint256 underlyingOffered,
-        uint256 deadline,
-        bytes memory signatureHToken
-    ) external;
-
-    /// @notice Buys underlying with hTokens using EIP-2612 signatures.
-    ///
-    /// Requirements:
-    /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend `maxHTokenIn`
-    /// tokens for the given `deadline` and the caller's current nonce.
-    ///
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param underlyingOut The exact amount of underlying that the user wants to buy.
-    /// @param maxHTokenIn The maximum amount of hTokens that the user is willing to pay.
-    /// @param deadline The deadline beyond which the signature is not valid anymore.
-    /// @param signatureHToken The packed signature for the hToken.
-    function buyUnderlyingWithSignature(
-        IHifiPool hifiPool,
-        uint256 underlyingOut,
-        uint256 maxHTokenIn,
         uint256 deadline,
         bytes memory signatureHToken
     ) external;

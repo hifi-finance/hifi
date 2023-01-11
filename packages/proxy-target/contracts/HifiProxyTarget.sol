@@ -125,29 +125,6 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function buyUnderlying(
-        IHifiPool hifiPool,
-        uint256 underlyingOut,
-        uint256 maxHTokenIn
-    ) public override {
-        // Ensure that we are within the user's slippage tolerance.
-        uint256 hTokenIn = hifiPool.getQuoteForBuyingUnderlying(underlyingOut);
-        if (hTokenIn > maxHTokenIn) {
-            revert HifiProxyTarget__TradeSlippage(maxHTokenIn, hTokenIn);
-        }
-
-        // Transfer the hTokens to the DSProxy.
-        IErc20 hToken = hifiPool.hToken();
-        hToken.transferFrom(msg.sender, address(this), hTokenIn);
-
-        // Allow the HifiPool contract to spend underlying from the DSProxy.
-        approveSpender(hToken, address(hifiPool), hTokenIn);
-
-        // Buy the underlying and relay it to the end user.
-        hifiPool.buyUnderlying(msg.sender, underlyingOut);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
     function buyUnderlyingAndAddLiquidity(
         IHifiPool hifiPool,
         uint256 maxHTokenAmount,
@@ -188,18 +165,6 @@ contract HifiProxyTarget is IHifiProxyTarget {
 
         // The LP tokens are now in the DSProxy, so we relay them to the end user.
         hifiPool.transfer(msg.sender, poolTokensMinted);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
-    function buyUnderlyingWithSignature(
-        IHifiPool hifiPool,
-        uint256 underlyingOut,
-        uint256 maxHTokenIn,
-        uint256 deadline,
-        bytes memory signatureHToken
-    ) external override {
-        permitInternal(hifiPool.hToken(), maxHTokenIn, deadline, signatureHToken);
-        buyUnderlying(hifiPool, underlyingOut, maxHTokenIn);
     }
 
     /// @inheritdoc IHifiProxyTarget
