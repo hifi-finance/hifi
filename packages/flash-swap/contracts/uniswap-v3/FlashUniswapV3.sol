@@ -50,6 +50,8 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
         address underlying;
     }
 
+    /// PUBLIC NON-CONSTANT FUNCTIONS ///
+
     /// @inheritdoc IFlashUniswapV3
     function flashLiquidate(FlashLiquidateParams memory params) external override {
         FlashLiquidateLocalVars memory vars;

@@ -41,9 +41,9 @@ contract UniswapV3Pool is IUniswapV3Pool, NoDelegateCall {
     /// @inheritdoc IUniswapV3PoolImmutables
     address public immutable override factory;
     /// @inheritdoc IUniswapV3PoolImmutables
-    address public immutable override token0;
+    address public override token0;
     /// @inheritdoc IUniswapV3PoolImmutables
-    address public immutable override token1;
+    address public override token1;
     /// @inheritdoc IUniswapV3PoolImmutables
     uint24 public immutable override fee;
 

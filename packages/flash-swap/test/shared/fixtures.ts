@@ -15,17 +15,25 @@ import type { SimplePriceFeed } from "../../src/types/contracts/test/SimplePrice
 import type { FlashUniswapV2 } from "../../src/types/contracts/uniswap-v2/FlashUniswapV2";
 import type { GodModeUniswapV2Factory } from "../../src/types/contracts/uniswap-v2/test/GodModeUniswapV2Factory";
 import type { GodModeUniswapV2Pair } from "../../src/types/contracts/uniswap-v2/test/GodModeUniswapV2Pair";
-import type { MaliciousPair } from "../../src/types/contracts/uniswap-v2/test/MaliciousPair";
+import type { MaliciousPair as MaliciousV2Pair } from "../../src/types/contracts/uniswap-v2/test/MaliciousPair";
+import type { FlashUniswapV3 } from "../../src/types/contracts/uniswap-v3/FlashUniswapV3";
+import type { GodModeUniswapV3Factory } from "../../src/types/contracts/uniswap-v3/test/GodModeUniswapV3Factory";
+import { GodModeUniswapV3Pool } from "../../src/types/contracts/uniswap-v3/test/GodModeUniswapV3Pool";
+import type { MaliciousPool as MaliciousV3Pool } from "../../src/types/contracts/uniswap-v3/test/MaliciousPool";
 import { GodModeUniswapV2Pair__factory } from "../../src/types/factories/contracts/uniswap-v2/test/GodModeUniswapV2Pair__factory";
+import { GodModeUniswapV3Pool__factory } from "../../src/types/factories/contracts/uniswap-v3/test/GodModeUniswapV3Pool__factory";
 import { deployGodModeErc20 } from "./deployers";
 
 type IntegrationFixtureReturnType = {
   balanceSheet: BalanceSheetV2;
   fintroller: Fintroller;
   flashUniswapV2: FlashUniswapV2;
+  flashUniswapV3: FlashUniswapV3;
   hToken: GodModeHToken;
-  maliciousPair: MaliciousPair;
+  maliciousV2Pair: MaliciousV2Pair;
+  maliciousV3Pool: MaliciousV3Pool;
   uniswapV2Pair: GodModeUniswapV2Pair;
+  uniswapV3Pool: GodModeUniswapV3Pool;
   usdc: GodModeErc20;
   usdcPriceFeed: SimplePriceFeed;
   wbtc: GodModeErc20;
@@ -79,14 +87,28 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
     await waffle.deployContract(deployer, godModeUniswapV2FactoryArtifact, [await deployer.getAddress()])
   );
   await uniswapV2Factory.createPair(wbtc.address, usdc.address);
-  const pairAddress: string = await uniswapV2Factory.allPairs(0);
+  const v2PairAddress: string = await uniswapV2Factory.allPairs(0);
+
+  const godModeUniswapV3FactoryArtifact: Artifact = await artifacts.readArtifact("GodModeUniswapV3Factory");
+  const uniswapV3Factory: GodModeUniswapV3Factory = <GodModeUniswapV3Factory>(
+    await waffle.deployContract(deployer, godModeUniswapV3FactoryArtifact, [])
+  );
+  await uniswapV3Factory.createPool(wbtc.address, usdc.address, 500);
+  const v3PoolAddress: string = await uniswapV3Factory.getPool(wbtc.address, usdc.address, 500);
 
   const godModeUniswapV2PairArtifact: Artifact = await artifacts.readArtifact("GodModeUniswapV2Pair");
-  const uniswapV2Pair: GodModeUniswapV2Pair = GodModeUniswapV2Pair__factory.connect(pairAddress, deployer);
+  const uniswapV2Pair: GodModeUniswapV2Pair = GodModeUniswapV2Pair__factory.connect(v2PairAddress, deployer);
 
-  const maliciousPairArtifact: Artifact = await artifacts.readArtifact("MaliciousPair");
-  const maliciousPair: MaliciousPair = <MaliciousPair>(
-    await waffle.deployContract(deployer, maliciousPairArtifact, [wbtc.address, usdc.address])
+  const uniswapV3Pool: GodModeUniswapV3Pool = GodModeUniswapV3Pool__factory.connect(v3PoolAddress, deployer);
+
+  const maliciousV2PairArtifact: Artifact = await artifacts.readArtifact("MaliciousPair");
+  const maliciousV2Pair: MaliciousV2Pair = <MaliciousV2Pair>(
+    await waffle.deployContract(deployer, maliciousV2PairArtifact, [wbtc.address, usdc.address])
+  );
+
+  const maliciousV3PoolArtifact: Artifact = await artifacts.readArtifact("MaliciousPool");
+  const maliciousV3Pool: MaliciousV3Pool = <MaliciousV3Pool>(
+    await waffle.deployContract(deployer, maliciousV3PoolArtifact, [wbtc.address, usdc.address])
   );
 
   const uniV2PairInitCodeHash: string = keccak256(godModeUniswapV2PairArtifact.bytecode);
@@ -100,13 +122,25 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
     ])
   );
 
+  const flashUniswapV3Artifact: Artifact = await artifacts.readArtifact("FlashUniswapV3");
+  const flashUniswapV3: FlashUniswapV3 = <FlashUniswapV3>await waffle.deployContract(deployer, flashUniswapV3Artifact, [
+    balanceSheet.address,
+    uniswapV3Factory.address,
+    // TODO: add fixtures for the following:
+    // quoter.address,
+    // swapRouter.address,
+  ]);
+
   return {
     balanceSheet,
     fintroller,
     flashUniswapV2,
+    flashUniswapV3,
     hToken,
-    maliciousPair,
+    maliciousV2Pair,
+    maliciousV3Pool,
     uniswapV2Pair,
+    uniswapV3Pool,
     usdc,
     usdcPriceFeed,
     wbtc,

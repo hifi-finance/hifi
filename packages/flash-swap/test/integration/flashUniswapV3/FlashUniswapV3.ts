@@ -1,35 +1,35 @@
 import { integrationFixture } from "../../shared/fixtures";
-import { shouldBehaveLikeFlashUniswapV2 } from "./FlashUniswapV2.behavior";
+import { shouldBehaveLikeFlashUniswapV3 } from "./FlashUniswapV3.behavior";
 
-export function integrationTestFlashUniswapV2(): void {
-  describe("FlashUniswapV2", function () {
+export function integrationTestFlashUniswapV3(): void {
+  describe("FlashUniswapV3", function () {
     beforeEach(async function () {
       const {
         balanceSheet,
         fintroller,
-        flashUniswapV2,
+        flashUniswapV3,
         hToken,
-        maliciousV2Pair,
+        maliciousV3Pool,
         oracle,
-        uniswapV2Pair,
+        uniswapV3Pool,
         usdc,
         usdcPriceFeed,
         wbtc,
         wbtcPriceFeed,
       } = await this.loadFixture(integrationFixture);
       this.contracts.balanceSheet = balanceSheet;
-      this.contracts.flashUniswapV2 = flashUniswapV2;
       this.contracts.fintroller = fintroller;
+      this.contracts.flashUniswapV3 = flashUniswapV3;
       this.contracts.hToken = hToken;
-      this.contracts.maliciousV2Pair = maliciousV2Pair;
+      this.contracts.maliciousV3Pool = maliciousV3Pool;
       this.contracts.oracle = oracle;
-      this.contracts.uniswapV2Pair = uniswapV2Pair;
+      this.contracts.uniswapV3Pool = uniswapV3Pool;
       this.contracts.usdc = usdc;
       this.contracts.usdcPriceFeed = usdcPriceFeed;
       this.contracts.wbtc = wbtc;
       this.contracts.wbtcPriceFeed = wbtcPriceFeed;
     });
 
-    shouldBehaveLikeFlashUniswapV2();
+    shouldBehaveLikeFlashUniswapV3();
   });
 }
