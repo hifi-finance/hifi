@@ -44,16 +44,6 @@ interface IHifiProxyTarget {
 
     /// NON-CONSTANT FUNCTIONS ///
 
-    /// @notice Borrows hTokens.
-    /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param hToken The address of the HToken contract.
-    /// @param borrowAmount The amount of hTokens to borrow.
-    function borrowHToken(
-        IBalanceSheetV2 balanceSheet,
-        IHToken hToken,
-        uint256 borrowAmount
-    ) external;
-
     /// @notice Borrows hTokens and adds liquidity to the AMM.
     ///
     /// Requirements:

@@ -19,18 +19,6 @@ contract HifiProxyTarget is IHifiProxyTarget {
     /// PUBLIC NON-CONSTANT FUNCTIONS ///
 
     /// @inheritdoc IHifiProxyTarget
-    function borrowHToken(
-        IBalanceSheetV2 balanceSheet,
-        IHToken hToken,
-        uint256 borrowAmount
-    ) public override {
-        balanceSheet.borrow(hToken, borrowAmount);
-
-        // The hTokens are now in the DSProxy, so we relay them to the end user.
-        hToken.transfer(msg.sender, borrowAmount);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
     function borrowHTokenAndAddLiquidity(
         IBalanceSheetV2 balanceSheet,
         IHifiPool hifiPool,
