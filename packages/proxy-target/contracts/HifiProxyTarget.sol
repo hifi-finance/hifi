@@ -640,20 +640,6 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @dev See the documentation for the public functions that call this internal function.
-    function getUnderlyingRequired(IHifiPool hifiPool, uint256 hTokenOut)
-        internal
-        view
-        returns (uint256 underlyingRequired)
-    {
-        // Calculate how much underlying is required to provide "hTokenOut" liquidity to the AMM.
-        IHToken hToken = hifiPool.hToken();
-        uint256 normalizedUnderlyingReserves = hifiPool.getNormalizedUnderlyingReserves();
-        uint256 hTokenReserves = hToken.balanceOf(address(hifiPool));
-        uint256 normalizedUnderlyingRequired = (normalizedUnderlyingReserves * hTokenOut) / hTokenReserves;
-        underlyingRequired = denormalize(normalizedUnderlyingRequired, hifiPool.underlyingPrecisionScalar());
-    }
-
-    /// @dev See the documentation for the public functions that call this internal function.
     function permitInternal(
         IErc20Permit token,
         uint256 amount,
