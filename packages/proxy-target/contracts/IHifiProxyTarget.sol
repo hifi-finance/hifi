@@ -255,51 +255,6 @@ interface IHifiProxyTarget {
         uint256 depositAmount
     ) external;
 
-    /// @notice Deposits collateral into the vault, borrows hTokens and sells them.
-    ///
-    /// Requirements:
-    /// - The caller must have allowed the DSProxy to spend `collateralAmount` tokens.
-    ///
-    /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param collateral The address of the collateral contract.
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param depositAmount The amount of collateral to deposit.
-    /// @param borrowAmount The exact amount of hTokens to borrow.
-    /// @param minUnderlyingOut The minimum amount of underlying that the user is willing to accept.
-    function depositCollateralAndBorrowHTokenAndSellHToken(
-        IBalanceSheetV2 balanceSheet,
-        IErc20 collateral,
-        IHifiPool hifiPool,
-        uint256 depositAmount,
-        uint256 borrowAmount,
-        uint256 minUnderlyingOut
-    ) external;
-
-    /// @notice Deposits collateral into the vault, borrows hTokens and sells them.
-    ///
-    /// Requirements:
-    /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend `collateralAmount`
-    /// and `underlyingAmount` for the given `deadline` and the caller's current nonce.
-    ///
-    /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param collateral The address of the collateral contract.
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param depositAmount The amount of collateral to deposit.
-    /// @param borrowAmount The exact amount of hTokens to borrow.
-    /// @param minUnderlyingOut The minimum amount of underlying that the user is willing to accept.
-    /// @param deadline The deadline beyond which the signature is not valid anymore.
-    /// @param signatureCollateral The packed signature for the collateral.
-    function depositCollateralAndBorrowHTokenAndSellHTokenWithSignature(
-        IBalanceSheetV2 balanceSheet,
-        IErc20Permit collateral,
-        IHifiPool hifiPool,
-        uint256 depositAmount,
-        uint256 borrowAmount,
-        uint256 minUnderlyingOut,
-        uint256 deadline,
-        bytes memory signatureCollateral
-    ) external;
-
     /// @notice Deposits collateral into the vault using EIP-2612 signatures.
     ///
     /// @dev Requirements:

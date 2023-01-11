@@ -329,41 +329,6 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function depositCollateralAndBorrowHTokenAndSellHToken(
-        IBalanceSheetV2 balanceSheet,
-        IErc20 collateral,
-        IHifiPool hifiPool,
-        uint256 depositAmount,
-        uint256 borrowAmount,
-        uint256 minUnderlyingOut
-    ) public override {
-        depositCollateral(balanceSheet, collateral, depositAmount);
-        borrowHTokenAndSellHToken(balanceSheet, hifiPool, borrowAmount, minUnderlyingOut);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
-    function depositCollateralAndBorrowHTokenAndSellHTokenWithSignature(
-        IBalanceSheetV2 balanceSheet,
-        IErc20Permit collateral,
-        IHifiPool hifiPool,
-        uint256 depositAmount,
-        uint256 borrowAmount,
-        uint256 minUnderlyingOut,
-        uint256 deadline,
-        bytes memory signatureCollateral
-    ) external override {
-        permitInternal(collateral, depositAmount, deadline, signatureCollateral);
-        depositCollateralAndBorrowHTokenAndSellHToken(
-            balanceSheet,
-            collateral,
-            hifiPool,
-            depositAmount,
-            borrowAmount,
-            minUnderlyingOut
-        );
-    }
-
-    /// @inheritdoc IHifiProxyTarget
     function depositCollateralWithSignature(
         IBalanceSheetV2 balanceSheet,
         IErc20Permit collateral,
