@@ -292,54 +292,6 @@ interface IHifiProxyTarget {
         uint256 depositAmount
     ) external;
 
-    /// @notice Deposits collateral into the vault, borrows hTokens and adds liquidity to the AMM.
-    ///
-    /// Requirements:
-    /// - The caller must have allowed the DSProxy to spend `collateralAmount` tokens.
-    ///
-    /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param collateral The address of the collateral contract.
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param depositAmount The amount of collateral to deposit.
-    /// @param maxBorrowAmount The amount of hTokens to borrow and the max amount that the user is willing to invest.
-    /// @param underlyingOffered The amount of underlying to invest.
-    function depositCollateralAndBorrowHTokenAndAddLiquidity(
-        IBalanceSheetV2 balanceSheet,
-        IErc20 collateral,
-        IHifiPool hifiPool,
-        uint256 depositAmount,
-        uint256 maxBorrowAmount,
-        uint256 underlyingOffered
-    ) external;
-
-    /// @notice Deposits collateral into the vault, borrows hTokens and adds liquidity to the AMM using EIP-2612
-    /// signatures.
-    ///
-    /// Requirements:
-    /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend `collateralAmount`
-    /// and `underlyingAmount` tokens for the given `deadline` and the caller's current nonce.
-    ///
-    /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param collateral The address of the collateral contract.
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param depositAmount The amount of collateral to deposit.
-    /// @param maxBorrowAmount The amount of hTokens to borrow and the max amount that the user is willing to invest.
-    /// @param underlyingOffered The amount of underlying to invest.
-    /// @param deadline The deadline beyond which the signatures are not valid anymore.
-    /// @param signatureCollateral The packed signature for the collateral.
-    /// @param signatureUnderlying The packed signature for the underlying.
-    function depositCollateralAndBorrowHTokenAndAddLiquidityWithSignature(
-        IBalanceSheetV2 balanceSheet,
-        IErc20Permit collateral,
-        IHifiPool hifiPool,
-        uint256 depositAmount,
-        uint256 maxBorrowAmount,
-        uint256 underlyingOffered,
-        uint256 deadline,
-        bytes memory signatureCollateral,
-        bytes memory signatureUnderlying
-    ) external;
-
     /// @notice Deposits collateral into the vault, borrows hTokens and sells them.
     ///
     /// Requirements:
