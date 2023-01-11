@@ -44,43 +44,6 @@ interface IHifiProxyTarget {
 
     /// NON-CONSTANT FUNCTIONS ///
 
-    /// @notice Borrows hTokens and adds liquidity to the AMM.
-    ///
-    /// Requirements:
-    /// - The caller must have allowed the DSProxy to spend `underlyingAmount` tokens.
-    ///
-    /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param maxBorrowAmount The amount of hTokens to borrow and the max amount that the user is willing to invest.
-    /// @param underlyingOffered The amount of underlying to invest.
-    function borrowHTokenAndAddLiquidity(
-        IBalanceSheetV2 balanceSheet,
-        IHifiPool hifiPool,
-        uint256 maxBorrowAmount,
-        uint256 underlyingOffered
-    ) external;
-
-    /// @notice Borrows hTokens and adds liquidity to the AMM using EIP-2612 signatures.
-    ///
-    /// Requirements:
-    /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend
-    /// `underlyingOffered` tokens for the given `deadline` and the caller's current nonce.
-    ///
-    /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param maxBorrowAmount The amount of hTokens to borrow and the max amount that the user is willing to invest.
-    /// @param underlyingOffered The amount of underlying to invest.
-    /// @param deadline The deadline beyond which the signature is not valid anymore.
-    /// @param signatureUnderlying The packed signature for the underlying.
-    function borrowHTokenAndAddLiquidityWithSignature(
-        IBalanceSheetV2 balanceSheet,
-        IHifiPool hifiPool,
-        uint256 maxBorrowAmount,
-        uint256 underlyingOffered,
-        uint256 deadline,
-        bytes memory signatureUnderlying
-    ) external;
-
     /// @notice Borrows hTokens and buys underlying.
     ///
     /// @dev Emits a {BorrowHTokenAndBuyUnderlying} event.

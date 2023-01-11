@@ -19,53 +19,6 @@ contract HifiProxyTarget is IHifiProxyTarget {
     /// PUBLIC NON-CONSTANT FUNCTIONS ///
 
     /// @inheritdoc IHifiProxyTarget
-    function borrowHTokenAndAddLiquidity(
-        IBalanceSheetV2 balanceSheet,
-        IHifiPool hifiPool,
-        uint256 maxBorrowAmount,
-        uint256 underlyingOffered
-    ) public override {
-        // Ensure that we are within the user's slippage tolerance.
-        (uint256 hTokenRequired, ) = hifiPool.getMintInputs(underlyingOffered);
-        if (hTokenRequired > maxBorrowAmount) {
-            revert HifiProxyTarget__AddLiquidityHTokenSlippage(maxBorrowAmount, hTokenRequired);
-        }
-
-        // Borrow the hTokens.
-        IHToken hToken = hifiPool.hToken();
-        balanceSheet.borrow(hToken, hTokenRequired);
-
-        // Transfer the underlying to the DSProxy.
-        IErc20 underlying = hifiPool.underlying();
-        underlying.safeTransferFrom(msg.sender, address(this), underlyingOffered);
-
-        // Allow the HifiPool contract to spend underlying from the DSProxy.
-        approveSpender(underlying, address(hifiPool), underlyingOffered);
-
-        // Allow the HifiPool contract to spend hTokens from the DSProxy.
-        approveSpender(hToken, address(hifiPool), hTokenRequired);
-
-        // Add liquidity to pool.
-        uint256 poolTokensMinted = hifiPool.mint(underlyingOffered);
-
-        // The LP tokens are now in the DSProxy, so we relay them to the end user.
-        hifiPool.transfer(msg.sender, poolTokensMinted);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
-    function borrowHTokenAndAddLiquidityWithSignature(
-        IBalanceSheetV2 balanceSheet,
-        IHifiPool hifiPool,
-        uint256 maxBorrowAmount,
-        uint256 underlyingOffered,
-        uint256 deadline,
-        bytes memory signatureUnderlying
-    ) external override {
-        permitInternal(IErc20Permit(address(hifiPool.underlying())), underlyingOffered, deadline, signatureUnderlying);
-        borrowHTokenAndAddLiquidity(balanceSheet, hifiPool, maxBorrowAmount, underlyingOffered);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
     function borrowHTokenAndBuyUnderlying(
         IBalanceSheetV2 balanceSheet,
         IHifiPool hifiPool,
