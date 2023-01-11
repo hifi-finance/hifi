@@ -178,39 +178,6 @@ interface IHifiProxyTarget {
         bytes memory signatureUnderlying
     ) external;
 
-    /// @notice Deposits underlying in the HToken contract to mint hTokens, and repays the borrow.
-    ///
-    /// @dev Requirements:
-    /// - The caller must have allowed the DSProxy to spend `underlyingAmount` tokens.
-    ///
-    /// @param hToken The address of the HToken contract.
-    /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param underlyingAmount The amount of underlying to deposit.
-    function depositUnderlyingAndRepayBorrow(
-        IHToken hToken,
-        IBalanceSheetV2 balanceSheet,
-        uint256 underlyingAmount
-    ) external;
-
-    /// @notice Supplies underlying to mint hTokens and repay the hToken borrow using EIP-2612 signatures.
-    ///
-    /// @dev Requirements:
-    /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend `underlyingAmount`
-    ///   for the given `deadline` and the caller's current nonce.
-    ///
-    /// @param hToken The address of the HToken contract.
-    /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param underlyingAmount The amount of underlying to supply.
-    /// @param deadline The deadline beyond which the signature is not valid anymore.
-    /// @param signatureUnderlying The packed signature for the underlying.
-    function depositUnderlyingAndRepayBorrowWithSignature(
-        IHToken hToken,
-        IBalanceSheetV2 balanceSheet,
-        uint256 underlyingAmount,
-        uint256 deadline,
-        bytes memory signatureUnderlying
-    ) external;
-
     /// @notice Redeems the underlying in exchange for hTokens.
     ///
     /// @dev Requirements:
