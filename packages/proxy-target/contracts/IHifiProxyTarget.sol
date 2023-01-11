@@ -299,39 +299,6 @@ interface IHifiProxyTarget {
         bytes memory signatureLPToken
     ) external;
 
-    /// @notice Repays the hToken borrow.
-    ///
-    /// @dev Requirements:
-    /// - The caller must have allowed the DSProxy to spend `repayAmount` hTokens.
-    ///
-    /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param hToken The address of the HToken contract.
-    /// @param repayAmount The amount of hTokens to repay.
-    function repayBorrow(
-        IBalanceSheetV2 balanceSheet,
-        IHToken hToken,
-        uint256 repayAmount
-    ) external;
-
-    /// @notice Repays the hToken borrow using EIP-2612 signatures.
-    ///
-    /// @dev Requirements:
-    /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend `repayAmount`
-    ///  hTokens for the given `deadline` and the caller's current nonce.
-    ///
-    /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param hToken The address of the HToken contract.
-    /// @param repayAmount The amount of hTokens to repay.
-    /// @param deadline The deadline beyond which the signature is not valid anymore.
-    /// @param signatureHToken The packed signature for HTokens.
-    function repayBorrowWithSignature(
-        IBalanceSheetV2 balanceSheet,
-        IHToken hToken,
-        uint256 repayAmount,
-        uint256 deadline,
-        bytes memory signatureHToken
-    ) external;
-
     /// @notice Sells hTokens for underlying.
     ///
     /// Requirements:

@@ -358,31 +358,6 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function repayBorrow(
-        IBalanceSheetV2 balanceSheet,
-        IHToken hToken,
-        uint256 repayAmount
-    ) public override {
-        // Transfer the hTokens to the DSProxy.
-        hToken.transferFrom(msg.sender, address(this), repayAmount);
-
-        // Repay the borrow.
-        balanceSheet.repayBorrow(hToken, repayAmount);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
-    function repayBorrowWithSignature(
-        IBalanceSheetV2 balanceSheet,
-        IHToken hToken,
-        uint256 repayAmount,
-        uint256 deadline,
-        bytes memory signatureHToken
-    ) external override {
-        permitInternal(hToken, repayAmount, deadline, signatureHToken);
-        repayBorrow(balanceSheet, hToken, repayAmount);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
     function sellHToken(
         IHifiPool hifiPool,
         uint256 hTokenIn,
