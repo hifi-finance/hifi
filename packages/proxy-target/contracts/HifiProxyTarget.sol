@@ -303,46 +303,6 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function removeLiquidityAndSellHToken(
-        IHifiPool hifiPool,
-        uint256 poolTokensBurned,
-        uint256 minUnderlyingOut
-    ) public override {
-        // Transfer the LP tokens to the DSProxy.
-        hifiPool.transferFrom(msg.sender, address(this), poolTokensBurned);
-
-        // Burn the LP tokens.
-        (uint256 underlyingReturned, uint256 hTokenReturned) = hifiPool.burn(poolTokensBurned);
-
-        // The underlying is now in the DSProxy, so we relay it to the end user.
-        hifiPool.underlying().safeTransfer(msg.sender, underlyingReturned);
-
-        // Ensure that we are within the user's slippage tolerance.
-        uint256 underlyingOut = hifiPool.getQuoteForSellingHToken(hTokenReturned);
-        if (underlyingOut < minUnderlyingOut) {
-            revert HifiProxyTarget__TradeSlippage(minUnderlyingOut, underlyingOut);
-        }
-
-        // Allow the HifiPool contract to spend hTokens from the DSProxy.
-        approveSpender(hifiPool.hToken(), address(hifiPool), hTokenReturned);
-
-        // Sell the hTokens and relay the underlying to the end user.
-        hifiPool.sellHToken(msg.sender, hTokenReturned);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
-    function removeLiquidityAndSellHTokenWithSignature(
-        IHifiPool hifiPool,
-        uint256 poolTokensBurned,
-        uint256 minUnderlyingOut,
-        uint256 deadline,
-        bytes memory signatureLPToken
-    ) external override {
-        permitInternal(hifiPool, poolTokensBurned, deadline, signatureLPToken);
-        removeLiquidityAndSellHToken(hifiPool, poolTokensBurned, minUnderlyingOut);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
     function removeLiquidityAndWithdrawUnderlying(
         IHifiPool hifiPool,
         uint256 poolTokensBurned,

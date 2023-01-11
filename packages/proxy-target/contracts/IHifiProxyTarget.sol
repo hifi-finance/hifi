@@ -247,39 +247,6 @@ interface IHifiProxyTarget {
         bytes memory signatureLPToken
     ) external;
 
-    /// @notice Removes liquidity from the AMM, and sells all hTokens for the underlying.
-    ///
-    /// @dev Requirements:
-    /// - The caller must have allowed the DSProxy to spend `poolTokensBurned` tokens.
-    ///
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param poolTokensBurned The amount of LP tokens to burn.
-    /// @param minUnderlyingOut The minimum amount of underlying that the user is willing to accept.
-    function removeLiquidityAndSellHToken(
-        IHifiPool hifiPool,
-        uint256 poolTokensBurned,
-        uint256 minUnderlyingOut
-    ) external;
-
-    /// @notice Removes liquidity from the AMM, and sells all hTokens for underlying using EIP-2612 signatures.
-    ///
-    /// @dev Requirements:
-    /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend `poolTokensBurned`
-    ///  for the given `deadline` and the caller's current nonce.
-    ///
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param poolTokensBurned The amount of LP tokens to burn.
-    /// @param minUnderlyingOut The minimum amount of underlying that the user is willing to accept.
-    /// @param deadline The deadline beyond which the signature is not valid anymore.
-    /// @param signatureLPToken The packed signature for LP tokens.
-    function removeLiquidityAndSellHTokenWithSignature(
-        IHifiPool hifiPool,
-        uint256 poolTokensBurned,
-        uint256 minUnderlyingOut,
-        uint256 deadline,
-        bytes memory signatureLPToken
-    ) external;
-
     /// @notice Removes liquidity from the AMM, and withdraws underlying in exchange for hTokens.
     ///
     /// @dev Requirements:
