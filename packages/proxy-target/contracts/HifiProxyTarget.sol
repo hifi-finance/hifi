@@ -125,61 +125,6 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function buyUnderlyingAndAddLiquidity(
-        IHifiPool hifiPool,
-        uint256 maxHTokenAmount,
-        uint256 underlyingOffered
-    ) public override {
-        // Ensure that we are within the user's slippage tolerance.
-        uint256 hTokenIn = hifiPool.getQuoteForBuyingUnderlying(underlyingOffered);
-        if (hTokenIn > maxHTokenAmount) {
-            revert HifiProxyTarget__TradeSlippage(maxHTokenAmount, hTokenIn);
-        }
-
-        // Transfer the hTokens to the DSProxy.
-        IHToken hToken = hifiPool.hToken();
-        hToken.transferFrom(msg.sender, address(this), hTokenIn);
-
-        // Allow the HifiPool contract to spend hTokens from the DSProxy.
-        approveSpender(hToken, address(hifiPool), maxHTokenAmount);
-
-        // Buy the underlying.
-        hifiPool.buyUnderlying(address(this), underlyingOffered);
-
-        // Ensure that we are within the user's slippage tolerance.
-        (uint256 hTokenRequired, ) = hifiPool.getMintInputs(underlyingOffered);
-        uint256 totalhTokenAmount = hTokenIn + hTokenRequired;
-        if (totalhTokenAmount > maxHTokenAmount) {
-            revert HifiProxyTarget__AddLiquidityHTokenSlippage(maxHTokenAmount, totalhTokenAmount);
-        }
-
-        // Transfer the hTokens to the DSProxy. We are calling the "transfer" function twice because we couldn't
-        // have known what value "hTokenRequired" will have had after the call to "buyUnderlying".
-        hToken.transferFrom(msg.sender, address(this), hTokenRequired);
-
-        // Allow the HifiPool contract to spend underlying from the DSProxy.
-        approveSpender(hifiPool.underlying(), address(hifiPool), underlyingOffered);
-
-        // Add liquidity to the AMM.
-        uint256 poolTokensMinted = hifiPool.mint(underlyingOffered);
-
-        // The LP tokens are now in the DSProxy, so we relay them to the end user.
-        hifiPool.transfer(msg.sender, poolTokensMinted);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
-    function buyUnderlyingAndAddLiquidityWithSignature(
-        IHifiPool hifiPool,
-        uint256 maxHTokenAmount,
-        uint256 underlyingOffered,
-        uint256 deadline,
-        bytes memory signatureHToken
-    ) external override {
-        permitInternal(hifiPool.hToken(), maxHTokenAmount, deadline, signatureHToken);
-        buyUnderlyingAndAddLiquidity(hifiPool, maxHTokenAmount, underlyingOffered);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
     function depositCollateral(
         IBalanceSheetV2 balanceSheet,
         IErc20 collateral,

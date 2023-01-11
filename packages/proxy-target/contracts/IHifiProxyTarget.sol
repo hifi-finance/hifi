@@ -111,37 +111,6 @@ interface IHifiProxyTarget {
         bytes memory signatureUnderlying
     ) external;
 
-    /// @notice Buys underlying and adds liquidity to the AMM.
-    ///
-    /// - The caller must have allowed DSProxy to spend `maxHTokenAmount` tokens.
-    ///
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param maxHTokenAmount maxHTokenAmount The maximum amount of hTokens that the user is willing to invest.
-    /// @param underlyingOffered The amount of underlying to invest.
-    function buyUnderlyingAndAddLiquidity(
-        IHifiPool hifiPool,
-        uint256 maxHTokenAmount,
-        uint256 underlyingOffered
-    ) external;
-
-    /// @notice Buys underlying and adds liquidity to the AMM.
-    ///
-    /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend
-    /// `maxHTokenAmount` tokens for the given `deadline` and the caller's current nonce.
-    ///
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param maxHTokenAmount maxHTokenAmount The maximum amount of hTokens that the user is willing to invest.
-    /// @param underlyingOffered The amount of underlying to invest.
-    /// @param deadline The deadline beyond which the signature is not valid anymore.
-    /// @param signatureHToken The packed signature for the hToken.
-    function buyUnderlyingAndAddLiquidityWithSignature(
-        IHifiPool hifiPool,
-        uint256 maxHTokenAmount,
-        uint256 underlyingOffered,
-        uint256 deadline,
-        bytes memory signatureHToken
-    ) external;
-
     /// @notice Deposits collateral into the vault.
     ///
     /// @dev Requirements:
