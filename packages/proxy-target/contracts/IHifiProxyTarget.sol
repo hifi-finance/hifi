@@ -44,41 +44,6 @@ interface IHifiProxyTarget {
 
     /// NON-CONSTANT FUNCTIONS ///
 
-    /// @notice Adds liquidity to the AMM.
-    ///
-    /// Requirements:
-    /// - The caller must have allowed the DSProxy to spend `underlyingAmount` and `maxHTokenRequired` tokens.
-    ///
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param underlyingOffered The amount of underlying to invest.
-    /// @param maxHTokenRequired The maximum amount of hTokens that the user is willing to accept.
-    function addLiquidity(
-        IHifiPool hifiPool,
-        uint256 underlyingOffered,
-        uint256 maxHTokenRequired
-    ) external;
-
-    /// @notice Adds liquidity to the AMM using EIP-2612 signatures.
-    ///
-    /// Requirements:
-    /// - The `signature` must be a valid signed approval given by caller to the DSProxy to spend `underlyingAmount`
-    /// and `maxHTokenRequired` tokens for the given `deadline` and the caller's current nonce.
-    ///
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param underlyingOffered The amount of underlying to invest.
-    /// @param maxHTokenRequired The maximum amount of hTokens that the user is willing to accept.
-    /// @param deadline The deadline beyond which the signatures are not valid anymore.
-    /// @param signatureHToken The packed signature for the hToken.
-    /// @param signatureUnderlying The packed signature for the underlying.
-    function addLiquidityWithSignature(
-        IHifiPool hifiPool,
-        uint256 underlyingOffered,
-        uint256 maxHTokenRequired,
-        uint256 deadline,
-        bytes memory signatureHToken,
-        bytes memory signatureUnderlying
-    ) external;
-
     /// @notice Borrows hTokens.
     /// @param balanceSheet The address of the BalanceSheet contract.
     /// @param hToken The address of the HToken contract.

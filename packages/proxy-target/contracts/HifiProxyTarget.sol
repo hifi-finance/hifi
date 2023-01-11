@@ -19,53 +19,6 @@ contract HifiProxyTarget is IHifiProxyTarget {
     /// PUBLIC NON-CONSTANT FUNCTIONS ///
 
     /// @inheritdoc IHifiProxyTarget
-    function addLiquidity(
-        IHifiPool hifiPool,
-        uint256 underlyingOffered,
-        uint256 maxHTokenRequired
-    ) public override {
-        // Ensure that we are within the user's slippage tolerance.
-        (uint256 hTokenRequired, ) = hifiPool.getMintInputs(underlyingOffered);
-        if (hTokenRequired > maxHTokenRequired) {
-            revert HifiProxyTarget__AddLiquidityHTokenSlippage(maxHTokenRequired, hTokenRequired);
-        }
-
-        // Transfer the underlying to the DSProxy.
-        IErc20 underlying = hifiPool.underlying();
-        underlying.safeTransferFrom(msg.sender, address(this), underlyingOffered);
-
-        // Allow the HifiPool contract to spend underlying from the DSProxy.
-        approveSpender(underlying, address(hifiPool), underlyingOffered);
-
-        // Transfer the hTokens to the DSProxy.
-        IHToken hToken = hifiPool.hToken();
-        hToken.transferFrom(msg.sender, address(this), hTokenRequired);
-
-        // Allow the HifiPool contract to spend hTokens from the DSProxy.
-        approveSpender(hToken, address(hifiPool), hTokenRequired);
-
-        // Add liquidity to the AMM.
-        uint256 poolTokensMinted = hifiPool.mint(underlyingOffered);
-
-        // The LP tokens are now in the DSProxy, so we relay them to the end user.
-        hifiPool.transfer(msg.sender, poolTokensMinted);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
-    function addLiquidityWithSignature(
-        IHifiPool hifiPool,
-        uint256 underlyingOffered,
-        uint256 maxHTokenRequired,
-        uint256 deadline,
-        bytes memory signatureHToken,
-        bytes memory signatureUnderlying
-    ) external override {
-        permitInternal(IErc20Permit(address(hifiPool.underlying())), underlyingOffered, deadline, signatureUnderlying);
-        permitInternal(hifiPool.hToken(), maxHTokenRequired, deadline, signatureHToken);
-        addLiquidity(hifiPool, underlyingOffered, maxHTokenRequired);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
     function borrowHToken(
         IBalanceSheetV2 balanceSheet,
         IHToken hToken,
