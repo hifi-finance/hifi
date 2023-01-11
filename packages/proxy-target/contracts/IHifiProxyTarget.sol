@@ -302,24 +302,6 @@ interface IHifiProxyTarget {
         uint256 depositAmount
     ) external;
 
-    /// @notice Deposits collateral into the vault and borrows hTokens.
-    ///
-    /// Requirements:
-    /// - The caller must have allowed the DSProxy to spend `collateralAmount` tokens.
-    ///
-    /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param collateral The address of the collateral contract.
-    /// @param hToken The address of the HToken contract.
-    /// @param depositAmount The amount of collateral to deposit.
-    /// @param borrowAmount The amount of hTokens to borrow.
-    function depositCollateralAndBorrowHToken(
-        IBalanceSheetV2 balanceSheet,
-        IErc20 collateral,
-        IHToken hToken,
-        uint256 depositAmount,
-        uint256 borrowAmount
-    ) external;
-
     /// @notice Deposits collateral into the vault, borrows hTokens and adds liquidity to the AMM.
     ///
     /// Requirements:
@@ -409,29 +391,6 @@ interface IHifiProxyTarget {
         uint256 depositAmount,
         uint256 borrowAmount,
         uint256 minUnderlyingOut,
-        uint256 deadline,
-        bytes memory signatureCollateral
-    ) external;
-
-    /// @notice Deposits collateral into the vault and borrows hTokens using EIP-2612 signatures.
-    ///
-    /// Requirements:
-    /// - The `signature` must be a valid signed approval given by the caller to the DSProxy to spend
-    /// `depositAmount` `collateral` tokens for the given `deadline` and the caller's current nonce.
-    ///
-    /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param collateral The address of the collateral contract.
-    /// @param hToken The address of the HToken contract.
-    /// @param depositAmount The amount of collateral to deposit.
-    /// @param borrowAmount The amount of hTokens to borrow.
-    /// @param deadline The deadline beyond which the signature is not valid anymore.
-    /// @param signatureCollateral The packed signature for the collateral.
-    function depositCollateralAndBorrowHTokenWithSignature(
-        IBalanceSheetV2 balanceSheet,
-        IErc20Permit collateral,
-        IHToken hToken,
-        uint256 depositAmount,
-        uint256 borrowAmount,
         uint256 deadline,
         bytes memory signatureCollateral
     ) external;
