@@ -36,12 +36,6 @@ interface IHifiProxyTarget {
     /// @param underlyingAmount The amount of underlying bought.
     event BorrowHTokenAndBuyUnderlying(address indexed borrower, uint256 borrowAmount, uint256 underlyingAmount);
 
-    /// @notice Emitted when hTokens are borrowed and sold for underlying.
-    /// @param borrower The address of the borrower.
-    /// @param borrowAmount The amount of hTokens borrowed and sold.
-    /// @param underlyingAmount The amount of underlying bought.
-    event BorrowHTokenAndSellHToken(address indexed borrower, uint256 borrowAmount, uint256 underlyingAmount);
-
     /// NON-CONSTANT FUNCTIONS ///
 
     /// @notice Borrows hTokens and buys underlying.
@@ -57,21 +51,6 @@ interface IHifiProxyTarget {
         IHifiPool hifiPool,
         uint256 maxBorrowAmount,
         uint256 underlyingOut
-    ) external;
-
-    /// @notice Borrows hTokens and sells them.
-    ///
-    /// @dev Emits a {BorrowHTokenAndSellHToken} event.
-    ///
-    /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param borrowAmount The exact amount of hTokens to borrow and sell.
-    /// @param minUnderlyingOut The minimum amount of underlying that the user is willing to accept.
-    function borrowHTokenAndSellHToken(
-        IBalanceSheetV2 balanceSheet,
-        IHifiPool hifiPool,
-        uint256 borrowAmount,
-        uint256 minUnderlyingOut
     ) external;
 
     /// @notice Buys hTokens with underlying and repays the borrow.
@@ -462,21 +441,4 @@ interface IHifiProxyTarget {
         IBalanceSheetV2 balanceSheet,
         uint256 withdrawAmount
     ) external;
-
-    /// @notice Wraps ETH into WETH, deposits collateral into the vault, borrows hTokens and sells them.
-    ///
-    /// @dev This is a payable function so it can receive ETH transfers.
-    ///
-    /// @param weth The address of the WETH contract.
-    /// @param balanceSheet The address of the BalanceSheet contract.
-    /// @param hifiPool The address of the HifiPool contract.
-    /// @param borrowAmount The exact amount of hTokens to borrow and sell for underlying.
-    /// @param minUnderlyingOut The minimum amount of underlying that the user is willing to accept.
-    function wrapEthAndDepositAndBorrowHTokenAndSellHToken(
-        WethInterface weth,
-        IBalanceSheetV2 balanceSheet,
-        IHifiPool hifiPool,
-        uint256 borrowAmount,
-        uint256 minUnderlyingOut
-    ) external payable;
 }

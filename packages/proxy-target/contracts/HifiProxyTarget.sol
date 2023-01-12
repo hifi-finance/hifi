@@ -45,32 +45,6 @@ contract HifiProxyTarget is IHifiProxyTarget {
     }
 
     /// @inheritdoc IHifiProxyTarget
-    function borrowHTokenAndSellHToken(
-        IBalanceSheetV2 balanceSheet,
-        IHifiPool hifiPool,
-        uint256 borrowAmount,
-        uint256 minUnderlyingOut
-    ) public override {
-        // Ensure that we are within the user's slippage tolerance.
-        uint256 underlyingOut = hifiPool.getQuoteForSellingHToken(borrowAmount);
-        if (underlyingOut < minUnderlyingOut) {
-            revert HifiProxyTarget__TradeSlippage(minUnderlyingOut, underlyingOut);
-        }
-
-        // Borrow the hTokens.
-        IHToken hToken = hifiPool.hToken();
-        balanceSheet.borrow(hToken, borrowAmount);
-
-        // Allow the HifiPool contract to spend hTokens from the DSProxy.
-        approveSpender(hToken, address(hifiPool), borrowAmount);
-
-        // Sell the hTokens and relay the underlying to the end user.
-        hifiPool.sellHToken(msg.sender, borrowAmount);
-
-        emit BorrowHTokenAndSellHToken(msg.sender, borrowAmount, underlyingOut);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
     function buyHTokenAndRepayBorrow(
         IHifiPool hifiPool,
         IBalanceSheetV2 balanceSheet,
@@ -564,18 +538,6 @@ contract HifiProxyTarget is IHifiProxyTarget {
 
         // The ETH is now in the DSProxy, so we relay it to the end user.
         payable(msg.sender).transfer(withdrawAmount);
-    }
-
-    /// @inheritdoc IHifiProxyTarget
-    function wrapEthAndDepositAndBorrowHTokenAndSellHToken(
-        WethInterface weth,
-        IBalanceSheetV2 balanceSheet,
-        IHifiPool hifiPool,
-        uint256 borrowAmount,
-        uint256 minUnderlyingOut
-    ) external payable override {
-        wrapEthAndDepositCollateral(weth, balanceSheet);
-        borrowHTokenAndSellHToken(balanceSheet, hifiPool, borrowAmount, minUnderlyingOut);
     }
 
     /// INTERNAL CONSTANT FUNCTIONS ///
