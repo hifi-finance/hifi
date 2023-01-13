@@ -53,6 +53,6 @@ contract StablecoinPriceFeed is IAggregatorV3 {
             uint80 answeredInRound
         )
     {
-        return (0, price, 0, 0, 0);
+        return (0, price, 0, block.timestamp, 0);
     }
 }
