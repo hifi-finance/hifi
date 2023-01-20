@@ -137,14 +137,14 @@ interface IFintroller is IOwnable {
 
     /// @notice Emitted when a new max bonds value is set.
     /// @param owner The address indexed owner.
-    /// @param oldMaxBonds The address of the old max bonds value.
-    /// @param newMaxBonds The address of the new max bonds value.
+    /// @param oldMaxBonds The old max bonds value.
+    /// @param newMaxBonds The new max bonds value.
     event SetMaxBonds(address indexed owner, uint256 oldMaxBonds, uint256 newMaxBonds);
 
     /// @notice Emitted when a new max collaterals value is set.
     /// @param owner The address indexed owner.
-    /// @param oldMaxCollaterals The address of the old max collaterals value.
-    /// @param newMaxCollaterals The address of the new max collaterals value.
+    /// @param oldMaxCollaterals The old max collaterals value.
+    /// @param newMaxCollaterals The new max collaterals value.
     event SetMaxCollaterals(address indexed owner, uint256 oldMaxCollaterals, uint256 newMaxCollaterals);
 
     /// @notice Emitted when the repay borrow permission is updated.
