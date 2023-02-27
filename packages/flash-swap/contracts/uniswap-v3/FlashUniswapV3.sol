@@ -201,10 +201,6 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
 
     /// @dev Compares the token addresses to find amount0 and amount1.
     ///
-    /// Requirements:
-    ///
-    /// - The underlying must be one of the pair's tokens.
-    ///
     /// @param poolKey The Uniswap V3 PoolKey.
     /// @param underlying The address of the underlying contract.
     /// @param underlyingAmount The amount of underlying to be flash borrowed.
@@ -214,21 +210,10 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
         PoolAddress.PoolKey memory poolKey,
         address underlying,
         uint256 underlyingAmount
-    ) internal view returns (uint256 amount0, uint256 amount1) {
-        address token0 = poolKey.token0;
-        address token1 = poolKey.token1;
-        if (token0 == underlying) {
-            amount0 = underlyingAmount;
-        } else if (token1 == underlying) {
-            amount1 = underlyingAmount;
-        } else {
-            revert FlashUniswapV3__UnderlyingNotInPool({
-                pool: poolFor(poolKey),
-                token0: token0,
-                token1: token1,
-                underlying: underlying
-            });
-        }
+    ) internal pure returns (uint256 amount0, uint256 amount1) {
+        // If underlying is token0, then amount0 = underlyingAmount.
+        // Otherwise, underlying is token1, so amount1 = underlyingAmount.
+        (underlying == poolKey.token0) ? amount0 = underlyingAmount : amount1 = underlyingAmount;
     }
 
     /// @dev Calculates the CREATE2 address for a pool without making any external calls.

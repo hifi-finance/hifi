@@ -5,7 +5,10 @@
 /* eslint-disable */
 import type * as test from "./test";
 import type * as uniswapV2 from "./uniswap-v2";
+import type * as uniswapV3 from "./uniswap-v3";
 
 export type { test };
 
 export type { uniswapV2 };
+
+export type { uniswapV3 };
