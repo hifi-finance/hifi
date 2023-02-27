@@ -23,9 +23,6 @@ interface IFlashUniswapV3 is IUniswapV3FlashCallback {
     /// than what the subsidizer is willing to pay.
     error FlashUniswapV3__TurnoutNotSatisfied(uint256 seizeAmount, uint256 sellAmount, int256 turnout);
 
-    /// @notice Emitted when neither the token0 nor the token1 is the underlying.
-    error FlashUniswapV3__UnderlyingNotInPool(address pool, address token0, address token1, address underlying);
-
     /// EVENTS ///
 
     /// @notice Emitted when a flash loan is made and an account is liquidated.

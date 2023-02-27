@@ -89,32 +89,6 @@ const _abi = [
     inputs: [
       {
         internalType: "address",
-        name: "pool",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "token0",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "token1",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "underlying",
-        type: "address",
-      },
-    ],
-    name: "FlashUniswapV3__UnderlyingNotInPool",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
         name: "target",
         type: "address",
       },
