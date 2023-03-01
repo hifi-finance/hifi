@@ -154,7 +154,12 @@ const _abi = [
           },
           {
             internalType: "uint24",
-            name: "poolFee",
+            name: "flashPoolFee",
+            type: "uint24",
+          },
+          {
+            internalType: "uint24",
+            name: "sellPoolFee",
             type: "uint24",
           },
           {

@@ -13,7 +13,7 @@ import "./PoolAddress.sol";
 interface IFlashUniswapV3 is IUniswapV3FlashCallback {
     /// CUSTOM ERRORS ///
 
-    /// @notice Emitted when the caller is not the Uniswap V3 pool contract.
+    /// @notice Emitted when the caller is not the Uniswap V3 flash pool contract.
     error FlashUniswapV3__CallNotAuthorized(address caller);
 
     /// @notice Emitted when liquidating a vault backed by underlying.
@@ -53,7 +53,8 @@ interface IFlashUniswapV3 is IUniswapV3FlashCallback {
         address borrower;
         IHToken bond;
         address collateral;
-        uint24 poolFee;
+        uint24 flashPoolFee;
+        uint24 sellPoolFee;
         int256 turnout;
         uint256 underlyingAmount;
     }
@@ -64,7 +65,8 @@ interface IFlashUniswapV3 is IUniswapV3FlashCallback {
         IHToken bond;
         address borrower;
         address collateral;
-        PoolAddress.PoolKey poolKey;
+        PoolAddress.PoolKey flashPoolKey;
+        uint24 sellPoolFee;
         address sender;
         int256 turnout;
         address underlying;
