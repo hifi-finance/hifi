@@ -11,24 +11,27 @@ export function integrationTestFlashUniswapV3(): void {
         hToken,
         maliciousV3Pool,
         oracle,
+        poolAddress,
         uniswapV3Pool,
         usdc,
         usdcPriceFeed,
         wbtc,
         wbtcPriceFeed,
+        nonfungiblePositionManager,
       } = await this.loadFixture(integrationFixture);
       this.contracts.balanceSheet = balanceSheet;
       this.contracts.fintroller = fintroller;
-      // TODO: uncomment all lines below when ready.
-      // this.contracts.flashUniswapV3 = flashUniswapV3;
+      this.contracts.flashUniswapV3 = flashUniswapV3;
       this.contracts.hToken = hToken;
-      // this.contracts.maliciousV3Pool = maliciousV3Pool;
+      this.contracts.maliciousV3Pool = maliciousV3Pool;
       this.contracts.oracle = oracle;
-      // this.contracts.uniswapV3Pool = uniswapV3Pool;
+      this.contracts.poolAddress = poolAddress;
+      this.contracts.uniswapV3Pool = uniswapV3Pool;
       this.contracts.usdc = usdc;
       this.contracts.usdcPriceFeed = usdcPriceFeed;
       this.contracts.wbtc = wbtc;
       this.contracts.wbtcPriceFeed = wbtcPriceFeed;
+      this.contracts.nonfungiblePositionManager = nonfungiblePositionManager;
     });
 
     shouldBehaveLikeFlashUniswapV3();

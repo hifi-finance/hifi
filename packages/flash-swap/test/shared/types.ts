@@ -9,11 +9,11 @@ import type { SimplePriceFeed } from "../../src/types/contracts/test/SimplePrice
 import type { FlashUniswapV2 } from "../../src/types/contracts/uniswap-v2/FlashUniswapV2";
 import type { GodModeUniswapV2Pair } from "../../src/types/contracts/uniswap-v2/test/GodModeUniswapV2Pair";
 import type { MaliciousPair as MaliciousV2Pair } from "../../src/types/contracts/uniswap-v2/test/MaliciousPair";
-
-// TODO: uncomment all lines below when ready.
-// import type { FlashUniswapV3 } from "../../src/types/contracts/uniswap-v3/FlashUniswapV3";
-// import type { GodModeUniswapV3Pool } from "../../src/types/contracts/uniswap-v3/test/GodModeUniswapV3Pool";
-// import type { MaliciousPool as MaliciousV3Pool } from "../../src/types/contracts/uniswap-v3/test/MaliciousPool";
+import type { FlashUniswapV3 } from "../../src/types/contracts/uniswap-v3/FlashUniswapV3";
+import type { UniswapV3Pool } from "../../src/types/contracts/uniswap-v3/UniswapV3Pool";
+import type { PoolAddressMock } from "../../src/types/contracts/uniswap-v3/test";
+import type { MaliciousPool as MaliciousV3Pool } from "../../src/types/contracts/uniswap-v3/test/MaliciousPool";
+import type { NonfungiblePositionManager } from "../../src/types/contracts/uniswap-v3/test/NonfungiblePositionManager";
 
 declare module "mocha" {
   export interface Context {
@@ -26,17 +26,19 @@ export interface Contracts {
   balanceSheet: BalanceSheetV2;
   fintroller: Fintroller;
   flashUniswapV2: FlashUniswapV2;
-  // flashUniswapV3: FlashUniswapV3;
+  flashUniswapV3: FlashUniswapV3;
   hToken: GodModeHToken;
   maliciousV2Pair: MaliciousV2Pair;
-  // maliciousV3Pool: MaliciousV3Pool;
+  maliciousV3Pool: MaliciousV3Pool;
   oracle: ChainlinkOperator;
+  poolAddress: PoolAddressMock;
   usdc: GodModeErc20;
   usdcPriceFeed: SimplePriceFeed;
   uniswapV2Pair: GodModeUniswapV2Pair;
-  // uniswapV3Pool: GodModeUniswapV3Pool;
+  uniswapV3Pool: UniswapV3Pool;
   wbtc: GodModeErc20;
   wbtcPriceFeed: SimplePriceFeed;
+  nonfungiblePositionManager: NonfungiblePositionManager;
 }
 
 export interface Signers {

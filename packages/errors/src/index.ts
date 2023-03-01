@@ -5,7 +5,7 @@ export { HifiPoolErrors, HifiPoolRegistryErrors, YieldSpaceErrors } from "./amm"
 export { OwnableErrors } from "./external";
 
 // flashSwap.ts
-export { FlashUniswapV2Errors } from "./flashSwap";
+export { FlashUniswapV2Errors, FlashUniswapV3Errors } from "./flashSwap";
 
 // protocol.ts
 export {
