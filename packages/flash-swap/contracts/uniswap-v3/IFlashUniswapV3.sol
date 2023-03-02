@@ -16,6 +16,10 @@ interface IFlashUniswapV3 is IUniswapV3FlashCallback {
     /// @notice Emitted when the caller is not the Uniswap V3 flash pool contract.
     error FlashUniswapV3__CallNotAuthorized(address caller);
 
+    /// @notice Emitted when the flash pool and the sell pool are identical.
+    /// @dev See this StackExchange post: https://ethereum.stackexchange.com/a/146817/51644.
+    error FlashUniswapV3__FlashPoolAndSellPoolAreIdentical(uint24 poolFee);
+
     /// @notice Emitted when liquidating a vault backed by underlying.
     error FlashUniswapV3__LiquidateUnderlyingBackedVault(address borrower, address underlying);
 

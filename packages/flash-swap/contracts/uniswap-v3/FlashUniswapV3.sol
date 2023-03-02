@@ -64,6 +64,9 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
                 underlying: vars.underlying
             });
         }
+        if (params.flashPoolFee == params.sellPoolFee) {
+            revert FlashUniswapV3__FlashPoolAndSellPoolAreIdentical({ poolFee: params.flashPoolFee });
+        }
 
         // Compute the flash pool key and address.
         vars.flashPoolKey = PoolAddress.getPoolKey({

@@ -25,6 +25,17 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "uint24",
+        name: "poolFee",
+        type: "uint24",
+      },
+    ],
+    name: "FlashUniswapV3__FlashPoolAndSellPoolAreIdentical",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "borrower",
         type: "address",
