@@ -2,13 +2,14 @@
 
 /* tslint:disable */
 
+import type { Provider } from "@ethersproject/providers";
+import { Contract, Signer, utils } from "ethers";
+
 /* eslint-disable */
 import type {
   IFlashUniswapV3,
   IFlashUniswapV3Interface,
 } from "../../../contracts/uniswap-v3/IFlashUniswapV3";
-import type { Provider } from "@ethersproject/providers";
-import { Contract, Signer, utils } from "ethers";
 
 const _abi = [
   {
@@ -20,6 +21,17 @@ const _abi = [
       },
     ],
     name: "FlashUniswapV3__CallNotAuthorized",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint24",
+        name: "poolFee",
+        type: "uint24",
+      },
+    ],
+    name: "FlashUniswapV3__FlashPoolAndSellPoolAreIdentical",
     type: "error",
   },
   {
@@ -180,7 +192,12 @@ const _abi = [
           },
           {
             internalType: "uint24",
-            name: "poolFee",
+            name: "flashPoolFee",
+            type: "uint24",
+          },
+          {
+            internalType: "uint24",
+            name: "sellPoolFee",
             type: "uint24",
           },
           {

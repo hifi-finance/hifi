@@ -2,17 +2,10 @@
 
 /* tslint:disable */
 
-/* eslint-disable */
 import type {
-  TypedEventFilter,
-  TypedEvent,
-  TypedListener,
-  OnEvent,
-} from "../../../common";
-import type {
+  EventFragment,
   FunctionFragment,
   Result,
-  EventFragment,
 } from "@ethersproject/abi";
 import type { Listener, Provider } from "@ethersproject/providers";
 import type {
@@ -28,9 +21,18 @@ import type {
   utils,
 } from "ethers";
 
+/* eslint-disable */
+import type {
+  OnEvent,
+  TypedEvent,
+  TypedEventFilter,
+  TypedListener,
+} from "../../../common";
+
 export interface GodModeUniswapV3PoolInterface extends utils.Interface {
   functions: {
-    "__godMode_setLiquidity(uint128)": FunctionFragment;
+    "__godMode_setToken0(address)": FunctionFragment;
+    "__godMode_setToken1(address)": FunctionFragment;
     "burn(int24,int24,uint128)": FunctionFragment;
     "collect(address,int24,int24,uint128,uint128)": FunctionFragment;
     "collectProtocol(address,uint128,uint128)": FunctionFragment;

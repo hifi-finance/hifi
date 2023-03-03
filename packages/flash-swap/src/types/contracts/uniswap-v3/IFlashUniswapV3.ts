@@ -33,7 +33,12 @@ export declare namespace IFlashUniswapV3 {
     borrower: string;
     bond: string;
     collateral: string;
+<<<<<<< HEAD
     poolFee: BigNumberish;
+=======
+    flashPoolFee: BigNumberish;
+    sellPoolFee: BigNumberish;
+>>>>>>> 6c3bf0f4deb9d0fb575bb76654ea7cdf0edae7a7
     turnout: BigNumberish;
     underlyingAmount: BigNumberish;
   };
@@ -43,13 +48,22 @@ export declare namespace IFlashUniswapV3 {
     string,
     string,
     number,
+<<<<<<< HEAD
+=======
+    number,
+>>>>>>> 6c3bf0f4deb9d0fb575bb76654ea7cdf0edae7a7
     BigNumber,
     BigNumber
   ] & {
     borrower: string;
     bond: string;
     collateral: string;
+<<<<<<< HEAD
     poolFee: number;
+=======
+    flashPoolFee: number;
+    sellPoolFee: number;
+>>>>>>> 6c3bf0f4deb9d0fb575bb76654ea7cdf0edae7a7
     turnout: BigNumber;
     underlyingAmount: BigNumber;
   };
@@ -58,7 +72,11 @@ export declare namespace IFlashUniswapV3 {
 export interface IFlashUniswapV3Interface extends utils.Interface {
   functions: {
     "balanceSheet()": FunctionFragment;
+<<<<<<< HEAD
     "flashLiquidate((address,address,address,uint24,int256,uint256))": FunctionFragment;
+=======
+    "flashLiquidate((address,address,address,uint24,uint24,int256,uint256))": FunctionFragment;
+>>>>>>> 6c3bf0f4deb9d0fb575bb76654ea7cdf0edae7a7
     "uniV3Factory()": FunctionFragment;
     "uniV3Quoter()": FunctionFragment;
     "uniV3SwapRouter()": FunctionFragment;

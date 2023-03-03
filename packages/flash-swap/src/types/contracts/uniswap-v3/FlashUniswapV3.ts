@@ -2,17 +2,10 @@
 
 /* tslint:disable */
 
-/* eslint-disable */
 import type {
-  TypedEventFilter,
-  TypedEvent,
-  TypedListener,
-  OnEvent,
-} from "../../common";
-import type {
+  EventFragment,
   FunctionFragment,
   Result,
-  EventFragment,
 } from "@ethersproject/abi";
 import type { Listener, Provider } from "@ethersproject/providers";
 import type {
@@ -28,12 +21,21 @@ import type {
   utils,
 } from "ethers";
 
+/* eslint-disable */
+import type {
+  OnEvent,
+  TypedEvent,
+  TypedEventFilter,
+  TypedListener,
+} from "../../common";
+
 export declare namespace IFlashUniswapV3 {
   export type FlashLiquidateParamsStruct = {
     borrower: string;
     bond: string;
     collateral: string;
-    poolFee: BigNumberish;
+    flashPoolFee: BigNumberish;
+    sellPoolFee: BigNumberish;
     turnout: BigNumberish;
     underlyingAmount: BigNumberish;
   };
@@ -43,13 +45,15 @@ export declare namespace IFlashUniswapV3 {
     string,
     string,
     number,
+    number,
     BigNumber,
     BigNumber
   ] & {
     borrower: string;
     bond: string;
     collateral: string;
-    poolFee: number;
+    flashPoolFee: number;
+    sellPoolFee: number;
     turnout: BigNumber;
     underlyingAmount: BigNumber;
   };
@@ -58,7 +62,7 @@ export declare namespace IFlashUniswapV3 {
 export interface FlashUniswapV3Interface extends utils.Interface {
   functions: {
     "balanceSheet()": FunctionFragment;
-    "flashLiquidate((address,address,address,uint24,int256,uint256))": FunctionFragment;
+    "flashLiquidate((address,address,address,uint24,uint24,int256,uint256))": FunctionFragment;
     "uniV3Factory()": FunctionFragment;
     "uniV3Quoter()": FunctionFragment;
     "uniV3SwapRouter()": FunctionFragment;

@@ -13,8 +13,12 @@ import "./PoolAddress.sol";
 interface IFlashUniswapV3 is IUniswapV3FlashCallback {
     /// CUSTOM ERRORS ///
 
-    /// @notice Emitted when the caller is not the Uniswap V3 pool contract.
+    /// @notice Emitted when the caller is not the Uniswap V3 flash pool contract.
     error FlashUniswapV3__CallNotAuthorized(address caller);
+
+    /// @notice Emitted when the flash pool and the sell pool are identical.
+    /// @dev See this StackExchange post: https://ethereum.stackexchange.com/a/146817/51644.
+    error FlashUniswapV3__FlashPoolAndSellPoolAreIdentical(uint24 poolFee);
 
     /// @notice Emitted when liquidating a vault backed by underlying.
     error FlashUniswapV3__LiquidateUnderlyingBackedVault(address borrower, address underlying);
@@ -22,9 +26,6 @@ interface IFlashUniswapV3 is IUniswapV3FlashCallback {
     /// @notice Emitted when the liquidation either does not yield a sufficient profit or it costs more
     /// than what the subsidizer is willing to pay.
     error FlashUniswapV3__TurnoutNotSatisfied(uint256 seizeAmount, uint256 sellAmount, int256 turnout);
-
-    /// @notice Emitted when neither the token0 nor the token1 is the underlying.
-    error FlashUniswapV3__UnderlyingNotInPool(address pool, address token0, address token1, address underlying);
 
     /// EVENTS ///
 
@@ -56,7 +57,8 @@ interface IFlashUniswapV3 is IUniswapV3FlashCallback {
         address borrower;
         IHToken bond;
         address collateral;
-        uint24 poolFee;
+        uint24 flashPoolFee;
+        uint24 sellPoolFee;
         int256 turnout;
         uint256 underlyingAmount;
     }
@@ -67,7 +69,8 @@ interface IFlashUniswapV3 is IUniswapV3FlashCallback {
         IHToken bond;
         address borrower;
         address collateral;
-        PoolAddress.PoolKey poolKey;
+        PoolAddress.PoolKey flashPoolKey;
+        uint24 sellPoolFee;
         address sender;
         int256 turnout;
         address underlying;

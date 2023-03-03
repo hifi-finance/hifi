@@ -46,7 +46,7 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
     struct FlashLiquidateLocalVars {
         uint256 amount0;
         uint256 amount1;
-        PoolAddress.PoolKey poolKey;
+        PoolAddress.PoolKey flashPoolKey;
         address underlying;
     }
 
@@ -64,22 +64,25 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
                 underlying: vars.underlying
             });
         }
+        if (params.flashPoolFee == params.sellPoolFee) {
+            revert FlashUniswapV3__FlashPoolAndSellPoolAreIdentical({ poolFee: params.flashPoolFee });
+        }
 
-        // Compute the PoolKey and pool address.
-        vars.poolKey = PoolAddress.getPoolKey({
+        // Compute the flash pool key and address.
+        vars.flashPoolKey = PoolAddress.getPoolKey({
             tokenA: params.collateral,
             tokenB: vars.underlying,
-            fee: params.poolFee
+            fee: params.flashPoolFee
         });
 
         // Find amount0 and amount1 to be passed to the UniswapV3Pool contract.
         (vars.amount0, vars.amount1) = getAmount0AndAmount1({
-            poolKey: vars.poolKey,
+            poolKey: vars.flashPoolKey,
             underlying: vars.underlying,
             underlyingAmount: params.underlyingAmount
         });
 
-        IUniswapV3Pool(poolFor(vars.poolKey)).flash({
+        IUniswapV3Pool(poolFor(vars.flashPoolKey)).flash({
             recipient: address(this),
             amount0: vars.amount0,
             amount1: vars.amount1,
@@ -90,7 +93,8 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
                     bond: params.bond,
                     borrower: params.borrower,
                     collateral: params.collateral,
-                    poolKey: vars.poolKey,
+                    flashPoolKey: vars.flashPoolKey,
+                    sellPoolFee: params.sellPoolFee,
                     sender: msg.sender,
                     turnout: params.turnout,
                     underlying: vars.underlying,
@@ -120,8 +124,8 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
         // Unpack the ABI encoded data passed by the UniswapV3Pool contract.
         UniswapV3FlashCallbackParams memory params = abi.decode(data, (UniswapV3FlashCallbackParams));
 
-        // Check that the caller is a genuine UniswapV3Pool contract.
-        if (msg.sender != poolFor(params.poolKey)) {
+        // Check that the caller is the Uniswap V3 flash pool contract.
+        if (msg.sender != poolFor(params.flashPoolKey)) {
             revert FlashUniswapV3__CallNotAuthorized(msg.sender);
         }
 
@@ -135,13 +139,15 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
         });
 
         // Calculate the amount of underlying required to repay.
-        vars.repayAmount = params.poolKey.token0 == params.underlying ? params.amount0 + fee0 : params.amount1 + fee1;
+        vars.repayAmount = params.flashPoolKey.token0 == params.underlying
+            ? params.amount0 + fee0
+            : params.amount1 + fee1;
 
         // Calculate the amount of collateral required to sell.
         vars.sellAmount = IQuoter(uniV3Quoter).quoteExactOutputSingle({
             tokenIn: params.collateral,
             tokenOut: params.underlying,
-            fee: params.poolKey.fee,
+            fee: params.sellPoolFee,
             amountOut: vars.repayAmount,
             sqrtPriceLimitX96: 0
         });
@@ -173,7 +179,7 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
             ISwapRouter.ExactOutputSingleParams({
                 tokenIn: params.collateral,
                 tokenOut: params.underlying,
-                fee: params.poolKey.fee,
+                fee: params.sellPoolFee,
                 recipient: address(this),
                 deadline: block.timestamp,
                 amountOut: vars.repayAmount,
@@ -201,10 +207,6 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
 
     /// @dev Compares the token addresses to find amount0 and amount1.
     ///
-    /// Requirements:
-    ///
-    /// - The underlying must be one of the pair's tokens.
-    ///
     /// @param poolKey The Uniswap V3 PoolKey.
     /// @param underlying The address of the underlying contract.
     /// @param underlyingAmount The amount of underlying to be flash borrowed.
@@ -214,21 +216,10 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
         PoolAddress.PoolKey memory poolKey,
         address underlying,
         uint256 underlyingAmount
-    ) internal view returns (uint256 amount0, uint256 amount1) {
-        address token0 = poolKey.token0;
-        address token1 = poolKey.token1;
-        if (token0 == underlying) {
-            amount0 = underlyingAmount;
-        } else if (token1 == underlying) {
-            amount1 = underlyingAmount;
-        } else {
-            revert FlashUniswapV3__UnderlyingNotInPool({
-                pool: poolFor(poolKey),
-                token0: token0,
-                token1: token1,
-                underlying: underlying
-            });
-        }
+    ) internal pure returns (uint256 amount0, uint256 amount1) {
+        // If underlying is token0, then amount0 = underlyingAmount.
+        // Otherwise, underlying is token1, so amount1 = underlyingAmount.
+        (underlying == poolKey.token0) ? amount0 = underlyingAmount : amount1 = underlyingAmount;
     }
 
     /// @dev Calculates the CREATE2 address for a pool without making any external calls.
