@@ -51,18 +51,8 @@ interface IFlashUniswapV3 is IUniswapV3SwapCallback {
     struct FlashLiquidateParams {
         address borrower;
         IHToken bond;
-        address collateral;
+        IErc20 collateral;
         uint24 poolFee;
-        int256 turnout;
-        uint256 underlyingAmount;
-    }
-
-    struct UniswapV3SwapCallbackParams {
-        IHToken bond;
-        address borrower;
-        address collateral;
-        PoolAddress.PoolKey poolKey;
-        address sender;
         int256 turnout;
         uint256 underlyingAmount;
     }

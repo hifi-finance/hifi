@@ -148,7 +148,7 @@ const _abi = [
             type: "address",
           },
           {
-            internalType: "address",
+            internalType: "contract IErc20",
             name: "collateral",
             type: "address",
           },

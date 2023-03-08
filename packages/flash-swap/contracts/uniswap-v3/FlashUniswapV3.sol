@@ -28,14 +28,24 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
 
     /// CONSTRUCTOR ///
     constructor(IBalanceSheetV2 balanceSheet_, address uniV3Factory_) {
-        balanceSheet = IBalanceSheetV2(balanceSheet_);
+        balanceSheet = balanceSheet_;
         uniV3Factory = uniV3Factory_;
     }
 
     struct FlashLiquidateLocalVars {
         PoolAddress.PoolKey poolKey;
-        address underlying;
+        IErc20 underlying;
         bool zeroForOne;
+    }
+
+    struct UniswapV3SwapCallbackParams {
+        IHToken bond;
+        address borrower;
+        IErc20 collateral;
+        PoolAddress.PoolKey poolKey;
+        address sender;
+        int256 turnout;
+        uint256 underlyingAmount;
     }
 
     /// PUBLIC NON-CONSTANT FUNCTIONS ///
@@ -45,23 +55,23 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
         FlashLiquidateLocalVars memory vars;
 
         // This flash swap contract does not support liquidating vaults backed by underlying.
-        vars.underlying = address(params.bond.underlying());
+        vars.underlying = params.bond.underlying();
         if (params.collateral == vars.underlying) {
             revert FlashUniswapV3__LiquidateUnderlyingBackedVault({
                 borrower: params.borrower,
-                underlying: vars.underlying
+                underlying: address(vars.underlying)
             });
         }
 
         // Compute the flash pool key and address.
         vars.poolKey = PoolAddress.getPoolKey({
-            tokenA: params.collateral,
-            tokenB: vars.underlying,
+            tokenA: address(params.collateral),
+            tokenB: address(vars.underlying),
             fee: params.poolFee
         });
 
         // The direction of the swap, true for token0 to token1, false for token1 to token0.
-        vars.zeroForOne = vars.underlying == vars.poolKey.token1;
+        vars.zeroForOne = address(vars.underlying) == vars.poolKey.token1;
 
         IUniswapV3Pool(poolFor(vars.poolKey)).swap({
             recipient: address(this),
@@ -111,7 +121,7 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
         vars.seizeAmount = liquidateBorrow({
             borrower: params.borrower,
             bond: params.bond,
-            collateral: IErc20(params.collateral),
+            collateral: params.collateral,
             mintedHTokenAmount: vars.mintedHTokenAmount
         });
 
@@ -133,25 +143,25 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
             unchecked {
                 vars.subsidyAmount = vars.repayAmount - vars.seizeAmount;
             }
-            IErc20(params.collateral).safeTransferFrom(params.sender, address(this), vars.subsidyAmount);
+            params.collateral.safeTransferFrom(params.sender, address(this), vars.subsidyAmount);
         }
         // Or reap the profit.
         else if (vars.seizeAmount > vars.repayAmount) {
             unchecked {
                 vars.profitAmount = vars.seizeAmount - vars.repayAmount;
             }
-            IErc20(params.collateral).safeTransfer(params.sender, vars.profitAmount);
+            params.collateral.safeTransfer(params.sender, vars.profitAmount);
         }
 
         // Pay back the loan.
-        IErc20(params.collateral).safeTransfer(msg.sender, vars.repayAmount);
+        params.collateral.safeTransfer(msg.sender, vars.repayAmount);
 
         // Emit an event.
         emit FlashSwapAndLiquidateBorrow({
             liquidator: params.sender,
             borrower: params.borrower,
             bond: address(params.bond),
-            collateral: params.collateral,
+            collateral: address(params.collateral),
             underlyingAmount: params.underlyingAmount,
             seizeAmount: vars.seizeAmount,
             repayAmount: vars.repayAmount,
