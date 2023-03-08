@@ -92,10 +92,6 @@ export type { IUniswapV3PoolOwnerActions } from "./@uniswap/v3-core/contracts/in
 export { IUniswapV3PoolOwnerActions__factory } from "./factories/@uniswap/v3-core/contracts/interfaces/pool/IUniswapV3PoolOwnerActions__factory";
 export type { IUniswapV3PoolState } from "./@uniswap/v3-core/contracts/interfaces/pool/IUniswapV3PoolState";
 export { IUniswapV3PoolState__factory } from "./factories/@uniswap/v3-core/contracts/interfaces/pool/IUniswapV3PoolState__factory";
-export type { IQuoter } from "./@uniswap/v3-periphery/contracts/interfaces/IQuoter";
-export { IQuoter__factory } from "./factories/@uniswap/v3-periphery/contracts/interfaces/IQuoter__factory";
-export type { ISwapRouter } from "./@uniswap/v3-periphery/contracts/interfaces/ISwapRouter";
-export { ISwapRouter__factory } from "./factories/@uniswap/v3-periphery/contracts/interfaces/ISwapRouter__factory";
 export type { GodModeErc20 } from "./contracts/test/GodModeErc20";
 export { GodModeErc20__factory } from "./factories/contracts/test/GodModeErc20__factory";
 export type { GodModeHToken } from "./contracts/test/GodModeHToken";

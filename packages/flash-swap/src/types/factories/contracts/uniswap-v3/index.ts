@@ -4,5 +4,4 @@
 export * as test from "./test";
 export { FlashUniswapV3__factory } from "./FlashUniswapV3__factory";
 export { IFlashUniswapV3__factory } from "./IFlashUniswapV3__factory";
-export { IUniswapV3Pool__factory } from "./IUniswapV3Pool__factory";
 export { UniswapV3Pool__factory } from "./UniswapV3Pool__factory";

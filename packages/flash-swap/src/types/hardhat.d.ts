@@ -165,14 +165,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IUniswapV3PoolState__factory>;
     getContractFactory(
-      name: "IQuoter",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IQuoter__factory>;
-    getContractFactory(
-      name: "ISwapRouter",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ISwapRouter__factory>;
-    getContractFactory(
       name: "GodModeErc20",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.GodModeErc20__factory>;
@@ -224,10 +216,6 @@ declare module "hardhat/types/runtime" {
       name: "IFlashUniswapV3",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IFlashUniswapV3__factory>;
-    getContractFactory(
-      name: "IUniswapV3Pool",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IUniswapV3Pool__factory>;
     getContractFactory(
       name: "GodModeUniswapV3Factory",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -436,16 +424,6 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IUniswapV3PoolState>;
     getContractAt(
-      name: "IQuoter",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IQuoter>;
-    getContractAt(
-      name: "ISwapRouter",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ISwapRouter>;
-    getContractAt(
       name: "GodModeErc20",
       address: string,
       signer?: ethers.Signer
@@ -510,11 +488,6 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.IFlashUniswapV3>;
-    getContractAt(
-      name: "IUniswapV3Pool",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IUniswapV3Pool>;
     getContractAt(
       name: "GodModeUniswapV3Factory",
       address: string,

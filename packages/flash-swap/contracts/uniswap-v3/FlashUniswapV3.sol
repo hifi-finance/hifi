@@ -4,9 +4,9 @@ pragma solidity ^0.8.4;
 import "@prb/contracts/token/erc20/IErc20.sol";
 import "@prb/contracts/token/erc20/SafeErc20.sol";
 import "@hifi/protocol/contracts/core/balance-sheet/IBalanceSheetV2.sol";
+import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
 
 import "./IFlashUniswapV3.sol";
-import "./IUniswapV3Pool.sol";
 import "./PoolAddress.sol";
 
 /// @title FlashUniswapV3

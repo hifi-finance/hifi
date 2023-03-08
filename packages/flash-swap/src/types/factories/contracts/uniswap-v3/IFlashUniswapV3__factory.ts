@@ -25,17 +25,6 @@ const _abi = [
   {
     inputs: [
       {
-        internalType: "uint24",
-        name: "poolFee",
-        type: "uint24",
-      },
-    ],
-    name: "FlashUniswapV3__FlashPoolAndSellPoolAreIdentical",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
         internalType: "address",
         name: "borrower",
         type: "address",
@@ -58,7 +47,7 @@ const _abi = [
       },
       {
         internalType: "uint256",
-        name: "sellAmount",
+        name: "repayAmount",
         type: "uint256",
       },
       {
@@ -93,6 +82,12 @@ const _abi = [
       },
       {
         indexed: false,
+        internalType: "address",
+        name: "collateral",
+        type: "address",
+      },
+      {
+        indexed: false,
         internalType: "uint256",
         name: "underlyingAmount",
         type: "uint256",
@@ -101,12 +96,6 @@ const _abi = [
         indexed: false,
         internalType: "uint256",
         name: "seizeAmount",
-        type: "uint256",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "sellAmount",
         type: "uint256",
       },
       {
@@ -128,7 +117,7 @@ const _abi = [
         type: "uint256",
       },
     ],
-    name: "FlashLoanAndLiquidateBorrow",
+    name: "FlashSwapAndLiquidateBorrow",
     type: "event",
   },
   {
@@ -165,12 +154,7 @@ const _abi = [
           },
           {
             internalType: "uint24",
-            name: "flashPoolFee",
-            type: "uint24",
-          },
-          {
-            internalType: "uint24",
-            name: "sellPoolFee",
+            name: "poolFee",
             type: "uint24",
           },
           {
@@ -208,42 +192,16 @@ const _abi = [
     type: "function",
   },
   {
-    inputs: [],
-    name: "uniV3Quoter",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
-    inputs: [],
-    name: "uniV3SwapRouter",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-  {
     inputs: [
       {
-        internalType: "uint256",
-        name: "fee0",
-        type: "uint256",
+        internalType: "int256",
+        name: "amount0Delta",
+        type: "int256",
       },
       {
-        internalType: "uint256",
-        name: "fee1",
-        type: "uint256",
+        internalType: "int256",
+        name: "amount1Delta",
+        type: "int256",
       },
       {
         internalType: "bytes",
@@ -251,7 +209,7 @@ const _abi = [
         type: "bytes",
       },
     ],
-    name: "uniswapV3FlashCallback",
+    name: "uniswapV3SwapCallback",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
