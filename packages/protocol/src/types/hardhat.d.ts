@@ -89,6 +89,22 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IAggregatorV3__factory>;
     getContractFactory(
+      name: "IERC20",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IERC20__factory>;
+    getContractFactory(
+      name: "IUniswapV3Pool",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IUniswapV3Pool__factory>;
+    getContractFactory(
+      name: "IUniswapV3PoolDerivedState",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IUniswapV3PoolDerivedState__factory>;
+    getContractFactory(
+      name: "IUniswapV3PoolImmutables",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IUniswapV3PoolImmutables__factory>;
+    getContractFactory(
       name: "ChainlinkOperator",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ChainlinkOperator__factory>;
@@ -97,6 +113,10 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IChainlinkOperator__factory>;
     getContractFactory(
+      name: "IUniswapV3PriceFeed",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IUniswapV3PriceFeed__factory>;
+    getContractFactory(
       name: "SimplePriceFeed",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.SimplePriceFeed__factory>;
@@ -104,6 +124,10 @@ declare module "hardhat/types/runtime" {
       name: "StablecoinPriceFeed",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.StablecoinPriceFeed__factory>;
+    getContractFactory(
+      name: "UniswapV3PriceFeed",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.UniswapV3PriceFeed__factory>;
     getContractFactory(
       name: "BalanceSheetUpgraded",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -233,6 +257,26 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IAggregatorV3>;
     getContractAt(
+      name: "IERC20",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IERC20>;
+    getContractAt(
+      name: "IUniswapV3Pool",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IUniswapV3Pool>;
+    getContractAt(
+      name: "IUniswapV3PoolDerivedState",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IUniswapV3PoolDerivedState>;
+    getContractAt(
+      name: "IUniswapV3PoolImmutables",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IUniswapV3PoolImmutables>;
+    getContractAt(
       name: "ChainlinkOperator",
       address: string,
       signer?: ethers.Signer
@@ -243,6 +287,11 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IChainlinkOperator>;
     getContractAt(
+      name: "IUniswapV3PriceFeed",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IUniswapV3PriceFeed>;
+    getContractAt(
       name: "SimplePriceFeed",
       address: string,
       signer?: ethers.Signer
@@ -252,6 +301,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.StablecoinPriceFeed>;
+    getContractAt(
+      name: "UniswapV3PriceFeed",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.UniswapV3PriceFeed>;
     getContractAt(
       name: "BalanceSheetUpgraded",
       address: string,

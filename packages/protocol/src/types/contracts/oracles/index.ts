@@ -3,5 +3,7 @@
 /* eslint-disable */
 export type { ChainlinkOperator } from "./ChainlinkOperator";
 export type { IChainlinkOperator } from "./IChainlinkOperator";
+export type { IUniswapV3PriceFeed } from "./IUniswapV3PriceFeed";
 export type { SimplePriceFeed } from "./SimplePriceFeed";
 export type { StablecoinPriceFeed } from "./StablecoinPriceFeed";
+export type { UniswapV3PriceFeed } from "./UniswapV3PriceFeed";
