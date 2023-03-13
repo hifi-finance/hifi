@@ -3,6 +3,7 @@ pragma solidity ^0.8.4;
 
 import "@prb/contracts/token/erc20/IErc20.sol";
 
+import "./IUniswapV3PriceFeed.sol";
 import "../external/chainlink/IAggregatorV3.sol";
 import "../external/uniswap/interfaces/IUniswapV3Pool.sol";
 import "../external/uniswap/libraries/TickMath.sol";
@@ -10,37 +11,55 @@ import "../external/uniswap/libraries/FullMath.sol";
 
 /// @title UniswapV3PriceFeed
 /// @author Hifi
-/// @notice Chainlink-compatible price feed for Uniswap V3 pools.
-contract UniswapV3PriceFeed is IAggregatorV3 {
-    string internal internalDescription;
-    IUniswapV3Pool public immutable pool;
-    address public immutable refAsset;
-    uint32 public immutable twapInterval;
+contract UniswapV3PriceFeed is
+    IUniswapV3PriceFeed // one dependency
+{
+    /// PUBLIC STORAGE ///
+
+    /// @inheritdoc IAggregatorV3
+    string public override description;
+
+    /// @inheritdoc IUniswapV3PriceFeed
+    IUniswapV3Pool public immutable override pool;
+
+    /// @inheritdoc IUniswapV3PriceFeed
+    IErc20 public immutable override refAsset;
+
+    /// @inheritdoc IUniswapV3PriceFeed
+    uint32 public immutable override twapInterval;
+
+    /// CONSTRUCTOR ///
 
     constructor(
-        string memory description_,
         IUniswapV3Pool pool_,
-        address refAsset_,
+        IErc20 refAsset_,
         uint32 twapInterval_
     ) {
-        internalDescription = description_;
+        IErc20 token0 = IErc20(pool_.token0());
+        IErc20 token1 = IErc20(pool_.token1());
+        if (refAsset_ == token0) {
+            description = string.concat(token1.symbol(), " / ", refAsset_.symbol());
+        } else if (refAsset_ == token1) {
+            description = string.concat(token0.symbol(), " / ", refAsset_.symbol());
+        } else {
+            revert IUniswapV3PriceFeed__RefAssetNotInPool(refAsset_);
+        }
         pool = pool_;
         refAsset = refAsset_;
         twapInterval = twapInterval_;
     }
 
+    /// @inheritdoc IAggregatorV3
     function decimals() external pure override returns (uint8) {
         return 8;
     }
 
-    function description() external view override returns (string memory) {
-        return internalDescription;
-    }
-
+    /// @inheritdoc IAggregatorV3
     function version() external pure override returns (uint256) {
         return 1;
     }
 
+    /// @inheritdoc IAggregatorV3
     function getRoundData(uint80 roundId_)
         external
         view
@@ -53,9 +72,10 @@ contract UniswapV3PriceFeed is IAggregatorV3 {
             uint80 answeredInRound
         )
     {
-        return (roundId_, getNormalizedPriceInternal(), 0, 0, 0);
+        return (roundId_, getPriceInternal(), 0, 0, 0);
     }
 
+    /// @inheritdoc IAggregatorV3
     function latestRoundData()
         external
         view
@@ -68,11 +88,11 @@ contract UniswapV3PriceFeed is IAggregatorV3 {
             uint80 answeredInRound
         )
     {
-        return (0, getNormalizedPriceInternal(), 0, block.timestamp, 0);
+        return (0, getPriceInternal(), 0, block.timestamp, 0);
     }
 
     /// @dev Returns Chainlink-compatible price data from the Uniswap V3 pool.
-    function getNormalizedPriceInternal() internal returns (int256 normalizedPrice) {
+    function getPriceInternal() internal view returns (int256 normalizedPrice) {
         uint32 mTwapInterval = twapInterval;
         uint32[] memory secondsAgo = new uint32[](2);
 
@@ -81,23 +101,18 @@ contract UniswapV3PriceFeed is IAggregatorV3 {
 
         (int56[] memory tickCumulatives, ) = pool.observe(secondsAgo);
 
-        int24 tick = int24((tickCumulatives[1] - tickCumulatives[0]) / int56(int32(mTwapInterval)));
+        int24 tick = int24((tickCumulatives[1] - tickCumulatives[0]) / int32(mTwapInterval));
         uint160 sqrtPriceX96 = TickMath.getSqrtRatioAtTick(tick);
 
-        uint256 feedDecimals = IAggregatorV3(this).decimals();
         uint256 token0Decimals = IErc20(pool.token0()).decimals();
         uint256 token1Decimals = IErc20(pool.token1()).decimals();
 
-        uint256 basePrice = FullMath.mulDiv(sqrtPriceX96, sqrtPriceX96, 2**(96 * 2));
+        uint256 basePrice = FullMath.mulDiv(sqrtPriceX96, sqrtPriceX96, 1 << 192);
 
-        if (refAsset == pool.token1()) {
-            normalizedPrice = int256(
-                FullMath.mulDiv(basePrice, 10**token0Decimals * 10**feedDecimals, 10**token1Decimals)
-            );
+        if (address(refAsset) == pool.token1()) {
+            normalizedPrice = int256(FullMath.mulDiv(basePrice, 10**token0Decimals * 10**8, 10**token1Decimals));
         } else {
-            normalizedPrice = int256(
-                FullMath.mulDiv(10**feedDecimals, 10**token1Decimals, basePrice * 10**token0Decimals)
-            );
+            normalizedPrice = int256(FullMath.mulDiv(10**token1Decimals, 10**8, basePrice * 10**token0Decimals));
         }
     }
 }
