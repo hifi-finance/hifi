@@ -89,10 +89,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IAggregatorV3__factory>;
     getContractFactory(
-      name: "IERC20",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IERC20__factory>;
-    getContractFactory(
       name: "IUniswapV3Pool",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IUniswapV3Pool__factory>;
@@ -256,11 +252,6 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.IAggregatorV3>;
-    getContractAt(
-      name: "IERC20",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IERC20>;
     getContractAt(
       name: "IUniswapV3Pool",
       address: string,

@@ -48,8 +48,6 @@ export type { IHToken } from "./contracts/core/h-token/IHToken";
 export { IHToken__factory } from "./factories/contracts/core/h-token/IHToken__factory";
 export type { IAggregatorV3 } from "./contracts/external/chainlink/IAggregatorV3";
 export { IAggregatorV3__factory } from "./factories/contracts/external/chainlink/IAggregatorV3__factory";
-export type { IERC20 } from "./contracts/external/common/IERC20";
-export { IERC20__factory } from "./factories/contracts/external/common/IERC20__factory";
 export type { IUniswapV3Pool } from "./contracts/external/uniswap/interfaces/IUniswapV3Pool";
 export { IUniswapV3Pool__factory } from "./factories/contracts/external/uniswap/interfaces/IUniswapV3Pool__factory";
 export type { IUniswapV3PoolDerivedState } from "./contracts/external/uniswap/interfaces/pool/IUniswapV3PoolDerivedState";

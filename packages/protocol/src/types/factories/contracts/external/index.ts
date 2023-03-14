@@ -2,5 +2,4 @@
 /* tslint:disable */
 /* eslint-disable */
 export * as chainlink from "./chainlink";
-export * as common from "./common";
 export * as uniswap from "./uniswap";

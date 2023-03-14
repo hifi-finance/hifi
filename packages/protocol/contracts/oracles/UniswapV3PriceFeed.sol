@@ -107,12 +107,12 @@ contract UniswapV3PriceFeed is
         uint256 token0Decimals = IErc20(pool.token0()).decimals();
         uint256 token1Decimals = IErc20(pool.token1()).decimals();
 
-        uint256 basePrice = FullMath.mulDiv(sqrtPriceX96, sqrtPriceX96, 1 << 192);
+        uint256 basePrice = FullMath.mulDiv(sqrtPriceX96, sqrtPriceX96, (2**192) / 10**(8 + token0Decimals));
 
         if (address(refAsset) == pool.token1()) {
-            normalizedPrice = int256(FullMath.mulDiv(basePrice, 10**token0Decimals * 10**8, 10**token1Decimals));
+            normalizedPrice = int256(basePrice / 10**token1Decimals);
         } else {
-            normalizedPrice = int256(FullMath.mulDiv(10**token1Decimals, 10**8, basePrice * 10**token0Decimals));
+            normalizedPrice = int256(10**(16 + token1Decimals) / (basePrice));
         }
     }
 }
