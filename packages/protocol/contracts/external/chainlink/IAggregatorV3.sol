@@ -4,7 +4,7 @@ pragma solidity >=0.8.4;
 /// @title IAggregatorV3
 /// @author Hifi
 /// @dev Forked from Chainlink
-/// github.com/smartcontractkit/chainlink/blob/v1.2.0/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol
+/// https://github.com/smartcontractkit/chainlink/blob/v1.2.0/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol
 interface IAggregatorV3 {
     function decimals() external view returns (uint8);
 

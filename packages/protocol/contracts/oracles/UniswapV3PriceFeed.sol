@@ -92,7 +92,7 @@ contract UniswapV3PriceFeed is
     }
 
     /// @dev Returns Chainlink-compatible price data from the Uniswap V3 pool.
-    function getPriceInternal() internal view returns (int256 normalizedPrice) {
+    function getPriceInternal() internal view returns (int256 price) {
         uint32 mTwapInterval = twapInterval;
         uint32[] memory secondsAgo = new uint32[](2);
 
@@ -107,12 +107,15 @@ contract UniswapV3PriceFeed is
         uint256 token0Decimals = IErc20(pool.token0()).decimals();
         uint256 token1Decimals = IErc20(pool.token1()).decimals();
 
-        uint256 basePrice = FullMath.mulDiv(sqrtPriceX96, sqrtPriceX96, (2**192) / 10**(8 + token0Decimals));
-
         if (address(refAsset) == pool.token1()) {
-            normalizedPrice = int256(basePrice / 10**token1Decimals);
+            price = int256(
+                FullMath.mulDiv(sqrtPriceX96, sqrtPriceX96, (1 << 192) / 10**(8 + token0Decimals)) / 10**token1Decimals
+            );
+            if (price == 0) return 1;
         } else {
-            normalizedPrice = int256(10**(16 + token1Decimals) / (basePrice));
+            price = int256(FullMath.mulDiv(sqrtPriceX96, sqrtPriceX96, (1 << 192) / 10**(8 + token0Decimals)));
+            if (price == 0) return int256(10**(16 + token1Decimals));
+            price = int256(10**(16 + token1Decimals)) / price;
         }
     }
 }
