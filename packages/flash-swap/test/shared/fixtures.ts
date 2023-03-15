@@ -8,8 +8,6 @@ import type { Fintroller } from "@hifi/protocol/dist/types/contracts/core/fintro
 import type { ChainlinkOperator } from "@hifi/protocol/dist/types/contracts/oracles/ChainlinkOperator";
 import UniswapV3FactoryArtifact from "@uniswap/v3-core/artifacts/contracts/UniswapV3Factory.sol/UniswapV3Factory.json";
 import NonfungibleTokenPositionDescriptorArtifact from "@uniswap/v3-periphery/artifacts/contracts/NonfungibleTokenPositionDescriptor.sol/NonfungibleTokenPositionDescriptor.json";
-import SwapRouterArtifact from "@uniswap/v3-periphery/artifacts/contracts/SwapRouter.sol/SwapRouter.json";
-import QuoterArtifact from "@uniswap/v3-periphery/artifacts/contracts/lens/Quoter.sol/Quoter.json";
 import NFTDescriptorArtifact from "@uniswap/v3-periphery/artifacts/contracts/libraries/NFTDescriptor.sol/NFTDescriptor.json";
 import { artifacts, waffle } from "hardhat";
 import type { Artifact } from "hardhat/types";
@@ -136,13 +134,6 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
   const wETH9Artifact: Artifact = await artifacts.readArtifact("WETH9");
   const wETH9: WETH9 = <WETH9>await waffle.deployContract(deployer, wETH9Artifact, []);
 
-  const quoter = await waffle.deployContract(deployer, QuoterArtifact, [uniswapV3Factory.address, wETH9.address]);
-
-  const swapRouter = await waffle.deployContract(deployer, SwapRouterArtifact, [
-    uniswapV3Factory.address,
-    wETH9.address,
-  ]);
-
   const poolAddressMockArtifact: Artifact = await artifacts.readArtifact("PoolAddressMock");
   const poolAddress: PoolAddressMock = <PoolAddressMock>(
     await waffle.deployContract(deployer, poolAddressMockArtifact, [])
@@ -150,12 +141,7 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
 
   const flashUniswapV3Artifact: Artifact = await artifacts.readArtifact("FlashUniswapV3");
   const flashUniswapV3: FlashUniswapV3 = <FlashUniswapV3>(
-    await waffle.deployContract(deployer, flashUniswapV3Artifact, [
-      balanceSheet.address,
-      uniswapV3Factory.address,
-      quoter.address,
-      swapRouter.address,
-    ])
+    await waffle.deployContract(deployer, flashUniswapV3Artifact, [balanceSheet.address, uniswapV3Factory.address])
   );
 
   const nftDescriptor = await waffle.deployContract(deployer, NFTDescriptorArtifact, []);

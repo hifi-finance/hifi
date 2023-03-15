@@ -2,10 +2,17 @@
 
 /* tslint:disable */
 
+/* eslint-disable */
 import type {
-  EventFragment,
+  TypedEventFilter,
+  TypedEvent,
+  TypedListener,
+  OnEvent,
+} from "../../common";
+import type {
   FunctionFragment,
   Result,
+  EventFragment,
 } from "@ethersproject/abi";
 import type { Listener, Provider } from "@ethersproject/providers";
 import type {
@@ -20,14 +27,6 @@ import type {
   Signer,
   utils,
 } from "ethers";
-
-/* eslint-disable */
-import type {
-  OnEvent,
-  TypedEvent,
-  TypedEventFilter,
-  TypedListener,
-} from "../../common";
 
 export declare namespace IFlashUniswapV3 {
   export type FlashLiquidateParamsStruct = {

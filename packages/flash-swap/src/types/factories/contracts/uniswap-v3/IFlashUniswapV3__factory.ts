@@ -2,14 +2,13 @@
 
 /* tslint:disable */
 
-import type { Provider } from "@ethersproject/providers";
-import { Contract, Signer, utils } from "ethers";
-
 /* eslint-disable */
 import type {
   IFlashUniswapV3,
   IFlashUniswapV3Interface,
 } from "../../../contracts/uniswap-v3/IFlashUniswapV3";
+import type { Provider } from "@ethersproject/providers";
+import { Contract, Signer, utils } from "ethers";
 
 const _abi = [
   {
@@ -58,32 +57,6 @@ const _abi = [
       },
     ],
     name: "FlashUniswapV3__TurnoutNotSatisfied",
-    type: "error",
-  },
-  {
-    inputs: [
-      {
-        internalType: "address",
-        name: "pool",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "token0",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "token1",
-        type: "address",
-      },
-      {
-        internalType: "address",
-        name: "underlying",
-        type: "address",
-      },
-    ],
-    name: "FlashUniswapV3__UnderlyingNotInPool",
     type: "error",
   },
   {

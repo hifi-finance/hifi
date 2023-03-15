@@ -333,10 +333,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IFlashUniswapV3__factory>;
     getContractFactory(
-      name: "IUniswapV3Pool",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IUniswapV3Pool__factory>;
-    getContractFactory(
       name: "MaliciousPool",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.MaliciousPool__factory>;
@@ -757,11 +753,6 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.IFlashUniswapV3>;
-    getContractAt(
-      name: "IUniswapV3Pool",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IUniswapV3Pool>;
     getContractAt(
       name: "MaliciousPool",
       address: string,
