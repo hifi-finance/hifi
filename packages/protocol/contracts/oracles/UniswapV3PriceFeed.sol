@@ -103,15 +103,12 @@ contract UniswapV3PriceFeed is
 
     /// @dev Returns Chainlink-compatible price data from the Uniswap V3 pool.
     function getPriceInternal() internal view returns (int256 price) {
-        uint32 mTwapInterval = twapInterval;
         uint32[] memory secondsAgo = new uint32[](2);
-
-        secondsAgo[0] = mTwapInterval;
+        secondsAgo[0] = twapInterval;
         secondsAgo[1] = 0;
 
         (int56[] memory tickCumulatives, ) = pool.observe(secondsAgo);
-
-        int24 tick = int24((tickCumulatives[1] - tickCumulatives[0]) / int32(mTwapInterval));
+        int24 tick = int24((tickCumulatives[1] - tickCumulatives[0]) / int32(twapInterval));
         uint160 sqrtPriceX96 = TickMath.getSqrtRatioAtTick(tick);
 
         if (address(refAsset) == pool.token1()) {
