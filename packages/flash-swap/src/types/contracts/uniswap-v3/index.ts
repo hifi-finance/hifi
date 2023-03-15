@@ -8,5 +8,4 @@ import type * as test from "./test";
 export type { test };
 export type { FlashUniswapV3 } from "./FlashUniswapV3";
 export type { IFlashUniswapV3 } from "./IFlashUniswapV3";
-export type { IUniswapV3Pool } from "./IUniswapV3Pool";
 export type { UniswapV3Pool } from "./UniswapV3Pool";

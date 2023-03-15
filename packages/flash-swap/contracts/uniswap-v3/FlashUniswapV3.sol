@@ -4,11 +4,9 @@ pragma solidity ^0.8.4;
 import "@prb/contracts/token/erc20/IErc20.sol";
 import "@prb/contracts/token/erc20/SafeErc20.sol";
 import "@hifi/protocol/contracts/core/balance-sheet/IBalanceSheetV2.sol";
-import "@uniswap/v3-periphery/contracts/interfaces/IQuoter.sol";
-import "@uniswap/v3-periphery/contracts/interfaces/ISwapRouter.sol";
+import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
 
 import "./IFlashUniswapV3.sol";
-import "./IUniswapV3Pool.sol";
 import "./PoolAddress.sol";
 
 /// @title FlashUniswapV3
@@ -24,30 +22,30 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
     /// @inheritdoc IFlashUniswapV3
     address public immutable override uniV3Factory;
 
-    /// @inheritdoc IFlashUniswapV3
-    address public immutable override uniV3Quoter;
-
-    /// @inheritdoc IFlashUniswapV3
-    address public immutable override uniV3SwapRouter;
+    /// @dev TickMath constants for computing the sqrt price limit.
+    uint160 internal constant MIN_SQRT_RATIO = 4295128739;
+    uint160 internal constant MAX_SQRT_RATIO = 1461446703485210103287273052203988822378723970342;
 
     /// CONSTRUCTOR ///
-    constructor(
-        IBalanceSheetV2 balanceSheet_,
-        address uniV3Factory_,
-        address uniV3Quoter_,
-        address uniV3SwapRouter_
-    ) {
-        balanceSheet = IBalanceSheetV2(balanceSheet_);
+    constructor(IBalanceSheetV2 balanceSheet_, address uniV3Factory_) {
+        balanceSheet = balanceSheet_;
         uniV3Factory = uniV3Factory_;
-        uniV3Quoter = uniV3Quoter_;
-        uniV3SwapRouter = uniV3SwapRouter_;
     }
 
     struct FlashLiquidateLocalVars {
-        uint256 amount0;
-        uint256 amount1;
-        PoolAddress.PoolKey flashPoolKey;
-        address underlying;
+        PoolAddress.PoolKey poolKey;
+        IErc20 underlying;
+        bool zeroForOne;
+    }
+
+    struct UniswapV3SwapCallbackParams {
+        IHToken bond;
+        address borrower;
+        IErc20 collateral;
+        PoolAddress.PoolKey poolKey;
+        address sender;
+        int256 turnout;
+        uint256 underlyingAmount;
     }
 
     /// PUBLIC NON-CONSTANT FUNCTIONS ///
@@ -57,75 +55,64 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
         FlashLiquidateLocalVars memory vars;
 
         // This flash swap contract does not support liquidating vaults backed by underlying.
-        vars.underlying = address(params.bond.underlying());
+        vars.underlying = params.bond.underlying();
         if (params.collateral == vars.underlying) {
             revert FlashUniswapV3__LiquidateUnderlyingBackedVault({
                 borrower: params.borrower,
-                underlying: vars.underlying
+                underlying: address(vars.underlying)
             });
-        }
-        if (params.flashPoolFee == params.sellPoolFee) {
-            revert FlashUniswapV3__FlashPoolAndSellPoolAreIdentical({ poolFee: params.flashPoolFee });
         }
 
         // Compute the flash pool key and address.
-        vars.flashPoolKey = PoolAddress.getPoolKey({
-            tokenA: params.collateral,
-            tokenB: vars.underlying,
-            fee: params.flashPoolFee
+        vars.poolKey = PoolAddress.getPoolKey({
+            tokenA: address(params.collateral),
+            tokenB: address(vars.underlying),
+            fee: params.poolFee
         });
 
-        // Find amount0 and amount1 to be passed to the UniswapV3Pool contract.
-        (vars.amount0, vars.amount1) = getAmount0AndAmount1({
-            poolKey: vars.flashPoolKey,
-            underlying: vars.underlying,
-            underlyingAmount: params.underlyingAmount
-        });
+        // The direction of the swap, true for token0 to token1, false for token1 to token0.
+        vars.zeroForOne = address(vars.underlying) == vars.poolKey.token1;
 
-        IUniswapV3Pool(poolFor(vars.flashPoolKey)).flash({
+        IUniswapV3Pool(poolFor(vars.poolKey)).swap({
             recipient: address(this),
-            amount0: vars.amount0,
-            amount1: vars.amount1,
+            zeroForOne: vars.zeroForOne,
+            amountSpecified: int256(params.underlyingAmount) * -1,
+            sqrtPriceLimitX96: vars.zeroForOne ? MIN_SQRT_RATIO + 1 : MAX_SQRT_RATIO - 1,
             data: abi.encode(
-                UniswapV3FlashCallbackParams({
-                    amount0: vars.amount0,
-                    amount1: vars.amount1,
+                UniswapV3SwapCallbackParams({
                     bond: params.bond,
                     borrower: params.borrower,
                     collateral: params.collateral,
-                    flashPoolKey: vars.flashPoolKey,
-                    sellPoolFee: params.sellPoolFee,
+                    poolKey: vars.poolKey,
                     sender: msg.sender,
                     turnout: params.turnout,
-                    underlying: vars.underlying,
                     underlyingAmount: params.underlyingAmount
                 })
             )
         });
     }
 
-    struct UniswapV3FlashCallbackLocalVars {
+    struct UniswapV3SwapCallbackLocalVars {
         uint256 mintedHTokenAmount;
         uint256 profitAmount;
         uint256 repayAmount;
         uint256 seizeAmount;
-        uint256 sellAmount;
         uint256 subsidyAmount;
     }
 
-    /// @inheritdoc IUniswapV3FlashCallback
-    function uniswapV3FlashCallback(
-        uint256 fee0,
-        uint256 fee1,
+    /// @inheritdoc IUniswapV3SwapCallback
+    function uniswapV3SwapCallback(
+        int256 amount0Delta,
+        int256 amount1Delta,
         bytes calldata data
     ) external override {
-        UniswapV3FlashCallbackLocalVars memory vars;
+        UniswapV3SwapCallbackLocalVars memory vars;
 
         // Unpack the ABI encoded data passed by the UniswapV3Pool contract.
-        UniswapV3FlashCallbackParams memory params = abi.decode(data, (UniswapV3FlashCallbackParams));
+        UniswapV3SwapCallbackParams memory params = abi.decode(data, (UniswapV3SwapCallbackParams));
 
         // Check that the caller is the Uniswap V3 flash pool contract.
-        if (msg.sender != poolFor(params.flashPoolKey)) {
+        if (msg.sender != poolFor(params.poolKey)) {
             revert FlashUniswapV3__CallNotAuthorized(msg.sender);
         }
 
@@ -134,69 +121,49 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
         vars.seizeAmount = liquidateBorrow({
             borrower: params.borrower,
             bond: params.bond,
-            collateral: IErc20(params.collateral),
+            collateral: params.collateral,
             mintedHTokenAmount: vars.mintedHTokenAmount
         });
 
-        // Calculate the amount of underlying required to repay.
-        vars.repayAmount = params.flashPoolKey.token0 == params.underlying
-            ? params.amount0 + fee0
-            : params.amount1 + fee1;
-
-        // Calculate the amount of collateral required to sell.
-        vars.sellAmount = IQuoter(uniV3Quoter).quoteExactOutputSingle({
-            tokenIn: params.collateral,
-            tokenOut: params.underlying,
-            fee: params.sellPoolFee,
-            amountOut: vars.repayAmount,
-            sqrtPriceLimitX96: 0
-        });
+        // Calculate the amount of collateral required to repay.
+        vars.repayAmount = uint256(amount0Delta > 0 ? amount0Delta : amount1Delta);
 
         // Note that "turnout" is a signed int. When it is negative, it acts as a maximum subsidy amount.
         // When its value is positive, it acts as a minimum profit.
-        if (int256(vars.seizeAmount) < int256(vars.sellAmount) + params.turnout) {
-            revert FlashUniswapV3__TurnoutNotSatisfied(vars.seizeAmount, vars.sellAmount, params.turnout);
+        if (int256(vars.seizeAmount) < int256(vars.repayAmount) + params.turnout) {
+            revert FlashUniswapV3__TurnoutNotSatisfied({
+                seizeAmount: vars.seizeAmount,
+                repayAmount: vars.repayAmount,
+                turnout: params.turnout
+            });
         }
 
         // Transfer the subsidy amount.
-        if (vars.sellAmount > vars.seizeAmount) {
+        if (vars.repayAmount > vars.seizeAmount) {
             unchecked {
-                vars.subsidyAmount = vars.sellAmount - vars.seizeAmount;
+                vars.subsidyAmount = vars.repayAmount - vars.seizeAmount;
             }
-            IErc20(params.collateral).safeTransferFrom(params.sender, address(this), vars.subsidyAmount);
+            params.collateral.safeTransferFrom(params.sender, address(this), vars.subsidyAmount);
         }
         // Or reap the profit.
-        else if (vars.seizeAmount > vars.sellAmount) {
+        else if (vars.seizeAmount > vars.repayAmount) {
             unchecked {
-                vars.profitAmount = vars.seizeAmount - vars.sellAmount;
+                vars.profitAmount = vars.seizeAmount - vars.repayAmount;
             }
-            IErc20(params.collateral).safeTransfer(params.sender, vars.profitAmount);
+            params.collateral.safeTransfer(params.sender, vars.profitAmount);
         }
 
-        // Sell the remaining collateral to pay back the loan.
-        IErc20(params.collateral).approve({ spender: uniV3SwapRouter, amount: vars.sellAmount });
-        ISwapRouter(uniV3SwapRouter).exactOutputSingle(
-            ISwapRouter.ExactOutputSingleParams({
-                tokenIn: params.collateral,
-                tokenOut: params.underlying,
-                fee: params.sellPoolFee,
-                recipient: address(this),
-                deadline: block.timestamp,
-                amountOut: vars.repayAmount,
-                amountInMaximum: vars.sellAmount,
-                sqrtPriceLimitX96: 0
-            })
-        );
-        IErc20(params.underlying).safeTransfer(msg.sender, vars.repayAmount);
+        // Pay back the loan.
+        params.collateral.safeTransfer(msg.sender, vars.repayAmount);
 
         // Emit an event.
-        emit FlashLoanAndLiquidateBorrow({
+        emit FlashSwapAndLiquidateBorrow({
             liquidator: params.sender,
             borrower: params.borrower,
             bond: address(params.bond),
+            collateral: address(params.collateral),
             underlyingAmount: params.underlyingAmount,
             seizeAmount: vars.seizeAmount,
-            sellAmount: vars.sellAmount,
             repayAmount: vars.repayAmount,
             subsidyAmount: vars.subsidyAmount,
             profitAmount: vars.profitAmount
@@ -204,23 +171,6 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
     }
 
     /// INTERNAL CONSTANT FUNCTIONS ///
-
-    /// @dev Compares the token addresses to find amount0 and amount1.
-    ///
-    /// @param poolKey The Uniswap V3 PoolKey.
-    /// @param underlying The address of the underlying contract.
-    /// @param underlyingAmount The amount of underlying to be flash borrowed.
-    /// @return amount0 The amount of token0.
-    /// @return amount1 The amount of token1.
-    function getAmount0AndAmount1(
-        PoolAddress.PoolKey memory poolKey,
-        address underlying,
-        uint256 underlyingAmount
-    ) internal pure returns (uint256 amount0, uint256 amount1) {
-        // If underlying is token0, then amount0 = underlyingAmount.
-        // Otherwise, underlying is token1, so amount1 = underlyingAmount.
-        (underlying == poolKey.token0) ? amount0 = underlyingAmount : amount1 = underlyingAmount;
-    }
 
     /// @dev Calculates the CREATE2 address for a pool without making any external calls.
     function poolFor(PoolAddress.PoolKey memory key) internal view returns (address pool) {

@@ -2,17 +2,10 @@
 
 /* tslint:disable */
 
-/* eslint-disable */
 import type {
-  TypedEventFilter,
-  TypedEvent,
-  TypedListener,
-  OnEvent,
-} from "../../common";
-import type {
+  EventFragment,
   FunctionFragment,
   Result,
-  EventFragment,
 } from "@ethersproject/abi";
 import type { Listener, Provider } from "@ethersproject/providers";
 import type {
@@ -28,17 +21,20 @@ import type {
   utils,
 } from "ethers";
 
+/* eslint-disable */
+import type {
+  OnEvent,
+  TypedEvent,
+  TypedEventFilter,
+  TypedListener,
+} from "../../common";
+
 export declare namespace IFlashUniswapV3 {
   export type FlashLiquidateParamsStruct = {
     borrower: string;
     bond: string;
     collateral: string;
-<<<<<<< HEAD
     poolFee: BigNumberish;
-=======
-    flashPoolFee: BigNumberish;
-    sellPoolFee: BigNumberish;
->>>>>>> 6c3bf0f4deb9d0fb575bb76654ea7cdf0edae7a7
     turnout: BigNumberish;
     underlyingAmount: BigNumberish;
   };
@@ -48,22 +44,13 @@ export declare namespace IFlashUniswapV3 {
     string,
     string,
     number,
-<<<<<<< HEAD
-=======
-    number,
->>>>>>> 6c3bf0f4deb9d0fb575bb76654ea7cdf0edae7a7
     BigNumber,
     BigNumber
   ] & {
     borrower: string;
     bond: string;
     collateral: string;
-<<<<<<< HEAD
     poolFee: number;
-=======
-    flashPoolFee: number;
-    sellPoolFee: number;
->>>>>>> 6c3bf0f4deb9d0fb575bb76654ea7cdf0edae7a7
     turnout: BigNumber;
     underlyingAmount: BigNumber;
   };
@@ -72,15 +59,9 @@ export declare namespace IFlashUniswapV3 {
 export interface IFlashUniswapV3Interface extends utils.Interface {
   functions: {
     "balanceSheet()": FunctionFragment;
-<<<<<<< HEAD
     "flashLiquidate((address,address,address,uint24,int256,uint256))": FunctionFragment;
-=======
-    "flashLiquidate((address,address,address,uint24,uint24,int256,uint256))": FunctionFragment;
->>>>>>> 6c3bf0f4deb9d0fb575bb76654ea7cdf0edae7a7
     "uniV3Factory()": FunctionFragment;
-    "uniV3Quoter()": FunctionFragment;
-    "uniV3SwapRouter()": FunctionFragment;
-    "uniswapV3FlashCallback(uint256,uint256,bytes)": FunctionFragment;
+    "uniswapV3SwapCallback(int256,int256,bytes)": FunctionFragment;
   };
 
   getFunction(
@@ -88,9 +69,7 @@ export interface IFlashUniswapV3Interface extends utils.Interface {
       | "balanceSheet"
       | "flashLiquidate"
       | "uniV3Factory"
-      | "uniV3Quoter"
-      | "uniV3SwapRouter"
-      | "uniswapV3FlashCallback"
+      | "uniswapV3SwapCallback"
   ): FunctionFragment;
 
   encodeFunctionData(
@@ -106,15 +85,7 @@ export interface IFlashUniswapV3Interface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
-    functionFragment: "uniV3Quoter",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "uniV3SwapRouter",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "uniswapV3FlashCallback",
+    functionFragment: "uniswapV3SwapCallback",
     values: [BigNumberish, BigNumberish, BytesLike]
   ): string;
 
@@ -131,55 +102,47 @@ export interface IFlashUniswapV3Interface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
-    functionFragment: "uniV3Quoter",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "uniV3SwapRouter",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "uniswapV3FlashCallback",
+    functionFragment: "uniswapV3SwapCallback",
     data: BytesLike
   ): Result;
 
   events: {
-    "FlashLoanAndLiquidateBorrow(address,address,address,uint256,uint256,uint256,uint256,uint256,uint256)": EventFragment;
+    "FlashSwapAndLiquidateBorrow(address,address,address,address,uint256,uint256,uint256,uint256,uint256)": EventFragment;
   };
 
   getEvent(
-    nameOrSignatureOrTopic: "FlashLoanAndLiquidateBorrow"
+    nameOrSignatureOrTopic: "FlashSwapAndLiquidateBorrow"
   ): EventFragment;
 }
 
-export interface FlashLoanAndLiquidateBorrowEventObject {
+export interface FlashSwapAndLiquidateBorrowEventObject {
   liquidator: string;
   borrower: string;
   bond: string;
+  collateral: string;
   underlyingAmount: BigNumber;
   seizeAmount: BigNumber;
-  sellAmount: BigNumber;
   repayAmount: BigNumber;
   subsidyAmount: BigNumber;
   profitAmount: BigNumber;
 }
-export type FlashLoanAndLiquidateBorrowEvent = TypedEvent<
+export type FlashSwapAndLiquidateBorrowEvent = TypedEvent<
   [
     string,
     string,
     string,
-    BigNumber,
+    string,
     BigNumber,
     BigNumber,
     BigNumber,
     BigNumber,
     BigNumber
   ],
-  FlashLoanAndLiquidateBorrowEventObject
+  FlashSwapAndLiquidateBorrowEventObject
 >;
 
-export type FlashLoanAndLiquidateBorrowEventFilter =
-  TypedEventFilter<FlashLoanAndLiquidateBorrowEvent>;
+export type FlashSwapAndLiquidateBorrowEventFilter =
+  TypedEventFilter<FlashSwapAndLiquidateBorrowEvent>;
 
 export interface IFlashUniswapV3 extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -217,13 +180,9 @@ export interface IFlashUniswapV3 extends BaseContract {
 
     uniV3Factory(overrides?: CallOverrides): Promise<[string]>;
 
-    uniV3Quoter(overrides?: CallOverrides): Promise<[string]>;
-
-    uniV3SwapRouter(overrides?: CallOverrides): Promise<[string]>;
-
-    uniswapV3FlashCallback(
-      fee0: BigNumberish,
-      fee1: BigNumberish,
+    uniswapV3SwapCallback(
+      amount0Delta: BigNumberish,
+      amount1Delta: BigNumberish,
       data: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -238,13 +197,9 @@ export interface IFlashUniswapV3 extends BaseContract {
 
   uniV3Factory(overrides?: CallOverrides): Promise<string>;
 
-  uniV3Quoter(overrides?: CallOverrides): Promise<string>;
-
-  uniV3SwapRouter(overrides?: CallOverrides): Promise<string>;
-
-  uniswapV3FlashCallback(
-    fee0: BigNumberish,
-    fee1: BigNumberish,
+  uniswapV3SwapCallback(
+    amount0Delta: BigNumberish,
+    amount1Delta: BigNumberish,
     data: BytesLike,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -259,41 +214,37 @@ export interface IFlashUniswapV3 extends BaseContract {
 
     uniV3Factory(overrides?: CallOverrides): Promise<string>;
 
-    uniV3Quoter(overrides?: CallOverrides): Promise<string>;
-
-    uniV3SwapRouter(overrides?: CallOverrides): Promise<string>;
-
-    uniswapV3FlashCallback(
-      fee0: BigNumberish,
-      fee1: BigNumberish,
+    uniswapV3SwapCallback(
+      amount0Delta: BigNumberish,
+      amount1Delta: BigNumberish,
       data: BytesLike,
       overrides?: CallOverrides
     ): Promise<void>;
   };
 
   filters: {
-    "FlashLoanAndLiquidateBorrow(address,address,address,uint256,uint256,uint256,uint256,uint256,uint256)"(
+    "FlashSwapAndLiquidateBorrow(address,address,address,address,uint256,uint256,uint256,uint256,uint256)"(
       liquidator?: string | null,
       borrower?: string | null,
       bond?: string | null,
+      collateral?: null,
       underlyingAmount?: null,
       seizeAmount?: null,
-      sellAmount?: null,
       repayAmount?: null,
       subsidyAmount?: null,
       profitAmount?: null
-    ): FlashLoanAndLiquidateBorrowEventFilter;
-    FlashLoanAndLiquidateBorrow(
+    ): FlashSwapAndLiquidateBorrowEventFilter;
+    FlashSwapAndLiquidateBorrow(
       liquidator?: string | null,
       borrower?: string | null,
       bond?: string | null,
+      collateral?: null,
       underlyingAmount?: null,
       seizeAmount?: null,
-      sellAmount?: null,
       repayAmount?: null,
       subsidyAmount?: null,
       profitAmount?: null
-    ): FlashLoanAndLiquidateBorrowEventFilter;
+    ): FlashSwapAndLiquidateBorrowEventFilter;
   };
 
   estimateGas: {
@@ -306,13 +257,9 @@ export interface IFlashUniswapV3 extends BaseContract {
 
     uniV3Factory(overrides?: CallOverrides): Promise<BigNumber>;
 
-    uniV3Quoter(overrides?: CallOverrides): Promise<BigNumber>;
-
-    uniV3SwapRouter(overrides?: CallOverrides): Promise<BigNumber>;
-
-    uniswapV3FlashCallback(
-      fee0: BigNumberish,
-      fee1: BigNumberish,
+    uniswapV3SwapCallback(
+      amount0Delta: BigNumberish,
+      amount1Delta: BigNumberish,
       data: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -328,13 +275,9 @@ export interface IFlashUniswapV3 extends BaseContract {
 
     uniV3Factory(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    uniV3Quoter(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    uniV3SwapRouter(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    uniswapV3FlashCallback(
-      fee0: BigNumberish,
-      fee1: BigNumberish,
+    uniswapV3SwapCallback(
+      amount0Delta: BigNumberish,
+      amount1Delta: BigNumberish,
       data: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;

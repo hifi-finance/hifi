@@ -2295,7 +2295,6 @@ __metadata:
     "@uniswap/sdk-core": ^3.1.2
     "@uniswap/v2-core": 1.0.1
     "@uniswap/v3-core": 1.0.1
-    "@uniswap/v3-periphery": 1.0.1
     "@uniswap/v3-sdk": ^3.9.0
     chai: ^4.3.6
     cross-env: ^7.0.3
@@ -2326,7 +2325,6 @@ __metadata:
     "@prb/contracts": 3.8.0
     "@uniswap/v2-core": 1.0.1
     "@uniswap/v3-core": 1.0.1
-    "@uniswap/v3-periphery": 1.0.1
     ethers: ^5.6.2
   languageName: unknown
   linkType: soft
@@ -3433,13 +3431,6 @@ __metadata:
   version: 1.0.1
   resolution: "@uniswap/v2-core@npm:1.0.1"
   checksum: eaa118fe45eac2e80b7468547ce2cde12bd3c8157555d2e40e0462a788c9506c6295247b511382da85e44a89ad92aff7bb3433b23bfbd2eeea23942ecd46e979
-  languageName: node
-  linkType: hard
-
-"@uniswap/v3-core@npm:1.0.0":
-  version: 1.0.0
-  resolution: "@uniswap/v3-core@npm:1.0.0"
-  checksum: 0e7654cfbf9885f1ca94446c3b220aeddb039af7892bc4ae94669512570ceefdf1ce6c2b0703396927d5a203d7c6c5ccaf8bd61426e52372aafb6ada64141055
   languageName: node
   linkType: hard
 
@@ -4829,13 +4820,6 @@ __metadata:
   version: 1.5.1
   resolution: "base64-js@npm:1.5.1"
   checksum: 669632eb3745404c2f822a18fc3a0122d2f9a7a13f7fb8b5823ee19d1d2ff9ee5b52c53367176ea4ad093c332fd5ab4bd0ebae5a8e27917a4105a4cfc86b1005
-  languageName: node
-  linkType: hard
-
-"base64-sol@npm:1.0.1":
-  version: 1.0.1
-  resolution: "base64-sol@npm:1.0.1"
-  checksum: be0f9e8cf3c744256913223fbae8187773f530cc096e98a77f49ef0bd6cedeb294d15a784e439419f7cb99f07bf85b08999169feafafa1a9e29c3affc0bc6d0a
   languageName: node
   linkType: hard
 
