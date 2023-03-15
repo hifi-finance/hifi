@@ -28,6 +28,14 @@ contract UniswapV3PriceFeed is
     /// @inheritdoc IUniswapV3PriceFeed
     uint32 public immutable override twapInterval;
 
+    /// INTERNAL STORAGE ///
+
+    /// @dev The Uniswap V3 pool's token0 decimals.
+    uint256 internal immutable token0Decimals;
+
+    /// @dev The Uniswap V3 pool's token1 decimals.
+    uint256 internal immutable token1Decimals;
+
     /// CONSTRUCTOR ///
 
     constructor(
@@ -46,6 +54,8 @@ contract UniswapV3PriceFeed is
         }
         pool = pool_;
         refAsset = refAsset_;
+        token0Decimals = token0.decimals();
+        token1Decimals = token1.decimals();
         twapInterval = twapInterval_;
     }
 
@@ -103,9 +113,6 @@ contract UniswapV3PriceFeed is
 
         int24 tick = int24((tickCumulatives[1] - tickCumulatives[0]) / int32(mTwapInterval));
         uint160 sqrtPriceX96 = TickMath.getSqrtRatioAtTick(tick);
-
-        uint256 token0Decimals = IErc20(pool.token0()).decimals();
-        uint256 token1Decimals = IErc20(pool.token1()).decimals();
 
         if (address(refAsset) == pool.token1()) {
             price = int256(
