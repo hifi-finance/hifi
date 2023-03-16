@@ -5,8 +5,9 @@ import { LIQUIDATION_INCENTIVES } from "@hifi/constants";
 import { BalanceSheetErrors, FlashUniswapV3Errors } from "@hifi/errors";
 import { USDC, WBTC, getNow, hUSDC, price } from "@hifi/helpers";
 import { expect } from "chai";
+import { toBn } from "evm-bn";
 
-import { increaseUniswapV3PoolReserves } from "../../../../shared/helpers";
+import { mintUniswapV3PoolReserves } from "../../../../shared/helpers";
 
 interface FlashLiquidateParams {
   borrower: string;
@@ -21,11 +22,10 @@ async function getFlashLiquidateParams(
   this: Mocha.Context,
   collateral: string,
   turnout: BigNumber = WBTC("0.001"),
+  underlyingAmount: BigNumber = USDC("10000"),
 ): Promise<FlashLiquidateParams> {
   const borrower: string = this.signers.borrower.address;
   const bond: string = this.contracts.hToken.address;
-  const underlyingAmount: BigNumber = USDC("10000");
-
   const params: FlashLiquidateParams = {
     borrower: borrower,
     bond: bond,
@@ -43,7 +43,7 @@ export function shouldBehaveLikeCollateralFlashSwap(): void {
   const collateralCeiling: BigNumber = USDC("1e6");
   const debtCeiling: BigNumber = hUSDC("1e6");
   const depositCollateralAmount: BigNumber = WBTC("1");
-  const profitCollateralAmount: BigNumber = WBTC("0.49974692");
+  const profitCollateralAmount: BigNumber = WBTC("0.59979736");
   const swapUnderlyingAmount: BigNumber = USDC("10000");
 
   context("when the underlying is flash borrowed", function () {
@@ -64,7 +64,7 @@ export function shouldBehaveLikeCollateralFlashSwap(): void {
       await this.contracts.usdcPriceFeed.setPrice(price("1"));
 
       //Set up the uniswapV3 Pool,  mint a position.
-      await increaseUniswapV3PoolReserves.call(this, "120000000000000");
+      await mintUniswapV3PoolReserves.call(this, "100000000000000");
 
       // List the bond in the Fintroller.
       await this.contracts.fintroller.connect(this.signers.admin).listBond(this.contracts.hToken.address);
@@ -193,8 +193,135 @@ export function shouldBehaveLikeCollateralFlashSwap(): void {
             });
           });
 
+          context("when the repay amount is equal to the seized amount", function () {
+            const subsidyCollateralAmount: BigNumber = WBTC("0.00051608");
+            const liquidationIncentive = toBn("1.00051608");
+            const repayCollateralAmount: BigNumber = WBTC("1.00051608");
+            const seizeCollateralAmount: BigNumber = WBTC("1.00051608");
+            const swapUnderlyingAmount: BigNumber = USDC("25000");
+            let params: FlashLiquidateParams;
+
+            beforeEach(async function () {
+              params = await getFlashLiquidateParams.call(
+                this,
+                this.contracts.wbtc.address,
+                Zero,
+                swapUnderlyingAmount,
+              );
+
+              await this.contracts.wbtc.__godMode_mint(this.signers.borrower.address, subsidyCollateralAmount);
+
+              await this.contracts.balanceSheet
+                .connect(this.signers.borrower)
+                .depositCollateral(this.contracts.wbtc.address, subsidyCollateralAmount);
+
+              await this.contracts.wbtcPriceFeed.setPrice(price("10000"));
+
+              await this.contracts.fintroller
+                .connect(this.signers.admin)
+                .setLiquidationIncentive(this.contracts.wbtc.address, liquidationIncentive);
+            });
+
+            it("flash swaps WBTC", async function () {
+              const oldCollateralBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+              await this.contracts.flashUniswapV3.connect(this.signers.liquidator).flashLiquidate(params);
+              const newCollateralBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+              expect(oldCollateralBalance).to.equal(newCollateralBalance);
+            });
+
+            it("emits a FlashSwapAndLiquidateBorrow event", async function () {
+              const contractCall = this.contracts.flashUniswapV3
+                .connect(this.signers.liquidator)
+                .flashLiquidate(params);
+              await expect(contractCall)
+                .to.emit(this.contracts.flashUniswapV3, "FlashSwapAndLiquidateBorrow")
+                .withArgs(
+                  this.signers.liquidator.address,
+                  this.signers.borrower.address,
+                  this.contracts.hToken.address,
+                  this.contracts.wbtc.address,
+                  swapUnderlyingAmount,
+                  seizeCollateralAmount,
+                  repayCollateralAmount,
+                  Zero,
+                  Zero,
+                );
+            });
+          });
+
+          context("when the repay amount is greater than the seized amount", function () {
+            const subsidyCollateralAmount: BigNumber = WBTC("0.20062309");
+            const seizeCollateralAmount: BigNumber = WBTC("1");
+            const repayCollateralAmount: BigNumber = WBTC("1.20062309");
+            const swapUnderlyingAmount: BigNumber = USDC("30000");
+
+            beforeEach(async function () {
+              // Mint WBTC to the liquidator's wallet and approve the flash swap contract to spend it.
+              await this.contracts.wbtc.__godMode_mint(this.signers.liquidator.address, subsidyCollateralAmount);
+
+              await this.contracts.wbtcPriceFeed.setPrice(price("10000"));
+
+              await this.contracts.fintroller
+                .connect(this.signers.admin)
+                .setLiquidationIncentive(this.contracts.wbtc.address, LIQUIDATION_INCENTIVES.lowerBound);
+            });
+
+            context("when the turnout is not satisfied", function () {
+              it("reverts", async function () {
+                const params: FlashLiquidateParams = await getFlashLiquidateParams.call(
+                  this,
+                  this.contracts.wbtc.address,
+                  subsidyCollateralAmount.sub(1).mul(-1),
+                  swapUnderlyingAmount,
+                );
+                await expect(
+                  this.contracts.flashUniswapV3.connect(this.signers.liquidator).flashLiquidate(params),
+                ).to.be.revertedWith(FlashUniswapV3Errors.TURNOUT_NOT_SATISFIED);
+              });
+            });
+
+            context("when the turnout is satisfied", function () {
+              let params: FlashLiquidateParams;
+
+              beforeEach(async function () {
+                params = await getFlashLiquidateParams.call(
+                  this,
+                  this.contracts.wbtc.address,
+                  subsidyCollateralAmount.mul(-1),
+                  swapUnderlyingAmount,
+                );
+              });
+
+              it("flash swaps WBTC, makes no WBTC profit and subsidizes the flash swap fee", async function () {
+                const oldCollateralBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+                await this.contracts.flashUniswapV3.connect(this.signers.liquidator).flashLiquidate(params);
+                const newCollateralBalance = await this.contracts.wbtc.balanceOf(this.signers.liquidator.address);
+                expect(oldCollateralBalance.sub(newCollateralBalance)).to.equal(subsidyCollateralAmount);
+              });
+
+              it("emits a FlashSwapAndLiquidateBorrow event", async function () {
+                const contractCall = this.contracts.flashUniswapV3
+                  .connect(this.signers.liquidator)
+                  .flashLiquidate(params);
+                await expect(contractCall)
+                  .to.emit(this.contracts.flashUniswapV3, "FlashSwapAndLiquidateBorrow")
+                  .withArgs(
+                    this.signers.liquidator.address,
+                    this.signers.borrower.address,
+                    this.contracts.hToken.address,
+                    this.contracts.wbtc.address,
+                    swapUnderlyingAmount,
+                    seizeCollateralAmount,
+                    repayCollateralAmount,
+                    subsidyCollateralAmount,
+                    Zero,
+                  );
+              });
+            });
+          });
+
           context("when the repay amount is less than the seized amount", function () {
-            const repayCollateralAmount: BigNumber = WBTC("0.50025308");
+            const repayCollateralAmount: BigNumber = WBTC("0.40020264");
             const seizeCollateralAmount: BigNumber = WBTC("1");
 
             beforeEach(async function () {
