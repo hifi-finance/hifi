@@ -4,6 +4,7 @@ import type { Fixture } from "ethereum-waffle";
 
 import type { ChainlinkOperator } from "../../src/types/contracts/oracles/ChainlinkOperator";
 import type { SimplePriceFeed } from "../../src/types/contracts/oracles/SimplePriceFeed";
+import type { UniswapV3PriceFeed } from "../../src/types/contracts/oracles/UniswapV3PriceFeed";
 import type { GodModeBalanceSheet } from "../../src/types/contracts/test/GodModeBalanceSheet";
 import type { GodModeErc20 } from "../../src/types/contracts/test/GodModeErc20";
 import type { GodModeFintroller } from "../../src/types/contracts/test/GodModeFintroller";
@@ -25,6 +26,7 @@ export interface Contracts {
   hTokens: GodModeHToken[];
   oracle: ChainlinkOperator;
   ownableUpgradeable: GodModeOwnableUpgradeable;
+  uniswapV3priceFeed: UniswapV3PriceFeed;
   usdc: GodModeErc20;
   usdcPriceFeed: SimplePriceFeed;
   wbtc: GodModeErc20;
@@ -36,6 +38,7 @@ export interface Mocks {
   fintroller: MockContract;
   hTokens: MockContract[];
   oracle: MockContract;
+  pool: MockContract;
   usdc: MockContract;
   usdcPriceFeed: MockContract;
   wbtc: MockContract;

@@ -17,6 +17,7 @@ import type { Artifact } from "hardhat/types";
 import type { HToken } from "../../src/types/contracts/core/h-token/HToken";
 import type { ChainlinkOperator } from "../../src/types/contracts/oracles/ChainlinkOperator";
 import type { SimplePriceFeed } from "../../src/types/contracts/oracles/SimplePriceFeed";
+import type { UniswapV3PriceFeed } from "../../src/types/contracts/oracles/UniswapV3PriceFeed";
 import type { GodModeBalanceSheet } from "../../src/types/contracts/test/GodModeBalanceSheet";
 import type { GodModeErc20 } from "../../src/types/contracts/test/GodModeErc20";
 import type { GodModeFintroller } from "../../src/types/contracts/test/GodModeFintroller";
@@ -117,6 +118,19 @@ export async function deployOwnableUpgradeable(): Promise<GodModeOwnableUpgradea
   );
   await ownableUpgradeable.deployed();
   return ownableUpgradeable;
+}
+
+export async function deployUniswapV3PriceFeed(
+  deployer: Signer,
+  poolAddress: string,
+  refAssetAddress: string,
+  twapInterval: number,
+): Promise<UniswapV3PriceFeed> {
+  const uniswapV3PriceFeedArtifact: Artifact = await artifacts.readArtifact("UniswapV3PriceFeed");
+  const priceFeed: UniswapV3PriceFeed = <UniswapV3PriceFeed>(
+    await deployContract(deployer, uniswapV3PriceFeedArtifact, [poolAddress, refAssetAddress, twapInterval], overrides)
+  );
+  return priceFeed;
 }
 
 export async function deployUsdc(deployer: Signer): Promise<GodModeErc20> {

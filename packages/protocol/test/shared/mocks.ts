@@ -72,6 +72,12 @@ export async function deployMockSimplePriceFeed(deployer: Signer, price: BigNumb
   return simplePriceFeed;
 }
 
+export async function deployMockUniswapV3Pool(deployer: Signer): Promise<MockContract> {
+  const uniswapV3PoolArtifact: Artifact = await hre.artifacts.readArtifact("IUniswapV3Pool");
+  const uniswapV3Pool: MockContract = await deployMockContract(deployer, uniswapV3PoolArtifact.abi);
+  return uniswapV3Pool;
+}
+
 export async function deployMockUsdc(deployer: Signer): Promise<MockContract> {
   return deployMockErc20(deployer, USDC_NAME, USDC_SYMBOL, USDC_DECIMALS);
 }

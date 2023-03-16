@@ -15,6 +15,7 @@ import type { MockContract } from "ethereum-waffle";
 
 import type { ChainlinkOperator } from "../../src/types/contracts/oracles/ChainlinkOperator";
 import type { SimplePriceFeed } from "../../src/types/contracts/oracles/SimplePriceFeed";
+import type { UniswapV3PriceFeed } from "../../src/types/contracts/oracles/UniswapV3PriceFeed";
 import type { GodModeBalanceSheet } from "../../src/types/contracts/test/GodModeBalanceSheet";
 import type { GodModeErc20 } from "../../src/types/contracts/test/GodModeErc20";
 import { GodModeFintroller } from "../../src/types/contracts/test/GodModeFintroller";
@@ -26,6 +27,7 @@ import {
   deployGodModeFintroller,
   deployGodModeHToken,
   deployOwnableUpgradeable,
+  deployUniswapV3PriceFeed,
   deployUsdc,
   deployUsdcPriceFeed,
   deployWbtc,
@@ -37,6 +39,7 @@ import {
   deployMockFintroller,
   deployMockHToken,
   deployMockSimplePriceFeed,
+  deployMockUniswapV3Pool,
   deployMockUsdc,
   deployMockWbtc,
   deployMockWeth,
@@ -196,4 +199,22 @@ type UnitFixtureOwnableUpgradeable = {
 export async function unitFixtureOwnableUpgradeable(): Promise<UnitFixtureOwnableUpgradeable> {
   const ownableUpgradeable: GodModeOwnableUpgradeable = await deployOwnableUpgradeable();
   return { ownableUpgradeable };
+}
+
+type UnitFixtureUniswapV3PriceFeed = {
+  pool: MockContract;
+  priceFeed: UniswapV3PriceFeed;
+};
+
+export async function unitFixtureUniswapV3PriceFeed(signers: Signer[]): Promise<UnitFixtureUniswapV3PriceFeed> {
+  const deployer: Signer = signers[0];
+
+  const pool: MockContract = await deployMockUniswapV3Pool(deployer);
+  const usdc: MockContract = await deployMockUsdc(deployer);
+  const wbtc: MockContract = await deployMockWbtc(deployer);
+  await pool.mock.token0.returns(usdc.address);
+  await pool.mock.token1.returns(wbtc.address);
+
+  const priceFeed: UniswapV3PriceFeed = await deployUniswapV3PriceFeed(deployer, pool.address, usdc.address, 900);
+  return { pool, priceFeed };
 }
