@@ -115,11 +115,11 @@ contract UniswapV3PriceFeed is
             price = int256(
                 FullMath.mulDiv(sqrtPriceX96, sqrtPriceX96, (1 << 192) / 10**(8 + token0Decimals)) / 10**token1Decimals
             );
-            if (price == 0) return 1;
         } else {
             price = int256(FullMath.mulDiv(sqrtPriceX96, sqrtPriceX96, (1 << 192) / 10**(8 + token0Decimals)));
             if (price == 0) return int256(10**(16 + token1Decimals));
             price = int256(10**(16 + token1Decimals)) / price;
         }
+        if (price == 0) return 1;
     }
 }
