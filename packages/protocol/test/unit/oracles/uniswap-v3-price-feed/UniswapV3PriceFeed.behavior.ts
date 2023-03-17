@@ -1,9 +1,11 @@
+import { shouldBehaveLikeDecimals } from "./view/decimals";
 import { shouldBehaveLikeDescription } from "./view/description";
 import { shouldBehaveLikeGetRoundData } from "./view/getRoundData";
 import { shouldBehaveLikeLatestRoundData } from "./view/latestRoundData";
 import { shouldBehaveLikePool } from "./view/pool";
 import { shouldBehaveLikeRefAsset } from "./view/refAsset";
 import { shouldBehaveLikeTwapInterval } from "./view/twapInterval";
+import { shouldBehaveLikeVersion } from "./view/version";
 
 export function shouldBehaveLikeUniswapV3PriceFeed(): void {
   describe("View Functions", function () {
@@ -21,6 +23,14 @@ export function shouldBehaveLikeUniswapV3PriceFeed(): void {
 
     describe("twapInterval", function () {
       shouldBehaveLikeTwapInterval();
+    });
+
+    describe("decimals", function () {
+      shouldBehaveLikeDecimals();
+    });
+
+    describe("version", function () {
+      shouldBehaveLikeVersion();
     });
 
     describe("getRoundData", function () {
