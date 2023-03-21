@@ -82,3 +82,5 @@ export type { GodModeHToken } from "./contracts/test/GodModeHToken";
 export { GodModeHToken__factory } from "./factories/contracts/test/GodModeHToken__factory";
 export type { GodModeOwnableUpgradeable } from "./contracts/test/GodModeOwnableUpgradeable";
 export { GodModeOwnableUpgradeable__factory } from "./factories/contracts/test/GodModeOwnableUpgradeable__factory";
+export type { GodModeUniswapV3PriceFeed } from "./contracts/test/GodModeUniswapV3PriceFeed";
+export { GodModeUniswapV3PriceFeed__factory } from "./factories/contracts/test/GodModeUniswapV3PriceFeed__factory";

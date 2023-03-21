@@ -156,6 +156,10 @@ declare module "hardhat/types/runtime" {
       name: "GodModeOwnableUpgradeable",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.GodModeOwnableUpgradeable__factory>;
+    getContractFactory(
+      name: "GodModeUniswapV3PriceFeed",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.GodModeUniswapV3PriceFeed__factory>;
 
     getContractAt(
       name: "IOwnable",
@@ -337,6 +341,11 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.GodModeOwnableUpgradeable>;
+    getContractAt(
+      name: "GodModeUniswapV3PriceFeed",
+      address: string,
+      signer?: ethers.Signer
+    ): Promise<Contracts.GodModeUniswapV3PriceFeed>;
 
     // default types
     getContractFactory(

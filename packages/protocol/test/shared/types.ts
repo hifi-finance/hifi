@@ -4,12 +4,12 @@ import type { Fixture } from "ethereum-waffle";
 
 import type { ChainlinkOperator } from "../../src/types/contracts/oracles/ChainlinkOperator";
 import type { SimplePriceFeed } from "../../src/types/contracts/oracles/SimplePriceFeed";
-import type { UniswapV3PriceFeed } from "../../src/types/contracts/oracles/UniswapV3PriceFeed";
 import type { GodModeBalanceSheet } from "../../src/types/contracts/test/GodModeBalanceSheet";
 import type { GodModeErc20 } from "../../src/types/contracts/test/GodModeErc20";
 import type { GodModeFintroller } from "../../src/types/contracts/test/GodModeFintroller";
 import type { GodModeHToken } from "../../src/types/contracts/test/GodModeHToken";
 import type { GodModeOwnableUpgradeable } from "../../src/types/contracts/test/GodModeOwnableUpgradeable";
+import type { GodModeUniswapV3PriceFeed } from "../../src/types/contracts/test/GodModeUniswapV3PriceFeed";
 
 declare module "mocha" {
   interface Context {
@@ -26,7 +26,7 @@ export interface Contracts {
   hTokens: GodModeHToken[];
   oracle: ChainlinkOperator;
   ownableUpgradeable: GodModeOwnableUpgradeable;
-  uniswapV3priceFeed: UniswapV3PriceFeed;
+  uniswapV3priceFeed: GodModeUniswapV3PriceFeed;
   usdc: GodModeErc20;
   usdcPriceFeed: SimplePriceFeed;
   wbtc: GodModeErc20;

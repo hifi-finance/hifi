@@ -11,3 +11,4 @@ export type { GodModeErc20 } from "./GodModeErc20";
 export type { GodModeFintroller } from "./GodModeFintroller";
 export type { GodModeHToken } from "./GodModeHToken";
 export type { GodModeOwnableUpgradeable } from "./GodModeOwnableUpgradeable";
+export type { GodModeUniswapV3PriceFeed } from "./GodModeUniswapV3PriceFeed";

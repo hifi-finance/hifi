@@ -17,12 +17,12 @@ import type { Artifact } from "hardhat/types";
 import type { HToken } from "../../src/types/contracts/core/h-token/HToken";
 import type { ChainlinkOperator } from "../../src/types/contracts/oracles/ChainlinkOperator";
 import type { SimplePriceFeed } from "../../src/types/contracts/oracles/SimplePriceFeed";
-import type { UniswapV3PriceFeed } from "../../src/types/contracts/oracles/UniswapV3PriceFeed";
 import type { GodModeBalanceSheet } from "../../src/types/contracts/test/GodModeBalanceSheet";
 import type { GodModeErc20 } from "../../src/types/contracts/test/GodModeErc20";
 import type { GodModeFintroller } from "../../src/types/contracts/test/GodModeFintroller";
 import type { GodModeHToken } from "../../src/types/contracts/test/GodModeHToken";
 import type { GodModeOwnableUpgradeable } from "../../src/types/contracts/test/GodModeOwnableUpgradeable";
+import type { GodModeUniswapV3PriceFeed } from "../../src/types/contracts/test/GodModeUniswapV3PriceFeed";
 import type { GodModeBalanceSheet__factory } from "../../src/types/factories/contracts/test/GodModeBalanceSheet__factory";
 import type { GodModeOwnableUpgradeable__factory } from "../../src/types/factories/contracts/test/GodModeOwnableUpgradeable__factory";
 
@@ -125,9 +125,9 @@ export async function deployUniswapV3PriceFeed(
   poolAddress: string,
   refAssetAddress: string,
   twapInterval: number,
-): Promise<UniswapV3PriceFeed> {
-  const uniswapV3PriceFeedArtifact: Artifact = await artifacts.readArtifact("UniswapV3PriceFeed");
-  const priceFeed: UniswapV3PriceFeed = <UniswapV3PriceFeed>(
+): Promise<GodModeUniswapV3PriceFeed> {
+  const uniswapV3PriceFeedArtifact: Artifact = await artifacts.readArtifact("GodModeUniswapV3PriceFeed");
+  const priceFeed: GodModeUniswapV3PriceFeed = <GodModeUniswapV3PriceFeed>(
     await deployContract(deployer, uniswapV3PriceFeedArtifact, [poolAddress, refAssetAddress, twapInterval], overrides)
   );
   return priceFeed;

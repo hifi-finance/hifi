@@ -48,7 +48,9 @@ export function shouldBehaveLikeGetRoundData(): void {
 
   context("when token1 is the reference asset of the price feed", function () {
     beforeEach(async function () {
-      await this.mocks.pool.mock.token1.returns(await this.contracts.uniswapV3priceFeed.refAsset());
+      await this.mocks.pool.mock.token0.returns(this.mocks.wbtc.address);
+      await this.mocks.pool.mock.token1.returns(this.mocks.usdc.address);
+      await this.contracts.uniswapV3priceFeed.__godMode_setPool(this.mocks.pool.address);
     });
 
     context("when sqrtPriceX96 is minimum ", function () {
@@ -57,7 +59,7 @@ export function shouldBehaveLikeGetRoundData(): void {
         const { roundId, answer, startedAt, updatedAt, answeredInRound } =
           await this.contracts.uniswapV3priceFeed.getRoundData(123);
         expect(roundId).to.equal(123);
-        expect(answer).to.equal("340256786836388094070642339899681172762184834");
+        expect(answer).to.equal("3402567868363880940706423398996811727621851270355");
         expect(startedAt).to.equal(0);
         expect(updatedAt).to.equal(0);
         expect(answeredInRound).to.equal(0);
@@ -83,7 +85,7 @@ export function shouldBehaveLikeGetRoundData(): void {
         const { roundId, answer, startedAt, updatedAt, answeredInRound } =
           await this.contracts.uniswapV3priceFeed.getRoundData(123);
         expect(roundId).to.equal(123);
-        expect(answer).to.equal("999900");
+        expect(answer).to.equal("9999000099");
         expect(startedAt).to.equal(0);
         expect(updatedAt).to.equal(0);
         expect(answeredInRound).to.equal(0);
