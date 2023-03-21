@@ -4,3 +4,4 @@ export * from "./gas";
 export * from "./prices";
 export * from "./protocol";
 export * from "./tokens";
+export * from "./uniswap-v3";

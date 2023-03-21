@@ -1,5 +1,6 @@
 import type { Signer } from "@ethersproject/abstract-signer";
 import {
+  DEFAULT_TWAP_INTERVAL,
   H_TOKEN_MATURITY_ONE_YEAR,
   H_TOKEN_MATURITY_THREE_MONTHS,
   NORMALIZED_USDC_PRICE,
@@ -221,7 +222,7 @@ export async function unitFixtureUniswapV3PriceFeed(signers: Signer[]): Promise<
     deployer,
     pool.address,
     usdc.address,
-    900,
+    DEFAULT_TWAP_INTERVAL,
   );
   return { pool, priceFeed, usdc, wbtc };
 }
