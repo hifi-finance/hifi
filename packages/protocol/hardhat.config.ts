@@ -90,14 +90,33 @@ const config: HardhatUserConfig = {
     tests: "./test",
   },
   solidity: {
-    version: "0.8.12",
-    settings: {
-      metadata: {
-        bytecodeHash: "none",
+    compilers: [
+      {
+        version: "0.8.12",
+        settings: {
+          metadata: {
+            bytecodeHash: "none",
+          },
+          optimizer: {
+            enabled: true,
+            runs: 800,
+          },
+        },
       },
-      optimizer: {
-        enabled: true,
-        runs: 800,
+    ],
+    overrides: {
+      "contracts/oracles/UniswapV3PriceFeed.sol": {
+        version: "0.8.12",
+        settings: {
+          metadata: {
+            bytecodeHash: "none",
+          },
+          optimizer: {
+            enabled: true,
+            runs: 1_000_000,
+          },
+          viaIR: true,
+        },
       },
     },
   },
