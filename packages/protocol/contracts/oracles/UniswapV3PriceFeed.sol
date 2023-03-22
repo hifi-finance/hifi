@@ -16,9 +16,6 @@ contract UniswapV3PriceFeed is
 {
     /// PUBLIC STORAGE ///
 
-    /// @inheritdoc IAggregatorV3
-    string public override description;
-
     /// @inheritdoc IUniswapV3PriceFeed
     IUniswapV3Pool public immutable override pool;
 
@@ -30,11 +27,17 @@ contract UniswapV3PriceFeed is
 
     /// INTERNAL STORAGE ///
 
-    /// @dev The Uniswap V3 pool's token0 decimals.
-    uint256 internal immutable token0Decimals;
+    /// @dev The Uniswap V3 pool's token0.
+    IErc20 internal immutable token0;
 
-    /// @dev The Uniswap V3 pool's token1 decimals.
-    uint256 internal immutable token1Decimals;
+    /// @dev The ERC20 decimals of "token0".
+    uint8 internal immutable token0Decimals;
+
+    /// @dev The Uniswap V3 pool's token1.
+    IErc20 internal immutable token1;
+
+    /// @dev The ERC20 decimals of "token1".
+    uint8 internal immutable token1Decimals;
 
     /// CONSTRUCTOR ///
 
@@ -43,17 +46,13 @@ contract UniswapV3PriceFeed is
         IErc20 refAsset_,
         uint32 twapInterval_
     ) {
-        IErc20 token0 = IErc20(pool_.token0());
-        IErc20 token1 = IErc20(pool_.token1());
-        if (refAsset_ == token0) {
-            description = string.concat(token1.symbol(), " / ", refAsset_.symbol());
-        } else if (refAsset_ == token1) {
-            description = string.concat(token0.symbol(), " / ", refAsset_.symbol());
-        } else {
-            revert IUniswapV3PriceFeed__RefAssetNotInPool(refAsset_);
+        refAsset = refAsset_;
+        token0 = IErc20(pool_.token0());
+        token1 = IErc20(pool_.token1());
+        if (refAsset != token0 && refAsset != token1) {
+            revert IUniswapV3PriceFeed__RefAssetNotInPool(refAsset);
         }
         pool = pool_;
-        refAsset = refAsset_;
         token0Decimals = token0.decimals();
         token1Decimals = token1.decimals();
         twapInterval = twapInterval_;
@@ -62,6 +61,15 @@ contract UniswapV3PriceFeed is
     /// @inheritdoc IAggregatorV3
     function decimals() external pure override returns (uint8) {
         return 8;
+    }
+
+    /// @inheritdoc IAggregatorV3
+    function description() external view override returns (string memory) {
+        if (refAsset == token1) {
+            return string.concat(token0.symbol(), " / ", refAsset.symbol());
+        } else {
+            return string.concat(token1.symbol(), " / ", refAsset.symbol());
+        }
     }
 
     /// @inheritdoc IAggregatorV3
@@ -111,7 +119,7 @@ contract UniswapV3PriceFeed is
         int24 tick = int24((tickCumulatives[1] - tickCumulatives[0]) / int32(twapInterval));
         uint160 sqrtPriceX96 = TickMath.getSqrtRatioAtTick(tick);
 
-        if (address(refAsset) == pool.token1()) {
+        if (refAsset == token1) {
             price = int256(
                 FullMath.mulDiv(sqrtPriceX96, sqrtPriceX96, (1 << 192) / 10**(8 + token0Decimals)) / 10**token1Decimals
             );

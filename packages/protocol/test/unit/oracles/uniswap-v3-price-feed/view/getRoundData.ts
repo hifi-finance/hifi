@@ -12,6 +12,7 @@ export function shouldBehaveLikeGetRoundData(): void {
       await this.mocks.pool.mock.token0.returns(this.mocks.usdc.address);
       await this.mocks.pool.mock.token1.returns(this.mocks.wbtc.address);
       await this.contracts.uniswapV3priceFeed.__godMode_setPool(this.mocks.pool.address);
+      await this.contracts.uniswapV3priceFeed.__godMode_setRefAsset(this.mocks.usdc.address);
       token0Decimals = await this.mocks.usdc.decimals();
       token1Decimals = await this.mocks.wbtc.decimals();
     });
@@ -73,6 +74,7 @@ export function shouldBehaveLikeGetRoundData(): void {
       await this.mocks.pool.mock.token0.returns(this.mocks.wbtc.address);
       await this.mocks.pool.mock.token1.returns(this.mocks.usdc.address);
       await this.contracts.uniswapV3priceFeed.__godMode_setPool(this.mocks.pool.address);
+      await this.contracts.uniswapV3priceFeed.__godMode_setRefAsset(this.mocks.usdc.address);
       token0Decimals = await this.mocks.wbtc.decimals();
       token1Decimals = await this.mocks.usdc.decimals();
     });
