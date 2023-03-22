@@ -114,6 +114,9 @@ const config: HardhatUserConfig = {
           optimizer: {
             enabled: true,
             runs: 1_000_000,
+            details: {
+              yul: true,
+            },
           },
           viaIR: true,
         },
