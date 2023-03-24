@@ -11,7 +11,6 @@ export function integrationTestFlashUniswapV3(): void {
         hToken,
         maliciousV3Pool,
         oracle,
-        poolAddress,
         uniswapV3Pool,
         usdc,
         usdcPriceFeed,
@@ -25,7 +24,6 @@ export function integrationTestFlashUniswapV3(): void {
       this.contracts.hToken = hToken;
       this.contracts.maliciousV3Pool = maliciousV3Pool;
       this.contracts.oracle = oracle;
-      this.contracts.poolAddress = poolAddress;
       this.contracts.uniswapV3Pool = uniswapV3Pool;
       this.contracts.usdc = usdc;
       this.contracts.usdcPriceFeed = usdcPriceFeed;

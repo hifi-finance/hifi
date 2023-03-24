@@ -23,10 +23,8 @@ import type { FlashUniswapV3 } from "../../src/types/contracts/uniswap-v3/FlashU
 import type { UniswapV3Pool } from "../../src/types/contracts/uniswap-v3/UniswapV3Pool";
 import type { MaliciousPool as MaliciousV3Pool } from "../../src/types/contracts/uniswap-v3/test/MaliciousPool";
 import type { NonfungiblePositionManager } from "../../src/types/contracts/uniswap-v3/test/NonfungiblePositionManager";
-import type { PoolAddressMock } from "../../src/types/contracts/uniswap-v3/test/PoolAddressMock";
 import type { WETH9 } from "../../src/types/contracts/uniswap-v3/test/WETH9";
 import { GodModeUniswapV2Pair__factory } from "../../src/types/factories/contracts/uniswap-v2/test/GodModeUniswapV2Pair__factory";
-import { UniswapV3Pool__factory } from "../../src/types/factories/contracts/uniswap-v3/UniswapV3Pool__factory";
 import { createUniswapV3Pool, deployGodModeErc20 } from "./deployers";
 import { linkLibraries } from "./linkLibraries";
 
@@ -39,7 +37,6 @@ type IntegrationFixtureReturnType = {
   maliciousV2Pair: MaliciousV2Pair;
   maliciousV3Pool: MaliciousV3Pool;
   oracle: ChainlinkOperator;
-  poolAddress: PoolAddressMock;
   uniswapV2Pair: GodModeUniswapV2Pair;
   uniswapV3Pool: UniswapV3Pool;
   usdc: GodModeErc20;
@@ -134,11 +131,6 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
   const wETH9Artifact: Artifact = await artifacts.readArtifact("WETH9");
   const wETH9: WETH9 = <WETH9>await waffle.deployContract(deployer, wETH9Artifact, []);
 
-  const poolAddressMockArtifact: Artifact = await artifacts.readArtifact("PoolAddressMock");
-  const poolAddress: PoolAddressMock = <PoolAddressMock>(
-    await waffle.deployContract(deployer, poolAddressMockArtifact, [])
-  );
-
   const flashUniswapV3Artifact: Artifact = await artifacts.readArtifact("FlashUniswapV3");
   const flashUniswapV3: FlashUniswapV3 = <FlashUniswapV3>(
     await waffle.deployContract(deployer, flashUniswapV3Artifact, [balanceSheet.address, uniswapV3Factory.address])
@@ -185,7 +177,6 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
     maliciousV2Pair,
     maliciousV3Pool,
     oracle,
-    poolAddress,
     uniswapV2Pair,
     uniswapV3Pool,
     usdc,

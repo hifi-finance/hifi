@@ -7,30 +7,20 @@ import { expect } from "chai";
 
 import { shouldBehaveLikeCollateralFlashSwap } from "./collateral";
 
-interface PoolKey {
-  token0: string;
-  token1: string;
-  fee: number;
-}
-function getUniswapV3SwapCallbackData(this: Mocha.Context, collateral: string, poolKey: PoolKey): string {
+async function getUniswapV3SwapCallbackData(
+  this: Mocha.Context,
+  collateral: string,
+  token0: string,
+  token1: string,
+  fee: number,
+): Promise<string> {
   const types = ["address", "address", "address", "address", "address", "uint24", "address", "int256", "uint256"];
-
   const bond: string = this.contracts.hToken.address;
   const borrower: string = this.signers.borrower.address;
   const sender: string = this.signers.raider.address;
   const turnout: string = String(WBTC("0.001"));
-  const flashBorrowUnderlyingAmount: string = String(USDC("10000"));
-  const values = [
-    bond,
-    borrower,
-    collateral,
-    poolKey.token0,
-    poolKey.token1,
-    poolKey.fee,
-    sender,
-    turnout,
-    flashBorrowUnderlyingAmount,
-  ];
+  const underlyingAmount: string = String(USDC("10000"));
+  const values = [bond, borrower, collateral, token0, token1, fee, sender, turnout, underlyingAmount];
   const data: string = defaultAbiCoder.encode(types, values);
   return data;
 }
@@ -51,10 +41,14 @@ export function shouldBehaveLikeUniswapV3SwapCallback(): void {
     let data: string;
 
     beforeEach(async function () {
-      const poolKey: PoolKey = await this.contracts.poolAddress
-        .connect(this.signers.raider)
-        .getPoolKey(this.contracts.wbtc.address, this.contracts.usdc.address, 3000);
-      data = getUniswapV3SwapCallbackData.call(this, this.contracts.wbtc.address, poolKey);
+      const { token0, token1, fee } = this.contracts.uniswapV3Pool;
+      data = await getUniswapV3SwapCallbackData.call(
+        this,
+        this.contracts.wbtc.address,
+        await token0(),
+        await token1(),
+        await fee(),
+      );
     });
 
     context("when the caller is not the UniswapV3Pool contract", function () {

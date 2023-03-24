@@ -269,17 +269,9 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IPoolInitializer__factory>;
     getContractFactory(
-      name: "IQuoter",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IQuoter__factory>;
-    getContractFactory(
       name: "ISelfPermit",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ISelfPermit__factory>;
-    getContractFactory(
-      name: "ISwapRouter",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.ISwapRouter__factory>;
     getContractFactory(
       name: "GodModeErc20",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -340,10 +332,6 @@ declare module "hardhat/types/runtime" {
       name: "NonfungiblePositionManager",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.NonfungiblePositionManager__factory>;
-    getContractFactory(
-      name: "PoolAddressMock",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.PoolAddressMock__factory>;
     getContractFactory(
       name: "WETH9",
       signerOrOptions?: ethers.Signer | FactoryOptions
@@ -674,20 +662,10 @@ declare module "hardhat/types/runtime" {
       signer?: ethers.Signer
     ): Promise<Contracts.IPoolInitializer>;
     getContractAt(
-      name: "IQuoter",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IQuoter>;
-    getContractAt(
       name: "ISelfPermit",
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.ISelfPermit>;
-    getContractAt(
-      name: "ISwapRouter",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.ISwapRouter>;
     getContractAt(
       name: "GodModeErc20",
       address: string,
@@ -763,11 +741,6 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.NonfungiblePositionManager>;
-    getContractAt(
-      name: "PoolAddressMock",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.PoolAddressMock>;
     getContractAt(
       name: "WETH9",
       address: string,

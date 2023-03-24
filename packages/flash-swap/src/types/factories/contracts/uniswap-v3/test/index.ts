@@ -3,5 +3,4 @@
 /* eslint-disable */
 export { MaliciousPool__factory } from "./MaliciousPool__factory";
 export { NonfungiblePositionManager__factory } from "./NonfungiblePositionManager__factory";
-export { PoolAddressMock__factory } from "./PoolAddressMock__factory";
 export { WETH9__factory } from "./WETH9__factory";

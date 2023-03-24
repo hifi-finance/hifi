@@ -11,7 +11,6 @@ import type { GodModeUniswapV2Pair } from "../../src/types/contracts/uniswap-v2/
 import type { MaliciousPair as MaliciousV2Pair } from "../../src/types/contracts/uniswap-v2/test/MaliciousPair";
 import type { FlashUniswapV3 } from "../../src/types/contracts/uniswap-v3/FlashUniswapV3";
 import type { UniswapV3Pool } from "../../src/types/contracts/uniswap-v3/UniswapV3Pool";
-import type { PoolAddressMock } from "../../src/types/contracts/uniswap-v3/test";
 import type { MaliciousPool as MaliciousV3Pool } from "../../src/types/contracts/uniswap-v3/test/MaliciousPool";
 import type { NonfungiblePositionManager } from "../../src/types/contracts/uniswap-v3/test/NonfungiblePositionManager";
 
@@ -31,7 +30,6 @@ export interface Contracts {
   maliciousV2Pair: MaliciousV2Pair;
   maliciousV3Pool: MaliciousV3Pool;
   oracle: ChainlinkOperator;
-  poolAddress: PoolAddressMock;
   usdc: GodModeErc20;
   usdcPriceFeed: SimplePriceFeed;
   uniswapV2Pair: GodModeUniswapV2Pair;

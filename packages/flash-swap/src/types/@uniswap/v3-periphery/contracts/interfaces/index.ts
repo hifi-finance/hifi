@@ -13,6 +13,4 @@ export type { INonfungibleTokenPositionDescriptor } from "./INonfungibleTokenPos
 export type { IPeripheryImmutableState } from "./IPeripheryImmutableState";
 export type { IPeripheryPayments } from "./IPeripheryPayments";
 export type { IPoolInitializer } from "./IPoolInitializer";
-export type { IQuoter } from "./IQuoter";
 export type { ISelfPermit } from "./ISelfPermit";
-export type { ISwapRouter } from "./ISwapRouter";

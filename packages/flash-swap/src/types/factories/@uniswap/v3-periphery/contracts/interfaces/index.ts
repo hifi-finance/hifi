@@ -9,6 +9,4 @@ export { INonfungibleTokenPositionDescriptor__factory } from "./INonfungibleToke
 export { IPeripheryImmutableState__factory } from "./IPeripheryImmutableState__factory";
 export { IPeripheryPayments__factory } from "./IPeripheryPayments__factory";
 export { IPoolInitializer__factory } from "./IPoolInitializer__factory";
-export { IQuoter__factory } from "./IQuoter__factory";
 export { ISelfPermit__factory } from "./ISelfPermit__factory";
-export { ISwapRouter__factory } from "./ISwapRouter__factory";
