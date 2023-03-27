@@ -15,9 +15,8 @@ import "@uniswap/v3-periphery/contracts/base/ERC721Permit.sol";
 import "@uniswap/v3-periphery/contracts/base/PeripheryValidation.sol";
 import "@uniswap/v3-periphery/contracts/base/SelfPermit.sol";
 
-/// @title NFT positions
-/// @notice Wraps Uniswap V3 positions in the ERC721 non-fungible token interface
-contract NonfungiblePositionManager is
+/// @dev https://raw.githubusercontent.com/Uniswap/v3-periphery/v1.3.0/contracts/NonfungiblePositionManager.sol
+contract GodModeNonfungiblePositionManager is
     INonfungiblePositionManager,
     Multicall,
     ERC721Permit,
@@ -62,15 +61,11 @@ contract NonfungiblePositionManager is
     /// @dev The ID of the next pool that is used for the first time. Skips 0
     uint80 private _nextPoolId = 1;
 
-    /// @dev The address of the token descriptor contract, which handles generating token URIs for position tokens
-    address private immutable _tokenDescriptor;
-
-    constructor(
-        address _factory,
-        address _WETH9,
-        address _tokenDescriptor_
-    ) ERC721Permit("Uniswap V3 Positions NFT-V1", "UNI-V3-POS", "1") PeripheryImmutableState(_factory, _WETH9) {
-        _tokenDescriptor = _tokenDescriptor_;
+    constructor(address _factory, address _WETH9)
+        ERC721Permit("Uniswap V3 Positions NFT-V1", "UNI-V3-POS", "1")
+        PeripheryImmutableState(_factory, _WETH9)
+    {
+        // solhint-disable-previous-line no-empty-blocks
     }
 
     /// @inheritdoc INonfungiblePositionManager
@@ -184,7 +179,7 @@ contract NonfungiblePositionManager is
 
     function tokenURI(uint256 tokenId) public view override(ERC721, IERC721Metadata) returns (string memory) {
         require(_exists(tokenId));
-        return INonfungibleTokenPositionDescriptor(_tokenDescriptor).tokenURI(this, tokenId);
+        return "";
     }
 
     // save bytecode by removing implementation of unused method

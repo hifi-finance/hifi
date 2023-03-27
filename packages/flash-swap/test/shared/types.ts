@@ -11,8 +11,8 @@ import type { GodModeUniswapV2Pair } from "../../src/types/contracts/uniswap-v2/
 import type { MaliciousPair as MaliciousV2Pair } from "../../src/types/contracts/uniswap-v2/test/MaliciousPair";
 import type { FlashUniswapV3 } from "../../src/types/contracts/uniswap-v3/FlashUniswapV3";
 import type { UniswapV3Pool } from "../../src/types/contracts/uniswap-v3/UniswapV3Pool";
+import { GodModeNonfungiblePositionManager } from "../../src/types/contracts/uniswap-v3/test/GodModeNonfungiblePositionManager";
 import type { MaliciousPool as MaliciousV3Pool } from "../../src/types/contracts/uniswap-v3/test/MaliciousPool";
-import type { NonfungiblePositionManager } from "../../src/types/contracts/uniswap-v3/test/NonfungiblePositionManager";
 
 declare module "mocha" {
   export interface Context {
@@ -36,7 +36,7 @@ export interface Contracts {
   uniswapV3Pool: UniswapV3Pool;
   wbtc: GodModeErc20;
   wbtcPriceFeed: SimplePriceFeed;
-  nonfungiblePositionManager: NonfungiblePositionManager;
+  nonfungiblePositionManager: GodModeNonfungiblePositionManager;
 }
 
 export interface Signers {

@@ -137,7 +137,8 @@ export declare namespace INonfungiblePositionManager {
   };
 }
 
-export interface NonfungiblePositionManagerInterface extends utils.Interface {
+export interface GodModeNonfungiblePositionManagerInterface
+  extends utils.Interface {
   functions: {
     "DOMAIN_SEPARATOR()": FunctionFragment;
     "PERMIT_TYPEHASH()": FunctionFragment;
@@ -578,12 +579,12 @@ export type TransferEvent = TypedEvent<
 
 export type TransferEventFilter = TypedEventFilter<TransferEvent>;
 
-export interface NonfungiblePositionManager extends BaseContract {
+export interface GodModeNonfungiblePositionManager extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
 
-  interface: NonfungiblePositionManagerInterface;
+  interface: GodModeNonfungiblePositionManagerInterface;
 
   queryFilter<TEvent extends TypedEvent>(
     event: TypedEventFilter<TEvent>,

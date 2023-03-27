@@ -7,8 +7,6 @@ import type { BalanceSheetV2 } from "@hifi/protocol/dist/types/contracts/core/ba
 import type { Fintroller } from "@hifi/protocol/dist/types/contracts/core/fintroller/Fintroller";
 import type { ChainlinkOperator } from "@hifi/protocol/dist/types/contracts/oracles/ChainlinkOperator";
 import UniswapV3FactoryArtifact from "@uniswap/v3-core/artifacts/contracts/UniswapV3Factory.sol/UniswapV3Factory.json";
-import NonfungibleTokenPositionDescriptorArtifact from "@uniswap/v3-periphery/artifacts/contracts/NonfungibleTokenPositionDescriptor.sol/NonfungibleTokenPositionDescriptor.json";
-import NFTDescriptorArtifact from "@uniswap/v3-periphery/artifacts/contracts/libraries/NFTDescriptor.sol/NFTDescriptor.json";
 import { artifacts, waffle } from "hardhat";
 import type { Artifact } from "hardhat/types";
 
@@ -21,12 +19,10 @@ import type { GodModeUniswapV2Pair } from "../../src/types/contracts/uniswap-v2/
 import type { MaliciousPair as MaliciousV2Pair } from "../../src/types/contracts/uniswap-v2/test/MaliciousPair";
 import type { FlashUniswapV3 } from "../../src/types/contracts/uniswap-v3/FlashUniswapV3";
 import type { UniswapV3Pool } from "../../src/types/contracts/uniswap-v3/UniswapV3Pool";
+import type { GodModeNonfungiblePositionManager } from "../../src/types/contracts/uniswap-v3/test/GodModeNonfungiblePositionManager";
 import type { MaliciousPool as MaliciousV3Pool } from "../../src/types/contracts/uniswap-v3/test/MaliciousPool";
-import type { NonfungiblePositionManager } from "../../src/types/contracts/uniswap-v3/test/NonfungiblePositionManager";
-import type { WETH9 } from "../../src/types/contracts/uniswap-v3/test/WETH9";
 import { GodModeUniswapV2Pair__factory } from "../../src/types/factories/contracts/uniswap-v2/test/GodModeUniswapV2Pair__factory";
 import { createUniswapV3Pool, deployGodModeErc20 } from "./deployers";
-import { linkLibraries } from "./linkLibraries";
 
 type IntegrationFixtureReturnType = {
   balanceSheet: BalanceSheetV2;
@@ -43,7 +39,7 @@ type IntegrationFixtureReturnType = {
   usdcPriceFeed: SimplePriceFeed;
   wbtc: GodModeErc20;
   wbtcPriceFeed: SimplePriceFeed;
-  nonfungiblePositionManager: NonfungiblePositionManager;
+  nonfungiblePositionManager: GodModeNonfungiblePositionManager;
 };
 
 export async function integrationFixture(signers: Signer[]): Promise<IntegrationFixtureReturnType> {
@@ -135,36 +131,11 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
     await waffle.deployContract(deployer, flashUniswapV3Artifact, [balanceSheet.address, uniswapV3Factory.address])
   );
 
-  const nftDescriptor = await waffle.deployContract(deployer, NFTDescriptorArtifact, []);
-
-  const linkedBytecode = linkLibraries(
-    {
-      bytecode: NonfungibleTokenPositionDescriptorArtifact.bytecode,
-      linkReferences: {
-        "NFTDescriptor.sol": {
-          NFTDescriptor: [
-            {
-              length: 20,
-              start: 1261,
-            },
-          ],
-        },
-      },
-    },
-    {
-      NFTDescriptor: nftDescriptor.address,
-    },
+  const nonfungiblePositionManagerArtifact: Artifact = await artifacts.readArtifact(
+    "GodModeNonfungiblePositionManager",
   );
-  const contractArtifact = { abi: NonfungibleTokenPositionDescriptorArtifact.abi, bytecode: linkedBytecode };
-  const nonfungibleTokenPositionDescriptor = await waffle.deployContract(deployer, contractArtifact, [weth.address]);
-
-  const nonfungiblePositionManagerArtifact: Artifact = await artifacts.readArtifact("NonfungiblePositionManager");
-  const nonfungiblePositionManager: NonfungiblePositionManager = <NonfungiblePositionManager>(
-    await waffle.deployContract(deployer, nonfungiblePositionManagerArtifact, [
-      uniswapV3Factory.address,
-      weth.address,
-      nonfungibleTokenPositionDescriptor.address,
-    ])
+  const nonfungiblePositionManager: GodModeNonfungiblePositionManager = <GodModeNonfungiblePositionManager>(
+    await waffle.deployContract(deployer, nonfungiblePositionManagerArtifact, [uniswapV3Factory.address, weth.address])
   );
 
   return {
