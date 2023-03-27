@@ -2,4 +2,3 @@
 /* tslint:disable */
 /* eslint-disable */
 export { GodModeNonfungiblePositionManager__factory } from "./GodModeNonfungiblePositionManager__factory";
-export { MaliciousPool__factory } from "./MaliciousPool__factory";

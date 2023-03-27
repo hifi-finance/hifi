@@ -2,4 +2,3 @@
 /* tslint:disable */
 /* eslint-disable */
 export type { GodModeNonfungiblePositionManager } from "./GodModeNonfungiblePositionManager";
-export type { MaliciousPool } from "./MaliciousPool";

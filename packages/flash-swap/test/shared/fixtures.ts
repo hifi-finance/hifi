@@ -20,7 +20,6 @@ import type { MaliciousPair as MaliciousV2Pair } from "../../src/types/contracts
 import type { FlashUniswapV3 } from "../../src/types/contracts/uniswap-v3/FlashUniswapV3";
 import type { UniswapV3Pool } from "../../src/types/contracts/uniswap-v3/UniswapV3Pool";
 import type { GodModeNonfungiblePositionManager } from "../../src/types/contracts/uniswap-v3/test/GodModeNonfungiblePositionManager";
-import type { MaliciousPool as MaliciousV3Pool } from "../../src/types/contracts/uniswap-v3/test/MaliciousPool";
 import { GodModeUniswapV2Pair__factory } from "../../src/types/factories/contracts/uniswap-v2/test/GodModeUniswapV2Pair__factory";
 import { createUniswapV3Pool, deployGodModeErc20 } from "./deployers";
 
@@ -31,15 +30,14 @@ type IntegrationFixtureReturnType = {
   flashUniswapV3: FlashUniswapV3;
   hToken: GodModeHToken;
   maliciousV2Pair: MaliciousV2Pair;
-  maliciousV3Pool: MaliciousV3Pool;
   oracle: ChainlinkOperator;
   uniswapV2Pair: GodModeUniswapV2Pair;
   uniswapV3Pool: UniswapV3Pool;
+  uniswapV3PositionManager: GodModeNonfungiblePositionManager;
   usdc: GodModeErc20;
   usdcPriceFeed: SimplePriceFeed;
   wbtc: GodModeErc20;
   wbtcPriceFeed: SimplePriceFeed;
-  nonfungiblePositionManager: GodModeNonfungiblePositionManager;
 };
 
 export async function integrationFixture(signers: Signer[]): Promise<IntegrationFixtureReturnType> {
@@ -119,23 +117,16 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
     500,
   );
 
-  const maliciousV3PoolArtifact: Artifact = await artifacts.readArtifact("MaliciousPool");
-  const maliciousV3Pool: MaliciousV3Pool = <MaliciousV3Pool>(
-    await waffle.deployContract(deployer, maliciousV3PoolArtifact, [wbtc.address, usdc.address])
-  );
-
   const weth: GodModeErc20 = await deployGodModeErc20(deployer, WETH_NAME, WETH_SYMBOL, WETH_DECIMALS);
+
+  const uniswapV3PositionManagerArtifact: Artifact = await artifacts.readArtifact("GodModeNonfungiblePositionManager");
+  const uniswapV3PositionManager: GodModeNonfungiblePositionManager = <GodModeNonfungiblePositionManager>(
+    await waffle.deployContract(deployer, uniswapV3PositionManagerArtifact, [uniswapV3Factory.address, weth.address])
+  );
 
   const flashUniswapV3Artifact: Artifact = await artifacts.readArtifact("FlashUniswapV3");
   const flashUniswapV3: FlashUniswapV3 = <FlashUniswapV3>(
     await waffle.deployContract(deployer, flashUniswapV3Artifact, [balanceSheet.address, uniswapV3Factory.address])
-  );
-
-  const nonfungiblePositionManagerArtifact: Artifact = await artifacts.readArtifact(
-    "GodModeNonfungiblePositionManager",
-  );
-  const nonfungiblePositionManager: GodModeNonfungiblePositionManager = <GodModeNonfungiblePositionManager>(
-    await waffle.deployContract(deployer, nonfungiblePositionManagerArtifact, [uniswapV3Factory.address, weth.address])
   );
 
   return {
@@ -145,14 +136,13 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
     flashUniswapV3,
     hToken,
     maliciousV2Pair,
-    maliciousV3Pool,
     oracle,
     uniswapV2Pair,
     uniswapV3Pool,
+    uniswapV3PositionManager,
     usdc,
     usdcPriceFeed,
     wbtc,
     wbtcPriceFeed,
-    nonfungiblePositionManager,
   };
 }

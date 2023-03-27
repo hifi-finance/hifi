@@ -79,7 +79,7 @@ async function getPoolData(poolContract: any): Promise<{
 // Creates a new position wrapped in a NFT
 export async function mintUniswapV3PoolReserves(this: Mocha.Context, mintLiquidity: string): Promise<void> {
   // Create a position with price range 1 WBTC ~ 20k USDC.
-  await this.contracts.nonfungiblePositionManager
+  await this.contracts.uniswapV3PositionManager
     .connect(this.signers.admin)
     .createAndInitializePoolIfNecessary(
       this.contracts.wbtc.address,
@@ -117,11 +117,11 @@ export async function mintUniswapV3PoolReserves(this: Mocha.Context, mintLiquidi
 
   await this.contracts.wbtc
     .connect(this.signers.admin)
-    .approve(this.contracts.nonfungiblePositionManager.address, amount0Desired.toString());
+    .approve(this.contracts.uniswapV3PositionManager.address, amount0Desired.toString());
 
   await this.contracts.usdc
     .connect(this.signers.admin)
-    .approve(this.contracts.nonfungiblePositionManager.address, amount1Desired.toString());
+    .approve(this.contracts.uniswapV3PositionManager.address, amount1Desired.toString());
 
   const params: {
     token0: string;
@@ -149,7 +149,7 @@ export async function mintUniswapV3PoolReserves(this: Mocha.Context, mintLiquidi
     deadline: Math.floor(Date.now() / 1000) + 60 * 10,
   };
 
-  await this.contracts.nonfungiblePositionManager.connect(this.signers.admin).mint(params, { gasLimit: "1000000" });
+  await this.contracts.uniswapV3PositionManager.connect(this.signers.admin).mint(params, { gasLimit: "1000000" });
 }
 
 export async function decreaseUniswapV3PoolReserves(this: Mocha.Context, decreaseLiquidity: string): Promise<void> {
@@ -167,7 +167,7 @@ export async function decreaseUniswapV3PoolReserves(this: Mocha.Context, decreas
     deadline: Math.floor(Date.now() / 1000) + 60 * 10,
   };
 
-  await this.contracts.nonfungiblePositionManager
+  await this.contracts.uniswapV3PositionManager
     .connect(this.signers.admin)
     .decreaseLiquidity(params, { gasLimit: "1000000" });
 
@@ -182,7 +182,7 @@ export async function decreaseUniswapV3PoolReserves(this: Mocha.Context, decreas
     amount0Max: Number.MAX_SAFE_INTEGER.toString(),
     amount1Max: Number.MAX_SAFE_INTEGER.toString(),
   };
-  await this.contracts.nonfungiblePositionManager.connect(this.signers.admin).collect(CollectParams);
+  await this.contracts.uniswapV3PositionManager.connect(this.signers.admin).collect(CollectParams);
 }
 
 export async function increaseUniswapV3PoolReserves(this: Mocha.Context, increaseLiquidity: string): Promise<void> {
@@ -215,11 +215,11 @@ export async function increaseUniswapV3PoolReserves(this: Mocha.Context, increas
 
   await this.contracts.wbtc
     .connect(this.signers.admin)
-    .approve(this.contracts.nonfungiblePositionManager.address, amount0Desired.toString());
+    .approve(this.contracts.uniswapV3PositionManager.address, amount0Desired.toString());
 
   await this.contracts.usdc
     .connect(this.signers.admin)
-    .approve(this.contracts.nonfungiblePositionManager.address, amount1Desired.toString());
+    .approve(this.contracts.uniswapV3PositionManager.address, amount1Desired.toString());
   const params: {
     tokenId: string;
     amount0Desired: string;
@@ -236,7 +236,7 @@ export async function increaseUniswapV3PoolReserves(this: Mocha.Context, increas
     deadline: Math.floor(Date.now() / 1000) + 60 * 10,
   };
 
-  await this.contracts.nonfungiblePositionManager
+  await this.contracts.uniswapV3PositionManager
     .connect(this.signers.admin)
     .increaseLiquidity(params, { gasLimit: "1000000" });
 
@@ -251,5 +251,5 @@ export async function increaseUniswapV3PoolReserves(this: Mocha.Context, increas
     amount0Max: Number.MAX_SAFE_INTEGER.toString(),
     amount1Max: Number.MAX_SAFE_INTEGER.toString(),
   };
-  await this.contracts.nonfungiblePositionManager.connect(this.signers.admin).collect(CollectParams);
+  await this.contracts.uniswapV3PositionManager.connect(this.signers.admin).collect(CollectParams);
 }

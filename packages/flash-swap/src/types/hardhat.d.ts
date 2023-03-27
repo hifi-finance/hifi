@@ -329,10 +329,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.GodModeNonfungiblePositionManager__factory>;
     getContractFactory(
-      name: "MaliciousPool",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.MaliciousPool__factory>;
-    getContractFactory(
       name: "UniswapV3Pool",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.UniswapV3Pool__factory>;
@@ -732,11 +728,6 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.GodModeNonfungiblePositionManager>;
-    getContractAt(
-      name: "MaliciousPool",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.MaliciousPool>;
     getContractAt(
       name: "UniswapV3Pool",
       address: string,

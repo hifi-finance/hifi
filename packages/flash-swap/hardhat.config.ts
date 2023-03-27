@@ -16,12 +16,21 @@ dotenvConfig({ path: resolve(__dirname, "..", "..", ".env") });
 // Ensure that we have the environment variables we need.
 const infuraApiKey: string = getEnvVar("INFURA_API_KEY");
 const mnemonic: string = getEnvVar("MNEMONIC");
-const UNISWAP_SETTING = {
+const uniswapV2CompilerSettings = {
+  version: "0.5.16",
+  settings: {
+    optimizer: {
+      enabled: true,
+      runs: 999_999,
+    },
+  },
+};
+const uniswapV3CompilerSettings = {
   version: "0.7.6",
   settings: {
     optimizer: {
       enabled: true,
-      runs: 2_000,
+      runs: 1_000_000,
     },
   },
 };
@@ -86,34 +95,8 @@ const config: HardhatUserConfig = {
   },
   solidity: {
     compilers: [
-      {
-        version: "0.4.18",
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 999_999,
-          },
-        },
-      },
-
-      {
-        version: "0.5.16",
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 999_999,
-          },
-        },
-      },
-      {
-        version: "0.7.6",
-        settings: {
-          optimizer: {
-            enabled: true,
-            runs: 800,
-          },
-        },
-      },
+      uniswapV2CompilerSettings,
+      uniswapV3CompilerSettings,
       {
         version: "0.8.12",
         settings: {
@@ -126,16 +109,11 @@ const config: HardhatUserConfig = {
           },
         },
       },
-      UNISWAP_SETTING,
     ],
     overrides: {
-      "@uniswap/v3-core/contracts/libraries/TickBitmap.sol": UNISWAP_SETTING,
-      "@uniswap/v3-periphery/contracts/libraries/PoolAddress.sol": UNISWAP_SETTING,
-      "@uniswap/v3-periphery/contracts/libraries/ChainId.sol": UNISWAP_SETTING,
-      "@uniswap/lib/contracts/libraries/SafeERC20Namer.sol": UNISWAP_SETTING,
-      "@uniswap/lib/contracts/libraries/AddressStringUtil.sol": UNISWAP_SETTING,
-      "@uniswap/v3-core/contracts/libraries/FullMath.sol": UNISWAP_SETTING,
-      "contracts/uniswap-v3/PoolAddress.sol": UNISWAP_SETTING,
+      "@uniswap/v3-core/contracts/libraries/TickBitmap.sol": uniswapV3CompilerSettings,
+      "@uniswap/v3-periphery/contracts/libraries/PoolAddress.sol": uniswapV3CompilerSettings,
+      "@uniswap/v3-periphery/contracts/libraries/ChainId.sol": uniswapV3CompilerSettings,
     },
   },
   typechain: {

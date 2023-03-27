@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
+// solhint-disable
 pragma solidity =0.7.6;
 pragma abicoder v2;
 import "@uniswap/v3-periphery/contracts/base/PoolInitializer.sol";
 import "@uniswap/v3-core/contracts/libraries/FixedPoint128.sol";
 import "@uniswap/v3-core/contracts/libraries/FullMath.sol";
 import "@uniswap/v3-periphery/contracts/interfaces/INonfungiblePositionManager.sol";
-import "@uniswap/v3-periphery/contracts/interfaces/INonfungibleTokenPositionDescriptor.sol";
 import "@uniswap/v3-periphery/contracts/libraries/PositionKey.sol";
 import "@uniswap/v3-periphery/contracts/libraries/PoolAddress.sol";
 import "@uniswap/v3-periphery/contracts/base/LiquidityManagement.sol";
