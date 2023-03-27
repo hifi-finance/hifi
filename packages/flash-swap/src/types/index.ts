@@ -179,7 +179,5 @@ export type { MaliciousPool } from "./contracts/uniswap-v3/test/MaliciousPool";
 export { MaliciousPool__factory } from "./factories/contracts/uniswap-v3/test/MaliciousPool__factory";
 export type { NonfungiblePositionManager } from "./contracts/uniswap-v3/test/NonfungiblePositionManager";
 export { NonfungiblePositionManager__factory } from "./factories/contracts/uniswap-v3/test/NonfungiblePositionManager__factory";
-export type { WETH9 } from "./contracts/uniswap-v3/test/WETH9";
-export { WETH9__factory } from "./factories/contracts/uniswap-v3/test/WETH9__factory";
 export type { UniswapV3Pool } from "./contracts/uniswap-v3/UniswapV3Pool";
 export { UniswapV3Pool__factory } from "./factories/contracts/uniswap-v3/UniswapV3Pool__factory";

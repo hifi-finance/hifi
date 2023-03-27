@@ -1,6 +1,6 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { keccak256 } from "@ethersproject/keccak256";
-import { H_TOKEN_MATURITY_ONE_YEAR } from "@hifi/constants";
+import { H_TOKEN_MATURITY_ONE_YEAR, WETH_DECIMALS, WETH_NAME, WETH_SYMBOL } from "@hifi/constants";
 import { USDC_DECIMALS, USDC_NAME, USDC_SYMBOL, WBTC_DECIMALS, WBTC_NAME, WBTC_SYMBOL } from "@hifi/constants";
 import { getHTokenName, getHTokenSymbol } from "@hifi/helpers";
 import type { BalanceSheetV2 } from "@hifi/protocol/dist/types/contracts/core/balance-sheet/BalanceSheetV2";
@@ -128,8 +128,7 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
     await waffle.deployContract(deployer, maliciousV3PoolArtifact, [wbtc.address, usdc.address])
   );
 
-  const wETH9Artifact: Artifact = await artifacts.readArtifact("WETH9");
-  const wETH9: WETH9 = <WETH9>await waffle.deployContract(deployer, wETH9Artifact, []);
+  const weth: GodModeErc20 = await deployGodModeErc20(deployer, WETH_NAME, WETH_SYMBOL, WETH_DECIMALS);
 
   const flashUniswapV3Artifact: Artifact = await artifacts.readArtifact("FlashUniswapV3");
   const flashUniswapV3: FlashUniswapV3 = <FlashUniswapV3>(
@@ -157,13 +156,13 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
     },
   );
   const contractArtifact = { abi: NonfungibleTokenPositionDescriptorArtifact.abi, bytecode: linkedBytecode };
-  const nonfungibleTokenPositionDescriptor = await waffle.deployContract(deployer, contractArtifact, [wETH9.address]);
+  const nonfungibleTokenPositionDescriptor = await waffle.deployContract(deployer, contractArtifact, [weth.address]);
 
   const nonfungiblePositionManagerArtifact: Artifact = await artifacts.readArtifact("NonfungiblePositionManager");
   const nonfungiblePositionManager: NonfungiblePositionManager = <NonfungiblePositionManager>(
     await waffle.deployContract(deployer, nonfungiblePositionManagerArtifact, [
       uniswapV3Factory.address,
-      wETH9.address,
+      weth.address,
       nonfungibleTokenPositionDescriptor.address,
     ])
   );
