@@ -9,7 +9,6 @@ export type { external };
 export type { IERC721Permit } from "./IERC721Permit";
 export type { IMulticall } from "./IMulticall";
 export type { INonfungiblePositionManager } from "./INonfungiblePositionManager";
-export type { INonfungibleTokenPositionDescriptor } from "./INonfungibleTokenPositionDescriptor";
 export type { IPeripheryImmutableState } from "./IPeripheryImmutableState";
 export type { IPeripheryPayments } from "./IPeripheryPayments";
 export type { IPoolInitializer } from "./IPoolInitializer";

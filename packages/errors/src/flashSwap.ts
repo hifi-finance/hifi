@@ -10,5 +10,4 @@ export enum FlashUniswapV3Errors {
   CALL_NOT_AUTHORIZED = "FlashUniswapV3__CallNotAuthorized",
   LIQUIDATE_UNDERLYING_BACKED_VAULT = "FlashUniswapV3__LiquidateUnderlyingBackedVault",
   TURNOUT_NOT_SATISFIED = "FlashUniswapV3__TurnoutNotSatisfied",
-  UNDERLYING_NOT_IN_POOL = "FlashUniswapV3__UnderlyingNotInPool",
 }

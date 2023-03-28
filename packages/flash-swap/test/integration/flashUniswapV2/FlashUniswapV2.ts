@@ -22,7 +22,6 @@ export function integrationTestFlashUniswapV2(): void {
       this.contracts.fintroller = fintroller;
       this.contracts.hToken = hToken;
       this.contracts.maliciousV2Pair = maliciousV2Pair;
-      this.contracts.oracle = oracle;
       this.contracts.uniswapV2Pair = uniswapV2Pair;
       this.contracts.usdc = usdc;
       this.contracts.usdcPriceFeed = usdcPriceFeed;

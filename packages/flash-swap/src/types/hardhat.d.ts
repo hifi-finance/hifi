@@ -253,10 +253,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.INonfungiblePositionManager__factory>;
     getContractFactory(
-      name: "INonfungibleTokenPositionDescriptor",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.INonfungibleTokenPositionDescriptor__factory>;
-    getContractFactory(
       name: "IPeripheryImmutableState",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IPeripheryImmutableState__factory>;
@@ -633,11 +629,6 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.INonfungiblePositionManager>;
-    getContractAt(
-      name: "INonfungibleTokenPositionDescriptor",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.INonfungibleTokenPositionDescriptor>;
     getContractAt(
       name: "IPeripheryImmutableState",
       address: string,

@@ -27,7 +27,6 @@ export interface Contracts {
   flashUniswapV3: FlashUniswapV3;
   hToken: GodModeHToken;
   maliciousV2Pair: MaliciousV2Pair;
-  oracle: ChainlinkOperator;
   usdc: GodModeErc20;
   usdcPriceFeed: SimplePriceFeed;
   uniswapV2Pair: GodModeUniswapV2Pair;

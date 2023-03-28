@@ -21,7 +21,6 @@ export function integrationTestFlashUniswapV3(): void {
       this.contracts.fintroller = fintroller;
       this.contracts.flashUniswapV3 = flashUniswapV3;
       this.contracts.hToken = hToken;
-      this.contracts.oracle = oracle;
       this.contracts.uniswapV3Pool = uniswapV3Pool;
       this.contracts.uniswapV3PositionManager = uniswapV3PositionManager;
       this.contracts.usdc = usdc;

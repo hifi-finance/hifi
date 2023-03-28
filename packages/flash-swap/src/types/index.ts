@@ -139,8 +139,6 @@ export type { IMulticall } from "./@uniswap/v3-periphery/contracts/interfaces/IM
 export { IMulticall__factory } from "./factories/@uniswap/v3-periphery/contracts/interfaces/IMulticall__factory";
 export type { INonfungiblePositionManager } from "./@uniswap/v3-periphery/contracts/interfaces/INonfungiblePositionManager";
 export { INonfungiblePositionManager__factory } from "./factories/@uniswap/v3-periphery/contracts/interfaces/INonfungiblePositionManager__factory";
-export type { INonfungibleTokenPositionDescriptor } from "./@uniswap/v3-periphery/contracts/interfaces/INonfungibleTokenPositionDescriptor";
-export { INonfungibleTokenPositionDescriptor__factory } from "./factories/@uniswap/v3-periphery/contracts/interfaces/INonfungibleTokenPositionDescriptor__factory";
 export type { IPeripheryImmutableState } from "./@uniswap/v3-periphery/contracts/interfaces/IPeripheryImmutableState";
 export { IPeripheryImmutableState__factory } from "./factories/@uniswap/v3-periphery/contracts/interfaces/IPeripheryImmutableState__factory";
 export type { IPeripheryPayments } from "./@uniswap/v3-periphery/contracts/interfaces/IPeripheryPayments";

@@ -6,7 +6,7 @@ import { getHTokenName, getHTokenSymbol } from "@hifi/helpers";
 import type { BalanceSheetV2 } from "@hifi/protocol/dist/types/contracts/core/balance-sheet/BalanceSheetV2";
 import type { Fintroller } from "@hifi/protocol/dist/types/contracts/core/fintroller/Fintroller";
 import type { ChainlinkOperator } from "@hifi/protocol/dist/types/contracts/oracles/ChainlinkOperator";
-import UniswapV3FactoryArtifact from "@uniswap/v3-core/artifacts/contracts/UniswapV3Factory.sol/UniswapV3Factory.json";
+import uniswapV3FactoryArtifact from "@uniswap/v3-core/artifacts/contracts/UniswapV3Factory.sol/UniswapV3Factory.json";
 import { artifacts, waffle } from "hardhat";
 import type { Artifact } from "hardhat/types";
 
@@ -21,7 +21,8 @@ import type { FlashUniswapV3 } from "../../src/types/contracts/uniswap-v3/FlashU
 import type { UniswapV3Pool } from "../../src/types/contracts/uniswap-v3/UniswapV3Pool";
 import type { GodModeNonfungiblePositionManager } from "../../src/types/contracts/uniswap-v3/test/GodModeNonfungiblePositionManager";
 import { GodModeUniswapV2Pair__factory } from "../../src/types/factories/contracts/uniswap-v2/test/GodModeUniswapV2Pair__factory";
-import { createUniswapV3Pool, deployGodModeErc20 } from "./deployers";
+import { UniswapV3Pool__factory } from "../../src/types/factories/contracts/uniswap-v3/UniswapV3Pool__factory";
+import { deployGodModeErc20 } from "./deployers";
 
 type IntegrationFixtureReturnType = {
   balanceSheet: BalanceSheetV2;
@@ -30,7 +31,6 @@ type IntegrationFixtureReturnType = {
   flashUniswapV3: FlashUniswapV3;
   hToken: GodModeHToken;
   maliciousV2Pair: MaliciousV2Pair;
-  oracle: ChainlinkOperator;
   uniswapV2Pair: GodModeUniswapV2Pair;
   uniswapV3Pool: UniswapV3Pool;
   uniswapV3PositionManager: GodModeNonfungiblePositionManager;
@@ -108,14 +108,11 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
     ])
   );
 
-  const uniswapV3Factory = await waffle.deployContract(deployer, UniswapV3FactoryArtifact, []);
-  const uniswapV3Pool: UniswapV3Pool = await createUniswapV3Pool(
-    deployer,
-    uniswapV3Factory,
-    wbtc.address,
-    usdc.address,
-    500,
-  );
+  const uniswapV3Factory = await waffle.deployContract(deployer, uniswapV3FactoryArtifact, []);
+  await uniswapV3Factory.createPool(wbtc.address, usdc.address, 500);
+  const v3PairAddress: string = await uniswapV3Factory.getPool(wbtc.address, usdc.address, 500);
+
+  const uniswapV3Pool: UniswapV3Pool = UniswapV3Pool__factory.connect(v3PairAddress, deployer);
 
   const weth: GodModeErc20 = await deployGodModeErc20(deployer, WETH_NAME, WETH_SYMBOL, WETH_DECIMALS);
 
@@ -136,7 +133,6 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
     flashUniswapV3,
     hToken,
     maliciousV2Pair,
-    oracle,
     uniswapV2Pair,
     uniswapV3Pool,
     uniswapV3PositionManager,
