@@ -7,7 +7,7 @@ import { USDC, WBTC, getNow, hUSDC, price } from "@hifi/helpers";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
 
-import { mintUniswapV3PoolReserves } from "../../../../shared/helpers";
+import { mintUniswapV3PoolReserves as mintPoolReserves } from "../../../../shared/helpers";
 
 interface FlashLiquidateParams {
   borrower: string;
@@ -64,7 +64,7 @@ export function shouldBehaveLikeCollateralFlashSwap(): void {
       await this.contracts.usdcPriceFeed.setPrice(price("1"));
 
       // Set up the uniswapV3 Pool,  mint a position.
-      await mintUniswapV3PoolReserves.call(this, "100000000000000");
+      await mintPoolReserves.call(this, "100000000000000");
 
       // List the bond in the Fintroller.
       await this.contracts.fintroller.connect(this.signers.admin).listBond(this.contracts.hToken.address);

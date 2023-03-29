@@ -6,7 +6,7 @@ import bn from "bignumber.js";
 
 bn.config({ EXPONENTIAL_AT: 999999, DECIMAL_PLACES: 40 });
 
-export async function increasePoolReserves(
+export async function increaseUniswapV2PoolReserves(
   this: Mocha.Context,
   wbtcAmount: BigNumber,
   usdcAmount: BigNumber,
@@ -25,7 +25,7 @@ export async function increasePoolReserves(
   await this.contracts.uniswapV2Pair.sync();
 }
 
-export async function reducePoolReserves(
+export async function reduceUniswapV2PoolReserves(
   this: Mocha.Context,
   wbtcAmount: BigNumber,
   usdcAmount: BigNumber,

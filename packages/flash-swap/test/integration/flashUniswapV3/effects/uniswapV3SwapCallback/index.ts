@@ -7,7 +7,7 @@ import { expect } from "chai";
 
 import { shouldBehaveLikeCollateralFlashSwap } from "./collateral";
 
-async function getUniswapV3SwapCallbackData(
+async function getSwapCallbackData(
   this: Mocha.Context,
   collateral: string,
   token0: string,
@@ -42,7 +42,7 @@ export function shouldBehaveLikeUniswapV3SwapCallback(): void {
 
     beforeEach(async function () {
       const { token0, token1, fee } = this.contracts.uniswapV3Pool;
-      data = await getUniswapV3SwapCallbackData.call(
+      data = await getSwapCallbackData.call(
         this,
         this.contracts.wbtc.address,
         await token0(),
