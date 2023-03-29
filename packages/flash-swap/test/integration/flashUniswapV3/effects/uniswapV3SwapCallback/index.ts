@@ -5,7 +5,7 @@ import { FlashUniswapV3Errors } from "@hifi/errors";
 import { USDC, WBTC } from "@hifi/helpers";
 import { expect } from "chai";
 
-import { shouldBehaveLikeCollateralFlashSwap } from "./collateral";
+import { shouldBehaveLikeFlashLiquidate } from "./flashLiquidate";
 
 async function getSwapCallbackData(
   this: Mocha.Context,
@@ -55,17 +55,15 @@ export function shouldBehaveLikeUniswapV3SwapCallback(): void {
       const fee0: BigNumber = Zero;
       const fee1: BigNumber = Zero;
 
-      context("when the caller is an externally owned account", function () {
-        it("reverts", async function () {
-          await expect(
-            this.contracts.flashUniswapV3.connect(this.signers.raider).uniswapV3SwapCallback(fee0, fee1, data),
-          ).to.be.revertedWith(FlashUniswapV3Errors.CALL_NOT_AUTHORIZED);
-        });
+      it("reverts", async function () {
+        await expect(
+          this.contracts.flashUniswapV3.connect(this.signers.raider).uniswapV3SwapCallback(fee0, fee1, data),
+        ).to.be.revertedWith(FlashUniswapV3Errors.CALL_NOT_AUTHORIZED);
       });
     });
 
     context("when the caller is the UniswapV3Pool contract", function () {
-      shouldBehaveLikeCollateralFlashSwap();
+      shouldBehaveLikeFlashLiquidate();
     });
   });
 }

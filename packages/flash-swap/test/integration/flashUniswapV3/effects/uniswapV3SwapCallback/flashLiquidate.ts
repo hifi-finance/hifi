@@ -7,16 +7,10 @@ import { USDC, WBTC, getNow, hUSDC, price } from "@hifi/helpers";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
 
+import { IFlashUniswapV3 } from "../../../../../src/types/contracts/uniswap-v3/IFlashUniswapV3";
 import { mintUniswapV3PoolReserves as mintPoolReserves } from "../../../../shared/helpers";
 
-interface FlashLiquidateParams {
-  borrower: string;
-  bond: string;
-  collateral: string;
-  poolFee: number;
-  turnout: BigNumber;
-  underlyingAmount: BigNumber;
-}
+type FlashLiquidateParams = IFlashUniswapV3.FlashLiquidateParamsStruct;
 
 async function getFlashLiquidateParams(
   this: Mocha.Context,
@@ -38,7 +32,7 @@ async function getFlashLiquidateParams(
   return params;
 }
 
-export function shouldBehaveLikeCollateralFlashSwap(): void {
+export function shouldBehaveLikeFlashLiquidate(): void {
   const borrowAmount: BigNumber = hUSDC("10000");
   const collateralCeiling: BigNumber = USDC("1e6");
   const debtCeiling: BigNumber = hUSDC("1e6");
@@ -56,57 +50,59 @@ export function shouldBehaveLikeCollateralFlashSwap(): void {
       });
     });
 
-    beforeEach(async function () {
-      // Set the oracle price to 1 WBTC = $20k.
-      await this.contracts.wbtcPriceFeed.setPrice(price("20000"));
-
-      // Set the oracle price to 1 USDC = $1.
-      await this.contracts.usdcPriceFeed.setPrice(price("1"));
-
-      // Set up the uniswapV3 Pool,  mint a position.
-      await mintPoolReserves.call(this, "100000000000000");
-
-      // List the bond in the Fintroller.
-      await this.contracts.fintroller.connect(this.signers.admin).listBond(this.contracts.hToken.address);
-
-      // List the collateral in the Fintroller.
-      await this.contracts.fintroller.connect(this.signers.admin).listCollateral(this.contracts.wbtc.address);
-
-      // Set the liquidation incentive to 10%.
-      await this.contracts.fintroller
-        .connect(this.signers.admin)
-        .setLiquidationIncentive(this.contracts.wbtc.address, LIQUIDATION_INCENTIVES.default);
-
-      // Set the collateral ceiling.
-      await this.contracts.fintroller
-        .connect(this.signers.admin)
-        .setCollateralCeiling(this.contracts.wbtc.address, collateralCeiling);
-
-      // Set the debt ceiling.
-      await this.contracts.fintroller
-        .connect(this.signers.admin)
-        .setDebtCeiling(this.contracts.hToken.address, debtCeiling);
-
-      // Mint WBTC to the borrower's wallet and approve the BalanceSheet to spend it.
-      await this.contracts.wbtc.__godMode_mint(this.signers.borrower.address, depositCollateralAmount);
-      await this.contracts.wbtc.connect(this.signers.borrower).approve(this.contracts.balanceSheet.address, MaxUint256);
-
-      await this.contracts.wbtc
-        .connect(this.signers.liquidator)
-        .approve(this.contracts.flashUniswapV3.address, MaxUint256);
-
-      // Deposit the WBTC in the BalanceSheet.
-      await this.contracts.balanceSheet
-        .connect(this.signers.borrower)
-        .depositCollateral(this.contracts.wbtc.address, depositCollateralAmount);
-
-      // Borrow hUSDC.
-      await this.contracts.balanceSheet
-        .connect(this.signers.borrower)
-        .borrow(this.contracts.hToken.address, borrowAmount);
-    });
-
     context("when the collateral is not the same as the underlying", function () {
+      beforeEach(async function () {
+        // Set the oracle price to 1 WBTC = $20k.
+        await this.contracts.wbtcPriceFeed.setPrice(price("20000"));
+
+        // Set the oracle price to 1 USDC = $1.
+        await this.contracts.usdcPriceFeed.setPrice(price("1"));
+
+        // Set up the uniswapV3 Pool,  mint a position.
+        await mintPoolReserves.call(this, "100000000000000");
+
+        // List the bond in the Fintroller.
+        await this.contracts.fintroller.connect(this.signers.admin).listBond(this.contracts.hToken.address);
+
+        // List the collateral in the Fintroller.
+        await this.contracts.fintroller.connect(this.signers.admin).listCollateral(this.contracts.wbtc.address);
+
+        // Set the liquidation incentive to 10%.
+        await this.contracts.fintroller
+          .connect(this.signers.admin)
+          .setLiquidationIncentive(this.contracts.wbtc.address, LIQUIDATION_INCENTIVES.default);
+
+        // Set the collateral ceiling.
+        await this.contracts.fintroller
+          .connect(this.signers.admin)
+          .setCollateralCeiling(this.contracts.wbtc.address, collateralCeiling);
+
+        // Set the debt ceiling.
+        await this.contracts.fintroller
+          .connect(this.signers.admin)
+          .setDebtCeiling(this.contracts.hToken.address, debtCeiling);
+
+        // Mint WBTC to the borrower's wallet and approve the BalanceSheet to spend it.
+        await this.contracts.wbtc.__godMode_mint(this.signers.borrower.address, depositCollateralAmount);
+        await this.contracts.wbtc
+          .connect(this.signers.borrower)
+          .approve(this.contracts.balanceSheet.address, MaxUint256);
+
+        await this.contracts.wbtc
+          .connect(this.signers.liquidator)
+          .approve(this.contracts.flashUniswapV3.address, MaxUint256);
+
+        // Deposit the WBTC in the BalanceSheet.
+        await this.contracts.balanceSheet
+          .connect(this.signers.borrower)
+          .depositCollateral(this.contracts.wbtc.address, depositCollateralAmount);
+
+        // Borrow hUSDC.
+        await this.contracts.balanceSheet
+          .connect(this.signers.borrower)
+          .borrow(this.contracts.hToken.address, borrowAmount);
+      });
+
       context("when the bond does not have enough allowance to spend underlying from flash swap contract", function () {
         beforeEach(async function () {
           await this.contracts.wbtcPriceFeed.setPrice(price("10000"));
