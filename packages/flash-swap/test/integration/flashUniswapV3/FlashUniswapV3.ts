@@ -9,7 +9,6 @@ export function integrationTestFlashUniswapV3(): void {
         fintroller,
         flashUniswapV3,
         hToken,
-        oracle,
         uniswapV3Pool,
         uniswapV3PositionManager,
         usdc,

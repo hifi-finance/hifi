@@ -10,7 +10,6 @@ export function integrationTestFlashUniswapV2(): void {
         flashUniswapV2,
         hToken,
         maliciousV2Pair,
-        oracle,
         uniswapV2Pair,
         usdc,
         usdcPriceFeed,

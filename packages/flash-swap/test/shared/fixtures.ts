@@ -10,6 +10,7 @@ import uniswapV3FactoryArtifact from "@uniswap/v3-core/artifacts/contracts/Unisw
 import { artifacts, waffle } from "hardhat";
 import type { Artifact } from "hardhat/types";
 
+import type { IUniswapV3Factory } from "../../src/types/@uniswap/v3-core/contracts/interfaces/IUniswapV3Factory";
 import type { GodModeErc20 } from "../../src/types/contracts/test/GodModeErc20";
 import type { GodModeHToken } from "../../src/types/contracts/test/GodModeHToken";
 import type { SimplePriceFeed } from "../../src/types/contracts/test/SimplePriceFeed";
@@ -108,11 +109,13 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
     ])
   );
 
-  const uniswapV3Factory = await waffle.deployContract(deployer, uniswapV3FactoryArtifact, []);
+  const uniswapV3Factory: IUniswapV3Factory = <IUniswapV3Factory>(
+    await waffle.deployContract(deployer, uniswapV3FactoryArtifact, [])
+  );
   await uniswapV3Factory.createPool(wbtc.address, usdc.address, 500);
-  const v3PairAddress: string = await uniswapV3Factory.getPool(wbtc.address, usdc.address, 500);
+  const v3PoolAddress: string = await uniswapV3Factory.getPool(wbtc.address, usdc.address, 500);
 
-  const uniswapV3Pool: UniswapV3Pool = UniswapV3Pool__factory.connect(v3PairAddress, deployer);
+  const uniswapV3Pool: UniswapV3Pool = UniswapV3Pool__factory.connect(v3PoolAddress, deployer);
 
   const weth: GodModeErc20 = await deployGodModeErc20(deployer, WETH_NAME, WETH_SYMBOL, WETH_DECIMALS);
 

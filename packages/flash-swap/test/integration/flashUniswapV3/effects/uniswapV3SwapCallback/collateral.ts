@@ -63,7 +63,7 @@ export function shouldBehaveLikeCollateralFlashSwap(): void {
       // Set the oracle price to 1 USDC = $1.
       await this.contracts.usdcPriceFeed.setPrice(price("1"));
 
-      //Set up the uniswapV3 Pool,  mint a position.
+      // Set up the uniswapV3 Pool,  mint a position.
       await mintUniswapV3PoolReserves.call(this, "100000000000000");
 
       // List the bond in the Fintroller.

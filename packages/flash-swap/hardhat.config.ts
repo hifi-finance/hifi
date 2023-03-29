@@ -79,11 +79,12 @@ const config: HardhatUserConfig = {
       "IFlashUniswapV2",
       "IFlashUniswapV3",
       "IUniswapV2Callee",
-      "IUniswapV3FlashCallback",
+      "IUniswapV3SwapCallback",
       "IUniswapV2Pair",
       "IUniswapV3Pool",
       "UniswapV2Pair",
       "UniswapV3Pool",
+      "PoolAddress",
     ],
     includeFactories: true,
   },
@@ -112,8 +113,8 @@ const config: HardhatUserConfig = {
     ],
     overrides: {
       "@uniswap/v3-core/contracts/libraries/TickBitmap.sol": uniswapV3CompilerSettings,
-      "@uniswap/v3-periphery/contracts/libraries/PoolAddress.sol": uniswapV3CompilerSettings,
       "@uniswap/v3-periphery/contracts/libraries/ChainId.sol": uniswapV3CompilerSettings,
+      "@uniswap/v3-periphery/contracts/libraries/PoolAddress.sol": uniswapV3CompilerSettings,
     },
   },
   typechain: {
