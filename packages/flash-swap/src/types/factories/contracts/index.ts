@@ -3,3 +3,4 @@
 /* eslint-disable */
 export * as test from "./test";
 export * as uniswapV2 from "./uniswap-v2";
+export * as uniswapV3 from "./uniswap-v3";

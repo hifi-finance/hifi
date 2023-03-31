@@ -6,7 +6,7 @@ import { USDC, WBTC, price } from "@hifi/helpers";
 import { expect } from "chai";
 
 import { deployGodModeErc20 } from "../../../../shared/deployers";
-import { increasePoolReserves } from "../../../../shared/helpers";
+import { increaseUniswapV2PoolReserves as increasePoolReserves } from "../../../../shared/helpers";
 import { shouldBehaveLikeCollateralFlashSwap } from "./collateral";
 
 function getFlashSwapCallData(this: Mocha.Context, collateral: string): string {
@@ -67,7 +67,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
         it("reverts", async function () {
           const to: string = this.contracts.flashUniswapV2.address;
           await expect(
-            this.contracts.maliciousPair
+            this.contracts.maliciousV2Pair
               .connect(this.signers.raider)
               .swap(swapCollateralAmount, swapUnderlyingAmount, to, data),
           ).to.be.revertedWith(FlashUniswapV2Errors.CALL_NOT_AUTHORIZED);
@@ -105,7 +105,7 @@ export function shouldBehaveLikeUniswapV2Call(): void {
             const to: string = this.contracts.flashUniswapV2.address;
             data = getFlashSwapCallData.call(this, this.contracts.usdc.address);
             await expect(
-              this.contracts.maliciousPair
+              this.contracts.maliciousV2Pair
                 .connect(this.signers.raider)
                 .swap(swapCollateralAmount, swapUnderlyingAmount, to, data),
             ).to.be.revertedWith(FlashUniswapV2Errors.LIQUIDATE_UNDERLYING_BACKED_VAULT);

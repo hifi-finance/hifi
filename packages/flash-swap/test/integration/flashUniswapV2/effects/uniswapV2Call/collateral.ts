@@ -8,7 +8,10 @@ import { USDC, WBTC, getNow, hUSDC, price } from "@hifi/helpers";
 import { expect } from "chai";
 import { toBn } from "evm-bn";
 
-import { increasePoolReserves, reducePoolReserves } from "../../../../shared/helpers";
+import {
+  increaseUniswapV2PoolReserves as increasePoolReserves,
+  reduceUniswapV2PoolReserves as reducePoolReserves,
+} from "../../../../shared/helpers";
 
 function getFlashSwapCallData(this: Mocha.Context, turnout: BigNumber = WBTC("0.001")): string {
   const types = ["address", "address", "address", "int256"];
