@@ -6,7 +6,7 @@ import { USDC, WBTC, price } from "@hifi/helpers";
 import { expect } from "chai";
 
 import { deployGodModeErc20 } from "../../../../shared/deployers";
-import { increasePoolReserves } from "../../../../shared/helpers";
+import { increaseUniswapV2PoolReserves as increasePoolReserves } from "../../../../shared/helpers";
 import { shouldBehaveLikeCollateralFlashSwap } from "./collateral";
 
 function getFlashSwapCallData(this: Mocha.Context, collateral: string): string {

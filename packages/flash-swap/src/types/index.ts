@@ -4,11 +4,14 @@
 
 /* eslint-disable */
 import type * as hifi from "./@hifi";
+import type * as openzeppelin from "./@openzeppelin";
 import type * as prb from "./@prb";
 import type * as uniswap from "./@uniswap";
 import type * as contracts from "./contracts";
 
 export type { hifi };
+
+export type { openzeppelin };
 
 export type { prb };
 
@@ -42,6 +45,24 @@ export type { ChainlinkOperator } from "./@hifi/protocol/contracts/oracles/Chain
 export { ChainlinkOperator__factory } from "./factories/@hifi/protocol/contracts/oracles/ChainlinkOperator__factory";
 export type { IChainlinkOperator } from "./@hifi/protocol/contracts/oracles/IChainlinkOperator";
 export { IChainlinkOperator__factory } from "./factories/@hifi/protocol/contracts/oracles/IChainlinkOperator__factory";
+export type { IERC20Permit } from "./@openzeppelin/contracts/drafts/IERC20Permit";
+export { IERC20Permit__factory } from "./factories/@openzeppelin/contracts/drafts/IERC20Permit__factory";
+export type { ERC165 } from "./@openzeppelin/contracts/introspection/ERC165";
+export { ERC165__factory } from "./factories/@openzeppelin/contracts/introspection/ERC165__factory";
+export type { IERC165 } from "./@openzeppelin/contracts/introspection/IERC165";
+export { IERC165__factory } from "./factories/@openzeppelin/contracts/introspection/IERC165__factory";
+export type { IERC20 } from "./@openzeppelin/contracts/token/ERC20/IERC20";
+export { IERC20__factory } from "./factories/@openzeppelin/contracts/token/ERC20/IERC20__factory";
+export type { ERC721 } from "./@openzeppelin/contracts/token/ERC721/ERC721";
+export { ERC721__factory } from "./factories/@openzeppelin/contracts/token/ERC721/ERC721__factory";
+export type { IERC721 } from "./@openzeppelin/contracts/token/ERC721/IERC721";
+export { IERC721__factory } from "./factories/@openzeppelin/contracts/token/ERC721/IERC721__factory";
+export type { IERC721Enumerable } from "./@openzeppelin/contracts/token/ERC721/IERC721Enumerable";
+export { IERC721Enumerable__factory } from "./factories/@openzeppelin/contracts/token/ERC721/IERC721Enumerable__factory";
+export type { IERC721Metadata } from "./@openzeppelin/contracts/token/ERC721/IERC721Metadata";
+export { IERC721Metadata__factory } from "./factories/@openzeppelin/contracts/token/ERC721/IERC721Metadata__factory";
+export type { IERC721Receiver } from "./@openzeppelin/contracts/token/ERC721/IERC721Receiver";
+export { IERC721Receiver__factory } from "./factories/@openzeppelin/contracts/token/ERC721/IERC721Receiver__factory";
 export type { IOwnable } from "./@prb/contracts/access/IOwnable";
 export { IOwnable__factory } from "./factories/@prb/contracts/access/IOwnable__factory";
 export type { Ownable } from "./@prb/contracts/access/Ownable";
@@ -92,6 +113,40 @@ export type { IUniswapV3PoolOwnerActions } from "./@uniswap/v3-core/contracts/in
 export { IUniswapV3PoolOwnerActions__factory } from "./factories/@uniswap/v3-core/contracts/interfaces/pool/IUniswapV3PoolOwnerActions__factory";
 export type { IUniswapV3PoolState } from "./@uniswap/v3-core/contracts/interfaces/pool/IUniswapV3PoolState";
 export { IUniswapV3PoolState__factory } from "./factories/@uniswap/v3-core/contracts/interfaces/pool/IUniswapV3PoolState__factory";
+export type { ERC721Permit } from "./@uniswap/v3-periphery/contracts/base/ERC721Permit";
+export { ERC721Permit__factory } from "./factories/@uniswap/v3-periphery/contracts/base/ERC721Permit__factory";
+export type { LiquidityManagement } from "./@uniswap/v3-periphery/contracts/base/LiquidityManagement";
+export { LiquidityManagement__factory } from "./factories/@uniswap/v3-periphery/contracts/base/LiquidityManagement__factory";
+export type { Multicall } from "./@uniswap/v3-periphery/contracts/base/Multicall";
+export { Multicall__factory } from "./factories/@uniswap/v3-periphery/contracts/base/Multicall__factory";
+export type { PeripheryImmutableState } from "./@uniswap/v3-periphery/contracts/base/PeripheryImmutableState";
+export { PeripheryImmutableState__factory } from "./factories/@uniswap/v3-periphery/contracts/base/PeripheryImmutableState__factory";
+export type { PeripheryPayments } from "./@uniswap/v3-periphery/contracts/base/PeripheryPayments";
+export { PeripheryPayments__factory } from "./factories/@uniswap/v3-periphery/contracts/base/PeripheryPayments__factory";
+export type { PoolInitializer } from "./@uniswap/v3-periphery/contracts/base/PoolInitializer";
+export { PoolInitializer__factory } from "./factories/@uniswap/v3-periphery/contracts/base/PoolInitializer__factory";
+export type { SelfPermit } from "./@uniswap/v3-periphery/contracts/base/SelfPermit";
+export { SelfPermit__factory } from "./factories/@uniswap/v3-periphery/contracts/base/SelfPermit__factory";
+export type { IERC1271 } from "./@uniswap/v3-periphery/contracts/interfaces/external/IERC1271";
+export { IERC1271__factory } from "./factories/@uniswap/v3-periphery/contracts/interfaces/external/IERC1271__factory";
+export type { IERC20PermitAllowed } from "./@uniswap/v3-periphery/contracts/interfaces/external/IERC20PermitAllowed";
+export { IERC20PermitAllowed__factory } from "./factories/@uniswap/v3-periphery/contracts/interfaces/external/IERC20PermitAllowed__factory";
+export type { IWETH9 } from "./@uniswap/v3-periphery/contracts/interfaces/external/IWETH9";
+export { IWETH9__factory } from "./factories/@uniswap/v3-periphery/contracts/interfaces/external/IWETH9__factory";
+export type { IERC721Permit } from "./@uniswap/v3-periphery/contracts/interfaces/IERC721Permit";
+export { IERC721Permit__factory } from "./factories/@uniswap/v3-periphery/contracts/interfaces/IERC721Permit__factory";
+export type { IMulticall } from "./@uniswap/v3-periphery/contracts/interfaces/IMulticall";
+export { IMulticall__factory } from "./factories/@uniswap/v3-periphery/contracts/interfaces/IMulticall__factory";
+export type { INonfungiblePositionManager } from "./@uniswap/v3-periphery/contracts/interfaces/INonfungiblePositionManager";
+export { INonfungiblePositionManager__factory } from "./factories/@uniswap/v3-periphery/contracts/interfaces/INonfungiblePositionManager__factory";
+export type { IPeripheryImmutableState } from "./@uniswap/v3-periphery/contracts/interfaces/IPeripheryImmutableState";
+export { IPeripheryImmutableState__factory } from "./factories/@uniswap/v3-periphery/contracts/interfaces/IPeripheryImmutableState__factory";
+export type { IPeripheryPayments } from "./@uniswap/v3-periphery/contracts/interfaces/IPeripheryPayments";
+export { IPeripheryPayments__factory } from "./factories/@uniswap/v3-periphery/contracts/interfaces/IPeripheryPayments__factory";
+export type { IPoolInitializer } from "./@uniswap/v3-periphery/contracts/interfaces/IPoolInitializer";
+export { IPoolInitializer__factory } from "./factories/@uniswap/v3-periphery/contracts/interfaces/IPoolInitializer__factory";
+export type { ISelfPermit } from "./@uniswap/v3-periphery/contracts/interfaces/ISelfPermit";
+export { ISelfPermit__factory } from "./factories/@uniswap/v3-periphery/contracts/interfaces/ISelfPermit__factory";
 export type { GodModeErc20 } from "./contracts/test/GodModeErc20";
 export { GodModeErc20__factory } from "./factories/contracts/test/GodModeErc20__factory";
 export type { GodModeHToken } from "./contracts/test/GodModeHToken";
@@ -118,11 +173,7 @@ export type { FlashUniswapV3 } from "./contracts/uniswap-v3/FlashUniswapV3";
 export { FlashUniswapV3__factory } from "./factories/contracts/uniswap-v3/FlashUniswapV3__factory";
 export type { IFlashUniswapV3 } from "./contracts/uniswap-v3/IFlashUniswapV3";
 export { IFlashUniswapV3__factory } from "./factories/contracts/uniswap-v3/IFlashUniswapV3__factory";
-export type { GodModeUniswapV3Factory } from "./contracts/uniswap-v3/test/GodModeUniswapV3Factory";
-export { GodModeUniswapV3Factory__factory } from "./factories/contracts/uniswap-v3/test/GodModeUniswapV3Factory__factory";
-export type { GodModeUniswapV3Pool } from "./contracts/uniswap-v3/test/GodModeUniswapV3Pool";
-export { GodModeUniswapV3Pool__factory } from "./factories/contracts/uniswap-v3/test/GodModeUniswapV3Pool__factory";
-export type { MaliciousPool } from "./contracts/uniswap-v3/test/MaliciousPool";
-export { MaliciousPool__factory } from "./factories/contracts/uniswap-v3/test/MaliciousPool__factory";
+export type { GodModeNonfungiblePositionManager } from "./contracts/uniswap-v3/test/GodModeNonfungiblePositionManager";
+export { GodModeNonfungiblePositionManager__factory } from "./factories/contracts/uniswap-v3/test/GodModeNonfungiblePositionManager__factory";
 export type { UniswapV3Pool } from "./contracts/uniswap-v3/UniswapV3Pool";
 export { UniswapV3Pool__factory } from "./factories/contracts/uniswap-v3/UniswapV3Pool__factory";

@@ -4,8 +4,6 @@ pragma solidity >=0.8.4;
 import "@hifi/protocol/contracts/core/balance-sheet/IBalanceSheetV2.sol";
 import "@uniswap/v3-core/contracts/interfaces/callback/IUniswapV3SwapCallback.sol";
 
-import "./PoolAddress.sol";
-
 /// @title IFlashUniswapV3
 /// @author Hifi
 /// @notice Integration of Uniswap V3 flash swaps for liquidating underwater accounts in Hifi.
