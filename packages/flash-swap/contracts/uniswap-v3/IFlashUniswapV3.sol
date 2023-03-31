@@ -46,6 +46,7 @@ interface IFlashUniswapV3 is IUniswapV3SwapCallback {
 
     /// STRUCTS ///
 
+    /// @dev The parameters for the flash liquidation.
     struct FlashLiquidateParams {
         address borrower;
         IHToken bond;
@@ -53,6 +54,13 @@ interface IFlashUniswapV3 is IUniswapV3SwapCallback {
         uint24 poolFee;
         int256 turnout;
         uint256 underlyingAmount;
+    }
+
+    /// @dev The identifying key of the Uniswap V3 pool.
+    struct PoolKey {
+        address token0;
+        address token1;
+        uint24 fee;
     }
 
     /// CONSTANT FUNCTIONS ///

@@ -7,7 +7,6 @@ import "@hifi/protocol/contracts/core/balance-sheet/IBalanceSheetV2.sol";
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
 
 import "./IFlashUniswapV3.sol";
-import "./PoolAddress.sol";
 
 /// @title FlashUniswapV3
 /// @author Hifi
@@ -26,6 +25,9 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
     uint160 internal constant MIN_SQRT_RATIO = 4295128739;
     uint160 internal constant MAX_SQRT_RATIO = 1461446703485210103287273052203988822378723970342;
 
+    /// @dev The Uniswap V3 pool init code hash.
+    bytes32 internal constant POOL_INIT_CODE_HASH = 0xe34f199b19b2b4f47f68442619d555527d244f78a3297ea89325f843f87b8b54;
+
     /// CONSTRUCTOR ///
     constructor(IBalanceSheetV2 balanceSheet_, address uniV3Factory_) {
         balanceSheet = balanceSheet_;
@@ -33,7 +35,7 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
     }
 
     struct FlashLiquidateLocalVars {
-        PoolAddress.PoolKey poolKey;
+        PoolKey poolKey;
         IErc20 underlying;
         bool zeroForOne;
     }
@@ -42,7 +44,7 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
         IHToken bond;
         address borrower;
         IErc20 collateral;
-        PoolAddress.PoolKey poolKey;
+        PoolKey poolKey;
         address sender;
         int256 turnout;
         uint256 underlyingAmount;
@@ -64,7 +66,7 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
         }
 
         // Compute the flash pool key and address.
-        vars.poolKey = PoolAddress.getPoolKey({
+        vars.poolKey = getPoolKey({
             tokenA: address(params.collateral),
             tokenB: address(vars.underlying),
             fee: params.poolFee
@@ -172,9 +174,34 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
 
     /// INTERNAL CONSTANT FUNCTIONS ///
 
-    /// @dev Calculates the CREATE2 address for a pool without making any external calls.
-    function poolFor(PoolAddress.PoolKey memory key) internal view returns (address pool) {
-        pool = PoolAddress.computeAddress({ factory: uniV3Factory, key: key });
+    /// @dev Returns the Uniswap V3 pool key for a given token pair and fee level.
+    function getPoolKey(
+        address tokenA,
+        address tokenB,
+        uint24 fee
+    ) internal pure returns (PoolKey memory) {
+        if (tokenA > tokenB) (tokenA, tokenB) = (tokenB, tokenA);
+        return PoolKey({ token0: tokenA, token1: tokenB, fee: fee });
+    }
+
+    /// @dev Calculates the CREATE2 address for a Uniswap V3 pool without making any external calls.
+    function poolFor(PoolKey memory key) internal view returns (address pool) {
+        // solhint-disable-next-line reason-string
+        require(key.token0 < key.token1);
+        pool = address(
+            uint160(
+                uint256(
+                    keccak256(
+                        abi.encodePacked(
+                            hex"ff",
+                            uniV3Factory,
+                            keccak256(abi.encode(key.token0, key.token1, key.fee)),
+                            POOL_INIT_CODE_HASH
+                        )
+                    )
+                )
+            )
+        );
     }
 
     /// INTERNAL NON-CONSTANT FUNCTIONS ///

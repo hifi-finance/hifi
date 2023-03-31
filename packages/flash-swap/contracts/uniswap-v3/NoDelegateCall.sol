@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: BUSL-1.1
+// solhint-disable
 pragma solidity =0.7.6;
 
 /// @title Prevents delegatecall to a contract

@@ -84,7 +84,6 @@ const config: HardhatUserConfig = {
       "IUniswapV3Pool",
       "UniswapV2Pair",
       "UniswapV3Pool",
-      "PoolAddress",
     ],
     includeFactories: true,
   },
