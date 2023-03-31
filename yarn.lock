@@ -2292,7 +2292,11 @@ __metadata:
     "@types/node": ^17.0.23
     "@typescript-eslint/eslint-plugin": ^5.17.0
     "@typescript-eslint/parser": ^5.17.0
+    "@uniswap/sdk-core": ^3.1.2
     "@uniswap/v2-core": 1.0.1
+    "@uniswap/v3-core": 1.0.1
+    "@uniswap/v3-periphery": 1.0.1
+    "@uniswap/v3-sdk": ^3.9.0
     chai: ^4.3.6
     cross-env: ^7.0.3
     dotenv: ^16.0.0
@@ -2321,6 +2325,7 @@ __metadata:
     "@hifi/protocol": 1.10.0
     "@prb/contracts": 3.8.0
     "@uniswap/v2-core": 1.0.1
+    "@uniswap/v3-core": 1.0.1
     ethers: ^5.6.2
   languageName: unknown
   linkType: soft
@@ -3396,7 +3401,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uniswap/sdk-core@npm:^3.0.1":
+"@uniswap/sdk-core@npm:^3.0.1, @uniswap/sdk-core@npm:^3.1.2":
   version: 3.2.2
   resolution: "@uniswap/sdk-core@npm:3.2.2"
   dependencies:
@@ -3435,6 +3440,26 @@ __metadata:
   version: 1.0.0
   resolution: "@uniswap/v3-core@npm:1.0.0"
   checksum: 0e7654cfbf9885f1ca94446c3b220aeddb039af7892bc4ae94669512570ceefdf1ce6c2b0703396927d5a203d7c6c5ccaf8bd61426e52372aafb6ada64141055
+  languageName: node
+  linkType: hard
+
+"@uniswap/v3-core@npm:1.0.1":
+  version: 1.0.1
+  resolution: "@uniswap/v3-core@npm:1.0.1"
+  checksum: 4bfd8b218391a3d9efde44e0f984cfec3bc25889cd4d1386766828521006e71b210a3583ee32b52f3c81d384af9e8c39f471f2229e9af4d50da6801446ecb3e4
+  languageName: node
+  linkType: hard
+
+"@uniswap/v3-periphery@npm:1.0.1":
+  version: 1.0.1
+  resolution: "@uniswap/v3-periphery@npm:1.0.1"
+  dependencies:
+    "@openzeppelin/contracts": 3.4.1-solc-0.7-2
+    "@uniswap/lib": ^4.0.1-alpha
+    "@uniswap/v2-core": 1.0.1
+    "@uniswap/v3-core": 1.0.0
+    base64-sol: 1.0.1
+  checksum: 26c3babe6cfef10c300bcd022eccbb60a692ca6e8bc6abe0a937237560883377446e2a32fe56cf0f6278b2b70f34066a76c5d689e3dc5fb4660e1bbb3955a73a
   languageName: node
   linkType: hard
 
