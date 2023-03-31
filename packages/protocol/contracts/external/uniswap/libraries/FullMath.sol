@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-
+// solhint-disable max-line-length, no-inline-assembly, reason-string
 pragma solidity ^0.8.4;
 
 /// @title FullMath

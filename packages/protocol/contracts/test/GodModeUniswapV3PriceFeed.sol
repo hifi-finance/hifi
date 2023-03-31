@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: UNLICENSED
-// solhint-disable func-name-mixedcase
+// solhint-disable
 pragma solidity ^0.8.4;
 
 import "@prb/contracts/token/erc20/IErc20.sol";

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
-
+// solhint-disable code-complexity, max-line-length, no-inline-assembly, var-name-mixedcase
 pragma solidity ^0.8.4;
 
 /// @title TickMath
