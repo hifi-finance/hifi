@@ -21,6 +21,7 @@ associated to each package for detailed usage instructions.
 | Package                                  | Description                                  |
 | ---------------------------------------- | -------------------------------------------- |
 | [`@hifi/constants`](/packages/constants) | Constants shared across Hifi packages        |
+| [`@hifi/errors`](/packages/errors)       | Errors emitted in the Hifi protocol          |
 | [`@hifi/helpers`](/packages/helpers)     | Helper functions shared across Hifi packages |
 
 ## Contributing
@@ -41,6 +42,12 @@ In addition, familiarity with [Solidity](https://soliditylang.org/), [TypeScript
 
 ### Set Up
 
+Set the version of Node to use:
+
+```bash
+$ nvm use
+```
+
 Install the dependencies:
 
 ```bash
@@ -50,7 +57,7 @@ $ yarn install
 Create a `.env` file and follow the `.env.example` file to add the requisite environment variables, then run the watcher:
 
 ```bash
-$ yarn watch
+$ yarn watch:ts
 ```
 
 Now you can start making changes.
