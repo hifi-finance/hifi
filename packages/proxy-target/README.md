@@ -32,17 +32,18 @@ You will likely never need to interact with the smart contracts from Solidity. T
 pragma solidity >=0.8.4;
 
 import "@hifi/proxy-target/contracts/IHifiProxyTarget.sol";
+import "@hifi/protocol/contracts/core/balance-sheet/IBalanceSheetV2.sol";
 
 contract YourContract {
     // Find the address on https://docs.hifi.finance
-    IHifiPool hifiProxyTarget = IHifiProxyTarget(0x...);
+    IHifiProxyTarget hifiProxyTarget = IHifiProxyTarget(0x...);
 
-    function depositCollateral(IBalanceSheetV1 balanceSheet, IErc20 collateral, uint256 depositAmount)
-      external
-      view
-      returns (uint256 underlyingOut)
-    {
-        hifiProxyTarget.depositCollateral(balanceSheet, collateral, depositAmount);
+    function depositCollateral(
+      IBalanceSheetV2 balanceSheet,
+      IErc20 collateral,
+      uint256 depositAmount
+    ) external {
+      hifiProxyTarget.depositCollateral(balanceSheet, collateral, depositAmount);
     }
 }
 ```
@@ -59,7 +60,8 @@ import { HifiProxyTarget__factory } from "@hifi/protocol/dist/types/factories/co
 
 async function depositCollateral() {
   const signer = "..."; // Get hold of an ethers.js Signer
-  const hifiProxyTarget = new HifiProxyTarget__factory("0x...", signer); // Find the address on https://docs.hifi.finance
+  const hifiProxyTargetFactory = new HifiProxyTarget__factory(signer); // Find the address on https://docs.hifi.finance
+  const hifiProxyTarget = hifiProxyTargetFactory.attach("0x...");
   const balanceSheet = "0x...";
   const collateral = "0x...";
   const depositAmount = parseUnits("100", 18);

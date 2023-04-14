@@ -39,13 +39,13 @@ Example for Uniswap V2:
 
 ```javascript
 import { defaultAbiCoder } from "@ethersproject/abi";
-import { getDefaultProvider } from "@ethersproject/providers";
 import { parseUnits } from "@ethersproject/units";
-import { UniswapV2Pair__factory } from "@hifi/flash-swap/dist/types/factories/UniswapV2Pair__factory";
+import { UniswapV2Pair__factory } from "@hifi/flash-swap/dist/types/factories/contracts/UniswapV2Pair__factory";
 
 async function flashSwap() {
-  const defaultProvider = getDefaultProvider();
-  const pair = new UniswapV2Pair__factory("0x...", defaultProvider);
+  const signer = "..."; // Get hold of an ethers.js Signer
+  const pairFactory = new UniswapV2Pair__factory(signer);
+  const pair = pairFactory.attach("0x...");
 
   const token0Amount = parseUnits("100", 18);
   const token1Amount = parseUnits("0", 18);
@@ -75,13 +75,13 @@ To interact with the `FlashUniswapV3` contract, you will call the `flashLiquidat
 Example for Uniswap V3:
 
 ```javascript
-import { getDefaultProvider } from "@ethersproject/providers";
 import { parseUnits } from "@ethersproject/units";
 import { FlashUniswapV3__factory } from "@hifi/flash-swap/dist/types/factories/FlashUniswapV3__factory";
 
 async function flashLiquidate() {
-  const defaultProvider = getDefaultProvider();
-  const flashUniswapV3 = new FlashUniswapV3__factory("0x...", defaultProvider);
+  const signer = "..."; // Get hold of an ethers.js Signer
+  const flashUniswapV3Factory = new FlashUniswapV3__factory(signer);
+  const flashUniswapV3 = flashUniswapV3Factory.attach("0x...");
 
   const borrower = "0x...";
   const hToken = "0x...";

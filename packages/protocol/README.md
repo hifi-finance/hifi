@@ -38,12 +38,12 @@ contract YourContract {
     // Find the address on https://docs.hifi.finance
     IBalanceSheetV2 balanceSheet = IBalanceSheetV2(0x...);
 
-    function queryAccountLiquidity(address user) external view returns (uint256 excessLiquidity, shortfallLiquidity) {
+    function queryAccountLiquidity(address user) external view returns (uint256 excessLiquidity, uint256 shortfallLiquidity) {
         (excessLiquidity, shortfallLiquidity) = balanceSheet.getCurrentAccountLiquidity(user);
     }
 
     function queryCollateralAmount(address user, IErc20 collateral) external view returns (uint256 collateralAmount) {
-        debtAmount = balanceSheet.getCollateralAmount(user, collateral);
+        collateralAmount = balanceSheet.getCollateralAmount(user, collateral);
     }
 
     function queryDebtAmount(address user, IHToken hToken) external view returns (uint256 debtAmount) {
@@ -55,13 +55,12 @@ contract YourContract {
 ### JavaScript
 
 ```javascript
-import { getDefaultProvider } from "@ethersproject/providers";
 import type { BalanceSheetV2__factory } from "@hifi/protocol/dist/types/factories/contracts/core/balance-sheet/BalanceSheetV2__factory";
 
 async function queryAccountLiquidity() {
-  const balanceSheetABI = BalanceSheetV2__factory.abi;
-  const defaultProvider = getDefaultProvider();
-  const balanceSheet = new BalanceSheetV2__factory("0x...", defaultProvider); // Find the address on https://docs.hifi.finance
+  const signer = "..."; // Get hold of an ethers.js Signer
+  const balanceSheetFactory = new BalanceSheetV2__factory(signer); // Find the address on https://docs.hifi.finance
+  const balanceSheet = balanceSheetFactory.attach("0x...");
   const user = "0x...";
   const accountLiquidity = await balanceSheet.getCurrentAccountLiquidity(user);
 }

@@ -47,14 +47,15 @@ contract YourContract {
 ### JavaScript
 
 ```javascript
-import { getDefaultProvider } from "@ethersproject/providers";
 import { parseUnits } from "@ethersproject/units";
-import { HifiPool__factory } from "@hifi/amm/dist/types/factories/HifiPool__factory";
+import { HifiPool__factory } from "@hifi/amm/dist/types/factories/contracts/HifiPool__factory";
 
 async function getQuote() {
-  const hifiPoolABI = HifiPool__factory.abi;
-  const defaultProvider = getDefaultProvider();
-  const hifiPool = new HifiPool__factory("0x...", defaultProvider); // Find the address on https://docs.hifi.finance
+  const signer = "..."; // Get hold of an ethers.js Signer
+
+  const hifiPoolFactory = new HifiPool__factory(signer);
+  const hifiPool = hifiPoolFactory.attach("0x..."); // Find the address on https://docs.hifi.finance
+
   const hTokenIn = parseUnits("100", 18);
   const underlyingOut = await hifiPool.getQuoteForSellingHToken(hTokenIn);
 }
