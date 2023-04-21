@@ -47,12 +47,39 @@ contract UniswapV3PriceFeed is
         uint32 twapInterval_
     ) {
         refAsset = refAsset_;
+
+        // Ensure the provided pool address is not a zero address
+        if (address(pool_) == address(0)) {
+            revert IUniswapV3PriceFeed__ZeroAddressPool();
+        }
         token0 = IErc20(pool_.token0());
         token1 = IErc20(pool_.token1());
+
+        // Ensure the reference asset is in the provided pool
         if (refAsset != token0 && refAsset != token1) {
             revert IUniswapV3PriceFeed__RefAssetNotInPool(refAsset);
         }
         pool = pool_;
+
+        // We need to check that the pool has enough initialized observations to be useful.
+        (, , uint16 index, uint16 cardinality, , , ) = pool.slot0();
+
+        // Ensure the oldest pool observation is initialized and satisfies the TWAP interval.
+        // The next observation at index + 1 is the oldest observation in the ring buffer.
+        (uint32 oldestAvailableAge, , , bool initialized) = pool.observations((index + 1) % cardinality);
+
+        // If the next observation is not initialized, all observations after it in the ring buffer aren't initialized.
+        // Therefore, revert to index 0 to find the oldest initialized observation.
+        if (!initialized) (oldestAvailableAge, , , ) = pool.observations(0);
+
+        // Calculate the available TWAP interval.
+        uint256 availableTwapInterval = oldestAvailableAge - block.timestamp;
+
+        // Ensure the available TWAP interval and cardinality satisfy the TWAP criteria.
+        if (availableTwapInterval < twapInterval_ || cardinality < 65535) {
+            revert IUniswapV3PriceFeed__TwapCriteriaNotSatisfied();
+        }
+
         token0Decimals = token0.decimals();
         token1Decimals = token1.decimals();
         twapInterval = twapInterval_;
