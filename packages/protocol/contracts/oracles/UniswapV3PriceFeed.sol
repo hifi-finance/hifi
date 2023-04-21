@@ -68,7 +68,7 @@ contract UniswapV3PriceFeed is
         // The next observation at index + 1 is the oldest observation in the ring buffer.
         (uint32 oldestAvailableAge, , , bool initialized) = pool.observations((index + 1) % cardinality);
 
-        // If the next observation is not initialized, all observations after it in the ring buffer aren't initialized.
+        // If the next observation is not initialized, all observations of higher indices are also not initialized.
         // Therefore, revert to index 0 to find the oldest initialized observation.
         if (!initialized) (oldestAvailableAge, , , ) = pool.observations(0);
 
