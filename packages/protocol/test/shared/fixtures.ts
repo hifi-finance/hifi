@@ -1,5 +1,6 @@
 import type { Signer } from "@ethersproject/abstract-signer";
 import {
+  CARDINALITY,
   DEFAULT_TWAP_INTERVAL,
   H_TOKEN_MATURITY_ONE_YEAR,
   H_TOKEN_MATURITY_THREE_MONTHS,
@@ -220,10 +221,9 @@ export async function unitFixtureUniswapV3PriceFeed(signers: Signer[]): Promise<
   await pool.mock.token1.returns(wbtc.address);
 
   const currentIndex: number = 0;
-  const cardinality: number = 65535;
-  await pool.mock.slot0.returns(0, 0, currentIndex, cardinality, 0, 0, 0);
+  await pool.mock.slot0.returns(0, 0, currentIndex, CARDINALITY, 0, 0, 0);
 
-  const oldestIndex: number = (currentIndex + 1) % cardinality;
+  const oldestIndex: number = (currentIndex + 1) % CARDINALITY;
   const { timestamp }: { timestamp: number } = await ethers.provider.getBlock("latest");
   const oldestAvailableAge: number = DEFAULT_TWAP_INTERVAL + timestamp + 60;
   const initialized: boolean = true;
