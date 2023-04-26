@@ -13,6 +13,7 @@ import {
   WETH_SYMBOL,
 } from "@hifi/constants";
 import type { MockContract } from "ethereum-waffle";
+import { ethers } from "hardhat";
 
 import type { ChainlinkOperator } from "../../src/types/contracts/oracles/ChainlinkOperator";
 import type { SimplePriceFeed } from "../../src/types/contracts/oracles/SimplePriceFeed";
@@ -217,6 +218,16 @@ export async function unitFixtureUniswapV3PriceFeed(signers: Signer[]): Promise<
   const wbtc: MockContract = await deployMockWbtc(deployer);
   await pool.mock.token0.returns(usdc.address);
   await pool.mock.token1.returns(wbtc.address);
+
+  const currentIndex: number = 0;
+  const cardinality: number = 65535;
+  await pool.mock.slot0.returns(0, 0, currentIndex, cardinality, 0, 0, 0);
+
+  const oldestIndex: number = (currentIndex + 1) % cardinality;
+  const { timestamp }: { timestamp: number } = await ethers.provider.getBlock("latest");
+  const oldestAvailableAge: number = DEFAULT_TWAP_INTERVAL + timestamp + 60;
+  const initialized: boolean = true;
+  await pool.mock.observations.withArgs(oldestIndex).returns(oldestAvailableAge, 0, 0, initialized);
 
   const priceFeed: GodModeUniswapV3PriceFeed = await deployUniswapV3PriceFeed(
     deployer,

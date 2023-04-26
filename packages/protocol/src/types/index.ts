@@ -50,10 +50,6 @@ export type { IAggregatorV3 } from "./contracts/external/chainlink/IAggregatorV3
 export { IAggregatorV3__factory } from "./factories/contracts/external/chainlink/IAggregatorV3__factory";
 export type { IUniswapV3Pool } from "./contracts/external/uniswap/interfaces/IUniswapV3Pool";
 export { IUniswapV3Pool__factory } from "./factories/contracts/external/uniswap/interfaces/IUniswapV3Pool__factory";
-export type { IUniswapV3PoolDerivedState } from "./contracts/external/uniswap/interfaces/pool/IUniswapV3PoolDerivedState";
-export { IUniswapV3PoolDerivedState__factory } from "./factories/contracts/external/uniswap/interfaces/pool/IUniswapV3PoolDerivedState__factory";
-export type { IUniswapV3PoolImmutables } from "./contracts/external/uniswap/interfaces/pool/IUniswapV3PoolImmutables";
-export { IUniswapV3PoolImmutables__factory } from "./factories/contracts/external/uniswap/interfaces/pool/IUniswapV3PoolImmutables__factory";
 export type { ChainlinkOperator } from "./contracts/oracles/ChainlinkOperator";
 export { ChainlinkOperator__factory } from "./factories/contracts/oracles/ChainlinkOperator__factory";
 export type { IChainlinkOperator } from "./contracts/oracles/IChainlinkOperator";

@@ -24,6 +24,16 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "IUniswapV3PriceFeed__TwapCriteriaNotSatisfied",
+    type: "error",
+  },
+  {
+    inputs: [],
+    name: "IUniswapV3PriceFeed__ZeroAddressPool",
+    type: "error",
+  },
+  {
+    inputs: [],
     name: "decimals",
     outputs: [
       {

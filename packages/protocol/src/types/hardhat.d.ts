@@ -93,14 +93,6 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.IUniswapV3Pool__factory>;
     getContractFactory(
-      name: "IUniswapV3PoolDerivedState",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IUniswapV3PoolDerivedState__factory>;
-    getContractFactory(
-      name: "IUniswapV3PoolImmutables",
-      signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.IUniswapV3PoolImmutables__factory>;
-    getContractFactory(
       name: "ChainlinkOperator",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.ChainlinkOperator__factory>;
@@ -261,16 +253,6 @@ declare module "hardhat/types/runtime" {
       address: string,
       signer?: ethers.Signer
     ): Promise<Contracts.IUniswapV3Pool>;
-    getContractAt(
-      name: "IUniswapV3PoolDerivedState",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IUniswapV3PoolDerivedState>;
-    getContractAt(
-      name: "IUniswapV3PoolImmutables",
-      address: string,
-      signer?: ethers.Signer
-    ): Promise<Contracts.IUniswapV3PoolImmutables>;
     getContractAt(
       name: "ChainlinkOperator",
       address: string,

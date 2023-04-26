@@ -38,6 +38,19 @@ const _abi = [
     type: "function",
   },
   {
+    inputs: [
+      {
+        internalType: "uint160",
+        name: "sqrtPriceX96",
+        type: "uint160",
+      },
+    ],
+    name: "initialize",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+  {
     inputs: [],
     name: "maxLiquidityPerTick",
     outputs: [
@@ -45,6 +58,40 @@ const _abi = [
         internalType: "uint128",
         name: "",
         type: "uint128",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "index",
+        type: "uint256",
+      },
+    ],
+    name: "observations",
+    outputs: [
+      {
+        internalType: "uint32",
+        name: "blockTimestamp",
+        type: "uint32",
+      },
+      {
+        internalType: "int56",
+        name: "tickCumulative",
+        type: "int56",
+      },
+      {
+        internalType: "uint160",
+        name: "secondsPerLiquidityCumulativeX128",
+        type: "uint160",
+      },
+      {
+        internalType: "bool",
+        name: "initialized",
+        type: "bool",
       },
     ],
     stateMutability: "view",
@@ -75,34 +122,43 @@ const _abi = [
     type: "function",
   },
   {
-    inputs: [
-      {
-        internalType: "int24",
-        name: "tickLower",
-        type: "int24",
-      },
-      {
-        internalType: "int24",
-        name: "tickUpper",
-        type: "int24",
-      },
-    ],
-    name: "snapshotCumulativesInside",
+    inputs: [],
+    name: "slot0",
     outputs: [
       {
-        internalType: "int56",
-        name: "tickCumulativeInside",
-        type: "int56",
-      },
-      {
         internalType: "uint160",
-        name: "secondsPerLiquidityInsideX128",
+        name: "sqrtPriceX96",
         type: "uint160",
       },
       {
-        internalType: "uint32",
-        name: "secondsInside",
-        type: "uint32",
+        internalType: "int24",
+        name: "tick",
+        type: "int24",
+      },
+      {
+        internalType: "uint16",
+        name: "observationIndex",
+        type: "uint16",
+      },
+      {
+        internalType: "uint16",
+        name: "observationCardinality",
+        type: "uint16",
+      },
+      {
+        internalType: "uint16",
+        name: "observationCardinalityNext",
+        type: "uint16",
+      },
+      {
+        internalType: "uint8",
+        name: "feeProtocol",
+        type: "uint8",
+      },
+      {
+        internalType: "bool",
+        name: "unlocked",
+        type: "bool",
       },
     ],
     stateMutability: "view",
