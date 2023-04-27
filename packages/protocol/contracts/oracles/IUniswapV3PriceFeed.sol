@@ -22,6 +22,9 @@ interface IUniswapV3PriceFeed is IAggregatorV3 {
 
     /// CONSTANT FUNCTIONS ///
 
+    /// @notice The base asset for price calculations.
+    function baseAsset() external view returns (IErc20);
+
     /// @notice The Uniswap V3 pool.
     function pool() external view returns (IUniswapV3Pool);
 

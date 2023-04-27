@@ -1,4 +1,5 @@
 import { shouldBehaveLikeConstructor } from "./deployment/constructor";
+import { shouldBehaveLikeBaseAsset } from "./view/baseAsset";
 import { shouldBehaveLikeDecimals } from "./view/decimals";
 import { shouldBehaveLikeDescription } from "./view/description";
 import { shouldBehaveLikeGetRoundData } from "./view/getRoundData";
@@ -16,6 +17,10 @@ export function shouldBehaveLikeUniswapV3PriceFeed(): void {
   });
 
   describe("View Functions", function () {
+    describe("baseAsset", function () {
+      shouldBehaveLikeBaseAsset();
+    });
+
     describe("description", function () {
       shouldBehaveLikeDescription();
     });

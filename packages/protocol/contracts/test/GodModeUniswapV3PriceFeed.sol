@@ -22,6 +22,10 @@ contract GodModeUniswapV3PriceFeed is IUniswapV3PriceFeed {
         instance = new UniswapV3PriceFeed(pool_, refAsset_, twapInterval_);
     }
 
+    function baseAsset() external view returns (IErc20) {
+        return instance.baseAsset();
+    }
+
     function decimals() external view returns (uint8) {
         return instance.decimals();
     }

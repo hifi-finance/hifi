@@ -17,6 +17,9 @@ contract UniswapV3PriceFeed is
     /// PUBLIC STORAGE ///
 
     /// @inheritdoc IUniswapV3PriceFeed
+    IErc20 public immutable override baseAsset;
+
+    /// @inheritdoc IUniswapV3PriceFeed
     IUniswapV3Pool public immutable override pool;
 
     /// @inheritdoc IUniswapV3PriceFeed
@@ -62,6 +65,8 @@ contract UniswapV3PriceFeed is
         if (refAsset != token0 && refAsset != token1) {
             revert IUniswapV3PriceFeed__RefAssetNotInPool(refAsset);
         }
+
+        baseAsset = refAsset == token1 ? token0 : token1;
         pool = pool_;
 
         // We need to check that the pool has enough initialized observations to be useful.
@@ -95,11 +100,7 @@ contract UniswapV3PriceFeed is
 
     /// @inheritdoc IAggregatorV3
     function description() external view override returns (string memory) {
-        if (refAsset == token1) {
-            return string.concat(token0.symbol(), " / ", refAsset.symbol());
-        } else {
-            return string.concat(token1.symbol(), " / ", refAsset.symbol());
-        }
+        return string.concat(baseAsset.symbol(), " / ", refAsset.symbol());
     }
 
     /// @inheritdoc IAggregatorV3

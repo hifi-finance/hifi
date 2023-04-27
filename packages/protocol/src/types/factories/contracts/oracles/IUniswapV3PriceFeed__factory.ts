@@ -34,6 +34,19 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "baseAsset",
+    outputs: [
+      {
+        internalType: "contract IErc20",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "decimals",
     outputs: [
       {

@@ -24,6 +24,7 @@ import type {
 
 export interface UniswapV3PriceFeedInterface extends utils.Interface {
   functions: {
+    "baseAsset()": FunctionFragment;
     "decimals()": FunctionFragment;
     "description()": FunctionFragment;
     "getRoundData(uint80)": FunctionFragment;
@@ -36,6 +37,7 @@ export interface UniswapV3PriceFeedInterface extends utils.Interface {
 
   getFunction(
     nameOrSignatureOrTopic:
+      | "baseAsset"
       | "decimals"
       | "description"
       | "getRoundData"
@@ -46,6 +48,7 @@ export interface UniswapV3PriceFeedInterface extends utils.Interface {
       | "version"
   ): FunctionFragment;
 
+  encodeFunctionData(functionFragment: "baseAsset", values?: undefined): string;
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "description",
@@ -67,6 +70,7 @@ export interface UniswapV3PriceFeedInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "version", values?: undefined): string;
 
+  decodeFunctionResult(functionFragment: "baseAsset", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "description",
@@ -118,6 +122,8 @@ export interface UniswapV3PriceFeed extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    baseAsset(overrides?: CallOverrides): Promise<[string]>;
+
     decimals(overrides?: CallOverrides): Promise<[number]>;
 
     description(overrides?: CallOverrides): Promise<[string]>;
@@ -155,6 +161,8 @@ export interface UniswapV3PriceFeed extends BaseContract {
 
     version(overrides?: CallOverrides): Promise<[BigNumber]>;
   };
+
+  baseAsset(overrides?: CallOverrides): Promise<string>;
 
   decimals(overrides?: CallOverrides): Promise<number>;
 
@@ -194,6 +202,8 @@ export interface UniswapV3PriceFeed extends BaseContract {
   version(overrides?: CallOverrides): Promise<BigNumber>;
 
   callStatic: {
+    baseAsset(overrides?: CallOverrides): Promise<string>;
+
     decimals(overrides?: CallOverrides): Promise<number>;
 
     description(overrides?: CallOverrides): Promise<string>;
@@ -235,6 +245,8 @@ export interface UniswapV3PriceFeed extends BaseContract {
   filters: {};
 
   estimateGas: {
+    baseAsset(overrides?: CallOverrides): Promise<BigNumber>;
+
     decimals(overrides?: CallOverrides): Promise<BigNumber>;
 
     description(overrides?: CallOverrides): Promise<BigNumber>;
@@ -256,6 +268,8 @@ export interface UniswapV3PriceFeed extends BaseContract {
   };
 
   populateTransaction: {
+    baseAsset(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     description(overrides?: CallOverrides): Promise<PopulatedTransaction>;

@@ -29,6 +29,7 @@ export interface GodModeUniswapV3PriceFeedInterface extends utils.Interface {
     "__godMode_setPool(address)": FunctionFragment;
     "__godMode_setRefAsset(address)": FunctionFragment;
     "__godMode_setTwapInterval(uint32)": FunctionFragment;
+    "baseAsset()": FunctionFragment;
     "decimals()": FunctionFragment;
     "description()": FunctionFragment;
     "getRoundData(uint80)": FunctionFragment;
@@ -44,6 +45,7 @@ export interface GodModeUniswapV3PriceFeedInterface extends utils.Interface {
       | "__godMode_setPool"
       | "__godMode_setRefAsset"
       | "__godMode_setTwapInterval"
+      | "baseAsset"
       | "decimals"
       | "description"
       | "getRoundData"
@@ -66,6 +68,7 @@ export interface GodModeUniswapV3PriceFeedInterface extends utils.Interface {
     functionFragment: "__godMode_setTwapInterval",
     values: [BigNumberish]
   ): string;
+  encodeFunctionData(functionFragment: "baseAsset", values?: undefined): string;
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "description",
@@ -99,6 +102,7 @@ export interface GodModeUniswapV3PriceFeedInterface extends utils.Interface {
     functionFragment: "__godMode_setTwapInterval",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "baseAsset", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "description",
@@ -165,6 +169,8 @@ export interface GodModeUniswapV3PriceFeed extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
+    baseAsset(overrides?: CallOverrides): Promise<[string]>;
+
     decimals(overrides?: CallOverrides): Promise<[number]>;
 
     description(overrides?: CallOverrides): Promise<[string]>;
@@ -218,6 +224,8 @@ export interface GodModeUniswapV3PriceFeed extends BaseContract {
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
+  baseAsset(overrides?: CallOverrides): Promise<string>;
+
   decimals(overrides?: CallOverrides): Promise<number>;
 
   description(overrides?: CallOverrides): Promise<string>;
@@ -270,6 +278,8 @@ export interface GodModeUniswapV3PriceFeed extends BaseContract {
       newTwapInterval: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
+
+    baseAsset(overrides?: CallOverrides): Promise<string>;
 
     decimals(overrides?: CallOverrides): Promise<number>;
 
@@ -327,6 +337,8 @@ export interface GodModeUniswapV3PriceFeed extends BaseContract {
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
+    baseAsset(overrides?: CallOverrides): Promise<BigNumber>;
+
     decimals(overrides?: CallOverrides): Promise<BigNumber>;
 
     description(overrides?: CallOverrides): Promise<BigNumber>;
@@ -362,6 +374,8 @@ export interface GodModeUniswapV3PriceFeed extends BaseContract {
       newTwapInterval: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
+
+    baseAsset(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
