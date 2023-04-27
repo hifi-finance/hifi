@@ -136,7 +136,23 @@ contract UniswapV3PriceFeed is
         return (0, getPriceInternal(), 0, block.timestamp, 0);
     }
 
-    /// @dev Returns Chainlink-compatible price data from the Uniswap V3 pool.
+    /// @dev Returns Chainlink-compatible price data from the Uniswap V3 pool. If the reference asset is token1,
+    /// the formula used is:
+    ///
+    ///          sqrtPriceX96^2
+    /// price = ----------------
+    ///               Q192
+    ///
+    /// Otherwise, the formula is:
+    ///
+    ///               Q192
+    /// price = ----------------
+    ///          sqrtPriceX96^2
+    ///
+    /// @dev See OracleLibrary.sol in the Uniswap V3 periphery for more details:
+    /// https://github.com/Uniswap/v3-periphery/blob/v1.3.0/contracts/libraries/OracleLibrary.sol
+    ///
+    /// @return price The Chainlink-compatible price of the other asset in terms of the reference asset.
     function getPriceInternal() internal view returns (int256 price) {
         uint32[] memory secondsAgo = new uint32[](2);
         secondsAgo[0] = twapInterval;
@@ -147,10 +163,12 @@ contract UniswapV3PriceFeed is
         uint160 sqrtPriceX96 = TickMath.getSqrtRatioAtTick(tick);
 
         if (refAsset == token1) {
+            // Calculate the Chainlink-compatible price of token0 in terms of token1
             price = int256(
                 FullMath.mulDiv(sqrtPriceX96, sqrtPriceX96, (1 << 192) / 10**(8 + token0Decimals)) / 10**token1Decimals
             );
         } else {
+            // Calculate the Chainlink-compatible price of token1 in terms of token0
             price = int256(FullMath.mulDiv(sqrtPriceX96, sqrtPriceX96, (1 << 192) / 10**(8 + token0Decimals)));
             if (price == 0) return int256(10**(16 + token1Decimals));
             price = int256(10**(16 + token1Decimals)) / price;
