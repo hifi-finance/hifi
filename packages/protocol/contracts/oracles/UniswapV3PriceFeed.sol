@@ -65,7 +65,7 @@ contract UniswapV3PriceFeed is
         baseAsset = quoteAsset == token1 ? token0 : token1;
         pool = pool_;
 
-        // We need to check that the pool has enough initialized observations to be useful.
+        // Fetch the pool cardinality and most recent observation index.
         (, , uint16 index, uint16 cardinality, , , ) = pool.slot0();
 
         // Ensure the oldest pool observation is initialized and satisfies the TWAP interval.

@@ -1,4 +1,3 @@
-import { AddressZero } from "@ethersproject/constants";
 import { CARDINALITY, DEFAULT_TWAP_INTERVAL } from "@hifi/constants";
 import { UniswapV3PriceFeedErrors } from "@hifi/errors";
 import { expect } from "chai";
