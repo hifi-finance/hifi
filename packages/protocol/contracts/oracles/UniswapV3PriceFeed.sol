@@ -81,7 +81,7 @@ contract UniswapV3PriceFeed is
         if (!initialized) (oldestAvailableAge, , , ) = pool.observations(0);
 
         // Calculate the available TWAP interval.
-        uint256 availableTwapInterval = oldestAvailableAge - block.timestamp;
+        uint256 availableTwapInterval = block.timestamp - oldestAvailableAge;
 
         // Ensure the available TWAP interval and cardinality satisfy the TWAP criteria.
         if (availableTwapInterval < twapInterval_ || cardinality < REQUIRED_CARDINALITY) {

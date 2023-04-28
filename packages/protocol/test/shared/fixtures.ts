@@ -225,7 +225,7 @@ export async function unitFixtureUniswapV3PriceFeed(signers: Signer[]): Promise<
 
   const oldestIndex: number = (currentIndex + 1) % CARDINALITY;
   const { timestamp }: { timestamp: number } = await ethers.provider.getBlock("latest");
-  const oldestAvailableAge: number = DEFAULT_TWAP_INTERVAL + timestamp + 60;
+  const oldestAvailableAge: number = timestamp - DEFAULT_TWAP_INTERVAL;
   const initialized: boolean = true;
   await pool.mock.observations.withArgs(oldestIndex).returns(oldestAvailableAge, 0, 0, initialized);
 

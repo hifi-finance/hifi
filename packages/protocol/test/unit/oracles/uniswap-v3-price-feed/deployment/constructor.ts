@@ -77,7 +77,7 @@ export function shouldBehaveLikeConstructor(): void {
 
             const oldestIndex: number = (currentIndex + 1) % CARDINALITY;
             const { timestamp }: { timestamp: number } = await ethers.provider.getBlock("latest");
-            oldestAvailableAge = DEFAULT_TWAP_INTERVAL + timestamp - 1;
+            oldestAvailableAge = timestamp - DEFAULT_TWAP_INTERVAL + 60;
             latestObservationIsInitialized = false;
             await pool.mock.observations
               .withArgs(oldestIndex)
@@ -108,7 +108,7 @@ export function shouldBehaveLikeConstructor(): void {
 
               const oldestIndex: number = (currentIndex + 1) % (CARDINALITY - 1);
               const { timestamp }: { timestamp: number } = await ethers.provider.getBlock("latest");
-              const oldestAvailableAge: number = DEFAULT_TWAP_INTERVAL + timestamp + 60;
+              const oldestAvailableAge: number = timestamp - DEFAULT_TWAP_INTERVAL;
               const latestObservationIsInitialized: boolean = false;
               await pool.mock.observations
                 .withArgs(oldestIndex)
@@ -141,7 +141,7 @@ export function shouldBehaveLikeConstructor(): void {
 
             const oldestIndex: number = (currentIndex + 1) % CARDINALITY;
             const { timestamp }: { timestamp: number } = await ethers.provider.getBlock("latest");
-            const oldestAvailableAge: number = DEFAULT_TWAP_INTERVAL + timestamp - 1;
+            const oldestAvailableAge: number = timestamp - DEFAULT_TWAP_INTERVAL + 60;
             const latestObservationIsInitialized: boolean = true;
             await pool.mock.observations
               .withArgs(oldestIndex)
@@ -169,7 +169,7 @@ export function shouldBehaveLikeConstructor(): void {
 
             const oldestIndex: number = (currentIndex + 1) % (CARDINALITY - 1);
             const { timestamp }: { timestamp: number } = await ethers.provider.getBlock("latest");
-            const oldestAvailableAge: number = DEFAULT_TWAP_INTERVAL + timestamp + 60;
+            const oldestAvailableAge: number = timestamp - DEFAULT_TWAP_INTERVAL;
             const latestObservationIsInitialized: boolean = true;
             await pool.mock.observations
               .withArgs(oldestIndex)
