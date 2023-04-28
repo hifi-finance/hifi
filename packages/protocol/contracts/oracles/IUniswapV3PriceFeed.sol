@@ -17,9 +17,6 @@ interface IUniswapV3PriceFeed is IAggregatorV3 {
     /// @notice Emitted when the TWAP criteria is not satisfied.
     error IUniswapV3PriceFeed__TwapCriteriaNotSatisfied();
 
-    /// @notice Emitted when the pool is the zero address.
-    error IUniswapV3PriceFeed__ZeroAddressPool();
-
     /// CONSTANT FUNCTIONS ///
 
     /// @notice The base asset for price calculations.

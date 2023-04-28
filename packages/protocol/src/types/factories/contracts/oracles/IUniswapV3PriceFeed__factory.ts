@@ -29,11 +29,6 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "IUniswapV3PriceFeed__ZeroAddressPool",
-    type: "error",
-  },
-  {
-    inputs: [],
     name: "baseAsset",
     outputs: [
       {

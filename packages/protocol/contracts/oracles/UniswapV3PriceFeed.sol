@@ -54,10 +54,6 @@ contract UniswapV3PriceFeed is
     ) {
         quoteAsset = quoteAsset_;
 
-        // Ensure the provided pool address is not a zero address
-        if (address(pool_) == address(0)) {
-            revert IUniswapV3PriceFeed__ZeroAddressPool();
-        }
         token0 = IErc20(pool_.token0());
         token1 = IErc20(pool_.token1());
 
