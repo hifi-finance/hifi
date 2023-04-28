@@ -15,11 +15,11 @@ const _abi = [
     inputs: [
       {
         internalType: "contract IErc20",
-        name: "refAsset",
+        name: "quoteAsset",
         type: "address",
       },
     ],
-    name: "IUniswapV3PriceFeed__RefAssetNotInPool",
+    name: "IUniswapV3PriceFeed__QuoteAssetNotInPool",
     type: "error",
   },
   {
@@ -158,7 +158,7 @@ const _abi = [
   },
   {
     inputs: [],
-    name: "refAsset",
+    name: "quoteAsset",
     outputs: [
       {
         internalType: "contract IErc20",

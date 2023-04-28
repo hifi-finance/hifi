@@ -23,7 +23,7 @@ contract UniswapV3PriceFeed is
     IUniswapV3Pool public immutable override pool;
 
     /// @inheritdoc IUniswapV3PriceFeed
-    IErc20 public immutable override refAsset;
+    IErc20 public immutable override quoteAsset;
 
     /// @inheritdoc IUniswapV3PriceFeed
     uint32 public immutable override twapInterval;
@@ -49,10 +49,10 @@ contract UniswapV3PriceFeed is
 
     constructor(
         IUniswapV3Pool pool_,
-        IErc20 refAsset_,
+        IErc20 quoteAsset_,
         uint32 twapInterval_
     ) {
-        refAsset = refAsset_;
+        quoteAsset = quoteAsset_;
 
         // Ensure the provided pool address is not a zero address
         if (address(pool_) == address(0)) {
@@ -61,12 +61,12 @@ contract UniswapV3PriceFeed is
         token0 = IErc20(pool_.token0());
         token1 = IErc20(pool_.token1());
 
-        // Ensure the reference asset is in the provided pool
-        if (refAsset != token0 && refAsset != token1) {
-            revert IUniswapV3PriceFeed__RefAssetNotInPool(refAsset);
+        // Ensure the quote asset is in the provided pool
+        if (quoteAsset != token0 && quoteAsset != token1) {
+            revert IUniswapV3PriceFeed__QuoteAssetNotInPool(quoteAsset);
         }
 
-        baseAsset = refAsset == token1 ? token0 : token1;
+        baseAsset = quoteAsset == token1 ? token0 : token1;
         pool = pool_;
 
         // We need to check that the pool has enough initialized observations to be useful.
@@ -100,7 +100,7 @@ contract UniswapV3PriceFeed is
 
     /// @inheritdoc IAggregatorV3
     function description() external view override returns (string memory) {
-        return string.concat(baseAsset.symbol(), " / ", refAsset.symbol());
+        return string.concat(baseAsset.symbol(), " / ", quoteAsset.symbol());
     }
 
     /// @inheritdoc IAggregatorV3
@@ -140,7 +140,7 @@ contract UniswapV3PriceFeed is
         return (0, getPriceInternal(), 0, block.timestamp, 0);
     }
 
-    /// @dev Returns Chainlink-compatible price data from the Uniswap V3 pool. If the reference asset is token1,
+    /// @dev Returns Chainlink-compatible price data from the Uniswap V3 pool. If the quote asset is token1,
     /// the formula used is:
     ///
     ///          sqrtPriceX96^2
@@ -156,7 +156,7 @@ contract UniswapV3PriceFeed is
     /// @dev See OracleLibrary.sol in the Uniswap V3 periphery for more details:
     /// https://github.com/Uniswap/v3-periphery/blob/v1.3.0/contracts/libraries/OracleLibrary.sol
     ///
-    /// @return price The Chainlink-compatible price of the other asset in terms of the reference asset.
+    /// @return price The Chainlink-compatible price of the other asset in terms of the quote asset.
     function getPriceInternal() internal view returns (int256 price) {
         uint32[] memory secondsAgo = new uint32[](2);
         secondsAgo[0] = twapInterval;
@@ -166,7 +166,7 @@ contract UniswapV3PriceFeed is
         int24 tick = int24((tickCumulatives[1] - tickCumulatives[0]) / int32(twapInterval));
         uint160 sqrtPriceX96 = TickMath.getSqrtRatioAtTick(tick);
 
-        if (refAsset == token1) {
+        if (quoteAsset == token1) {
             // Calculate the Chainlink-compatible price of token0 in terms of token1
             price = int256(
                 FullMath.mulDiv(sqrtPriceX96, sqrtPriceX96, (1 << 192) / 10**(8 + token0Decimals)) / 10**token1Decimals

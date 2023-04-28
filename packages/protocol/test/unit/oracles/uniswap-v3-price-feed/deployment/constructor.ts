@@ -37,7 +37,7 @@ export function shouldBehaveLikeConstructor(): void {
   });
 
   context("when provided pool address is not zero", function () {
-    context("when the reference asset is not in the provided pool", function () {
+    context("when the quote asset is not in the provided pool", function () {
       let wbtc: MockContract;
 
       beforeEach(async function () {
@@ -55,12 +55,12 @@ export function shouldBehaveLikeConstructor(): void {
         );
 
         await expect(deployUniswapV3PriceFeedPromise).to.be.revertedWith(
-          UniswapV3PriceFeedErrors.REF_ASSET_NOT_IN_POOL,
+          UniswapV3PriceFeedErrors.QUOTE_ASSET_NOT_IN_POOL,
         );
       });
     });
 
-    context("when the reference asset is in the provided pool", function () {
+    context("when the quote asset is in the provided pool", function () {
       let oldestAvailableAge: number;
       let latestObservationIsInitialized: boolean;
 

@@ -30,7 +30,7 @@ export interface UniswapV3PriceFeedInterface extends utils.Interface {
     "getRoundData(uint80)": FunctionFragment;
     "latestRoundData()": FunctionFragment;
     "pool()": FunctionFragment;
-    "refAsset()": FunctionFragment;
+    "quoteAsset()": FunctionFragment;
     "twapInterval()": FunctionFragment;
     "version()": FunctionFragment;
   };
@@ -43,7 +43,7 @@ export interface UniswapV3PriceFeedInterface extends utils.Interface {
       | "getRoundData"
       | "latestRoundData"
       | "pool"
-      | "refAsset"
+      | "quoteAsset"
       | "twapInterval"
       | "version"
   ): FunctionFragment;
@@ -63,7 +63,10 @@ export interface UniswapV3PriceFeedInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "pool", values?: undefined): string;
-  encodeFunctionData(functionFragment: "refAsset", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "quoteAsset",
+    values?: undefined
+  ): string;
   encodeFunctionData(
     functionFragment: "twapInterval",
     values?: undefined
@@ -85,7 +88,7 @@ export interface UniswapV3PriceFeedInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "pool", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "refAsset", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "quoteAsset", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "twapInterval",
     data: BytesLike
@@ -155,7 +158,7 @@ export interface UniswapV3PriceFeed extends BaseContract {
 
     pool(overrides?: CallOverrides): Promise<[string]>;
 
-    refAsset(overrides?: CallOverrides): Promise<[string]>;
+    quoteAsset(overrides?: CallOverrides): Promise<[string]>;
 
     twapInterval(overrides?: CallOverrides): Promise<[number]>;
 
@@ -195,7 +198,7 @@ export interface UniswapV3PriceFeed extends BaseContract {
 
   pool(overrides?: CallOverrides): Promise<string>;
 
-  refAsset(overrides?: CallOverrides): Promise<string>;
+  quoteAsset(overrides?: CallOverrides): Promise<string>;
 
   twapInterval(overrides?: CallOverrides): Promise<number>;
 
@@ -235,7 +238,7 @@ export interface UniswapV3PriceFeed extends BaseContract {
 
     pool(overrides?: CallOverrides): Promise<string>;
 
-    refAsset(overrides?: CallOverrides): Promise<string>;
+    quoteAsset(overrides?: CallOverrides): Promise<string>;
 
     twapInterval(overrides?: CallOverrides): Promise<number>;
 
@@ -260,7 +263,7 @@ export interface UniswapV3PriceFeed extends BaseContract {
 
     pool(overrides?: CallOverrides): Promise<BigNumber>;
 
-    refAsset(overrides?: CallOverrides): Promise<BigNumber>;
+    quoteAsset(overrides?: CallOverrides): Promise<BigNumber>;
 
     twapInterval(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -283,7 +286,7 @@ export interface UniswapV3PriceFeed extends BaseContract {
 
     pool(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
-    refAsset(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    quoteAsset(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     twapInterval(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

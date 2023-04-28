@@ -5,7 +5,7 @@ import { shouldBehaveLikeDescription } from "./view/description";
 import { shouldBehaveLikeGetRoundData } from "./view/getRoundData";
 import { shouldBehaveLikeLatestRoundData } from "./view/latestRoundData";
 import { shouldBehaveLikePool } from "./view/pool";
-import { shouldBehaveLikeRefAsset } from "./view/refAsset";
+import { shouldBehaveLikeQuoteAsset } from "./view/quoteAsset";
 import { shouldBehaveLikeTwapInterval } from "./view/twapInterval";
 import { shouldBehaveLikeVersion } from "./view/version";
 
@@ -29,8 +29,8 @@ export function shouldBehaveLikeUniswapV3PriceFeed(): void {
       shouldBehaveLikePool();
     });
 
-    describe("refAsset", function () {
-      shouldBehaveLikeRefAsset();
+    describe("quoteAsset", function () {
+      shouldBehaveLikeQuoteAsset();
     });
 
     describe("twapInterval", function () {

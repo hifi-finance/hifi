@@ -16,10 +16,10 @@ contract GodModeUniswapV3PriceFeed is IUniswapV3PriceFeed {
 
     constructor(
         IUniswapV3Pool pool_,
-        IErc20 refAsset_,
+        IErc20 quoteAsset_,
         uint32 twapInterval_
     ) {
-        instance = new UniswapV3PriceFeed(pool_, refAsset_, twapInterval_);
+        instance = new UniswapV3PriceFeed(pool_, quoteAsset_, twapInterval_);
     }
 
     function baseAsset() external view returns (IErc20) {
@@ -70,8 +70,8 @@ contract GodModeUniswapV3PriceFeed is IUniswapV3PriceFeed {
         return instance.pool();
     }
 
-    function refAsset() external view returns (IErc20) {
-        return instance.refAsset();
+    function quoteAsset() external view returns (IErc20) {
+        return instance.quoteAsset();
     }
 
     function twapInterval() external view returns (uint32) {
@@ -90,14 +90,14 @@ contract GodModeUniswapV3PriceFeed is IUniswapV3PriceFeed {
     }
 
     function __godMode_setPool(IUniswapV3Pool newPool) external {
-        instance = new UniswapV3PriceFeed(newPool, instance.refAsset(), instance.twapInterval());
+        instance = new UniswapV3PriceFeed(newPool, instance.quoteAsset(), instance.twapInterval());
     }
 
-    function __godMode_setRefAsset(IErc20 newRefAsset) external {
-        instance = new UniswapV3PriceFeed(instance.pool(), newRefAsset, instance.twapInterval());
+    function __godMode_setQuoteAsset(IErc20 newQuoteAsset) external {
+        instance = new UniswapV3PriceFeed(instance.pool(), newQuoteAsset, instance.twapInterval());
     }
 
     function __godMode_setTwapInterval(uint32 newTwapInterval) external {
-        instance = new UniswapV3PriceFeed(instance.pool(), instance.refAsset(), newTwapInterval);
+        instance = new UniswapV3PriceFeed(instance.pool(), instance.quoteAsset(), newTwapInterval);
     }
 }

@@ -123,12 +123,17 @@ export async function deployOwnableUpgradeable(): Promise<GodModeOwnableUpgradea
 export async function deployUniswapV3PriceFeed(
   deployer: Signer,
   poolAddress: string,
-  refAssetAddress: string,
+  quoteAssetAddress: string,
   twapInterval: number,
 ): Promise<GodModeUniswapV3PriceFeed> {
   const uniswapV3PriceFeedArtifact: Artifact = await artifacts.readArtifact("GodModeUniswapV3PriceFeed");
   const priceFeed: GodModeUniswapV3PriceFeed = <GodModeUniswapV3PriceFeed>(
-    await deployContract(deployer, uniswapV3PriceFeedArtifact, [poolAddress, refAssetAddress, twapInterval], overrides)
+    await deployContract(
+      deployer,
+      uniswapV3PriceFeedArtifact,
+      [poolAddress, quoteAssetAddress, twapInterval],
+      overrides,
+    )
   );
   return priceFeed;
 }

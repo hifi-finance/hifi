@@ -9,7 +9,7 @@ import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_UNISWAP_V3_
 task(TASK_DEPLOY_CONTRACT_UNISWAP_V3_PRICE_FEED)
   // Contract arguments
   .addParam("pool", "Address of the Uniswap V3 pool")
-  .addParam("refAsset", "Address of the reference asset for price calculation")
+  .addParam("quoteAsset", "Address of the quote asset for price calculation")
   .addParam("twapInterval", "The time interval for TWAP calculation")
   // Developer settings
   .addOptionalParam("confirmations", "How many block confirmations to wait for", 2, types.int)
@@ -19,7 +19,7 @@ task(TASK_DEPLOY_CONTRACT_UNISWAP_V3_PRICE_FEED)
     const signers: SignerWithAddress[] = await ethers.getSigners();
     const uniswapV3PriceFeedFactory: UniswapV3PriceFeed__factory = new UniswapV3PriceFeed__factory(signers[0]);
     const uniswapV3PriceFeed: UniswapV3PriceFeed = <UniswapV3PriceFeed>(
-      await uniswapV3PriceFeedFactory.deploy(taskArgs.pool, taskArgs.refAsset, taskArgs.twapInterval)
+      await uniswapV3PriceFeedFactory.deploy(taskArgs.pool, taskArgs.quoteAsset, taskArgs.twapInterval)
     );
 
     await run(SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, {
@@ -35,7 +35,7 @@ task(TASK_DEPLOY_CONTRACT_UNISWAP_V3_PRICE_FEED)
       try {
         await run("verify:verify", {
           address: uniswapV3PriceFeed.address,
-          constructorArguments: [taskArgs.pool, taskArgs.refAsset, taskArgs.twapInterval],
+          constructorArguments: [taskArgs.pool, taskArgs.quoteAsset, taskArgs.twapInterval],
         });
       } catch (error) {
         console.error("Error while verifying contract:", error);
