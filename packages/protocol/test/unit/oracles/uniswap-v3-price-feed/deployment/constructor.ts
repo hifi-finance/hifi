@@ -1,4 +1,4 @@
-import { CARDINALITY, DEFAULT_TWAP_INTERVAL } from "@hifi/constants";
+import { DEFAULT_CARDINALITY, DEFAULT_TWAP_INTERVAL } from "@hifi/constants";
 import { UniswapV3PriceFeedErrors } from "@hifi/errors";
 import { expect } from "chai";
 import { MockContract } from "ethereum-waffle";
@@ -58,9 +58,9 @@ export function shouldBehaveLikeConstructor(): void {
       context("when the pool does not have enough TWAP available", function () {
         beforeEach(async function () {
           const currentIndex: number = 0;
-          await pool.mock.slot0.returns(0, 0, currentIndex, CARDINALITY, 0, 0, 0);
+          await pool.mock.slot0.returns(0, 0, currentIndex, DEFAULT_CARDINALITY, 0, 0, 0);
 
-          const oldestIndex: number = (currentIndex + 1) % CARDINALITY;
+          const oldestIndex: number = (currentIndex + 1) % DEFAULT_CARDINALITY;
           const { timestamp }: { timestamp: number } = await ethers.provider.getBlock("latest");
           oldestAvailableAge = timestamp - DEFAULT_TWAP_INTERVAL + 60;
           latestObservationIsInitialized = false;
@@ -89,9 +89,9 @@ export function shouldBehaveLikeConstructor(): void {
         context("when the pool does not have enough cardinality", function () {
           beforeEach(async function () {
             const currentIndex: number = 0;
-            await pool.mock.slot0.returns(0, 0, currentIndex, CARDINALITY - 1, 0, 0, 0);
+            await pool.mock.slot0.returns(0, 0, currentIndex, DEFAULT_CARDINALITY - 1, 0, 0, 0);
 
-            const oldestIndex: number = (currentIndex + 1) % (CARDINALITY - 1);
+            const oldestIndex: number = (currentIndex + 1) % (DEFAULT_CARDINALITY - 1);
             const { timestamp }: { timestamp: number } = await ethers.provider.getBlock("latest");
             const oldestAvailableAge: number = timestamp - DEFAULT_TWAP_INTERVAL;
             const latestObservationIsInitialized: boolean = false;
@@ -122,9 +122,9 @@ export function shouldBehaveLikeConstructor(): void {
       context("when the pool does not have enough TWAP available", function () {
         beforeEach(async function () {
           const currentIndex: number = 0;
-          await pool.mock.slot0.returns(0, 0, currentIndex, CARDINALITY, 0, 0, 0);
+          await pool.mock.slot0.returns(0, 0, currentIndex, DEFAULT_CARDINALITY, 0, 0, 0);
 
-          const oldestIndex: number = (currentIndex + 1) % CARDINALITY;
+          const oldestIndex: number = (currentIndex + 1) % DEFAULT_CARDINALITY;
           const { timestamp }: { timestamp: number } = await ethers.provider.getBlock("latest");
           const oldestAvailableAge: number = timestamp - DEFAULT_TWAP_INTERVAL + 60;
           const latestObservationIsInitialized: boolean = true;
@@ -150,9 +150,9 @@ export function shouldBehaveLikeConstructor(): void {
       context("when the pool does not have enough cardinality", function () {
         beforeEach(async function () {
           const currentIndex: number = 0;
-          await pool.mock.slot0.returns(0, 0, currentIndex, CARDINALITY - 1, 0, 0, 0);
+          await pool.mock.slot0.returns(0, 0, currentIndex, DEFAULT_CARDINALITY - 1, 0, 0, 0);
 
-          const oldestIndex: number = (currentIndex + 1) % (CARDINALITY - 1);
+          const oldestIndex: number = (currentIndex + 1) % (DEFAULT_CARDINALITY - 1);
           const { timestamp }: { timestamp: number } = await ethers.provider.getBlock("latest");
           const oldestAvailableAge: number = timestamp - DEFAULT_TWAP_INTERVAL;
           const latestObservationIsInitialized: boolean = true;

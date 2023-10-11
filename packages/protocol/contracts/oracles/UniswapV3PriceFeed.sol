@@ -42,11 +42,12 @@ contract UniswapV3PriceFeed is
     /// @dev The ERC20 decimals of "token1".
     uint8 internal immutable token1Decimals;
 
-    // The cardinality required to satisfy the TWAP criteria.
-    uint16 internal constant REQUIRED_CARDINALITY = 65535;
-
     /// CONSTRUCTOR ///
 
+    /// @notice Instantiates the UniswapV3PriceFeed contract.
+    /// @param pool_ The address of the Uniswap V3 pool.
+    /// @param quoteAsset_ The address of the quote asset for price calculation.
+    /// @param twapInterval_ The time window for the TWAP calculation.
     constructor(
         IUniswapV3Pool pool_,
         IErc20 quoteAsset_,
@@ -79,8 +80,11 @@ contract UniswapV3PriceFeed is
         // Calculate the available TWAP interval.
         uint256 availableTwapInterval = block.timestamp - oldestAvailableAge;
 
+        // Calculate the minimum cardinality, assuming 12.5 second block times.
+        uint16 minimumCardinality = uint16((twapInterval_ * 10) / 125);
+
         // Ensure the available TWAP interval and cardinality satisfy the TWAP criteria.
-        if (availableTwapInterval < twapInterval_ || cardinality < REQUIRED_CARDINALITY) {
+        if (availableTwapInterval < twapInterval_ || cardinality < minimumCardinality) {
             revert IUniswapV3PriceFeed__TwapCriteriaNotSatisfied();
         }
 
