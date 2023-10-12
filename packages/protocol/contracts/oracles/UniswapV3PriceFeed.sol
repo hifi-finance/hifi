@@ -75,7 +75,7 @@ contract UniswapV3PriceFeed is
         pool = pool_;
 
         // Fetch the pool cardinality and most recent observation index.
-        (, , uint16 index, uint16 cardinality, , , ) = pool.slot0();
+        (, , uint16 index, uint16 cardinality, uint16 cardinalityNext, , ) = pool.slot0();
 
         // Ensure the oldest pool observation is initialized and satisfies the TWAP interval.
         // The next observation at index + 1 is the oldest observation in the ring buffer.
@@ -92,7 +92,7 @@ contract UniswapV3PriceFeed is
         uint16 minimumCardinality = uint16((twapInterval_ * 10) / 125);
 
         // Ensure the available TWAP interval and cardinality satisfy the TWAP criteria.
-        if (availableTwapInterval < twapInterval_ || cardinality < minimumCardinality) {
+        if (availableTwapInterval < twapInterval_ || cardinalityNext < minimumCardinality) {
             revert IUniswapV3PriceFeed__TwapCriteriaNotSatisfied();
         }
 

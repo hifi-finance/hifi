@@ -221,7 +221,7 @@ export async function unitFixtureUniswapV3PriceFeed(signers: Signer[]): Promise<
   await pool.mock.token1.returns(wbtc.address);
 
   const currentIndex: number = 0;
-  await pool.mock.slot0.returns(0, 0, currentIndex, DEFAULT_CARDINALITY, 0, 0, 0);
+  await pool.mock.slot0.returns(0, 0, currentIndex, DEFAULT_CARDINALITY, DEFAULT_CARDINALITY, 0, 0);
 
   const oldestIndex: number = (currentIndex + 1) % DEFAULT_CARDINALITY;
   const { timestamp }: { timestamp: number } = await ethers.provider.getBlock("latest");
