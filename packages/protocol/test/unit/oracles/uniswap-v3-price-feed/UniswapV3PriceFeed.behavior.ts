@@ -1,9 +1,11 @@
 import { shouldBehaveLikeConstructor } from "./deployment/constructor";
+import { shouldBehaveLikeSetMaxPrice } from "./effects/setMaxPrice";
 import { shouldBehaveLikeBaseAsset } from "./view/baseAsset";
 import { shouldBehaveLikeDecimals } from "./view/decimals";
 import { shouldBehaveLikeDescription } from "./view/description";
 import { shouldBehaveLikeGetRoundData } from "./view/getRoundData";
 import { shouldBehaveLikeLatestRoundData } from "./view/latestRoundData";
+import { shouldBehaveLikeMaxPrice } from "./view/maxPrice";
 import { shouldBehaveLikePool } from "./view/pool";
 import { shouldBehaveLikeQuoteAsset } from "./view/quoteAsset";
 import { shouldBehaveLikeTwapInterval } from "./view/twapInterval";
@@ -23,6 +25,10 @@ export function shouldBehaveLikeUniswapV3PriceFeed(): void {
 
     describe("description", function () {
       shouldBehaveLikeDescription();
+    });
+
+    describe("maxPrice", function () {
+      shouldBehaveLikeMaxPrice();
     });
 
     describe("pool", function () {
@@ -51,6 +57,12 @@ export function shouldBehaveLikeUniswapV3PriceFeed(): void {
 
     describe("latestRoundData", function () {
       shouldBehaveLikeLatestRoundData();
+    });
+  });
+
+  describe("Effects Functions", function () {
+    describe("setMaxPrice", function () {
+      shouldBehaveLikeSetMaxPrice();
     });
   });
 }

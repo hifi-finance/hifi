@@ -12,6 +12,11 @@ import { Contract, Signer, utils } from "ethers";
 
 const _abi = [
   {
+    inputs: [],
+    name: "IUniswapV3PriceFeed__MaxPriceLessThanOrEqualToZero",
+    type: "error",
+  },
+  {
     inputs: [
       {
         internalType: "contract IErc20",
@@ -140,6 +145,19 @@ const _abi = [
   },
   {
     inputs: [],
+    name: "maxPrice",
+    outputs: [
+      {
+        internalType: "int256",
+        name: "",
+        type: "int256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
     name: "pool",
     outputs: [
       {
@@ -162,6 +180,19 @@ const _abi = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "int256",
+        name: "maxPrice_",
+        type: "int256",
+      },
+    ],
+    name: "setMaxPrice",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {

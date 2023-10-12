@@ -26,6 +26,7 @@ import type {
 
 export interface GodModeUniswapV3PriceFeedInterface extends utils.Interface {
   functions: {
+    "__godMode_setMaxPrice(int256)": FunctionFragment;
     "__godMode_setPool(address)": FunctionFragment;
     "__godMode_setQuoteAsset(address)": FunctionFragment;
     "__godMode_setTwapInterval(uint32)": FunctionFragment;
@@ -34,14 +35,17 @@ export interface GodModeUniswapV3PriceFeedInterface extends utils.Interface {
     "description()": FunctionFragment;
     "getRoundData(uint80)": FunctionFragment;
     "latestRoundData()": FunctionFragment;
+    "maxPrice()": FunctionFragment;
     "pool()": FunctionFragment;
     "quoteAsset()": FunctionFragment;
+    "setMaxPrice(int256)": FunctionFragment;
     "twapInterval()": FunctionFragment;
     "version()": FunctionFragment;
   };
 
   getFunction(
     nameOrSignatureOrTopic:
+      | "__godMode_setMaxPrice"
       | "__godMode_setPool"
       | "__godMode_setQuoteAsset"
       | "__godMode_setTwapInterval"
@@ -50,12 +54,18 @@ export interface GodModeUniswapV3PriceFeedInterface extends utils.Interface {
       | "description"
       | "getRoundData"
       | "latestRoundData"
+      | "maxPrice"
       | "pool"
       | "quoteAsset"
+      | "setMaxPrice"
       | "twapInterval"
       | "version"
   ): FunctionFragment;
 
+  encodeFunctionData(
+    functionFragment: "__godMode_setMaxPrice",
+    values: [BigNumberish]
+  ): string;
   encodeFunctionData(
     functionFragment: "__godMode_setPool",
     values: [string]
@@ -82,10 +92,15 @@ export interface GodModeUniswapV3PriceFeedInterface extends utils.Interface {
     functionFragment: "latestRoundData",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "maxPrice", values?: undefined): string;
   encodeFunctionData(functionFragment: "pool", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "quoteAsset",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setMaxPrice",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "twapInterval",
@@ -93,6 +108,10 @@ export interface GodModeUniswapV3PriceFeedInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "version", values?: undefined): string;
 
+  decodeFunctionResult(
+    functionFragment: "__godMode_setMaxPrice",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "__godMode_setPool",
     data: BytesLike
@@ -119,8 +138,13 @@ export interface GodModeUniswapV3PriceFeedInterface extends utils.Interface {
     functionFragment: "latestRoundData",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "maxPrice", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "pool", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "quoteAsset", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setMaxPrice",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "twapInterval",
     data: BytesLike
@@ -157,6 +181,11 @@ export interface GodModeUniswapV3PriceFeed extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    __godMode_setMaxPrice(
+      newMaxPrice: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     __godMode_setPool(
       newPool: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -203,14 +232,26 @@ export interface GodModeUniswapV3PriceFeed extends BaseContract {
       }
     >;
 
+    maxPrice(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     pool(overrides?: CallOverrides): Promise<[string]>;
 
     quoteAsset(overrides?: CallOverrides): Promise<[string]>;
+
+    setMaxPrice(
+      maxPrice_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     twapInterval(overrides?: CallOverrides): Promise<[number]>;
 
     version(overrides?: CallOverrides): Promise<[BigNumber]>;
   };
+
+  __godMode_setMaxPrice(
+    newMaxPrice: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   __godMode_setPool(
     newPool: string,
@@ -258,15 +299,27 @@ export interface GodModeUniswapV3PriceFeed extends BaseContract {
     }
   >;
 
+  maxPrice(overrides?: CallOverrides): Promise<BigNumber>;
+
   pool(overrides?: CallOverrides): Promise<string>;
 
   quoteAsset(overrides?: CallOverrides): Promise<string>;
+
+  setMaxPrice(
+    maxPrice_: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   twapInterval(overrides?: CallOverrides): Promise<number>;
 
   version(overrides?: CallOverrides): Promise<BigNumber>;
 
   callStatic: {
+    __godMode_setMaxPrice(
+      newMaxPrice: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     __godMode_setPool(
       newPool: string,
       overrides?: CallOverrides
@@ -313,9 +366,16 @@ export interface GodModeUniswapV3PriceFeed extends BaseContract {
       }
     >;
 
+    maxPrice(overrides?: CallOverrides): Promise<BigNumber>;
+
     pool(overrides?: CallOverrides): Promise<string>;
 
     quoteAsset(overrides?: CallOverrides): Promise<string>;
+
+    setMaxPrice(
+      maxPrice_: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     twapInterval(overrides?: CallOverrides): Promise<number>;
 
@@ -325,6 +385,11 @@ export interface GodModeUniswapV3PriceFeed extends BaseContract {
   filters: {};
 
   estimateGas: {
+    __godMode_setMaxPrice(
+      newMaxPrice: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     __godMode_setPool(
       newPool: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -353,9 +418,16 @@ export interface GodModeUniswapV3PriceFeed extends BaseContract {
 
     latestRoundData(overrides?: CallOverrides): Promise<BigNumber>;
 
+    maxPrice(overrides?: CallOverrides): Promise<BigNumber>;
+
     pool(overrides?: CallOverrides): Promise<BigNumber>;
 
     quoteAsset(overrides?: CallOverrides): Promise<BigNumber>;
+
+    setMaxPrice(
+      maxPrice_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     twapInterval(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -363,6 +435,11 @@ export interface GodModeUniswapV3PriceFeed extends BaseContract {
   };
 
   populateTransaction: {
+    __godMode_setMaxPrice(
+      newMaxPrice: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     __godMode_setPool(
       newPool: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -391,9 +468,16 @@ export interface GodModeUniswapV3PriceFeed extends BaseContract {
 
     latestRoundData(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    maxPrice(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     pool(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     quoteAsset(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    setMaxPrice(
+      maxPrice_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     twapInterval(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

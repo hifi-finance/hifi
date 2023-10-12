@@ -9,7 +9,11 @@ import type {
   TypedListener,
   OnEvent,
 } from "../../common";
-import type { FunctionFragment, Result } from "@ethersproject/abi";
+import type {
+  FunctionFragment,
+  Result,
+  EventFragment,
+} from "@ethersproject/abi";
 import type { Listener, Provider } from "@ethersproject/providers";
 import type {
   BaseContract,
@@ -17,6 +21,8 @@ import type {
   BigNumberish,
   BytesLike,
   CallOverrides,
+  ContractTransaction,
+  Overrides,
   PopulatedTransaction,
   Signer,
   utils,
@@ -24,30 +30,48 @@ import type {
 
 export interface UniswapV3PriceFeedInterface extends utils.Interface {
   functions: {
+    "_renounceOwnership()": FunctionFragment;
+    "_transferOwnership(address)": FunctionFragment;
     "baseAsset()": FunctionFragment;
     "decimals()": FunctionFragment;
     "description()": FunctionFragment;
     "getRoundData(uint80)": FunctionFragment;
     "latestRoundData()": FunctionFragment;
+    "maxPrice()": FunctionFragment;
+    "owner()": FunctionFragment;
     "pool()": FunctionFragment;
     "quoteAsset()": FunctionFragment;
+    "setMaxPrice(int256)": FunctionFragment;
     "twapInterval()": FunctionFragment;
     "version()": FunctionFragment;
   };
 
   getFunction(
     nameOrSignatureOrTopic:
+      | "_renounceOwnership"
+      | "_transferOwnership"
       | "baseAsset"
       | "decimals"
       | "description"
       | "getRoundData"
       | "latestRoundData"
+      | "maxPrice"
+      | "owner"
       | "pool"
       | "quoteAsset"
+      | "setMaxPrice"
       | "twapInterval"
       | "version"
   ): FunctionFragment;
 
+  encodeFunctionData(
+    functionFragment: "_renounceOwnership",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "_transferOwnership",
+    values: [string]
+  ): string;
   encodeFunctionData(functionFragment: "baseAsset", values?: undefined): string;
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
   encodeFunctionData(
@@ -62,10 +86,16 @@ export interface UniswapV3PriceFeedInterface extends utils.Interface {
     functionFragment: "latestRoundData",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "maxPrice", values?: undefined): string;
+  encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(functionFragment: "pool", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "quoteAsset",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setMaxPrice",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "twapInterval",
@@ -73,6 +103,14 @@ export interface UniswapV3PriceFeedInterface extends utils.Interface {
   ): string;
   encodeFunctionData(functionFragment: "version", values?: undefined): string;
 
+  decodeFunctionResult(
+    functionFragment: "_renounceOwnership",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "_transferOwnership",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "baseAsset", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "decimals", data: BytesLike): Result;
   decodeFunctionResult(
@@ -87,16 +125,38 @@ export interface UniswapV3PriceFeedInterface extends utils.Interface {
     functionFragment: "latestRoundData",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "maxPrice", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "pool", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "quoteAsset", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setMaxPrice",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "twapInterval",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "version", data: BytesLike): Result;
 
-  events: {};
+  events: {
+    "TransferOwnership(address,address)": EventFragment;
+  };
+
+  getEvent(nameOrSignatureOrTopic: "TransferOwnership"): EventFragment;
 }
+
+export interface TransferOwnershipEventObject {
+  oldOwner: string;
+  newOwner: string;
+}
+export type TransferOwnershipEvent = TypedEvent<
+  [string, string],
+  TransferOwnershipEventObject
+>;
+
+export type TransferOwnershipEventFilter =
+  TypedEventFilter<TransferOwnershipEvent>;
 
 export interface UniswapV3PriceFeed extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -125,6 +185,15 @@ export interface UniswapV3PriceFeed extends BaseContract {
   removeListener: OnEvent<this>;
 
   functions: {
+    _renounceOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    _transferOwnership(
+      newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
     baseAsset(overrides?: CallOverrides): Promise<[string]>;
 
     decimals(overrides?: CallOverrides): Promise<[number]>;
@@ -156,14 +225,32 @@ export interface UniswapV3PriceFeed extends BaseContract {
       }
     >;
 
+    maxPrice(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    owner(overrides?: CallOverrides): Promise<[string]>;
+
     pool(overrides?: CallOverrides): Promise<[string]>;
 
     quoteAsset(overrides?: CallOverrides): Promise<[string]>;
+
+    setMaxPrice(
+      maxPrice_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     twapInterval(overrides?: CallOverrides): Promise<[number]>;
 
     version(overrides?: CallOverrides): Promise<[BigNumber]>;
   };
+
+  _renounceOwnership(
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  _transferOwnership(
+    newOwner: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   baseAsset(overrides?: CallOverrides): Promise<string>;
 
@@ -196,15 +283,31 @@ export interface UniswapV3PriceFeed extends BaseContract {
     }
   >;
 
+  maxPrice(overrides?: CallOverrides): Promise<BigNumber>;
+
+  owner(overrides?: CallOverrides): Promise<string>;
+
   pool(overrides?: CallOverrides): Promise<string>;
 
   quoteAsset(overrides?: CallOverrides): Promise<string>;
+
+  setMaxPrice(
+    maxPrice_: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   twapInterval(overrides?: CallOverrides): Promise<number>;
 
   version(overrides?: CallOverrides): Promise<BigNumber>;
 
   callStatic: {
+    _renounceOwnership(overrides?: CallOverrides): Promise<void>;
+
+    _transferOwnership(
+      newOwner: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
     baseAsset(overrides?: CallOverrides): Promise<string>;
 
     decimals(overrides?: CallOverrides): Promise<number>;
@@ -236,18 +339,45 @@ export interface UniswapV3PriceFeed extends BaseContract {
       }
     >;
 
+    maxPrice(overrides?: CallOverrides): Promise<BigNumber>;
+
+    owner(overrides?: CallOverrides): Promise<string>;
+
     pool(overrides?: CallOverrides): Promise<string>;
 
     quoteAsset(overrides?: CallOverrides): Promise<string>;
+
+    setMaxPrice(
+      maxPrice_: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     twapInterval(overrides?: CallOverrides): Promise<number>;
 
     version(overrides?: CallOverrides): Promise<BigNumber>;
   };
 
-  filters: {};
+  filters: {
+    "TransferOwnership(address,address)"(
+      oldOwner?: string | null,
+      newOwner?: string | null
+    ): TransferOwnershipEventFilter;
+    TransferOwnership(
+      oldOwner?: string | null,
+      newOwner?: string | null
+    ): TransferOwnershipEventFilter;
+  };
 
   estimateGas: {
+    _renounceOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    _transferOwnership(
+      newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
     baseAsset(overrides?: CallOverrides): Promise<BigNumber>;
 
     decimals(overrides?: CallOverrides): Promise<BigNumber>;
@@ -261,9 +391,18 @@ export interface UniswapV3PriceFeed extends BaseContract {
 
     latestRoundData(overrides?: CallOverrides): Promise<BigNumber>;
 
+    maxPrice(overrides?: CallOverrides): Promise<BigNumber>;
+
+    owner(overrides?: CallOverrides): Promise<BigNumber>;
+
     pool(overrides?: CallOverrides): Promise<BigNumber>;
 
     quoteAsset(overrides?: CallOverrides): Promise<BigNumber>;
+
+    setMaxPrice(
+      maxPrice_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     twapInterval(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -271,6 +410,15 @@ export interface UniswapV3PriceFeed extends BaseContract {
   };
 
   populateTransaction: {
+    _renounceOwnership(
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    _transferOwnership(
+      newOwner: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
     baseAsset(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
@@ -284,9 +432,18 @@ export interface UniswapV3PriceFeed extends BaseContract {
 
     latestRoundData(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    maxPrice(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     pool(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     quoteAsset(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    setMaxPrice(
+      maxPrice_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     twapInterval(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

@@ -11,6 +11,7 @@ task(TASK_DEPLOY_CONTRACT_UNISWAP_V3_PRICE_FEED)
   .addParam("pool", "Address of the Uniswap V3 pool")
   .addParam("quoteAsset", "Address of the quote asset for price calculation")
   .addParam("twapInterval", "The time interval for TWAP calculation")
+  .addParam("maxPrice", "The maximum price for the price feed")
   // Developer settings
   .addOptionalParam("confirmations", "How many block confirmations to wait for", 2, types.int)
   .addOptionalParam("print", "Print the address in the console", true, types.boolean)
@@ -19,7 +20,12 @@ task(TASK_DEPLOY_CONTRACT_UNISWAP_V3_PRICE_FEED)
     const signers: SignerWithAddress[] = await ethers.getSigners();
     const uniswapV3PriceFeedFactory: UniswapV3PriceFeed__factory = new UniswapV3PriceFeed__factory(signers[0]);
     const uniswapV3PriceFeed: UniswapV3PriceFeed = <UniswapV3PriceFeed>(
-      await uniswapV3PriceFeedFactory.deploy(taskArgs.pool, taskArgs.quoteAsset, taskArgs.twapInterval)
+      await uniswapV3PriceFeedFactory.deploy(
+        taskArgs.pool,
+        taskArgs.quoteAsset,
+        taskArgs.twapInterval,
+        taskArgs.maxPrice,
+      )
     );
 
     await run(SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, {

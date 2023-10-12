@@ -17,6 +17,8 @@ import type {
   BigNumberish,
   BytesLike,
   CallOverrides,
+  ContractTransaction,
+  Overrides,
   PopulatedTransaction,
   Signer,
   utils,
@@ -29,8 +31,10 @@ export interface IUniswapV3PriceFeedInterface extends utils.Interface {
     "description()": FunctionFragment;
     "getRoundData(uint80)": FunctionFragment;
     "latestRoundData()": FunctionFragment;
+    "maxPrice()": FunctionFragment;
     "pool()": FunctionFragment;
     "quoteAsset()": FunctionFragment;
+    "setMaxPrice(int256)": FunctionFragment;
     "twapInterval()": FunctionFragment;
     "version()": FunctionFragment;
   };
@@ -42,8 +46,10 @@ export interface IUniswapV3PriceFeedInterface extends utils.Interface {
       | "description"
       | "getRoundData"
       | "latestRoundData"
+      | "maxPrice"
       | "pool"
       | "quoteAsset"
+      | "setMaxPrice"
       | "twapInterval"
       | "version"
   ): FunctionFragment;
@@ -62,10 +68,15 @@ export interface IUniswapV3PriceFeedInterface extends utils.Interface {
     functionFragment: "latestRoundData",
     values?: undefined
   ): string;
+  encodeFunctionData(functionFragment: "maxPrice", values?: undefined): string;
   encodeFunctionData(functionFragment: "pool", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "quoteAsset",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "setMaxPrice",
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "twapInterval",
@@ -87,8 +98,13 @@ export interface IUniswapV3PriceFeedInterface extends utils.Interface {
     functionFragment: "latestRoundData",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "maxPrice", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "pool", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "quoteAsset", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "setMaxPrice",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "twapInterval",
     data: BytesLike
@@ -156,9 +172,16 @@ export interface IUniswapV3PriceFeed extends BaseContract {
       }
     >;
 
+    maxPrice(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     pool(overrides?: CallOverrides): Promise<[string]>;
 
     quoteAsset(overrides?: CallOverrides): Promise<[string]>;
+
+    setMaxPrice(
+      maxPrice_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     twapInterval(overrides?: CallOverrides): Promise<[number]>;
 
@@ -196,9 +219,16 @@ export interface IUniswapV3PriceFeed extends BaseContract {
     }
   >;
 
+  maxPrice(overrides?: CallOverrides): Promise<BigNumber>;
+
   pool(overrides?: CallOverrides): Promise<string>;
 
   quoteAsset(overrides?: CallOverrides): Promise<string>;
+
+  setMaxPrice(
+    maxPrice_: BigNumberish,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   twapInterval(overrides?: CallOverrides): Promise<number>;
 
@@ -236,9 +266,16 @@ export interface IUniswapV3PriceFeed extends BaseContract {
       }
     >;
 
+    maxPrice(overrides?: CallOverrides): Promise<BigNumber>;
+
     pool(overrides?: CallOverrides): Promise<string>;
 
     quoteAsset(overrides?: CallOverrides): Promise<string>;
+
+    setMaxPrice(
+      maxPrice_: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<void>;
 
     twapInterval(overrides?: CallOverrides): Promise<number>;
 
@@ -261,9 +298,16 @@ export interface IUniswapV3PriceFeed extends BaseContract {
 
     latestRoundData(overrides?: CallOverrides): Promise<BigNumber>;
 
+    maxPrice(overrides?: CallOverrides): Promise<BigNumber>;
+
     pool(overrides?: CallOverrides): Promise<BigNumber>;
 
     quoteAsset(overrides?: CallOverrides): Promise<BigNumber>;
+
+    setMaxPrice(
+      maxPrice_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     twapInterval(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -284,9 +328,16 @@ export interface IUniswapV3PriceFeed extends BaseContract {
 
     latestRoundData(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
+    maxPrice(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
     pool(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     quoteAsset(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    setMaxPrice(
+      maxPrice_: BigNumberish,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     twapInterval(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

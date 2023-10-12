@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: BUSL-1.1
 pragma solidity ^0.8.4;
 
+import "@prb/contracts/access/Ownable.sol";
 import "@prb/contracts/token/erc20/IErc20.sol";
 
 import "./IUniswapV3PriceFeed.sol";
@@ -11,13 +12,18 @@ import "../external/uniswap/libraries/FullMath.sol";
 
 /// @title UniswapV3PriceFeed
 /// @author Hifi
+/// @dev Although the contract is production-ready, it has not been audited for security vulnerabilities. Use at your own risk.
 contract UniswapV3PriceFeed is
+    Ownable, // one dependency
     IUniswapV3PriceFeed // one dependency
 {
     /// PUBLIC STORAGE ///
 
     /// @inheritdoc IUniswapV3PriceFeed
     IErc20 public immutable override baseAsset;
+
+    /// @inheritdoc IUniswapV3PriceFeed
+    int256 public override maxPrice;
 
     /// @inheritdoc IUniswapV3PriceFeed
     IUniswapV3Pool public immutable override pool;
@@ -48,10 +54,12 @@ contract UniswapV3PriceFeed is
     /// @param pool_ The address of the Uniswap V3 pool.
     /// @param quoteAsset_ The address of the quote asset for price calculation.
     /// @param twapInterval_ The time window for the TWAP calculation.
+    /// @param maxPrice_ The maximum price for the price feed.
     constructor(
         IUniswapV3Pool pool_,
         IErc20 quoteAsset_,
-        uint32 twapInterval_
+        uint32 twapInterval_,
+        int256 maxPrice_
     ) {
         quoteAsset = quoteAsset_;
 
@@ -88,10 +96,16 @@ contract UniswapV3PriceFeed is
             revert IUniswapV3PriceFeed__TwapCriteriaNotSatisfied();
         }
 
+        // Ensure the max price is not less than or equal to zero.
+        if (maxPrice_ <= 0) revert IUniswapV3PriceFeed__MaxPriceLessThanOrEqualToZero();
+
         token0Decimals = token0.decimals();
         token1Decimals = token1.decimals();
         twapInterval = twapInterval_;
+        maxPrice = maxPrice_;
     }
+
+    /// PUBLIC CONSTANT FUNCTIONS ///
 
     /// @inheritdoc IAggregatorV3
     function decimals() external pure override returns (uint8) {
@@ -140,6 +154,16 @@ contract UniswapV3PriceFeed is
         return (0, getPriceInternal(), 0, block.timestamp, 0);
     }
 
+    /// PUBLIC NON-CONSTANT FUNCTIONS ///
+
+    /// @inheritdoc IUniswapV3PriceFeed
+    function setMaxPrice(int256 maxPrice_) external override onlyOwner {
+        if (maxPrice_ <= 0) revert IUniswapV3PriceFeed__MaxPriceLessThanOrEqualToZero();
+        maxPrice = maxPrice_;
+    }
+
+    /// INTERNAL CONSTANT FUNCTIONS ///
+
     /// @dev Returns Chainlink-compatible price data from the Uniswap V3 pool. If the quote asset is token1,
     /// the formula used is:
     ///
@@ -177,6 +201,7 @@ contract UniswapV3PriceFeed is
             if (price == 0) return int256(10**(16 + token1Decimals));
             price = int256(10**(16 + token1Decimals)) / price;
         }
+        if (price > maxPrice) return maxPrice;
         if (price == 0) return 1;
     }
 }
