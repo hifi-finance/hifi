@@ -41,7 +41,7 @@ task(TASK_DEPLOY_CONTRACT_UNISWAP_V3_PRICE_FEED)
       try {
         await run("verify:verify", {
           address: uniswapV3PriceFeed.address,
-          constructorArguments: [taskArgs.pool, taskArgs.quoteAsset, taskArgs.twapInterval],
+          constructorArguments: [taskArgs.pool, taskArgs.quoteAsset, taskArgs.twapInterval, taskArgs.maxPrice],
         });
       } catch (error) {
         console.error("Error while verifying contract:", error);
