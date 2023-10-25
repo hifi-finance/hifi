@@ -1,5 +1,7 @@
 import type { Signer } from "@ethersproject/abstract-signer";
 import {
+  DEFAULT_CARDINALITY,
+  DEFAULT_TWAP_INTERVAL,
   H_TOKEN_MATURITY_ONE_YEAR,
   H_TOKEN_MATURITY_THREE_MONTHS,
   NORMALIZED_USDC_PRICE,
@@ -12,6 +14,7 @@ import {
   WETH_SYMBOL,
 } from "@hifi/constants";
 import type { MockContract } from "ethereum-waffle";
+import { ethers } from "hardhat";
 
 import type { ChainlinkOperator } from "../../src/types/contracts/oracles/ChainlinkOperator";
 import type { SimplePriceFeed } from "../../src/types/contracts/oracles/SimplePriceFeed";
@@ -20,12 +23,14 @@ import type { GodModeErc20 } from "../../src/types/contracts/test/GodModeErc20";
 import { GodModeFintroller } from "../../src/types/contracts/test/GodModeFintroller";
 import type { GodModeHToken } from "../../src/types/contracts/test/GodModeHToken";
 import type { GodModeOwnableUpgradeable } from "../../src/types/contracts/test/GodModeOwnableUpgradeable";
+import type { GodModeUniswapV3PriceFeed } from "../../src/types/contracts/test/GodModeUniswapV3PriceFeed";
 import {
   deployChainlinkOperator,
   deployGodModeBalanceSheet,
   deployGodModeFintroller,
   deployGodModeHToken,
   deployOwnableUpgradeable,
+  deployUniswapV3PriceFeed,
   deployUsdc,
   deployUsdcPriceFeed,
   deployWbtc,
@@ -37,6 +42,7 @@ import {
   deployMockFintroller,
   deployMockHToken,
   deployMockSimplePriceFeed,
+  deployMockUniswapV3Pool,
   deployMockUsdc,
   deployMockWbtc,
   deployMockWeth,
@@ -196,4 +202,38 @@ type UnitFixtureOwnableUpgradeable = {
 export async function unitFixtureOwnableUpgradeable(): Promise<UnitFixtureOwnableUpgradeable> {
   const ownableUpgradeable: GodModeOwnableUpgradeable = await deployOwnableUpgradeable();
   return { ownableUpgradeable };
+}
+
+type UnitFixtureUniswapV3PriceFeed = {
+  pool: MockContract;
+  priceFeed: GodModeUniswapV3PriceFeed;
+  usdc: MockContract;
+  wbtc: MockContract;
+};
+
+export async function unitFixtureUniswapV3PriceFeed(signers: Signer[]): Promise<UnitFixtureUniswapV3PriceFeed> {
+  const deployer: Signer = signers[0];
+
+  const pool: MockContract = await deployMockUniswapV3Pool(deployer);
+  const usdc: MockContract = await deployMockUsdc(deployer);
+  const wbtc: MockContract = await deployMockWbtc(deployer);
+  await pool.mock.token0.returns(usdc.address);
+  await pool.mock.token1.returns(wbtc.address);
+
+  const currentIndex: number = 0;
+  await pool.mock.slot0.returns(0, 0, currentIndex, DEFAULT_CARDINALITY, DEFAULT_CARDINALITY, 0, 0);
+
+  const oldestIndex: number = (currentIndex + 1) % DEFAULT_CARDINALITY;
+  const { timestamp }: { timestamp: number } = await ethers.provider.getBlock("latest");
+  const oldestAvailableAge: number = timestamp - DEFAULT_TWAP_INTERVAL;
+  const initialized: boolean = true;
+  await pool.mock.observations.withArgs(oldestIndex).returns(oldestAvailableAge, 0, 0, initialized);
+
+  const priceFeed: GodModeUniswapV3PriceFeed = await deployUniswapV3PriceFeed(
+    deployer,
+    pool.address,
+    usdc.address,
+    DEFAULT_TWAP_INTERVAL,
+  );
+  return { pool, priceFeed, usdc, wbtc };
 }

@@ -6,11 +6,13 @@ import {
   NORMALIZED_USDC_PRICE,
   NORMALIZED_WBTC_PRICE,
   NORMALIZED_WETH_PRICE,
+  Q192,
   WBTC_DECIMALS,
   WBTC_PRICE_PRECISION_SCALAR,
 } from "@hifi/constants";
 import { getPrecisionScalar } from "@hifi/helpers";
 import { div, mul } from "@prb/math";
+import { TickMath } from "@uniswap/v3-sdk";
 
 export function getHypotheticalAccountLiquidity(
   collateralAmounts: BigNumber[],
@@ -82,4 +84,24 @@ export function weighWeth(
   collateralRatio: BigNumber = COLLATERAL_RATIOS.weth,
 ): BigNumber {
   return div(mul(wethDepositAmount, NORMALIZED_WETH_PRICE), collateralRatio);
+}
+
+export function calculateTick(tickCumulatives: number[], twapInterval: number): number {
+  const tick = BigNumber.from(tickCumulatives[1])
+    .sub(BigNumber.from(tickCumulatives[0]))
+    .div(BigNumber.from(twapInterval))
+    .toNumber();
+  return tick;
+}
+
+export function tickToTokenPrices(tick: number, token0Decimals: number, token1Decimals: number): BigNumber[] {
+  const sqrtPriceX96: BigNumber = BigNumber.from(TickMath.getSqrtRatioAtTick(tick).toString());
+  const num: BigNumber = sqrtPriceX96.mul(sqrtPriceX96);
+  const denom: BigNumber = Q192.div(BigNumber.from("10").pow(BigNumber.from(token0Decimals).add(8)));
+  const base: BigNumber = num.div(denom);
+  const price0: BigNumber = base.eq(0)
+    ? BigNumber.from("10").pow(BigNumber.from(token1Decimals).add(16))
+    : BigNumber.from("10").pow(BigNumber.from(token1Decimals).add(16)).div(base);
+  const price1: BigNumber = base.div(BigNumber.from("10").pow(BigNumber.from(token1Decimals)));
+  return [price0.eq(0) ? BigNumber.from("1") : price0, price1.eq(0) ? BigNumber.from("1") : price1];
 }

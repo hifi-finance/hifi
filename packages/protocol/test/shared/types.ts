@@ -9,6 +9,7 @@ import type { GodModeErc20 } from "../../src/types/contracts/test/GodModeErc20";
 import type { GodModeFintroller } from "../../src/types/contracts/test/GodModeFintroller";
 import type { GodModeHToken } from "../../src/types/contracts/test/GodModeHToken";
 import type { GodModeOwnableUpgradeable } from "../../src/types/contracts/test/GodModeOwnableUpgradeable";
+import type { GodModeUniswapV3PriceFeed } from "../../src/types/contracts/test/GodModeUniswapV3PriceFeed";
 
 declare module "mocha" {
   interface Context {
@@ -25,6 +26,7 @@ export interface Contracts {
   hTokens: GodModeHToken[];
   oracle: ChainlinkOperator;
   ownableUpgradeable: GodModeOwnableUpgradeable;
+  uniswapV3priceFeed: GodModeUniswapV3PriceFeed;
   usdc: GodModeErc20;
   usdcPriceFeed: SimplePriceFeed;
   wbtc: GodModeErc20;
@@ -36,6 +38,7 @@ export interface Mocks {
   fintroller: MockContract;
   hTokens: MockContract[];
   oracle: MockContract;
+  pool: MockContract;
   usdc: MockContract;
   usdcPriceFeed: MockContract;
   wbtc: MockContract;

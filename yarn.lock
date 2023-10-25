@@ -2396,6 +2396,7 @@ __metadata:
     "@types/node": ^17.0.23
     "@typescript-eslint/eslint-plugin": ^5.17.0
     "@typescript-eslint/parser": ^5.17.0
+    "@uniswap/v3-sdk": ^3.9.0
     chai: ^4.3.6
     cross-env: ^7.0.3
     dotenv: ^16.0.0
@@ -3401,8 +3402,8 @@ __metadata:
   linkType: hard
 
 "@uniswap/sdk-core@npm:^3.0.1, @uniswap/sdk-core@npm:^3.1.2":
-  version: 3.1.2
-  resolution: "@uniswap/sdk-core@npm:3.1.2"
+  version: 3.2.2
+  resolution: "@uniswap/sdk-core@npm:3.2.2"
   dependencies:
     "@ethersproject/address": ^5.0.2
     big.js: ^5.2.2
@@ -3410,7 +3411,7 @@ __metadata:
     jsbi: ^3.1.4
     tiny-invariant: ^1.1.0
     toformat: ^2.0.0
-  checksum: fbf98235e5724f150a54f9a5c11cd48a8c4508fbd913fdf7eb0fa4ffcaca86a8dab3baa41d1599682c04749860f463b5b63a412742a57df6ff8117b60078341b
+  checksum: 6a2b85ef429b2f19324764944f7de309e74509bcc7c4f869e4fb39b836e75d3efda6c842a35511e9e4747dddaf24c4675f2bf980668110e742c76bafab29e8b4
   languageName: node
   linkType: hard
 

@@ -3,5 +3,7 @@
 /* eslint-disable */
 export { ChainlinkOperator__factory } from "./ChainlinkOperator__factory";
 export { IChainlinkOperator__factory } from "./IChainlinkOperator__factory";
+export { IUniswapV3PriceFeed__factory } from "./IUniswapV3PriceFeed__factory";
 export { SimplePriceFeed__factory } from "./SimplePriceFeed__factory";
 export { StablecoinPriceFeed__factory } from "./StablecoinPriceFeed__factory";
+export { UniswapV3PriceFeed__factory } from "./UniswapV3PriceFeed__factory";

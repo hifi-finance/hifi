@@ -4,5 +4,6 @@ export const TASK_DEPLOY_CONTRACT_FINTROLLER: string = "deploy:contract:fintroll
 export const TASK_DEPLOY_CONTRACT_H_TOKEN: string = "deploy:contract:h-token";
 export const TASK_DEPLOY_CONTRACT_SIMPLE_PRICE_FEED: string = "deploy:contract:simple-price-feed";
 export const TASK_DEPLOY_CONTRACT_STABLECOIN_PRICE_FEED: string = "deploy:contract:stablecoin-price-feed";
+export const TASK_DEPLOY_CONTRACT_UNISWAP_V3_PRICE_FEED: string = "deploy:contract:uniswap-v3-price-feed";
 export const TASK_PREPARE_UPGRADE_BALANCE_SHEET: string = "prepare:upgrade:balance-sheet";
 export const SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS: string = "deploy:wait-for-confirmations";

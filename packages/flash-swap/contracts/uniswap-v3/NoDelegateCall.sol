@@ -2,8 +2,7 @@
 // solhint-disable
 pragma solidity =0.7.6;
 
-/// @title Prevents delegatecall to a contract
-/// @notice Base contract that provides a modifier for preventing delegatecall to methods in a child contract
+/// @dev https://raw.githubusercontent.com/Uniswap/v3-core/v1.0.0/contracts/NoDelegateCall.sol
 abstract contract NoDelegateCall {
     /// @dev The original address of this contract
     address private immutable original;

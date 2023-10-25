@@ -4,5 +4,8 @@
 
 /* eslint-disable */
 import type * as chainlink from "./chainlink";
+import type * as uniswap from "./uniswap";
 
 export type { chainlink };
+
+export type { uniswap };

@@ -22,6 +22,7 @@ import type { GodModeErc20 } from "../../src/types/contracts/test/GodModeErc20";
 import type { GodModeFintroller } from "../../src/types/contracts/test/GodModeFintroller";
 import type { GodModeHToken } from "../../src/types/contracts/test/GodModeHToken";
 import type { GodModeOwnableUpgradeable } from "../../src/types/contracts/test/GodModeOwnableUpgradeable";
+import type { GodModeUniswapV3PriceFeed } from "../../src/types/contracts/test/GodModeUniswapV3PriceFeed";
 import type { GodModeBalanceSheet__factory } from "../../src/types/factories/contracts/test/GodModeBalanceSheet__factory";
 import type { GodModeOwnableUpgradeable__factory } from "../../src/types/factories/contracts/test/GodModeOwnableUpgradeable__factory";
 
@@ -117,6 +118,24 @@ export async function deployOwnableUpgradeable(): Promise<GodModeOwnableUpgradea
   );
   await ownableUpgradeable.deployed();
   return ownableUpgradeable;
+}
+
+export async function deployUniswapV3PriceFeed(
+  deployer: Signer,
+  poolAddress: string,
+  quoteAssetAddress: string,
+  twapInterval: number,
+): Promise<GodModeUniswapV3PriceFeed> {
+  const uniswapV3PriceFeedArtifact: Artifact = await artifacts.readArtifact("GodModeUniswapV3PriceFeed");
+  const priceFeed: GodModeUniswapV3PriceFeed = <GodModeUniswapV3PriceFeed>(
+    await deployContract(
+      deployer,
+      uniswapV3PriceFeedArtifact,
+      [poolAddress, quoteAssetAddress, twapInterval],
+      overrides,
+    )
+  );
+  return priceFeed;
 }
 
 export async function deployUsdc(deployer: Signer): Promise<GodModeErc20> {
