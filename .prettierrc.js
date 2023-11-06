@@ -6,6 +6,7 @@ module.exports = {
   importOrderParserPlugins: ["typescript"],
   importOrderSeparation: true,
   importOrderSortSpecifiers: true,
+  plugins: [require.resolve("@trivago/prettier-plugin-sort-imports"), require.resolve("prettier-plugin-solidity")],
   printWidth: 120,
   singleQuote: false,
   tabWidth: 2,
