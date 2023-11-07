@@ -11,9 +11,9 @@
     "url": "https://github.com/hifi-finance/hifi/issues"
   },
   "dependencies": {
-    "@ethersproject/abi": "^5.6.0",
-    "@ethersproject/bytes": "^5.6.1",
-    "@ethersproject/providers": "^5.6.2",
+    "@ethersproject/abi": "^5.7.0",
+    "@ethersproject/bytes": "^5.7.0",
+    "@ethersproject/providers": "^5.7.2",
     "@hifi/protocol": "1.11.0",
     "@openzeppelin/contracts-upgradeable": "4.5.2",
     "@prb/contracts": "3.8.1",
@@ -25,10 +25,10 @@
     "ethers": "^5.6.2"
   },
   "devDependencies": {
-    "@ethersproject/abstract-signer": "^5.6.0",
-    "@ethersproject/bignumber": "^5.6.0",
-    "@ethersproject/constants": "^5.6.0",
-    "@ethersproject/keccak256": "^5.6.0",
+    "@ethersproject/abstract-signer": "^5.7.0",
+    "@ethersproject/bignumber": "^5.7.0",
+    "@ethersproject/constants": "^5.7.0",
+    "@ethersproject/keccak256": "^5.7.0",
     "@hifi/errors": "workspace:*",
     "@hifi/helpers": "workspace:*",
     "@nomiclabs/hardhat-ethers": "^2.0.5",
@@ -47,9 +47,9 @@
     "eslint": "^8.12.0",
     "eslint-config-prettier": "^8.5.0",
     "ethereum-waffle": "^3.4.4",
-    "evm-bn": "^1.1.1",
+    "evm-bn": "^1.1.2",
     "from-exponential": "^1.1.1",
-    "hardhat": "^2.9.2",
+    "hardhat": "^2.19.0",
     "hardhat-packager": "^1.4.1",
     "lodash": "^4.17.21",
     "mocha": "^9.2.2",
@@ -61,7 +61,7 @@
     "solhint-plugin-prettier": "^0.0.5",
     "solidity-coverage": "^0.7.20",
     "solidity-docgen": "^0.6.0-beta.36",
-    "ts-node": "^10.7.0",
+    "ts-node": "^10.9.1",
     "typechain": "^8.0.0",
     "typescript": "^4.6.3"
   },
