@@ -18,7 +18,7 @@
     "@openzeppelin/contracts-upgradeable": "4.5.2",
     "@prb/contracts": "3.8.1",
     "@prb/math": "2.5.0",
-    "ethers": "^5.7.2"
+    "ethers": "^6.8.1"
   },
   "devDependencies": {
     "@ethersproject/abstract-provider": "^5.7.0",
@@ -32,7 +32,7 @@
     "@nomiclabs/hardhat-ethers": "^2.2.3",
     "@nomiclabs/hardhat-etherscan": "^3.1.7",
     "@nomiclabs/hardhat-waffle": "^2.0.6",
-    "@typechain/ethers-v5": "^10.2.1",
+    "@typechain/ethers-v6": "^0.5.1",
     "@typechain/hardhat": "^9.1.0",
     "@types/chai": "^4.3.10",
     "@types/mocha": "^10.0.4",

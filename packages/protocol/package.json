@@ -17,7 +17,7 @@
     "@openzeppelin/contracts-upgradeable": "4.5.2",
     "@prb/contracts": "3.8.1",
     "@prb/math": "2.5.0",
-    "ethers": "^5.7.2"
+    "ethers": "^6.8.1"
   },
   "devDependencies": {
     "@ethersproject/abstract-signer": "^5.7.0",
@@ -30,7 +30,7 @@
     "@nomiclabs/hardhat-etherscan": "^3.1.7",
     "@nomiclabs/hardhat-waffle": "^2.0.6",
     "@openzeppelin/hardhat-upgrades": "^1.16.1",
-    "@typechain/ethers-v5": "^10.2.1",
+    "@typechain/ethers-v6": "^0.5.1",
     "@typechain/hardhat": "^9.1.0",
     "@types/chai": "^4.3.10",
     "@types/mocha": "^10.0.4",
@@ -45,7 +45,7 @@
     "eslint": "^8.53.0",
     "eslint-config-prettier": "^8.10.0",
     "ethereum-waffle": "^4.0.10",
-    "ethers": "^5.7.2",
+    "ethers": "^6.8.1",
     "evm-bn": "^1.1.2",
     "hardhat": "^2.19.0",
     "hardhat-gas-reporter": "^1.0.9",

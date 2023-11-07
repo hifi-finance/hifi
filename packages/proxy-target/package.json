@@ -18,13 +18,13 @@
     "@hifi/protocol": "1.11.0",
     "@openzeppelin/contracts-upgradeable": "4.5.2",
     "@prb/contracts": "3.8.1",
-    "ethers": "^5.7.2"
+    "ethers": "^6.8.1"
   },
   "devDependencies": {
     "@hifi/helpers": "workspace:*",
     "@nomiclabs/hardhat-ethers": "^2.2.3",
     "@nomiclabs/hardhat-etherscan": "^3.1.7",
-    "@typechain/ethers-v5": "^10.2.1",
+    "@typechain/ethers-v6": "^0.5.1",
     "@typechain/hardhat": "^9.1.0",
     "@types/node": "^20.9.0",
     "@typescript-eslint/eslint-plugin": "^5.62.0",
@@ -33,7 +33,7 @@
     "dotenv": "^16.3.1",
     "eslint": "^8.53.0",
     "eslint-config-prettier": "^8.10.0",
-    "ethers": "^5.7.2",
+    "ethers": "^6.8.1",
     "hardhat": "^2.19.0",
     "hardhat-packager": "^1.4.2",
     "lodash": "^4.17.21",
