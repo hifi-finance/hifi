@@ -51,7 +51,7 @@
     "hardhat-gas-reporter": "^1.0.8",
     "hardhat-packager": "^1.4.1",
     "lodash": "^4.17.21",
-    "mocha": "^9.2.2",
+    "mocha": "^10.2.0",
     "mocha-each": "^2.0.1",
     "prettier": "^2.6.1",
     "prettier-plugin-solidity": "^1.0.0-dev.21",
