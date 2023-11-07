@@ -2272,7 +2272,7 @@ __metadata:
     "@openzeppelin/contracts-upgradeable": 4.5.2
     "@prb/contracts": 3.8.1
     "@prb/math": 2.5.0
-    "@typechain/ethers-v5": ^10.0.0
+    "@typechain/ethers-v5": ^10.2.1
     "@typechain/hardhat": ^9.1.0
     "@types/chai": ^4.3.10
     "@types/mocha": ^10.0.4
@@ -2286,7 +2286,7 @@ __metadata:
     eslint: ^8.12.0
     eslint-config-prettier: ^8.5.0
     ethereum-waffle: ^4.0.10
-    ethers: ^5.6.2
+    ethers: ^5.7.2
     evm-bn: ^1.1.2
     hardhat: ^2.19.0
     hardhat-packager: ^1.4.2
@@ -2295,7 +2295,7 @@ __metadata:
     mathjs: ^12.0.0
     mocha: ^10.2.0
     mocha-each: ^2.0.1
-    prettier: ^2.6.1
+    prettier: ^2.8.8
     prettier-plugin-solidity: ^1.0.0-dev.21
     shelljs: ^0.8.5
     shx: ^0.3.4
@@ -2305,7 +2305,7 @@ __metadata:
     solidity-docgen: ^0.6.0-beta.36
     ts-node: ^10.9.1
     typechain: ^8.3.2
-    typescript: ^4.6.3
+    typescript: ^4.9.5
   peerDependencies:
     "@hifi/protocol": 1.10.0
     "@prb/contracts": 3.8.0
@@ -2324,9 +2324,9 @@ __metadata:
     eslint: ^8.12.0
     eslint-config-prettier: ^8.5.0
     evm-bn: ^1.1.2
-    prettier: ^2.6.1
+    prettier: ^2.8.8
     shx: ^0.3.4
-    typescript: ^4.6.3
+    typescript: ^4.9.5
   languageName: unknown
   linkType: soft
 
@@ -2340,9 +2340,9 @@ __metadata:
     eslint: ^8.12.0
     eslint-config-prettier: ^8.5.0
     evm-bn: ^1.1.2
-    prettier: ^2.6.1
+    prettier: ^2.8.8
     shx: ^0.3.4
-    typescript: ^4.6.3
+    typescript: ^4.9.5
   languageName: unknown
   linkType: soft
 
@@ -2365,32 +2365,32 @@ __metadata:
     "@nomiclabs/hardhat-waffle": ^2.0.6
     "@openzeppelin/contracts-upgradeable": 4.5.2
     "@prb/contracts": 3.8.1
-    "@typechain/ethers-v5": ^10.0.0
+    "@typechain/ethers-v5": ^10.2.1
     "@typechain/hardhat": ^9.1.0
     "@types/chai": ^4.3.10
     "@types/mocha": ^10.0.4
     "@types/node": ^20.9.0
     "@typescript-eslint/eslint-plugin": ^5.17.0
     "@typescript-eslint/parser": ^5.17.0
-    "@uniswap/sdk-core": ^3.1.2
+    "@uniswap/sdk-core": ^3.2.3
     "@uniswap/v2-core": 1.0.1
     "@uniswap/v3-core": 1.0.1
     "@uniswap/v3-periphery": 1.0.1
-    "@uniswap/v3-sdk": ^3.9.0
+    "@uniswap/v3-sdk": ^3.10.0
     chai: ^4.3.10
     cross-env: ^7.0.3
     dotenv: ^16.3.1
     eslint: ^8.12.0
     eslint-config-prettier: ^8.5.0
     ethereum-waffle: ^4.0.10
-    ethers: ^5.6.2
+    ethers: ^5.7.2
     evm-bn: ^1.1.2
     from-exponential: ^1.1.1
     hardhat: ^2.19.0
     hardhat-packager: ^1.4.2
     lodash: ^4.17.21
     mocha: ^10.2.0
-    prettier: ^2.6.1
+    prettier: ^2.8.8
     prettier-plugin-solidity: ^1.0.0-dev.21
     shelljs: ^0.8.5
     shx: ^0.3.4
@@ -2400,7 +2400,7 @@ __metadata:
     solidity-docgen: ^0.6.0-beta.36
     ts-node: ^10.9.1
     typechain: ^8.3.2
-    typescript: ^4.6.3
+    typescript: ^4.9.5
   peerDependencies:
     "@hifi/protocol": 1.10.0
     "@prb/contracts": 3.8.0
@@ -2422,9 +2422,9 @@ __metadata:
     eslint-config-prettier: ^8.5.0
     evm-bn: ^1.1.2
     hardhat: ^2.19.0
-    prettier: ^2.6.1
+    prettier: ^2.8.8
     shx: ^0.3.4
-    typescript: ^4.6.3
+    typescript: ^4.9.5
   languageName: unknown
   linkType: soft
 
@@ -2468,7 +2468,7 @@ __metadata:
     "@openzeppelin/hardhat-upgrades": ^1.16.1
     "@prb/contracts": 3.8.1
     "@prb/math": 2.5.0
-    "@typechain/ethers-v5": ^10.0.0
+    "@typechain/ethers-v5": ^10.2.1
     "@typechain/hardhat": ^9.1.0
     "@types/chai": ^4.3.10
     "@types/mocha": ^10.0.4
@@ -2476,14 +2476,14 @@ __metadata:
     "@types/node": ^20.9.0
     "@typescript-eslint/eslint-plugin": ^5.17.0
     "@typescript-eslint/parser": ^5.17.0
-    "@uniswap/v3-sdk": ^3.9.0
+    "@uniswap/v3-sdk": ^3.10.0
     chai: ^4.3.10
     cross-env: ^7.0.3
     dotenv: ^16.3.1
     eslint: ^8.12.0
     eslint-config-prettier: ^8.5.0
     ethereum-waffle: ^4.0.10
-    ethers: ^5.6.2
+    ethers: ^5.7.2
     evm-bn: ^1.1.2
     hardhat: ^2.19.0
     hardhat-gas-reporter: ^1.0.9
@@ -2491,7 +2491,7 @@ __metadata:
     lodash: ^4.17.21
     mocha: ^10.2.0
     mocha-each: ^2.0.1
-    prettier: ^2.6.1
+    prettier: ^2.8.8
     prettier-plugin-solidity: ^1.0.0-dev.21
     shelljs: ^0.8.5
     shx: ^0.3.4
@@ -2501,7 +2501,7 @@ __metadata:
     solidity-docgen: ^0.6.0-beta.36
     ts-node: ^10.9.1
     typechain: ^8.3.2
-    typescript: ^4.6.3
+    typescript: ^4.9.5
   peerDependencies:
     "@openzeppelin/contracts-upgradeable": 4.5.2
     "@prb/contracts": 3.8.0
@@ -2524,7 +2524,7 @@ __metadata:
     "@nomiclabs/hardhat-etherscan": ^3.1.7
     "@openzeppelin/contracts-upgradeable": 4.5.2
     "@prb/contracts": 3.8.1
-    "@typechain/ethers-v5": ^10.0.0
+    "@typechain/ethers-v5": ^10.2.1
     "@typechain/hardhat": ^9.1.0
     "@types/node": ^20.9.0
     "@typescript-eslint/eslint-plugin": ^5.17.0
@@ -2533,11 +2533,11 @@ __metadata:
     dotenv: ^16.3.1
     eslint: ^8.12.0
     eslint-config-prettier: ^8.5.0
-    ethers: ^5.6.2
+    ethers: ^5.7.2
     hardhat: ^2.19.0
     hardhat-packager: ^1.4.2
     lodash: ^4.17.21
-    prettier: ^2.6.1
+    prettier: ^2.8.8
     prettier-plugin-solidity: ^1.0.0-dev.21
     shelljs: ^0.8.5
     shx: ^0.3.4
@@ -2546,7 +2546,7 @@ __metadata:
     solidity-docgen: ^0.6.0-beta.36
     ts-node: ^10.9.1
     typechain: ^8.3.2
-    typescript: ^4.6.3
+    typescript: ^4.9.5
   peerDependencies:
     "@hifi/amm": 1.10.0
     "@hifi/protocol": 1.10.0
@@ -3366,6 +3366,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@typechain/ethers-v5@npm:^10.2.1":
+  version: 10.2.1
+  resolution: "@typechain/ethers-v5@npm:10.2.1"
+  dependencies:
+    lodash: ^4.17.15
+    ts-essentials: ^7.0.1
+  peerDependencies:
+    "@ethersproject/abi": ^5.0.0
+    "@ethersproject/providers": ^5.0.0
+    ethers: ^5.1.3
+    typechain: ^8.1.1
+    typescript: ">=4.3.0"
+  checksum: 852da4b1ff368ef87251111a5d50077de3d0fc12c519529269a74223740f8bda89297e67a5eb6c1f5b04ee23119566d6cbccf58264d32a83132be0f328a58d22
+  languageName: node
+  linkType: hard
+
 "@typechain/hardhat@npm:^6.0.0":
   version: 6.0.0
   resolution: "@typechain/hardhat@npm:6.0.0"
@@ -3785,9 +3801,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uniswap/sdk-core@npm:^3.0.1, @uniswap/sdk-core@npm:^3.1.2":
-  version: 3.2.2
-  resolution: "@uniswap/sdk-core@npm:3.2.2"
+"@uniswap/sdk-core@npm:^3.2.3":
+  version: 3.2.3
+  resolution: "@uniswap/sdk-core@npm:3.2.3"
   dependencies:
     "@ethersproject/address": ^5.0.2
     big.js: ^5.2.2
@@ -3795,7 +3811,21 @@ __metadata:
     jsbi: ^3.1.4
     tiny-invariant: ^1.1.0
     toformat: ^2.0.0
-  checksum: 6a2b85ef429b2f19324764944f7de309e74509bcc7c4f869e4fb39b836e75d3efda6c842a35511e9e4747dddaf24c4675f2bf980668110e742c76bafab29e8b4
+  checksum: a19367c7e1d7b391b1664f59b808836cbaed9a12880bdf6b9a31e6c3b63f2edce2966bdda65144a3003e4c3cd96085b86129c174971330a9766194c404263346
+  languageName: node
+  linkType: hard
+
+"@uniswap/sdk-core@npm:^4":
+  version: 4.0.9
+  resolution: "@uniswap/sdk-core@npm:4.0.9"
+  dependencies:
+    "@ethersproject/address": ^5.0.2
+    big.js: ^5.2.2
+    decimal.js-light: ^2.5.0
+    jsbi: ^3.1.4
+    tiny-invariant: ^1.1.0
+    toformat: ^2.0.0
+  checksum: f4ed31d995ddd04579061ecc9d613c88da400c50a8be820142fb7cce958532b828ec1992d0c0a5115f839a3cd5e4722cbd853578fa0a28a46aabbd60c3a54ef7
   languageName: node
   linkType: hard
 
@@ -3874,19 +3904,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uniswap/v3-sdk@npm:^3.9.0":
-  version: 3.9.0
-  resolution: "@uniswap/v3-sdk@npm:3.9.0"
+"@uniswap/v3-sdk@npm:^3.10.0":
+  version: 3.10.0
+  resolution: "@uniswap/v3-sdk@npm:3.10.0"
   dependencies:
     "@ethersproject/abi": ^5.0.12
     "@ethersproject/solidity": ^5.0.9
-    "@uniswap/sdk-core": ^3.0.1
+    "@uniswap/sdk-core": ^4
     "@uniswap/swap-router-contracts": ^1.2.1
     "@uniswap/v3-periphery": ^1.1.1
     "@uniswap/v3-staker": 1.0.0
     tiny-invariant: ^1.1.0
     tiny-warning: ^1.0.3
-  checksum: 7b05a47431c0c9f575b38678a000c7b2712b0d44601a8aecc61009030bbd62f79070fed8b9eb307366d2c73b7459dbf8337daaf272e290ea6e56acd23c8d39ef
+  checksum: 664d40550aa5c88b21bce3dc209746bc61490e4afaa5686d12d6a5839e26211ae5093d82eeff3e3ec80df5df3eb1d40f9a7510b61a389e2779a9b1e5eca9ed25
   languageName: node
   linkType: hard
 
@@ -8114,7 +8144,7 @@ fsevents@~2.3.2:
     cz-conventional-changelog: ^3.3.0
     husky: ^8.0.3
     lint-staged: ^15.0.2
-    prettier: ^2.6.1
+    prettier: ^2.8.8
     prettier-plugin-solidity: ^1.0.0-dev.21
     shx: ^0.3.4
   languageName: unknown
@@ -10810,12 +10840,21 @@ fsevents@~2.3.2:
   languageName: node
   linkType: hard
 
-"prettier@npm:^2.3.1, prettier@npm:^2.6.1":
+"prettier@npm:^2.3.1":
   version: 2.6.1
   resolution: "prettier@npm:2.6.1"
   bin:
     prettier: bin-prettier.js
   checksum: 78be1f8a3ddfad7c3d8a854b6c8941a3bb1ddfca4225c38d778e0fe1029a55368f71b3bbefff82c689015fbb4d391ec44add957f01308ad2725e01a7c1f37cb6
+  languageName: node
+  linkType: hard
+
+"prettier@npm:^2.8.8":
+  version: 2.8.8
+  resolution: "prettier@npm:2.8.8"
+  bin:
+    prettier: bin-prettier.js
+  checksum: b49e409431bf129dd89238d64299ba80717b57ff5a6d1c1a8b1a28b590d998a34e083fa13573bc732bb8d2305becb4c9a4407f8486c81fa7d55100eb08263cf8
   languageName: node
   linkType: hard
 
@@ -12942,13 +12981,13 @@ typescript@^4.3.4:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.6.3":
-  version: 4.6.3
-  resolution: "typescript@npm:4.6.3"
+"typescript@npm:^4.9.5":
+  version: 4.9.5
+  resolution: "typescript@npm:4.9.5"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 255bb26c8cb846ca689dd1c3a56587af4f69055907aa2c154796ea28ee0dea871535b1c78f85a6212c77f2657843a269c3a742d09d81495b97b914bf7920415b
+  checksum: ee000bc26848147ad423b581bd250075662a354d84f0e06eb76d3b892328d8d4440b7487b5a83e851b12b255f55d71835b008a66cbf8f255a11e4400159237db
   languageName: node
   linkType: hard
 
@@ -12962,13 +13001,13 @@ typescript@^4.3.4:
   languageName: node
   linkType: hard
 
-"typescript@patch:typescript@^4.6.3#~builtin<compat/typescript>":
-  version: 4.6.3
-  resolution: "typescript@patch:typescript@npm%3A4.6.3#~builtin<compat/typescript>::version=4.6.3&hash=bda367"
+"typescript@patch:typescript@^4.9.5#~builtin<compat/typescript>":
+  version: 4.9.5
+  resolution: "typescript@patch:typescript@npm%3A4.9.5#~builtin<compat/typescript>::version=4.9.5&hash=bda367"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 6bf45caf847062420592e711bc9c28bf5f9a9a7fa8245343b81493e4ededae33f1774009d1234d911422d1646a2c839f44e1a23ecb111b40a60ac2ea4c1482a8
+  checksum: 2eee5c37cad4390385db5db5a8e81470e42e8f1401b0358d7390095d6f681b410f2c4a0c496c6ff9ebd775423c7785cdace7bcdad76c7bee283df3d9718c0f20
   languageName: node
   linkType: hard
 
