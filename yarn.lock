@@ -2274,10 +2274,10 @@ __metadata:
     "@prb/math": 2.5.0
     "@typechain/ethers-v5": ^10.0.0
     "@typechain/hardhat": ^9.1.0
-    "@types/chai": ^4.3.9
+    "@types/chai": ^4.3.10
     "@types/mocha": ^10.0.4
     "@types/mocha-each": ^2.0.3
-    "@types/node": ^20.8.10
+    "@types/node": ^20.9.0
     "@typescript-eslint/eslint-plugin": ^5.17.0
     "@typescript-eslint/parser": ^5.17.0
     chai: ^4.3.10
@@ -2367,9 +2367,9 @@ __metadata:
     "@prb/contracts": 3.8.1
     "@typechain/ethers-v5": ^10.0.0
     "@typechain/hardhat": ^9.1.0
-    "@types/chai": ^4.3.9
+    "@types/chai": ^4.3.10
     "@types/mocha": ^10.0.4
-    "@types/node": ^20.8.10
+    "@types/node": ^20.9.0
     "@typescript-eslint/eslint-plugin": ^5.17.0
     "@typescript-eslint/parser": ^5.17.0
     "@uniswap/sdk-core": ^3.1.2
@@ -2470,10 +2470,10 @@ __metadata:
     "@prb/math": 2.5.0
     "@typechain/ethers-v5": ^10.0.0
     "@typechain/hardhat": ^9.1.0
-    "@types/chai": ^4.3.9
+    "@types/chai": ^4.3.10
     "@types/mocha": ^10.0.4
     "@types/mocha-each": ^2.0.3
-    "@types/node": ^20.8.10
+    "@types/node": ^20.9.0
     "@typescript-eslint/eslint-plugin": ^5.17.0
     "@typescript-eslint/parser": ^5.17.0
     "@uniswap/v3-sdk": ^3.9.0
@@ -2526,7 +2526,7 @@ __metadata:
     "@prb/contracts": 3.8.1
     "@typechain/ethers-v5": ^10.0.0
     "@typechain/hardhat": ^9.1.0
-    "@types/node": ^20.8.10
+    "@types/node": ^20.9.0
     "@typescript-eslint/eslint-plugin": ^5.17.0
     "@typescript-eslint/parser": ^5.17.0
     cross-env: ^7.0.3
@@ -3422,10 +3422,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chai@npm:^4.3.9":
-  version: 4.3.9
-  resolution: "@types/chai@npm:4.3.9"
-  checksum: 2300a2c7abd4cb590349927a759b3d0172211a69f363db06e585faf7874a47f125ef3b364cce4f6190e3668147587fc11164c791c9560cf9bce8478fb7019610
+"@types/chai@npm:^4.3.10":
+  version: 4.3.10
+  resolution: "@types/chai@npm:4.3.10"
+  checksum: cb9ebe31f5da2d72c4b9362ec4efb33497355372270163c0290f6b9c389934ff178dac933be6b2911a125f15972c0379603736ea83ad10bfca933b6aaf6c0c5b
   languageName: node
   linkType: hard
 
@@ -3575,12 +3575,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^20.8.10":
-  version: 20.8.10
-  resolution: "@types/node@npm:20.8.10"
+"@types/node@npm:^20.9.0":
+  version: 20.9.0
+  resolution: "@types/node@npm:20.9.0"
   dependencies:
     undici-types: ~5.26.4
-  checksum: 7c61190e43e8074a1b571e52ff14c880bc67a0447f2fe5ed0e1a023eb8a23d5f815658edb98890f7578afe0f090433c4a635c7c87311762544e20dd78723e515
+  checksum: bfd927da6bff8a32051fa44bb47ca32a56d2c8bc8ba0170770f181cc1fa3c0b05863c9b930f0ba8604a48d5eb0d319166601709ca53bf2deae0025d8b6c6b8a3
   languageName: node
   linkType: hard
 
