@@ -12,7 +12,8 @@ import "../external/uniswap/libraries/FullMath.sol";
 
 /// @title UniswapV3PriceFeed
 /// @author Hifi
-/// @dev Although the contract is production-ready, it has not been audited for security vulnerabilities. Use at your own risk.
+/// @dev Although the contract is production-ready, it has not been audited for security vulnerabilities.
+// Use at your own risk.
 contract UniswapV3PriceFeed is
     Ownable, // one dependency
     IUniswapV3PriceFeed // one dependency
