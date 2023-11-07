@@ -2273,11 +2273,11 @@ __metadata:
     "@prb/contracts": 3.8.1
     "@prb/math": 2.5.0
     "@typechain/ethers-v5": ^10.0.0
-    "@typechain/hardhat": ^6.0.0
-    "@types/chai": ^4.3.0
-    "@types/mocha": ^9.1.0
-    "@types/mocha-each": ^2.0.0
-    "@types/node": ^17.0.23
+    "@typechain/hardhat": ^9.1.0
+    "@types/chai": ^4.3.9
+    "@types/mocha": ^10.0.4
+    "@types/mocha-each": ^2.0.3
+    "@types/node": ^20.8.10
     "@typescript-eslint/eslint-plugin": ^5.17.0
     "@typescript-eslint/parser": ^5.17.0
     chai: ^4.3.6
@@ -2366,10 +2366,10 @@ __metadata:
     "@openzeppelin/contracts-upgradeable": 4.5.2
     "@prb/contracts": 3.8.1
     "@typechain/ethers-v5": ^10.0.0
-    "@typechain/hardhat": ^6.0.0
-    "@types/chai": ^4.3.0
-    "@types/mocha": ^9.1.0
-    "@types/node": ^17.0.23
+    "@typechain/hardhat": ^9.1.0
+    "@types/chai": ^4.3.9
+    "@types/mocha": ^10.0.4
+    "@types/node": ^20.8.10
     "@typescript-eslint/eslint-plugin": ^5.17.0
     "@typescript-eslint/parser": ^5.17.0
     "@uniswap/sdk-core": ^3.1.2
@@ -2469,11 +2469,11 @@ __metadata:
     "@prb/contracts": 3.8.1
     "@prb/math": 2.5.0
     "@typechain/ethers-v5": ^10.0.0
-    "@typechain/hardhat": ^6.0.0
-    "@types/chai": ^4.3.0
-    "@types/mocha": ^9.1.0
-    "@types/mocha-each": ^2.0.0
-    "@types/node": ^17.0.23
+    "@typechain/hardhat": ^9.1.0
+    "@types/chai": ^4.3.9
+    "@types/mocha": ^10.0.4
+    "@types/mocha-each": ^2.0.3
+    "@types/node": ^20.8.10
     "@typescript-eslint/eslint-plugin": ^5.17.0
     "@typescript-eslint/parser": ^5.17.0
     "@uniswap/v3-sdk": ^3.9.0
@@ -2525,8 +2525,8 @@ __metadata:
     "@openzeppelin/contracts-upgradeable": 4.5.2
     "@prb/contracts": 3.8.1
     "@typechain/ethers-v5": ^10.0.0
-    "@typechain/hardhat": ^6.0.0
-    "@types/node": ^17.0.23
+    "@typechain/hardhat": ^9.1.0
+    "@types/node": ^20.8.10
     "@typescript-eslint/eslint-plugin": ^5.17.0
     "@typescript-eslint/parser": ^5.17.0
     cross-env: ^7.0.3
@@ -3383,6 +3383,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@typechain/hardhat@npm:^9.1.0":
+  version: 9.1.0
+  resolution: "@typechain/hardhat@npm:9.1.0"
+  dependencies:
+    fs-extra: ^9.1.0
+  peerDependencies:
+    "@typechain/ethers-v6": ^0.5.1
+    ethers: ^6.1.0
+    hardhat: ^2.9.9
+    typechain: ^8.3.2
+  checksum: a05998ce89bb4a297f233f4489e4af2a3ad0abcedd75392096745a378d7c5bab9650fcd5dd778c9deaf790bf16e3a849b3ed91a6ae916173df6dfc9e574efcbc
+  languageName: node
+  linkType: hard
+
 "@types/abstract-leveldown@npm:*":
   version: 5.0.2
   resolution: "@types/abstract-leveldown@npm:5.0.2"
@@ -3408,10 +3422,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/chai@npm:^4.3.0":
-  version: 4.3.0
-  resolution: "@types/chai@npm:4.3.0"
-  checksum: 3e393e094263db65df28a0123dc13f342937c1bab6cd173eae913d593c5b9a16b555713a08c34863a1fbf079aa7222b96197c70380a5c130549d6b2f6845a989
+"@types/chai@npm:^4.3.9":
+  version: 4.3.9
+  resolution: "@types/chai@npm:4.3.9"
+  checksum: 2300a2c7abd4cb590349927a759b3d0172211a69f363db06e585faf7874a47f125ef3b364cce4f6190e3668147587fc11164c791c9560cf9bce8478fb7019610
   languageName: node
   linkType: hard
 
@@ -3498,19 +3512,26 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mocha-each@npm:^2.0.0":
-  version: 2.0.0
-  resolution: "@types/mocha-each@npm:2.0.0"
+"@types/mocha-each@npm:^2.0.3":
+  version: 2.0.3
+  resolution: "@types/mocha-each@npm:2.0.3"
   dependencies:
     "@types/mocha": "*"
-  checksum: 83be93fab0095c0ec4d8dbfcc5b7e0da0bf4edc3b45f98985e302c725675501c17dbfdc1fd0df9bd23e04ea8d86bbf08756f4a7491799fb0de481db0a0a07875
+  checksum: f7e3a5f54404e9e98de8419da324b2594c5abec89e616fa601782381c309aced7ea45c89fa09e4fed112b6162b1100fa2add4af73ee837365ae9eb1b3458b61a
   languageName: node
   linkType: hard
 
-"@types/mocha@npm:*, @types/mocha@npm:^9.1.0":
+"@types/mocha@npm:*":
   version: 9.1.0
   resolution: "@types/mocha@npm:9.1.0"
   checksum: 21e1000dafcfe387c6812be41c44a47b48c27a74d5a70c3d5ef1bb5c88eadadfc74dba06e93f160e7248c8a57b3977b590f82504c801c9927816ecd4668023c0
+  languageName: node
+  linkType: hard
+
+"@types/mocha@npm:^10.0.4":
+  version: 10.0.4
+  resolution: "@types/mocha@npm:10.0.4"
+  checksum: 57c258676ba9885a5be1c952cf32b87c0117ffd00cd7aa488bb462268098e0874049cde3f4ed0c0370389493f5c2b43d4b40bee4d258476b6fb59e2b3d10b1d6
   languageName: node
   linkType: hard
 
@@ -3545,19 +3566,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^17.0.23":
-  version: 17.0.23
-  resolution: "@types/node@npm:17.0.23"
-  checksum: a3517554737cbb042e76c30d0e5482192ac4d9bea0eeb086e2622d9cabf460a0eb52a696b99fcd18e7fcc93c96db6cc7ae507f6608f256ef0b5c1d8c87a5a470
-  languageName: node
-  linkType: hard
-
 "@types/node@npm:^18.11.9":
   version: 18.18.8
   resolution: "@types/node@npm:18.18.8"
   dependencies:
     undici-types: ~5.26.4
   checksum: d6a82bfc28bca8e4e32ffc9526798d1aea62f6993ea3a535cd3f47ac3f725a48efe3f484d68168dd154af0001c89935e4e1d77e7b1809c3824c6382bf99b86f6
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^20.8.10":
+  version: 20.8.10
+  resolution: "@types/node@npm:20.8.10"
+  dependencies:
+    undici-types: ~5.26.4
+  checksum: 7c61190e43e8074a1b571e52ff14c880bc67a0447f2fe5ed0e1a023eb8a23d5f815658edb98890f7578afe0f090433c4a635c7c87311762544e20dd78723e515
   languageName: node
   linkType: hard
 
