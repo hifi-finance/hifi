@@ -9,7 +9,9 @@
     "constructor-syntax": "error",
     "func-name-mixedcase": "off",
     "func-visibility": ["error", { "ignoreConstructors": true }],
+    "immutable-vars-naming": "off",
     "max-line-length": ["error", 120],
+    "no-global-import": "off",
     "not-rely-on-time": "off",
     "prettier/prettier": [
       "error",
