@@ -4,9 +4,10 @@
 
 import { ethers } from "ethers";
 import {
+  DeployContractOptions,
   FactoryOptions,
   HardhatEthersHelpers as HardhatEthersHelpersBase,
-} from "@nomiclabs/hardhat-ethers/types";
+} from "@nomicfoundation/hardhat-ethers/types";
 
 import * as Contracts from ".";
 
@@ -115,128 +116,355 @@ declare module "hardhat/types/runtime" {
 
     getContractAt(
       name: "IOwnableUpgradeable",
-      address: string,
+      address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.IOwnableUpgradeable>;
     getContractAt(
       name: "IBalanceSheetV2",
-      address: string,
+      address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.IBalanceSheetV2>;
     getContractAt(
       name: "IFintroller",
-      address: string,
+      address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.IFintroller>;
     getContractAt(
       name: "HToken",
-      address: string,
+      address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.HToken>;
     getContractAt(
       name: "IHToken",
-      address: string,
+      address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.IHToken>;
     getContractAt(
       name: "IAggregatorV3",
-      address: string,
+      address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.IAggregatorV3>;
     getContractAt(
       name: "IChainlinkOperator",
-      address: string,
+      address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.IChainlinkOperator>;
     getContractAt(
       name: "IOwnable",
-      address: string,
+      address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.IOwnable>;
     getContractAt(
       name: "Ownable",
-      address: string,
+      address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.Ownable>;
     getContractAt(
       name: "Erc20",
-      address: string,
+      address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.Erc20>;
     getContractAt(
       name: "Erc20Permit",
-      address: string,
+      address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.Erc20Permit>;
     getContractAt(
       name: "Erc20Recover",
-      address: string,
+      address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.Erc20Recover>;
     getContractAt(
       name: "IErc20",
-      address: string,
+      address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.IErc20>;
     getContractAt(
       name: "IErc20Permit",
-      address: string,
+      address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.IErc20Permit>;
     getContractAt(
       name: "IErc20Recover",
-      address: string,
+      address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.IErc20Recover>;
     getContractAt(
       name: "HifiPool",
-      address: string,
+      address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.HifiPool>;
     getContractAt(
       name: "HifiPoolRegistry",
-      address: string,
+      address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.HifiPoolRegistry>;
     getContractAt(
       name: "IHifiPool",
-      address: string,
+      address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.IHifiPool>;
     getContractAt(
       name: "IHifiPoolRegistry",
-      address: string,
+      address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.IHifiPoolRegistry>;
     getContractAt(
       name: "YieldSpace",
-      address: string,
+      address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.YieldSpace>;
     getContractAt(
       name: "GodModeErc20",
-      address: string,
+      address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.GodModeErc20>;
     getContractAt(
       name: "GodModeHifiPool",
-      address: string,
+      address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.GodModeHifiPool>;
     getContractAt(
       name: "GodModeHifiPoolRegistry",
-      address: string,
+      address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.GodModeHifiPoolRegistry>;
     getContractAt(
       name: "GodModeHToken",
-      address: string,
+      address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.GodModeHToken>;
     getContractAt(
       name: "YieldSpaceMock",
-      address: string,
+      address: string | ethers.Addressable,
       signer?: ethers.Signer
+    ): Promise<Contracts.YieldSpaceMock>;
+
+    deployContract(
+      name: "IOwnableUpgradeable",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IOwnableUpgradeable>;
+    deployContract(
+      name: "IBalanceSheetV2",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IBalanceSheetV2>;
+    deployContract(
+      name: "IFintroller",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IFintroller>;
+    deployContract(
+      name: "HToken",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.HToken>;
+    deployContract(
+      name: "IHToken",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IHToken>;
+    deployContract(
+      name: "IAggregatorV3",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IAggregatorV3>;
+    deployContract(
+      name: "IChainlinkOperator",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IChainlinkOperator>;
+    deployContract(
+      name: "IOwnable",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IOwnable>;
+    deployContract(
+      name: "Ownable",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.Ownable>;
+    deployContract(
+      name: "Erc20",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.Erc20>;
+    deployContract(
+      name: "Erc20Permit",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.Erc20Permit>;
+    deployContract(
+      name: "Erc20Recover",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.Erc20Recover>;
+    deployContract(
+      name: "IErc20",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IErc20>;
+    deployContract(
+      name: "IErc20Permit",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IErc20Permit>;
+    deployContract(
+      name: "IErc20Recover",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IErc20Recover>;
+    deployContract(
+      name: "HifiPool",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.HifiPool>;
+    deployContract(
+      name: "HifiPoolRegistry",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.HifiPoolRegistry>;
+    deployContract(
+      name: "IHifiPool",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IHifiPool>;
+    deployContract(
+      name: "IHifiPoolRegistry",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IHifiPoolRegistry>;
+    deployContract(
+      name: "YieldSpace",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.YieldSpace>;
+    deployContract(
+      name: "GodModeErc20",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.GodModeErc20>;
+    deployContract(
+      name: "GodModeHifiPool",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.GodModeHifiPool>;
+    deployContract(
+      name: "GodModeHifiPoolRegistry",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.GodModeHifiPoolRegistry>;
+    deployContract(
+      name: "GodModeHToken",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.GodModeHToken>;
+    deployContract(
+      name: "YieldSpaceMock",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.YieldSpaceMock>;
+
+    deployContract(
+      name: "IOwnableUpgradeable",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IOwnableUpgradeable>;
+    deployContract(
+      name: "IBalanceSheetV2",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IBalanceSheetV2>;
+    deployContract(
+      name: "IFintroller",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IFintroller>;
+    deployContract(
+      name: "HToken",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.HToken>;
+    deployContract(
+      name: "IHToken",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IHToken>;
+    deployContract(
+      name: "IAggregatorV3",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IAggregatorV3>;
+    deployContract(
+      name: "IChainlinkOperator",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IChainlinkOperator>;
+    deployContract(
+      name: "IOwnable",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IOwnable>;
+    deployContract(
+      name: "Ownable",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.Ownable>;
+    deployContract(
+      name: "Erc20",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.Erc20>;
+    deployContract(
+      name: "Erc20Permit",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.Erc20Permit>;
+    deployContract(
+      name: "Erc20Recover",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.Erc20Recover>;
+    deployContract(
+      name: "IErc20",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IErc20>;
+    deployContract(
+      name: "IErc20Permit",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IErc20Permit>;
+    deployContract(
+      name: "IErc20Recover",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IErc20Recover>;
+    deployContract(
+      name: "HifiPool",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.HifiPool>;
+    deployContract(
+      name: "HifiPoolRegistry",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.HifiPoolRegistry>;
+    deployContract(
+      name: "IHifiPool",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IHifiPool>;
+    deployContract(
+      name: "IHifiPoolRegistry",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IHifiPoolRegistry>;
+    deployContract(
+      name: "YieldSpace",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.YieldSpace>;
+    deployContract(
+      name: "GodModeErc20",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.GodModeErc20>;
+    deployContract(
+      name: "GodModeHifiPool",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.GodModeHifiPool>;
+    deployContract(
+      name: "GodModeHifiPoolRegistry",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.GodModeHifiPoolRegistry>;
+    deployContract(
+      name: "GodModeHToken",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.GodModeHToken>;
+    deployContract(
+      name: "YieldSpaceMock",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.YieldSpaceMock>;
 
     // default types
@@ -246,13 +474,22 @@ declare module "hardhat/types/runtime" {
     ): Promise<ethers.ContractFactory>;
     getContractFactory(
       abi: any[],
-      bytecode: ethers.utils.BytesLike,
+      bytecode: ethers.BytesLike,
       signer?: ethers.Signer
     ): Promise<ethers.ContractFactory>;
     getContractAt(
       nameOrAbi: string | any[],
-      address: string,
+      address: string | ethers.Addressable,
       signer?: ethers.Signer
+    ): Promise<ethers.Contract>;
+    deployContract(
+      name: string,
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<ethers.Contract>;
+    deployContract(
+      name: string,
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<ethers.Contract>;
   }
 }

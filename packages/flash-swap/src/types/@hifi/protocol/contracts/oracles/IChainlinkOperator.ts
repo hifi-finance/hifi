@@ -3,45 +3,29 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumber,
   BigNumberish,
   BytesLike,
-  CallOverrides,
-  ContractTransaction,
-  Overrides,
-  PopulatedTransaction,
-  Signer,
-  utils,
-} from "ethers";
-import type {
   FunctionFragment,
   Result,
+  Interface,
   EventFragment,
-} from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
+  AddressLike,
+  ContractRunner,
+  ContractMethod,
+  Listener,
+} from "ethers";
 import type {
-  TypedEventFilter,
-  TypedEvent,
+  TypedContractEvent,
+  TypedDeferredTopicFilter,
+  TypedEventLog,
+  TypedLogDescription,
   TypedListener,
-  OnEvent,
-  PromiseOrValue,
+  TypedContractMethod,
 } from "../../../../common";
 
-export interface IChainlinkOperatorInterface extends utils.Interface {
-  functions: {
-    "deleteFeed(string)": FunctionFragment;
-    "getFeed(string)": FunctionFragment;
-    "getNormalizedPrice(string)": FunctionFragment;
-    "getPrice(string)": FunctionFragment;
-    "pricePrecision()": FunctionFragment;
-    "pricePrecisionScalar()": FunctionFragment;
-    "priceStalenessThreshold()": FunctionFragment;
-    "setFeed(address,address)": FunctionFragment;
-    "setPriceStalenessThreshold(uint256)": FunctionFragment;
-  };
-
+export interface IChainlinkOperatorInterface extends Interface {
   getFunction(
-    nameOrSignatureOrTopic:
+    nameOrSignature:
       | "deleteFeed"
       | "getFeed"
       | "getNormalizedPrice"
@@ -53,22 +37,20 @@ export interface IChainlinkOperatorInterface extends utils.Interface {
       | "setPriceStalenessThreshold"
   ): FunctionFragment;
 
-  encodeFunctionData(
-    functionFragment: "deleteFeed",
-    values: [PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getFeed",
-    values: [PromiseOrValue<string>]
-  ): string;
+  getEvent(
+    nameOrSignatureOrTopic:
+      | "DeleteFeed"
+      | "SetFeed"
+      | "SetPriceStalenessThreshold"
+  ): EventFragment;
+
+  encodeFunctionData(functionFragment: "deleteFeed", values: [string]): string;
+  encodeFunctionData(functionFragment: "getFeed", values: [string]): string;
   encodeFunctionData(
     functionFragment: "getNormalizedPrice",
-    values: [PromiseOrValue<string>]
+    values: [string]
   ): string;
-  encodeFunctionData(
-    functionFragment: "getPrice",
-    values: [PromiseOrValue<string>]
-  ): string;
+  encodeFunctionData(functionFragment: "getPrice", values: [string]): string;
   encodeFunctionData(
     functionFragment: "pricePrecision",
     values?: undefined
@@ -83,11 +65,11 @@ export interface IChainlinkOperatorInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "setFeed",
-    values: [PromiseOrValue<string>, PromiseOrValue<string>]
+    values: [AddressLike, AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "setPriceStalenessThreshold",
-    values: [PromiseOrValue<BigNumberish>]
+    values: [BigNumberish]
   ): string;
 
   decodeFunctionResult(functionFragment: "deleteFeed", data: BytesLike): Result;
@@ -114,298 +96,220 @@ export interface IChainlinkOperatorInterface extends utils.Interface {
     functionFragment: "setPriceStalenessThreshold",
     data: BytesLike
   ): Result;
-
-  events: {
-    "DeleteFeed(address,address)": EventFragment;
-    "SetFeed(address,address)": EventFragment;
-    "SetPriceStalenessThreshold(uint256,uint256)": EventFragment;
-  };
-
-  getEvent(nameOrSignatureOrTopic: "DeleteFeed"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "SetFeed"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "SetPriceStalenessThreshold"): EventFragment;
 }
 
-export interface DeleteFeedEventObject {
-  asset: string;
-  feed: string;
+export namespace DeleteFeedEvent {
+  export type InputTuple = [asset: AddressLike, feed: AddressLike];
+  export type OutputTuple = [asset: string, feed: string];
+  export interface OutputObject {
+    asset: string;
+    feed: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type DeleteFeedEvent = TypedEvent<
-  [string, string],
-  DeleteFeedEventObject
->;
 
-export type DeleteFeedEventFilter = TypedEventFilter<DeleteFeedEvent>;
-
-export interface SetFeedEventObject {
-  asset: string;
-  feed: string;
+export namespace SetFeedEvent {
+  export type InputTuple = [asset: AddressLike, feed: AddressLike];
+  export type OutputTuple = [asset: string, feed: string];
+  export interface OutputObject {
+    asset: string;
+    feed: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type SetFeedEvent = TypedEvent<[string, string], SetFeedEventObject>;
 
-export type SetFeedEventFilter = TypedEventFilter<SetFeedEvent>;
-
-export interface SetPriceStalenessThresholdEventObject {
-  oldPriceStalenessThreshold: BigNumber;
-  newPriceStalenessThreshold: BigNumber;
+export namespace SetPriceStalenessThresholdEvent {
+  export type InputTuple = [
+    oldPriceStalenessThreshold: BigNumberish,
+    newPriceStalenessThreshold: BigNumberish
+  ];
+  export type OutputTuple = [
+    oldPriceStalenessThreshold: bigint,
+    newPriceStalenessThreshold: bigint
+  ];
+  export interface OutputObject {
+    oldPriceStalenessThreshold: bigint;
+    newPriceStalenessThreshold: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type SetPriceStalenessThresholdEvent = TypedEvent<
-  [BigNumber, BigNumber],
-  SetPriceStalenessThresholdEventObject
->;
-
-export type SetPriceStalenessThresholdEventFilter =
-  TypedEventFilter<SetPriceStalenessThresholdEvent>;
 
 export interface IChainlinkOperator extends BaseContract {
-  connect(signerOrProvider: Signer | Provider | string): this;
-  attach(addressOrName: string): this;
-  deployed(): Promise<this>;
+  connect(runner?: ContractRunner | null): IChainlinkOperator;
+  waitForDeployment(): Promise<this>;
 
   interface: IChainlinkOperatorInterface;
 
-  queryFilter<TEvent extends TypedEvent>(
-    event: TypedEventFilter<TEvent>,
+  queryFilter<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TEvent>>;
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  queryFilter<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
 
-  listeners<TEvent extends TypedEvent>(
-    eventFilter?: TypedEventFilter<TEvent>
-  ): Array<TypedListener<TEvent>>;
-  listeners(eventName?: string): Array<Listener>;
-  removeAllListeners<TEvent extends TypedEvent>(
-    eventFilter: TypedEventFilter<TEvent>
-  ): this;
-  removeAllListeners(eventName?: string): this;
-  off: OnEvent<this>;
-  on: OnEvent<this>;
-  once: OnEvent<this>;
-  removeListener: OnEvent<this>;
+  on<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  on<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-  functions: {
-    deleteFeed(
-      symbol: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+  once<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  once<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-    getFeed(
-      symbol: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[string, string, boolean]>;
+  listeners<TCEvent extends TypedContractEvent>(
+    event: TCEvent
+  ): Promise<Array<TypedListener<TCEvent>>>;
+  listeners(eventName?: string): Promise<Array<Listener>>;
+  removeAllListeners<TCEvent extends TypedContractEvent>(
+    event?: TCEvent
+  ): Promise<this>;
 
-    getNormalizedPrice(
-      symbol: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+  deleteFeed: TypedContractMethod<[symbol: string], [void], "nonpayable">;
 
-    getPrice(
-      symbol: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+  getFeed: TypedContractMethod<
+    [symbol: string],
+    [[string, string, boolean]],
+    "view"
+  >;
 
-    pricePrecision(overrides?: CallOverrides): Promise<[BigNumber]>;
+  getNormalizedPrice: TypedContractMethod<[symbol: string], [bigint], "view">;
 
-    pricePrecisionScalar(overrides?: CallOverrides): Promise<[BigNumber]>;
+  getPrice: TypedContractMethod<[symbol: string], [bigint], "view">;
 
-    priceStalenessThreshold(overrides?: CallOverrides): Promise<[BigNumber]>;
+  pricePrecision: TypedContractMethod<[], [bigint], "view">;
 
-    setFeed(
-      asset: PromiseOrValue<string>,
-      feed: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+  pricePrecisionScalar: TypedContractMethod<[], [bigint], "view">;
 
-    setPriceStalenessThreshold(
-      newPriceStalenessThreshold: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-  };
+  priceStalenessThreshold: TypedContractMethod<[], [bigint], "view">;
 
-  deleteFeed(
-    symbol: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  setFeed: TypedContractMethod<
+    [asset: AddressLike, feed: AddressLike],
+    [void],
+    "nonpayable"
+  >;
 
-  getFeed(
-    symbol: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<[string, string, boolean]>;
+  setPriceStalenessThreshold: TypedContractMethod<
+    [newPriceStalenessThreshold: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
 
-  getNormalizedPrice(
-    symbol: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
 
-  getPrice(
-    symbol: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  getFunction(
+    nameOrSignature: "deleteFeed"
+  ): TypedContractMethod<[symbol: string], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "getFeed"
+  ): TypedContractMethod<[symbol: string], [[string, string, boolean]], "view">;
+  getFunction(
+    nameOrSignature: "getNormalizedPrice"
+  ): TypedContractMethod<[symbol: string], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getPrice"
+  ): TypedContractMethod<[symbol: string], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "pricePrecision"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "pricePrecisionScalar"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "priceStalenessThreshold"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "setFeed"
+  ): TypedContractMethod<
+    [asset: AddressLike, feed: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setPriceStalenessThreshold"
+  ): TypedContractMethod<
+    [newPriceStalenessThreshold: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
 
-  pricePrecision(overrides?: CallOverrides): Promise<BigNumber>;
-
-  pricePrecisionScalar(overrides?: CallOverrides): Promise<BigNumber>;
-
-  priceStalenessThreshold(overrides?: CallOverrides): Promise<BigNumber>;
-
-  setFeed(
-    asset: PromiseOrValue<string>,
-    feed: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  setPriceStalenessThreshold(
-    newPriceStalenessThreshold: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  callStatic: {
-    deleteFeed(
-      symbol: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    getFeed(
-      symbol: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[string, string, boolean]>;
-
-    getNormalizedPrice(
-      symbol: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getPrice(
-      symbol: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    pricePrecision(overrides?: CallOverrides): Promise<BigNumber>;
-
-    pricePrecisionScalar(overrides?: CallOverrides): Promise<BigNumber>;
-
-    priceStalenessThreshold(overrides?: CallOverrides): Promise<BigNumber>;
-
-    setFeed(
-      asset: PromiseOrValue<string>,
-      feed: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setPriceStalenessThreshold(
-      newPriceStalenessThreshold: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-  };
+  getEvent(
+    key: "DeleteFeed"
+  ): TypedContractEvent<
+    DeleteFeedEvent.InputTuple,
+    DeleteFeedEvent.OutputTuple,
+    DeleteFeedEvent.OutputObject
+  >;
+  getEvent(
+    key: "SetFeed"
+  ): TypedContractEvent<
+    SetFeedEvent.InputTuple,
+    SetFeedEvent.OutputTuple,
+    SetFeedEvent.OutputObject
+  >;
+  getEvent(
+    key: "SetPriceStalenessThreshold"
+  ): TypedContractEvent<
+    SetPriceStalenessThresholdEvent.InputTuple,
+    SetPriceStalenessThresholdEvent.OutputTuple,
+    SetPriceStalenessThresholdEvent.OutputObject
+  >;
 
   filters: {
-    "DeleteFeed(address,address)"(
-      asset?: PromiseOrValue<string> | null,
-      feed?: PromiseOrValue<string> | null
-    ): DeleteFeedEventFilter;
-    DeleteFeed(
-      asset?: PromiseOrValue<string> | null,
-      feed?: PromiseOrValue<string> | null
-    ): DeleteFeedEventFilter;
+    "DeleteFeed(address,address)": TypedContractEvent<
+      DeleteFeedEvent.InputTuple,
+      DeleteFeedEvent.OutputTuple,
+      DeleteFeedEvent.OutputObject
+    >;
+    DeleteFeed: TypedContractEvent<
+      DeleteFeedEvent.InputTuple,
+      DeleteFeedEvent.OutputTuple,
+      DeleteFeedEvent.OutputObject
+    >;
 
-    "SetFeed(address,address)"(
-      asset?: PromiseOrValue<string> | null,
-      feed?: PromiseOrValue<string> | null
-    ): SetFeedEventFilter;
-    SetFeed(
-      asset?: PromiseOrValue<string> | null,
-      feed?: PromiseOrValue<string> | null
-    ): SetFeedEventFilter;
+    "SetFeed(address,address)": TypedContractEvent<
+      SetFeedEvent.InputTuple,
+      SetFeedEvent.OutputTuple,
+      SetFeedEvent.OutputObject
+    >;
+    SetFeed: TypedContractEvent<
+      SetFeedEvent.InputTuple,
+      SetFeedEvent.OutputTuple,
+      SetFeedEvent.OutputObject
+    >;
 
-    "SetPriceStalenessThreshold(uint256,uint256)"(
-      oldPriceStalenessThreshold?: null,
-      newPriceStalenessThreshold?: null
-    ): SetPriceStalenessThresholdEventFilter;
-    SetPriceStalenessThreshold(
-      oldPriceStalenessThreshold?: null,
-      newPriceStalenessThreshold?: null
-    ): SetPriceStalenessThresholdEventFilter;
-  };
-
-  estimateGas: {
-    deleteFeed(
-      symbol: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    getFeed(
-      symbol: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getNormalizedPrice(
-      symbol: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getPrice(
-      symbol: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    pricePrecision(overrides?: CallOverrides): Promise<BigNumber>;
-
-    pricePrecisionScalar(overrides?: CallOverrides): Promise<BigNumber>;
-
-    priceStalenessThreshold(overrides?: CallOverrides): Promise<BigNumber>;
-
-    setFeed(
-      asset: PromiseOrValue<string>,
-      feed: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    setPriceStalenessThreshold(
-      newPriceStalenessThreshold: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-  };
-
-  populateTransaction: {
-    deleteFeed(
-      symbol: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    getFeed(
-      symbol: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getNormalizedPrice(
-      symbol: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getPrice(
-      symbol: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    pricePrecision(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    pricePrecisionScalar(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    priceStalenessThreshold(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    setFeed(
-      asset: PromiseOrValue<string>,
-      feed: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setPriceStalenessThreshold(
-      newPriceStalenessThreshold: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
+    "SetPriceStalenessThreshold(uint256,uint256)": TypedContractEvent<
+      SetPriceStalenessThresholdEvent.InputTuple,
+      SetPriceStalenessThresholdEvent.OutputTuple,
+      SetPriceStalenessThresholdEvent.OutputObject
+    >;
+    SetPriceStalenessThreshold: TypedContractEvent<
+      SetPriceStalenessThresholdEvent.InputTuple,
+      SetPriceStalenessThresholdEvent.OutputTuple,
+      SetPriceStalenessThresholdEvent.OutputObject
+    >;
   };
 }

@@ -3,47 +3,36 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumber,
   BigNumberish,
   BytesLike,
-  CallOverrides,
-  ContractTransaction,
-  Overrides,
-  PopulatedTransaction,
-  Signer,
-  utils,
+  FunctionFragment,
+  Result,
+  Interface,
+  AddressLike,
+  ContractRunner,
+  ContractMethod,
+  Listener,
 } from "ethers";
-import type { FunctionFragment, Result } from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
 import type {
-  TypedEventFilter,
-  TypedEvent,
+  TypedContractEvent,
+  TypedDeferredTopicFilter,
+  TypedEventLog,
   TypedListener,
-  OnEvent,
-  PromiseOrValue,
+  TypedContractMethod,
 } from "../../../../../common";
 
-export interface IUniswapV3PoolOwnerActionsInterface extends utils.Interface {
-  functions: {
-    "collectProtocol(address,uint128,uint128)": FunctionFragment;
-    "setFeeProtocol(uint8,uint8)": FunctionFragment;
-  };
-
+export interface IUniswapV3PoolOwnerActionsInterface extends Interface {
   getFunction(
-    nameOrSignatureOrTopic: "collectProtocol" | "setFeeProtocol"
+    nameOrSignature: "collectProtocol" | "setFeeProtocol"
   ): FunctionFragment;
 
   encodeFunctionData(
     functionFragment: "collectProtocol",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>
-    ]
+    values: [AddressLike, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setFeeProtocol",
-    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
+    values: [BigNumberish, BigNumberish]
   ): string;
 
   decodeFunctionResult(
@@ -54,110 +43,89 @@ export interface IUniswapV3PoolOwnerActionsInterface extends utils.Interface {
     functionFragment: "setFeeProtocol",
     data: BytesLike
   ): Result;
-
-  events: {};
 }
 
 export interface IUniswapV3PoolOwnerActions extends BaseContract {
-  connect(signerOrProvider: Signer | Provider | string): this;
-  attach(addressOrName: string): this;
-  deployed(): Promise<this>;
+  connect(runner?: ContractRunner | null): IUniswapV3PoolOwnerActions;
+  waitForDeployment(): Promise<this>;
 
   interface: IUniswapV3PoolOwnerActionsInterface;
 
-  queryFilter<TEvent extends TypedEvent>(
-    event: TypedEventFilter<TEvent>,
+  queryFilter<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TEvent>>;
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  queryFilter<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
 
-  listeners<TEvent extends TypedEvent>(
-    eventFilter?: TypedEventFilter<TEvent>
-  ): Array<TypedListener<TEvent>>;
-  listeners(eventName?: string): Array<Listener>;
-  removeAllListeners<TEvent extends TypedEvent>(
-    eventFilter: TypedEventFilter<TEvent>
-  ): this;
-  removeAllListeners(eventName?: string): this;
-  off: OnEvent<this>;
-  on: OnEvent<this>;
-  once: OnEvent<this>;
-  removeListener: OnEvent<this>;
+  on<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  on<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-  functions: {
-    collectProtocol(
-      recipient: PromiseOrValue<string>,
-      amount0Requested: PromiseOrValue<BigNumberish>,
-      amount1Requested: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+  once<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  once<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-    setFeeProtocol(
-      feeProtocol0: PromiseOrValue<BigNumberish>,
-      feeProtocol1: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-  };
+  listeners<TCEvent extends TypedContractEvent>(
+    event: TCEvent
+  ): Promise<Array<TypedListener<TCEvent>>>;
+  listeners(eventName?: string): Promise<Array<Listener>>;
+  removeAllListeners<TCEvent extends TypedContractEvent>(
+    event?: TCEvent
+  ): Promise<this>;
 
-  collectProtocol(
-    recipient: PromiseOrValue<string>,
-    amount0Requested: PromiseOrValue<BigNumberish>,
-    amount1Requested: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  collectProtocol: TypedContractMethod<
+    [
+      recipient: AddressLike,
+      amount0Requested: BigNumberish,
+      amount1Requested: BigNumberish
+    ],
+    [[bigint, bigint] & { amount0: bigint; amount1: bigint }],
+    "nonpayable"
+  >;
 
-  setFeeProtocol(
-    feeProtocol0: PromiseOrValue<BigNumberish>,
-    feeProtocol1: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  setFeeProtocol: TypedContractMethod<
+    [feeProtocol0: BigNumberish, feeProtocol1: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
 
-  callStatic: {
-    collectProtocol(
-      recipient: PromiseOrValue<string>,
-      amount0Requested: PromiseOrValue<BigNumberish>,
-      amount1Requested: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber] & { amount0: BigNumber; amount1: BigNumber }
-    >;
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
 
-    setFeeProtocol(
-      feeProtocol0: PromiseOrValue<BigNumberish>,
-      feeProtocol1: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-  };
+  getFunction(
+    nameOrSignature: "collectProtocol"
+  ): TypedContractMethod<
+    [
+      recipient: AddressLike,
+      amount0Requested: BigNumberish,
+      amount1Requested: BigNumberish
+    ],
+    [[bigint, bigint] & { amount0: bigint; amount1: bigint }],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setFeeProtocol"
+  ): TypedContractMethod<
+    [feeProtocol0: BigNumberish, feeProtocol1: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
 
   filters: {};
-
-  estimateGas: {
-    collectProtocol(
-      recipient: PromiseOrValue<string>,
-      amount0Requested: PromiseOrValue<BigNumberish>,
-      amount1Requested: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    setFeeProtocol(
-      feeProtocol0: PromiseOrValue<BigNumberish>,
-      feeProtocol1: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-  };
-
-  populateTransaction: {
-    collectProtocol(
-      recipient: PromiseOrValue<string>,
-      amount0Requested: PromiseOrValue<BigNumberish>,
-      amount1Requested: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setFeeProtocol(
-      feeProtocol0: PromiseOrValue<BigNumberish>,
-      feeProtocol1: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-  };
 }

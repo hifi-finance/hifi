@@ -3,41 +3,35 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumber,
   BigNumberish,
   BytesLike,
-  CallOverrides,
-  PopulatedTransaction,
-  Signer,
-  utils,
+  FunctionFragment,
+  Result,
+  Interface,
+  ContractRunner,
+  ContractMethod,
+  Listener,
 } from "ethers";
-import type { FunctionFragment, Result } from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
 import type {
-  TypedEventFilter,
-  TypedEvent,
+  TypedContractEvent,
+  TypedDeferredTopicFilter,
+  TypedEventLog,
   TypedListener,
-  OnEvent,
-  PromiseOrValue,
+  TypedContractMethod,
 } from "../../../../../common";
 
-export interface IUniswapV3PoolDerivedStateInterface extends utils.Interface {
-  functions: {
-    "observe(uint32[])": FunctionFragment;
-    "snapshotCumulativesInside(int24,int24)": FunctionFragment;
-  };
-
+export interface IUniswapV3PoolDerivedStateInterface extends Interface {
   getFunction(
-    nameOrSignatureOrTopic: "observe" | "snapshotCumulativesInside"
+    nameOrSignature: "observe" | "snapshotCumulativesInside"
   ): FunctionFragment;
 
   encodeFunctionData(
     functionFragment: "observe",
-    values: [PromiseOrValue<BigNumberish>[]]
+    values: [BigNumberish[]]
   ): string;
   encodeFunctionData(
     functionFragment: "snapshotCumulativesInside",
-    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
+    values: [BigNumberish, BigNumberish]
   ): string;
 
   decodeFunctionResult(functionFragment: "observe", data: BytesLike): Result;
@@ -45,131 +39,103 @@ export interface IUniswapV3PoolDerivedStateInterface extends utils.Interface {
     functionFragment: "snapshotCumulativesInside",
     data: BytesLike
   ): Result;
-
-  events: {};
 }
 
 export interface IUniswapV3PoolDerivedState extends BaseContract {
-  connect(signerOrProvider: Signer | Provider | string): this;
-  attach(addressOrName: string): this;
-  deployed(): Promise<this>;
+  connect(runner?: ContractRunner | null): IUniswapV3PoolDerivedState;
+  waitForDeployment(): Promise<this>;
 
   interface: IUniswapV3PoolDerivedStateInterface;
 
-  queryFilter<TEvent extends TypedEvent>(
-    event: TypedEventFilter<TEvent>,
+  queryFilter<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TEvent>>;
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  queryFilter<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
 
-  listeners<TEvent extends TypedEvent>(
-    eventFilter?: TypedEventFilter<TEvent>
-  ): Array<TypedListener<TEvent>>;
-  listeners(eventName?: string): Array<Listener>;
-  removeAllListeners<TEvent extends TypedEvent>(
-    eventFilter: TypedEventFilter<TEvent>
-  ): this;
-  removeAllListeners(eventName?: string): this;
-  off: OnEvent<this>;
-  on: OnEvent<this>;
-  once: OnEvent<this>;
-  removeListener: OnEvent<this>;
+  on<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  on<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-  functions: {
-    observe(
-      secondsAgos: PromiseOrValue<BigNumberish>[],
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber[], BigNumber[]] & {
-        tickCumulatives: BigNumber[];
-        secondsPerLiquidityCumulativeX128s: BigNumber[];
+  once<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  once<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+
+  listeners<TCEvent extends TypedContractEvent>(
+    event: TCEvent
+  ): Promise<Array<TypedListener<TCEvent>>>;
+  listeners(eventName?: string): Promise<Array<Listener>>;
+  removeAllListeners<TCEvent extends TypedContractEvent>(
+    event?: TCEvent
+  ): Promise<this>;
+
+  observe: TypedContractMethod<
+    [secondsAgos: BigNumberish[]],
+    [
+      [bigint[], bigint[]] & {
+        tickCumulatives: bigint[];
+        secondsPerLiquidityCumulativeX128s: bigint[];
       }
-    >;
-
-    snapshotCumulativesInside(
-      tickLower: PromiseOrValue<BigNumberish>,
-      tickUpper: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber, number] & {
-        tickCumulativeInside: BigNumber;
-        secondsPerLiquidityInsideX128: BigNumber;
-        secondsInside: number;
-      }
-    >;
-  };
-
-  observe(
-    secondsAgos: PromiseOrValue<BigNumberish>[],
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber[], BigNumber[]] & {
-      tickCumulatives: BigNumber[];
-      secondsPerLiquidityCumulativeX128s: BigNumber[];
-    }
+    ],
+    "view"
   >;
 
-  snapshotCumulativesInside(
-    tickLower: PromiseOrValue<BigNumberish>,
-    tickUpper: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber, BigNumber, number] & {
-      tickCumulativeInside: BigNumber;
-      secondsPerLiquidityInsideX128: BigNumber;
-      secondsInside: number;
-    }
+  snapshotCumulativesInside: TypedContractMethod<
+    [tickLower: BigNumberish, tickUpper: BigNumberish],
+    [
+      [bigint, bigint, bigint] & {
+        tickCumulativeInside: bigint;
+        secondsPerLiquidityInsideX128: bigint;
+        secondsInside: bigint;
+      }
+    ],
+    "view"
   >;
 
-  callStatic: {
-    observe(
-      secondsAgos: PromiseOrValue<BigNumberish>[],
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber[], BigNumber[]] & {
-        tickCumulatives: BigNumber[];
-        secondsPerLiquidityCumulativeX128s: BigNumber[];
-      }
-    >;
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
 
-    snapshotCumulativesInside(
-      tickLower: PromiseOrValue<BigNumberish>,
-      tickUpper: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber, number] & {
-        tickCumulativeInside: BigNumber;
-        secondsPerLiquidityInsideX128: BigNumber;
-        secondsInside: number;
+  getFunction(
+    nameOrSignature: "observe"
+  ): TypedContractMethod<
+    [secondsAgos: BigNumberish[]],
+    [
+      [bigint[], bigint[]] & {
+        tickCumulatives: bigint[];
+        secondsPerLiquidityCumulativeX128s: bigint[];
       }
-    >;
-  };
+    ],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "snapshotCumulativesInside"
+  ): TypedContractMethod<
+    [tickLower: BigNumberish, tickUpper: BigNumberish],
+    [
+      [bigint, bigint, bigint] & {
+        tickCumulativeInside: bigint;
+        secondsPerLiquidityInsideX128: bigint;
+        secondsInside: bigint;
+      }
+    ],
+    "view"
+  >;
 
   filters: {};
-
-  estimateGas: {
-    observe(
-      secondsAgos: PromiseOrValue<BigNumberish>[],
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    snapshotCumulativesInside(
-      tickLower: PromiseOrValue<BigNumberish>,
-      tickUpper: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-  };
-
-  populateTransaction: {
-    observe(
-      secondsAgos: PromiseOrValue<BigNumberish>[],
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    snapshotCumulativesInside(
-      tickLower: PromiseOrValue<BigNumberish>,
-      tickUpper: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-  };
 }

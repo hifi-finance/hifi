@@ -3,37 +3,27 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumber,
   BigNumberish,
   BytesLike,
-  CallOverrides,
-  ContractTransaction,
-  PayableOverrides,
-  PopulatedTransaction,
-  Signer,
-  utils,
+  FunctionFragment,
+  Result,
+  Interface,
+  AddressLike,
+  ContractRunner,
+  ContractMethod,
+  Listener,
 } from "ethers";
-import type { FunctionFragment, Result } from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
 import type {
-  TypedEventFilter,
-  TypedEvent,
+  TypedContractEvent,
+  TypedDeferredTopicFilter,
+  TypedEventLog,
   TypedListener,
-  OnEvent,
-  PromiseOrValue,
+  TypedContractMethod,
 } from "../../../../common";
 
-export interface PeripheryPaymentsInterface extends utils.Interface {
-  functions: {
-    "WETH9()": FunctionFragment;
-    "factory()": FunctionFragment;
-    "refundETH()": FunctionFragment;
-    "sweepToken(address,uint256,address)": FunctionFragment;
-    "unwrapWETH9(uint256,address)": FunctionFragment;
-  };
-
+export interface PeripheryPaymentsInterface extends Interface {
   getFunction(
-    nameOrSignatureOrTopic:
+    nameOrSignature:
       | "WETH9"
       | "factory"
       | "refundETH"
@@ -46,15 +36,11 @@ export interface PeripheryPaymentsInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "refundETH", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "sweepToken",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<string>
-    ]
+    values: [AddressLike, BigNumberish, AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "unwrapWETH9",
-    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<string>]
+    values: [BigNumberish, AddressLike]
   ): string;
 
   decodeFunctionResult(functionFragment: "WETH9", data: BytesLike): Result;
@@ -65,146 +51,96 @@ export interface PeripheryPaymentsInterface extends utils.Interface {
     functionFragment: "unwrapWETH9",
     data: BytesLike
   ): Result;
-
-  events: {};
 }
 
 export interface PeripheryPayments extends BaseContract {
-  connect(signerOrProvider: Signer | Provider | string): this;
-  attach(addressOrName: string): this;
-  deployed(): Promise<this>;
+  connect(runner?: ContractRunner | null): PeripheryPayments;
+  waitForDeployment(): Promise<this>;
 
   interface: PeripheryPaymentsInterface;
 
-  queryFilter<TEvent extends TypedEvent>(
-    event: TypedEventFilter<TEvent>,
+  queryFilter<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TEvent>>;
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  queryFilter<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
 
-  listeners<TEvent extends TypedEvent>(
-    eventFilter?: TypedEventFilter<TEvent>
-  ): Array<TypedListener<TEvent>>;
-  listeners(eventName?: string): Array<Listener>;
-  removeAllListeners<TEvent extends TypedEvent>(
-    eventFilter: TypedEventFilter<TEvent>
-  ): this;
-  removeAllListeners(eventName?: string): this;
-  off: OnEvent<this>;
-  on: OnEvent<this>;
-  once: OnEvent<this>;
-  removeListener: OnEvent<this>;
+  on<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  on<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-  functions: {
-    WETH9(overrides?: CallOverrides): Promise<[string]>;
+  once<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  once<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-    factory(overrides?: CallOverrides): Promise<[string]>;
+  listeners<TCEvent extends TypedContractEvent>(
+    event: TCEvent
+  ): Promise<Array<TypedListener<TCEvent>>>;
+  listeners(eventName?: string): Promise<Array<Listener>>;
+  removeAllListeners<TCEvent extends TypedContractEvent>(
+    event?: TCEvent
+  ): Promise<this>;
 
-    refundETH(
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+  WETH9: TypedContractMethod<[], [string], "view">;
 
-    sweepToken(
-      token: PromiseOrValue<string>,
-      amountMinimum: PromiseOrValue<BigNumberish>,
-      recipient: PromiseOrValue<string>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+  factory: TypedContractMethod<[], [string], "view">;
 
-    unwrapWETH9(
-      amountMinimum: PromiseOrValue<BigNumberish>,
-      recipient: PromiseOrValue<string>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-  };
+  refundETH: TypedContractMethod<[], [void], "payable">;
 
-  WETH9(overrides?: CallOverrides): Promise<string>;
+  sweepToken: TypedContractMethod<
+    [token: AddressLike, amountMinimum: BigNumberish, recipient: AddressLike],
+    [void],
+    "payable"
+  >;
 
-  factory(overrides?: CallOverrides): Promise<string>;
+  unwrapWETH9: TypedContractMethod<
+    [amountMinimum: BigNumberish, recipient: AddressLike],
+    [void],
+    "payable"
+  >;
 
-  refundETH(
-    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
 
-  sweepToken(
-    token: PromiseOrValue<string>,
-    amountMinimum: PromiseOrValue<BigNumberish>,
-    recipient: PromiseOrValue<string>,
-    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  unwrapWETH9(
-    amountMinimum: PromiseOrValue<BigNumberish>,
-    recipient: PromiseOrValue<string>,
-    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  callStatic: {
-    WETH9(overrides?: CallOverrides): Promise<string>;
-
-    factory(overrides?: CallOverrides): Promise<string>;
-
-    refundETH(overrides?: CallOverrides): Promise<void>;
-
-    sweepToken(
-      token: PromiseOrValue<string>,
-      amountMinimum: PromiseOrValue<BigNumberish>,
-      recipient: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    unwrapWETH9(
-      amountMinimum: PromiseOrValue<BigNumberish>,
-      recipient: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-  };
+  getFunction(
+    nameOrSignature: "WETH9"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "factory"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "refundETH"
+  ): TypedContractMethod<[], [void], "payable">;
+  getFunction(
+    nameOrSignature: "sweepToken"
+  ): TypedContractMethod<
+    [token: AddressLike, amountMinimum: BigNumberish, recipient: AddressLike],
+    [void],
+    "payable"
+  >;
+  getFunction(
+    nameOrSignature: "unwrapWETH9"
+  ): TypedContractMethod<
+    [amountMinimum: BigNumberish, recipient: AddressLike],
+    [void],
+    "payable"
+  >;
 
   filters: {};
-
-  estimateGas: {
-    WETH9(overrides?: CallOverrides): Promise<BigNumber>;
-
-    factory(overrides?: CallOverrides): Promise<BigNumber>;
-
-    refundETH(
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    sweepToken(
-      token: PromiseOrValue<string>,
-      amountMinimum: PromiseOrValue<BigNumberish>,
-      recipient: PromiseOrValue<string>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    unwrapWETH9(
-      amountMinimum: PromiseOrValue<BigNumberish>,
-      recipient: PromiseOrValue<string>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-  };
-
-  populateTransaction: {
-    WETH9(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    factory(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    refundETH(
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    sweepToken(
-      token: PromiseOrValue<string>,
-      amountMinimum: PromiseOrValue<BigNumberish>,
-      recipient: PromiseOrValue<string>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    unwrapWETH9(
-      amountMinimum: PromiseOrValue<BigNumberish>,
-      recipient: PromiseOrValue<string>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-  };
 }

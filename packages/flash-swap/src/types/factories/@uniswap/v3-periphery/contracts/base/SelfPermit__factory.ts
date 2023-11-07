@@ -2,8 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Contract, Signer, utils } from "ethers";
-import type { Provider } from "@ethersproject/providers";
+import { Contract, Interface, type ContractRunner } from "ethers";
 import type {
   SelfPermit,
   SelfPermitInterface,
@@ -167,12 +166,9 @@ const _abi = [
 export class SelfPermit__factory {
   static readonly abi = _abi;
   static createInterface(): SelfPermitInterface {
-    return new utils.Interface(_abi) as SelfPermitInterface;
+    return new Interface(_abi) as SelfPermitInterface;
   }
-  static connect(
-    address: string,
-    signerOrProvider: Signer | Provider
-  ): SelfPermit {
-    return new Contract(address, _abi, signerOrProvider) as SelfPermit;
+  static connect(address: string, runner?: ContractRunner | null): SelfPermit {
+    return new Contract(address, _abi, runner) as unknown as SelfPermit;
   }
 }

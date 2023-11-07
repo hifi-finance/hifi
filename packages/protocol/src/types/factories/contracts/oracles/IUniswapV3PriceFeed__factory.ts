@@ -2,8 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Contract, Signer, utils } from "ethers";
-import type { Provider } from "@ethersproject/providers";
+import { Contract, Interface, type ContractRunner } from "ethers";
 import type {
   IUniswapV3PriceFeed,
   IUniswapV3PriceFeedInterface,
@@ -225,12 +224,16 @@ const _abi = [
 export class IUniswapV3PriceFeed__factory {
   static readonly abi = _abi;
   static createInterface(): IUniswapV3PriceFeedInterface {
-    return new utils.Interface(_abi) as IUniswapV3PriceFeedInterface;
+    return new Interface(_abi) as IUniswapV3PriceFeedInterface;
   }
   static connect(
     address: string,
-    signerOrProvider: Signer | Provider
+    runner?: ContractRunner | null
   ): IUniswapV3PriceFeed {
-    return new Contract(address, _abi, signerOrProvider) as IUniswapV3PriceFeed;
+    return new Contract(
+      address,
+      _abi,
+      runner
+    ) as unknown as IUniswapV3PriceFeed;
   }
 }

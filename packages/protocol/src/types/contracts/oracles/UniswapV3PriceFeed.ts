@@ -3,50 +3,29 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumber,
   BigNumberish,
   BytesLike,
-  CallOverrides,
-  ContractTransaction,
-  Overrides,
-  PopulatedTransaction,
-  Signer,
-  utils,
-} from "ethers";
-import type {
   FunctionFragment,
   Result,
+  Interface,
   EventFragment,
-} from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
+  AddressLike,
+  ContractRunner,
+  ContractMethod,
+  Listener,
+} from "ethers";
 import type {
-  TypedEventFilter,
-  TypedEvent,
+  TypedContractEvent,
+  TypedDeferredTopicFilter,
+  TypedEventLog,
+  TypedLogDescription,
   TypedListener,
-  OnEvent,
-  PromiseOrValue,
+  TypedContractMethod,
 } from "../../common";
 
-export interface UniswapV3PriceFeedInterface extends utils.Interface {
-  functions: {
-    "_renounceOwnership()": FunctionFragment;
-    "_transferOwnership(address)": FunctionFragment;
-    "baseAsset()": FunctionFragment;
-    "decimals()": FunctionFragment;
-    "description()": FunctionFragment;
-    "getRoundData(uint80)": FunctionFragment;
-    "latestRoundData()": FunctionFragment;
-    "maxPrice()": FunctionFragment;
-    "owner()": FunctionFragment;
-    "pool()": FunctionFragment;
-    "quoteAsset()": FunctionFragment;
-    "setMaxPrice(int256)": FunctionFragment;
-    "twapInterval()": FunctionFragment;
-    "version()": FunctionFragment;
-  };
-
+export interface UniswapV3PriceFeedInterface extends Interface {
   getFunction(
-    nameOrSignatureOrTopic:
+    nameOrSignature:
       | "_renounceOwnership"
       | "_transferOwnership"
       | "baseAsset"
@@ -63,13 +42,15 @@ export interface UniswapV3PriceFeedInterface extends utils.Interface {
       | "version"
   ): FunctionFragment;
 
+  getEvent(nameOrSignatureOrTopic: "TransferOwnership"): EventFragment;
+
   encodeFunctionData(
     functionFragment: "_renounceOwnership",
     values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "_transferOwnership",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(functionFragment: "baseAsset", values?: undefined): string;
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
@@ -79,7 +60,7 @@ export interface UniswapV3PriceFeedInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getRoundData",
-    values: [PromiseOrValue<BigNumberish>]
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "latestRoundData",
@@ -94,7 +75,7 @@ export interface UniswapV3PriceFeedInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "setMaxPrice",
-    values: [PromiseOrValue<BigNumberish>]
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "twapInterval",
@@ -137,315 +118,213 @@ export interface UniswapV3PriceFeedInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "version", data: BytesLike): Result;
-
-  events: {
-    "TransferOwnership(address,address)": EventFragment;
-  };
-
-  getEvent(nameOrSignatureOrTopic: "TransferOwnership"): EventFragment;
 }
 
-export interface TransferOwnershipEventObject {
-  oldOwner: string;
-  newOwner: string;
+export namespace TransferOwnershipEvent {
+  export type InputTuple = [oldOwner: AddressLike, newOwner: AddressLike];
+  export type OutputTuple = [oldOwner: string, newOwner: string];
+  export interface OutputObject {
+    oldOwner: string;
+    newOwner: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type TransferOwnershipEvent = TypedEvent<
-  [string, string],
-  TransferOwnershipEventObject
->;
-
-export type TransferOwnershipEventFilter =
-  TypedEventFilter<TransferOwnershipEvent>;
 
 export interface UniswapV3PriceFeed extends BaseContract {
-  connect(signerOrProvider: Signer | Provider | string): this;
-  attach(addressOrName: string): this;
-  deployed(): Promise<this>;
+  connect(runner?: ContractRunner | null): UniswapV3PriceFeed;
+  waitForDeployment(): Promise<this>;
 
   interface: UniswapV3PriceFeedInterface;
 
-  queryFilter<TEvent extends TypedEvent>(
-    event: TypedEventFilter<TEvent>,
+  queryFilter<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TEvent>>;
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  queryFilter<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
 
-  listeners<TEvent extends TypedEvent>(
-    eventFilter?: TypedEventFilter<TEvent>
-  ): Array<TypedListener<TEvent>>;
-  listeners(eventName?: string): Array<Listener>;
-  removeAllListeners<TEvent extends TypedEvent>(
-    eventFilter: TypedEventFilter<TEvent>
-  ): this;
-  removeAllListeners(eventName?: string): this;
-  off: OnEvent<this>;
-  on: OnEvent<this>;
-  once: OnEvent<this>;
-  removeListener: OnEvent<this>;
+  on<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  on<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-  functions: {
-    _renounceOwnership(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+  once<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  once<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-    _transferOwnership(
-      newOwner: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+  listeners<TCEvent extends TypedContractEvent>(
+    event: TCEvent
+  ): Promise<Array<TypedListener<TCEvent>>>;
+  listeners(eventName?: string): Promise<Array<Listener>>;
+  removeAllListeners<TCEvent extends TypedContractEvent>(
+    event?: TCEvent
+  ): Promise<this>;
 
-    baseAsset(overrides?: CallOverrides): Promise<[string]>;
+  _renounceOwnership: TypedContractMethod<[], [void], "nonpayable">;
 
-    decimals(overrides?: CallOverrides): Promise<[number]>;
-
-    description(overrides?: CallOverrides): Promise<[string]>;
-
-    getRoundData(
-      roundId_: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
-        roundId: BigNumber;
-        answer: BigNumber;
-        startedAt: BigNumber;
-        updatedAt: BigNumber;
-        answeredInRound: BigNumber;
-      }
-    >;
-
-    latestRoundData(
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
-        roundId: BigNumber;
-        answer: BigNumber;
-        startedAt: BigNumber;
-        updatedAt: BigNumber;
-        answeredInRound: BigNumber;
-      }
-    >;
-
-    maxPrice(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    owner(overrides?: CallOverrides): Promise<[string]>;
-
-    pool(overrides?: CallOverrides): Promise<[string]>;
-
-    quoteAsset(overrides?: CallOverrides): Promise<[string]>;
-
-    setMaxPrice(
-      maxPrice_: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    twapInterval(overrides?: CallOverrides): Promise<[number]>;
-
-    version(overrides?: CallOverrides): Promise<[BigNumber]>;
-  };
-
-  _renounceOwnership(
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  _transferOwnership(
-    newOwner: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  baseAsset(overrides?: CallOverrides): Promise<string>;
-
-  decimals(overrides?: CallOverrides): Promise<number>;
-
-  description(overrides?: CallOverrides): Promise<string>;
-
-  getRoundData(
-    roundId_: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
-      roundId: BigNumber;
-      answer: BigNumber;
-      startedAt: BigNumber;
-      updatedAt: BigNumber;
-      answeredInRound: BigNumber;
-    }
+  _transferOwnership: TypedContractMethod<
+    [newOwner: AddressLike],
+    [void],
+    "nonpayable"
   >;
 
-  latestRoundData(
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
-      roundId: BigNumber;
-      answer: BigNumber;
-      startedAt: BigNumber;
-      updatedAt: BigNumber;
-      answeredInRound: BigNumber;
-    }
+  baseAsset: TypedContractMethod<[], [string], "view">;
+
+  decimals: TypedContractMethod<[], [bigint], "view">;
+
+  description: TypedContractMethod<[], [string], "view">;
+
+  getRoundData: TypedContractMethod<
+    [roundId_: BigNumberish],
+    [
+      [bigint, bigint, bigint, bigint, bigint] & {
+        roundId: bigint;
+        answer: bigint;
+        startedAt: bigint;
+        updatedAt: bigint;
+        answeredInRound: bigint;
+      }
+    ],
+    "view"
   >;
 
-  maxPrice(overrides?: CallOverrides): Promise<BigNumber>;
-
-  owner(overrides?: CallOverrides): Promise<string>;
-
-  pool(overrides?: CallOverrides): Promise<string>;
-
-  quoteAsset(overrides?: CallOverrides): Promise<string>;
-
-  setMaxPrice(
-    maxPrice_: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  twapInterval(overrides?: CallOverrides): Promise<number>;
-
-  version(overrides?: CallOverrides): Promise<BigNumber>;
-
-  callStatic: {
-    _renounceOwnership(overrides?: CallOverrides): Promise<void>;
-
-    _transferOwnership(
-      newOwner: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    baseAsset(overrides?: CallOverrides): Promise<string>;
-
-    decimals(overrides?: CallOverrides): Promise<number>;
-
-    description(overrides?: CallOverrides): Promise<string>;
-
-    getRoundData(
-      roundId_: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
-        roundId: BigNumber;
-        answer: BigNumber;
-        startedAt: BigNumber;
-        updatedAt: BigNumber;
-        answeredInRound: BigNumber;
+  latestRoundData: TypedContractMethod<
+    [],
+    [
+      [bigint, bigint, bigint, bigint, bigint] & {
+        roundId: bigint;
+        answer: bigint;
+        startedAt: bigint;
+        updatedAt: bigint;
+        answeredInRound: bigint;
       }
-    >;
+    ],
+    "view"
+  >;
 
-    latestRoundData(
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
-        roundId: BigNumber;
-        answer: BigNumber;
-        startedAt: BigNumber;
-        updatedAt: BigNumber;
-        answeredInRound: BigNumber;
+  maxPrice: TypedContractMethod<[], [bigint], "view">;
+
+  owner: TypedContractMethod<[], [string], "view">;
+
+  pool: TypedContractMethod<[], [string], "view">;
+
+  quoteAsset: TypedContractMethod<[], [string], "view">;
+
+  setMaxPrice: TypedContractMethod<
+    [maxPrice_: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  twapInterval: TypedContractMethod<[], [bigint], "view">;
+
+  version: TypedContractMethod<[], [bigint], "view">;
+
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
+
+  getFunction(
+    nameOrSignature: "_renounceOwnership"
+  ): TypedContractMethod<[], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "_transferOwnership"
+  ): TypedContractMethod<[newOwner: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "baseAsset"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "decimals"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "description"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "getRoundData"
+  ): TypedContractMethod<
+    [roundId_: BigNumberish],
+    [
+      [bigint, bigint, bigint, bigint, bigint] & {
+        roundId: bigint;
+        answer: bigint;
+        startedAt: bigint;
+        updatedAt: bigint;
+        answeredInRound: bigint;
       }
-    >;
+    ],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "latestRoundData"
+  ): TypedContractMethod<
+    [],
+    [
+      [bigint, bigint, bigint, bigint, bigint] & {
+        roundId: bigint;
+        answer: bigint;
+        startedAt: bigint;
+        updatedAt: bigint;
+        answeredInRound: bigint;
+      }
+    ],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "maxPrice"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "owner"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "pool"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "quoteAsset"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "setMaxPrice"
+  ): TypedContractMethod<[maxPrice_: BigNumberish], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "twapInterval"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "version"
+  ): TypedContractMethod<[], [bigint], "view">;
 
-    maxPrice(overrides?: CallOverrides): Promise<BigNumber>;
-
-    owner(overrides?: CallOverrides): Promise<string>;
-
-    pool(overrides?: CallOverrides): Promise<string>;
-
-    quoteAsset(overrides?: CallOverrides): Promise<string>;
-
-    setMaxPrice(
-      maxPrice_: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    twapInterval(overrides?: CallOverrides): Promise<number>;
-
-    version(overrides?: CallOverrides): Promise<BigNumber>;
-  };
+  getEvent(
+    key: "TransferOwnership"
+  ): TypedContractEvent<
+    TransferOwnershipEvent.InputTuple,
+    TransferOwnershipEvent.OutputTuple,
+    TransferOwnershipEvent.OutputObject
+  >;
 
   filters: {
-    "TransferOwnership(address,address)"(
-      oldOwner?: PromiseOrValue<string> | null,
-      newOwner?: PromiseOrValue<string> | null
-    ): TransferOwnershipEventFilter;
-    TransferOwnership(
-      oldOwner?: PromiseOrValue<string> | null,
-      newOwner?: PromiseOrValue<string> | null
-    ): TransferOwnershipEventFilter;
-  };
-
-  estimateGas: {
-    _renounceOwnership(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    _transferOwnership(
-      newOwner: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    baseAsset(overrides?: CallOverrides): Promise<BigNumber>;
-
-    decimals(overrides?: CallOverrides): Promise<BigNumber>;
-
-    description(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getRoundData(
-      roundId_: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    latestRoundData(overrides?: CallOverrides): Promise<BigNumber>;
-
-    maxPrice(overrides?: CallOverrides): Promise<BigNumber>;
-
-    owner(overrides?: CallOverrides): Promise<BigNumber>;
-
-    pool(overrides?: CallOverrides): Promise<BigNumber>;
-
-    quoteAsset(overrides?: CallOverrides): Promise<BigNumber>;
-
-    setMaxPrice(
-      maxPrice_: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    twapInterval(overrides?: CallOverrides): Promise<BigNumber>;
-
-    version(overrides?: CallOverrides): Promise<BigNumber>;
-  };
-
-  populateTransaction: {
-    _renounceOwnership(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    _transferOwnership(
-      newOwner: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    baseAsset(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    description(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    getRoundData(
-      roundId_: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    latestRoundData(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    maxPrice(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    pool(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    quoteAsset(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    setMaxPrice(
-      maxPrice_: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    twapInterval(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    version(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "TransferOwnership(address,address)": TypedContractEvent<
+      TransferOwnershipEvent.InputTuple,
+      TransferOwnershipEvent.OutputTuple,
+      TransferOwnershipEvent.OutputObject
+    >;
+    TransferOwnership: TypedContractEvent<
+      TransferOwnershipEvent.InputTuple,
+      TransferOwnershipEvent.OutputTuple,
+      TransferOwnershipEvent.OutputObject
+    >;
   };
 }

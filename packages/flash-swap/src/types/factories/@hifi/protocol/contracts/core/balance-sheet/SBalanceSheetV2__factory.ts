@@ -2,8 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Contract, Signer, utils } from "ethers";
-import type { Provider } from "@ethersproject/providers";
+import { Contract, Interface, type ContractRunner } from "ethers";
 import type {
   SBalanceSheetV2,
   SBalanceSheetV2Interface,
@@ -41,12 +40,12 @@ const _abi = [
 export class SBalanceSheetV2__factory {
   static readonly abi = _abi;
   static createInterface(): SBalanceSheetV2Interface {
-    return new utils.Interface(_abi) as SBalanceSheetV2Interface;
+    return new Interface(_abi) as SBalanceSheetV2Interface;
   }
   static connect(
     address: string,
-    signerOrProvider: Signer | Provider
+    runner?: ContractRunner | null
   ): SBalanceSheetV2 {
-    return new Contract(address, _abi, signerOrProvider) as SBalanceSheetV2;
+    return new Contract(address, _abi, runner) as unknown as SBalanceSheetV2;
   }
 }

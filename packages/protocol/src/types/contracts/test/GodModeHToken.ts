@@ -3,76 +3,29 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumber,
   BigNumberish,
   BytesLike,
-  CallOverrides,
-  ContractTransaction,
-  Overrides,
-  PopulatedTransaction,
-  Signer,
-  utils,
-} from "ethers";
-import type {
   FunctionFragment,
   Result,
+  Interface,
   EventFragment,
-} from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
+  AddressLike,
+  ContractRunner,
+  ContractMethod,
+  Listener,
+} from "ethers";
 import type {
-  TypedEventFilter,
-  TypedEvent,
+  TypedContractEvent,
+  TypedDeferredTopicFilter,
+  TypedEventLog,
+  TypedLogDescription,
   TypedListener,
-  OnEvent,
-  PromiseOrValue,
+  TypedContractMethod,
 } from "../../common";
 
-export interface GodModeHTokenInterface extends utils.Interface {
-  functions: {
-    "DOMAIN_SEPARATOR()": FunctionFragment;
-    "PERMIT_TYPEHASH()": FunctionFragment;
-    "__godMode_mint(address,uint256)": FunctionFragment;
-    "__godMode_setMaturity(uint256)": FunctionFragment;
-    "__godMode_setTotalUnderlyingReserve(uint256)": FunctionFragment;
-    "__godMode_setUnderlyingPrecisionScalar(uint256)": FunctionFragment;
-    "_recover(address,uint256)": FunctionFragment;
-    "_renounceOwnership()": FunctionFragment;
-    "_setBalanceSheet(address)": FunctionFragment;
-    "_setNonRecoverableTokens(address[])": FunctionFragment;
-    "_transferOwnership(address)": FunctionFragment;
-    "allowance(address,address)": FunctionFragment;
-    "approve(address,uint256)": FunctionFragment;
-    "balanceOf(address)": FunctionFragment;
-    "balanceSheet()": FunctionFragment;
-    "burn(address,uint256)": FunctionFragment;
-    "decimals()": FunctionFragment;
-    "decreaseAllowance(address,uint256)": FunctionFragment;
-    "depositUnderlying(uint256)": FunctionFragment;
-    "fintroller()": FunctionFragment;
-    "getDepositorBalance(address)": FunctionFragment;
-    "increaseAllowance(address,uint256)": FunctionFragment;
-    "isMatured()": FunctionFragment;
-    "maturity()": FunctionFragment;
-    "mint(address,uint256)": FunctionFragment;
-    "name()": FunctionFragment;
-    "nonRecoverableTokens(uint256)": FunctionFragment;
-    "nonces(address)": FunctionFragment;
-    "owner()": FunctionFragment;
-    "permit(address,address,uint256,uint256,uint8,bytes32,bytes32)": FunctionFragment;
-    "redeem(uint256)": FunctionFragment;
-    "symbol()": FunctionFragment;
-    "totalSupply()": FunctionFragment;
-    "totalUnderlyingReserve()": FunctionFragment;
-    "transfer(address,uint256)": FunctionFragment;
-    "transferFrom(address,address,uint256)": FunctionFragment;
-    "underlying()": FunctionFragment;
-    "underlyingPrecisionScalar()": FunctionFragment;
-    "version()": FunctionFragment;
-    "withdrawUnderlying(uint256)": FunctionFragment;
-  };
-
+export interface GodModeHTokenInterface extends Interface {
   getFunction(
-    nameOrSignatureOrTopic:
+    nameOrSignature:
       | "DOMAIN_SEPARATOR"
       | "PERMIT_TYPEHASH"
       | "__godMode_mint"
@@ -115,6 +68,21 @@ export interface GodModeHTokenInterface extends utils.Interface {
       | "withdrawUnderlying"
   ): FunctionFragment;
 
+  getEvent(
+    nameOrSignatureOrTopic:
+      | "Approval"
+      | "Burn"
+      | "DepositUnderlying"
+      | "Mint"
+      | "Recover"
+      | "Redeem"
+      | "SetBalanceSheet"
+      | "SetNonRecoverableTokens"
+      | "Transfer"
+      | "TransferOwnership"
+      | "WithdrawUnderlying"
+  ): EventFragment;
+
   encodeFunctionData(
     functionFragment: "DOMAIN_SEPARATOR",
     values?: undefined
@@ -125,23 +93,23 @@ export interface GodModeHTokenInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "__godMode_mint",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "__godMode_setMaturity",
-    values: [PromiseOrValue<BigNumberish>]
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "__godMode_setTotalUnderlyingReserve",
-    values: [PromiseOrValue<BigNumberish>]
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "__godMode_setUnderlyingPrecisionScalar",
-    values: [PromiseOrValue<BigNumberish>]
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "_recover",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "_renounceOwnership",
@@ -149,27 +117,27 @@ export interface GodModeHTokenInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "_setBalanceSheet",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "_setNonRecoverableTokens",
-    values: [PromiseOrValue<string>[]]
+    values: [AddressLike[]]
   ): string;
   encodeFunctionData(
     functionFragment: "_transferOwnership",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "allowance",
-    values: [PromiseOrValue<string>, PromiseOrValue<string>]
+    values: [AddressLike, AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "approve",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "balanceOf",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "balanceSheet",
@@ -177,16 +145,16 @@ export interface GodModeHTokenInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "burn",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "decreaseAllowance",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "depositUnderlying",
-    values: [PromiseOrValue<BigNumberish>]
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "fintroller",
@@ -194,43 +162,40 @@ export interface GodModeHTokenInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getDepositorBalance",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "increaseAllowance",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "isMatured", values?: undefined): string;
   encodeFunctionData(functionFragment: "maturity", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "mint",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "nonRecoverableTokens",
-    values: [PromiseOrValue<BigNumberish>]
+    values: [BigNumberish]
   ): string;
-  encodeFunctionData(
-    functionFragment: "nonces",
-    values: [PromiseOrValue<string>]
-  ): string;
+  encodeFunctionData(functionFragment: "nonces", values: [AddressLike]): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "permit",
     values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>
+      AddressLike,
+      AddressLike,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BytesLike,
+      BytesLike
     ]
   ): string;
   encodeFunctionData(
     functionFragment: "redeem",
-    values: [PromiseOrValue<BigNumberish>]
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
   encodeFunctionData(
@@ -243,15 +208,11 @@ export interface GodModeHTokenInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "transfer",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "transferFrom",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>
-    ]
+    values: [AddressLike, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "underlying",
@@ -264,7 +225,7 @@ export interface GodModeHTokenInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "version", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "withdrawUnderlying",
-    values: [PromiseOrValue<BigNumberish>]
+    values: [BigNumberish]
   ): string;
 
   decodeFunctionResult(
@@ -370,1163 +331,823 @@ export interface GodModeHTokenInterface extends utils.Interface {
     functionFragment: "withdrawUnderlying",
     data: BytesLike
   ): Result;
-
-  events: {
-    "Approval(address,address,uint256)": EventFragment;
-    "Burn(address,uint256)": EventFragment;
-    "DepositUnderlying(address,uint256,uint256)": EventFragment;
-    "Mint(address,uint256)": EventFragment;
-    "Recover(address,address,uint256)": EventFragment;
-    "Redeem(address,uint256,uint256)": EventFragment;
-    "SetBalanceSheet(address,address,address)": EventFragment;
-    "SetNonRecoverableTokens(address,address[])": EventFragment;
-    "Transfer(address,address,uint256)": EventFragment;
-    "TransferOwnership(address,address)": EventFragment;
-    "WithdrawUnderlying(address,uint256,uint256)": EventFragment;
-  };
-
-  getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Burn"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "DepositUnderlying"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Mint"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Recover"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Redeem"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "SetBalanceSheet"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "SetNonRecoverableTokens"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "TransferOwnership"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "WithdrawUnderlying"): EventFragment;
 }
 
-export interface ApprovalEventObject {
-  owner: string;
-  spender: string;
-  amount: BigNumber;
+export namespace ApprovalEvent {
+  export type InputTuple = [
+    owner: AddressLike,
+    spender: AddressLike,
+    amount: BigNumberish
+  ];
+  export type OutputTuple = [owner: string, spender: string, amount: bigint];
+  export interface OutputObject {
+    owner: string;
+    spender: string;
+    amount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type ApprovalEvent = TypedEvent<
-  [string, string, BigNumber],
-  ApprovalEventObject
->;
 
-export type ApprovalEventFilter = TypedEventFilter<ApprovalEvent>;
-
-export interface BurnEventObject {
-  holder: string;
-  burnAmount: BigNumber;
+export namespace BurnEvent {
+  export type InputTuple = [holder: AddressLike, burnAmount: BigNumberish];
+  export type OutputTuple = [holder: string, burnAmount: bigint];
+  export interface OutputObject {
+    holder: string;
+    burnAmount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type BurnEvent = TypedEvent<[string, BigNumber], BurnEventObject>;
 
-export type BurnEventFilter = TypedEventFilter<BurnEvent>;
-
-export interface DepositUnderlyingEventObject {
-  depositor: string;
-  depositUnderlyingAmount: BigNumber;
-  hTokenAmount: BigNumber;
+export namespace DepositUnderlyingEvent {
+  export type InputTuple = [
+    depositor: AddressLike,
+    depositUnderlyingAmount: BigNumberish,
+    hTokenAmount: BigNumberish
+  ];
+  export type OutputTuple = [
+    depositor: string,
+    depositUnderlyingAmount: bigint,
+    hTokenAmount: bigint
+  ];
+  export interface OutputObject {
+    depositor: string;
+    depositUnderlyingAmount: bigint;
+    hTokenAmount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type DepositUnderlyingEvent = TypedEvent<
-  [string, BigNumber, BigNumber],
-  DepositUnderlyingEventObject
->;
 
-export type DepositUnderlyingEventFilter =
-  TypedEventFilter<DepositUnderlyingEvent>;
-
-export interface MintEventObject {
-  beneficiary: string;
-  mintAmount: BigNumber;
+export namespace MintEvent {
+  export type InputTuple = [beneficiary: AddressLike, mintAmount: BigNumberish];
+  export type OutputTuple = [beneficiary: string, mintAmount: bigint];
+  export interface OutputObject {
+    beneficiary: string;
+    mintAmount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type MintEvent = TypedEvent<[string, BigNumber], MintEventObject>;
 
-export type MintEventFilter = TypedEventFilter<MintEvent>;
-
-export interface RecoverEventObject {
-  owner: string;
-  token: string;
-  recoverAmount: BigNumber;
+export namespace RecoverEvent {
+  export type InputTuple = [
+    owner: AddressLike,
+    token: AddressLike,
+    recoverAmount: BigNumberish
+  ];
+  export type OutputTuple = [
+    owner: string,
+    token: string,
+    recoverAmount: bigint
+  ];
+  export interface OutputObject {
+    owner: string;
+    token: string;
+    recoverAmount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type RecoverEvent = TypedEvent<
-  [string, string, BigNumber],
-  RecoverEventObject
->;
 
-export type RecoverEventFilter = TypedEventFilter<RecoverEvent>;
-
-export interface RedeemEventObject {
-  account: string;
-  underlyingAmount: BigNumber;
-  hTokenAmount: BigNumber;
+export namespace RedeemEvent {
+  export type InputTuple = [
+    account: AddressLike,
+    underlyingAmount: BigNumberish,
+    hTokenAmount: BigNumberish
+  ];
+  export type OutputTuple = [
+    account: string,
+    underlyingAmount: bigint,
+    hTokenAmount: bigint
+  ];
+  export interface OutputObject {
+    account: string;
+    underlyingAmount: bigint;
+    hTokenAmount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type RedeemEvent = TypedEvent<
-  [string, BigNumber, BigNumber],
-  RedeemEventObject
->;
 
-export type RedeemEventFilter = TypedEventFilter<RedeemEvent>;
-
-export interface SetBalanceSheetEventObject {
-  owner: string;
-  oldBalanceSheet: string;
-  newBalanceSheet: string;
+export namespace SetBalanceSheetEvent {
+  export type InputTuple = [
+    owner: AddressLike,
+    oldBalanceSheet: AddressLike,
+    newBalanceSheet: AddressLike
+  ];
+  export type OutputTuple = [
+    owner: string,
+    oldBalanceSheet: string,
+    newBalanceSheet: string
+  ];
+  export interface OutputObject {
+    owner: string;
+    oldBalanceSheet: string;
+    newBalanceSheet: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type SetBalanceSheetEvent = TypedEvent<
-  [string, string, string],
-  SetBalanceSheetEventObject
->;
 
-export type SetBalanceSheetEventFilter = TypedEventFilter<SetBalanceSheetEvent>;
-
-export interface SetNonRecoverableTokensEventObject {
-  owner: string;
-  nonRecoverableTokens: string[];
+export namespace SetNonRecoverableTokensEvent {
+  export type InputTuple = [
+    owner: AddressLike,
+    nonRecoverableTokens: AddressLike[]
+  ];
+  export type OutputTuple = [owner: string, nonRecoverableTokens: string[]];
+  export interface OutputObject {
+    owner: string;
+    nonRecoverableTokens: string[];
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type SetNonRecoverableTokensEvent = TypedEvent<
-  [string, string[]],
-  SetNonRecoverableTokensEventObject
->;
 
-export type SetNonRecoverableTokensEventFilter =
-  TypedEventFilter<SetNonRecoverableTokensEvent>;
-
-export interface TransferEventObject {
-  from: string;
-  to: string;
-  amount: BigNumber;
+export namespace TransferEvent {
+  export type InputTuple = [
+    from: AddressLike,
+    to: AddressLike,
+    amount: BigNumberish
+  ];
+  export type OutputTuple = [from: string, to: string, amount: bigint];
+  export interface OutputObject {
+    from: string;
+    to: string;
+    amount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type TransferEvent = TypedEvent<
-  [string, string, BigNumber],
-  TransferEventObject
->;
 
-export type TransferEventFilter = TypedEventFilter<TransferEvent>;
-
-export interface TransferOwnershipEventObject {
-  oldOwner: string;
-  newOwner: string;
+export namespace TransferOwnershipEvent {
+  export type InputTuple = [oldOwner: AddressLike, newOwner: AddressLike];
+  export type OutputTuple = [oldOwner: string, newOwner: string];
+  export interface OutputObject {
+    oldOwner: string;
+    newOwner: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type TransferOwnershipEvent = TypedEvent<
-  [string, string],
-  TransferOwnershipEventObject
->;
 
-export type TransferOwnershipEventFilter =
-  TypedEventFilter<TransferOwnershipEvent>;
-
-export interface WithdrawUnderlyingEventObject {
-  depositor: string;
-  underlyingAmount: BigNumber;
-  hTokenAmount: BigNumber;
+export namespace WithdrawUnderlyingEvent {
+  export type InputTuple = [
+    depositor: AddressLike,
+    underlyingAmount: BigNumberish,
+    hTokenAmount: BigNumberish
+  ];
+  export type OutputTuple = [
+    depositor: string,
+    underlyingAmount: bigint,
+    hTokenAmount: bigint
+  ];
+  export interface OutputObject {
+    depositor: string;
+    underlyingAmount: bigint;
+    hTokenAmount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type WithdrawUnderlyingEvent = TypedEvent<
-  [string, BigNumber, BigNumber],
-  WithdrawUnderlyingEventObject
->;
-
-export type WithdrawUnderlyingEventFilter =
-  TypedEventFilter<WithdrawUnderlyingEvent>;
 
 export interface GodModeHToken extends BaseContract {
-  connect(signerOrProvider: Signer | Provider | string): this;
-  attach(addressOrName: string): this;
-  deployed(): Promise<this>;
+  connect(runner?: ContractRunner | null): GodModeHToken;
+  waitForDeployment(): Promise<this>;
 
   interface: GodModeHTokenInterface;
 
-  queryFilter<TEvent extends TypedEvent>(
-    event: TypedEventFilter<TEvent>,
+  queryFilter<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TEvent>>;
-
-  listeners<TEvent extends TypedEvent>(
-    eventFilter?: TypedEventFilter<TEvent>
-  ): Array<TypedListener<TEvent>>;
-  listeners(eventName?: string): Array<Listener>;
-  removeAllListeners<TEvent extends TypedEvent>(
-    eventFilter: TypedEventFilter<TEvent>
-  ): this;
-  removeAllListeners(eventName?: string): this;
-  off: OnEvent<this>;
-  on: OnEvent<this>;
-  once: OnEvent<this>;
-  removeListener: OnEvent<this>;
-
-  functions: {
-    DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<[string]>;
-
-    PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<[string]>;
-
-    __godMode_mint(
-      beneficiary: PromiseOrValue<string>,
-      mintAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    __godMode_setMaturity(
-      newMaturity: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    __godMode_setTotalUnderlyingReserve(
-      newTotalUnderlyingReserve: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    __godMode_setUnderlyingPrecisionScalar(
-      newUnderlyingPrecisionScalar: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    _recover(
-      token: PromiseOrValue<string>,
-      recoverAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    _renounceOwnership(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    _setBalanceSheet(
-      newBalanceSheet: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    _setNonRecoverableTokens(
-      tokens: PromiseOrValue<string>[],
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    _transferOwnership(
-      newOwner: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    allowance(
-      owner: PromiseOrValue<string>,
-      spender: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    approve(
-      spender: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    balanceOf(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    balanceSheet(overrides?: CallOverrides): Promise<[string]>;
-
-    burn(
-      holder: PromiseOrValue<string>,
-      burnAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    decimals(overrides?: CallOverrides): Promise<[number]>;
-
-    decreaseAllowance(
-      spender: PromiseOrValue<string>,
-      subtractedAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    depositUnderlying(
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    fintroller(overrides?: CallOverrides): Promise<[string]>;
-
-    getDepositorBalance(
-      depositor: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber] & { amount: BigNumber }>;
-
-    increaseAllowance(
-      spender: PromiseOrValue<string>,
-      addedAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    isMatured(overrides?: CallOverrides): Promise<[boolean]>;
-
-    maturity(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    mint(
-      beneficiary: PromiseOrValue<string>,
-      mintAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    name(overrides?: CallOverrides): Promise<[string]>;
-
-    nonRecoverableTokens(
-      arg0: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<[string]>;
-
-    nonces(
-      arg0: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    owner(overrides?: CallOverrides): Promise<[string]>;
-
-    permit(
-      owner: PromiseOrValue<string>,
-      spender: PromiseOrValue<string>,
-      value: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      v: PromiseOrValue<BigNumberish>,
-      r: PromiseOrValue<BytesLike>,
-      s: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    redeem(
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    symbol(overrides?: CallOverrides): Promise<[string]>;
-
-    totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    totalUnderlyingReserve(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    transfer(
-      recipient: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    transferFrom(
-      sender: PromiseOrValue<string>,
-      recipient: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    underlying(overrides?: CallOverrides): Promise<[string]>;
-
-    underlyingPrecisionScalar(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    version(overrides?: CallOverrides): Promise<[string]>;
-
-    withdrawUnderlying(
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-  };
-
-  DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<string>;
-
-  PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<string>;
-
-  __godMode_mint(
-    beneficiary: PromiseOrValue<string>,
-    mintAmount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  __godMode_setMaturity(
-    newMaturity: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  __godMode_setTotalUnderlyingReserve(
-    newTotalUnderlyingReserve: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  __godMode_setUnderlyingPrecisionScalar(
-    newUnderlyingPrecisionScalar: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  _recover(
-    token: PromiseOrValue<string>,
-    recoverAmount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  _renounceOwnership(
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  _setBalanceSheet(
-    newBalanceSheet: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  _setNonRecoverableTokens(
-    tokens: PromiseOrValue<string>[],
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  _transferOwnership(
-    newOwner: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  allowance(
-    owner: PromiseOrValue<string>,
-    spender: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  approve(
-    spender: PromiseOrValue<string>,
-    amount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  balanceOf(
-    account: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  balanceSheet(overrides?: CallOverrides): Promise<string>;
-
-  burn(
-    holder: PromiseOrValue<string>,
-    burnAmount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  decimals(overrides?: CallOverrides): Promise<number>;
-
-  decreaseAllowance(
-    spender: PromiseOrValue<string>,
-    subtractedAmount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  depositUnderlying(
-    underlyingAmount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  fintroller(overrides?: CallOverrides): Promise<string>;
-
-  getDepositorBalance(
-    depositor: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  increaseAllowance(
-    spender: PromiseOrValue<string>,
-    addedAmount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  isMatured(overrides?: CallOverrides): Promise<boolean>;
-
-  maturity(overrides?: CallOverrides): Promise<BigNumber>;
-
-  mint(
-    beneficiary: PromiseOrValue<string>,
-    mintAmount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  name(overrides?: CallOverrides): Promise<string>;
-
-  nonRecoverableTokens(
-    arg0: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<string>;
-
-  nonces(
-    arg0: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  owner(overrides?: CallOverrides): Promise<string>;
-
-  permit(
-    owner: PromiseOrValue<string>,
-    spender: PromiseOrValue<string>,
-    value: PromiseOrValue<BigNumberish>,
-    deadline: PromiseOrValue<BigNumberish>,
-    v: PromiseOrValue<BigNumberish>,
-    r: PromiseOrValue<BytesLike>,
-    s: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  redeem(
-    underlyingAmount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  symbol(overrides?: CallOverrides): Promise<string>;
-
-  totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
-
-  totalUnderlyingReserve(overrides?: CallOverrides): Promise<BigNumber>;
-
-  transfer(
-    recipient: PromiseOrValue<string>,
-    amount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  transferFrom(
-    sender: PromiseOrValue<string>,
-    recipient: PromiseOrValue<string>,
-    amount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  underlying(overrides?: CallOverrides): Promise<string>;
-
-  underlyingPrecisionScalar(overrides?: CallOverrides): Promise<BigNumber>;
-
-  version(overrides?: CallOverrides): Promise<string>;
-
-  withdrawUnderlying(
-    underlyingAmount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  callStatic: {
-    DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<string>;
-
-    PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<string>;
-
-    __godMode_mint(
-      beneficiary: PromiseOrValue<string>,
-      mintAmount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    __godMode_setMaturity(
-      newMaturity: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    __godMode_setTotalUnderlyingReserve(
-      newTotalUnderlyingReserve: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    __godMode_setUnderlyingPrecisionScalar(
-      newUnderlyingPrecisionScalar: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    _recover(
-      token: PromiseOrValue<string>,
-      recoverAmount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    _renounceOwnership(overrides?: CallOverrides): Promise<void>;
-
-    _setBalanceSheet(
-      newBalanceSheet: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    _setNonRecoverableTokens(
-      tokens: PromiseOrValue<string>[],
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    _transferOwnership(
-      newOwner: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    allowance(
-      owner: PromiseOrValue<string>,
-      spender: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    approve(
-      spender: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    balanceOf(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    balanceSheet(overrides?: CallOverrides): Promise<string>;
-
-    burn(
-      holder: PromiseOrValue<string>,
-      burnAmount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    decimals(overrides?: CallOverrides): Promise<number>;
-
-    decreaseAllowance(
-      spender: PromiseOrValue<string>,
-      subtractedAmount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    depositUnderlying(
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    fintroller(overrides?: CallOverrides): Promise<string>;
-
-    getDepositorBalance(
-      depositor: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    increaseAllowance(
-      spender: PromiseOrValue<string>,
-      addedAmount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    isMatured(overrides?: CallOverrides): Promise<boolean>;
-
-    maturity(overrides?: CallOverrides): Promise<BigNumber>;
-
-    mint(
-      beneficiary: PromiseOrValue<string>,
-      mintAmount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    name(overrides?: CallOverrides): Promise<string>;
-
-    nonRecoverableTokens(
-      arg0: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<string>;
-
-    nonces(
-      arg0: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    owner(overrides?: CallOverrides): Promise<string>;
-
-    permit(
-      owner: PromiseOrValue<string>,
-      spender: PromiseOrValue<string>,
-      value: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      v: PromiseOrValue<BigNumberish>,
-      r: PromiseOrValue<BytesLike>,
-      s: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    redeem(
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    symbol(overrides?: CallOverrides): Promise<string>;
-
-    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
-
-    totalUnderlyingReserve(overrides?: CallOverrides): Promise<BigNumber>;
-
-    transfer(
-      recipient: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    transferFrom(
-      sender: PromiseOrValue<string>,
-      recipient: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    underlying(overrides?: CallOverrides): Promise<string>;
-
-    underlyingPrecisionScalar(overrides?: CallOverrides): Promise<BigNumber>;
-
-    version(overrides?: CallOverrides): Promise<string>;
-
-    withdrawUnderlying(
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-  };
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  queryFilter<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+
+  on<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  on<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+
+  once<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  once<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+
+  listeners<TCEvent extends TypedContractEvent>(
+    event: TCEvent
+  ): Promise<Array<TypedListener<TCEvent>>>;
+  listeners(eventName?: string): Promise<Array<Listener>>;
+  removeAllListeners<TCEvent extends TypedContractEvent>(
+    event?: TCEvent
+  ): Promise<this>;
+
+  DOMAIN_SEPARATOR: TypedContractMethod<[], [string], "view">;
+
+  PERMIT_TYPEHASH: TypedContractMethod<[], [string], "view">;
+
+  __godMode_mint: TypedContractMethod<
+    [beneficiary: AddressLike, mintAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  __godMode_setMaturity: TypedContractMethod<
+    [newMaturity: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  __godMode_setTotalUnderlyingReserve: TypedContractMethod<
+    [newTotalUnderlyingReserve: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  __godMode_setUnderlyingPrecisionScalar: TypedContractMethod<
+    [newUnderlyingPrecisionScalar: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  _recover: TypedContractMethod<
+    [token: AddressLike, recoverAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  _renounceOwnership: TypedContractMethod<[], [void], "nonpayable">;
+
+  _setBalanceSheet: TypedContractMethod<
+    [newBalanceSheet: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+
+  _setNonRecoverableTokens: TypedContractMethod<
+    [tokens: AddressLike[]],
+    [void],
+    "nonpayable"
+  >;
+
+  _transferOwnership: TypedContractMethod<
+    [newOwner: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+
+  allowance: TypedContractMethod<
+    [owner: AddressLike, spender: AddressLike],
+    [bigint],
+    "view"
+  >;
+
+  approve: TypedContractMethod<
+    [spender: AddressLike, amount: BigNumberish],
+    [boolean],
+    "nonpayable"
+  >;
+
+  balanceOf: TypedContractMethod<[account: AddressLike], [bigint], "view">;
+
+  balanceSheet: TypedContractMethod<[], [string], "view">;
+
+  burn: TypedContractMethod<
+    [holder: AddressLike, burnAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  decimals: TypedContractMethod<[], [bigint], "view">;
+
+  decreaseAllowance: TypedContractMethod<
+    [spender: AddressLike, subtractedAmount: BigNumberish],
+    [boolean],
+    "nonpayable"
+  >;
+
+  depositUnderlying: TypedContractMethod<
+    [underlyingAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  fintroller: TypedContractMethod<[], [string], "view">;
+
+  getDepositorBalance: TypedContractMethod<
+    [depositor: AddressLike],
+    [bigint],
+    "view"
+  >;
+
+  increaseAllowance: TypedContractMethod<
+    [spender: AddressLike, addedAmount: BigNumberish],
+    [boolean],
+    "nonpayable"
+  >;
+
+  isMatured: TypedContractMethod<[], [boolean], "view">;
+
+  maturity: TypedContractMethod<[], [bigint], "view">;
+
+  mint: TypedContractMethod<
+    [beneficiary: AddressLike, mintAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  name: TypedContractMethod<[], [string], "view">;
+
+  nonRecoverableTokens: TypedContractMethod<
+    [arg0: BigNumberish],
+    [string],
+    "view"
+  >;
+
+  nonces: TypedContractMethod<[arg0: AddressLike], [bigint], "view">;
+
+  owner: TypedContractMethod<[], [string], "view">;
+
+  permit: TypedContractMethod<
+    [
+      owner: AddressLike,
+      spender: AddressLike,
+      value: BigNumberish,
+      deadline: BigNumberish,
+      v: BigNumberish,
+      r: BytesLike,
+      s: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  redeem: TypedContractMethod<
+    [underlyingAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  symbol: TypedContractMethod<[], [string], "view">;
+
+  totalSupply: TypedContractMethod<[], [bigint], "view">;
+
+  totalUnderlyingReserve: TypedContractMethod<[], [bigint], "view">;
+
+  transfer: TypedContractMethod<
+    [recipient: AddressLike, amount: BigNumberish],
+    [boolean],
+    "nonpayable"
+  >;
+
+  transferFrom: TypedContractMethod<
+    [sender: AddressLike, recipient: AddressLike, amount: BigNumberish],
+    [boolean],
+    "nonpayable"
+  >;
+
+  underlying: TypedContractMethod<[], [string], "view">;
+
+  underlyingPrecisionScalar: TypedContractMethod<[], [bigint], "view">;
+
+  version: TypedContractMethod<[], [string], "view">;
+
+  withdrawUnderlying: TypedContractMethod<
+    [underlyingAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
+
+  getFunction(
+    nameOrSignature: "DOMAIN_SEPARATOR"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "PERMIT_TYPEHASH"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "__godMode_mint"
+  ): TypedContractMethod<
+    [beneficiary: AddressLike, mintAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "__godMode_setMaturity"
+  ): TypedContractMethod<[newMaturity: BigNumberish], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "__godMode_setTotalUnderlyingReserve"
+  ): TypedContractMethod<
+    [newTotalUnderlyingReserve: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "__godMode_setUnderlyingPrecisionScalar"
+  ): TypedContractMethod<
+    [newUnderlyingPrecisionScalar: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "_recover"
+  ): TypedContractMethod<
+    [token: AddressLike, recoverAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "_renounceOwnership"
+  ): TypedContractMethod<[], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "_setBalanceSheet"
+  ): TypedContractMethod<[newBalanceSheet: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "_setNonRecoverableTokens"
+  ): TypedContractMethod<[tokens: AddressLike[]], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "_transferOwnership"
+  ): TypedContractMethod<[newOwner: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "allowance"
+  ): TypedContractMethod<
+    [owner: AddressLike, spender: AddressLike],
+    [bigint],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "approve"
+  ): TypedContractMethod<
+    [spender: AddressLike, amount: BigNumberish],
+    [boolean],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "balanceOf"
+  ): TypedContractMethod<[account: AddressLike], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "balanceSheet"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "burn"
+  ): TypedContractMethod<
+    [holder: AddressLike, burnAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "decimals"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "decreaseAllowance"
+  ): TypedContractMethod<
+    [spender: AddressLike, subtractedAmount: BigNumberish],
+    [boolean],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "depositUnderlying"
+  ): TypedContractMethod<
+    [underlyingAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "fintroller"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "getDepositorBalance"
+  ): TypedContractMethod<[depositor: AddressLike], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "increaseAllowance"
+  ): TypedContractMethod<
+    [spender: AddressLike, addedAmount: BigNumberish],
+    [boolean],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "isMatured"
+  ): TypedContractMethod<[], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "maturity"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "mint"
+  ): TypedContractMethod<
+    [beneficiary: AddressLike, mintAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "name"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "nonRecoverableTokens"
+  ): TypedContractMethod<[arg0: BigNumberish], [string], "view">;
+  getFunction(
+    nameOrSignature: "nonces"
+  ): TypedContractMethod<[arg0: AddressLike], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "owner"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "permit"
+  ): TypedContractMethod<
+    [
+      owner: AddressLike,
+      spender: AddressLike,
+      value: BigNumberish,
+      deadline: BigNumberish,
+      v: BigNumberish,
+      r: BytesLike,
+      s: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "redeem"
+  ): TypedContractMethod<
+    [underlyingAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "symbol"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "totalSupply"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "totalUnderlyingReserve"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "transfer"
+  ): TypedContractMethod<
+    [recipient: AddressLike, amount: BigNumberish],
+    [boolean],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "transferFrom"
+  ): TypedContractMethod<
+    [sender: AddressLike, recipient: AddressLike, amount: BigNumberish],
+    [boolean],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "underlying"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "underlyingPrecisionScalar"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "version"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "withdrawUnderlying"
+  ): TypedContractMethod<
+    [underlyingAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  getEvent(
+    key: "Approval"
+  ): TypedContractEvent<
+    ApprovalEvent.InputTuple,
+    ApprovalEvent.OutputTuple,
+    ApprovalEvent.OutputObject
+  >;
+  getEvent(
+    key: "Burn"
+  ): TypedContractEvent<
+    BurnEvent.InputTuple,
+    BurnEvent.OutputTuple,
+    BurnEvent.OutputObject
+  >;
+  getEvent(
+    key: "DepositUnderlying"
+  ): TypedContractEvent<
+    DepositUnderlyingEvent.InputTuple,
+    DepositUnderlyingEvent.OutputTuple,
+    DepositUnderlyingEvent.OutputObject
+  >;
+  getEvent(
+    key: "Mint"
+  ): TypedContractEvent<
+    MintEvent.InputTuple,
+    MintEvent.OutputTuple,
+    MintEvent.OutputObject
+  >;
+  getEvent(
+    key: "Recover"
+  ): TypedContractEvent<
+    RecoverEvent.InputTuple,
+    RecoverEvent.OutputTuple,
+    RecoverEvent.OutputObject
+  >;
+  getEvent(
+    key: "Redeem"
+  ): TypedContractEvent<
+    RedeemEvent.InputTuple,
+    RedeemEvent.OutputTuple,
+    RedeemEvent.OutputObject
+  >;
+  getEvent(
+    key: "SetBalanceSheet"
+  ): TypedContractEvent<
+    SetBalanceSheetEvent.InputTuple,
+    SetBalanceSheetEvent.OutputTuple,
+    SetBalanceSheetEvent.OutputObject
+  >;
+  getEvent(
+    key: "SetNonRecoverableTokens"
+  ): TypedContractEvent<
+    SetNonRecoverableTokensEvent.InputTuple,
+    SetNonRecoverableTokensEvent.OutputTuple,
+    SetNonRecoverableTokensEvent.OutputObject
+  >;
+  getEvent(
+    key: "Transfer"
+  ): TypedContractEvent<
+    TransferEvent.InputTuple,
+    TransferEvent.OutputTuple,
+    TransferEvent.OutputObject
+  >;
+  getEvent(
+    key: "TransferOwnership"
+  ): TypedContractEvent<
+    TransferOwnershipEvent.InputTuple,
+    TransferOwnershipEvent.OutputTuple,
+    TransferOwnershipEvent.OutputObject
+  >;
+  getEvent(
+    key: "WithdrawUnderlying"
+  ): TypedContractEvent<
+    WithdrawUnderlyingEvent.InputTuple,
+    WithdrawUnderlyingEvent.OutputTuple,
+    WithdrawUnderlyingEvent.OutputObject
+  >;
 
   filters: {
-    "Approval(address,address,uint256)"(
-      owner?: PromiseOrValue<string> | null,
-      spender?: PromiseOrValue<string> | null,
-      amount?: null
-    ): ApprovalEventFilter;
-    Approval(
-      owner?: PromiseOrValue<string> | null,
-      spender?: PromiseOrValue<string> | null,
-      amount?: null
-    ): ApprovalEventFilter;
-
-    "Burn(address,uint256)"(
-      holder?: PromiseOrValue<string> | null,
-      burnAmount?: null
-    ): BurnEventFilter;
-    Burn(
-      holder?: PromiseOrValue<string> | null,
-      burnAmount?: null
-    ): BurnEventFilter;
-
-    "DepositUnderlying(address,uint256,uint256)"(
-      depositor?: PromiseOrValue<string> | null,
-      depositUnderlyingAmount?: null,
-      hTokenAmount?: null
-    ): DepositUnderlyingEventFilter;
-    DepositUnderlying(
-      depositor?: PromiseOrValue<string> | null,
-      depositUnderlyingAmount?: null,
-      hTokenAmount?: null
-    ): DepositUnderlyingEventFilter;
-
-    "Mint(address,uint256)"(
-      beneficiary?: PromiseOrValue<string> | null,
-      mintAmount?: null
-    ): MintEventFilter;
-    Mint(
-      beneficiary?: PromiseOrValue<string> | null,
-      mintAmount?: null
-    ): MintEventFilter;
-
-    "Recover(address,address,uint256)"(
-      owner?: PromiseOrValue<string> | null,
-      token?: null,
-      recoverAmount?: null
-    ): RecoverEventFilter;
-    Recover(
-      owner?: PromiseOrValue<string> | null,
-      token?: null,
-      recoverAmount?: null
-    ): RecoverEventFilter;
-
-    "Redeem(address,uint256,uint256)"(
-      account?: PromiseOrValue<string> | null,
-      underlyingAmount?: null,
-      hTokenAmount?: null
-    ): RedeemEventFilter;
-    Redeem(
-      account?: PromiseOrValue<string> | null,
-      underlyingAmount?: null,
-      hTokenAmount?: null
-    ): RedeemEventFilter;
-
-    "SetBalanceSheet(address,address,address)"(
-      owner?: PromiseOrValue<string> | null,
-      oldBalanceSheet?: null,
-      newBalanceSheet?: null
-    ): SetBalanceSheetEventFilter;
-    SetBalanceSheet(
-      owner?: PromiseOrValue<string> | null,
-      oldBalanceSheet?: null,
-      newBalanceSheet?: null
-    ): SetBalanceSheetEventFilter;
-
-    "SetNonRecoverableTokens(address,address[])"(
-      owner?: PromiseOrValue<string> | null,
-      nonRecoverableTokens?: null
-    ): SetNonRecoverableTokensEventFilter;
-    SetNonRecoverableTokens(
-      owner?: PromiseOrValue<string> | null,
-      nonRecoverableTokens?: null
-    ): SetNonRecoverableTokensEventFilter;
-
-    "Transfer(address,address,uint256)"(
-      from?: PromiseOrValue<string> | null,
-      to?: PromiseOrValue<string> | null,
-      amount?: null
-    ): TransferEventFilter;
-    Transfer(
-      from?: PromiseOrValue<string> | null,
-      to?: PromiseOrValue<string> | null,
-      amount?: null
-    ): TransferEventFilter;
-
-    "TransferOwnership(address,address)"(
-      oldOwner?: PromiseOrValue<string> | null,
-      newOwner?: PromiseOrValue<string> | null
-    ): TransferOwnershipEventFilter;
-    TransferOwnership(
-      oldOwner?: PromiseOrValue<string> | null,
-      newOwner?: PromiseOrValue<string> | null
-    ): TransferOwnershipEventFilter;
-
-    "WithdrawUnderlying(address,uint256,uint256)"(
-      depositor?: PromiseOrValue<string> | null,
-      underlyingAmount?: null,
-      hTokenAmount?: null
-    ): WithdrawUnderlyingEventFilter;
-    WithdrawUnderlying(
-      depositor?: PromiseOrValue<string> | null,
-      underlyingAmount?: null,
-      hTokenAmount?: null
-    ): WithdrawUnderlyingEventFilter;
-  };
-
-  estimateGas: {
-    DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<BigNumber>;
-
-    PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<BigNumber>;
-
-    __godMode_mint(
-      beneficiary: PromiseOrValue<string>,
-      mintAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    __godMode_setMaturity(
-      newMaturity: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    __godMode_setTotalUnderlyingReserve(
-      newTotalUnderlyingReserve: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    __godMode_setUnderlyingPrecisionScalar(
-      newUnderlyingPrecisionScalar: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    _recover(
-      token: PromiseOrValue<string>,
-      recoverAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    _renounceOwnership(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    _setBalanceSheet(
-      newBalanceSheet: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    _setNonRecoverableTokens(
-      tokens: PromiseOrValue<string>[],
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    _transferOwnership(
-      newOwner: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    allowance(
-      owner: PromiseOrValue<string>,
-      spender: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    approve(
-      spender: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    balanceOf(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    balanceSheet(overrides?: CallOverrides): Promise<BigNumber>;
-
-    burn(
-      holder: PromiseOrValue<string>,
-      burnAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    decimals(overrides?: CallOverrides): Promise<BigNumber>;
-
-    decreaseAllowance(
-      spender: PromiseOrValue<string>,
-      subtractedAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    depositUnderlying(
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    fintroller(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getDepositorBalance(
-      depositor: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    increaseAllowance(
-      spender: PromiseOrValue<string>,
-      addedAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    isMatured(overrides?: CallOverrides): Promise<BigNumber>;
-
-    maturity(overrides?: CallOverrides): Promise<BigNumber>;
-
-    mint(
-      beneficiary: PromiseOrValue<string>,
-      mintAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    name(overrides?: CallOverrides): Promise<BigNumber>;
-
-    nonRecoverableTokens(
-      arg0: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    nonces(
-      arg0: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    owner(overrides?: CallOverrides): Promise<BigNumber>;
-
-    permit(
-      owner: PromiseOrValue<string>,
-      spender: PromiseOrValue<string>,
-      value: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      v: PromiseOrValue<BigNumberish>,
-      r: PromiseOrValue<BytesLike>,
-      s: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    redeem(
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    symbol(overrides?: CallOverrides): Promise<BigNumber>;
-
-    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
-
-    totalUnderlyingReserve(overrides?: CallOverrides): Promise<BigNumber>;
-
-    transfer(
-      recipient: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    transferFrom(
-      sender: PromiseOrValue<string>,
-      recipient: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    underlying(overrides?: CallOverrides): Promise<BigNumber>;
-
-    underlyingPrecisionScalar(overrides?: CallOverrides): Promise<BigNumber>;
-
-    version(overrides?: CallOverrides): Promise<BigNumber>;
-
-    withdrawUnderlying(
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-  };
-
-  populateTransaction: {
-    DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    __godMode_mint(
-      beneficiary: PromiseOrValue<string>,
-      mintAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    __godMode_setMaturity(
-      newMaturity: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    __godMode_setTotalUnderlyingReserve(
-      newTotalUnderlyingReserve: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    __godMode_setUnderlyingPrecisionScalar(
-      newUnderlyingPrecisionScalar: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    _recover(
-      token: PromiseOrValue<string>,
-      recoverAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    _renounceOwnership(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    _setBalanceSheet(
-      newBalanceSheet: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    _setNonRecoverableTokens(
-      tokens: PromiseOrValue<string>[],
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    _transferOwnership(
-      newOwner: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    allowance(
-      owner: PromiseOrValue<string>,
-      spender: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    approve(
-      spender: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    balanceOf(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    balanceSheet(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    burn(
-      holder: PromiseOrValue<string>,
-      burnAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    decreaseAllowance(
-      spender: PromiseOrValue<string>,
-      subtractedAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    depositUnderlying(
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    fintroller(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    getDepositorBalance(
-      depositor: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    increaseAllowance(
-      spender: PromiseOrValue<string>,
-      addedAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    isMatured(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    maturity(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    mint(
-      beneficiary: PromiseOrValue<string>,
-      mintAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    nonRecoverableTokens(
-      arg0: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    nonces(
-      arg0: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    permit(
-      owner: PromiseOrValue<string>,
-      spender: PromiseOrValue<string>,
-      value: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      v: PromiseOrValue<BigNumberish>,
-      r: PromiseOrValue<BytesLike>,
-      s: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    redeem(
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    totalUnderlyingReserve(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    transfer(
-      recipient: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    transferFrom(
-      sender: PromiseOrValue<string>,
-      recipient: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    underlying(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    underlyingPrecisionScalar(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    version(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    withdrawUnderlying(
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
+    "Approval(address,address,uint256)": TypedContractEvent<
+      ApprovalEvent.InputTuple,
+      ApprovalEvent.OutputTuple,
+      ApprovalEvent.OutputObject
+    >;
+    Approval: TypedContractEvent<
+      ApprovalEvent.InputTuple,
+      ApprovalEvent.OutputTuple,
+      ApprovalEvent.OutputObject
+    >;
+
+    "Burn(address,uint256)": TypedContractEvent<
+      BurnEvent.InputTuple,
+      BurnEvent.OutputTuple,
+      BurnEvent.OutputObject
+    >;
+    Burn: TypedContractEvent<
+      BurnEvent.InputTuple,
+      BurnEvent.OutputTuple,
+      BurnEvent.OutputObject
+    >;
+
+    "DepositUnderlying(address,uint256,uint256)": TypedContractEvent<
+      DepositUnderlyingEvent.InputTuple,
+      DepositUnderlyingEvent.OutputTuple,
+      DepositUnderlyingEvent.OutputObject
+    >;
+    DepositUnderlying: TypedContractEvent<
+      DepositUnderlyingEvent.InputTuple,
+      DepositUnderlyingEvent.OutputTuple,
+      DepositUnderlyingEvent.OutputObject
+    >;
+
+    "Mint(address,uint256)": TypedContractEvent<
+      MintEvent.InputTuple,
+      MintEvent.OutputTuple,
+      MintEvent.OutputObject
+    >;
+    Mint: TypedContractEvent<
+      MintEvent.InputTuple,
+      MintEvent.OutputTuple,
+      MintEvent.OutputObject
+    >;
+
+    "Recover(address,address,uint256)": TypedContractEvent<
+      RecoverEvent.InputTuple,
+      RecoverEvent.OutputTuple,
+      RecoverEvent.OutputObject
+    >;
+    Recover: TypedContractEvent<
+      RecoverEvent.InputTuple,
+      RecoverEvent.OutputTuple,
+      RecoverEvent.OutputObject
+    >;
+
+    "Redeem(address,uint256,uint256)": TypedContractEvent<
+      RedeemEvent.InputTuple,
+      RedeemEvent.OutputTuple,
+      RedeemEvent.OutputObject
+    >;
+    Redeem: TypedContractEvent<
+      RedeemEvent.InputTuple,
+      RedeemEvent.OutputTuple,
+      RedeemEvent.OutputObject
+    >;
+
+    "SetBalanceSheet(address,address,address)": TypedContractEvent<
+      SetBalanceSheetEvent.InputTuple,
+      SetBalanceSheetEvent.OutputTuple,
+      SetBalanceSheetEvent.OutputObject
+    >;
+    SetBalanceSheet: TypedContractEvent<
+      SetBalanceSheetEvent.InputTuple,
+      SetBalanceSheetEvent.OutputTuple,
+      SetBalanceSheetEvent.OutputObject
+    >;
+
+    "SetNonRecoverableTokens(address,address[])": TypedContractEvent<
+      SetNonRecoverableTokensEvent.InputTuple,
+      SetNonRecoverableTokensEvent.OutputTuple,
+      SetNonRecoverableTokensEvent.OutputObject
+    >;
+    SetNonRecoverableTokens: TypedContractEvent<
+      SetNonRecoverableTokensEvent.InputTuple,
+      SetNonRecoverableTokensEvent.OutputTuple,
+      SetNonRecoverableTokensEvent.OutputObject
+    >;
+
+    "Transfer(address,address,uint256)": TypedContractEvent<
+      TransferEvent.InputTuple,
+      TransferEvent.OutputTuple,
+      TransferEvent.OutputObject
+    >;
+    Transfer: TypedContractEvent<
+      TransferEvent.InputTuple,
+      TransferEvent.OutputTuple,
+      TransferEvent.OutputObject
+    >;
+
+    "TransferOwnership(address,address)": TypedContractEvent<
+      TransferOwnershipEvent.InputTuple,
+      TransferOwnershipEvent.OutputTuple,
+      TransferOwnershipEvent.OutputObject
+    >;
+    TransferOwnership: TypedContractEvent<
+      TransferOwnershipEvent.InputTuple,
+      TransferOwnershipEvent.OutputTuple,
+      TransferOwnershipEvent.OutputObject
+    >;
+
+    "WithdrawUnderlying(address,uint256,uint256)": TypedContractEvent<
+      WithdrawUnderlyingEvent.InputTuple,
+      WithdrawUnderlyingEvent.OutputTuple,
+      WithdrawUnderlyingEvent.OutputObject
+    >;
+    WithdrawUnderlying: TypedContractEvent<
+      WithdrawUnderlyingEvent.InputTuple,
+      WithdrawUnderlyingEvent.OutputTuple,
+      WithdrawUnderlyingEvent.OutputObject
+    >;
   };
 }

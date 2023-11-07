@@ -2,8 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Contract, Signer, utils } from "ethers";
-import type { Provider } from "@ethersproject/providers";
+import { Contract, Interface, type ContractRunner } from "ethers";
 import type {
   IERC20PermitAllowed,
   IERC20PermitAllowedInterface,
@@ -63,12 +62,16 @@ const _abi = [
 export class IERC20PermitAllowed__factory {
   static readonly abi = _abi;
   static createInterface(): IERC20PermitAllowedInterface {
-    return new utils.Interface(_abi) as IERC20PermitAllowedInterface;
+    return new Interface(_abi) as IERC20PermitAllowedInterface;
   }
   static connect(
     address: string,
-    signerOrProvider: Signer | Provider
+    runner?: ContractRunner | null
   ): IERC20PermitAllowed {
-    return new Contract(address, _abi, signerOrProvider) as IERC20PermitAllowed;
+    return new Contract(
+      address,
+      _abi,
+      runner
+    ) as unknown as IERC20PermitAllowed;
   }
 }

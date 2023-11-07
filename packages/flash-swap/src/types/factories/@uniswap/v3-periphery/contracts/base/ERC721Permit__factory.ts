@@ -2,8 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Contract, Signer, utils } from "ethers";
-import type { Provider } from "@ethersproject/providers";
+import { Contract, Interface, type ContractRunner } from "ethers";
 import type {
   ERC721Permit,
   ERC721PermitInterface,
@@ -478,12 +477,12 @@ const _abi = [
 export class ERC721Permit__factory {
   static readonly abi = _abi;
   static createInterface(): ERC721PermitInterface {
-    return new utils.Interface(_abi) as ERC721PermitInterface;
+    return new Interface(_abi) as ERC721PermitInterface;
   }
   static connect(
     address: string,
-    signerOrProvider: Signer | Provider
+    runner?: ContractRunner | null
   ): ERC721Permit {
-    return new Contract(address, _abi, signerOrProvider) as ERC721Permit;
+    return new Contract(address, _abi, runner) as unknown as ERC721Permit;
   }
 }

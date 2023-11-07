@@ -3,63 +3,29 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumber,
   BigNumberish,
   BytesLike,
-  CallOverrides,
-  ContractTransaction,
-  Overrides,
-  PayableOverrides,
-  PopulatedTransaction,
-  Signer,
-  utils,
-} from "ethers";
-import type {
   FunctionFragment,
   Result,
+  Interface,
   EventFragment,
-} from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
+  AddressLike,
+  ContractRunner,
+  ContractMethod,
+  Listener,
+} from "ethers";
 import type {
-  TypedEventFilter,
-  TypedEvent,
+  TypedContractEvent,
+  TypedDeferredTopicFilter,
+  TypedEventLog,
+  TypedLogDescription,
   TypedListener,
-  OnEvent,
-  PromiseOrValue,
+  TypedContractMethod,
 } from "../common";
 
-export interface IHifiProxyTargetInterface extends utils.Interface {
-  functions: {
-    "borrowHTokenAndBuyUnderlying(address,address,uint256,uint256)": FunctionFragment;
-    "buyHTokenAndRepayBorrow(address,address,uint256,uint256)": FunctionFragment;
-    "buyHTokenAndRepayBorrowWithSignature(address,address,uint256,uint256,uint256,bytes)": FunctionFragment;
-    "depositCollateral(address,address,uint256)": FunctionFragment;
-    "depositCollateralWithSignature(address,address,uint256,uint256,bytes)": FunctionFragment;
-    "depositUnderlyingAndMintHTokenAndAddLiquidity(address,uint256,uint256)": FunctionFragment;
-    "depositUnderlyingAndMintHTokenAndAddLiquidityWithSignature(address,uint256,uint256,uint256,bytes)": FunctionFragment;
-    "depositUnderlyingAndRepayBorrow(address,address,uint256)": FunctionFragment;
-    "depositUnderlyingAndRepayBorrowWithSignature(address,address,uint256,uint256,bytes)": FunctionFragment;
-    "redeem(address,uint256,uint256)": FunctionFragment;
-    "redeemWithSignature(address,uint256,uint256,uint256,bytes)": FunctionFragment;
-    "removeLiquidity(address,uint256)": FunctionFragment;
-    "removeLiquidityAndRedeem(address,uint256)": FunctionFragment;
-    "removeLiquidityAndRedeemWithSignature(address,uint256,uint256,bytes)": FunctionFragment;
-    "removeLiquidityAndWithdrawUnderlying(address,uint256,uint256)": FunctionFragment;
-    "removeLiquidityAndWithdrawUnderlyingWithSignature(address,uint256,uint256,uint256,bytes)": FunctionFragment;
-    "removeLiquidityWithSignature(address,uint256,uint256,bytes)": FunctionFragment;
-    "sellHToken(address,uint256,uint256)": FunctionFragment;
-    "sellHTokenWithSignature(address,uint256,uint256,uint256,bytes)": FunctionFragment;
-    "sellUnderlying(address,uint256,uint256)": FunctionFragment;
-    "sellUnderlyingAndRepayBorrow(address,address,uint256,uint256)": FunctionFragment;
-    "sellUnderlyingAndRepayBorrowWithSignature(address,address,uint256,uint256,uint256,bytes)": FunctionFragment;
-    "sellUnderlyingWithSignature(address,uint256,uint256,uint256,bytes)": FunctionFragment;
-    "withdrawCollateral(address,address,uint256)": FunctionFragment;
-    "withdrawCollateralAndUnwrapWeth(address,address,uint256)": FunctionFragment;
-    "wrapEthAndDepositCollateral(address,address)": FunctionFragment;
-  };
-
+export interface IHifiProxyTargetInterface extends Interface {
   getFunction(
-    nameOrSignatureOrTopic:
+    nameOrSignature:
       | "borrowHTokenAndBuyUnderlying"
       | "buyHTokenAndRepayBorrow"
       | "buyHTokenAndRepayBorrowWithSignature"
@@ -88,226 +54,127 @@ export interface IHifiProxyTargetInterface extends utils.Interface {
       | "wrapEthAndDepositCollateral"
   ): FunctionFragment;
 
+  getEvent(
+    nameOrSignatureOrTopic: "BorrowHTokenAndBuyUnderlying"
+  ): EventFragment;
+
   encodeFunctionData(
     functionFragment: "borrowHTokenAndBuyUnderlying",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>
-    ]
+    values: [AddressLike, AddressLike, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "buyHTokenAndRepayBorrow",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>
-    ]
+    values: [AddressLike, AddressLike, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "buyHTokenAndRepayBorrowWithSignature",
     values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BytesLike>
+      AddressLike,
+      AddressLike,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BytesLike
     ]
   ): string;
   encodeFunctionData(
     functionFragment: "depositCollateral",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>
-    ]
+    values: [AddressLike, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "depositCollateralWithSignature",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BytesLike>
-    ]
+    values: [AddressLike, AddressLike, BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "depositUnderlyingAndMintHTokenAndAddLiquidity",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>
-    ]
+    values: [AddressLike, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "depositUnderlyingAndMintHTokenAndAddLiquidityWithSignature",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BytesLike>
-    ]
+    values: [AddressLike, BigNumberish, BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "depositUnderlyingAndRepayBorrow",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>
-    ]
+    values: [AddressLike, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "depositUnderlyingAndRepayBorrowWithSignature",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BytesLike>
-    ]
+    values: [AddressLike, AddressLike, BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "redeem",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>
-    ]
+    values: [AddressLike, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "redeemWithSignature",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BytesLike>
-    ]
+    values: [AddressLike, BigNumberish, BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "removeLiquidity",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "removeLiquidityAndRedeem",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "removeLiquidityAndRedeemWithSignature",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BytesLike>
-    ]
+    values: [AddressLike, BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "removeLiquidityAndWithdrawUnderlying",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>
-    ]
+    values: [AddressLike, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "removeLiquidityAndWithdrawUnderlyingWithSignature",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BytesLike>
-    ]
+    values: [AddressLike, BigNumberish, BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "removeLiquidityWithSignature",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BytesLike>
-    ]
+    values: [AddressLike, BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "sellHToken",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>
-    ]
+    values: [AddressLike, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "sellHTokenWithSignature",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BytesLike>
-    ]
+    values: [AddressLike, BigNumberish, BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "sellUnderlying",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>
-    ]
+    values: [AddressLike, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "sellUnderlyingAndRepayBorrow",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>
-    ]
+    values: [AddressLike, AddressLike, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "sellUnderlyingAndRepayBorrowWithSignature",
     values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BytesLike>
+      AddressLike,
+      AddressLike,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BytesLike
     ]
   ): string;
   encodeFunctionData(
     functionFragment: "sellUnderlyingWithSignature",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BytesLike>
-    ]
+    values: [AddressLike, BigNumberish, BigNumberish, BigNumberish, BytesLike]
   ): string;
   encodeFunctionData(
     functionFragment: "withdrawCollateral",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>
-    ]
+    values: [AddressLike, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "withdrawCollateralAndUnwrapWeth",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>
-    ]
+    values: [AddressLike, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "wrapEthAndDepositCollateral",
-    values: [PromiseOrValue<string>, PromiseOrValue<string>]
+    values: [AddressLike, AddressLike]
   ): string;
 
   decodeFunctionResult(
@@ -408,1093 +275,668 @@ export interface IHifiProxyTargetInterface extends utils.Interface {
     functionFragment: "wrapEthAndDepositCollateral",
     data: BytesLike
   ): Result;
-
-  events: {
-    "BorrowHTokenAndBuyUnderlying(address,uint256,uint256)": EventFragment;
-  };
-
-  getEvent(
-    nameOrSignatureOrTopic: "BorrowHTokenAndBuyUnderlying"
-  ): EventFragment;
 }
 
-export interface BorrowHTokenAndBuyUnderlyingEventObject {
-  borrower: string;
-  borrowAmount: BigNumber;
-  underlyingAmount: BigNumber;
+export namespace BorrowHTokenAndBuyUnderlyingEvent {
+  export type InputTuple = [
+    borrower: AddressLike,
+    borrowAmount: BigNumberish,
+    underlyingAmount: BigNumberish
+  ];
+  export type OutputTuple = [
+    borrower: string,
+    borrowAmount: bigint,
+    underlyingAmount: bigint
+  ];
+  export interface OutputObject {
+    borrower: string;
+    borrowAmount: bigint;
+    underlyingAmount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type BorrowHTokenAndBuyUnderlyingEvent = TypedEvent<
-  [string, BigNumber, BigNumber],
-  BorrowHTokenAndBuyUnderlyingEventObject
->;
-
-export type BorrowHTokenAndBuyUnderlyingEventFilter =
-  TypedEventFilter<BorrowHTokenAndBuyUnderlyingEvent>;
 
 export interface IHifiProxyTarget extends BaseContract {
-  connect(signerOrProvider: Signer | Provider | string): this;
-  attach(addressOrName: string): this;
-  deployed(): Promise<this>;
+  connect(runner?: ContractRunner | null): IHifiProxyTarget;
+  waitForDeployment(): Promise<this>;
 
   interface: IHifiProxyTargetInterface;
 
-  queryFilter<TEvent extends TypedEvent>(
-    event: TypedEventFilter<TEvent>,
+  queryFilter<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TEvent>>;
-
-  listeners<TEvent extends TypedEvent>(
-    eventFilter?: TypedEventFilter<TEvent>
-  ): Array<TypedListener<TEvent>>;
-  listeners(eventName?: string): Array<Listener>;
-  removeAllListeners<TEvent extends TypedEvent>(
-    eventFilter: TypedEventFilter<TEvent>
-  ): this;
-  removeAllListeners(eventName?: string): this;
-  off: OnEvent<this>;
-  on: OnEvent<this>;
-  once: OnEvent<this>;
-  removeListener: OnEvent<this>;
-
-  functions: {
-    borrowHTokenAndBuyUnderlying(
-      balanceSheet: PromiseOrValue<string>,
-      hifiPool: PromiseOrValue<string>,
-      maxBorrowAmount: PromiseOrValue<BigNumberish>,
-      underlyingOut: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    buyHTokenAndRepayBorrow(
-      hifiPool: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      maxUnderlyingIn: PromiseOrValue<BigNumberish>,
-      hTokenOut: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    buyHTokenAndRepayBorrowWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      maxUnderlyingIn: PromiseOrValue<BigNumberish>,
-      hTokenOut: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureUnderlying: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    depositCollateral(
-      balanceSheet: PromiseOrValue<string>,
-      collateral: PromiseOrValue<string>,
-      depositAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    depositCollateralWithSignature(
-      balanceSheet: PromiseOrValue<string>,
-      collateral: PromiseOrValue<string>,
-      depositAmount: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureCollateral: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    depositUnderlyingAndMintHTokenAndAddLiquidity(
-      hifiPool: PromiseOrValue<string>,
-      depositAmount: PromiseOrValue<BigNumberish>,
-      underlyingOffered: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    depositUnderlyingAndMintHTokenAndAddLiquidityWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      depositAmount: PromiseOrValue<BigNumberish>,
-      underlyingOffered: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureUnderlying: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    depositUnderlyingAndRepayBorrow(
-      hToken: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    depositUnderlyingAndRepayBorrowWithSignature(
-      hToken: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureUnderlying: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    redeem(
-      hToken: PromiseOrValue<string>,
-      hTokenAmount: PromiseOrValue<BigNumberish>,
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    redeemWithSignature(
-      hToken: PromiseOrValue<string>,
-      hTokenAmount: PromiseOrValue<BigNumberish>,
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureHToken: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    removeLiquidity(
-      hifiPool: PromiseOrValue<string>,
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    removeLiquidityAndRedeem(
-      hifiPool: PromiseOrValue<string>,
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    removeLiquidityAndRedeemWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureLPToken: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    removeLiquidityAndWithdrawUnderlying(
-      hifiPool: PromiseOrValue<string>,
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      withdrawAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    removeLiquidityAndWithdrawUnderlyingWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      withdrawAmount: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureLPToken: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    removeLiquidityWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureLPToken: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    sellHToken(
-      hifiPool: PromiseOrValue<string>,
-      hTokenIn: PromiseOrValue<BigNumberish>,
-      minUnderlyingOut: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    sellHTokenWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      hTokenIn: PromiseOrValue<BigNumberish>,
-      minUnderlyingOut: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureHToken: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    sellUnderlying(
-      hifiPool: PromiseOrValue<string>,
-      underlyingIn: PromiseOrValue<BigNumberish>,
-      minHTokenOut: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    sellUnderlyingAndRepayBorrow(
-      hifiPool: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      underlyingIn: PromiseOrValue<BigNumberish>,
-      minHTokenOut: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    sellUnderlyingAndRepayBorrowWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      underlyingIn: PromiseOrValue<BigNumberish>,
-      minHTokenOut: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureUnderlying: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    sellUnderlyingWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      underlyingIn: PromiseOrValue<BigNumberish>,
-      minHTokenOut: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureUnderlying: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    withdrawCollateral(
-      balanceSheet: PromiseOrValue<string>,
-      collateral: PromiseOrValue<string>,
-      withdrawAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    withdrawCollateralAndUnwrapWeth(
-      weth: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      withdrawAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    wrapEthAndDepositCollateral(
-      weth: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-  };
-
-  borrowHTokenAndBuyUnderlying(
-    balanceSheet: PromiseOrValue<string>,
-    hifiPool: PromiseOrValue<string>,
-    maxBorrowAmount: PromiseOrValue<BigNumberish>,
-    underlyingOut: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  buyHTokenAndRepayBorrow(
-    hifiPool: PromiseOrValue<string>,
-    balanceSheet: PromiseOrValue<string>,
-    maxUnderlyingIn: PromiseOrValue<BigNumberish>,
-    hTokenOut: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  buyHTokenAndRepayBorrowWithSignature(
-    hifiPool: PromiseOrValue<string>,
-    balanceSheet: PromiseOrValue<string>,
-    maxUnderlyingIn: PromiseOrValue<BigNumberish>,
-    hTokenOut: PromiseOrValue<BigNumberish>,
-    deadline: PromiseOrValue<BigNumberish>,
-    signatureUnderlying: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  depositCollateral(
-    balanceSheet: PromiseOrValue<string>,
-    collateral: PromiseOrValue<string>,
-    depositAmount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  depositCollateralWithSignature(
-    balanceSheet: PromiseOrValue<string>,
-    collateral: PromiseOrValue<string>,
-    depositAmount: PromiseOrValue<BigNumberish>,
-    deadline: PromiseOrValue<BigNumberish>,
-    signatureCollateral: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  depositUnderlyingAndMintHTokenAndAddLiquidity(
-    hifiPool: PromiseOrValue<string>,
-    depositAmount: PromiseOrValue<BigNumberish>,
-    underlyingOffered: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  depositUnderlyingAndMintHTokenAndAddLiquidityWithSignature(
-    hifiPool: PromiseOrValue<string>,
-    depositAmount: PromiseOrValue<BigNumberish>,
-    underlyingOffered: PromiseOrValue<BigNumberish>,
-    deadline: PromiseOrValue<BigNumberish>,
-    signatureUnderlying: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  depositUnderlyingAndRepayBorrow(
-    hToken: PromiseOrValue<string>,
-    balanceSheet: PromiseOrValue<string>,
-    underlyingAmount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  depositUnderlyingAndRepayBorrowWithSignature(
-    hToken: PromiseOrValue<string>,
-    balanceSheet: PromiseOrValue<string>,
-    underlyingAmount: PromiseOrValue<BigNumberish>,
-    deadline: PromiseOrValue<BigNumberish>,
-    signatureUnderlying: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  redeem(
-    hToken: PromiseOrValue<string>,
-    hTokenAmount: PromiseOrValue<BigNumberish>,
-    underlyingAmount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  redeemWithSignature(
-    hToken: PromiseOrValue<string>,
-    hTokenAmount: PromiseOrValue<BigNumberish>,
-    underlyingAmount: PromiseOrValue<BigNumberish>,
-    deadline: PromiseOrValue<BigNumberish>,
-    signatureHToken: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  removeLiquidity(
-    hifiPool: PromiseOrValue<string>,
-    poolTokensBurned: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  removeLiquidityAndRedeem(
-    hifiPool: PromiseOrValue<string>,
-    poolTokensBurned: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  removeLiquidityAndRedeemWithSignature(
-    hifiPool: PromiseOrValue<string>,
-    poolTokensBurned: PromiseOrValue<BigNumberish>,
-    deadline: PromiseOrValue<BigNumberish>,
-    signatureLPToken: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  removeLiquidityAndWithdrawUnderlying(
-    hifiPool: PromiseOrValue<string>,
-    poolTokensBurned: PromiseOrValue<BigNumberish>,
-    withdrawAmount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  removeLiquidityAndWithdrawUnderlyingWithSignature(
-    hifiPool: PromiseOrValue<string>,
-    poolTokensBurned: PromiseOrValue<BigNumberish>,
-    withdrawAmount: PromiseOrValue<BigNumberish>,
-    deadline: PromiseOrValue<BigNumberish>,
-    signatureLPToken: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  removeLiquidityWithSignature(
-    hifiPool: PromiseOrValue<string>,
-    poolTokensBurned: PromiseOrValue<BigNumberish>,
-    deadline: PromiseOrValue<BigNumberish>,
-    signatureLPToken: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  sellHToken(
-    hifiPool: PromiseOrValue<string>,
-    hTokenIn: PromiseOrValue<BigNumberish>,
-    minUnderlyingOut: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  sellHTokenWithSignature(
-    hifiPool: PromiseOrValue<string>,
-    hTokenIn: PromiseOrValue<BigNumberish>,
-    minUnderlyingOut: PromiseOrValue<BigNumberish>,
-    deadline: PromiseOrValue<BigNumberish>,
-    signatureHToken: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  sellUnderlying(
-    hifiPool: PromiseOrValue<string>,
-    underlyingIn: PromiseOrValue<BigNumberish>,
-    minHTokenOut: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  sellUnderlyingAndRepayBorrow(
-    hifiPool: PromiseOrValue<string>,
-    balanceSheet: PromiseOrValue<string>,
-    underlyingIn: PromiseOrValue<BigNumberish>,
-    minHTokenOut: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  sellUnderlyingAndRepayBorrowWithSignature(
-    hifiPool: PromiseOrValue<string>,
-    balanceSheet: PromiseOrValue<string>,
-    underlyingIn: PromiseOrValue<BigNumberish>,
-    minHTokenOut: PromiseOrValue<BigNumberish>,
-    deadline: PromiseOrValue<BigNumberish>,
-    signatureUnderlying: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  sellUnderlyingWithSignature(
-    hifiPool: PromiseOrValue<string>,
-    underlyingIn: PromiseOrValue<BigNumberish>,
-    minHTokenOut: PromiseOrValue<BigNumberish>,
-    deadline: PromiseOrValue<BigNumberish>,
-    signatureUnderlying: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  withdrawCollateral(
-    balanceSheet: PromiseOrValue<string>,
-    collateral: PromiseOrValue<string>,
-    withdrawAmount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  withdrawCollateralAndUnwrapWeth(
-    weth: PromiseOrValue<string>,
-    balanceSheet: PromiseOrValue<string>,
-    withdrawAmount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  wrapEthAndDepositCollateral(
-    weth: PromiseOrValue<string>,
-    balanceSheet: PromiseOrValue<string>,
-    overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  callStatic: {
-    borrowHTokenAndBuyUnderlying(
-      balanceSheet: PromiseOrValue<string>,
-      hifiPool: PromiseOrValue<string>,
-      maxBorrowAmount: PromiseOrValue<BigNumberish>,
-      underlyingOut: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    buyHTokenAndRepayBorrow(
-      hifiPool: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      maxUnderlyingIn: PromiseOrValue<BigNumberish>,
-      hTokenOut: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    buyHTokenAndRepayBorrowWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      maxUnderlyingIn: PromiseOrValue<BigNumberish>,
-      hTokenOut: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureUnderlying: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    depositCollateral(
-      balanceSheet: PromiseOrValue<string>,
-      collateral: PromiseOrValue<string>,
-      depositAmount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    depositCollateralWithSignature(
-      balanceSheet: PromiseOrValue<string>,
-      collateral: PromiseOrValue<string>,
-      depositAmount: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureCollateral: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    depositUnderlyingAndMintHTokenAndAddLiquidity(
-      hifiPool: PromiseOrValue<string>,
-      depositAmount: PromiseOrValue<BigNumberish>,
-      underlyingOffered: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    depositUnderlyingAndMintHTokenAndAddLiquidityWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      depositAmount: PromiseOrValue<BigNumberish>,
-      underlyingOffered: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureUnderlying: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    depositUnderlyingAndRepayBorrow(
-      hToken: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    depositUnderlyingAndRepayBorrowWithSignature(
-      hToken: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureUnderlying: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    redeem(
-      hToken: PromiseOrValue<string>,
-      hTokenAmount: PromiseOrValue<BigNumberish>,
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    redeemWithSignature(
-      hToken: PromiseOrValue<string>,
-      hTokenAmount: PromiseOrValue<BigNumberish>,
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureHToken: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    removeLiquidity(
-      hifiPool: PromiseOrValue<string>,
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    removeLiquidityAndRedeem(
-      hifiPool: PromiseOrValue<string>,
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    removeLiquidityAndRedeemWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureLPToken: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    removeLiquidityAndWithdrawUnderlying(
-      hifiPool: PromiseOrValue<string>,
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      withdrawAmount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    removeLiquidityAndWithdrawUnderlyingWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      withdrawAmount: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureLPToken: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    removeLiquidityWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureLPToken: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    sellHToken(
-      hifiPool: PromiseOrValue<string>,
-      hTokenIn: PromiseOrValue<BigNumberish>,
-      minUnderlyingOut: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    sellHTokenWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      hTokenIn: PromiseOrValue<BigNumberish>,
-      minUnderlyingOut: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureHToken: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    sellUnderlying(
-      hifiPool: PromiseOrValue<string>,
-      underlyingIn: PromiseOrValue<BigNumberish>,
-      minHTokenOut: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    sellUnderlyingAndRepayBorrow(
-      hifiPool: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      underlyingIn: PromiseOrValue<BigNumberish>,
-      minHTokenOut: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    sellUnderlyingAndRepayBorrowWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      underlyingIn: PromiseOrValue<BigNumberish>,
-      minHTokenOut: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureUnderlying: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    sellUnderlyingWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      underlyingIn: PromiseOrValue<BigNumberish>,
-      minHTokenOut: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureUnderlying: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    withdrawCollateral(
-      balanceSheet: PromiseOrValue<string>,
-      collateral: PromiseOrValue<string>,
-      withdrawAmount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    withdrawCollateralAndUnwrapWeth(
-      weth: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      withdrawAmount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    wrapEthAndDepositCollateral(
-      weth: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-  };
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  queryFilter<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+
+  on<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  on<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+
+  once<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  once<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+
+  listeners<TCEvent extends TypedContractEvent>(
+    event: TCEvent
+  ): Promise<Array<TypedListener<TCEvent>>>;
+  listeners(eventName?: string): Promise<Array<Listener>>;
+  removeAllListeners<TCEvent extends TypedContractEvent>(
+    event?: TCEvent
+  ): Promise<this>;
+
+  borrowHTokenAndBuyUnderlying: TypedContractMethod<
+    [
+      balanceSheet: AddressLike,
+      hifiPool: AddressLike,
+      maxBorrowAmount: BigNumberish,
+      underlyingOut: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  buyHTokenAndRepayBorrow: TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      balanceSheet: AddressLike,
+      maxUnderlyingIn: BigNumberish,
+      hTokenOut: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  buyHTokenAndRepayBorrowWithSignature: TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      balanceSheet: AddressLike,
+      maxUnderlyingIn: BigNumberish,
+      hTokenOut: BigNumberish,
+      deadline: BigNumberish,
+      signatureUnderlying: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  depositCollateral: TypedContractMethod<
+    [
+      balanceSheet: AddressLike,
+      collateral: AddressLike,
+      depositAmount: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  depositCollateralWithSignature: TypedContractMethod<
+    [
+      balanceSheet: AddressLike,
+      collateral: AddressLike,
+      depositAmount: BigNumberish,
+      deadline: BigNumberish,
+      signatureCollateral: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  depositUnderlyingAndMintHTokenAndAddLiquidity: TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      depositAmount: BigNumberish,
+      underlyingOffered: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  depositUnderlyingAndMintHTokenAndAddLiquidityWithSignature: TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      depositAmount: BigNumberish,
+      underlyingOffered: BigNumberish,
+      deadline: BigNumberish,
+      signatureUnderlying: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  depositUnderlyingAndRepayBorrow: TypedContractMethod<
+    [
+      hToken: AddressLike,
+      balanceSheet: AddressLike,
+      underlyingAmount: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  depositUnderlyingAndRepayBorrowWithSignature: TypedContractMethod<
+    [
+      hToken: AddressLike,
+      balanceSheet: AddressLike,
+      underlyingAmount: BigNumberish,
+      deadline: BigNumberish,
+      signatureUnderlying: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  redeem: TypedContractMethod<
+    [
+      hToken: AddressLike,
+      hTokenAmount: BigNumberish,
+      underlyingAmount: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  redeemWithSignature: TypedContractMethod<
+    [
+      hToken: AddressLike,
+      hTokenAmount: BigNumberish,
+      underlyingAmount: BigNumberish,
+      deadline: BigNumberish,
+      signatureHToken: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  removeLiquidity: TypedContractMethod<
+    [hifiPool: AddressLike, poolTokensBurned: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  removeLiquidityAndRedeem: TypedContractMethod<
+    [hifiPool: AddressLike, poolTokensBurned: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  removeLiquidityAndRedeemWithSignature: TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      poolTokensBurned: BigNumberish,
+      deadline: BigNumberish,
+      signatureLPToken: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  removeLiquidityAndWithdrawUnderlying: TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      poolTokensBurned: BigNumberish,
+      withdrawAmount: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  removeLiquidityAndWithdrawUnderlyingWithSignature: TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      poolTokensBurned: BigNumberish,
+      withdrawAmount: BigNumberish,
+      deadline: BigNumberish,
+      signatureLPToken: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  removeLiquidityWithSignature: TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      poolTokensBurned: BigNumberish,
+      deadline: BigNumberish,
+      signatureLPToken: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  sellHToken: TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      hTokenIn: BigNumberish,
+      minUnderlyingOut: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  sellHTokenWithSignature: TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      hTokenIn: BigNumberish,
+      minUnderlyingOut: BigNumberish,
+      deadline: BigNumberish,
+      signatureHToken: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  sellUnderlying: TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      underlyingIn: BigNumberish,
+      minHTokenOut: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  sellUnderlyingAndRepayBorrow: TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      balanceSheet: AddressLike,
+      underlyingIn: BigNumberish,
+      minHTokenOut: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  sellUnderlyingAndRepayBorrowWithSignature: TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      balanceSheet: AddressLike,
+      underlyingIn: BigNumberish,
+      minHTokenOut: BigNumberish,
+      deadline: BigNumberish,
+      signatureUnderlying: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  sellUnderlyingWithSignature: TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      underlyingIn: BigNumberish,
+      minHTokenOut: BigNumberish,
+      deadline: BigNumberish,
+      signatureUnderlying: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  withdrawCollateral: TypedContractMethod<
+    [
+      balanceSheet: AddressLike,
+      collateral: AddressLike,
+      withdrawAmount: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  withdrawCollateralAndUnwrapWeth: TypedContractMethod<
+    [
+      weth: AddressLike,
+      balanceSheet: AddressLike,
+      withdrawAmount: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+
+  wrapEthAndDepositCollateral: TypedContractMethod<
+    [weth: AddressLike, balanceSheet: AddressLike],
+    [void],
+    "payable"
+  >;
+
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
+
+  getFunction(
+    nameOrSignature: "borrowHTokenAndBuyUnderlying"
+  ): TypedContractMethod<
+    [
+      balanceSheet: AddressLike,
+      hifiPool: AddressLike,
+      maxBorrowAmount: BigNumberish,
+      underlyingOut: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "buyHTokenAndRepayBorrow"
+  ): TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      balanceSheet: AddressLike,
+      maxUnderlyingIn: BigNumberish,
+      hTokenOut: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "buyHTokenAndRepayBorrowWithSignature"
+  ): TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      balanceSheet: AddressLike,
+      maxUnderlyingIn: BigNumberish,
+      hTokenOut: BigNumberish,
+      deadline: BigNumberish,
+      signatureUnderlying: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "depositCollateral"
+  ): TypedContractMethod<
+    [
+      balanceSheet: AddressLike,
+      collateral: AddressLike,
+      depositAmount: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "depositCollateralWithSignature"
+  ): TypedContractMethod<
+    [
+      balanceSheet: AddressLike,
+      collateral: AddressLike,
+      depositAmount: BigNumberish,
+      deadline: BigNumberish,
+      signatureCollateral: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "depositUnderlyingAndMintHTokenAndAddLiquidity"
+  ): TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      depositAmount: BigNumberish,
+      underlyingOffered: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "depositUnderlyingAndMintHTokenAndAddLiquidityWithSignature"
+  ): TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      depositAmount: BigNumberish,
+      underlyingOffered: BigNumberish,
+      deadline: BigNumberish,
+      signatureUnderlying: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "depositUnderlyingAndRepayBorrow"
+  ): TypedContractMethod<
+    [
+      hToken: AddressLike,
+      balanceSheet: AddressLike,
+      underlyingAmount: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "depositUnderlyingAndRepayBorrowWithSignature"
+  ): TypedContractMethod<
+    [
+      hToken: AddressLike,
+      balanceSheet: AddressLike,
+      underlyingAmount: BigNumberish,
+      deadline: BigNumberish,
+      signatureUnderlying: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "redeem"
+  ): TypedContractMethod<
+    [
+      hToken: AddressLike,
+      hTokenAmount: BigNumberish,
+      underlyingAmount: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "redeemWithSignature"
+  ): TypedContractMethod<
+    [
+      hToken: AddressLike,
+      hTokenAmount: BigNumberish,
+      underlyingAmount: BigNumberish,
+      deadline: BigNumberish,
+      signatureHToken: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "removeLiquidity"
+  ): TypedContractMethod<
+    [hifiPool: AddressLike, poolTokensBurned: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "removeLiquidityAndRedeem"
+  ): TypedContractMethod<
+    [hifiPool: AddressLike, poolTokensBurned: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "removeLiquidityAndRedeemWithSignature"
+  ): TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      poolTokensBurned: BigNumberish,
+      deadline: BigNumberish,
+      signatureLPToken: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "removeLiquidityAndWithdrawUnderlying"
+  ): TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      poolTokensBurned: BigNumberish,
+      withdrawAmount: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "removeLiquidityAndWithdrawUnderlyingWithSignature"
+  ): TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      poolTokensBurned: BigNumberish,
+      withdrawAmount: BigNumberish,
+      deadline: BigNumberish,
+      signatureLPToken: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "removeLiquidityWithSignature"
+  ): TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      poolTokensBurned: BigNumberish,
+      deadline: BigNumberish,
+      signatureLPToken: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "sellHToken"
+  ): TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      hTokenIn: BigNumberish,
+      minUnderlyingOut: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "sellHTokenWithSignature"
+  ): TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      hTokenIn: BigNumberish,
+      minUnderlyingOut: BigNumberish,
+      deadline: BigNumberish,
+      signatureHToken: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "sellUnderlying"
+  ): TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      underlyingIn: BigNumberish,
+      minHTokenOut: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "sellUnderlyingAndRepayBorrow"
+  ): TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      balanceSheet: AddressLike,
+      underlyingIn: BigNumberish,
+      minHTokenOut: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "sellUnderlyingAndRepayBorrowWithSignature"
+  ): TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      balanceSheet: AddressLike,
+      underlyingIn: BigNumberish,
+      minHTokenOut: BigNumberish,
+      deadline: BigNumberish,
+      signatureUnderlying: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "sellUnderlyingWithSignature"
+  ): TypedContractMethod<
+    [
+      hifiPool: AddressLike,
+      underlyingIn: BigNumberish,
+      minHTokenOut: BigNumberish,
+      deadline: BigNumberish,
+      signatureUnderlying: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "withdrawCollateral"
+  ): TypedContractMethod<
+    [
+      balanceSheet: AddressLike,
+      collateral: AddressLike,
+      withdrawAmount: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "withdrawCollateralAndUnwrapWeth"
+  ): TypedContractMethod<
+    [
+      weth: AddressLike,
+      balanceSheet: AddressLike,
+      withdrawAmount: BigNumberish
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "wrapEthAndDepositCollateral"
+  ): TypedContractMethod<
+    [weth: AddressLike, balanceSheet: AddressLike],
+    [void],
+    "payable"
+  >;
+
+  getEvent(
+    key: "BorrowHTokenAndBuyUnderlying"
+  ): TypedContractEvent<
+    BorrowHTokenAndBuyUnderlyingEvent.InputTuple,
+    BorrowHTokenAndBuyUnderlyingEvent.OutputTuple,
+    BorrowHTokenAndBuyUnderlyingEvent.OutputObject
+  >;
 
   filters: {
-    "BorrowHTokenAndBuyUnderlying(address,uint256,uint256)"(
-      borrower?: PromiseOrValue<string> | null,
-      borrowAmount?: null,
-      underlyingAmount?: null
-    ): BorrowHTokenAndBuyUnderlyingEventFilter;
-    BorrowHTokenAndBuyUnderlying(
-      borrower?: PromiseOrValue<string> | null,
-      borrowAmount?: null,
-      underlyingAmount?: null
-    ): BorrowHTokenAndBuyUnderlyingEventFilter;
-  };
-
-  estimateGas: {
-    borrowHTokenAndBuyUnderlying(
-      balanceSheet: PromiseOrValue<string>,
-      hifiPool: PromiseOrValue<string>,
-      maxBorrowAmount: PromiseOrValue<BigNumberish>,
-      underlyingOut: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    buyHTokenAndRepayBorrow(
-      hifiPool: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      maxUnderlyingIn: PromiseOrValue<BigNumberish>,
-      hTokenOut: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    buyHTokenAndRepayBorrowWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      maxUnderlyingIn: PromiseOrValue<BigNumberish>,
-      hTokenOut: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureUnderlying: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    depositCollateral(
-      balanceSheet: PromiseOrValue<string>,
-      collateral: PromiseOrValue<string>,
-      depositAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    depositCollateralWithSignature(
-      balanceSheet: PromiseOrValue<string>,
-      collateral: PromiseOrValue<string>,
-      depositAmount: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureCollateral: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    depositUnderlyingAndMintHTokenAndAddLiquidity(
-      hifiPool: PromiseOrValue<string>,
-      depositAmount: PromiseOrValue<BigNumberish>,
-      underlyingOffered: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    depositUnderlyingAndMintHTokenAndAddLiquidityWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      depositAmount: PromiseOrValue<BigNumberish>,
-      underlyingOffered: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureUnderlying: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    depositUnderlyingAndRepayBorrow(
-      hToken: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    depositUnderlyingAndRepayBorrowWithSignature(
-      hToken: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureUnderlying: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    redeem(
-      hToken: PromiseOrValue<string>,
-      hTokenAmount: PromiseOrValue<BigNumberish>,
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    redeemWithSignature(
-      hToken: PromiseOrValue<string>,
-      hTokenAmount: PromiseOrValue<BigNumberish>,
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureHToken: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    removeLiquidity(
-      hifiPool: PromiseOrValue<string>,
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    removeLiquidityAndRedeem(
-      hifiPool: PromiseOrValue<string>,
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    removeLiquidityAndRedeemWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureLPToken: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    removeLiquidityAndWithdrawUnderlying(
-      hifiPool: PromiseOrValue<string>,
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      withdrawAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    removeLiquidityAndWithdrawUnderlyingWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      withdrawAmount: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureLPToken: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    removeLiquidityWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureLPToken: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    sellHToken(
-      hifiPool: PromiseOrValue<string>,
-      hTokenIn: PromiseOrValue<BigNumberish>,
-      minUnderlyingOut: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    sellHTokenWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      hTokenIn: PromiseOrValue<BigNumberish>,
-      minUnderlyingOut: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureHToken: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    sellUnderlying(
-      hifiPool: PromiseOrValue<string>,
-      underlyingIn: PromiseOrValue<BigNumberish>,
-      minHTokenOut: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    sellUnderlyingAndRepayBorrow(
-      hifiPool: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      underlyingIn: PromiseOrValue<BigNumberish>,
-      minHTokenOut: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    sellUnderlyingAndRepayBorrowWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      underlyingIn: PromiseOrValue<BigNumberish>,
-      minHTokenOut: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureUnderlying: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    sellUnderlyingWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      underlyingIn: PromiseOrValue<BigNumberish>,
-      minHTokenOut: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureUnderlying: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    withdrawCollateral(
-      balanceSheet: PromiseOrValue<string>,
-      collateral: PromiseOrValue<string>,
-      withdrawAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    withdrawCollateralAndUnwrapWeth(
-      weth: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      withdrawAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    wrapEthAndDepositCollateral(
-      weth: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-  };
-
-  populateTransaction: {
-    borrowHTokenAndBuyUnderlying(
-      balanceSheet: PromiseOrValue<string>,
-      hifiPool: PromiseOrValue<string>,
-      maxBorrowAmount: PromiseOrValue<BigNumberish>,
-      underlyingOut: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    buyHTokenAndRepayBorrow(
-      hifiPool: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      maxUnderlyingIn: PromiseOrValue<BigNumberish>,
-      hTokenOut: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    buyHTokenAndRepayBorrowWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      maxUnderlyingIn: PromiseOrValue<BigNumberish>,
-      hTokenOut: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureUnderlying: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    depositCollateral(
-      balanceSheet: PromiseOrValue<string>,
-      collateral: PromiseOrValue<string>,
-      depositAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    depositCollateralWithSignature(
-      balanceSheet: PromiseOrValue<string>,
-      collateral: PromiseOrValue<string>,
-      depositAmount: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureCollateral: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    depositUnderlyingAndMintHTokenAndAddLiquidity(
-      hifiPool: PromiseOrValue<string>,
-      depositAmount: PromiseOrValue<BigNumberish>,
-      underlyingOffered: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    depositUnderlyingAndMintHTokenAndAddLiquidityWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      depositAmount: PromiseOrValue<BigNumberish>,
-      underlyingOffered: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureUnderlying: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    depositUnderlyingAndRepayBorrow(
-      hToken: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    depositUnderlyingAndRepayBorrowWithSignature(
-      hToken: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureUnderlying: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    redeem(
-      hToken: PromiseOrValue<string>,
-      hTokenAmount: PromiseOrValue<BigNumberish>,
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    redeemWithSignature(
-      hToken: PromiseOrValue<string>,
-      hTokenAmount: PromiseOrValue<BigNumberish>,
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureHToken: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    removeLiquidity(
-      hifiPool: PromiseOrValue<string>,
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    removeLiquidityAndRedeem(
-      hifiPool: PromiseOrValue<string>,
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    removeLiquidityAndRedeemWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureLPToken: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    removeLiquidityAndWithdrawUnderlying(
-      hifiPool: PromiseOrValue<string>,
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      withdrawAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    removeLiquidityAndWithdrawUnderlyingWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      withdrawAmount: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureLPToken: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    removeLiquidityWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureLPToken: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    sellHToken(
-      hifiPool: PromiseOrValue<string>,
-      hTokenIn: PromiseOrValue<BigNumberish>,
-      minUnderlyingOut: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    sellHTokenWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      hTokenIn: PromiseOrValue<BigNumberish>,
-      minUnderlyingOut: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureHToken: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    sellUnderlying(
-      hifiPool: PromiseOrValue<string>,
-      underlyingIn: PromiseOrValue<BigNumberish>,
-      minHTokenOut: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    sellUnderlyingAndRepayBorrow(
-      hifiPool: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      underlyingIn: PromiseOrValue<BigNumberish>,
-      minHTokenOut: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    sellUnderlyingAndRepayBorrowWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      underlyingIn: PromiseOrValue<BigNumberish>,
-      minHTokenOut: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureUnderlying: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    sellUnderlyingWithSignature(
-      hifiPool: PromiseOrValue<string>,
-      underlyingIn: PromiseOrValue<BigNumberish>,
-      minHTokenOut: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      signatureUnderlying: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    withdrawCollateral(
-      balanceSheet: PromiseOrValue<string>,
-      collateral: PromiseOrValue<string>,
-      withdrawAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    withdrawCollateralAndUnwrapWeth(
-      weth: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      withdrawAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    wrapEthAndDepositCollateral(
-      weth: PromiseOrValue<string>,
-      balanceSheet: PromiseOrValue<string>,
-      overrides?: PayableOverrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
+    "BorrowHTokenAndBuyUnderlying(address,uint256,uint256)": TypedContractEvent<
+      BorrowHTokenAndBuyUnderlyingEvent.InputTuple,
+      BorrowHTokenAndBuyUnderlyingEvent.OutputTuple,
+      BorrowHTokenAndBuyUnderlyingEvent.OutputObject
+    >;
+    BorrowHTokenAndBuyUnderlying: TypedContractEvent<
+      BorrowHTokenAndBuyUnderlyingEvent.InputTuple,
+      BorrowHTokenAndBuyUnderlyingEvent.OutputTuple,
+      BorrowHTokenAndBuyUnderlyingEvent.OutputObject
+    >;
   };
 }

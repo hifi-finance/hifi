@@ -3,33 +3,25 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumber,
   BytesLike,
-  CallOverrides,
-  ContractTransaction,
-  Overrides,
-  PopulatedTransaction,
-  Signer,
-  utils,
+  FunctionFragment,
+  Result,
+  Interface,
+  ContractRunner,
+  ContractMethod,
+  Listener,
 } from "ethers";
-import type { FunctionFragment, Result } from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
 import type {
-  TypedEventFilter,
-  TypedEvent,
+  TypedContractEvent,
+  TypedDeferredTopicFilter,
+  TypedEventLog,
   TypedListener,
-  OnEvent,
-  PromiseOrValue,
+  TypedContractMethod,
 } from "../../../common";
 
-export interface IBalanceSheetUpgradedInterface extends utils.Interface {
-  functions: {
-    "getLastBlockNumber()": FunctionFragment;
-    "setLastBlockNumber()": FunctionFragment;
-  };
-
+export interface IBalanceSheetUpgradedInterface extends Interface {
   getFunction(
-    nameOrSignatureOrTopic: "getLastBlockNumber" | "setLastBlockNumber"
+    nameOrSignature: "getLastBlockNumber" | "setLastBlockNumber"
   ): FunctionFragment;
 
   encodeFunctionData(
@@ -49,73 +41,65 @@ export interface IBalanceSheetUpgradedInterface extends utils.Interface {
     functionFragment: "setLastBlockNumber",
     data: BytesLike
   ): Result;
-
-  events: {};
 }
 
 export interface IBalanceSheetUpgraded extends BaseContract {
-  connect(signerOrProvider: Signer | Provider | string): this;
-  attach(addressOrName: string): this;
-  deployed(): Promise<this>;
+  connect(runner?: ContractRunner | null): IBalanceSheetUpgraded;
+  waitForDeployment(): Promise<this>;
 
   interface: IBalanceSheetUpgradedInterface;
 
-  queryFilter<TEvent extends TypedEvent>(
-    event: TypedEventFilter<TEvent>,
+  queryFilter<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TEvent>>;
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  queryFilter<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
 
-  listeners<TEvent extends TypedEvent>(
-    eventFilter?: TypedEventFilter<TEvent>
-  ): Array<TypedListener<TEvent>>;
-  listeners(eventName?: string): Array<Listener>;
-  removeAllListeners<TEvent extends TypedEvent>(
-    eventFilter: TypedEventFilter<TEvent>
-  ): this;
-  removeAllListeners(eventName?: string): this;
-  off: OnEvent<this>;
-  on: OnEvent<this>;
-  once: OnEvent<this>;
-  removeListener: OnEvent<this>;
+  on<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  on<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-  functions: {
-    getLastBlockNumber(overrides?: CallOverrides): Promise<[BigNumber]>;
+  once<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  once<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-    setLastBlockNumber(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-  };
+  listeners<TCEvent extends TypedContractEvent>(
+    event: TCEvent
+  ): Promise<Array<TypedListener<TCEvent>>>;
+  listeners(eventName?: string): Promise<Array<Listener>>;
+  removeAllListeners<TCEvent extends TypedContractEvent>(
+    event?: TCEvent
+  ): Promise<this>;
 
-  getLastBlockNumber(overrides?: CallOverrides): Promise<BigNumber>;
+  getLastBlockNumber: TypedContractMethod<[], [bigint], "view">;
 
-  setLastBlockNumber(
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  setLastBlockNumber: TypedContractMethod<[], [void], "nonpayable">;
 
-  callStatic: {
-    getLastBlockNumber(overrides?: CallOverrides): Promise<BigNumber>;
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
 
-    setLastBlockNumber(overrides?: CallOverrides): Promise<void>;
-  };
+  getFunction(
+    nameOrSignature: "getLastBlockNumber"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "setLastBlockNumber"
+  ): TypedContractMethod<[], [void], "nonpayable">;
 
   filters: {};
-
-  estimateGas: {
-    getLastBlockNumber(overrides?: CallOverrides): Promise<BigNumber>;
-
-    setLastBlockNumber(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-  };
-
-  populateTransaction: {
-    getLastBlockNumber(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    setLastBlockNumber(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-  };
 }

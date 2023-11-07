@@ -3,55 +3,29 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumber,
   BigNumberish,
   BytesLike,
-  CallOverrides,
-  ContractTransaction,
-  Overrides,
-  PopulatedTransaction,
-  Signer,
-  utils,
-} from "ethers";
-import type {
   FunctionFragment,
   Result,
+  Interface,
   EventFragment,
-} from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
+  AddressLike,
+  ContractRunner,
+  ContractMethod,
+  Listener,
+} from "ethers";
 import type {
-  TypedEventFilter,
-  TypedEvent,
+  TypedContractEvent,
+  TypedDeferredTopicFilter,
+  TypedEventLog,
+  TypedLogDescription,
   TypedListener,
-  OnEvent,
-  PromiseOrValue,
+  TypedContractMethod,
 } from "../../../common";
 
-export interface IBalanceSheetV2Interface extends utils.Interface {
-  functions: {
-    "_renounceOwnership()": FunctionFragment;
-    "_transferOwnership(address)": FunctionFragment;
-    "borrow(address,uint256)": FunctionFragment;
-    "depositCollateral(address,uint256)": FunctionFragment;
-    "getBondList(address)": FunctionFragment;
-    "getCollateralAmount(address,address)": FunctionFragment;
-    "getCollateralList(address)": FunctionFragment;
-    "getCurrentAccountLiquidity(address)": FunctionFragment;
-    "getDebtAmount(address,address)": FunctionFragment;
-    "getHypotheticalAccountLiquidity(address,address,uint256,address,uint256)": FunctionFragment;
-    "getRepayAmount(address,uint256,address)": FunctionFragment;
-    "getSeizableCollateralAmount(address,uint256,address)": FunctionFragment;
-    "liquidateBorrow(address,address,uint256,address)": FunctionFragment;
-    "owner()": FunctionFragment;
-    "repayBorrow(address,uint256)": FunctionFragment;
-    "repayBorrowBehalf(address,address,uint256)": FunctionFragment;
-    "setFintroller(address)": FunctionFragment;
-    "setOracle(address)": FunctionFragment;
-    "withdrawCollateral(address,uint256)": FunctionFragment;
-  };
-
+export interface IBalanceSheetV2Interface extends Interface {
   getFunction(
-    nameOrSignatureOrTopic:
+    nameOrSignature:
       | "_renounceOwnership"
       | "_transferOwnership"
       | "borrow"
@@ -73,101 +47,90 @@ export interface IBalanceSheetV2Interface extends utils.Interface {
       | "withdrawCollateral"
   ): FunctionFragment;
 
+  getEvent(
+    nameOrSignatureOrTopic:
+      | "Borrow"
+      | "DepositCollateral"
+      | "LiquidateBorrow"
+      | "RepayBorrow"
+      | "SetFintroller"
+      | "SetOracle"
+      | "TransferOwnership"
+      | "WithdrawCollateral"
+  ): EventFragment;
+
   encodeFunctionData(
     functionFragment: "_renounceOwnership",
     values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "_transferOwnership",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "borrow",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "depositCollateral",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getBondList",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "getCollateralAmount",
-    values: [PromiseOrValue<string>, PromiseOrValue<string>]
+    values: [AddressLike, AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "getCollateralList",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "getCurrentAccountLiquidity",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "getDebtAmount",
-    values: [PromiseOrValue<string>, PromiseOrValue<string>]
+    values: [AddressLike, AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "getHypotheticalAccountLiquidity",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>
-    ]
+    values: [AddressLike, AddressLike, BigNumberish, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getRepayAmount",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<string>
-    ]
+    values: [AddressLike, BigNumberish, AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "getSeizableCollateralAmount",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<string>
-    ]
+    values: [AddressLike, BigNumberish, AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "liquidateBorrow",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<string>
-    ]
+    values: [AddressLike, AddressLike, BigNumberish, AddressLike]
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "repayBorrow",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "repayBorrowBehalf",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>
-    ]
+    values: [AddressLike, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setFintroller",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "setOracle",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "withdrawCollateral",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    values: [AddressLike, BigNumberish]
   ): string;
 
   decodeFunctionResult(
@@ -237,838 +200,627 @@ export interface IBalanceSheetV2Interface extends utils.Interface {
     functionFragment: "withdrawCollateral",
     data: BytesLike
   ): Result;
-
-  events: {
-    "Borrow(address,address,uint256)": EventFragment;
-    "DepositCollateral(address,address,uint256)": EventFragment;
-    "LiquidateBorrow(address,address,address,uint256,address,uint256)": EventFragment;
-    "RepayBorrow(address,address,address,uint256,uint256)": EventFragment;
-    "SetFintroller(address,address,address)": EventFragment;
-    "SetOracle(address,address,address)": EventFragment;
-    "TransferOwnership(address,address)": EventFragment;
-    "WithdrawCollateral(address,address,uint256)": EventFragment;
-  };
-
-  getEvent(nameOrSignatureOrTopic: "Borrow"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "DepositCollateral"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "LiquidateBorrow"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "RepayBorrow"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "SetFintroller"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "SetOracle"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "TransferOwnership"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "WithdrawCollateral"): EventFragment;
 }
 
-export interface BorrowEventObject {
-  account: string;
-  bond: string;
-  borrowAmount: BigNumber;
+export namespace BorrowEvent {
+  export type InputTuple = [
+    account: AddressLike,
+    bond: AddressLike,
+    borrowAmount: BigNumberish
+  ];
+  export type OutputTuple = [
+    account: string,
+    bond: string,
+    borrowAmount: bigint
+  ];
+  export interface OutputObject {
+    account: string;
+    bond: string;
+    borrowAmount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type BorrowEvent = TypedEvent<
-  [string, string, BigNumber],
-  BorrowEventObject
->;
 
-export type BorrowEventFilter = TypedEventFilter<BorrowEvent>;
-
-export interface DepositCollateralEventObject {
-  account: string;
-  collateral: string;
-  collateralAmount: BigNumber;
+export namespace DepositCollateralEvent {
+  export type InputTuple = [
+    account: AddressLike,
+    collateral: AddressLike,
+    collateralAmount: BigNumberish
+  ];
+  export type OutputTuple = [
+    account: string,
+    collateral: string,
+    collateralAmount: bigint
+  ];
+  export interface OutputObject {
+    account: string;
+    collateral: string;
+    collateralAmount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type DepositCollateralEvent = TypedEvent<
-  [string, string, BigNumber],
-  DepositCollateralEventObject
->;
 
-export type DepositCollateralEventFilter =
-  TypedEventFilter<DepositCollateralEvent>;
-
-export interface LiquidateBorrowEventObject {
-  liquidator: string;
-  borrower: string;
-  bond: string;
-  repayAmount: BigNumber;
-  collateral: string;
-  seizedCollateralAmount: BigNumber;
+export namespace LiquidateBorrowEvent {
+  export type InputTuple = [
+    liquidator: AddressLike,
+    borrower: AddressLike,
+    bond: AddressLike,
+    repayAmount: BigNumberish,
+    collateral: AddressLike,
+    seizedCollateralAmount: BigNumberish
+  ];
+  export type OutputTuple = [
+    liquidator: string,
+    borrower: string,
+    bond: string,
+    repayAmount: bigint,
+    collateral: string,
+    seizedCollateralAmount: bigint
+  ];
+  export interface OutputObject {
+    liquidator: string;
+    borrower: string;
+    bond: string;
+    repayAmount: bigint;
+    collateral: string;
+    seizedCollateralAmount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type LiquidateBorrowEvent = TypedEvent<
-  [string, string, string, BigNumber, string, BigNumber],
-  LiquidateBorrowEventObject
->;
 
-export type LiquidateBorrowEventFilter = TypedEventFilter<LiquidateBorrowEvent>;
-
-export interface RepayBorrowEventObject {
-  payer: string;
-  borrower: string;
-  bond: string;
-  repayAmount: BigNumber;
-  newDebtAmount: BigNumber;
+export namespace RepayBorrowEvent {
+  export type InputTuple = [
+    payer: AddressLike,
+    borrower: AddressLike,
+    bond: AddressLike,
+    repayAmount: BigNumberish,
+    newDebtAmount: BigNumberish
+  ];
+  export type OutputTuple = [
+    payer: string,
+    borrower: string,
+    bond: string,
+    repayAmount: bigint,
+    newDebtAmount: bigint
+  ];
+  export interface OutputObject {
+    payer: string;
+    borrower: string;
+    bond: string;
+    repayAmount: bigint;
+    newDebtAmount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type RepayBorrowEvent = TypedEvent<
-  [string, string, string, BigNumber, BigNumber],
-  RepayBorrowEventObject
->;
 
-export type RepayBorrowEventFilter = TypedEventFilter<RepayBorrowEvent>;
-
-export interface SetFintrollerEventObject {
-  owner: string;
-  oldFintroller: string;
-  newFintroller: string;
+export namespace SetFintrollerEvent {
+  export type InputTuple = [
+    owner: AddressLike,
+    oldFintroller: AddressLike,
+    newFintroller: AddressLike
+  ];
+  export type OutputTuple = [
+    owner: string,
+    oldFintroller: string,
+    newFintroller: string
+  ];
+  export interface OutputObject {
+    owner: string;
+    oldFintroller: string;
+    newFintroller: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type SetFintrollerEvent = TypedEvent<
-  [string, string, string],
-  SetFintrollerEventObject
->;
 
-export type SetFintrollerEventFilter = TypedEventFilter<SetFintrollerEvent>;
-
-export interface SetOracleEventObject {
-  owner: string;
-  oldOracle: string;
-  newOracle: string;
+export namespace SetOracleEvent {
+  export type InputTuple = [
+    owner: AddressLike,
+    oldOracle: AddressLike,
+    newOracle: AddressLike
+  ];
+  export type OutputTuple = [
+    owner: string,
+    oldOracle: string,
+    newOracle: string
+  ];
+  export interface OutputObject {
+    owner: string;
+    oldOracle: string;
+    newOracle: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type SetOracleEvent = TypedEvent<
-  [string, string, string],
-  SetOracleEventObject
->;
 
-export type SetOracleEventFilter = TypedEventFilter<SetOracleEvent>;
-
-export interface TransferOwnershipEventObject {
-  oldOwner: string;
-  newOwner: string;
+export namespace TransferOwnershipEvent {
+  export type InputTuple = [oldOwner: AddressLike, newOwner: AddressLike];
+  export type OutputTuple = [oldOwner: string, newOwner: string];
+  export interface OutputObject {
+    oldOwner: string;
+    newOwner: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type TransferOwnershipEvent = TypedEvent<
-  [string, string],
-  TransferOwnershipEventObject
->;
 
-export type TransferOwnershipEventFilter =
-  TypedEventFilter<TransferOwnershipEvent>;
-
-export interface WithdrawCollateralEventObject {
-  account: string;
-  collateral: string;
-  collateralAmount: BigNumber;
+export namespace WithdrawCollateralEvent {
+  export type InputTuple = [
+    account: AddressLike,
+    collateral: AddressLike,
+    collateralAmount: BigNumberish
+  ];
+  export type OutputTuple = [
+    account: string,
+    collateral: string,
+    collateralAmount: bigint
+  ];
+  export interface OutputObject {
+    account: string;
+    collateral: string;
+    collateralAmount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type WithdrawCollateralEvent = TypedEvent<
-  [string, string, BigNumber],
-  WithdrawCollateralEventObject
->;
-
-export type WithdrawCollateralEventFilter =
-  TypedEventFilter<WithdrawCollateralEvent>;
 
 export interface IBalanceSheetV2 extends BaseContract {
-  connect(signerOrProvider: Signer | Provider | string): this;
-  attach(addressOrName: string): this;
-  deployed(): Promise<this>;
+  connect(runner?: ContractRunner | null): IBalanceSheetV2;
+  waitForDeployment(): Promise<this>;
 
   interface: IBalanceSheetV2Interface;
 
-  queryFilter<TEvent extends TypedEvent>(
-    event: TypedEventFilter<TEvent>,
+  queryFilter<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TEvent>>;
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  queryFilter<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
 
-  listeners<TEvent extends TypedEvent>(
-    eventFilter?: TypedEventFilter<TEvent>
-  ): Array<TypedListener<TEvent>>;
-  listeners(eventName?: string): Array<Listener>;
-  removeAllListeners<TEvent extends TypedEvent>(
-    eventFilter: TypedEventFilter<TEvent>
-  ): this;
-  removeAllListeners(eventName?: string): this;
-  off: OnEvent<this>;
-  on: OnEvent<this>;
-  once: OnEvent<this>;
-  removeListener: OnEvent<this>;
+  on<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  on<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-  functions: {
-    _renounceOwnership(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+  once<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  once<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-    _transferOwnership(
-      newOwner: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+  listeners<TCEvent extends TypedContractEvent>(
+    event: TCEvent
+  ): Promise<Array<TypedListener<TCEvent>>>;
+  listeners(eventName?: string): Promise<Array<Listener>>;
+  removeAllListeners<TCEvent extends TypedContractEvent>(
+    event?: TCEvent
+  ): Promise<this>;
 
-    borrow(
-      bond: PromiseOrValue<string>,
-      borrowAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+  _renounceOwnership: TypedContractMethod<[], [void], "nonpayable">;
 
-    depositCollateral(
-      collateral: PromiseOrValue<string>,
-      depositAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    getBondList(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[string[]]>;
-
-    getCollateralAmount(
-      account: PromiseOrValue<string>,
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber] & { collateralAmount: BigNumber }>;
-
-    getCollateralList(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[string[]]>;
-
-    getCurrentAccountLiquidity(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber] & {
-        excessLiquidity: BigNumber;
-        shortfallLiquidity: BigNumber;
-      }
-    >;
-
-    getDebtAmount(
-      account: PromiseOrValue<string>,
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber] & { debtAmount: BigNumber }>;
-
-    getHypotheticalAccountLiquidity(
-      account: PromiseOrValue<string>,
-      collateralModify: PromiseOrValue<string>,
-      collateralAmountModify: PromiseOrValue<BigNumberish>,
-      bondModify: PromiseOrValue<string>,
-      debtAmountModify: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber] & {
-        excessLiquidity: BigNumber;
-        shortfallLiquidity: BigNumber;
-      }
-    >;
-
-    getRepayAmount(
-      collateral: PromiseOrValue<string>,
-      seizableCollateralAmount: PromiseOrValue<BigNumberish>,
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber] & { repayAmount: BigNumber }>;
-
-    getSeizableCollateralAmount(
-      bond: PromiseOrValue<string>,
-      repayAmount: PromiseOrValue<BigNumberish>,
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber] & { seizableCollateralAmount: BigNumber }>;
-
-    liquidateBorrow(
-      borrower: PromiseOrValue<string>,
-      bond: PromiseOrValue<string>,
-      repayAmount: PromiseOrValue<BigNumberish>,
-      collateral: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    owner(overrides?: CallOverrides): Promise<[string]>;
-
-    repayBorrow(
-      bond: PromiseOrValue<string>,
-      repayAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    repayBorrowBehalf(
-      borrower: PromiseOrValue<string>,
-      bond: PromiseOrValue<string>,
-      repayAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    setFintroller(
-      newFintroller: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    setOracle(
-      newOracle: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    withdrawCollateral(
-      collateral: PromiseOrValue<string>,
-      withdrawAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-  };
-
-  _renounceOwnership(
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  _transferOwnership(
-    newOwner: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  borrow(
-    bond: PromiseOrValue<string>,
-    borrowAmount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  depositCollateral(
-    collateral: PromiseOrValue<string>,
-    depositAmount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  getBondList(
-    account: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<string[]>;
-
-  getCollateralAmount(
-    account: PromiseOrValue<string>,
-    collateral: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  getCollateralList(
-    account: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<string[]>;
-
-  getCurrentAccountLiquidity(
-    account: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber, BigNumber] & {
-      excessLiquidity: BigNumber;
-      shortfallLiquidity: BigNumber;
-    }
+  _transferOwnership: TypedContractMethod<
+    [newOwner: AddressLike],
+    [void],
+    "nonpayable"
   >;
 
-  getDebtAmount(
-    account: PromiseOrValue<string>,
-    bond: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  getHypotheticalAccountLiquidity(
-    account: PromiseOrValue<string>,
-    collateralModify: PromiseOrValue<string>,
-    collateralAmountModify: PromiseOrValue<BigNumberish>,
-    bondModify: PromiseOrValue<string>,
-    debtAmountModify: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber, BigNumber] & {
-      excessLiquidity: BigNumber;
-      shortfallLiquidity: BigNumber;
-    }
+  borrow: TypedContractMethod<
+    [bond: AddressLike, borrowAmount: BigNumberish],
+    [void],
+    "nonpayable"
   >;
 
-  getRepayAmount(
-    collateral: PromiseOrValue<string>,
-    seizableCollateralAmount: PromiseOrValue<BigNumberish>,
-    bond: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  depositCollateral: TypedContractMethod<
+    [collateral: AddressLike, depositAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
 
-  getSeizableCollateralAmount(
-    bond: PromiseOrValue<string>,
-    repayAmount: PromiseOrValue<BigNumberish>,
-    collateral: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  getBondList: TypedContractMethod<[account: AddressLike], [string[]], "view">;
 
-  liquidateBorrow(
-    borrower: PromiseOrValue<string>,
-    bond: PromiseOrValue<string>,
-    repayAmount: PromiseOrValue<BigNumberish>,
-    collateral: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  getCollateralAmount: TypedContractMethod<
+    [account: AddressLike, collateral: AddressLike],
+    [bigint],
+    "view"
+  >;
 
-  owner(overrides?: CallOverrides): Promise<string>;
+  getCollateralList: TypedContractMethod<
+    [account: AddressLike],
+    [string[]],
+    "view"
+  >;
 
-  repayBorrow(
-    bond: PromiseOrValue<string>,
-    repayAmount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  getCurrentAccountLiquidity: TypedContractMethod<
+    [account: AddressLike],
+    [
+      [bigint, bigint] & { excessLiquidity: bigint; shortfallLiquidity: bigint }
+    ],
+    "view"
+  >;
 
-  repayBorrowBehalf(
-    borrower: PromiseOrValue<string>,
-    bond: PromiseOrValue<string>,
-    repayAmount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  getDebtAmount: TypedContractMethod<
+    [account: AddressLike, bond: AddressLike],
+    [bigint],
+    "view"
+  >;
 
-  setFintroller(
-    newFintroller: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  getHypotheticalAccountLiquidity: TypedContractMethod<
+    [
+      account: AddressLike,
+      collateralModify: AddressLike,
+      collateralAmountModify: BigNumberish,
+      bondModify: AddressLike,
+      debtAmountModify: BigNumberish
+    ],
+    [
+      [bigint, bigint] & { excessLiquidity: bigint; shortfallLiquidity: bigint }
+    ],
+    "view"
+  >;
 
-  setOracle(
-    newOracle: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  getRepayAmount: TypedContractMethod<
+    [
+      collateral: AddressLike,
+      seizableCollateralAmount: BigNumberish,
+      bond: AddressLike
+    ],
+    [bigint],
+    "view"
+  >;
 
-  withdrawCollateral(
-    collateral: PromiseOrValue<string>,
-    withdrawAmount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  getSeizableCollateralAmount: TypedContractMethod<
+    [bond: AddressLike, repayAmount: BigNumberish, collateral: AddressLike],
+    [bigint],
+    "view"
+  >;
 
-  callStatic: {
-    _renounceOwnership(overrides?: CallOverrides): Promise<void>;
+  liquidateBorrow: TypedContractMethod<
+    [
+      borrower: AddressLike,
+      bond: AddressLike,
+      repayAmount: BigNumberish,
+      collateral: AddressLike
+    ],
+    [void],
+    "nonpayable"
+  >;
 
-    _transferOwnership(
-      newOwner: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
+  owner: TypedContractMethod<[], [string], "view">;
 
-    borrow(
-      bond: PromiseOrValue<string>,
-      borrowAmount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
+  repayBorrow: TypedContractMethod<
+    [bond: AddressLike, repayAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
 
-    depositCollateral(
-      collateral: PromiseOrValue<string>,
-      depositAmount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
+  repayBorrowBehalf: TypedContractMethod<
+    [borrower: AddressLike, bond: AddressLike, repayAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
 
-    getBondList(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<string[]>;
+  setFintroller: TypedContractMethod<
+    [newFintroller: AddressLike],
+    [void],
+    "nonpayable"
+  >;
 
-    getCollateralAmount(
-      account: PromiseOrValue<string>,
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+  setOracle: TypedContractMethod<
+    [newOracle: AddressLike],
+    [void],
+    "nonpayable"
+  >;
 
-    getCollateralList(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<string[]>;
+  withdrawCollateral: TypedContractMethod<
+    [collateral: AddressLike, withdrawAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
 
-    getCurrentAccountLiquidity(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber] & {
-        excessLiquidity: BigNumber;
-        shortfallLiquidity: BigNumber;
-      }
-    >;
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
 
-    getDebtAmount(
-      account: PromiseOrValue<string>,
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+  getFunction(
+    nameOrSignature: "_renounceOwnership"
+  ): TypedContractMethod<[], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "_transferOwnership"
+  ): TypedContractMethod<[newOwner: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "borrow"
+  ): TypedContractMethod<
+    [bond: AddressLike, borrowAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "depositCollateral"
+  ): TypedContractMethod<
+    [collateral: AddressLike, depositAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "getBondList"
+  ): TypedContractMethod<[account: AddressLike], [string[]], "view">;
+  getFunction(
+    nameOrSignature: "getCollateralAmount"
+  ): TypedContractMethod<
+    [account: AddressLike, collateral: AddressLike],
+    [bigint],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "getCollateralList"
+  ): TypedContractMethod<[account: AddressLike], [string[]], "view">;
+  getFunction(
+    nameOrSignature: "getCurrentAccountLiquidity"
+  ): TypedContractMethod<
+    [account: AddressLike],
+    [
+      [bigint, bigint] & { excessLiquidity: bigint; shortfallLiquidity: bigint }
+    ],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "getDebtAmount"
+  ): TypedContractMethod<
+    [account: AddressLike, bond: AddressLike],
+    [bigint],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "getHypotheticalAccountLiquidity"
+  ): TypedContractMethod<
+    [
+      account: AddressLike,
+      collateralModify: AddressLike,
+      collateralAmountModify: BigNumberish,
+      bondModify: AddressLike,
+      debtAmountModify: BigNumberish
+    ],
+    [
+      [bigint, bigint] & { excessLiquidity: bigint; shortfallLiquidity: bigint }
+    ],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "getRepayAmount"
+  ): TypedContractMethod<
+    [
+      collateral: AddressLike,
+      seizableCollateralAmount: BigNumberish,
+      bond: AddressLike
+    ],
+    [bigint],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "getSeizableCollateralAmount"
+  ): TypedContractMethod<
+    [bond: AddressLike, repayAmount: BigNumberish, collateral: AddressLike],
+    [bigint],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "liquidateBorrow"
+  ): TypedContractMethod<
+    [
+      borrower: AddressLike,
+      bond: AddressLike,
+      repayAmount: BigNumberish,
+      collateral: AddressLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "owner"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "repayBorrow"
+  ): TypedContractMethod<
+    [bond: AddressLike, repayAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "repayBorrowBehalf"
+  ): TypedContractMethod<
+    [borrower: AddressLike, bond: AddressLike, repayAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setFintroller"
+  ): TypedContractMethod<[newFintroller: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "setOracle"
+  ): TypedContractMethod<[newOracle: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "withdrawCollateral"
+  ): TypedContractMethod<
+    [collateral: AddressLike, withdrawAmount: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
 
-    getHypotheticalAccountLiquidity(
-      account: PromiseOrValue<string>,
-      collateralModify: PromiseOrValue<string>,
-      collateralAmountModify: PromiseOrValue<BigNumberish>,
-      bondModify: PromiseOrValue<string>,
-      debtAmountModify: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber] & {
-        excessLiquidity: BigNumber;
-        shortfallLiquidity: BigNumber;
-      }
-    >;
-
-    getRepayAmount(
-      collateral: PromiseOrValue<string>,
-      seizableCollateralAmount: PromiseOrValue<BigNumberish>,
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getSeizableCollateralAmount(
-      bond: PromiseOrValue<string>,
-      repayAmount: PromiseOrValue<BigNumberish>,
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    liquidateBorrow(
-      borrower: PromiseOrValue<string>,
-      bond: PromiseOrValue<string>,
-      repayAmount: PromiseOrValue<BigNumberish>,
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    owner(overrides?: CallOverrides): Promise<string>;
-
-    repayBorrow(
-      bond: PromiseOrValue<string>,
-      repayAmount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    repayBorrowBehalf(
-      borrower: PromiseOrValue<string>,
-      bond: PromiseOrValue<string>,
-      repayAmount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setFintroller(
-      newFintroller: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setOracle(
-      newOracle: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    withdrawCollateral(
-      collateral: PromiseOrValue<string>,
-      withdrawAmount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-  };
+  getEvent(
+    key: "Borrow"
+  ): TypedContractEvent<
+    BorrowEvent.InputTuple,
+    BorrowEvent.OutputTuple,
+    BorrowEvent.OutputObject
+  >;
+  getEvent(
+    key: "DepositCollateral"
+  ): TypedContractEvent<
+    DepositCollateralEvent.InputTuple,
+    DepositCollateralEvent.OutputTuple,
+    DepositCollateralEvent.OutputObject
+  >;
+  getEvent(
+    key: "LiquidateBorrow"
+  ): TypedContractEvent<
+    LiquidateBorrowEvent.InputTuple,
+    LiquidateBorrowEvent.OutputTuple,
+    LiquidateBorrowEvent.OutputObject
+  >;
+  getEvent(
+    key: "RepayBorrow"
+  ): TypedContractEvent<
+    RepayBorrowEvent.InputTuple,
+    RepayBorrowEvent.OutputTuple,
+    RepayBorrowEvent.OutputObject
+  >;
+  getEvent(
+    key: "SetFintroller"
+  ): TypedContractEvent<
+    SetFintrollerEvent.InputTuple,
+    SetFintrollerEvent.OutputTuple,
+    SetFintrollerEvent.OutputObject
+  >;
+  getEvent(
+    key: "SetOracle"
+  ): TypedContractEvent<
+    SetOracleEvent.InputTuple,
+    SetOracleEvent.OutputTuple,
+    SetOracleEvent.OutputObject
+  >;
+  getEvent(
+    key: "TransferOwnership"
+  ): TypedContractEvent<
+    TransferOwnershipEvent.InputTuple,
+    TransferOwnershipEvent.OutputTuple,
+    TransferOwnershipEvent.OutputObject
+  >;
+  getEvent(
+    key: "WithdrawCollateral"
+  ): TypedContractEvent<
+    WithdrawCollateralEvent.InputTuple,
+    WithdrawCollateralEvent.OutputTuple,
+    WithdrawCollateralEvent.OutputObject
+  >;
 
   filters: {
-    "Borrow(address,address,uint256)"(
-      account?: PromiseOrValue<string> | null,
-      bond?: PromiseOrValue<string> | null,
-      borrowAmount?: null
-    ): BorrowEventFilter;
-    Borrow(
-      account?: PromiseOrValue<string> | null,
-      bond?: PromiseOrValue<string> | null,
-      borrowAmount?: null
-    ): BorrowEventFilter;
+    "Borrow(address,address,uint256)": TypedContractEvent<
+      BorrowEvent.InputTuple,
+      BorrowEvent.OutputTuple,
+      BorrowEvent.OutputObject
+    >;
+    Borrow: TypedContractEvent<
+      BorrowEvent.InputTuple,
+      BorrowEvent.OutputTuple,
+      BorrowEvent.OutputObject
+    >;
 
-    "DepositCollateral(address,address,uint256)"(
-      account?: PromiseOrValue<string> | null,
-      collateral?: PromiseOrValue<string> | null,
-      collateralAmount?: null
-    ): DepositCollateralEventFilter;
-    DepositCollateral(
-      account?: PromiseOrValue<string> | null,
-      collateral?: PromiseOrValue<string> | null,
-      collateralAmount?: null
-    ): DepositCollateralEventFilter;
+    "DepositCollateral(address,address,uint256)": TypedContractEvent<
+      DepositCollateralEvent.InputTuple,
+      DepositCollateralEvent.OutputTuple,
+      DepositCollateralEvent.OutputObject
+    >;
+    DepositCollateral: TypedContractEvent<
+      DepositCollateralEvent.InputTuple,
+      DepositCollateralEvent.OutputTuple,
+      DepositCollateralEvent.OutputObject
+    >;
 
-    "LiquidateBorrow(address,address,address,uint256,address,uint256)"(
-      liquidator?: PromiseOrValue<string> | null,
-      borrower?: PromiseOrValue<string> | null,
-      bond?: PromiseOrValue<string> | null,
-      repayAmount?: null,
-      collateral?: null,
-      seizedCollateralAmount?: null
-    ): LiquidateBorrowEventFilter;
-    LiquidateBorrow(
-      liquidator?: PromiseOrValue<string> | null,
-      borrower?: PromiseOrValue<string> | null,
-      bond?: PromiseOrValue<string> | null,
-      repayAmount?: null,
-      collateral?: null,
-      seizedCollateralAmount?: null
-    ): LiquidateBorrowEventFilter;
+    "LiquidateBorrow(address,address,address,uint256,address,uint256)": TypedContractEvent<
+      LiquidateBorrowEvent.InputTuple,
+      LiquidateBorrowEvent.OutputTuple,
+      LiquidateBorrowEvent.OutputObject
+    >;
+    LiquidateBorrow: TypedContractEvent<
+      LiquidateBorrowEvent.InputTuple,
+      LiquidateBorrowEvent.OutputTuple,
+      LiquidateBorrowEvent.OutputObject
+    >;
 
-    "RepayBorrow(address,address,address,uint256,uint256)"(
-      payer?: PromiseOrValue<string> | null,
-      borrower?: PromiseOrValue<string> | null,
-      bond?: PromiseOrValue<string> | null,
-      repayAmount?: null,
-      newDebtAmount?: null
-    ): RepayBorrowEventFilter;
-    RepayBorrow(
-      payer?: PromiseOrValue<string> | null,
-      borrower?: PromiseOrValue<string> | null,
-      bond?: PromiseOrValue<string> | null,
-      repayAmount?: null,
-      newDebtAmount?: null
-    ): RepayBorrowEventFilter;
+    "RepayBorrow(address,address,address,uint256,uint256)": TypedContractEvent<
+      RepayBorrowEvent.InputTuple,
+      RepayBorrowEvent.OutputTuple,
+      RepayBorrowEvent.OutputObject
+    >;
+    RepayBorrow: TypedContractEvent<
+      RepayBorrowEvent.InputTuple,
+      RepayBorrowEvent.OutputTuple,
+      RepayBorrowEvent.OutputObject
+    >;
 
-    "SetFintroller(address,address,address)"(
-      owner?: PromiseOrValue<string> | null,
-      oldFintroller?: null,
-      newFintroller?: null
-    ): SetFintrollerEventFilter;
-    SetFintroller(
-      owner?: PromiseOrValue<string> | null,
-      oldFintroller?: null,
-      newFintroller?: null
-    ): SetFintrollerEventFilter;
+    "SetFintroller(address,address,address)": TypedContractEvent<
+      SetFintrollerEvent.InputTuple,
+      SetFintrollerEvent.OutputTuple,
+      SetFintrollerEvent.OutputObject
+    >;
+    SetFintroller: TypedContractEvent<
+      SetFintrollerEvent.InputTuple,
+      SetFintrollerEvent.OutputTuple,
+      SetFintrollerEvent.OutputObject
+    >;
 
-    "SetOracle(address,address,address)"(
-      owner?: PromiseOrValue<string> | null,
-      oldOracle?: null,
-      newOracle?: null
-    ): SetOracleEventFilter;
-    SetOracle(
-      owner?: PromiseOrValue<string> | null,
-      oldOracle?: null,
-      newOracle?: null
-    ): SetOracleEventFilter;
+    "SetOracle(address,address,address)": TypedContractEvent<
+      SetOracleEvent.InputTuple,
+      SetOracleEvent.OutputTuple,
+      SetOracleEvent.OutputObject
+    >;
+    SetOracle: TypedContractEvent<
+      SetOracleEvent.InputTuple,
+      SetOracleEvent.OutputTuple,
+      SetOracleEvent.OutputObject
+    >;
 
-    "TransferOwnership(address,address)"(
-      oldOwner?: PromiseOrValue<string> | null,
-      newOwner?: PromiseOrValue<string> | null
-    ): TransferOwnershipEventFilter;
-    TransferOwnership(
-      oldOwner?: PromiseOrValue<string> | null,
-      newOwner?: PromiseOrValue<string> | null
-    ): TransferOwnershipEventFilter;
+    "TransferOwnership(address,address)": TypedContractEvent<
+      TransferOwnershipEvent.InputTuple,
+      TransferOwnershipEvent.OutputTuple,
+      TransferOwnershipEvent.OutputObject
+    >;
+    TransferOwnership: TypedContractEvent<
+      TransferOwnershipEvent.InputTuple,
+      TransferOwnershipEvent.OutputTuple,
+      TransferOwnershipEvent.OutputObject
+    >;
 
-    "WithdrawCollateral(address,address,uint256)"(
-      account?: PromiseOrValue<string> | null,
-      collateral?: PromiseOrValue<string> | null,
-      collateralAmount?: null
-    ): WithdrawCollateralEventFilter;
-    WithdrawCollateral(
-      account?: PromiseOrValue<string> | null,
-      collateral?: PromiseOrValue<string> | null,
-      collateralAmount?: null
-    ): WithdrawCollateralEventFilter;
-  };
-
-  estimateGas: {
-    _renounceOwnership(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    _transferOwnership(
-      newOwner: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    borrow(
-      bond: PromiseOrValue<string>,
-      borrowAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    depositCollateral(
-      collateral: PromiseOrValue<string>,
-      depositAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    getBondList(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getCollateralAmount(
-      account: PromiseOrValue<string>,
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getCollateralList(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getCurrentAccountLiquidity(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getDebtAmount(
-      account: PromiseOrValue<string>,
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getHypotheticalAccountLiquidity(
-      account: PromiseOrValue<string>,
-      collateralModify: PromiseOrValue<string>,
-      collateralAmountModify: PromiseOrValue<BigNumberish>,
-      bondModify: PromiseOrValue<string>,
-      debtAmountModify: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getRepayAmount(
-      collateral: PromiseOrValue<string>,
-      seizableCollateralAmount: PromiseOrValue<BigNumberish>,
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getSeizableCollateralAmount(
-      bond: PromiseOrValue<string>,
-      repayAmount: PromiseOrValue<BigNumberish>,
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    liquidateBorrow(
-      borrower: PromiseOrValue<string>,
-      bond: PromiseOrValue<string>,
-      repayAmount: PromiseOrValue<BigNumberish>,
-      collateral: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    owner(overrides?: CallOverrides): Promise<BigNumber>;
-
-    repayBorrow(
-      bond: PromiseOrValue<string>,
-      repayAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    repayBorrowBehalf(
-      borrower: PromiseOrValue<string>,
-      bond: PromiseOrValue<string>,
-      repayAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    setFintroller(
-      newFintroller: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    setOracle(
-      newOracle: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    withdrawCollateral(
-      collateral: PromiseOrValue<string>,
-      withdrawAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-  };
-
-  populateTransaction: {
-    _renounceOwnership(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    _transferOwnership(
-      newOwner: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    borrow(
-      bond: PromiseOrValue<string>,
-      borrowAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    depositCollateral(
-      collateral: PromiseOrValue<string>,
-      depositAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    getBondList(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getCollateralAmount(
-      account: PromiseOrValue<string>,
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getCollateralList(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getCurrentAccountLiquidity(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getDebtAmount(
-      account: PromiseOrValue<string>,
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getHypotheticalAccountLiquidity(
-      account: PromiseOrValue<string>,
-      collateralModify: PromiseOrValue<string>,
-      collateralAmountModify: PromiseOrValue<BigNumberish>,
-      bondModify: PromiseOrValue<string>,
-      debtAmountModify: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getRepayAmount(
-      collateral: PromiseOrValue<string>,
-      seizableCollateralAmount: PromiseOrValue<BigNumberish>,
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getSeizableCollateralAmount(
-      bond: PromiseOrValue<string>,
-      repayAmount: PromiseOrValue<BigNumberish>,
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    liquidateBorrow(
-      borrower: PromiseOrValue<string>,
-      bond: PromiseOrValue<string>,
-      repayAmount: PromiseOrValue<BigNumberish>,
-      collateral: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    repayBorrow(
-      bond: PromiseOrValue<string>,
-      repayAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    repayBorrowBehalf(
-      borrower: PromiseOrValue<string>,
-      bond: PromiseOrValue<string>,
-      repayAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setFintroller(
-      newFintroller: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setOracle(
-      newOracle: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    withdrawCollateral(
-      collateral: PromiseOrValue<string>,
-      withdrawAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
+    "WithdrawCollateral(address,address,uint256)": TypedContractEvent<
+      WithdrawCollateralEvent.InputTuple,
+      WithdrawCollateralEvent.OutputTuple,
+      WithdrawCollateralEvent.OutputObject
+    >;
+    WithdrawCollateral: TypedContractEvent<
+      WithdrawCollateralEvent.InputTuple,
+      WithdrawCollateralEvent.OutputTuple,
+      WithdrawCollateralEvent.OutputObject
+    >;
   };
 }

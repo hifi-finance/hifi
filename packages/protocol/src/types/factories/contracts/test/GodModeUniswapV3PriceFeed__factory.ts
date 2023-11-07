@@ -2,15 +2,19 @@
 /* tslint:disable */
 /* eslint-disable */
 import {
-  Signer,
-  utils,
   Contract,
   ContractFactory,
-  BigNumberish,
-  Overrides,
+  ContractTransactionResponse,
+  Interface,
 } from "ethers";
-import type { Provider, TransactionRequest } from "@ethersproject/providers";
-import type { PromiseOrValue } from "../../../common";
+import type {
+  Signer,
+  BigNumberish,
+  AddressLike,
+  ContractDeployTransaction,
+  ContractRunner,
+} from "ethers";
+import type { NonPayableOverrides } from "../../../common";
 import type {
   GodModeUniswapV3PriceFeed,
   GodModeUniswapV3PriceFeedInterface,
@@ -330,25 +334,12 @@ export class GodModeUniswapV3PriceFeed__factory extends ContractFactory {
     }
   }
 
-  override deploy(
-    pool_: PromiseOrValue<string>,
-    quoteAsset_: PromiseOrValue<string>,
-    twapInterval_: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<GodModeUniswapV3PriceFeed> {
-    return super.deploy(
-      pool_,
-      quoteAsset_,
-      twapInterval_,
-      overrides || {}
-    ) as Promise<GodModeUniswapV3PriceFeed>;
-  }
   override getDeployTransaction(
-    pool_: PromiseOrValue<string>,
-    quoteAsset_: PromiseOrValue<string>,
-    twapInterval_: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): TransactionRequest {
+    pool_: AddressLike,
+    quoteAsset_: AddressLike,
+    twapInterval_: BigNumberish,
+    overrides?: NonPayableOverrides & { from?: string }
+  ): Promise<ContractDeployTransaction> {
     return super.getDeployTransaction(
       pool_,
       quoteAsset_,
@@ -356,26 +347,42 @@ export class GodModeUniswapV3PriceFeed__factory extends ContractFactory {
       overrides || {}
     );
   }
-  override attach(address: string): GodModeUniswapV3PriceFeed {
-    return super.attach(address) as GodModeUniswapV3PriceFeed;
+  override deploy(
+    pool_: AddressLike,
+    quoteAsset_: AddressLike,
+    twapInterval_: BigNumberish,
+    overrides?: NonPayableOverrides & { from?: string }
+  ) {
+    return super.deploy(
+      pool_,
+      quoteAsset_,
+      twapInterval_,
+      overrides || {}
+    ) as Promise<
+      GodModeUniswapV3PriceFeed & {
+        deploymentTransaction(): ContractTransactionResponse;
+      }
+    >;
   }
-  override connect(signer: Signer): GodModeUniswapV3PriceFeed__factory {
-    return super.connect(signer) as GodModeUniswapV3PriceFeed__factory;
+  override connect(
+    runner: ContractRunner | null
+  ): GodModeUniswapV3PriceFeed__factory {
+    return super.connect(runner) as GodModeUniswapV3PriceFeed__factory;
   }
 
   static readonly bytecode = _bytecode;
   static readonly abi = _abi;
   static createInterface(): GodModeUniswapV3PriceFeedInterface {
-    return new utils.Interface(_abi) as GodModeUniswapV3PriceFeedInterface;
+    return new Interface(_abi) as GodModeUniswapV3PriceFeedInterface;
   }
   static connect(
     address: string,
-    signerOrProvider: Signer | Provider
+    runner?: ContractRunner | null
   ): GodModeUniswapV3PriceFeed {
     return new Contract(
       address,
       _abi,
-      signerOrProvider
-    ) as GodModeUniswapV3PriceFeed;
+      runner
+    ) as unknown as GodModeUniswapV3PriceFeed;
   }
 }

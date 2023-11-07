@@ -2,15 +2,18 @@
 /* tslint:disable */
 /* eslint-disable */
 import {
-  Signer,
-  utils,
   Contract,
   ContractFactory,
-  BigNumberish,
-  Overrides,
+  ContractTransactionResponse,
+  Interface,
 } from "ethers";
-import type { Provider, TransactionRequest } from "@ethersproject/providers";
-import type { PromiseOrValue } from "../../../common";
+import type {
+  Signer,
+  BigNumberish,
+  ContractDeployTransaction,
+  ContractRunner,
+} from "ethers";
+import type { NonPayableOverrides } from "../../../common";
 import type {
   StablecoinPriceFeed,
   StablecoinPriceFeedInterface,
@@ -166,40 +169,43 @@ export class StablecoinPriceFeed__factory extends ContractFactory {
     }
   }
 
-  override deploy(
-    price_: PromiseOrValue<BigNumberish>,
-    description_: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<StablecoinPriceFeed> {
-    return super.deploy(
-      price_,
-      description_,
-      overrides || {}
-    ) as Promise<StablecoinPriceFeed>;
-  }
   override getDeployTransaction(
-    price_: PromiseOrValue<BigNumberish>,
-    description_: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): TransactionRequest {
+    price_: BigNumberish,
+    description_: string,
+    overrides?: NonPayableOverrides & { from?: string }
+  ): Promise<ContractDeployTransaction> {
     return super.getDeployTransaction(price_, description_, overrides || {});
   }
-  override attach(address: string): StablecoinPriceFeed {
-    return super.attach(address) as StablecoinPriceFeed;
+  override deploy(
+    price_: BigNumberish,
+    description_: string,
+    overrides?: NonPayableOverrides & { from?: string }
+  ) {
+    return super.deploy(price_, description_, overrides || {}) as Promise<
+      StablecoinPriceFeed & {
+        deploymentTransaction(): ContractTransactionResponse;
+      }
+    >;
   }
-  override connect(signer: Signer): StablecoinPriceFeed__factory {
-    return super.connect(signer) as StablecoinPriceFeed__factory;
+  override connect(
+    runner: ContractRunner | null
+  ): StablecoinPriceFeed__factory {
+    return super.connect(runner) as StablecoinPriceFeed__factory;
   }
 
   static readonly bytecode = _bytecode;
   static readonly abi = _abi;
   static createInterface(): StablecoinPriceFeedInterface {
-    return new utils.Interface(_abi) as StablecoinPriceFeedInterface;
+    return new Interface(_abi) as StablecoinPriceFeedInterface;
   }
   static connect(
     address: string,
-    signerOrProvider: Signer | Provider
+    runner?: ContractRunner | null
   ): StablecoinPriceFeed {
-    return new Contract(address, _abi, signerOrProvider) as StablecoinPriceFeed;
+    return new Contract(
+      address,
+      _abi,
+      runner
+    ) as unknown as StablecoinPriceFeed;
   }
 }

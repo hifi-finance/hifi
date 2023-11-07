@@ -2,8 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Contract, Signer, utils } from "ethers";
-import type { Provider } from "@ethersproject/providers";
+import { Contract, Interface, type ContractRunner } from "ethers";
 import type {
   IUniswapV2ERC20,
   IUniswapV2ERC20Interface,
@@ -325,12 +324,12 @@ const _abi = [
 export class IUniswapV2ERC20__factory {
   static readonly abi = _abi;
   static createInterface(): IUniswapV2ERC20Interface {
-    return new utils.Interface(_abi) as IUniswapV2ERC20Interface;
+    return new Interface(_abi) as IUniswapV2ERC20Interface;
   }
   static connect(
     address: string,
-    signerOrProvider: Signer | Provider
+    runner?: ContractRunner | null
   ): IUniswapV2ERC20 {
-    return new Contract(address, _abi, signerOrProvider) as IUniswapV2ERC20;
+    return new Contract(address, _abi, runner) as unknown as IUniswapV2ERC20;
   }
 }

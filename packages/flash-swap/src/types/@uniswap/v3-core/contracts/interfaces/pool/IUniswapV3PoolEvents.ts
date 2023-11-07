@@ -3,338 +3,490 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumber,
   BigNumberish,
-  Signer,
-  utils,
+  FunctionFragment,
+  Interface,
+  EventFragment,
+  AddressLike,
+  ContractRunner,
+  ContractMethod,
+  Listener,
 } from "ethers";
-import type { EventFragment } from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
 import type {
-  TypedEventFilter,
-  TypedEvent,
+  TypedContractEvent,
+  TypedDeferredTopicFilter,
+  TypedEventLog,
+  TypedLogDescription,
   TypedListener,
-  OnEvent,
-  PromiseOrValue,
 } from "../../../../../common";
 
-export interface IUniswapV3PoolEventsInterface extends utils.Interface {
-  functions: {};
-
-  events: {
-    "Burn(address,int24,int24,uint128,uint256,uint256)": EventFragment;
-    "Collect(address,address,int24,int24,uint128,uint128)": EventFragment;
-    "CollectProtocol(address,address,uint128,uint128)": EventFragment;
-    "Flash(address,address,uint256,uint256,uint256,uint256)": EventFragment;
-    "IncreaseObservationCardinalityNext(uint16,uint16)": EventFragment;
-    "Initialize(uint160,int24)": EventFragment;
-    "Mint(address,address,int24,int24,uint128,uint256,uint256)": EventFragment;
-    "SetFeeProtocol(uint8,uint8,uint8,uint8)": EventFragment;
-    "Swap(address,address,int256,int256,uint160,uint128,int24)": EventFragment;
-  };
-
-  getEvent(nameOrSignatureOrTopic: "Burn"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Collect"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "CollectProtocol"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Flash"): EventFragment;
+export interface IUniswapV3PoolEventsInterface extends Interface {
   getEvent(
-    nameOrSignatureOrTopic: "IncreaseObservationCardinalityNext"
+    nameOrSignatureOrTopic:
+      | "Burn"
+      | "Collect"
+      | "CollectProtocol"
+      | "Flash"
+      | "IncreaseObservationCardinalityNext"
+      | "Initialize"
+      | "Mint"
+      | "SetFeeProtocol"
+      | "Swap"
   ): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Initialize"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Mint"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "SetFeeProtocol"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Swap"): EventFragment;
 }
 
-export interface BurnEventObject {
-  owner: string;
-  tickLower: number;
-  tickUpper: number;
-  amount: BigNumber;
-  amount0: BigNumber;
-  amount1: BigNumber;
+export namespace BurnEvent {
+  export type InputTuple = [
+    owner: AddressLike,
+    tickLower: BigNumberish,
+    tickUpper: BigNumberish,
+    amount: BigNumberish,
+    amount0: BigNumberish,
+    amount1: BigNumberish
+  ];
+  export type OutputTuple = [
+    owner: string,
+    tickLower: bigint,
+    tickUpper: bigint,
+    amount: bigint,
+    amount0: bigint,
+    amount1: bigint
+  ];
+  export interface OutputObject {
+    owner: string;
+    tickLower: bigint;
+    tickUpper: bigint;
+    amount: bigint;
+    amount0: bigint;
+    amount1: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type BurnEvent = TypedEvent<
-  [string, number, number, BigNumber, BigNumber, BigNumber],
-  BurnEventObject
->;
 
-export type BurnEventFilter = TypedEventFilter<BurnEvent>;
-
-export interface CollectEventObject {
-  owner: string;
-  recipient: string;
-  tickLower: number;
-  tickUpper: number;
-  amount0: BigNumber;
-  amount1: BigNumber;
+export namespace CollectEvent {
+  export type InputTuple = [
+    owner: AddressLike,
+    recipient: AddressLike,
+    tickLower: BigNumberish,
+    tickUpper: BigNumberish,
+    amount0: BigNumberish,
+    amount1: BigNumberish
+  ];
+  export type OutputTuple = [
+    owner: string,
+    recipient: string,
+    tickLower: bigint,
+    tickUpper: bigint,
+    amount0: bigint,
+    amount1: bigint
+  ];
+  export interface OutputObject {
+    owner: string;
+    recipient: string;
+    tickLower: bigint;
+    tickUpper: bigint;
+    amount0: bigint;
+    amount1: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type CollectEvent = TypedEvent<
-  [string, string, number, number, BigNumber, BigNumber],
-  CollectEventObject
->;
 
-export type CollectEventFilter = TypedEventFilter<CollectEvent>;
-
-export interface CollectProtocolEventObject {
-  sender: string;
-  recipient: string;
-  amount0: BigNumber;
-  amount1: BigNumber;
+export namespace CollectProtocolEvent {
+  export type InputTuple = [
+    sender: AddressLike,
+    recipient: AddressLike,
+    amount0: BigNumberish,
+    amount1: BigNumberish
+  ];
+  export type OutputTuple = [
+    sender: string,
+    recipient: string,
+    amount0: bigint,
+    amount1: bigint
+  ];
+  export interface OutputObject {
+    sender: string;
+    recipient: string;
+    amount0: bigint;
+    amount1: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type CollectProtocolEvent = TypedEvent<
-  [string, string, BigNumber, BigNumber],
-  CollectProtocolEventObject
->;
 
-export type CollectProtocolEventFilter = TypedEventFilter<CollectProtocolEvent>;
-
-export interface FlashEventObject {
-  sender: string;
-  recipient: string;
-  amount0: BigNumber;
-  amount1: BigNumber;
-  paid0: BigNumber;
-  paid1: BigNumber;
+export namespace FlashEvent {
+  export type InputTuple = [
+    sender: AddressLike,
+    recipient: AddressLike,
+    amount0: BigNumberish,
+    amount1: BigNumberish,
+    paid0: BigNumberish,
+    paid1: BigNumberish
+  ];
+  export type OutputTuple = [
+    sender: string,
+    recipient: string,
+    amount0: bigint,
+    amount1: bigint,
+    paid0: bigint,
+    paid1: bigint
+  ];
+  export interface OutputObject {
+    sender: string;
+    recipient: string;
+    amount0: bigint;
+    amount1: bigint;
+    paid0: bigint;
+    paid1: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type FlashEvent = TypedEvent<
-  [string, string, BigNumber, BigNumber, BigNumber, BigNumber],
-  FlashEventObject
->;
 
-export type FlashEventFilter = TypedEventFilter<FlashEvent>;
-
-export interface IncreaseObservationCardinalityNextEventObject {
-  observationCardinalityNextOld: number;
-  observationCardinalityNextNew: number;
+export namespace IncreaseObservationCardinalityNextEvent {
+  export type InputTuple = [
+    observationCardinalityNextOld: BigNumberish,
+    observationCardinalityNextNew: BigNumberish
+  ];
+  export type OutputTuple = [
+    observationCardinalityNextOld: bigint,
+    observationCardinalityNextNew: bigint
+  ];
+  export interface OutputObject {
+    observationCardinalityNextOld: bigint;
+    observationCardinalityNextNew: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type IncreaseObservationCardinalityNextEvent = TypedEvent<
-  [number, number],
-  IncreaseObservationCardinalityNextEventObject
->;
 
-export type IncreaseObservationCardinalityNextEventFilter =
-  TypedEventFilter<IncreaseObservationCardinalityNextEvent>;
-
-export interface InitializeEventObject {
-  sqrtPriceX96: BigNumber;
-  tick: number;
+export namespace InitializeEvent {
+  export type InputTuple = [sqrtPriceX96: BigNumberish, tick: BigNumberish];
+  export type OutputTuple = [sqrtPriceX96: bigint, tick: bigint];
+  export interface OutputObject {
+    sqrtPriceX96: bigint;
+    tick: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type InitializeEvent = TypedEvent<
-  [BigNumber, number],
-  InitializeEventObject
->;
 
-export type InitializeEventFilter = TypedEventFilter<InitializeEvent>;
-
-export interface MintEventObject {
-  sender: string;
-  owner: string;
-  tickLower: number;
-  tickUpper: number;
-  amount: BigNumber;
-  amount0: BigNumber;
-  amount1: BigNumber;
+export namespace MintEvent {
+  export type InputTuple = [
+    sender: AddressLike,
+    owner: AddressLike,
+    tickLower: BigNumberish,
+    tickUpper: BigNumberish,
+    amount: BigNumberish,
+    amount0: BigNumberish,
+    amount1: BigNumberish
+  ];
+  export type OutputTuple = [
+    sender: string,
+    owner: string,
+    tickLower: bigint,
+    tickUpper: bigint,
+    amount: bigint,
+    amount0: bigint,
+    amount1: bigint
+  ];
+  export interface OutputObject {
+    sender: string;
+    owner: string;
+    tickLower: bigint;
+    tickUpper: bigint;
+    amount: bigint;
+    amount0: bigint;
+    amount1: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type MintEvent = TypedEvent<
-  [string, string, number, number, BigNumber, BigNumber, BigNumber],
-  MintEventObject
->;
 
-export type MintEventFilter = TypedEventFilter<MintEvent>;
-
-export interface SetFeeProtocolEventObject {
-  feeProtocol0Old: number;
-  feeProtocol1Old: number;
-  feeProtocol0New: number;
-  feeProtocol1New: number;
+export namespace SetFeeProtocolEvent {
+  export type InputTuple = [
+    feeProtocol0Old: BigNumberish,
+    feeProtocol1Old: BigNumberish,
+    feeProtocol0New: BigNumberish,
+    feeProtocol1New: BigNumberish
+  ];
+  export type OutputTuple = [
+    feeProtocol0Old: bigint,
+    feeProtocol1Old: bigint,
+    feeProtocol0New: bigint,
+    feeProtocol1New: bigint
+  ];
+  export interface OutputObject {
+    feeProtocol0Old: bigint;
+    feeProtocol1Old: bigint;
+    feeProtocol0New: bigint;
+    feeProtocol1New: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type SetFeeProtocolEvent = TypedEvent<
-  [number, number, number, number],
-  SetFeeProtocolEventObject
->;
 
-export type SetFeeProtocolEventFilter = TypedEventFilter<SetFeeProtocolEvent>;
-
-export interface SwapEventObject {
-  sender: string;
-  recipient: string;
-  amount0: BigNumber;
-  amount1: BigNumber;
-  sqrtPriceX96: BigNumber;
-  liquidity: BigNumber;
-  tick: number;
+export namespace SwapEvent {
+  export type InputTuple = [
+    sender: AddressLike,
+    recipient: AddressLike,
+    amount0: BigNumberish,
+    amount1: BigNumberish,
+    sqrtPriceX96: BigNumberish,
+    liquidity: BigNumberish,
+    tick: BigNumberish
+  ];
+  export type OutputTuple = [
+    sender: string,
+    recipient: string,
+    amount0: bigint,
+    amount1: bigint,
+    sqrtPriceX96: bigint,
+    liquidity: bigint,
+    tick: bigint
+  ];
+  export interface OutputObject {
+    sender: string;
+    recipient: string;
+    amount0: bigint;
+    amount1: bigint;
+    sqrtPriceX96: bigint;
+    liquidity: bigint;
+    tick: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type SwapEvent = TypedEvent<
-  [string, string, BigNumber, BigNumber, BigNumber, BigNumber, number],
-  SwapEventObject
->;
-
-export type SwapEventFilter = TypedEventFilter<SwapEvent>;
 
 export interface IUniswapV3PoolEvents extends BaseContract {
-  connect(signerOrProvider: Signer | Provider | string): this;
-  attach(addressOrName: string): this;
-  deployed(): Promise<this>;
+  connect(runner?: ContractRunner | null): IUniswapV3PoolEvents;
+  waitForDeployment(): Promise<this>;
 
   interface: IUniswapV3PoolEventsInterface;
 
-  queryFilter<TEvent extends TypedEvent>(
-    event: TypedEventFilter<TEvent>,
+  queryFilter<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TEvent>>;
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  queryFilter<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
 
-  listeners<TEvent extends TypedEvent>(
-    eventFilter?: TypedEventFilter<TEvent>
-  ): Array<TypedListener<TEvent>>;
-  listeners(eventName?: string): Array<Listener>;
-  removeAllListeners<TEvent extends TypedEvent>(
-    eventFilter: TypedEventFilter<TEvent>
-  ): this;
-  removeAllListeners(eventName?: string): this;
-  off: OnEvent<this>;
-  on: OnEvent<this>;
-  once: OnEvent<this>;
-  removeListener: OnEvent<this>;
+  on<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  on<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-  functions: {};
+  once<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  once<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-  callStatic: {};
+  listeners<TCEvent extends TypedContractEvent>(
+    event: TCEvent
+  ): Promise<Array<TypedListener<TCEvent>>>;
+  listeners(eventName?: string): Promise<Array<Listener>>;
+  removeAllListeners<TCEvent extends TypedContractEvent>(
+    event?: TCEvent
+  ): Promise<this>;
+
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
+
+  getEvent(
+    key: "Burn"
+  ): TypedContractEvent<
+    BurnEvent.InputTuple,
+    BurnEvent.OutputTuple,
+    BurnEvent.OutputObject
+  >;
+  getEvent(
+    key: "Collect"
+  ): TypedContractEvent<
+    CollectEvent.InputTuple,
+    CollectEvent.OutputTuple,
+    CollectEvent.OutputObject
+  >;
+  getEvent(
+    key: "CollectProtocol"
+  ): TypedContractEvent<
+    CollectProtocolEvent.InputTuple,
+    CollectProtocolEvent.OutputTuple,
+    CollectProtocolEvent.OutputObject
+  >;
+  getEvent(
+    key: "Flash"
+  ): TypedContractEvent<
+    FlashEvent.InputTuple,
+    FlashEvent.OutputTuple,
+    FlashEvent.OutputObject
+  >;
+  getEvent(
+    key: "IncreaseObservationCardinalityNext"
+  ): TypedContractEvent<
+    IncreaseObservationCardinalityNextEvent.InputTuple,
+    IncreaseObservationCardinalityNextEvent.OutputTuple,
+    IncreaseObservationCardinalityNextEvent.OutputObject
+  >;
+  getEvent(
+    key: "Initialize"
+  ): TypedContractEvent<
+    InitializeEvent.InputTuple,
+    InitializeEvent.OutputTuple,
+    InitializeEvent.OutputObject
+  >;
+  getEvent(
+    key: "Mint"
+  ): TypedContractEvent<
+    MintEvent.InputTuple,
+    MintEvent.OutputTuple,
+    MintEvent.OutputObject
+  >;
+  getEvent(
+    key: "SetFeeProtocol"
+  ): TypedContractEvent<
+    SetFeeProtocolEvent.InputTuple,
+    SetFeeProtocolEvent.OutputTuple,
+    SetFeeProtocolEvent.OutputObject
+  >;
+  getEvent(
+    key: "Swap"
+  ): TypedContractEvent<
+    SwapEvent.InputTuple,
+    SwapEvent.OutputTuple,
+    SwapEvent.OutputObject
+  >;
 
   filters: {
-    "Burn(address,int24,int24,uint128,uint256,uint256)"(
-      owner?: PromiseOrValue<string> | null,
-      tickLower?: PromiseOrValue<BigNumberish> | null,
-      tickUpper?: PromiseOrValue<BigNumberish> | null,
-      amount?: null,
-      amount0?: null,
-      amount1?: null
-    ): BurnEventFilter;
-    Burn(
-      owner?: PromiseOrValue<string> | null,
-      tickLower?: PromiseOrValue<BigNumberish> | null,
-      tickUpper?: PromiseOrValue<BigNumberish> | null,
-      amount?: null,
-      amount0?: null,
-      amount1?: null
-    ): BurnEventFilter;
+    "Burn(address,int24,int24,uint128,uint256,uint256)": TypedContractEvent<
+      BurnEvent.InputTuple,
+      BurnEvent.OutputTuple,
+      BurnEvent.OutputObject
+    >;
+    Burn: TypedContractEvent<
+      BurnEvent.InputTuple,
+      BurnEvent.OutputTuple,
+      BurnEvent.OutputObject
+    >;
 
-    "Collect(address,address,int24,int24,uint128,uint128)"(
-      owner?: PromiseOrValue<string> | null,
-      recipient?: null,
-      tickLower?: PromiseOrValue<BigNumberish> | null,
-      tickUpper?: PromiseOrValue<BigNumberish> | null,
-      amount0?: null,
-      amount1?: null
-    ): CollectEventFilter;
-    Collect(
-      owner?: PromiseOrValue<string> | null,
-      recipient?: null,
-      tickLower?: PromiseOrValue<BigNumberish> | null,
-      tickUpper?: PromiseOrValue<BigNumberish> | null,
-      amount0?: null,
-      amount1?: null
-    ): CollectEventFilter;
+    "Collect(address,address,int24,int24,uint128,uint128)": TypedContractEvent<
+      CollectEvent.InputTuple,
+      CollectEvent.OutputTuple,
+      CollectEvent.OutputObject
+    >;
+    Collect: TypedContractEvent<
+      CollectEvent.InputTuple,
+      CollectEvent.OutputTuple,
+      CollectEvent.OutputObject
+    >;
 
-    "CollectProtocol(address,address,uint128,uint128)"(
-      sender?: PromiseOrValue<string> | null,
-      recipient?: PromiseOrValue<string> | null,
-      amount0?: null,
-      amount1?: null
-    ): CollectProtocolEventFilter;
-    CollectProtocol(
-      sender?: PromiseOrValue<string> | null,
-      recipient?: PromiseOrValue<string> | null,
-      amount0?: null,
-      amount1?: null
-    ): CollectProtocolEventFilter;
+    "CollectProtocol(address,address,uint128,uint128)": TypedContractEvent<
+      CollectProtocolEvent.InputTuple,
+      CollectProtocolEvent.OutputTuple,
+      CollectProtocolEvent.OutputObject
+    >;
+    CollectProtocol: TypedContractEvent<
+      CollectProtocolEvent.InputTuple,
+      CollectProtocolEvent.OutputTuple,
+      CollectProtocolEvent.OutputObject
+    >;
 
-    "Flash(address,address,uint256,uint256,uint256,uint256)"(
-      sender?: PromiseOrValue<string> | null,
-      recipient?: PromiseOrValue<string> | null,
-      amount0?: null,
-      amount1?: null,
-      paid0?: null,
-      paid1?: null
-    ): FlashEventFilter;
-    Flash(
-      sender?: PromiseOrValue<string> | null,
-      recipient?: PromiseOrValue<string> | null,
-      amount0?: null,
-      amount1?: null,
-      paid0?: null,
-      paid1?: null
-    ): FlashEventFilter;
+    "Flash(address,address,uint256,uint256,uint256,uint256)": TypedContractEvent<
+      FlashEvent.InputTuple,
+      FlashEvent.OutputTuple,
+      FlashEvent.OutputObject
+    >;
+    Flash: TypedContractEvent<
+      FlashEvent.InputTuple,
+      FlashEvent.OutputTuple,
+      FlashEvent.OutputObject
+    >;
 
-    "IncreaseObservationCardinalityNext(uint16,uint16)"(
-      observationCardinalityNextOld?: null,
-      observationCardinalityNextNew?: null
-    ): IncreaseObservationCardinalityNextEventFilter;
-    IncreaseObservationCardinalityNext(
-      observationCardinalityNextOld?: null,
-      observationCardinalityNextNew?: null
-    ): IncreaseObservationCardinalityNextEventFilter;
+    "IncreaseObservationCardinalityNext(uint16,uint16)": TypedContractEvent<
+      IncreaseObservationCardinalityNextEvent.InputTuple,
+      IncreaseObservationCardinalityNextEvent.OutputTuple,
+      IncreaseObservationCardinalityNextEvent.OutputObject
+    >;
+    IncreaseObservationCardinalityNext: TypedContractEvent<
+      IncreaseObservationCardinalityNextEvent.InputTuple,
+      IncreaseObservationCardinalityNextEvent.OutputTuple,
+      IncreaseObservationCardinalityNextEvent.OutputObject
+    >;
 
-    "Initialize(uint160,int24)"(
-      sqrtPriceX96?: null,
-      tick?: null
-    ): InitializeEventFilter;
-    Initialize(sqrtPriceX96?: null, tick?: null): InitializeEventFilter;
+    "Initialize(uint160,int24)": TypedContractEvent<
+      InitializeEvent.InputTuple,
+      InitializeEvent.OutputTuple,
+      InitializeEvent.OutputObject
+    >;
+    Initialize: TypedContractEvent<
+      InitializeEvent.InputTuple,
+      InitializeEvent.OutputTuple,
+      InitializeEvent.OutputObject
+    >;
 
-    "Mint(address,address,int24,int24,uint128,uint256,uint256)"(
-      sender?: null,
-      owner?: PromiseOrValue<string> | null,
-      tickLower?: PromiseOrValue<BigNumberish> | null,
-      tickUpper?: PromiseOrValue<BigNumberish> | null,
-      amount?: null,
-      amount0?: null,
-      amount1?: null
-    ): MintEventFilter;
-    Mint(
-      sender?: null,
-      owner?: PromiseOrValue<string> | null,
-      tickLower?: PromiseOrValue<BigNumberish> | null,
-      tickUpper?: PromiseOrValue<BigNumberish> | null,
-      amount?: null,
-      amount0?: null,
-      amount1?: null
-    ): MintEventFilter;
+    "Mint(address,address,int24,int24,uint128,uint256,uint256)": TypedContractEvent<
+      MintEvent.InputTuple,
+      MintEvent.OutputTuple,
+      MintEvent.OutputObject
+    >;
+    Mint: TypedContractEvent<
+      MintEvent.InputTuple,
+      MintEvent.OutputTuple,
+      MintEvent.OutputObject
+    >;
 
-    "SetFeeProtocol(uint8,uint8,uint8,uint8)"(
-      feeProtocol0Old?: null,
-      feeProtocol1Old?: null,
-      feeProtocol0New?: null,
-      feeProtocol1New?: null
-    ): SetFeeProtocolEventFilter;
-    SetFeeProtocol(
-      feeProtocol0Old?: null,
-      feeProtocol1Old?: null,
-      feeProtocol0New?: null,
-      feeProtocol1New?: null
-    ): SetFeeProtocolEventFilter;
+    "SetFeeProtocol(uint8,uint8,uint8,uint8)": TypedContractEvent<
+      SetFeeProtocolEvent.InputTuple,
+      SetFeeProtocolEvent.OutputTuple,
+      SetFeeProtocolEvent.OutputObject
+    >;
+    SetFeeProtocol: TypedContractEvent<
+      SetFeeProtocolEvent.InputTuple,
+      SetFeeProtocolEvent.OutputTuple,
+      SetFeeProtocolEvent.OutputObject
+    >;
 
-    "Swap(address,address,int256,int256,uint160,uint128,int24)"(
-      sender?: PromiseOrValue<string> | null,
-      recipient?: PromiseOrValue<string> | null,
-      amount0?: null,
-      amount1?: null,
-      sqrtPriceX96?: null,
-      liquidity?: null,
-      tick?: null
-    ): SwapEventFilter;
-    Swap(
-      sender?: PromiseOrValue<string> | null,
-      recipient?: PromiseOrValue<string> | null,
-      amount0?: null,
-      amount1?: null,
-      sqrtPriceX96?: null,
-      liquidity?: null,
-      tick?: null
-    ): SwapEventFilter;
+    "Swap(address,address,int256,int256,uint160,uint128,int24)": TypedContractEvent<
+      SwapEvent.InputTuple,
+      SwapEvent.OutputTuple,
+      SwapEvent.OutputObject
+    >;
+    Swap: TypedContractEvent<
+      SwapEvent.InputTuple,
+      SwapEvent.OutputTuple,
+      SwapEvent.OutputObject
+    >;
   };
-
-  estimateGas: {};
-
-  populateTransaction: {};
 }

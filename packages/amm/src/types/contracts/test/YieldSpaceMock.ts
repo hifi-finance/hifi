@@ -3,35 +3,26 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumber,
   BigNumberish,
   BytesLike,
-  CallOverrides,
-  PopulatedTransaction,
-  Signer,
-  utils,
+  FunctionFragment,
+  Result,
+  Interface,
+  ContractRunner,
+  ContractMethod,
+  Listener,
 } from "ethers";
-import type { FunctionFragment, Result } from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
 import type {
-  TypedEventFilter,
-  TypedEvent,
+  TypedContractEvent,
+  TypedDeferredTopicFilter,
+  TypedEventLog,
   TypedListener,
-  OnEvent,
-  PromiseOrValue,
+  TypedContractMethod,
 } from "../../common";
 
-export interface YieldSpaceMockInterface extends utils.Interface {
-  functions: {
-    "doGetYieldExponent(uint256,uint256)": FunctionFragment;
-    "doHTokenInForUnderlyingOut(uint256,uint256,uint256,uint256)": FunctionFragment;
-    "doHTokenOutForUnderlyingIn(uint256,uint256,uint256,uint256)": FunctionFragment;
-    "doUnderlyingInForHTokenOut(uint256,uint256,uint256,uint256)": FunctionFragment;
-    "doUnderlyingOutForHTokenIn(uint256,uint256,uint256,uint256)": FunctionFragment;
-  };
-
+export interface YieldSpaceMockInterface extends Interface {
   getFunction(
-    nameOrSignatureOrTopic:
+    nameOrSignature:
       | "doGetYieldExponent"
       | "doHTokenInForUnderlyingOut"
       | "doHTokenOutForUnderlyingIn"
@@ -41,43 +32,23 @@ export interface YieldSpaceMockInterface extends utils.Interface {
 
   encodeFunctionData(
     functionFragment: "doGetYieldExponent",
-    values: [PromiseOrValue<BigNumberish>, PromiseOrValue<BigNumberish>]
+    values: [BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "doHTokenInForUnderlyingOut",
-    values: [
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>
-    ]
+    values: [BigNumberish, BigNumberish, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "doHTokenOutForUnderlyingIn",
-    values: [
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>
-    ]
+    values: [BigNumberish, BigNumberish, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "doUnderlyingInForHTokenOut",
-    values: [
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>
-    ]
+    values: [BigNumberish, BigNumberish, BigNumberish, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "doUnderlyingOutForHTokenIn",
-    values: [
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>
-    ]
+    values: [BigNumberish, BigNumberish, BigNumberish, BigNumberish]
   ): string;
 
   decodeFunctionResult(
@@ -100,233 +71,160 @@ export interface YieldSpaceMockInterface extends utils.Interface {
     functionFragment: "doUnderlyingOutForHTokenIn",
     data: BytesLike
   ): Result;
-
-  events: {};
 }
 
 export interface YieldSpaceMock extends BaseContract {
-  connect(signerOrProvider: Signer | Provider | string): this;
-  attach(addressOrName: string): this;
-  deployed(): Promise<this>;
+  connect(runner?: ContractRunner | null): YieldSpaceMock;
+  waitForDeployment(): Promise<this>;
 
   interface: YieldSpaceMockInterface;
 
-  queryFilter<TEvent extends TypedEvent>(
-    event: TypedEventFilter<TEvent>,
+  queryFilter<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TEvent>>;
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  queryFilter<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
 
-  listeners<TEvent extends TypedEvent>(
-    eventFilter?: TypedEventFilter<TEvent>
-  ): Array<TypedListener<TEvent>>;
-  listeners(eventName?: string): Array<Listener>;
-  removeAllListeners<TEvent extends TypedEvent>(
-    eventFilter: TypedEventFilter<TEvent>
-  ): this;
-  removeAllListeners(eventName?: string): this;
-  off: OnEvent<this>;
-  on: OnEvent<this>;
-  once: OnEvent<this>;
-  removeListener: OnEvent<this>;
+  on<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  on<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-  functions: {
-    doGetYieldExponent(
-      timeToMaturity: PromiseOrValue<BigNumberish>,
-      g: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber] & { a: BigNumber }>;
+  once<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  once<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-    doHTokenInForUnderlyingOut(
-      normalizedUnderlyingReserves: PromiseOrValue<BigNumberish>,
-      hTokenReserves: PromiseOrValue<BigNumberish>,
-      normalizedUnderlyingOut: PromiseOrValue<BigNumberish>,
-      timeToMaturity: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber] & { hTokenIn: BigNumber }>;
+  listeners<TCEvent extends TypedContractEvent>(
+    event: TCEvent
+  ): Promise<Array<TypedListener<TCEvent>>>;
+  listeners(eventName?: string): Promise<Array<Listener>>;
+  removeAllListeners<TCEvent extends TypedContractEvent>(
+    event?: TCEvent
+  ): Promise<this>;
 
-    doHTokenOutForUnderlyingIn(
-      normalizedUnderlyingReserves: PromiseOrValue<BigNumberish>,
-      hTokenReserves: PromiseOrValue<BigNumberish>,
-      normalizedUnderlyingIn: PromiseOrValue<BigNumberish>,
-      timeToMaturity: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber] & { hTokenOut: BigNumber }>;
+  doGetYieldExponent: TypedContractMethod<
+    [timeToMaturity: BigNumberish, g: BigNumberish],
+    [bigint],
+    "view"
+  >;
 
-    doUnderlyingInForHTokenOut(
-      hTokenReserves: PromiseOrValue<BigNumberish>,
-      normalizedUnderlyingReserves: PromiseOrValue<BigNumberish>,
-      hTokenOut: PromiseOrValue<BigNumberish>,
-      timeToMaturity: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber] & { normalizedUnderlyingIn: BigNumber }>;
+  doHTokenInForUnderlyingOut: TypedContractMethod<
+    [
+      normalizedUnderlyingReserves: BigNumberish,
+      hTokenReserves: BigNumberish,
+      normalizedUnderlyingOut: BigNumberish,
+      timeToMaturity: BigNumberish
+    ],
+    [bigint],
+    "view"
+  >;
 
-    doUnderlyingOutForHTokenIn(
-      hTokenReserves: PromiseOrValue<BigNumberish>,
-      normalizedUnderlyingReserves: PromiseOrValue<BigNumberish>,
-      hTokenIn: PromiseOrValue<BigNumberish>,
-      timeToMaturity: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber] & { normalizedUnderlyingOut: BigNumber }>;
-  };
+  doHTokenOutForUnderlyingIn: TypedContractMethod<
+    [
+      normalizedUnderlyingReserves: BigNumberish,
+      hTokenReserves: BigNumberish,
+      normalizedUnderlyingIn: BigNumberish,
+      timeToMaturity: BigNumberish
+    ],
+    [bigint],
+    "view"
+  >;
 
-  doGetYieldExponent(
-    timeToMaturity: PromiseOrValue<BigNumberish>,
-    g: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  doUnderlyingInForHTokenOut: TypedContractMethod<
+    [
+      hTokenReserves: BigNumberish,
+      normalizedUnderlyingReserves: BigNumberish,
+      hTokenOut: BigNumberish,
+      timeToMaturity: BigNumberish
+    ],
+    [bigint],
+    "view"
+  >;
 
-  doHTokenInForUnderlyingOut(
-    normalizedUnderlyingReserves: PromiseOrValue<BigNumberish>,
-    hTokenReserves: PromiseOrValue<BigNumberish>,
-    normalizedUnderlyingOut: PromiseOrValue<BigNumberish>,
-    timeToMaturity: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  doUnderlyingOutForHTokenIn: TypedContractMethod<
+    [
+      hTokenReserves: BigNumberish,
+      normalizedUnderlyingReserves: BigNumberish,
+      hTokenIn: BigNumberish,
+      timeToMaturity: BigNumberish
+    ],
+    [bigint],
+    "view"
+  >;
 
-  doHTokenOutForUnderlyingIn(
-    normalizedUnderlyingReserves: PromiseOrValue<BigNumberish>,
-    hTokenReserves: PromiseOrValue<BigNumberish>,
-    normalizedUnderlyingIn: PromiseOrValue<BigNumberish>,
-    timeToMaturity: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
 
-  doUnderlyingInForHTokenOut(
-    hTokenReserves: PromiseOrValue<BigNumberish>,
-    normalizedUnderlyingReserves: PromiseOrValue<BigNumberish>,
-    hTokenOut: PromiseOrValue<BigNumberish>,
-    timeToMaturity: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  doUnderlyingOutForHTokenIn(
-    hTokenReserves: PromiseOrValue<BigNumberish>,
-    normalizedUnderlyingReserves: PromiseOrValue<BigNumberish>,
-    hTokenIn: PromiseOrValue<BigNumberish>,
-    timeToMaturity: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  callStatic: {
-    doGetYieldExponent(
-      timeToMaturity: PromiseOrValue<BigNumberish>,
-      g: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    doHTokenInForUnderlyingOut(
-      normalizedUnderlyingReserves: PromiseOrValue<BigNumberish>,
-      hTokenReserves: PromiseOrValue<BigNumberish>,
-      normalizedUnderlyingOut: PromiseOrValue<BigNumberish>,
-      timeToMaturity: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    doHTokenOutForUnderlyingIn(
-      normalizedUnderlyingReserves: PromiseOrValue<BigNumberish>,
-      hTokenReserves: PromiseOrValue<BigNumberish>,
-      normalizedUnderlyingIn: PromiseOrValue<BigNumberish>,
-      timeToMaturity: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    doUnderlyingInForHTokenOut(
-      hTokenReserves: PromiseOrValue<BigNumberish>,
-      normalizedUnderlyingReserves: PromiseOrValue<BigNumberish>,
-      hTokenOut: PromiseOrValue<BigNumberish>,
-      timeToMaturity: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    doUnderlyingOutForHTokenIn(
-      hTokenReserves: PromiseOrValue<BigNumberish>,
-      normalizedUnderlyingReserves: PromiseOrValue<BigNumberish>,
-      hTokenIn: PromiseOrValue<BigNumberish>,
-      timeToMaturity: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-  };
+  getFunction(
+    nameOrSignature: "doGetYieldExponent"
+  ): TypedContractMethod<
+    [timeToMaturity: BigNumberish, g: BigNumberish],
+    [bigint],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "doHTokenInForUnderlyingOut"
+  ): TypedContractMethod<
+    [
+      normalizedUnderlyingReserves: BigNumberish,
+      hTokenReserves: BigNumberish,
+      normalizedUnderlyingOut: BigNumberish,
+      timeToMaturity: BigNumberish
+    ],
+    [bigint],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "doHTokenOutForUnderlyingIn"
+  ): TypedContractMethod<
+    [
+      normalizedUnderlyingReserves: BigNumberish,
+      hTokenReserves: BigNumberish,
+      normalizedUnderlyingIn: BigNumberish,
+      timeToMaturity: BigNumberish
+    ],
+    [bigint],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "doUnderlyingInForHTokenOut"
+  ): TypedContractMethod<
+    [
+      hTokenReserves: BigNumberish,
+      normalizedUnderlyingReserves: BigNumberish,
+      hTokenOut: BigNumberish,
+      timeToMaturity: BigNumberish
+    ],
+    [bigint],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "doUnderlyingOutForHTokenIn"
+  ): TypedContractMethod<
+    [
+      hTokenReserves: BigNumberish,
+      normalizedUnderlyingReserves: BigNumberish,
+      hTokenIn: BigNumberish,
+      timeToMaturity: BigNumberish
+    ],
+    [bigint],
+    "view"
+  >;
 
   filters: {};
-
-  estimateGas: {
-    doGetYieldExponent(
-      timeToMaturity: PromiseOrValue<BigNumberish>,
-      g: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    doHTokenInForUnderlyingOut(
-      normalizedUnderlyingReserves: PromiseOrValue<BigNumberish>,
-      hTokenReserves: PromiseOrValue<BigNumberish>,
-      normalizedUnderlyingOut: PromiseOrValue<BigNumberish>,
-      timeToMaturity: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    doHTokenOutForUnderlyingIn(
-      normalizedUnderlyingReserves: PromiseOrValue<BigNumberish>,
-      hTokenReserves: PromiseOrValue<BigNumberish>,
-      normalizedUnderlyingIn: PromiseOrValue<BigNumberish>,
-      timeToMaturity: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    doUnderlyingInForHTokenOut(
-      hTokenReserves: PromiseOrValue<BigNumberish>,
-      normalizedUnderlyingReserves: PromiseOrValue<BigNumberish>,
-      hTokenOut: PromiseOrValue<BigNumberish>,
-      timeToMaturity: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    doUnderlyingOutForHTokenIn(
-      hTokenReserves: PromiseOrValue<BigNumberish>,
-      normalizedUnderlyingReserves: PromiseOrValue<BigNumberish>,
-      hTokenIn: PromiseOrValue<BigNumberish>,
-      timeToMaturity: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-  };
-
-  populateTransaction: {
-    doGetYieldExponent(
-      timeToMaturity: PromiseOrValue<BigNumberish>,
-      g: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    doHTokenInForUnderlyingOut(
-      normalizedUnderlyingReserves: PromiseOrValue<BigNumberish>,
-      hTokenReserves: PromiseOrValue<BigNumberish>,
-      normalizedUnderlyingOut: PromiseOrValue<BigNumberish>,
-      timeToMaturity: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    doHTokenOutForUnderlyingIn(
-      normalizedUnderlyingReserves: PromiseOrValue<BigNumberish>,
-      hTokenReserves: PromiseOrValue<BigNumberish>,
-      normalizedUnderlyingIn: PromiseOrValue<BigNumberish>,
-      timeToMaturity: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    doUnderlyingInForHTokenOut(
-      hTokenReserves: PromiseOrValue<BigNumberish>,
-      normalizedUnderlyingReserves: PromiseOrValue<BigNumberish>,
-      hTokenOut: PromiseOrValue<BigNumberish>,
-      timeToMaturity: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    doUnderlyingOutForHTokenIn(
-      hTokenReserves: PromiseOrValue<BigNumberish>,
-      normalizedUnderlyingReserves: PromiseOrValue<BigNumberish>,
-      hTokenIn: PromiseOrValue<BigNumberish>,
-      timeToMaturity: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-  };
 }

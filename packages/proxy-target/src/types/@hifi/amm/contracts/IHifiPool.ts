@@ -3,70 +3,29 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumber,
   BigNumberish,
   BytesLike,
-  CallOverrides,
-  ContractTransaction,
-  Overrides,
-  PopulatedTransaction,
-  Signer,
-  utils,
-} from "ethers";
-import type {
   FunctionFragment,
   Result,
+  Interface,
   EventFragment,
-} from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
+  AddressLike,
+  ContractRunner,
+  ContractMethod,
+  Listener,
+} from "ethers";
 import type {
-  TypedEventFilter,
-  TypedEvent,
+  TypedContractEvent,
+  TypedDeferredTopicFilter,
+  TypedEventLog,
+  TypedLogDescription,
   TypedListener,
-  OnEvent,
-  PromiseOrValue,
+  TypedContractMethod,
 } from "../../../common";
 
-export interface IHifiPoolInterface extends utils.Interface {
-  functions: {
-    "DOMAIN_SEPARATOR()": FunctionFragment;
-    "PERMIT_TYPEHASH()": FunctionFragment;
-    "allowance(address,address)": FunctionFragment;
-    "approve(address,uint256)": FunctionFragment;
-    "balanceOf(address)": FunctionFragment;
-    "burn(uint256)": FunctionFragment;
-    "buyHToken(address,uint256)": FunctionFragment;
-    "buyUnderlying(address,uint256)": FunctionFragment;
-    "decimals()": FunctionFragment;
-    "decreaseAllowance(address,uint256)": FunctionFragment;
-    "getBurnOutputs(uint256)": FunctionFragment;
-    "getMintInputs(uint256)": FunctionFragment;
-    "getNormalizedUnderlyingReserves()": FunctionFragment;
-    "getQuoteForBuyingHToken(uint256)": FunctionFragment;
-    "getQuoteForBuyingUnderlying(uint256)": FunctionFragment;
-    "getQuoteForSellingHToken(uint256)": FunctionFragment;
-    "getQuoteForSellingUnderlying(uint256)": FunctionFragment;
-    "getVirtualHTokenReserves()": FunctionFragment;
-    "hToken()": FunctionFragment;
-    "increaseAllowance(address,uint256)": FunctionFragment;
-    "maturity()": FunctionFragment;
-    "mint(uint256)": FunctionFragment;
-    "name()": FunctionFragment;
-    "nonces(address)": FunctionFragment;
-    "permit(address,address,uint256,uint256,uint8,bytes32,bytes32)": FunctionFragment;
-    "sellHToken(address,uint256)": FunctionFragment;
-    "sellUnderlying(address,uint256)": FunctionFragment;
-    "symbol()": FunctionFragment;
-    "totalSupply()": FunctionFragment;
-    "transfer(address,uint256)": FunctionFragment;
-    "transferFrom(address,address,uint256)": FunctionFragment;
-    "underlying()": FunctionFragment;
-    "underlyingPrecisionScalar()": FunctionFragment;
-    "version()": FunctionFragment;
-  };
-
+export interface IHifiPoolInterface extends Interface {
   getFunction(
-    nameOrSignatureOrTopic:
+    nameOrSignature:
       | "DOMAIN_SEPARATOR"
       | "PERMIT_TYPEHASH"
       | "allowance"
@@ -103,6 +62,15 @@ export interface IHifiPoolInterface extends utils.Interface {
       | "version"
   ): FunctionFragment;
 
+  getEvent(
+    nameOrSignatureOrTopic:
+      | "AddLiquidity"
+      | "Approval"
+      | "RemoveLiquidity"
+      | "Trade"
+      | "Transfer"
+  ): EventFragment;
+
   encodeFunctionData(
     functionFragment: "DOMAIN_SEPARATOR",
     values?: undefined
@@ -113,40 +81,37 @@ export interface IHifiPoolInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "allowance",
-    values: [PromiseOrValue<string>, PromiseOrValue<string>]
+    values: [AddressLike, AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "approve",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "balanceOf",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
-  encodeFunctionData(
-    functionFragment: "burn",
-    values: [PromiseOrValue<BigNumberish>]
-  ): string;
+  encodeFunctionData(functionFragment: "burn", values: [BigNumberish]): string;
   encodeFunctionData(
     functionFragment: "buyHToken",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "buyUnderlying",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "decimals", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "decreaseAllowance",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getBurnOutputs",
-    values: [PromiseOrValue<BigNumberish>]
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getMintInputs",
-    values: [PromiseOrValue<BigNumberish>]
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getNormalizedUnderlyingReserves",
@@ -154,19 +119,19 @@ export interface IHifiPoolInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getQuoteForBuyingHToken",
-    values: [PromiseOrValue<BigNumberish>]
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getQuoteForBuyingUnderlying",
-    values: [PromiseOrValue<BigNumberish>]
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getQuoteForSellingHToken",
-    values: [PromiseOrValue<BigNumberish>]
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getQuoteForSellingUnderlying",
-    values: [PromiseOrValue<BigNumberish>]
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "getVirtualHTokenReserves",
@@ -175,37 +140,31 @@ export interface IHifiPoolInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "hToken", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "increaseAllowance",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "maturity", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "mint",
-    values: [PromiseOrValue<BigNumberish>]
-  ): string;
+  encodeFunctionData(functionFragment: "mint", values: [BigNumberish]): string;
   encodeFunctionData(functionFragment: "name", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "nonces",
-    values: [PromiseOrValue<string>]
-  ): string;
+  encodeFunctionData(functionFragment: "nonces", values: [AddressLike]): string;
   encodeFunctionData(
     functionFragment: "permit",
     values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BytesLike>,
-      PromiseOrValue<BytesLike>
+      AddressLike,
+      AddressLike,
+      BigNumberish,
+      BigNumberish,
+      BigNumberish,
+      BytesLike,
+      BytesLike
     ]
   ): string;
   encodeFunctionData(
     functionFragment: "sellHToken",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "sellUnderlying",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "symbol", values?: undefined): string;
   encodeFunctionData(
@@ -214,15 +173,11 @@ export interface IHifiPoolInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "transfer",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "transferFrom",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>
-    ]
+    values: [AddressLike, AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "underlying",
@@ -319,979 +274,588 @@ export interface IHifiPoolInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "version", data: BytesLike): Result;
-
-  events: {
-    "AddLiquidity(uint256,address,uint256,uint256,uint256)": EventFragment;
-    "Approval(address,address,uint256)": EventFragment;
-    "RemoveLiquidity(uint256,address,uint256,uint256,uint256)": EventFragment;
-    "Trade(uint256,address,address,int256,int256)": EventFragment;
-    "Transfer(address,address,uint256)": EventFragment;
-  };
-
-  getEvent(nameOrSignatureOrTopic: "AddLiquidity"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Approval"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "RemoveLiquidity"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Trade"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "Transfer"): EventFragment;
 }
 
-export interface AddLiquidityEventObject {
-  maturity: BigNumber;
-  provider: string;
-  underlyingAmount: BigNumber;
-  hTokenAmount: BigNumber;
-  poolTokenAmount: BigNumber;
+export namespace AddLiquidityEvent {
+  export type InputTuple = [
+    maturity: BigNumberish,
+    provider: AddressLike,
+    underlyingAmount: BigNumberish,
+    hTokenAmount: BigNumberish,
+    poolTokenAmount: BigNumberish
+  ];
+  export type OutputTuple = [
+    maturity: bigint,
+    provider: string,
+    underlyingAmount: bigint,
+    hTokenAmount: bigint,
+    poolTokenAmount: bigint
+  ];
+  export interface OutputObject {
+    maturity: bigint;
+    provider: string;
+    underlyingAmount: bigint;
+    hTokenAmount: bigint;
+    poolTokenAmount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type AddLiquidityEvent = TypedEvent<
-  [BigNumber, string, BigNumber, BigNumber, BigNumber],
-  AddLiquidityEventObject
->;
 
-export type AddLiquidityEventFilter = TypedEventFilter<AddLiquidityEvent>;
-
-export interface ApprovalEventObject {
-  owner: string;
-  spender: string;
-  amount: BigNumber;
+export namespace ApprovalEvent {
+  export type InputTuple = [
+    owner: AddressLike,
+    spender: AddressLike,
+    amount: BigNumberish
+  ];
+  export type OutputTuple = [owner: string, spender: string, amount: bigint];
+  export interface OutputObject {
+    owner: string;
+    spender: string;
+    amount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type ApprovalEvent = TypedEvent<
-  [string, string, BigNumber],
-  ApprovalEventObject
->;
 
-export type ApprovalEventFilter = TypedEventFilter<ApprovalEvent>;
-
-export interface RemoveLiquidityEventObject {
-  maturity: BigNumber;
-  provider: string;
-  underlyingAmount: BigNumber;
-  hTokenAmount: BigNumber;
-  poolTokenAmount: BigNumber;
+export namespace RemoveLiquidityEvent {
+  export type InputTuple = [
+    maturity: BigNumberish,
+    provider: AddressLike,
+    underlyingAmount: BigNumberish,
+    hTokenAmount: BigNumberish,
+    poolTokenAmount: BigNumberish
+  ];
+  export type OutputTuple = [
+    maturity: bigint,
+    provider: string,
+    underlyingAmount: bigint,
+    hTokenAmount: bigint,
+    poolTokenAmount: bigint
+  ];
+  export interface OutputObject {
+    maturity: bigint;
+    provider: string;
+    underlyingAmount: bigint;
+    hTokenAmount: bigint;
+    poolTokenAmount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type RemoveLiquidityEvent = TypedEvent<
-  [BigNumber, string, BigNumber, BigNumber, BigNumber],
-  RemoveLiquidityEventObject
->;
 
-export type RemoveLiquidityEventFilter = TypedEventFilter<RemoveLiquidityEvent>;
-
-export interface TradeEventObject {
-  maturity: BigNumber;
-  from: string;
-  to: string;
-  underlyingAmount: BigNumber;
-  hTokenAmount: BigNumber;
+export namespace TradeEvent {
+  export type InputTuple = [
+    maturity: BigNumberish,
+    from: AddressLike,
+    to: AddressLike,
+    underlyingAmount: BigNumberish,
+    hTokenAmount: BigNumberish
+  ];
+  export type OutputTuple = [
+    maturity: bigint,
+    from: string,
+    to: string,
+    underlyingAmount: bigint,
+    hTokenAmount: bigint
+  ];
+  export interface OutputObject {
+    maturity: bigint;
+    from: string;
+    to: string;
+    underlyingAmount: bigint;
+    hTokenAmount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type TradeEvent = TypedEvent<
-  [BigNumber, string, string, BigNumber, BigNumber],
-  TradeEventObject
->;
 
-export type TradeEventFilter = TypedEventFilter<TradeEvent>;
-
-export interface TransferEventObject {
-  from: string;
-  to: string;
-  amount: BigNumber;
+export namespace TransferEvent {
+  export type InputTuple = [
+    from: AddressLike,
+    to: AddressLike,
+    amount: BigNumberish
+  ];
+  export type OutputTuple = [from: string, to: string, amount: bigint];
+  export interface OutputObject {
+    from: string;
+    to: string;
+    amount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type TransferEvent = TypedEvent<
-  [string, string, BigNumber],
-  TransferEventObject
->;
-
-export type TransferEventFilter = TypedEventFilter<TransferEvent>;
 
 export interface IHifiPool extends BaseContract {
-  connect(signerOrProvider: Signer | Provider | string): this;
-  attach(addressOrName: string): this;
-  deployed(): Promise<this>;
+  connect(runner?: ContractRunner | null): IHifiPool;
+  waitForDeployment(): Promise<this>;
 
   interface: IHifiPoolInterface;
 
-  queryFilter<TEvent extends TypedEvent>(
-    event: TypedEventFilter<TEvent>,
+  queryFilter<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TEvent>>;
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  queryFilter<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
 
-  listeners<TEvent extends TypedEvent>(
-    eventFilter?: TypedEventFilter<TEvent>
-  ): Array<TypedListener<TEvent>>;
-  listeners(eventName?: string): Array<Listener>;
-  removeAllListeners<TEvent extends TypedEvent>(
-    eventFilter: TypedEventFilter<TEvent>
-  ): this;
-  removeAllListeners(eventName?: string): this;
-  off: OnEvent<this>;
-  on: OnEvent<this>;
-  once: OnEvent<this>;
-  removeListener: OnEvent<this>;
+  on<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  on<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-  functions: {
-    DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<[string]>;
+  once<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  once<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-    PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<[string]>;
+  listeners<TCEvent extends TypedContractEvent>(
+    event: TCEvent
+  ): Promise<Array<TypedListener<TCEvent>>>;
+  listeners(eventName?: string): Promise<Array<Listener>>;
+  removeAllListeners<TCEvent extends TypedContractEvent>(
+    event?: TCEvent
+  ): Promise<this>;
 
-    allowance(
-      owner: PromiseOrValue<string>,
-      spender: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+  DOMAIN_SEPARATOR: TypedContractMethod<[], [string], "view">;
 
-    approve(
-      spender: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+  PERMIT_TYPEHASH: TypedContractMethod<[], [string], "view">;
 
-    balanceOf(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    burn(
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    buyHToken(
-      to: PromiseOrValue<string>,
-      hTokenOut: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    buyUnderlying(
-      to: PromiseOrValue<string>,
-      underlyingOut: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    decimals(overrides?: CallOverrides): Promise<[number]>;
-
-    decreaseAllowance(
-      spender: PromiseOrValue<string>,
-      subtractedAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    getBurnOutputs(
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber] & {
-        underlyingReturned: BigNumber;
-        hTokenReturned: BigNumber;
-      }
-    >;
-
-    getMintInputs(
-      underlyingOffered: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber] & {
-        hTokenRequired: BigNumber;
-        poolTokensMinted: BigNumber;
-      }
-    >;
-
-    getNormalizedUnderlyingReserves(
-      overrides?: CallOverrides
-    ): Promise<[BigNumber] & { normalizedUnderlyingReserves: BigNumber }>;
-
-    getQuoteForBuyingHToken(
-      hTokenOut: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber] & { underlyingIn: BigNumber }>;
-
-    getQuoteForBuyingUnderlying(
-      underlyingOut: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber] & { hTokenIn: BigNumber }>;
-
-    getQuoteForSellingHToken(
-      hTokenIn: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber] & { underlyingOut: BigNumber }>;
-
-    getQuoteForSellingUnderlying(
-      underlyingIn: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber] & { hTokenOut: BigNumber }>;
-
-    getVirtualHTokenReserves(
-      overrides?: CallOverrides
-    ): Promise<[BigNumber] & { virtualHTokenReserves: BigNumber }>;
-
-    hToken(overrides?: CallOverrides): Promise<[string]>;
-
-    increaseAllowance(
-      spender: PromiseOrValue<string>,
-      addedAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    maturity(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    mint(
-      underlyingOffered: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    name(overrides?: CallOverrides): Promise<[string]>;
-
-    nonces(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    permit(
-      owner: PromiseOrValue<string>,
-      spender: PromiseOrValue<string>,
-      value: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      v: PromiseOrValue<BigNumberish>,
-      r: PromiseOrValue<BytesLike>,
-      s: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    sellHToken(
-      to: PromiseOrValue<string>,
-      hTokenIn: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    sellUnderlying(
-      to: PromiseOrValue<string>,
-      underlyingIn: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    symbol(overrides?: CallOverrides): Promise<[string]>;
-
-    totalSupply(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    transfer(
-      recipient: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    transferFrom(
-      sender: PromiseOrValue<string>,
-      recipient: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    underlying(overrides?: CallOverrides): Promise<[string]>;
-
-    underlyingPrecisionScalar(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    version(overrides?: CallOverrides): Promise<[string]>;
-  };
-
-  DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<string>;
-
-  PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<string>;
-
-  allowance(
-    owner: PromiseOrValue<string>,
-    spender: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  approve(
-    spender: PromiseOrValue<string>,
-    amount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  balanceOf(
-    account: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  burn(
-    poolTokensBurned: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  buyHToken(
-    to: PromiseOrValue<string>,
-    hTokenOut: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  buyUnderlying(
-    to: PromiseOrValue<string>,
-    underlyingOut: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  decimals(overrides?: CallOverrides): Promise<number>;
-
-  decreaseAllowance(
-    spender: PromiseOrValue<string>,
-    subtractedAmount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  getBurnOutputs(
-    poolTokensBurned: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber, BigNumber] & {
-      underlyingReturned: BigNumber;
-      hTokenReturned: BigNumber;
-    }
+  allowance: TypedContractMethod<
+    [owner: AddressLike, spender: AddressLike],
+    [bigint],
+    "view"
   >;
 
-  getMintInputs(
-    underlyingOffered: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber, BigNumber] & {
-      hTokenRequired: BigNumber;
-      poolTokensMinted: BigNumber;
-    }
+  approve: TypedContractMethod<
+    [spender: AddressLike, amount: BigNumberish],
+    [boolean],
+    "nonpayable"
   >;
 
-  getNormalizedUnderlyingReserves(
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  balanceOf: TypedContractMethod<[account: AddressLike], [bigint], "view">;
 
-  getQuoteForBuyingHToken(
-    hTokenOut: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  burn: TypedContractMethod<
+    [poolTokensBurned: BigNumberish],
+    [[bigint, bigint] & { underlyingReturned: bigint; hTokenReturned: bigint }],
+    "nonpayable"
+  >;
 
-  getQuoteForBuyingUnderlying(
-    underlyingOut: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  buyHToken: TypedContractMethod<
+    [to: AddressLike, hTokenOut: BigNumberish],
+    [bigint],
+    "nonpayable"
+  >;
 
-  getQuoteForSellingHToken(
-    hTokenIn: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  buyUnderlying: TypedContractMethod<
+    [to: AddressLike, underlyingOut: BigNumberish],
+    [bigint],
+    "nonpayable"
+  >;
 
-  getQuoteForSellingUnderlying(
-    underlyingIn: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  decimals: TypedContractMethod<[], [bigint], "view">;
 
-  getVirtualHTokenReserves(overrides?: CallOverrides): Promise<BigNumber>;
+  decreaseAllowance: TypedContractMethod<
+    [spender: AddressLike, subtractedAmount: BigNumberish],
+    [boolean],
+    "nonpayable"
+  >;
 
-  hToken(overrides?: CallOverrides): Promise<string>;
+  getBurnOutputs: TypedContractMethod<
+    [poolTokensBurned: BigNumberish],
+    [[bigint, bigint] & { underlyingReturned: bigint; hTokenReturned: bigint }],
+    "view"
+  >;
 
-  increaseAllowance(
-    spender: PromiseOrValue<string>,
-    addedAmount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  getMintInputs: TypedContractMethod<
+    [underlyingOffered: BigNumberish],
+    [[bigint, bigint] & { hTokenRequired: bigint; poolTokensMinted: bigint }],
+    "view"
+  >;
 
-  maturity(overrides?: CallOverrides): Promise<BigNumber>;
+  getNormalizedUnderlyingReserves: TypedContractMethod<[], [bigint], "view">;
 
-  mint(
-    underlyingOffered: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  getQuoteForBuyingHToken: TypedContractMethod<
+    [hTokenOut: BigNumberish],
+    [bigint],
+    "view"
+  >;
 
-  name(overrides?: CallOverrides): Promise<string>;
+  getQuoteForBuyingUnderlying: TypedContractMethod<
+    [underlyingOut: BigNumberish],
+    [bigint],
+    "view"
+  >;
 
-  nonces(
-    account: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  getQuoteForSellingHToken: TypedContractMethod<
+    [hTokenIn: BigNumberish],
+    [bigint],
+    "view"
+  >;
 
-  permit(
-    owner: PromiseOrValue<string>,
-    spender: PromiseOrValue<string>,
-    value: PromiseOrValue<BigNumberish>,
-    deadline: PromiseOrValue<BigNumberish>,
-    v: PromiseOrValue<BigNumberish>,
-    r: PromiseOrValue<BytesLike>,
-    s: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  getQuoteForSellingUnderlying: TypedContractMethod<
+    [underlyingIn: BigNumberish],
+    [bigint],
+    "view"
+  >;
 
-  sellHToken(
-    to: PromiseOrValue<string>,
-    hTokenIn: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  getVirtualHTokenReserves: TypedContractMethod<[], [bigint], "view">;
 
-  sellUnderlying(
-    to: PromiseOrValue<string>,
-    underlyingIn: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  hToken: TypedContractMethod<[], [string], "view">;
 
-  symbol(overrides?: CallOverrides): Promise<string>;
+  increaseAllowance: TypedContractMethod<
+    [spender: AddressLike, addedAmount: BigNumberish],
+    [boolean],
+    "nonpayable"
+  >;
 
-  totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
+  maturity: TypedContractMethod<[], [bigint], "view">;
 
-  transfer(
-    recipient: PromiseOrValue<string>,
-    amount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  mint: TypedContractMethod<
+    [underlyingOffered: BigNumberish],
+    [bigint],
+    "nonpayable"
+  >;
 
-  transferFrom(
-    sender: PromiseOrValue<string>,
-    recipient: PromiseOrValue<string>,
-    amount: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  name: TypedContractMethod<[], [string], "view">;
 
-  underlying(overrides?: CallOverrides): Promise<string>;
+  nonces: TypedContractMethod<[account: AddressLike], [bigint], "view">;
 
-  underlyingPrecisionScalar(overrides?: CallOverrides): Promise<BigNumber>;
+  permit: TypedContractMethod<
+    [
+      owner: AddressLike,
+      spender: AddressLike,
+      value: BigNumberish,
+      deadline: BigNumberish,
+      v: BigNumberish,
+      r: BytesLike,
+      s: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
 
-  version(overrides?: CallOverrides): Promise<string>;
+  sellHToken: TypedContractMethod<
+    [to: AddressLike, hTokenIn: BigNumberish],
+    [bigint],
+    "nonpayable"
+  >;
 
-  callStatic: {
-    DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<string>;
+  sellUnderlying: TypedContractMethod<
+    [to: AddressLike, underlyingIn: BigNumberish],
+    [bigint],
+    "nonpayable"
+  >;
 
-    PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<string>;
+  symbol: TypedContractMethod<[], [string], "view">;
 
-    allowance(
-      owner: PromiseOrValue<string>,
-      spender: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+  totalSupply: TypedContractMethod<[], [bigint], "view">;
 
-    approve(
-      spender: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
+  transfer: TypedContractMethod<
+    [recipient: AddressLike, amount: BigNumberish],
+    [boolean],
+    "nonpayable"
+  >;
 
-    balanceOf(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+  transferFrom: TypedContractMethod<
+    [sender: AddressLike, recipient: AddressLike, amount: BigNumberish],
+    [boolean],
+    "nonpayable"
+  >;
 
-    burn(
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber] & {
-        underlyingReturned: BigNumber;
-        hTokenReturned: BigNumber;
-      }
-    >;
+  underlying: TypedContractMethod<[], [string], "view">;
 
-    buyHToken(
-      to: PromiseOrValue<string>,
-      hTokenOut: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+  underlyingPrecisionScalar: TypedContractMethod<[], [bigint], "view">;
 
-    buyUnderlying(
-      to: PromiseOrValue<string>,
-      underlyingOut: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
+  version: TypedContractMethod<[], [string], "view">;
 
-    decimals(overrides?: CallOverrides): Promise<number>;
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
 
-    decreaseAllowance(
-      spender: PromiseOrValue<string>,
-      subtractedAmount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
+  getFunction(
+    nameOrSignature: "DOMAIN_SEPARATOR"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "PERMIT_TYPEHASH"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "allowance"
+  ): TypedContractMethod<
+    [owner: AddressLike, spender: AddressLike],
+    [bigint],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "approve"
+  ): TypedContractMethod<
+    [spender: AddressLike, amount: BigNumberish],
+    [boolean],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "balanceOf"
+  ): TypedContractMethod<[account: AddressLike], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "burn"
+  ): TypedContractMethod<
+    [poolTokensBurned: BigNumberish],
+    [[bigint, bigint] & { underlyingReturned: bigint; hTokenReturned: bigint }],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "buyHToken"
+  ): TypedContractMethod<
+    [to: AddressLike, hTokenOut: BigNumberish],
+    [bigint],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "buyUnderlying"
+  ): TypedContractMethod<
+    [to: AddressLike, underlyingOut: BigNumberish],
+    [bigint],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "decimals"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "decreaseAllowance"
+  ): TypedContractMethod<
+    [spender: AddressLike, subtractedAmount: BigNumberish],
+    [boolean],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "getBurnOutputs"
+  ): TypedContractMethod<
+    [poolTokensBurned: BigNumberish],
+    [[bigint, bigint] & { underlyingReturned: bigint; hTokenReturned: bigint }],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "getMintInputs"
+  ): TypedContractMethod<
+    [underlyingOffered: BigNumberish],
+    [[bigint, bigint] & { hTokenRequired: bigint; poolTokensMinted: bigint }],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "getNormalizedUnderlyingReserves"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getQuoteForBuyingHToken"
+  ): TypedContractMethod<[hTokenOut: BigNumberish], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getQuoteForBuyingUnderlying"
+  ): TypedContractMethod<[underlyingOut: BigNumberish], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getQuoteForSellingHToken"
+  ): TypedContractMethod<[hTokenIn: BigNumberish], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getQuoteForSellingUnderlying"
+  ): TypedContractMethod<[underlyingIn: BigNumberish], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getVirtualHTokenReserves"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "hToken"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "increaseAllowance"
+  ): TypedContractMethod<
+    [spender: AddressLike, addedAmount: BigNumberish],
+    [boolean],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "maturity"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "mint"
+  ): TypedContractMethod<
+    [underlyingOffered: BigNumberish],
+    [bigint],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "name"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "nonces"
+  ): TypedContractMethod<[account: AddressLike], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "permit"
+  ): TypedContractMethod<
+    [
+      owner: AddressLike,
+      spender: AddressLike,
+      value: BigNumberish,
+      deadline: BigNumberish,
+      v: BigNumberish,
+      r: BytesLike,
+      s: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "sellHToken"
+  ): TypedContractMethod<
+    [to: AddressLike, hTokenIn: BigNumberish],
+    [bigint],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "sellUnderlying"
+  ): TypedContractMethod<
+    [to: AddressLike, underlyingIn: BigNumberish],
+    [bigint],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "symbol"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "totalSupply"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "transfer"
+  ): TypedContractMethod<
+    [recipient: AddressLike, amount: BigNumberish],
+    [boolean],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "transferFrom"
+  ): TypedContractMethod<
+    [sender: AddressLike, recipient: AddressLike, amount: BigNumberish],
+    [boolean],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "underlying"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "underlyingPrecisionScalar"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "version"
+  ): TypedContractMethod<[], [string], "view">;
 
-    getBurnOutputs(
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber] & {
-        underlyingReturned: BigNumber;
-        hTokenReturned: BigNumber;
-      }
-    >;
-
-    getMintInputs(
-      underlyingOffered: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber] & {
-        hTokenRequired: BigNumber;
-        poolTokensMinted: BigNumber;
-      }
-    >;
-
-    getNormalizedUnderlyingReserves(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getQuoteForBuyingHToken(
-      hTokenOut: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getQuoteForBuyingUnderlying(
-      underlyingOut: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getQuoteForSellingHToken(
-      hTokenIn: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getQuoteForSellingUnderlying(
-      underlyingIn: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getVirtualHTokenReserves(overrides?: CallOverrides): Promise<BigNumber>;
-
-    hToken(overrides?: CallOverrides): Promise<string>;
-
-    increaseAllowance(
-      spender: PromiseOrValue<string>,
-      addedAmount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    maturity(overrides?: CallOverrides): Promise<BigNumber>;
-
-    mint(
-      underlyingOffered: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    name(overrides?: CallOverrides): Promise<string>;
-
-    nonces(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    permit(
-      owner: PromiseOrValue<string>,
-      spender: PromiseOrValue<string>,
-      value: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      v: PromiseOrValue<BigNumberish>,
-      r: PromiseOrValue<BytesLike>,
-      s: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    sellHToken(
-      to: PromiseOrValue<string>,
-      hTokenIn: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    sellUnderlying(
-      to: PromiseOrValue<string>,
-      underlyingIn: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    symbol(overrides?: CallOverrides): Promise<string>;
-
-    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
-
-    transfer(
-      recipient: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    transferFrom(
-      sender: PromiseOrValue<string>,
-      recipient: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    underlying(overrides?: CallOverrides): Promise<string>;
-
-    underlyingPrecisionScalar(overrides?: CallOverrides): Promise<BigNumber>;
-
-    version(overrides?: CallOverrides): Promise<string>;
-  };
+  getEvent(
+    key: "AddLiquidity"
+  ): TypedContractEvent<
+    AddLiquidityEvent.InputTuple,
+    AddLiquidityEvent.OutputTuple,
+    AddLiquidityEvent.OutputObject
+  >;
+  getEvent(
+    key: "Approval"
+  ): TypedContractEvent<
+    ApprovalEvent.InputTuple,
+    ApprovalEvent.OutputTuple,
+    ApprovalEvent.OutputObject
+  >;
+  getEvent(
+    key: "RemoveLiquidity"
+  ): TypedContractEvent<
+    RemoveLiquidityEvent.InputTuple,
+    RemoveLiquidityEvent.OutputTuple,
+    RemoveLiquidityEvent.OutputObject
+  >;
+  getEvent(
+    key: "Trade"
+  ): TypedContractEvent<
+    TradeEvent.InputTuple,
+    TradeEvent.OutputTuple,
+    TradeEvent.OutputObject
+  >;
+  getEvent(
+    key: "Transfer"
+  ): TypedContractEvent<
+    TransferEvent.InputTuple,
+    TransferEvent.OutputTuple,
+    TransferEvent.OutputObject
+  >;
 
   filters: {
-    "AddLiquidity(uint256,address,uint256,uint256,uint256)"(
-      maturity?: null,
-      provider?: PromiseOrValue<string> | null,
-      underlyingAmount?: null,
-      hTokenAmount?: null,
-      poolTokenAmount?: null
-    ): AddLiquidityEventFilter;
-    AddLiquidity(
-      maturity?: null,
-      provider?: PromiseOrValue<string> | null,
-      underlyingAmount?: null,
-      hTokenAmount?: null,
-      poolTokenAmount?: null
-    ): AddLiquidityEventFilter;
-
-    "Approval(address,address,uint256)"(
-      owner?: PromiseOrValue<string> | null,
-      spender?: PromiseOrValue<string> | null,
-      amount?: null
-    ): ApprovalEventFilter;
-    Approval(
-      owner?: PromiseOrValue<string> | null,
-      spender?: PromiseOrValue<string> | null,
-      amount?: null
-    ): ApprovalEventFilter;
-
-    "RemoveLiquidity(uint256,address,uint256,uint256,uint256)"(
-      maturity?: null,
-      provider?: PromiseOrValue<string> | null,
-      underlyingAmount?: null,
-      hTokenAmount?: null,
-      poolTokenAmount?: null
-    ): RemoveLiquidityEventFilter;
-    RemoveLiquidity(
-      maturity?: null,
-      provider?: PromiseOrValue<string> | null,
-      underlyingAmount?: null,
-      hTokenAmount?: null,
-      poolTokenAmount?: null
-    ): RemoveLiquidityEventFilter;
-
-    "Trade(uint256,address,address,int256,int256)"(
-      maturity?: null,
-      from?: PromiseOrValue<string> | null,
-      to?: PromiseOrValue<string> | null,
-      underlyingAmount?: null,
-      hTokenAmount?: null
-    ): TradeEventFilter;
-    Trade(
-      maturity?: null,
-      from?: PromiseOrValue<string> | null,
-      to?: PromiseOrValue<string> | null,
-      underlyingAmount?: null,
-      hTokenAmount?: null
-    ): TradeEventFilter;
-
-    "Transfer(address,address,uint256)"(
-      from?: PromiseOrValue<string> | null,
-      to?: PromiseOrValue<string> | null,
-      amount?: null
-    ): TransferEventFilter;
-    Transfer(
-      from?: PromiseOrValue<string> | null,
-      to?: PromiseOrValue<string> | null,
-      amount?: null
-    ): TransferEventFilter;
-  };
-
-  estimateGas: {
-    DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<BigNumber>;
-
-    PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<BigNumber>;
-
-    allowance(
-      owner: PromiseOrValue<string>,
-      spender: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    approve(
-      spender: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    balanceOf(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    burn(
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    buyHToken(
-      to: PromiseOrValue<string>,
-      hTokenOut: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    buyUnderlying(
-      to: PromiseOrValue<string>,
-      underlyingOut: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    decimals(overrides?: CallOverrides): Promise<BigNumber>;
-
-    decreaseAllowance(
-      spender: PromiseOrValue<string>,
-      subtractedAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    getBurnOutputs(
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getMintInputs(
-      underlyingOffered: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getNormalizedUnderlyingReserves(
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getQuoteForBuyingHToken(
-      hTokenOut: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getQuoteForBuyingUnderlying(
-      underlyingOut: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getQuoteForSellingHToken(
-      hTokenIn: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getQuoteForSellingUnderlying(
-      underlyingIn: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getVirtualHTokenReserves(overrides?: CallOverrides): Promise<BigNumber>;
-
-    hToken(overrides?: CallOverrides): Promise<BigNumber>;
-
-    increaseAllowance(
-      spender: PromiseOrValue<string>,
-      addedAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    maturity(overrides?: CallOverrides): Promise<BigNumber>;
-
-    mint(
-      underlyingOffered: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    name(overrides?: CallOverrides): Promise<BigNumber>;
-
-    nonces(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    permit(
-      owner: PromiseOrValue<string>,
-      spender: PromiseOrValue<string>,
-      value: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      v: PromiseOrValue<BigNumberish>,
-      r: PromiseOrValue<BytesLike>,
-      s: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    sellHToken(
-      to: PromiseOrValue<string>,
-      hTokenIn: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    sellUnderlying(
-      to: PromiseOrValue<string>,
-      underlyingIn: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    symbol(overrides?: CallOverrides): Promise<BigNumber>;
-
-    totalSupply(overrides?: CallOverrides): Promise<BigNumber>;
-
-    transfer(
-      recipient: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    transferFrom(
-      sender: PromiseOrValue<string>,
-      recipient: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    underlying(overrides?: CallOverrides): Promise<BigNumber>;
-
-    underlyingPrecisionScalar(overrides?: CallOverrides): Promise<BigNumber>;
-
-    version(overrides?: CallOverrides): Promise<BigNumber>;
-  };
-
-  populateTransaction: {
-    DOMAIN_SEPARATOR(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    PERMIT_TYPEHASH(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    allowance(
-      owner: PromiseOrValue<string>,
-      spender: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    approve(
-      spender: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    balanceOf(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    burn(
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    buyHToken(
-      to: PromiseOrValue<string>,
-      hTokenOut: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    buyUnderlying(
-      to: PromiseOrValue<string>,
-      underlyingOut: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    decreaseAllowance(
-      spender: PromiseOrValue<string>,
-      subtractedAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    getBurnOutputs(
-      poolTokensBurned: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getMintInputs(
-      underlyingOffered: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getNormalizedUnderlyingReserves(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getQuoteForBuyingHToken(
-      hTokenOut: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getQuoteForBuyingUnderlying(
-      underlyingOut: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getQuoteForSellingHToken(
-      hTokenIn: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getQuoteForSellingUnderlying(
-      underlyingIn: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getVirtualHTokenReserves(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    hToken(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    increaseAllowance(
-      spender: PromiseOrValue<string>,
-      addedAmount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    maturity(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    mint(
-      underlyingOffered: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    name(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    nonces(
-      account: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    permit(
-      owner: PromiseOrValue<string>,
-      spender: PromiseOrValue<string>,
-      value: PromiseOrValue<BigNumberish>,
-      deadline: PromiseOrValue<BigNumberish>,
-      v: PromiseOrValue<BigNumberish>,
-      r: PromiseOrValue<BytesLike>,
-      s: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    sellHToken(
-      to: PromiseOrValue<string>,
-      hTokenIn: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    sellUnderlying(
-      to: PromiseOrValue<string>,
-      underlyingIn: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    symbol(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    totalSupply(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    transfer(
-      recipient: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    transferFrom(
-      sender: PromiseOrValue<string>,
-      recipient: PromiseOrValue<string>,
-      amount: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    underlying(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    underlyingPrecisionScalar(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    version(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    "AddLiquidity(uint256,address,uint256,uint256,uint256)": TypedContractEvent<
+      AddLiquidityEvent.InputTuple,
+      AddLiquidityEvent.OutputTuple,
+      AddLiquidityEvent.OutputObject
+    >;
+    AddLiquidity: TypedContractEvent<
+      AddLiquidityEvent.InputTuple,
+      AddLiquidityEvent.OutputTuple,
+      AddLiquidityEvent.OutputObject
+    >;
+
+    "Approval(address,address,uint256)": TypedContractEvent<
+      ApprovalEvent.InputTuple,
+      ApprovalEvent.OutputTuple,
+      ApprovalEvent.OutputObject
+    >;
+    Approval: TypedContractEvent<
+      ApprovalEvent.InputTuple,
+      ApprovalEvent.OutputTuple,
+      ApprovalEvent.OutputObject
+    >;
+
+    "RemoveLiquidity(uint256,address,uint256,uint256,uint256)": TypedContractEvent<
+      RemoveLiquidityEvent.InputTuple,
+      RemoveLiquidityEvent.OutputTuple,
+      RemoveLiquidityEvent.OutputObject
+    >;
+    RemoveLiquidity: TypedContractEvent<
+      RemoveLiquidityEvent.InputTuple,
+      RemoveLiquidityEvent.OutputTuple,
+      RemoveLiquidityEvent.OutputObject
+    >;
+
+    "Trade(uint256,address,address,int256,int256)": TypedContractEvent<
+      TradeEvent.InputTuple,
+      TradeEvent.OutputTuple,
+      TradeEvent.OutputObject
+    >;
+    Trade: TypedContractEvent<
+      TradeEvent.InputTuple,
+      TradeEvent.OutputTuple,
+      TradeEvent.OutputObject
+    >;
+
+    "Transfer(address,address,uint256)": TypedContractEvent<
+      TransferEvent.InputTuple,
+      TransferEvent.OutputTuple,
+      TransferEvent.OutputObject
+    >;
+    Transfer: TypedContractEvent<
+      TransferEvent.InputTuple,
+      TransferEvent.OutputTuple,
+      TransferEvent.OutputObject
+    >;
   };
 }

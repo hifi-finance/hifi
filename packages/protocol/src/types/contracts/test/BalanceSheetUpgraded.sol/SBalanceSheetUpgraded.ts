@@ -3,31 +3,25 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumber,
   BytesLike,
-  CallOverrides,
-  PopulatedTransaction,
-  Signer,
-  utils,
+  FunctionFragment,
+  Result,
+  Interface,
+  ContractRunner,
+  ContractMethod,
+  Listener,
 } from "ethers";
-import type { FunctionFragment, Result } from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
 import type {
-  TypedEventFilter,
-  TypedEvent,
+  TypedContractEvent,
+  TypedDeferredTopicFilter,
+  TypedEventLog,
   TypedListener,
-  OnEvent,
+  TypedContractMethod,
 } from "../../../common";
 
-export interface SBalanceSheetUpgradedInterface extends utils.Interface {
-  functions: {
-    "fintroller()": FunctionFragment;
-    "lastBlockNumber()": FunctionFragment;
-    "oracle()": FunctionFragment;
-  };
-
+export interface SBalanceSheetUpgradedInterface extends Interface {
   getFunction(
-    nameOrSignatureOrTopic: "fintroller" | "lastBlockNumber" | "oracle"
+    nameOrSignature: "fintroller" | "lastBlockNumber" | "oracle"
   ): FunctionFragment;
 
   encodeFunctionData(
@@ -46,73 +40,70 @@ export interface SBalanceSheetUpgradedInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "oracle", data: BytesLike): Result;
-
-  events: {};
 }
 
 export interface SBalanceSheetUpgraded extends BaseContract {
-  connect(signerOrProvider: Signer | Provider | string): this;
-  attach(addressOrName: string): this;
-  deployed(): Promise<this>;
+  connect(runner?: ContractRunner | null): SBalanceSheetUpgraded;
+  waitForDeployment(): Promise<this>;
 
   interface: SBalanceSheetUpgradedInterface;
 
-  queryFilter<TEvent extends TypedEvent>(
-    event: TypedEventFilter<TEvent>,
+  queryFilter<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TEvent>>;
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  queryFilter<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
 
-  listeners<TEvent extends TypedEvent>(
-    eventFilter?: TypedEventFilter<TEvent>
-  ): Array<TypedListener<TEvent>>;
-  listeners(eventName?: string): Array<Listener>;
-  removeAllListeners<TEvent extends TypedEvent>(
-    eventFilter: TypedEventFilter<TEvent>
-  ): this;
-  removeAllListeners(eventName?: string): this;
-  off: OnEvent<this>;
-  on: OnEvent<this>;
-  once: OnEvent<this>;
-  removeListener: OnEvent<this>;
+  on<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  on<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-  functions: {
-    fintroller(overrides?: CallOverrides): Promise<[string]>;
+  once<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  once<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-    lastBlockNumber(overrides?: CallOverrides): Promise<[BigNumber]>;
+  listeners<TCEvent extends TypedContractEvent>(
+    event: TCEvent
+  ): Promise<Array<TypedListener<TCEvent>>>;
+  listeners(eventName?: string): Promise<Array<Listener>>;
+  removeAllListeners<TCEvent extends TypedContractEvent>(
+    event?: TCEvent
+  ): Promise<this>;
 
-    oracle(overrides?: CallOverrides): Promise<[string]>;
-  };
+  fintroller: TypedContractMethod<[], [string], "view">;
 
-  fintroller(overrides?: CallOverrides): Promise<string>;
+  lastBlockNumber: TypedContractMethod<[], [bigint], "view">;
 
-  lastBlockNumber(overrides?: CallOverrides): Promise<BigNumber>;
+  oracle: TypedContractMethod<[], [string], "view">;
 
-  oracle(overrides?: CallOverrides): Promise<string>;
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
 
-  callStatic: {
-    fintroller(overrides?: CallOverrides): Promise<string>;
-
-    lastBlockNumber(overrides?: CallOverrides): Promise<BigNumber>;
-
-    oracle(overrides?: CallOverrides): Promise<string>;
-  };
+  getFunction(
+    nameOrSignature: "fintroller"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "lastBlockNumber"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "oracle"
+  ): TypedContractMethod<[], [string], "view">;
 
   filters: {};
-
-  estimateGas: {
-    fintroller(overrides?: CallOverrides): Promise<BigNumber>;
-
-    lastBlockNumber(overrides?: CallOverrides): Promise<BigNumber>;
-
-    oracle(overrides?: CallOverrides): Promise<BigNumber>;
-  };
-
-  populateTransaction: {
-    fintroller(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    lastBlockNumber(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    oracle(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-  };
 }

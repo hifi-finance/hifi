@@ -2,8 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Contract, Signer, utils } from "ethers";
-import type { Provider } from "@ethersproject/providers";
+import { Contract, Interface, type ContractRunner } from "ethers";
 import type {
   IMulticall,
   IMulticallInterface,
@@ -34,12 +33,9 @@ const _abi = [
 export class IMulticall__factory {
   static readonly abi = _abi;
   static createInterface(): IMulticallInterface {
-    return new utils.Interface(_abi) as IMulticallInterface;
+    return new Interface(_abi) as IMulticallInterface;
   }
-  static connect(
-    address: string,
-    signerOrProvider: Signer | Provider
-  ): IMulticall {
-    return new Contract(address, _abi, signerOrProvider) as IMulticall;
+  static connect(address: string, runner?: ContractRunner | null): IMulticall {
+    return new Contract(address, _abi, runner) as unknown as IMulticall;
   }
 }

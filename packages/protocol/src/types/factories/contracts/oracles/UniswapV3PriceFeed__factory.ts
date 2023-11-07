@@ -2,15 +2,19 @@
 /* tslint:disable */
 /* eslint-disable */
 import {
-  Signer,
-  utils,
   Contract,
   ContractFactory,
-  BigNumberish,
-  Overrides,
+  ContractTransactionResponse,
+  Interface,
 } from "ethers";
-import type { Provider, TransactionRequest } from "@ethersproject/providers";
-import type { PromiseOrValue } from "../../../common";
+import type {
+  Signer,
+  BigNumberish,
+  AddressLike,
+  ContractDeployTransaction,
+  ContractRunner,
+} from "ethers";
+import type { NonPayableOverrides } from "../../../common";
 import type {
   UniswapV3PriceFeed,
   UniswapV3PriceFeedInterface,
@@ -348,28 +352,13 @@ export class UniswapV3PriceFeed__factory extends ContractFactory {
     }
   }
 
-  override deploy(
-    pool_: PromiseOrValue<string>,
-    quoteAsset_: PromiseOrValue<string>,
-    twapInterval_: PromiseOrValue<BigNumberish>,
-    maxPrice_: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<UniswapV3PriceFeed> {
-    return super.deploy(
-      pool_,
-      quoteAsset_,
-      twapInterval_,
-      maxPrice_,
-      overrides || {}
-    ) as Promise<UniswapV3PriceFeed>;
-  }
   override getDeployTransaction(
-    pool_: PromiseOrValue<string>,
-    quoteAsset_: PromiseOrValue<string>,
-    twapInterval_: PromiseOrValue<BigNumberish>,
-    maxPrice_: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): TransactionRequest {
+    pool_: AddressLike,
+    quoteAsset_: AddressLike,
+    twapInterval_: BigNumberish,
+    maxPrice_: BigNumberish,
+    overrides?: NonPayableOverrides & { from?: string }
+  ): Promise<ContractDeployTransaction> {
     return super.getDeployTransaction(
       pool_,
       quoteAsset_,
@@ -378,22 +367,38 @@ export class UniswapV3PriceFeed__factory extends ContractFactory {
       overrides || {}
     );
   }
-  override attach(address: string): UniswapV3PriceFeed {
-    return super.attach(address) as UniswapV3PriceFeed;
+  override deploy(
+    pool_: AddressLike,
+    quoteAsset_: AddressLike,
+    twapInterval_: BigNumberish,
+    maxPrice_: BigNumberish,
+    overrides?: NonPayableOverrides & { from?: string }
+  ) {
+    return super.deploy(
+      pool_,
+      quoteAsset_,
+      twapInterval_,
+      maxPrice_,
+      overrides || {}
+    ) as Promise<
+      UniswapV3PriceFeed & {
+        deploymentTransaction(): ContractTransactionResponse;
+      }
+    >;
   }
-  override connect(signer: Signer): UniswapV3PriceFeed__factory {
-    return super.connect(signer) as UniswapV3PriceFeed__factory;
+  override connect(runner: ContractRunner | null): UniswapV3PriceFeed__factory {
+    return super.connect(runner) as UniswapV3PriceFeed__factory;
   }
 
   static readonly bytecode = _bytecode;
   static readonly abi = _abi;
   static createInterface(): UniswapV3PriceFeedInterface {
-    return new utils.Interface(_abi) as UniswapV3PriceFeedInterface;
+    return new Interface(_abi) as UniswapV3PriceFeedInterface;
   }
   static connect(
     address: string,
-    signerOrProvider: Signer | Provider
+    runner?: ContractRunner | null
   ): UniswapV3PriceFeed {
-    return new Contract(address, _abi, signerOrProvider) as UniswapV3PriceFeed;
+    return new Contract(address, _abi, runner) as unknown as UniswapV3PriceFeed;
   }
 }

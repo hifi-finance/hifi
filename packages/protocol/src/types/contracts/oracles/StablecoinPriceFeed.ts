@@ -3,35 +3,26 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumber,
   BigNumberish,
   BytesLike,
-  CallOverrides,
-  PopulatedTransaction,
-  Signer,
-  utils,
+  FunctionFragment,
+  Result,
+  Interface,
+  ContractRunner,
+  ContractMethod,
+  Listener,
 } from "ethers";
-import type { FunctionFragment, Result } from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
 import type {
-  TypedEventFilter,
-  TypedEvent,
+  TypedContractEvent,
+  TypedDeferredTopicFilter,
+  TypedEventLog,
   TypedListener,
-  OnEvent,
-  PromiseOrValue,
+  TypedContractMethod,
 } from "../../common";
 
-export interface StablecoinPriceFeedInterface extends utils.Interface {
-  functions: {
-    "decimals()": FunctionFragment;
-    "description()": FunctionFragment;
-    "getRoundData(uint80)": FunctionFragment;
-    "latestRoundData()": FunctionFragment;
-    "version()": FunctionFragment;
-  };
-
+export interface StablecoinPriceFeedInterface extends Interface {
   getFunction(
-    nameOrSignatureOrTopic:
+    nameOrSignature:
       | "decimals"
       | "description"
       | "getRoundData"
@@ -46,7 +37,7 @@ export interface StablecoinPriceFeedInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getRoundData",
-    values: [PromiseOrValue<BigNumberish>]
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "latestRoundData",
@@ -68,162 +59,128 @@ export interface StablecoinPriceFeedInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "version", data: BytesLike): Result;
-
-  events: {};
 }
 
 export interface StablecoinPriceFeed extends BaseContract {
-  connect(signerOrProvider: Signer | Provider | string): this;
-  attach(addressOrName: string): this;
-  deployed(): Promise<this>;
+  connect(runner?: ContractRunner | null): StablecoinPriceFeed;
+  waitForDeployment(): Promise<this>;
 
   interface: StablecoinPriceFeedInterface;
 
-  queryFilter<TEvent extends TypedEvent>(
-    event: TypedEventFilter<TEvent>,
+  queryFilter<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TEvent>>;
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  queryFilter<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
 
-  listeners<TEvent extends TypedEvent>(
-    eventFilter?: TypedEventFilter<TEvent>
-  ): Array<TypedListener<TEvent>>;
-  listeners(eventName?: string): Array<Listener>;
-  removeAllListeners<TEvent extends TypedEvent>(
-    eventFilter: TypedEventFilter<TEvent>
-  ): this;
-  removeAllListeners(eventName?: string): this;
-  off: OnEvent<this>;
-  on: OnEvent<this>;
-  once: OnEvent<this>;
-  removeListener: OnEvent<this>;
+  on<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  on<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-  functions: {
-    decimals(overrides?: CallOverrides): Promise<[number]>;
+  once<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  once<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-    description(overrides?: CallOverrides): Promise<[string]>;
+  listeners<TCEvent extends TypedContractEvent>(
+    event: TCEvent
+  ): Promise<Array<TypedListener<TCEvent>>>;
+  listeners(eventName?: string): Promise<Array<Listener>>;
+  removeAllListeners<TCEvent extends TypedContractEvent>(
+    event?: TCEvent
+  ): Promise<this>;
 
-    getRoundData(
-      roundId_: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
-        roundId: BigNumber;
-        answer: BigNumber;
-        startedAt: BigNumber;
-        updatedAt: BigNumber;
-        answeredInRound: BigNumber;
+  decimals: TypedContractMethod<[], [bigint], "view">;
+
+  description: TypedContractMethod<[], [string], "view">;
+
+  getRoundData: TypedContractMethod<
+    [roundId_: BigNumberish],
+    [
+      [bigint, bigint, bigint, bigint, bigint] & {
+        roundId: bigint;
+        answer: bigint;
+        startedAt: bigint;
+        updatedAt: bigint;
+        answeredInRound: bigint;
       }
-    >;
-
-    latestRoundData(
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
-        roundId: BigNumber;
-        answer: BigNumber;
-        startedAt: BigNumber;
-        updatedAt: BigNumber;
-        answeredInRound: BigNumber;
-      }
-    >;
-
-    version(overrides?: CallOverrides): Promise<[BigNumber]>;
-  };
-
-  decimals(overrides?: CallOverrides): Promise<number>;
-
-  description(overrides?: CallOverrides): Promise<string>;
-
-  getRoundData(
-    roundId_: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
-      roundId: BigNumber;
-      answer: BigNumber;
-      startedAt: BigNumber;
-      updatedAt: BigNumber;
-      answeredInRound: BigNumber;
-    }
+    ],
+    "view"
   >;
 
-  latestRoundData(
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
-      roundId: BigNumber;
-      answer: BigNumber;
-      startedAt: BigNumber;
-      updatedAt: BigNumber;
-      answeredInRound: BigNumber;
-    }
+  latestRoundData: TypedContractMethod<
+    [],
+    [
+      [bigint, bigint, bigint, bigint, bigint] & {
+        roundId: bigint;
+        answer: bigint;
+        startedAt: bigint;
+        updatedAt: bigint;
+        answeredInRound: bigint;
+      }
+    ],
+    "view"
   >;
 
-  version(overrides?: CallOverrides): Promise<BigNumber>;
+  version: TypedContractMethod<[], [bigint], "view">;
 
-  callStatic: {
-    decimals(overrides?: CallOverrides): Promise<number>;
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
 
-    description(overrides?: CallOverrides): Promise<string>;
-
-    getRoundData(
-      roundId_: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
-        roundId: BigNumber;
-        answer: BigNumber;
-        startedAt: BigNumber;
-        updatedAt: BigNumber;
-        answeredInRound: BigNumber;
+  getFunction(
+    nameOrSignature: "decimals"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "description"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "getRoundData"
+  ): TypedContractMethod<
+    [roundId_: BigNumberish],
+    [
+      [bigint, bigint, bigint, bigint, bigint] & {
+        roundId: bigint;
+        answer: bigint;
+        startedAt: bigint;
+        updatedAt: bigint;
+        answeredInRound: bigint;
       }
-    >;
-
-    latestRoundData(
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
-        roundId: BigNumber;
-        answer: BigNumber;
-        startedAt: BigNumber;
-        updatedAt: BigNumber;
-        answeredInRound: BigNumber;
+    ],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "latestRoundData"
+  ): TypedContractMethod<
+    [],
+    [
+      [bigint, bigint, bigint, bigint, bigint] & {
+        roundId: bigint;
+        answer: bigint;
+        startedAt: bigint;
+        updatedAt: bigint;
+        answeredInRound: bigint;
       }
-    >;
-
-    version(overrides?: CallOverrides): Promise<BigNumber>;
-  };
+    ],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "version"
+  ): TypedContractMethod<[], [bigint], "view">;
 
   filters: {};
-
-  estimateGas: {
-    decimals(overrides?: CallOverrides): Promise<BigNumber>;
-
-    description(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getRoundData(
-      roundId_: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    latestRoundData(overrides?: CallOverrides): Promise<BigNumber>;
-
-    version(overrides?: CallOverrides): Promise<BigNumber>;
-  };
-
-  populateTransaction: {
-    decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    description(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    getRoundData(
-      roundId_: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    latestRoundData(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    version(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-  };
 }

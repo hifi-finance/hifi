@@ -2,8 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Contract, Signer, utils } from "ethers";
-import type { Provider } from "@ethersproject/providers";
+import { Contract, Interface, type ContractRunner } from "ethers";
 import type {
   Erc20Recover,
   Erc20RecoverInterface,
@@ -224,12 +223,12 @@ const _abi = [
 export class Erc20Recover__factory {
   static readonly abi = _abi;
   static createInterface(): Erc20RecoverInterface {
-    return new utils.Interface(_abi) as Erc20RecoverInterface;
+    return new Interface(_abi) as Erc20RecoverInterface;
   }
   static connect(
     address: string,
-    signerOrProvider: Signer | Provider
+    runner?: ContractRunner | null
   ): Erc20Recover {
-    return new Contract(address, _abi, signerOrProvider) as Erc20Recover;
+    return new Contract(address, _abi, runner) as unknown as Erc20Recover;
   }
 }

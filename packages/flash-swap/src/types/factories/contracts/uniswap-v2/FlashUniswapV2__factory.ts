@@ -2,15 +2,19 @@
 /* tslint:disable */
 /* eslint-disable */
 import {
-  Signer,
-  utils,
   Contract,
   ContractFactory,
-  BytesLike,
-  Overrides,
+  ContractTransactionResponse,
+  Interface,
 } from "ethers";
-import type { Provider, TransactionRequest } from "@ethersproject/providers";
-import type { PromiseOrValue } from "../../../common";
+import type {
+  Signer,
+  BytesLike,
+  AddressLike,
+  ContractDeployTransaction,
+  ContractRunner,
+} from "ethers";
+import type { NonPayableOverrides } from "../../../common";
 import type {
   FlashUniswapV2,
   FlashUniswapV2Interface,
@@ -317,25 +321,12 @@ export class FlashUniswapV2__factory extends ContractFactory {
     }
   }
 
-  override deploy(
-    balanceSheet_: PromiseOrValue<string>,
-    uniV2Factory_: PromiseOrValue<string>,
-    uniV2PairInitCodeHash_: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<FlashUniswapV2> {
-    return super.deploy(
-      balanceSheet_,
-      uniV2Factory_,
-      uniV2PairInitCodeHash_,
-      overrides || {}
-    ) as Promise<FlashUniswapV2>;
-  }
   override getDeployTransaction(
-    balanceSheet_: PromiseOrValue<string>,
-    uniV2Factory_: PromiseOrValue<string>,
-    uniV2PairInitCodeHash_: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): TransactionRequest {
+    balanceSheet_: AddressLike,
+    uniV2Factory_: AddressLike,
+    uniV2PairInitCodeHash_: BytesLike,
+    overrides?: NonPayableOverrides & { from?: string }
+  ): Promise<ContractDeployTransaction> {
     return super.getDeployTransaction(
       balanceSheet_,
       uniV2Factory_,
@@ -343,22 +334,36 @@ export class FlashUniswapV2__factory extends ContractFactory {
       overrides || {}
     );
   }
-  override attach(address: string): FlashUniswapV2 {
-    return super.attach(address) as FlashUniswapV2;
+  override deploy(
+    balanceSheet_: AddressLike,
+    uniV2Factory_: AddressLike,
+    uniV2PairInitCodeHash_: BytesLike,
+    overrides?: NonPayableOverrides & { from?: string }
+  ) {
+    return super.deploy(
+      balanceSheet_,
+      uniV2Factory_,
+      uniV2PairInitCodeHash_,
+      overrides || {}
+    ) as Promise<
+      FlashUniswapV2 & {
+        deploymentTransaction(): ContractTransactionResponse;
+      }
+    >;
   }
-  override connect(signer: Signer): FlashUniswapV2__factory {
-    return super.connect(signer) as FlashUniswapV2__factory;
+  override connect(runner: ContractRunner | null): FlashUniswapV2__factory {
+    return super.connect(runner) as FlashUniswapV2__factory;
   }
 
   static readonly bytecode = _bytecode;
   static readonly abi = _abi;
   static createInterface(): FlashUniswapV2Interface {
-    return new utils.Interface(_abi) as FlashUniswapV2Interface;
+    return new Interface(_abi) as FlashUniswapV2Interface;
   }
   static connect(
     address: string,
-    signerOrProvider: Signer | Provider
+    runner?: ContractRunner | null
   ): FlashUniswapV2 {
-    return new Contract(address, _abi, signerOrProvider) as FlashUniswapV2;
+    return new Contract(address, _abi, runner) as unknown as FlashUniswapV2;
   }
 }

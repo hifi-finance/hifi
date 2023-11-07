@@ -3,49 +3,45 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumber,
   BigNumberish,
   BytesLike,
-  CallOverrides,
-  ContractTransaction,
-  Overrides,
-  PopulatedTransaction,
-  Signer,
-  utils,
-} from "ethers";
-import type {
   FunctionFragment,
   Result,
+  Interface,
   EventFragment,
-} from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
+  AddressLike,
+  ContractRunner,
+  ContractMethod,
+  Listener,
+} from "ethers";
 import type {
-  TypedEventFilter,
-  TypedEvent,
+  TypedContractEvent,
+  TypedDeferredTopicFilter,
+  TypedEventLog,
+  TypedLogDescription,
   TypedListener,
-  OnEvent,
-  PromiseOrValue,
+  TypedContractMethod,
 } from "../../common";
 
 export declare namespace IFintroller {
   export type BondStruct = {
-    debtCeiling: PromiseOrValue<BigNumberish>;
-    isBorrowAllowed: PromiseOrValue<boolean>;
-    isDepositUnderlyingAllowed: PromiseOrValue<boolean>;
-    isLiquidateBorrowAllowed: PromiseOrValue<boolean>;
-    isListed: PromiseOrValue<boolean>;
-    isRepayBorrowAllowed: PromiseOrValue<boolean>;
+    debtCeiling: BigNumberish;
+    isBorrowAllowed: boolean;
+    isDepositUnderlyingAllowed: boolean;
+    isLiquidateBorrowAllowed: boolean;
+    isListed: boolean;
+    isRepayBorrowAllowed: boolean;
   };
 
   export type BondStructOutput = [
-    BigNumber,
-    boolean,
-    boolean,
-    boolean,
-    boolean,
-    boolean
+    debtCeiling: bigint,
+    isBorrowAllowed: boolean,
+    isDepositUnderlyingAllowed: boolean,
+    isLiquidateBorrowAllowed: boolean,
+    isListed: boolean,
+    isRepayBorrowAllowed: boolean
   ] & {
-    debtCeiling: BigNumber;
+    debtCeiling: bigint;
     isBorrowAllowed: boolean;
     isDepositUnderlyingAllowed: boolean;
     isLiquidateBorrowAllowed: boolean;
@@ -54,68 +50,31 @@ export declare namespace IFintroller {
   };
 
   export type CollateralStruct = {
-    ceiling: PromiseOrValue<BigNumberish>;
-    ratio: PromiseOrValue<BigNumberish>;
-    liquidationIncentive: PromiseOrValue<BigNumberish>;
-    isDepositCollateralAllowed: PromiseOrValue<boolean>;
-    isListed: PromiseOrValue<boolean>;
+    ceiling: BigNumberish;
+    ratio: BigNumberish;
+    liquidationIncentive: BigNumberish;
+    isDepositCollateralAllowed: boolean;
+    isListed: boolean;
   };
 
   export type CollateralStructOutput = [
-    BigNumber,
-    BigNumber,
-    BigNumber,
-    boolean,
-    boolean
+    ceiling: bigint,
+    ratio: bigint,
+    liquidationIncentive: bigint,
+    isDepositCollateralAllowed: boolean,
+    isListed: boolean
   ] & {
-    ceiling: BigNumber;
-    ratio: BigNumber;
-    liquidationIncentive: BigNumber;
+    ceiling: bigint;
+    ratio: bigint;
+    liquidationIncentive: bigint;
     isDepositCollateralAllowed: boolean;
     isListed: boolean;
   };
 }
 
-export interface GodModeFintrollerInterface extends utils.Interface {
-  functions: {
-    "__godMode_setBorrowAllowed(address,bool)": FunctionFragment;
-    "__godMode_setLiquidateBorrowAllowed(address,bool)": FunctionFragment;
-    "__godMode_setRepayBorrowAllowed(address,bool)": FunctionFragment;
-    "_renounceOwnership()": FunctionFragment;
-    "_transferOwnership(address)": FunctionFragment;
-    "getBond(address)": FunctionFragment;
-    "getBorrowAllowed(address)": FunctionFragment;
-    "getCollateral(address)": FunctionFragment;
-    "getCollateralCeiling(address)": FunctionFragment;
-    "getCollateralRatio(address)": FunctionFragment;
-    "getDebtCeiling(address)": FunctionFragment;
-    "getDepositCollateralAllowed(address)": FunctionFragment;
-    "getDepositUnderlyingAllowed(address)": FunctionFragment;
-    "getLiquidateBorrowAllowed(address)": FunctionFragment;
-    "getLiquidationIncentive(address)": FunctionFragment;
-    "getRepayBorrowAllowed(address)": FunctionFragment;
-    "isBondListed(address)": FunctionFragment;
-    "isCollateralListed(address)": FunctionFragment;
-    "listBond(address)": FunctionFragment;
-    "listCollateral(address)": FunctionFragment;
-    "maxBonds()": FunctionFragment;
-    "maxCollaterals()": FunctionFragment;
-    "owner()": FunctionFragment;
-    "setBorrowAllowed(address,bool)": FunctionFragment;
-    "setCollateralCeiling(address,uint256)": FunctionFragment;
-    "setCollateralRatio(address,uint256)": FunctionFragment;
-    "setDebtCeiling(address,uint256)": FunctionFragment;
-    "setDepositCollateralAllowed(address,bool)": FunctionFragment;
-    "setDepositUnderlyingAllowed(address,bool)": FunctionFragment;
-    "setLiquidateBorrowAllowed(address,bool)": FunctionFragment;
-    "setLiquidationIncentive(address,uint256)": FunctionFragment;
-    "setMaxBonds(uint256)": FunctionFragment;
-    "setMaxCollaterals(uint256)": FunctionFragment;
-    "setRepayBorrowAllowed(address,bool)": FunctionFragment;
-  };
-
+export interface GodModeFintrollerInterface extends Interface {
   getFunction(
-    nameOrSignatureOrTopic:
+    nameOrSignature:
       | "__godMode_setBorrowAllowed"
       | "__godMode_setLiquidateBorrowAllowed"
       | "__godMode_setRepayBorrowAllowed"
@@ -152,17 +111,35 @@ export interface GodModeFintrollerInterface extends utils.Interface {
       | "setRepayBorrowAllowed"
   ): FunctionFragment;
 
+  getEvent(
+    nameOrSignatureOrTopic:
+      | "ListBond"
+      | "ListCollateral"
+      | "SetBorrowAllowed"
+      | "SetCollateralCeiling"
+      | "SetCollateralRatio"
+      | "SetDebtCeiling"
+      | "SetDepositCollateralAllowed"
+      | "SetDepositUnderlyingAllowed"
+      | "SetLiquidateBorrowAllowed"
+      | "SetLiquidationIncentive"
+      | "SetMaxBonds"
+      | "SetMaxCollaterals"
+      | "SetRepayBorrowAllowed"
+      | "TransferOwnership"
+  ): EventFragment;
+
   encodeFunctionData(
     functionFragment: "__godMode_setBorrowAllowed",
-    values: [PromiseOrValue<string>, PromiseOrValue<boolean>]
+    values: [AddressLike, boolean]
   ): string;
   encodeFunctionData(
     functionFragment: "__godMode_setLiquidateBorrowAllowed",
-    values: [PromiseOrValue<string>, PromiseOrValue<boolean>]
+    values: [AddressLike, boolean]
   ): string;
   encodeFunctionData(
     functionFragment: "__godMode_setRepayBorrowAllowed",
-    values: [PromiseOrValue<string>, PromiseOrValue<boolean>]
+    values: [AddressLike, boolean]
   ): string;
   encodeFunctionData(
     functionFragment: "_renounceOwnership",
@@ -170,67 +147,67 @@ export interface GodModeFintrollerInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "_transferOwnership",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "getBond",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "getBorrowAllowed",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "getCollateral",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "getCollateralCeiling",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "getCollateralRatio",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "getDebtCeiling",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "getDepositCollateralAllowed",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "getDepositUnderlyingAllowed",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "getLiquidateBorrowAllowed",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "getLiquidationIncentive",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "getRepayBorrowAllowed",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "isBondListed",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "isCollateralListed",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "listBond",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "listCollateral",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(functionFragment: "maxBonds", values?: undefined): string;
   encodeFunctionData(
@@ -240,47 +217,47 @@ export interface GodModeFintrollerInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "setBorrowAllowed",
-    values: [PromiseOrValue<string>, PromiseOrValue<boolean>]
+    values: [AddressLike, boolean]
   ): string;
   encodeFunctionData(
     functionFragment: "setCollateralCeiling",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setCollateralRatio",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setDebtCeiling",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setDepositCollateralAllowed",
-    values: [PromiseOrValue<string>, PromiseOrValue<boolean>]
+    values: [AddressLike, boolean]
   ): string;
   encodeFunctionData(
     functionFragment: "setDepositUnderlyingAllowed",
-    values: [PromiseOrValue<string>, PromiseOrValue<boolean>]
+    values: [AddressLike, boolean]
   ): string;
   encodeFunctionData(
     functionFragment: "setLiquidateBorrowAllowed",
-    values: [PromiseOrValue<string>, PromiseOrValue<boolean>]
+    values: [AddressLike, boolean]
   ): string;
   encodeFunctionData(
     functionFragment: "setLiquidationIncentive",
-    values: [PromiseOrValue<string>, PromiseOrValue<BigNumberish>]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setMaxBonds",
-    values: [PromiseOrValue<BigNumberish>]
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setMaxCollaterals",
-    values: [PromiseOrValue<BigNumberish>]
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "setRepayBorrowAllowed",
-    values: [PromiseOrValue<string>, PromiseOrValue<boolean>]
+    values: [AddressLike, boolean]
   ): string;
 
   decodeFunctionResult(
@@ -407,1267 +384,915 @@ export interface GodModeFintrollerInterface extends utils.Interface {
     functionFragment: "setRepayBorrowAllowed",
     data: BytesLike
   ): Result;
-
-  events: {
-    "ListBond(address,address)": EventFragment;
-    "ListCollateral(address,address)": EventFragment;
-    "SetBorrowAllowed(address,address,bool)": EventFragment;
-    "SetCollateralCeiling(address,address,uint256,uint256)": EventFragment;
-    "SetCollateralRatio(address,address,uint256,uint256)": EventFragment;
-    "SetDebtCeiling(address,address,uint256,uint256)": EventFragment;
-    "SetDepositCollateralAllowed(address,address,bool)": EventFragment;
-    "SetDepositUnderlyingAllowed(address,address,bool)": EventFragment;
-    "SetLiquidateBorrowAllowed(address,address,bool)": EventFragment;
-    "SetLiquidationIncentive(address,address,uint256,uint256)": EventFragment;
-    "SetMaxBonds(address,uint256,uint256)": EventFragment;
-    "SetMaxCollaterals(address,uint256,uint256)": EventFragment;
-    "SetRepayBorrowAllowed(address,address,bool)": EventFragment;
-    "TransferOwnership(address,address)": EventFragment;
-  };
-
-  getEvent(nameOrSignatureOrTopic: "ListBond"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "ListCollateral"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "SetBorrowAllowed"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "SetCollateralCeiling"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "SetCollateralRatio"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "SetDebtCeiling"): EventFragment;
-  getEvent(
-    nameOrSignatureOrTopic: "SetDepositCollateralAllowed"
-  ): EventFragment;
-  getEvent(
-    nameOrSignatureOrTopic: "SetDepositUnderlyingAllowed"
-  ): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "SetLiquidateBorrowAllowed"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "SetLiquidationIncentive"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "SetMaxBonds"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "SetMaxCollaterals"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "SetRepayBorrowAllowed"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "TransferOwnership"): EventFragment;
 }
 
-export interface ListBondEventObject {
-  owner: string;
-  bond: string;
+export namespace ListBondEvent {
+  export type InputTuple = [owner: AddressLike, bond: AddressLike];
+  export type OutputTuple = [owner: string, bond: string];
+  export interface OutputObject {
+    owner: string;
+    bond: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type ListBondEvent = TypedEvent<[string, string], ListBondEventObject>;
 
-export type ListBondEventFilter = TypedEventFilter<ListBondEvent>;
-
-export interface ListCollateralEventObject {
-  owner: string;
-  collateral: string;
+export namespace ListCollateralEvent {
+  export type InputTuple = [owner: AddressLike, collateral: AddressLike];
+  export type OutputTuple = [owner: string, collateral: string];
+  export interface OutputObject {
+    owner: string;
+    collateral: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type ListCollateralEvent = TypedEvent<
-  [string, string],
-  ListCollateralEventObject
->;
 
-export type ListCollateralEventFilter = TypedEventFilter<ListCollateralEvent>;
-
-export interface SetBorrowAllowedEventObject {
-  owner: string;
-  bond: string;
-  state: boolean;
+export namespace SetBorrowAllowedEvent {
+  export type InputTuple = [
+    owner: AddressLike,
+    bond: AddressLike,
+    state: boolean
+  ];
+  export type OutputTuple = [owner: string, bond: string, state: boolean];
+  export interface OutputObject {
+    owner: string;
+    bond: string;
+    state: boolean;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type SetBorrowAllowedEvent = TypedEvent<
-  [string, string, boolean],
-  SetBorrowAllowedEventObject
->;
 
-export type SetBorrowAllowedEventFilter =
-  TypedEventFilter<SetBorrowAllowedEvent>;
-
-export interface SetCollateralCeilingEventObject {
-  owner: string;
-  collateral: string;
-  oldCollateralCeiling: BigNumber;
-  newCollateralCeiling: BigNumber;
+export namespace SetCollateralCeilingEvent {
+  export type InputTuple = [
+    owner: AddressLike,
+    collateral: AddressLike,
+    oldCollateralCeiling: BigNumberish,
+    newCollateralCeiling: BigNumberish
+  ];
+  export type OutputTuple = [
+    owner: string,
+    collateral: string,
+    oldCollateralCeiling: bigint,
+    newCollateralCeiling: bigint
+  ];
+  export interface OutputObject {
+    owner: string;
+    collateral: string;
+    oldCollateralCeiling: bigint;
+    newCollateralCeiling: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type SetCollateralCeilingEvent = TypedEvent<
-  [string, string, BigNumber, BigNumber],
-  SetCollateralCeilingEventObject
->;
 
-export type SetCollateralCeilingEventFilter =
-  TypedEventFilter<SetCollateralCeilingEvent>;
-
-export interface SetCollateralRatioEventObject {
-  owner: string;
-  collateral: string;
-  oldCollateralRatio: BigNumber;
-  newCollateralRatio: BigNumber;
+export namespace SetCollateralRatioEvent {
+  export type InputTuple = [
+    owner: AddressLike,
+    collateral: AddressLike,
+    oldCollateralRatio: BigNumberish,
+    newCollateralRatio: BigNumberish
+  ];
+  export type OutputTuple = [
+    owner: string,
+    collateral: string,
+    oldCollateralRatio: bigint,
+    newCollateralRatio: bigint
+  ];
+  export interface OutputObject {
+    owner: string;
+    collateral: string;
+    oldCollateralRatio: bigint;
+    newCollateralRatio: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type SetCollateralRatioEvent = TypedEvent<
-  [string, string, BigNumber, BigNumber],
-  SetCollateralRatioEventObject
->;
 
-export type SetCollateralRatioEventFilter =
-  TypedEventFilter<SetCollateralRatioEvent>;
-
-export interface SetDebtCeilingEventObject {
-  owner: string;
-  bond: string;
-  oldDebtCeiling: BigNumber;
-  newDebtCeiling: BigNumber;
+export namespace SetDebtCeilingEvent {
+  export type InputTuple = [
+    owner: AddressLike,
+    bond: AddressLike,
+    oldDebtCeiling: BigNumberish,
+    newDebtCeiling: BigNumberish
+  ];
+  export type OutputTuple = [
+    owner: string,
+    bond: string,
+    oldDebtCeiling: bigint,
+    newDebtCeiling: bigint
+  ];
+  export interface OutputObject {
+    owner: string;
+    bond: string;
+    oldDebtCeiling: bigint;
+    newDebtCeiling: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type SetDebtCeilingEvent = TypedEvent<
-  [string, string, BigNumber, BigNumber],
-  SetDebtCeilingEventObject
->;
 
-export type SetDebtCeilingEventFilter = TypedEventFilter<SetDebtCeilingEvent>;
-
-export interface SetDepositCollateralAllowedEventObject {
-  owner: string;
-  collateral: string;
-  state: boolean;
+export namespace SetDepositCollateralAllowedEvent {
+  export type InputTuple = [
+    owner: AddressLike,
+    collateral: AddressLike,
+    state: boolean
+  ];
+  export type OutputTuple = [owner: string, collateral: string, state: boolean];
+  export interface OutputObject {
+    owner: string;
+    collateral: string;
+    state: boolean;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type SetDepositCollateralAllowedEvent = TypedEvent<
-  [string, string, boolean],
-  SetDepositCollateralAllowedEventObject
->;
 
-export type SetDepositCollateralAllowedEventFilter =
-  TypedEventFilter<SetDepositCollateralAllowedEvent>;
-
-export interface SetDepositUnderlyingAllowedEventObject {
-  owner: string;
-  bond: string;
-  state: boolean;
+export namespace SetDepositUnderlyingAllowedEvent {
+  export type InputTuple = [
+    owner: AddressLike,
+    bond: AddressLike,
+    state: boolean
+  ];
+  export type OutputTuple = [owner: string, bond: string, state: boolean];
+  export interface OutputObject {
+    owner: string;
+    bond: string;
+    state: boolean;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type SetDepositUnderlyingAllowedEvent = TypedEvent<
-  [string, string, boolean],
-  SetDepositUnderlyingAllowedEventObject
->;
 
-export type SetDepositUnderlyingAllowedEventFilter =
-  TypedEventFilter<SetDepositUnderlyingAllowedEvent>;
-
-export interface SetLiquidateBorrowAllowedEventObject {
-  owner: string;
-  bond: string;
-  state: boolean;
+export namespace SetLiquidateBorrowAllowedEvent {
+  export type InputTuple = [
+    owner: AddressLike,
+    bond: AddressLike,
+    state: boolean
+  ];
+  export type OutputTuple = [owner: string, bond: string, state: boolean];
+  export interface OutputObject {
+    owner: string;
+    bond: string;
+    state: boolean;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type SetLiquidateBorrowAllowedEvent = TypedEvent<
-  [string, string, boolean],
-  SetLiquidateBorrowAllowedEventObject
->;
 
-export type SetLiquidateBorrowAllowedEventFilter =
-  TypedEventFilter<SetLiquidateBorrowAllowedEvent>;
-
-export interface SetLiquidationIncentiveEventObject {
-  owner: string;
-  collateral: string;
-  oldLiquidationIncentive: BigNumber;
-  newLiquidationIncentive: BigNumber;
+export namespace SetLiquidationIncentiveEvent {
+  export type InputTuple = [
+    owner: AddressLike,
+    collateral: AddressLike,
+    oldLiquidationIncentive: BigNumberish,
+    newLiquidationIncentive: BigNumberish
+  ];
+  export type OutputTuple = [
+    owner: string,
+    collateral: string,
+    oldLiquidationIncentive: bigint,
+    newLiquidationIncentive: bigint
+  ];
+  export interface OutputObject {
+    owner: string;
+    collateral: string;
+    oldLiquidationIncentive: bigint;
+    newLiquidationIncentive: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type SetLiquidationIncentiveEvent = TypedEvent<
-  [string, string, BigNumber, BigNumber],
-  SetLiquidationIncentiveEventObject
->;
 
-export type SetLiquidationIncentiveEventFilter =
-  TypedEventFilter<SetLiquidationIncentiveEvent>;
-
-export interface SetMaxBondsEventObject {
-  owner: string;
-  oldMaxBonds: BigNumber;
-  newMaxBonds: BigNumber;
+export namespace SetMaxBondsEvent {
+  export type InputTuple = [
+    owner: AddressLike,
+    oldMaxBonds: BigNumberish,
+    newMaxBonds: BigNumberish
+  ];
+  export type OutputTuple = [
+    owner: string,
+    oldMaxBonds: bigint,
+    newMaxBonds: bigint
+  ];
+  export interface OutputObject {
+    owner: string;
+    oldMaxBonds: bigint;
+    newMaxBonds: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type SetMaxBondsEvent = TypedEvent<
-  [string, BigNumber, BigNumber],
-  SetMaxBondsEventObject
->;
 
-export type SetMaxBondsEventFilter = TypedEventFilter<SetMaxBondsEvent>;
-
-export interface SetMaxCollateralsEventObject {
-  owner: string;
-  oldMaxCollaterals: BigNumber;
-  newMaxCollaterals: BigNumber;
+export namespace SetMaxCollateralsEvent {
+  export type InputTuple = [
+    owner: AddressLike,
+    oldMaxCollaterals: BigNumberish,
+    newMaxCollaterals: BigNumberish
+  ];
+  export type OutputTuple = [
+    owner: string,
+    oldMaxCollaterals: bigint,
+    newMaxCollaterals: bigint
+  ];
+  export interface OutputObject {
+    owner: string;
+    oldMaxCollaterals: bigint;
+    newMaxCollaterals: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type SetMaxCollateralsEvent = TypedEvent<
-  [string, BigNumber, BigNumber],
-  SetMaxCollateralsEventObject
->;
 
-export type SetMaxCollateralsEventFilter =
-  TypedEventFilter<SetMaxCollateralsEvent>;
-
-export interface SetRepayBorrowAllowedEventObject {
-  owner: string;
-  bond: string;
-  state: boolean;
+export namespace SetRepayBorrowAllowedEvent {
+  export type InputTuple = [
+    owner: AddressLike,
+    bond: AddressLike,
+    state: boolean
+  ];
+  export type OutputTuple = [owner: string, bond: string, state: boolean];
+  export interface OutputObject {
+    owner: string;
+    bond: string;
+    state: boolean;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type SetRepayBorrowAllowedEvent = TypedEvent<
-  [string, string, boolean],
-  SetRepayBorrowAllowedEventObject
->;
 
-export type SetRepayBorrowAllowedEventFilter =
-  TypedEventFilter<SetRepayBorrowAllowedEvent>;
-
-export interface TransferOwnershipEventObject {
-  oldOwner: string;
-  newOwner: string;
+export namespace TransferOwnershipEvent {
+  export type InputTuple = [oldOwner: AddressLike, newOwner: AddressLike];
+  export type OutputTuple = [oldOwner: string, newOwner: string];
+  export interface OutputObject {
+    oldOwner: string;
+    newOwner: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type TransferOwnershipEvent = TypedEvent<
-  [string, string],
-  TransferOwnershipEventObject
->;
-
-export type TransferOwnershipEventFilter =
-  TypedEventFilter<TransferOwnershipEvent>;
 
 export interface GodModeFintroller extends BaseContract {
-  connect(signerOrProvider: Signer | Provider | string): this;
-  attach(addressOrName: string): this;
-  deployed(): Promise<this>;
+  connect(runner?: ContractRunner | null): GodModeFintroller;
+  waitForDeployment(): Promise<this>;
 
   interface: GodModeFintrollerInterface;
 
-  queryFilter<TEvent extends TypedEvent>(
-    event: TypedEventFilter<TEvent>,
+  queryFilter<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TEvent>>;
-
-  listeners<TEvent extends TypedEvent>(
-    eventFilter?: TypedEventFilter<TEvent>
-  ): Array<TypedListener<TEvent>>;
-  listeners(eventName?: string): Array<Listener>;
-  removeAllListeners<TEvent extends TypedEvent>(
-    eventFilter: TypedEventFilter<TEvent>
-  ): this;
-  removeAllListeners(eventName?: string): this;
-  off: OnEvent<this>;
-  on: OnEvent<this>;
-  once: OnEvent<this>;
-  removeListener: OnEvent<this>;
-
-  functions: {
-    __godMode_setBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    __godMode_setLiquidateBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    __godMode_setRepayBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    _renounceOwnership(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    _transferOwnership(
-      newOwner: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    getBond(
-      hToken: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[IFintroller.BondStructOutput]>;
-
-    getBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
-
-    getCollateral(
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[IFintroller.CollateralStructOutput]>;
-
-    getCollateralCeiling(
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    getCollateralRatio(
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    getDebtCeiling(
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    getDepositCollateralAllowed(
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
-
-    getDepositUnderlyingAllowed(
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
-
-    getLiquidateBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
-
-    getLiquidationIncentive(
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
-
-    getRepayBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
-
-    isBondListed(
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
-
-    isCollateralListed(
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
-
-    listBond(
-      bond: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    listCollateral(
-      collateral: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    maxBonds(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    maxCollaterals(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    owner(overrides?: CallOverrides): Promise<[string]>;
-
-    setBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    setCollateralCeiling(
-      collateral: PromiseOrValue<string>,
-      newCollateralCeiling: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    setCollateralRatio(
-      collateral: PromiseOrValue<string>,
-      newCollateralRatio: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    setDebtCeiling(
-      bond: PromiseOrValue<string>,
-      newDebtCeiling: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    setDepositCollateralAllowed(
-      collateral: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    setDepositUnderlyingAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    setLiquidateBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    setLiquidationIncentive(
-      collateral: PromiseOrValue<string>,
-      newLiquidationIncentive: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    setMaxBonds(
-      newMaxBonds: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    setMaxCollaterals(
-      newMaxCollaterals: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    setRepayBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-  };
-
-  __godMode_setBorrowAllowed(
-    bond: PromiseOrValue<string>,
-    state: PromiseOrValue<boolean>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  __godMode_setLiquidateBorrowAllowed(
-    bond: PromiseOrValue<string>,
-    state: PromiseOrValue<boolean>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  __godMode_setRepayBorrowAllowed(
-    bond: PromiseOrValue<string>,
-    state: PromiseOrValue<boolean>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  _renounceOwnership(
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  _transferOwnership(
-    newOwner: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  getBond(
-    hToken: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<IFintroller.BondStructOutput>;
-
-  getBorrowAllowed(
-    bond: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
-  getCollateral(
-    collateral: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<IFintroller.CollateralStructOutput>;
-
-  getCollateralCeiling(
-    collateral: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  getCollateralRatio(
-    collateral: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  getDebtCeiling(
-    bond: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  getDepositCollateralAllowed(
-    collateral: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
-  getDepositUnderlyingAllowed(
-    bond: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
-  getLiquidateBorrowAllowed(
-    bond: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
-  getLiquidationIncentive(
-    collateral: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  getRepayBorrowAllowed(
-    bond: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
-  isBondListed(
-    bond: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
-  isCollateralListed(
-    collateral: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
-
-  listBond(
-    bond: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  listCollateral(
-    collateral: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  maxBonds(overrides?: CallOverrides): Promise<BigNumber>;
-
-  maxCollaterals(overrides?: CallOverrides): Promise<BigNumber>;
-
-  owner(overrides?: CallOverrides): Promise<string>;
-
-  setBorrowAllowed(
-    bond: PromiseOrValue<string>,
-    state: PromiseOrValue<boolean>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  setCollateralCeiling(
-    collateral: PromiseOrValue<string>,
-    newCollateralCeiling: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  setCollateralRatio(
-    collateral: PromiseOrValue<string>,
-    newCollateralRatio: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  setDebtCeiling(
-    bond: PromiseOrValue<string>,
-    newDebtCeiling: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  setDepositCollateralAllowed(
-    collateral: PromiseOrValue<string>,
-    state: PromiseOrValue<boolean>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  setDepositUnderlyingAllowed(
-    bond: PromiseOrValue<string>,
-    state: PromiseOrValue<boolean>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  setLiquidateBorrowAllowed(
-    bond: PromiseOrValue<string>,
-    state: PromiseOrValue<boolean>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  setLiquidationIncentive(
-    collateral: PromiseOrValue<string>,
-    newLiquidationIncentive: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  setMaxBonds(
-    newMaxBonds: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  setMaxCollaterals(
-    newMaxCollaterals: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  setRepayBorrowAllowed(
-    bond: PromiseOrValue<string>,
-    state: PromiseOrValue<boolean>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  callStatic: {
-    __godMode_setBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    __godMode_setLiquidateBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    __godMode_setRepayBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    _renounceOwnership(overrides?: CallOverrides): Promise<void>;
-
-    _transferOwnership(
-      newOwner: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    getBond(
-      hToken: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<IFintroller.BondStructOutput>;
-
-    getBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    getCollateral(
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<IFintroller.CollateralStructOutput>;
-
-    getCollateralCeiling(
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getCollateralRatio(
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getDebtCeiling(
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getDepositCollateralAllowed(
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    getDepositUnderlyingAllowed(
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    getLiquidateBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    getLiquidationIncentive(
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getRepayBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    isBondListed(
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    isCollateralListed(
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    listBond(
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    listCollateral(
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    maxBonds(overrides?: CallOverrides): Promise<BigNumber>;
-
-    maxCollaterals(overrides?: CallOverrides): Promise<BigNumber>;
-
-    owner(overrides?: CallOverrides): Promise<string>;
-
-    setBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setCollateralCeiling(
-      collateral: PromiseOrValue<string>,
-      newCollateralCeiling: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setCollateralRatio(
-      collateral: PromiseOrValue<string>,
-      newCollateralRatio: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setDebtCeiling(
-      bond: PromiseOrValue<string>,
-      newDebtCeiling: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setDepositCollateralAllowed(
-      collateral: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setDepositUnderlyingAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setLiquidateBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setLiquidationIncentive(
-      collateral: PromiseOrValue<string>,
-      newLiquidationIncentive: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setMaxBonds(
-      newMaxBonds: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setMaxCollaterals(
-      newMaxCollaterals: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setRepayBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-  };
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  queryFilter<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+
+  on<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  on<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+
+  once<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  once<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+
+  listeners<TCEvent extends TypedContractEvent>(
+    event: TCEvent
+  ): Promise<Array<TypedListener<TCEvent>>>;
+  listeners(eventName?: string): Promise<Array<Listener>>;
+  removeAllListeners<TCEvent extends TypedContractEvent>(
+    event?: TCEvent
+  ): Promise<this>;
+
+  __godMode_setBorrowAllowed: TypedContractMethod<
+    [bond: AddressLike, state: boolean],
+    [void],
+    "nonpayable"
+  >;
+
+  __godMode_setLiquidateBorrowAllowed: TypedContractMethod<
+    [bond: AddressLike, state: boolean],
+    [void],
+    "nonpayable"
+  >;
+
+  __godMode_setRepayBorrowAllowed: TypedContractMethod<
+    [bond: AddressLike, state: boolean],
+    [void],
+    "nonpayable"
+  >;
+
+  _renounceOwnership: TypedContractMethod<[], [void], "nonpayable">;
+
+  _transferOwnership: TypedContractMethod<
+    [newOwner: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+
+  getBond: TypedContractMethod<
+    [hToken: AddressLike],
+    [IFintroller.BondStructOutput],
+    "view"
+  >;
+
+  getBorrowAllowed: TypedContractMethod<[bond: AddressLike], [boolean], "view">;
+
+  getCollateral: TypedContractMethod<
+    [collateral: AddressLike],
+    [IFintroller.CollateralStructOutput],
+    "view"
+  >;
+
+  getCollateralCeiling: TypedContractMethod<
+    [collateral: AddressLike],
+    [bigint],
+    "view"
+  >;
+
+  getCollateralRatio: TypedContractMethod<
+    [collateral: AddressLike],
+    [bigint],
+    "view"
+  >;
+
+  getDebtCeiling: TypedContractMethod<[bond: AddressLike], [bigint], "view">;
+
+  getDepositCollateralAllowed: TypedContractMethod<
+    [collateral: AddressLike],
+    [boolean],
+    "view"
+  >;
+
+  getDepositUnderlyingAllowed: TypedContractMethod<
+    [bond: AddressLike],
+    [boolean],
+    "view"
+  >;
+
+  getLiquidateBorrowAllowed: TypedContractMethod<
+    [bond: AddressLike],
+    [boolean],
+    "view"
+  >;
+
+  getLiquidationIncentive: TypedContractMethod<
+    [collateral: AddressLike],
+    [bigint],
+    "view"
+  >;
+
+  getRepayBorrowAllowed: TypedContractMethod<
+    [bond: AddressLike],
+    [boolean],
+    "view"
+  >;
+
+  isBondListed: TypedContractMethod<[bond: AddressLike], [boolean], "view">;
+
+  isCollateralListed: TypedContractMethod<
+    [collateral: AddressLike],
+    [boolean],
+    "view"
+  >;
+
+  listBond: TypedContractMethod<[bond: AddressLike], [void], "nonpayable">;
+
+  listCollateral: TypedContractMethod<
+    [collateral: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+
+  maxBonds: TypedContractMethod<[], [bigint], "view">;
+
+  maxCollaterals: TypedContractMethod<[], [bigint], "view">;
+
+  owner: TypedContractMethod<[], [string], "view">;
+
+  setBorrowAllowed: TypedContractMethod<
+    [bond: AddressLike, state: boolean],
+    [void],
+    "nonpayable"
+  >;
+
+  setCollateralCeiling: TypedContractMethod<
+    [collateral: AddressLike, newCollateralCeiling: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  setCollateralRatio: TypedContractMethod<
+    [collateral: AddressLike, newCollateralRatio: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  setDebtCeiling: TypedContractMethod<
+    [bond: AddressLike, newDebtCeiling: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  setDepositCollateralAllowed: TypedContractMethod<
+    [collateral: AddressLike, state: boolean],
+    [void],
+    "nonpayable"
+  >;
+
+  setDepositUnderlyingAllowed: TypedContractMethod<
+    [bond: AddressLike, state: boolean],
+    [void],
+    "nonpayable"
+  >;
+
+  setLiquidateBorrowAllowed: TypedContractMethod<
+    [bond: AddressLike, state: boolean],
+    [void],
+    "nonpayable"
+  >;
+
+  setLiquidationIncentive: TypedContractMethod<
+    [collateral: AddressLike, newLiquidationIncentive: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  setMaxBonds: TypedContractMethod<
+    [newMaxBonds: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  setMaxCollaterals: TypedContractMethod<
+    [newMaxCollaterals: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  setRepayBorrowAllowed: TypedContractMethod<
+    [bond: AddressLike, state: boolean],
+    [void],
+    "nonpayable"
+  >;
+
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
+
+  getFunction(
+    nameOrSignature: "__godMode_setBorrowAllowed"
+  ): TypedContractMethod<
+    [bond: AddressLike, state: boolean],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "__godMode_setLiquidateBorrowAllowed"
+  ): TypedContractMethod<
+    [bond: AddressLike, state: boolean],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "__godMode_setRepayBorrowAllowed"
+  ): TypedContractMethod<
+    [bond: AddressLike, state: boolean],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "_renounceOwnership"
+  ): TypedContractMethod<[], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "_transferOwnership"
+  ): TypedContractMethod<[newOwner: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "getBond"
+  ): TypedContractMethod<
+    [hToken: AddressLike],
+    [IFintroller.BondStructOutput],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "getBorrowAllowed"
+  ): TypedContractMethod<[bond: AddressLike], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "getCollateral"
+  ): TypedContractMethod<
+    [collateral: AddressLike],
+    [IFintroller.CollateralStructOutput],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "getCollateralCeiling"
+  ): TypedContractMethod<[collateral: AddressLike], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getCollateralRatio"
+  ): TypedContractMethod<[collateral: AddressLike], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getDebtCeiling"
+  ): TypedContractMethod<[bond: AddressLike], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getDepositCollateralAllowed"
+  ): TypedContractMethod<[collateral: AddressLike], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "getDepositUnderlyingAllowed"
+  ): TypedContractMethod<[bond: AddressLike], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "getLiquidateBorrowAllowed"
+  ): TypedContractMethod<[bond: AddressLike], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "getLiquidationIncentive"
+  ): TypedContractMethod<[collateral: AddressLike], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getRepayBorrowAllowed"
+  ): TypedContractMethod<[bond: AddressLike], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "isBondListed"
+  ): TypedContractMethod<[bond: AddressLike], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "isCollateralListed"
+  ): TypedContractMethod<[collateral: AddressLike], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "listBond"
+  ): TypedContractMethod<[bond: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "listCollateral"
+  ): TypedContractMethod<[collateral: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "maxBonds"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "maxCollaterals"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "owner"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "setBorrowAllowed"
+  ): TypedContractMethod<
+    [bond: AddressLike, state: boolean],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setCollateralCeiling"
+  ): TypedContractMethod<
+    [collateral: AddressLike, newCollateralCeiling: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setCollateralRatio"
+  ): TypedContractMethod<
+    [collateral: AddressLike, newCollateralRatio: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setDebtCeiling"
+  ): TypedContractMethod<
+    [bond: AddressLike, newDebtCeiling: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setDepositCollateralAllowed"
+  ): TypedContractMethod<
+    [collateral: AddressLike, state: boolean],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setDepositUnderlyingAllowed"
+  ): TypedContractMethod<
+    [bond: AddressLike, state: boolean],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setLiquidateBorrowAllowed"
+  ): TypedContractMethod<
+    [bond: AddressLike, state: boolean],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setLiquidationIncentive"
+  ): TypedContractMethod<
+    [collateral: AddressLike, newLiquidationIncentive: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setMaxBonds"
+  ): TypedContractMethod<[newMaxBonds: BigNumberish], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "setMaxCollaterals"
+  ): TypedContractMethod<
+    [newMaxCollaterals: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setRepayBorrowAllowed"
+  ): TypedContractMethod<
+    [bond: AddressLike, state: boolean],
+    [void],
+    "nonpayable"
+  >;
+
+  getEvent(
+    key: "ListBond"
+  ): TypedContractEvent<
+    ListBondEvent.InputTuple,
+    ListBondEvent.OutputTuple,
+    ListBondEvent.OutputObject
+  >;
+  getEvent(
+    key: "ListCollateral"
+  ): TypedContractEvent<
+    ListCollateralEvent.InputTuple,
+    ListCollateralEvent.OutputTuple,
+    ListCollateralEvent.OutputObject
+  >;
+  getEvent(
+    key: "SetBorrowAllowed"
+  ): TypedContractEvent<
+    SetBorrowAllowedEvent.InputTuple,
+    SetBorrowAllowedEvent.OutputTuple,
+    SetBorrowAllowedEvent.OutputObject
+  >;
+  getEvent(
+    key: "SetCollateralCeiling"
+  ): TypedContractEvent<
+    SetCollateralCeilingEvent.InputTuple,
+    SetCollateralCeilingEvent.OutputTuple,
+    SetCollateralCeilingEvent.OutputObject
+  >;
+  getEvent(
+    key: "SetCollateralRatio"
+  ): TypedContractEvent<
+    SetCollateralRatioEvent.InputTuple,
+    SetCollateralRatioEvent.OutputTuple,
+    SetCollateralRatioEvent.OutputObject
+  >;
+  getEvent(
+    key: "SetDebtCeiling"
+  ): TypedContractEvent<
+    SetDebtCeilingEvent.InputTuple,
+    SetDebtCeilingEvent.OutputTuple,
+    SetDebtCeilingEvent.OutputObject
+  >;
+  getEvent(
+    key: "SetDepositCollateralAllowed"
+  ): TypedContractEvent<
+    SetDepositCollateralAllowedEvent.InputTuple,
+    SetDepositCollateralAllowedEvent.OutputTuple,
+    SetDepositCollateralAllowedEvent.OutputObject
+  >;
+  getEvent(
+    key: "SetDepositUnderlyingAllowed"
+  ): TypedContractEvent<
+    SetDepositUnderlyingAllowedEvent.InputTuple,
+    SetDepositUnderlyingAllowedEvent.OutputTuple,
+    SetDepositUnderlyingAllowedEvent.OutputObject
+  >;
+  getEvent(
+    key: "SetLiquidateBorrowAllowed"
+  ): TypedContractEvent<
+    SetLiquidateBorrowAllowedEvent.InputTuple,
+    SetLiquidateBorrowAllowedEvent.OutputTuple,
+    SetLiquidateBorrowAllowedEvent.OutputObject
+  >;
+  getEvent(
+    key: "SetLiquidationIncentive"
+  ): TypedContractEvent<
+    SetLiquidationIncentiveEvent.InputTuple,
+    SetLiquidationIncentiveEvent.OutputTuple,
+    SetLiquidationIncentiveEvent.OutputObject
+  >;
+  getEvent(
+    key: "SetMaxBonds"
+  ): TypedContractEvent<
+    SetMaxBondsEvent.InputTuple,
+    SetMaxBondsEvent.OutputTuple,
+    SetMaxBondsEvent.OutputObject
+  >;
+  getEvent(
+    key: "SetMaxCollaterals"
+  ): TypedContractEvent<
+    SetMaxCollateralsEvent.InputTuple,
+    SetMaxCollateralsEvent.OutputTuple,
+    SetMaxCollateralsEvent.OutputObject
+  >;
+  getEvent(
+    key: "SetRepayBorrowAllowed"
+  ): TypedContractEvent<
+    SetRepayBorrowAllowedEvent.InputTuple,
+    SetRepayBorrowAllowedEvent.OutputTuple,
+    SetRepayBorrowAllowedEvent.OutputObject
+  >;
+  getEvent(
+    key: "TransferOwnership"
+  ): TypedContractEvent<
+    TransferOwnershipEvent.InputTuple,
+    TransferOwnershipEvent.OutputTuple,
+    TransferOwnershipEvent.OutputObject
+  >;
 
   filters: {
-    "ListBond(address,address)"(
-      owner?: PromiseOrValue<string> | null,
-      bond?: PromiseOrValue<string> | null
-    ): ListBondEventFilter;
-    ListBond(
-      owner?: PromiseOrValue<string> | null,
-      bond?: PromiseOrValue<string> | null
-    ): ListBondEventFilter;
-
-    "ListCollateral(address,address)"(
-      owner?: PromiseOrValue<string> | null,
-      collateral?: PromiseOrValue<string> | null
-    ): ListCollateralEventFilter;
-    ListCollateral(
-      owner?: PromiseOrValue<string> | null,
-      collateral?: PromiseOrValue<string> | null
-    ): ListCollateralEventFilter;
-
-    "SetBorrowAllowed(address,address,bool)"(
-      owner?: PromiseOrValue<string> | null,
-      bond?: PromiseOrValue<string> | null,
-      state?: null
-    ): SetBorrowAllowedEventFilter;
-    SetBorrowAllowed(
-      owner?: PromiseOrValue<string> | null,
-      bond?: PromiseOrValue<string> | null,
-      state?: null
-    ): SetBorrowAllowedEventFilter;
-
-    "SetCollateralCeiling(address,address,uint256,uint256)"(
-      owner?: PromiseOrValue<string> | null,
-      collateral?: PromiseOrValue<string> | null,
-      oldCollateralCeiling?: null,
-      newCollateralCeiling?: null
-    ): SetCollateralCeilingEventFilter;
-    SetCollateralCeiling(
-      owner?: PromiseOrValue<string> | null,
-      collateral?: PromiseOrValue<string> | null,
-      oldCollateralCeiling?: null,
-      newCollateralCeiling?: null
-    ): SetCollateralCeilingEventFilter;
-
-    "SetCollateralRatio(address,address,uint256,uint256)"(
-      owner?: PromiseOrValue<string> | null,
-      collateral?: PromiseOrValue<string> | null,
-      oldCollateralRatio?: null,
-      newCollateralRatio?: null
-    ): SetCollateralRatioEventFilter;
-    SetCollateralRatio(
-      owner?: PromiseOrValue<string> | null,
-      collateral?: PromiseOrValue<string> | null,
-      oldCollateralRatio?: null,
-      newCollateralRatio?: null
-    ): SetCollateralRatioEventFilter;
-
-    "SetDebtCeiling(address,address,uint256,uint256)"(
-      owner?: PromiseOrValue<string> | null,
-      bond?: PromiseOrValue<string> | null,
-      oldDebtCeiling?: null,
-      newDebtCeiling?: null
-    ): SetDebtCeilingEventFilter;
-    SetDebtCeiling(
-      owner?: PromiseOrValue<string> | null,
-      bond?: PromiseOrValue<string> | null,
-      oldDebtCeiling?: null,
-      newDebtCeiling?: null
-    ): SetDebtCeilingEventFilter;
-
-    "SetDepositCollateralAllowed(address,address,bool)"(
-      owner?: PromiseOrValue<string> | null,
-      collateral?: PromiseOrValue<string> | null,
-      state?: null
-    ): SetDepositCollateralAllowedEventFilter;
-    SetDepositCollateralAllowed(
-      owner?: PromiseOrValue<string> | null,
-      collateral?: PromiseOrValue<string> | null,
-      state?: null
-    ): SetDepositCollateralAllowedEventFilter;
-
-    "SetDepositUnderlyingAllowed(address,address,bool)"(
-      owner?: PromiseOrValue<string> | null,
-      bond?: PromiseOrValue<string> | null,
-      state?: null
-    ): SetDepositUnderlyingAllowedEventFilter;
-    SetDepositUnderlyingAllowed(
-      owner?: PromiseOrValue<string> | null,
-      bond?: PromiseOrValue<string> | null,
-      state?: null
-    ): SetDepositUnderlyingAllowedEventFilter;
-
-    "SetLiquidateBorrowAllowed(address,address,bool)"(
-      owner?: PromiseOrValue<string> | null,
-      bond?: PromiseOrValue<string> | null,
-      state?: null
-    ): SetLiquidateBorrowAllowedEventFilter;
-    SetLiquidateBorrowAllowed(
-      owner?: PromiseOrValue<string> | null,
-      bond?: PromiseOrValue<string> | null,
-      state?: null
-    ): SetLiquidateBorrowAllowedEventFilter;
-
-    "SetLiquidationIncentive(address,address,uint256,uint256)"(
-      owner?: PromiseOrValue<string> | null,
-      collateral?: null,
-      oldLiquidationIncentive?: null,
-      newLiquidationIncentive?: null
-    ): SetLiquidationIncentiveEventFilter;
-    SetLiquidationIncentive(
-      owner?: PromiseOrValue<string> | null,
-      collateral?: null,
-      oldLiquidationIncentive?: null,
-      newLiquidationIncentive?: null
-    ): SetLiquidationIncentiveEventFilter;
-
-    "SetMaxBonds(address,uint256,uint256)"(
-      owner?: PromiseOrValue<string> | null,
-      oldMaxBonds?: null,
-      newMaxBonds?: null
-    ): SetMaxBondsEventFilter;
-    SetMaxBonds(
-      owner?: PromiseOrValue<string> | null,
-      oldMaxBonds?: null,
-      newMaxBonds?: null
-    ): SetMaxBondsEventFilter;
-
-    "SetMaxCollaterals(address,uint256,uint256)"(
-      owner?: PromiseOrValue<string> | null,
-      oldMaxCollaterals?: null,
-      newMaxCollaterals?: null
-    ): SetMaxCollateralsEventFilter;
-    SetMaxCollaterals(
-      owner?: PromiseOrValue<string> | null,
-      oldMaxCollaterals?: null,
-      newMaxCollaterals?: null
-    ): SetMaxCollateralsEventFilter;
-
-    "SetRepayBorrowAllowed(address,address,bool)"(
-      owner?: PromiseOrValue<string> | null,
-      bond?: PromiseOrValue<string> | null,
-      state?: null
-    ): SetRepayBorrowAllowedEventFilter;
-    SetRepayBorrowAllowed(
-      owner?: PromiseOrValue<string> | null,
-      bond?: PromiseOrValue<string> | null,
-      state?: null
-    ): SetRepayBorrowAllowedEventFilter;
-
-    "TransferOwnership(address,address)"(
-      oldOwner?: PromiseOrValue<string> | null,
-      newOwner?: PromiseOrValue<string> | null
-    ): TransferOwnershipEventFilter;
-    TransferOwnership(
-      oldOwner?: PromiseOrValue<string> | null,
-      newOwner?: PromiseOrValue<string> | null
-    ): TransferOwnershipEventFilter;
-  };
-
-  estimateGas: {
-    __godMode_setBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    __godMode_setLiquidateBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    __godMode_setRepayBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    _renounceOwnership(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    _transferOwnership(
-      newOwner: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    getBond(
-      hToken: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getCollateral(
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getCollateralCeiling(
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getCollateralRatio(
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getDebtCeiling(
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getDepositCollateralAllowed(
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getDepositUnderlyingAllowed(
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getLiquidateBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getLiquidationIncentive(
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getRepayBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    isBondListed(
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    isCollateralListed(
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    listBond(
-      bond: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    listCollateral(
-      collateral: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    maxBonds(overrides?: CallOverrides): Promise<BigNumber>;
-
-    maxCollaterals(overrides?: CallOverrides): Promise<BigNumber>;
-
-    owner(overrides?: CallOverrides): Promise<BigNumber>;
-
-    setBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    setCollateralCeiling(
-      collateral: PromiseOrValue<string>,
-      newCollateralCeiling: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    setCollateralRatio(
-      collateral: PromiseOrValue<string>,
-      newCollateralRatio: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    setDebtCeiling(
-      bond: PromiseOrValue<string>,
-      newDebtCeiling: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    setDepositCollateralAllowed(
-      collateral: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    setDepositUnderlyingAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    setLiquidateBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    setLiquidationIncentive(
-      collateral: PromiseOrValue<string>,
-      newLiquidationIncentive: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    setMaxBonds(
-      newMaxBonds: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    setMaxCollaterals(
-      newMaxCollaterals: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    setRepayBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-  };
-
-  populateTransaction: {
-    __godMode_setBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    __godMode_setLiquidateBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    __godMode_setRepayBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    _renounceOwnership(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    _transferOwnership(
-      newOwner: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    getBond(
-      hToken: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getCollateral(
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getCollateralCeiling(
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getCollateralRatio(
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getDebtCeiling(
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getDepositCollateralAllowed(
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getDepositUnderlyingAllowed(
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getLiquidateBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getLiquidationIncentive(
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getRepayBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    isBondListed(
-      bond: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    isCollateralListed(
-      collateral: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    listBond(
-      bond: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    listCollateral(
-      collateral: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    maxBonds(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    maxCollaterals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    setBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setCollateralCeiling(
-      collateral: PromiseOrValue<string>,
-      newCollateralCeiling: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setCollateralRatio(
-      collateral: PromiseOrValue<string>,
-      newCollateralRatio: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setDebtCeiling(
-      bond: PromiseOrValue<string>,
-      newDebtCeiling: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setDepositCollateralAllowed(
-      collateral: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setDepositUnderlyingAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setLiquidateBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setLiquidationIncentive(
-      collateral: PromiseOrValue<string>,
-      newLiquidationIncentive: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setMaxBonds(
-      newMaxBonds: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setMaxCollaterals(
-      newMaxCollaterals: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setRepayBorrowAllowed(
-      bond: PromiseOrValue<string>,
-      state: PromiseOrValue<boolean>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
+    "ListBond(address,address)": TypedContractEvent<
+      ListBondEvent.InputTuple,
+      ListBondEvent.OutputTuple,
+      ListBondEvent.OutputObject
+    >;
+    ListBond: TypedContractEvent<
+      ListBondEvent.InputTuple,
+      ListBondEvent.OutputTuple,
+      ListBondEvent.OutputObject
+    >;
+
+    "ListCollateral(address,address)": TypedContractEvent<
+      ListCollateralEvent.InputTuple,
+      ListCollateralEvent.OutputTuple,
+      ListCollateralEvent.OutputObject
+    >;
+    ListCollateral: TypedContractEvent<
+      ListCollateralEvent.InputTuple,
+      ListCollateralEvent.OutputTuple,
+      ListCollateralEvent.OutputObject
+    >;
+
+    "SetBorrowAllowed(address,address,bool)": TypedContractEvent<
+      SetBorrowAllowedEvent.InputTuple,
+      SetBorrowAllowedEvent.OutputTuple,
+      SetBorrowAllowedEvent.OutputObject
+    >;
+    SetBorrowAllowed: TypedContractEvent<
+      SetBorrowAllowedEvent.InputTuple,
+      SetBorrowAllowedEvent.OutputTuple,
+      SetBorrowAllowedEvent.OutputObject
+    >;
+
+    "SetCollateralCeiling(address,address,uint256,uint256)": TypedContractEvent<
+      SetCollateralCeilingEvent.InputTuple,
+      SetCollateralCeilingEvent.OutputTuple,
+      SetCollateralCeilingEvent.OutputObject
+    >;
+    SetCollateralCeiling: TypedContractEvent<
+      SetCollateralCeilingEvent.InputTuple,
+      SetCollateralCeilingEvent.OutputTuple,
+      SetCollateralCeilingEvent.OutputObject
+    >;
+
+    "SetCollateralRatio(address,address,uint256,uint256)": TypedContractEvent<
+      SetCollateralRatioEvent.InputTuple,
+      SetCollateralRatioEvent.OutputTuple,
+      SetCollateralRatioEvent.OutputObject
+    >;
+    SetCollateralRatio: TypedContractEvent<
+      SetCollateralRatioEvent.InputTuple,
+      SetCollateralRatioEvent.OutputTuple,
+      SetCollateralRatioEvent.OutputObject
+    >;
+
+    "SetDebtCeiling(address,address,uint256,uint256)": TypedContractEvent<
+      SetDebtCeilingEvent.InputTuple,
+      SetDebtCeilingEvent.OutputTuple,
+      SetDebtCeilingEvent.OutputObject
+    >;
+    SetDebtCeiling: TypedContractEvent<
+      SetDebtCeilingEvent.InputTuple,
+      SetDebtCeilingEvent.OutputTuple,
+      SetDebtCeilingEvent.OutputObject
+    >;
+
+    "SetDepositCollateralAllowed(address,address,bool)": TypedContractEvent<
+      SetDepositCollateralAllowedEvent.InputTuple,
+      SetDepositCollateralAllowedEvent.OutputTuple,
+      SetDepositCollateralAllowedEvent.OutputObject
+    >;
+    SetDepositCollateralAllowed: TypedContractEvent<
+      SetDepositCollateralAllowedEvent.InputTuple,
+      SetDepositCollateralAllowedEvent.OutputTuple,
+      SetDepositCollateralAllowedEvent.OutputObject
+    >;
+
+    "SetDepositUnderlyingAllowed(address,address,bool)": TypedContractEvent<
+      SetDepositUnderlyingAllowedEvent.InputTuple,
+      SetDepositUnderlyingAllowedEvent.OutputTuple,
+      SetDepositUnderlyingAllowedEvent.OutputObject
+    >;
+    SetDepositUnderlyingAllowed: TypedContractEvent<
+      SetDepositUnderlyingAllowedEvent.InputTuple,
+      SetDepositUnderlyingAllowedEvent.OutputTuple,
+      SetDepositUnderlyingAllowedEvent.OutputObject
+    >;
+
+    "SetLiquidateBorrowAllowed(address,address,bool)": TypedContractEvent<
+      SetLiquidateBorrowAllowedEvent.InputTuple,
+      SetLiquidateBorrowAllowedEvent.OutputTuple,
+      SetLiquidateBorrowAllowedEvent.OutputObject
+    >;
+    SetLiquidateBorrowAllowed: TypedContractEvent<
+      SetLiquidateBorrowAllowedEvent.InputTuple,
+      SetLiquidateBorrowAllowedEvent.OutputTuple,
+      SetLiquidateBorrowAllowedEvent.OutputObject
+    >;
+
+    "SetLiquidationIncentive(address,address,uint256,uint256)": TypedContractEvent<
+      SetLiquidationIncentiveEvent.InputTuple,
+      SetLiquidationIncentiveEvent.OutputTuple,
+      SetLiquidationIncentiveEvent.OutputObject
+    >;
+    SetLiquidationIncentive: TypedContractEvent<
+      SetLiquidationIncentiveEvent.InputTuple,
+      SetLiquidationIncentiveEvent.OutputTuple,
+      SetLiquidationIncentiveEvent.OutputObject
+    >;
+
+    "SetMaxBonds(address,uint256,uint256)": TypedContractEvent<
+      SetMaxBondsEvent.InputTuple,
+      SetMaxBondsEvent.OutputTuple,
+      SetMaxBondsEvent.OutputObject
+    >;
+    SetMaxBonds: TypedContractEvent<
+      SetMaxBondsEvent.InputTuple,
+      SetMaxBondsEvent.OutputTuple,
+      SetMaxBondsEvent.OutputObject
+    >;
+
+    "SetMaxCollaterals(address,uint256,uint256)": TypedContractEvent<
+      SetMaxCollateralsEvent.InputTuple,
+      SetMaxCollateralsEvent.OutputTuple,
+      SetMaxCollateralsEvent.OutputObject
+    >;
+    SetMaxCollaterals: TypedContractEvent<
+      SetMaxCollateralsEvent.InputTuple,
+      SetMaxCollateralsEvent.OutputTuple,
+      SetMaxCollateralsEvent.OutputObject
+    >;
+
+    "SetRepayBorrowAllowed(address,address,bool)": TypedContractEvent<
+      SetRepayBorrowAllowedEvent.InputTuple,
+      SetRepayBorrowAllowedEvent.OutputTuple,
+      SetRepayBorrowAllowedEvent.OutputObject
+    >;
+    SetRepayBorrowAllowed: TypedContractEvent<
+      SetRepayBorrowAllowedEvent.InputTuple,
+      SetRepayBorrowAllowedEvent.OutputTuple,
+      SetRepayBorrowAllowedEvent.OutputObject
+    >;
+
+    "TransferOwnership(address,address)": TypedContractEvent<
+      TransferOwnershipEvent.InputTuple,
+      TransferOwnershipEvent.OutputTuple,
+      TransferOwnershipEvent.OutputObject
+    >;
+    TransferOwnership: TypedContractEvent<
+      TransferOwnershipEvent.InputTuple,
+      TransferOwnershipEvent.OutputTuple,
+      TransferOwnershipEvent.OutputObject
+    >;
   };
 }

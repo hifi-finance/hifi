@@ -3,42 +3,27 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumber,
   BigNumberish,
   BytesLike,
-  CallOverrides,
-  ContractTransaction,
-  Overrides,
-  PopulatedTransaction,
-  Signer,
-  utils,
+  FunctionFragment,
+  Result,
+  Interface,
+  AddressLike,
+  ContractRunner,
+  ContractMethod,
+  Listener,
 } from "ethers";
-import type { FunctionFragment, Result } from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
 import type {
-  TypedEventFilter,
-  TypedEvent,
+  TypedContractEvent,
+  TypedDeferredTopicFilter,
+  TypedEventLog,
   TypedListener,
-  OnEvent,
-  PromiseOrValue,
+  TypedContractMethod,
 } from "../../../common";
 
-export interface MaliciousPairInterface extends utils.Interface {
-  functions: {
-    "collateral()": FunctionFragment;
-    "swap(uint256,uint256,address,bytes)": FunctionFragment;
-    "token0()": FunctionFragment;
-    "token1()": FunctionFragment;
-    "underlying()": FunctionFragment;
-  };
-
+export interface MaliciousPairInterface extends Interface {
   getFunction(
-    nameOrSignatureOrTopic:
-      | "collateral"
-      | "swap"
-      | "token0"
-      | "token1"
-      | "underlying"
+    nameOrSignature: "collateral" | "swap" | "token0" | "token1" | "underlying"
   ): FunctionFragment;
 
   encodeFunctionData(
@@ -47,12 +32,7 @@ export interface MaliciousPairInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "swap",
-    values: [
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<string>,
-      PromiseOrValue<BytesLike>
-    ]
+    values: [BigNumberish, BigNumberish, AddressLike, BytesLike]
   ): string;
   encodeFunctionData(functionFragment: "token0", values?: undefined): string;
   encodeFunctionData(functionFragment: "token1", values?: undefined): string;
@@ -66,123 +46,98 @@ export interface MaliciousPairInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "token0", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "token1", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "underlying", data: BytesLike): Result;
-
-  events: {};
 }
 
 export interface MaliciousPair extends BaseContract {
-  connect(signerOrProvider: Signer | Provider | string): this;
-  attach(addressOrName: string): this;
-  deployed(): Promise<this>;
+  connect(runner?: ContractRunner | null): MaliciousPair;
+  waitForDeployment(): Promise<this>;
 
   interface: MaliciousPairInterface;
 
-  queryFilter<TEvent extends TypedEvent>(
-    event: TypedEventFilter<TEvent>,
+  queryFilter<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TEvent>>;
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  queryFilter<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
 
-  listeners<TEvent extends TypedEvent>(
-    eventFilter?: TypedEventFilter<TEvent>
-  ): Array<TypedListener<TEvent>>;
-  listeners(eventName?: string): Array<Listener>;
-  removeAllListeners<TEvent extends TypedEvent>(
-    eventFilter: TypedEventFilter<TEvent>
-  ): this;
-  removeAllListeners(eventName?: string): this;
-  off: OnEvent<this>;
-  on: OnEvent<this>;
-  once: OnEvent<this>;
-  removeListener: OnEvent<this>;
+  on<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  on<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-  functions: {
-    collateral(overrides?: CallOverrides): Promise<[string]>;
+  once<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  once<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-    swap(
-      amount0: PromiseOrValue<BigNumberish>,
-      amount1: PromiseOrValue<BigNumberish>,
-      to: PromiseOrValue<string>,
-      data: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+  listeners<TCEvent extends TypedContractEvent>(
+    event: TCEvent
+  ): Promise<Array<TypedListener<TCEvent>>>;
+  listeners(eventName?: string): Promise<Array<Listener>>;
+  removeAllListeners<TCEvent extends TypedContractEvent>(
+    event?: TCEvent
+  ): Promise<this>;
 
-    token0(overrides?: CallOverrides): Promise<[string]>;
+  collateral: TypedContractMethod<[], [string], "view">;
 
-    token1(overrides?: CallOverrides): Promise<[string]>;
+  swap: TypedContractMethod<
+    [
+      amount0: BigNumberish,
+      amount1: BigNumberish,
+      to: AddressLike,
+      data: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
 
-    underlying(overrides?: CallOverrides): Promise<[string]>;
-  };
+  token0: TypedContractMethod<[], [string], "view">;
 
-  collateral(overrides?: CallOverrides): Promise<string>;
+  token1: TypedContractMethod<[], [string], "view">;
 
-  swap(
-    amount0: PromiseOrValue<BigNumberish>,
-    amount1: PromiseOrValue<BigNumberish>,
-    to: PromiseOrValue<string>,
-    data: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  underlying: TypedContractMethod<[], [string], "view">;
 
-  token0(overrides?: CallOverrides): Promise<string>;
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
 
-  token1(overrides?: CallOverrides): Promise<string>;
-
-  underlying(overrides?: CallOverrides): Promise<string>;
-
-  callStatic: {
-    collateral(overrides?: CallOverrides): Promise<string>;
-
-    swap(
-      amount0: PromiseOrValue<BigNumberish>,
-      amount1: PromiseOrValue<BigNumberish>,
-      to: PromiseOrValue<string>,
-      data: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    token0(overrides?: CallOverrides): Promise<string>;
-
-    token1(overrides?: CallOverrides): Promise<string>;
-
-    underlying(overrides?: CallOverrides): Promise<string>;
-  };
+  getFunction(
+    nameOrSignature: "collateral"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "swap"
+  ): TypedContractMethod<
+    [
+      amount0: BigNumberish,
+      amount1: BigNumberish,
+      to: AddressLike,
+      data: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "token0"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "token1"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "underlying"
+  ): TypedContractMethod<[], [string], "view">;
 
   filters: {};
-
-  estimateGas: {
-    collateral(overrides?: CallOverrides): Promise<BigNumber>;
-
-    swap(
-      amount0: PromiseOrValue<BigNumberish>,
-      amount1: PromiseOrValue<BigNumberish>,
-      to: PromiseOrValue<string>,
-      data: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    token0(overrides?: CallOverrides): Promise<BigNumber>;
-
-    token1(overrides?: CallOverrides): Promise<BigNumber>;
-
-    underlying(overrides?: CallOverrides): Promise<BigNumber>;
-  };
-
-  populateTransaction: {
-    collateral(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    swap(
-      amount0: PromiseOrValue<BigNumberish>,
-      amount1: PromiseOrValue<BigNumberish>,
-      to: PromiseOrValue<string>,
-      data: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    token0(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    token1(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    underlying(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-  };
 }

@@ -2,8 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Contract, Signer, utils } from "ethers";
-import type { Provider } from "@ethersproject/providers";
+import { Contract, Interface, type ContractRunner } from "ethers";
 import type {
   IHToken,
   IHTokenInterface,
@@ -1011,12 +1010,9 @@ const _abi = [
 export class IHToken__factory {
   static readonly abi = _abi;
   static createInterface(): IHTokenInterface {
-    return new utils.Interface(_abi) as IHTokenInterface;
+    return new Interface(_abi) as IHTokenInterface;
   }
-  static connect(
-    address: string,
-    signerOrProvider: Signer | Provider
-  ): IHToken {
-    return new Contract(address, _abi, signerOrProvider) as IHToken;
+  static connect(address: string, runner?: ContractRunner | null): IHToken {
+    return new Contract(address, _abi, runner) as unknown as IHToken;
   }
 }

@@ -2,8 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 
-import { Contract, Signer, utils } from "ethers";
-import type { Provider } from "@ethersproject/providers";
+import { Contract, Interface, type ContractRunner } from "ethers";
 import type {
   PoolInitializer,
   PoolInitializerInterface,
@@ -75,12 +74,12 @@ const _abi = [
 export class PoolInitializer__factory {
   static readonly abi = _abi;
   static createInterface(): PoolInitializerInterface {
-    return new utils.Interface(_abi) as PoolInitializerInterface;
+    return new Interface(_abi) as PoolInitializerInterface;
   }
   static connect(
     address: string,
-    signerOrProvider: Signer | Provider
+    runner?: ContractRunner | null
   ): PoolInitializer {
-    return new Contract(address, _abi, signerOrProvider) as PoolInitializer;
+    return new Contract(address, _abi, runner) as unknown as PoolInitializer;
   }
 }

@@ -3,41 +3,28 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumber,
   BytesLike,
-  CallOverrides,
-  ContractTransaction,
-  Overrides,
-  PopulatedTransaction,
-  Signer,
-  utils,
-} from "ethers";
-import type {
   FunctionFragment,
   Result,
+  Interface,
   EventFragment,
-} from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
+  AddressLike,
+  ContractRunner,
+  ContractMethod,
+  Listener,
+} from "ethers";
 import type {
-  TypedEventFilter,
-  TypedEvent,
+  TypedContractEvent,
+  TypedDeferredTopicFilter,
+  TypedEventLog,
+  TypedLogDescription,
   TypedListener,
-  OnEvent,
-  PromiseOrValue,
+  TypedContractMethod,
 } from "../common";
 
-export interface HifiPoolRegistryInterface extends utils.Interface {
-  functions: {
-    "_renounceOwnership()": FunctionFragment;
-    "_transferOwnership(address)": FunctionFragment;
-    "owner()": FunctionFragment;
-    "pools(address)": FunctionFragment;
-    "trackPool(address)": FunctionFragment;
-    "untrackPool(address)": FunctionFragment;
-  };
-
+export interface HifiPoolRegistryInterface extends Interface {
   getFunction(
-    nameOrSignatureOrTopic:
+    nameOrSignature:
       | "_renounceOwnership"
       | "_transferOwnership"
       | "owner"
@@ -46,26 +33,27 @@ export interface HifiPoolRegistryInterface extends utils.Interface {
       | "untrackPool"
   ): FunctionFragment;
 
+  getEvent(
+    nameOrSignatureOrTopic: "TrackPool" | "TransferOwnership" | "UntrackPool"
+  ): EventFragment;
+
   encodeFunctionData(
     functionFragment: "_renounceOwnership",
     values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "_transferOwnership",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
-  encodeFunctionData(
-    functionFragment: "pools",
-    values: [PromiseOrValue<string>]
-  ): string;
+  encodeFunctionData(functionFragment: "pools", values: [AddressLike]): string;
   encodeFunctionData(
     functionFragment: "trackPool",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "untrackPool",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
 
   decodeFunctionResult(
@@ -83,224 +71,181 @@ export interface HifiPoolRegistryInterface extends utils.Interface {
     functionFragment: "untrackPool",
     data: BytesLike
   ): Result;
-
-  events: {
-    "TrackPool(address)": EventFragment;
-    "TransferOwnership(address,address)": EventFragment;
-    "UntrackPool(address)": EventFragment;
-  };
-
-  getEvent(nameOrSignatureOrTopic: "TrackPool"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "TransferOwnership"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "UntrackPool"): EventFragment;
 }
 
-export interface TrackPoolEventObject {
-  pool: string;
+export namespace TrackPoolEvent {
+  export type InputTuple = [pool: AddressLike];
+  export type OutputTuple = [pool: string];
+  export interface OutputObject {
+    pool: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type TrackPoolEvent = TypedEvent<[string], TrackPoolEventObject>;
 
-export type TrackPoolEventFilter = TypedEventFilter<TrackPoolEvent>;
-
-export interface TransferOwnershipEventObject {
-  oldOwner: string;
-  newOwner: string;
+export namespace TransferOwnershipEvent {
+  export type InputTuple = [oldOwner: AddressLike, newOwner: AddressLike];
+  export type OutputTuple = [oldOwner: string, newOwner: string];
+  export interface OutputObject {
+    oldOwner: string;
+    newOwner: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type TransferOwnershipEvent = TypedEvent<
-  [string, string],
-  TransferOwnershipEventObject
->;
 
-export type TransferOwnershipEventFilter =
-  TypedEventFilter<TransferOwnershipEvent>;
-
-export interface UntrackPoolEventObject {
-  pool: string;
+export namespace UntrackPoolEvent {
+  export type InputTuple = [pool: AddressLike];
+  export type OutputTuple = [pool: string];
+  export interface OutputObject {
+    pool: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type UntrackPoolEvent = TypedEvent<[string], UntrackPoolEventObject>;
-
-export type UntrackPoolEventFilter = TypedEventFilter<UntrackPoolEvent>;
 
 export interface HifiPoolRegistry extends BaseContract {
-  connect(signerOrProvider: Signer | Provider | string): this;
-  attach(addressOrName: string): this;
-  deployed(): Promise<this>;
+  connect(runner?: ContractRunner | null): HifiPoolRegistry;
+  waitForDeployment(): Promise<this>;
 
   interface: HifiPoolRegistryInterface;
 
-  queryFilter<TEvent extends TypedEvent>(
-    event: TypedEventFilter<TEvent>,
+  queryFilter<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TEvent>>;
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  queryFilter<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
 
-  listeners<TEvent extends TypedEvent>(
-    eventFilter?: TypedEventFilter<TEvent>
-  ): Array<TypedListener<TEvent>>;
-  listeners(eventName?: string): Array<Listener>;
-  removeAllListeners<TEvent extends TypedEvent>(
-    eventFilter: TypedEventFilter<TEvent>
-  ): this;
-  removeAllListeners(eventName?: string): this;
-  off: OnEvent<this>;
-  on: OnEvent<this>;
-  once: OnEvent<this>;
-  removeListener: OnEvent<this>;
+  on<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  on<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-  functions: {
-    _renounceOwnership(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+  once<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  once<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-    _transferOwnership(
-      newOwner: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+  listeners<TCEvent extends TypedContractEvent>(
+    event: TCEvent
+  ): Promise<Array<TypedListener<TCEvent>>>;
+  listeners(eventName?: string): Promise<Array<Listener>>;
+  removeAllListeners<TCEvent extends TypedContractEvent>(
+    event?: TCEvent
+  ): Promise<this>;
 
-    owner(overrides?: CallOverrides): Promise<[string]>;
+  _renounceOwnership: TypedContractMethod<[], [void], "nonpayable">;
 
-    pools(
-      arg0: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[boolean]>;
+  _transferOwnership: TypedContractMethod<
+    [newOwner: AddressLike],
+    [void],
+    "nonpayable"
+  >;
 
-    trackPool(
-      pool: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+  owner: TypedContractMethod<[], [string], "view">;
 
-    untrackPool(
-      pool: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-  };
+  pools: TypedContractMethod<[arg0: AddressLike], [boolean], "view">;
 
-  _renounceOwnership(
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  trackPool: TypedContractMethod<[pool: AddressLike], [void], "nonpayable">;
 
-  _transferOwnership(
-    newOwner: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  untrackPool: TypedContractMethod<[pool: AddressLike], [void], "nonpayable">;
 
-  owner(overrides?: CallOverrides): Promise<string>;
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
 
-  pools(
-    arg0: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
+  getFunction(
+    nameOrSignature: "_renounceOwnership"
+  ): TypedContractMethod<[], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "_transferOwnership"
+  ): TypedContractMethod<[newOwner: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "owner"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "pools"
+  ): TypedContractMethod<[arg0: AddressLike], [boolean], "view">;
+  getFunction(
+    nameOrSignature: "trackPool"
+  ): TypedContractMethod<[pool: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "untrackPool"
+  ): TypedContractMethod<[pool: AddressLike], [void], "nonpayable">;
 
-  trackPool(
-    pool: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  untrackPool(
-    pool: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  callStatic: {
-    _renounceOwnership(overrides?: CallOverrides): Promise<void>;
-
-    _transferOwnership(
-      newOwner: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    owner(overrides?: CallOverrides): Promise<string>;
-
-    pools(
-      arg0: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<boolean>;
-
-    trackPool(
-      pool: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    untrackPool(
-      pool: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-  };
+  getEvent(
+    key: "TrackPool"
+  ): TypedContractEvent<
+    TrackPoolEvent.InputTuple,
+    TrackPoolEvent.OutputTuple,
+    TrackPoolEvent.OutputObject
+  >;
+  getEvent(
+    key: "TransferOwnership"
+  ): TypedContractEvent<
+    TransferOwnershipEvent.InputTuple,
+    TransferOwnershipEvent.OutputTuple,
+    TransferOwnershipEvent.OutputObject
+  >;
+  getEvent(
+    key: "UntrackPool"
+  ): TypedContractEvent<
+    UntrackPoolEvent.InputTuple,
+    UntrackPoolEvent.OutputTuple,
+    UntrackPoolEvent.OutputObject
+  >;
 
   filters: {
-    "TrackPool(address)"(
-      pool?: PromiseOrValue<string> | null
-    ): TrackPoolEventFilter;
-    TrackPool(pool?: PromiseOrValue<string> | null): TrackPoolEventFilter;
+    "TrackPool(address)": TypedContractEvent<
+      TrackPoolEvent.InputTuple,
+      TrackPoolEvent.OutputTuple,
+      TrackPoolEvent.OutputObject
+    >;
+    TrackPool: TypedContractEvent<
+      TrackPoolEvent.InputTuple,
+      TrackPoolEvent.OutputTuple,
+      TrackPoolEvent.OutputObject
+    >;
 
-    "TransferOwnership(address,address)"(
-      oldOwner?: PromiseOrValue<string> | null,
-      newOwner?: PromiseOrValue<string> | null
-    ): TransferOwnershipEventFilter;
-    TransferOwnership(
-      oldOwner?: PromiseOrValue<string> | null,
-      newOwner?: PromiseOrValue<string> | null
-    ): TransferOwnershipEventFilter;
+    "TransferOwnership(address,address)": TypedContractEvent<
+      TransferOwnershipEvent.InputTuple,
+      TransferOwnershipEvent.OutputTuple,
+      TransferOwnershipEvent.OutputObject
+    >;
+    TransferOwnership: TypedContractEvent<
+      TransferOwnershipEvent.InputTuple,
+      TransferOwnershipEvent.OutputTuple,
+      TransferOwnershipEvent.OutputObject
+    >;
 
-    "UntrackPool(address)"(
-      pool?: PromiseOrValue<string> | null
-    ): UntrackPoolEventFilter;
-    UntrackPool(pool?: PromiseOrValue<string> | null): UntrackPoolEventFilter;
-  };
-
-  estimateGas: {
-    _renounceOwnership(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    _transferOwnership(
-      newOwner: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    owner(overrides?: CallOverrides): Promise<BigNumber>;
-
-    pools(
-      arg0: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    trackPool(
-      pool: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    untrackPool(
-      pool: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-  };
-
-  populateTransaction: {
-    _renounceOwnership(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    _transferOwnership(
-      newOwner: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    pools(
-      arg0: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    trackPool(
-      pool: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    untrackPool(
-      pool: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
+    "UntrackPool(address)": TypedContractEvent<
+      UntrackPoolEvent.InputTuple,
+      UntrackPoolEvent.OutputTuple,
+      UntrackPoolEvent.OutputObject
+    >;
+    UntrackPool: TypedContractEvent<
+      UntrackPoolEvent.InputTuple,
+      UntrackPoolEvent.OutputTuple,
+      UntrackPoolEvent.OutputObject
+    >;
   };
 }

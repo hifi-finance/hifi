@@ -3,43 +3,26 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumber,
   BigNumberish,
   BytesLike,
-  CallOverrides,
-  ContractTransaction,
-  Overrides,
-  PopulatedTransaction,
-  Signer,
-  utils,
+  FunctionFragment,
+  Result,
+  Interface,
+  ContractRunner,
+  ContractMethod,
+  Listener,
 } from "ethers";
-import type { FunctionFragment, Result } from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
 import type {
-  TypedEventFilter,
-  TypedEvent,
+  TypedContractEvent,
+  TypedDeferredTopicFilter,
+  TypedEventLog,
   TypedListener,
-  OnEvent,
-  PromiseOrValue,
+  TypedContractMethod,
 } from "../../common";
 
-export interface IUniswapV3PriceFeedInterface extends utils.Interface {
-  functions: {
-    "baseAsset()": FunctionFragment;
-    "decimals()": FunctionFragment;
-    "description()": FunctionFragment;
-    "getRoundData(uint80)": FunctionFragment;
-    "latestRoundData()": FunctionFragment;
-    "maxPrice()": FunctionFragment;
-    "pool()": FunctionFragment;
-    "quoteAsset()": FunctionFragment;
-    "setMaxPrice(int256)": FunctionFragment;
-    "twapInterval()": FunctionFragment;
-    "version()": FunctionFragment;
-  };
-
+export interface IUniswapV3PriceFeedInterface extends Interface {
   getFunction(
-    nameOrSignatureOrTopic:
+    nameOrSignature:
       | "baseAsset"
       | "decimals"
       | "description"
@@ -61,7 +44,7 @@ export interface IUniswapV3PriceFeedInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getRoundData",
-    values: [PromiseOrValue<BigNumberish>]
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "latestRoundData",
@@ -75,7 +58,7 @@ export interface IUniswapV3PriceFeedInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "setMaxPrice",
-    values: [PromiseOrValue<BigNumberish>]
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "twapInterval",
@@ -109,237 +92,162 @@ export interface IUniswapV3PriceFeedInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "version", data: BytesLike): Result;
-
-  events: {};
 }
 
 export interface IUniswapV3PriceFeed extends BaseContract {
-  connect(signerOrProvider: Signer | Provider | string): this;
-  attach(addressOrName: string): this;
-  deployed(): Promise<this>;
+  connect(runner?: ContractRunner | null): IUniswapV3PriceFeed;
+  waitForDeployment(): Promise<this>;
 
   interface: IUniswapV3PriceFeedInterface;
 
-  queryFilter<TEvent extends TypedEvent>(
-    event: TypedEventFilter<TEvent>,
+  queryFilter<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TEvent>>;
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  queryFilter<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
 
-  listeners<TEvent extends TypedEvent>(
-    eventFilter?: TypedEventFilter<TEvent>
-  ): Array<TypedListener<TEvent>>;
-  listeners(eventName?: string): Array<Listener>;
-  removeAllListeners<TEvent extends TypedEvent>(
-    eventFilter: TypedEventFilter<TEvent>
-  ): this;
-  removeAllListeners(eventName?: string): this;
-  off: OnEvent<this>;
-  on: OnEvent<this>;
-  once: OnEvent<this>;
-  removeListener: OnEvent<this>;
+  on<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  on<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-  functions: {
-    baseAsset(overrides?: CallOverrides): Promise<[string]>;
+  once<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  once<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-    decimals(overrides?: CallOverrides): Promise<[number]>;
+  listeners<TCEvent extends TypedContractEvent>(
+    event: TCEvent
+  ): Promise<Array<TypedListener<TCEvent>>>;
+  listeners(eventName?: string): Promise<Array<Listener>>;
+  removeAllListeners<TCEvent extends TypedContractEvent>(
+    event?: TCEvent
+  ): Promise<this>;
 
-    description(overrides?: CallOverrides): Promise<[string]>;
+  baseAsset: TypedContractMethod<[], [string], "view">;
 
-    getRoundData(
-      _roundId: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
-        roundId: BigNumber;
-        answer: BigNumber;
-        startedAt: BigNumber;
-        updatedAt: BigNumber;
-        answeredInRound: BigNumber;
+  decimals: TypedContractMethod<[], [bigint], "view">;
+
+  description: TypedContractMethod<[], [string], "view">;
+
+  getRoundData: TypedContractMethod<
+    [_roundId: BigNumberish],
+    [
+      [bigint, bigint, bigint, bigint, bigint] & {
+        roundId: bigint;
+        answer: bigint;
+        startedAt: bigint;
+        updatedAt: bigint;
+        answeredInRound: bigint;
       }
-    >;
-
-    latestRoundData(
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
-        roundId: BigNumber;
-        answer: BigNumber;
-        startedAt: BigNumber;
-        updatedAt: BigNumber;
-        answeredInRound: BigNumber;
-      }
-    >;
-
-    maxPrice(overrides?: CallOverrides): Promise<[BigNumber]>;
-
-    pool(overrides?: CallOverrides): Promise<[string]>;
-
-    quoteAsset(overrides?: CallOverrides): Promise<[string]>;
-
-    setMaxPrice(
-      maxPrice_: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-
-    twapInterval(overrides?: CallOverrides): Promise<[number]>;
-
-    version(overrides?: CallOverrides): Promise<[BigNumber]>;
-  };
-
-  baseAsset(overrides?: CallOverrides): Promise<string>;
-
-  decimals(overrides?: CallOverrides): Promise<number>;
-
-  description(overrides?: CallOverrides): Promise<string>;
-
-  getRoundData(
-    _roundId: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
-      roundId: BigNumber;
-      answer: BigNumber;
-      startedAt: BigNumber;
-      updatedAt: BigNumber;
-      answeredInRound: BigNumber;
-    }
+    ],
+    "view"
   >;
 
-  latestRoundData(
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
-      roundId: BigNumber;
-      answer: BigNumber;
-      startedAt: BigNumber;
-      updatedAt: BigNumber;
-      answeredInRound: BigNumber;
-    }
+  latestRoundData: TypedContractMethod<
+    [],
+    [
+      [bigint, bigint, bigint, bigint, bigint] & {
+        roundId: bigint;
+        answer: bigint;
+        startedAt: bigint;
+        updatedAt: bigint;
+        answeredInRound: bigint;
+      }
+    ],
+    "view"
   >;
 
-  maxPrice(overrides?: CallOverrides): Promise<BigNumber>;
+  maxPrice: TypedContractMethod<[], [bigint], "view">;
 
-  pool(overrides?: CallOverrides): Promise<string>;
+  pool: TypedContractMethod<[], [string], "view">;
 
-  quoteAsset(overrides?: CallOverrides): Promise<string>;
+  quoteAsset: TypedContractMethod<[], [string], "view">;
 
-  setMaxPrice(
-    maxPrice_: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  setMaxPrice: TypedContractMethod<
+    [maxPrice_: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
 
-  twapInterval(overrides?: CallOverrides): Promise<number>;
+  twapInterval: TypedContractMethod<[], [bigint], "view">;
 
-  version(overrides?: CallOverrides): Promise<BigNumber>;
+  version: TypedContractMethod<[], [bigint], "view">;
 
-  callStatic: {
-    baseAsset(overrides?: CallOverrides): Promise<string>;
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
 
-    decimals(overrides?: CallOverrides): Promise<number>;
-
-    description(overrides?: CallOverrides): Promise<string>;
-
-    getRoundData(
-      _roundId: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
-        roundId: BigNumber;
-        answer: BigNumber;
-        startedAt: BigNumber;
-        updatedAt: BigNumber;
-        answeredInRound: BigNumber;
+  getFunction(
+    nameOrSignature: "baseAsset"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "decimals"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "description"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "getRoundData"
+  ): TypedContractMethod<
+    [_roundId: BigNumberish],
+    [
+      [bigint, bigint, bigint, bigint, bigint] & {
+        roundId: bigint;
+        answer: bigint;
+        startedAt: bigint;
+        updatedAt: bigint;
+        answeredInRound: bigint;
       }
-    >;
-
-    latestRoundData(
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, BigNumber, BigNumber, BigNumber, BigNumber] & {
-        roundId: BigNumber;
-        answer: BigNumber;
-        startedAt: BigNumber;
-        updatedAt: BigNumber;
-        answeredInRound: BigNumber;
+    ],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "latestRoundData"
+  ): TypedContractMethod<
+    [],
+    [
+      [bigint, bigint, bigint, bigint, bigint] & {
+        roundId: bigint;
+        answer: bigint;
+        startedAt: bigint;
+        updatedAt: bigint;
+        answeredInRound: bigint;
       }
-    >;
-
-    maxPrice(overrides?: CallOverrides): Promise<BigNumber>;
-
-    pool(overrides?: CallOverrides): Promise<string>;
-
-    quoteAsset(overrides?: CallOverrides): Promise<string>;
-
-    setMaxPrice(
-      maxPrice_: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    twapInterval(overrides?: CallOverrides): Promise<number>;
-
-    version(overrides?: CallOverrides): Promise<BigNumber>;
-  };
+    ],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "maxPrice"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "pool"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "quoteAsset"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "setMaxPrice"
+  ): TypedContractMethod<[maxPrice_: BigNumberish], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "twapInterval"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "version"
+  ): TypedContractMethod<[], [bigint], "view">;
 
   filters: {};
-
-  estimateGas: {
-    baseAsset(overrides?: CallOverrides): Promise<BigNumber>;
-
-    decimals(overrides?: CallOverrides): Promise<BigNumber>;
-
-    description(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getRoundData(
-      _roundId: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    latestRoundData(overrides?: CallOverrides): Promise<BigNumber>;
-
-    maxPrice(overrides?: CallOverrides): Promise<BigNumber>;
-
-    pool(overrides?: CallOverrides): Promise<BigNumber>;
-
-    quoteAsset(overrides?: CallOverrides): Promise<BigNumber>;
-
-    setMaxPrice(
-      maxPrice_: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    twapInterval(overrides?: CallOverrides): Promise<BigNumber>;
-
-    version(overrides?: CallOverrides): Promise<BigNumber>;
-  };
-
-  populateTransaction: {
-    baseAsset(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    decimals(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    description(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    getRoundData(
-      _roundId: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    latestRoundData(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    maxPrice(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    pool(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    quoteAsset(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    setMaxPrice(
-      maxPrice_: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    twapInterval(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    version(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-  };
 }

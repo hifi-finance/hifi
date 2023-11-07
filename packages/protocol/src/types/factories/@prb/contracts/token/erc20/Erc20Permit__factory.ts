@@ -2,15 +2,18 @@
 /* tslint:disable */
 /* eslint-disable */
 import {
-  Signer,
-  utils,
   Contract,
   ContractFactory,
-  BigNumberish,
-  Overrides,
+  ContractTransactionResponse,
+  Interface,
 } from "ethers";
-import type { Provider, TransactionRequest } from "@ethersproject/providers";
-import type { PromiseOrValue } from "../../../../../common";
+import type {
+  Signer,
+  BigNumberish,
+  ContractDeployTransaction,
+  ContractRunner,
+} from "ethers";
+import type { NonPayableOverrides } from "../../../../../common";
 import type {
   Erc20Permit,
   Erc20PermitInterface,
@@ -530,25 +533,12 @@ export class Erc20Permit__factory extends ContractFactory {
     }
   }
 
-  override deploy(
-    _name: PromiseOrValue<string>,
-    _symbol: PromiseOrValue<string>,
-    _decimals: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<Erc20Permit> {
-    return super.deploy(
-      _name,
-      _symbol,
-      _decimals,
-      overrides || {}
-    ) as Promise<Erc20Permit>;
-  }
   override getDeployTransaction(
-    _name: PromiseOrValue<string>,
-    _symbol: PromiseOrValue<string>,
-    _decimals: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): TransactionRequest {
+    _name: string,
+    _symbol: string,
+    _decimals: BigNumberish,
+    overrides?: NonPayableOverrides & { from?: string }
+  ): Promise<ContractDeployTransaction> {
     return super.getDeployTransaction(
       _name,
       _symbol,
@@ -556,22 +546,28 @@ export class Erc20Permit__factory extends ContractFactory {
       overrides || {}
     );
   }
-  override attach(address: string): Erc20Permit {
-    return super.attach(address) as Erc20Permit;
+  override deploy(
+    _name: string,
+    _symbol: string,
+    _decimals: BigNumberish,
+    overrides?: NonPayableOverrides & { from?: string }
+  ) {
+    return super.deploy(_name, _symbol, _decimals, overrides || {}) as Promise<
+      Erc20Permit & {
+        deploymentTransaction(): ContractTransactionResponse;
+      }
+    >;
   }
-  override connect(signer: Signer): Erc20Permit__factory {
-    return super.connect(signer) as Erc20Permit__factory;
+  override connect(runner: ContractRunner | null): Erc20Permit__factory {
+    return super.connect(runner) as Erc20Permit__factory;
   }
 
   static readonly bytecode = _bytecode;
   static readonly abi = _abi;
   static createInterface(): Erc20PermitInterface {
-    return new utils.Interface(_abi) as Erc20PermitInterface;
+    return new Interface(_abi) as Erc20PermitInterface;
   }
-  static connect(
-    address: string,
-    signerOrProvider: Signer | Provider
-  ): Erc20Permit {
-    return new Contract(address, _abi, signerOrProvider) as Erc20Permit;
+  static connect(address: string, runner?: ContractRunner | null): Erc20Permit {
+    return new Contract(address, _abi, runner) as unknown as Erc20Permit;
   }
 }

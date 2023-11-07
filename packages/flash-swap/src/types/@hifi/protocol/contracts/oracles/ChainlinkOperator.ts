@@ -3,48 +3,29 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumber,
   BigNumberish,
   BytesLike,
-  CallOverrides,
-  ContractTransaction,
-  Overrides,
-  PopulatedTransaction,
-  Signer,
-  utils,
-} from "ethers";
-import type {
   FunctionFragment,
   Result,
+  Interface,
   EventFragment,
-} from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
+  AddressLike,
+  ContractRunner,
+  ContractMethod,
+  Listener,
+} from "ethers";
 import type {
-  TypedEventFilter,
-  TypedEvent,
+  TypedContractEvent,
+  TypedDeferredTopicFilter,
+  TypedEventLog,
+  TypedLogDescription,
   TypedListener,
-  OnEvent,
-  PromiseOrValue,
+  TypedContractMethod,
 } from "../../../../common";
 
-export interface ChainlinkOperatorInterface extends utils.Interface {
-  functions: {
-    "_renounceOwnership()": FunctionFragment;
-    "_transferOwnership(address)": FunctionFragment;
-    "deleteFeed(string)": FunctionFragment;
-    "getFeed(string)": FunctionFragment;
-    "getNormalizedPrice(string)": FunctionFragment;
-    "getPrice(string)": FunctionFragment;
-    "owner()": FunctionFragment;
-    "pricePrecision()": FunctionFragment;
-    "pricePrecisionScalar()": FunctionFragment;
-    "priceStalenessThreshold()": FunctionFragment;
-    "setFeed(address,address)": FunctionFragment;
-    "setPriceStalenessThreshold(uint256)": FunctionFragment;
-  };
-
+export interface ChainlinkOperatorInterface extends Interface {
   getFunction(
-    nameOrSignatureOrTopic:
+    nameOrSignature:
       | "_renounceOwnership"
       | "_transferOwnership"
       | "deleteFeed"
@@ -59,30 +40,29 @@ export interface ChainlinkOperatorInterface extends utils.Interface {
       | "setPriceStalenessThreshold"
   ): FunctionFragment;
 
+  getEvent(
+    nameOrSignatureOrTopic:
+      | "DeleteFeed"
+      | "SetFeed"
+      | "SetPriceStalenessThreshold"
+      | "TransferOwnership"
+  ): EventFragment;
+
   encodeFunctionData(
     functionFragment: "_renounceOwnership",
     values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "_transferOwnership",
-    values: [PromiseOrValue<string>]
+    values: [AddressLike]
   ): string;
-  encodeFunctionData(
-    functionFragment: "deleteFeed",
-    values: [PromiseOrValue<string>]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getFeed",
-    values: [PromiseOrValue<string>]
-  ): string;
+  encodeFunctionData(functionFragment: "deleteFeed", values: [string]): string;
+  encodeFunctionData(functionFragment: "getFeed", values: [string]): string;
   encodeFunctionData(
     functionFragment: "getNormalizedPrice",
-    values: [PromiseOrValue<string>]
+    values: [string]
   ): string;
-  encodeFunctionData(
-    functionFragment: "getPrice",
-    values: [PromiseOrValue<string>]
-  ): string;
+  encodeFunctionData(functionFragment: "getPrice", values: [string]): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "pricePrecision",
@@ -98,11 +78,11 @@ export interface ChainlinkOperatorInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "setFeed",
-    values: [PromiseOrValue<string>, PromiseOrValue<string>]
+    values: [AddressLike, AddressLike]
   ): string;
   encodeFunctionData(
     functionFragment: "setPriceStalenessThreshold",
-    values: [PromiseOrValue<BigNumberish>]
+    values: [BigNumberish]
   ): string;
 
   decodeFunctionResult(
@@ -138,374 +118,270 @@ export interface ChainlinkOperatorInterface extends utils.Interface {
     functionFragment: "setPriceStalenessThreshold",
     data: BytesLike
   ): Result;
-
-  events: {
-    "DeleteFeed(address,address)": EventFragment;
-    "SetFeed(address,address)": EventFragment;
-    "SetPriceStalenessThreshold(uint256,uint256)": EventFragment;
-    "TransferOwnership(address,address)": EventFragment;
-  };
-
-  getEvent(nameOrSignatureOrTopic: "DeleteFeed"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "SetFeed"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "SetPriceStalenessThreshold"): EventFragment;
-  getEvent(nameOrSignatureOrTopic: "TransferOwnership"): EventFragment;
 }
 
-export interface DeleteFeedEventObject {
-  asset: string;
-  feed: string;
+export namespace DeleteFeedEvent {
+  export type InputTuple = [asset: AddressLike, feed: AddressLike];
+  export type OutputTuple = [asset: string, feed: string];
+  export interface OutputObject {
+    asset: string;
+    feed: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type DeleteFeedEvent = TypedEvent<
-  [string, string],
-  DeleteFeedEventObject
->;
 
-export type DeleteFeedEventFilter = TypedEventFilter<DeleteFeedEvent>;
-
-export interface SetFeedEventObject {
-  asset: string;
-  feed: string;
+export namespace SetFeedEvent {
+  export type InputTuple = [asset: AddressLike, feed: AddressLike];
+  export type OutputTuple = [asset: string, feed: string];
+  export interface OutputObject {
+    asset: string;
+    feed: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type SetFeedEvent = TypedEvent<[string, string], SetFeedEventObject>;
 
-export type SetFeedEventFilter = TypedEventFilter<SetFeedEvent>;
-
-export interface SetPriceStalenessThresholdEventObject {
-  oldPriceStalenessThreshold: BigNumber;
-  newPriceStalenessThreshold: BigNumber;
+export namespace SetPriceStalenessThresholdEvent {
+  export type InputTuple = [
+    oldPriceStalenessThreshold: BigNumberish,
+    newPriceStalenessThreshold: BigNumberish
+  ];
+  export type OutputTuple = [
+    oldPriceStalenessThreshold: bigint,
+    newPriceStalenessThreshold: bigint
+  ];
+  export interface OutputObject {
+    oldPriceStalenessThreshold: bigint;
+    newPriceStalenessThreshold: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type SetPriceStalenessThresholdEvent = TypedEvent<
-  [BigNumber, BigNumber],
-  SetPriceStalenessThresholdEventObject
->;
 
-export type SetPriceStalenessThresholdEventFilter =
-  TypedEventFilter<SetPriceStalenessThresholdEvent>;
-
-export interface TransferOwnershipEventObject {
-  oldOwner: string;
-  newOwner: string;
+export namespace TransferOwnershipEvent {
+  export type InputTuple = [oldOwner: AddressLike, newOwner: AddressLike];
+  export type OutputTuple = [oldOwner: string, newOwner: string];
+  export interface OutputObject {
+    oldOwner: string;
+    newOwner: string;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type TransferOwnershipEvent = TypedEvent<
-  [string, string],
-  TransferOwnershipEventObject
->;
-
-export type TransferOwnershipEventFilter =
-  TypedEventFilter<TransferOwnershipEvent>;
 
 export interface ChainlinkOperator extends BaseContract {
-  connect(signerOrProvider: Signer | Provider | string): this;
-  attach(addressOrName: string): this;
-  deployed(): Promise<this>;
+  connect(runner?: ContractRunner | null): ChainlinkOperator;
+  waitForDeployment(): Promise<this>;
 
   interface: ChainlinkOperatorInterface;
 
-  queryFilter<TEvent extends TypedEvent>(
-    event: TypedEventFilter<TEvent>,
+  queryFilter<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TEvent>>;
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  queryFilter<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
 
-  listeners<TEvent extends TypedEvent>(
-    eventFilter?: TypedEventFilter<TEvent>
-  ): Array<TypedListener<TEvent>>;
-  listeners(eventName?: string): Array<Listener>;
-  removeAllListeners<TEvent extends TypedEvent>(
-    eventFilter: TypedEventFilter<TEvent>
-  ): this;
-  removeAllListeners(eventName?: string): this;
-  off: OnEvent<this>;
-  on: OnEvent<this>;
-  once: OnEvent<this>;
-  removeListener: OnEvent<this>;
+  on<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  on<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-  functions: {
-    _renounceOwnership(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+  once<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  once<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-    _transferOwnership(
-      newOwner: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+  listeners<TCEvent extends TypedContractEvent>(
+    event: TCEvent
+  ): Promise<Array<TypedListener<TCEvent>>>;
+  listeners(eventName?: string): Promise<Array<Listener>>;
+  removeAllListeners<TCEvent extends TypedContractEvent>(
+    event?: TCEvent
+  ): Promise<this>;
 
-    deleteFeed(
-      symbol: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+  _renounceOwnership: TypedContractMethod<[], [void], "nonpayable">;
 
-    getFeed(
-      symbol: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[string, string, boolean]>;
+  _transferOwnership: TypedContractMethod<
+    [newOwner: AddressLike],
+    [void],
+    "nonpayable"
+  >;
 
-    getNormalizedPrice(
-      symbol: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+  deleteFeed: TypedContractMethod<[symbol: string], [void], "nonpayable">;
 
-    getPrice(
-      symbol: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber]>;
+  getFeed: TypedContractMethod<
+    [symbol: string],
+    [[string, string, boolean]],
+    "view"
+  >;
 
-    owner(overrides?: CallOverrides): Promise<[string]>;
+  getNormalizedPrice: TypedContractMethod<[symbol: string], [bigint], "view">;
 
-    pricePrecision(overrides?: CallOverrides): Promise<[BigNumber]>;
+  getPrice: TypedContractMethod<[symbol: string], [bigint], "view">;
 
-    pricePrecisionScalar(overrides?: CallOverrides): Promise<[BigNumber]>;
+  owner: TypedContractMethod<[], [string], "view">;
 
-    priceStalenessThreshold(overrides?: CallOverrides): Promise<[BigNumber]>;
+  pricePrecision: TypedContractMethod<[], [bigint], "view">;
 
-    setFeed(
-      asset: PromiseOrValue<string>,
-      feed: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+  pricePrecisionScalar: TypedContractMethod<[], [bigint], "view">;
 
-    setPriceStalenessThreshold(
-      newPriceStalenessThreshold: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-  };
+  priceStalenessThreshold: TypedContractMethod<[], [bigint], "view">;
 
-  _renounceOwnership(
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  setFeed: TypedContractMethod<
+    [asset: AddressLike, feed: AddressLike],
+    [void],
+    "nonpayable"
+  >;
 
-  _transferOwnership(
-    newOwner: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  setPriceStalenessThreshold: TypedContractMethod<
+    [newPriceStalenessThreshold: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
 
-  deleteFeed(
-    symbol: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
 
-  getFeed(
-    symbol: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<[string, string, boolean]>;
+  getFunction(
+    nameOrSignature: "_renounceOwnership"
+  ): TypedContractMethod<[], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "_transferOwnership"
+  ): TypedContractMethod<[newOwner: AddressLike], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "deleteFeed"
+  ): TypedContractMethod<[symbol: string], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "getFeed"
+  ): TypedContractMethod<[symbol: string], [[string, string, boolean]], "view">;
+  getFunction(
+    nameOrSignature: "getNormalizedPrice"
+  ): TypedContractMethod<[symbol: string], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getPrice"
+  ): TypedContractMethod<[symbol: string], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "owner"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "pricePrecision"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "pricePrecisionScalar"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "priceStalenessThreshold"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "setFeed"
+  ): TypedContractMethod<
+    [asset: AddressLike, feed: AddressLike],
+    [void],
+    "nonpayable"
+  >;
+  getFunction(
+    nameOrSignature: "setPriceStalenessThreshold"
+  ): TypedContractMethod<
+    [newPriceStalenessThreshold: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
 
-  getNormalizedPrice(
-    symbol: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  getPrice(
-    symbol: PromiseOrValue<string>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
-
-  owner(overrides?: CallOverrides): Promise<string>;
-
-  pricePrecision(overrides?: CallOverrides): Promise<BigNumber>;
-
-  pricePrecisionScalar(overrides?: CallOverrides): Promise<BigNumber>;
-
-  priceStalenessThreshold(overrides?: CallOverrides): Promise<BigNumber>;
-
-  setFeed(
-    asset: PromiseOrValue<string>,
-    feed: PromiseOrValue<string>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  setPriceStalenessThreshold(
-    newPriceStalenessThreshold: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  callStatic: {
-    _renounceOwnership(overrides?: CallOverrides): Promise<void>;
-
-    _transferOwnership(
-      newOwner: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    deleteFeed(
-      symbol: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    getFeed(
-      symbol: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<[string, string, boolean]>;
-
-    getNormalizedPrice(
-      symbol: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getPrice(
-      symbol: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    owner(overrides?: CallOverrides): Promise<string>;
-
-    pricePrecision(overrides?: CallOverrides): Promise<BigNumber>;
-
-    pricePrecisionScalar(overrides?: CallOverrides): Promise<BigNumber>;
-
-    priceStalenessThreshold(overrides?: CallOverrides): Promise<BigNumber>;
-
-    setFeed(
-      asset: PromiseOrValue<string>,
-      feed: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    setPriceStalenessThreshold(
-      newPriceStalenessThreshold: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-  };
+  getEvent(
+    key: "DeleteFeed"
+  ): TypedContractEvent<
+    DeleteFeedEvent.InputTuple,
+    DeleteFeedEvent.OutputTuple,
+    DeleteFeedEvent.OutputObject
+  >;
+  getEvent(
+    key: "SetFeed"
+  ): TypedContractEvent<
+    SetFeedEvent.InputTuple,
+    SetFeedEvent.OutputTuple,
+    SetFeedEvent.OutputObject
+  >;
+  getEvent(
+    key: "SetPriceStalenessThreshold"
+  ): TypedContractEvent<
+    SetPriceStalenessThresholdEvent.InputTuple,
+    SetPriceStalenessThresholdEvent.OutputTuple,
+    SetPriceStalenessThresholdEvent.OutputObject
+  >;
+  getEvent(
+    key: "TransferOwnership"
+  ): TypedContractEvent<
+    TransferOwnershipEvent.InputTuple,
+    TransferOwnershipEvent.OutputTuple,
+    TransferOwnershipEvent.OutputObject
+  >;
 
   filters: {
-    "DeleteFeed(address,address)"(
-      asset?: PromiseOrValue<string> | null,
-      feed?: PromiseOrValue<string> | null
-    ): DeleteFeedEventFilter;
-    DeleteFeed(
-      asset?: PromiseOrValue<string> | null,
-      feed?: PromiseOrValue<string> | null
-    ): DeleteFeedEventFilter;
+    "DeleteFeed(address,address)": TypedContractEvent<
+      DeleteFeedEvent.InputTuple,
+      DeleteFeedEvent.OutputTuple,
+      DeleteFeedEvent.OutputObject
+    >;
+    DeleteFeed: TypedContractEvent<
+      DeleteFeedEvent.InputTuple,
+      DeleteFeedEvent.OutputTuple,
+      DeleteFeedEvent.OutputObject
+    >;
 
-    "SetFeed(address,address)"(
-      asset?: PromiseOrValue<string> | null,
-      feed?: PromiseOrValue<string> | null
-    ): SetFeedEventFilter;
-    SetFeed(
-      asset?: PromiseOrValue<string> | null,
-      feed?: PromiseOrValue<string> | null
-    ): SetFeedEventFilter;
+    "SetFeed(address,address)": TypedContractEvent<
+      SetFeedEvent.InputTuple,
+      SetFeedEvent.OutputTuple,
+      SetFeedEvent.OutputObject
+    >;
+    SetFeed: TypedContractEvent<
+      SetFeedEvent.InputTuple,
+      SetFeedEvent.OutputTuple,
+      SetFeedEvent.OutputObject
+    >;
 
-    "SetPriceStalenessThreshold(uint256,uint256)"(
-      oldPriceStalenessThreshold?: null,
-      newPriceStalenessThreshold?: null
-    ): SetPriceStalenessThresholdEventFilter;
-    SetPriceStalenessThreshold(
-      oldPriceStalenessThreshold?: null,
-      newPriceStalenessThreshold?: null
-    ): SetPriceStalenessThresholdEventFilter;
+    "SetPriceStalenessThreshold(uint256,uint256)": TypedContractEvent<
+      SetPriceStalenessThresholdEvent.InputTuple,
+      SetPriceStalenessThresholdEvent.OutputTuple,
+      SetPriceStalenessThresholdEvent.OutputObject
+    >;
+    SetPriceStalenessThreshold: TypedContractEvent<
+      SetPriceStalenessThresholdEvent.InputTuple,
+      SetPriceStalenessThresholdEvent.OutputTuple,
+      SetPriceStalenessThresholdEvent.OutputObject
+    >;
 
-    "TransferOwnership(address,address)"(
-      oldOwner?: PromiseOrValue<string> | null,
-      newOwner?: PromiseOrValue<string> | null
-    ): TransferOwnershipEventFilter;
-    TransferOwnership(
-      oldOwner?: PromiseOrValue<string> | null,
-      newOwner?: PromiseOrValue<string> | null
-    ): TransferOwnershipEventFilter;
-  };
-
-  estimateGas: {
-    _renounceOwnership(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    _transferOwnership(
-      newOwner: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    deleteFeed(
-      symbol: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    getFeed(
-      symbol: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getNormalizedPrice(
-      symbol: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    getPrice(
-      symbol: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    owner(overrides?: CallOverrides): Promise<BigNumber>;
-
-    pricePrecision(overrides?: CallOverrides): Promise<BigNumber>;
-
-    pricePrecisionScalar(overrides?: CallOverrides): Promise<BigNumber>;
-
-    priceStalenessThreshold(overrides?: CallOverrides): Promise<BigNumber>;
-
-    setFeed(
-      asset: PromiseOrValue<string>,
-      feed: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    setPriceStalenessThreshold(
-      newPriceStalenessThreshold: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-  };
-
-  populateTransaction: {
-    _renounceOwnership(
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    _transferOwnership(
-      newOwner: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    deleteFeed(
-      symbol: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    getFeed(
-      symbol: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getNormalizedPrice(
-      symbol: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    getPrice(
-      symbol: PromiseOrValue<string>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    pricePrecision(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    pricePrecisionScalar(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    priceStalenessThreshold(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    setFeed(
-      asset: PromiseOrValue<string>,
-      feed: PromiseOrValue<string>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    setPriceStalenessThreshold(
-      newPriceStalenessThreshold: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
+    "TransferOwnership(address,address)": TypedContractEvent<
+      TransferOwnershipEvent.InputTuple,
+      TransferOwnershipEvent.OutputTuple,
+      TransferOwnershipEvent.OutputObject
+    >;
+    TransferOwnership: TypedContractEvent<
+      TransferOwnershipEvent.InputTuple,
+      TransferOwnershipEvent.OutputTuple,
+      TransferOwnershipEvent.OutputObject
+    >;
   };
 }

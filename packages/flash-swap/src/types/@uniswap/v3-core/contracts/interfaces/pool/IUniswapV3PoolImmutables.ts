@@ -3,34 +3,25 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumber,
   BytesLike,
-  CallOverrides,
-  PopulatedTransaction,
-  Signer,
-  utils,
+  FunctionFragment,
+  Result,
+  Interface,
+  ContractRunner,
+  ContractMethod,
+  Listener,
 } from "ethers";
-import type { FunctionFragment, Result } from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
 import type {
-  TypedEventFilter,
-  TypedEvent,
+  TypedContractEvent,
+  TypedDeferredTopicFilter,
+  TypedEventLog,
   TypedListener,
-  OnEvent,
+  TypedContractMethod,
 } from "../../../../../common";
 
-export interface IUniswapV3PoolImmutablesInterface extends utils.Interface {
-  functions: {
-    "factory()": FunctionFragment;
-    "fee()": FunctionFragment;
-    "maxLiquidityPerTick()": FunctionFragment;
-    "tickSpacing()": FunctionFragment;
-    "token0()": FunctionFragment;
-    "token1()": FunctionFragment;
-  };
-
+export interface IUniswapV3PoolImmutablesInterface extends Interface {
   getFunction(
-    nameOrSignatureOrTopic:
+    nameOrSignature:
       | "factory"
       | "fee"
       | "maxLiquidityPerTick"
@@ -64,105 +55,85 @@ export interface IUniswapV3PoolImmutablesInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "token0", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "token1", data: BytesLike): Result;
-
-  events: {};
 }
 
 export interface IUniswapV3PoolImmutables extends BaseContract {
-  connect(signerOrProvider: Signer | Provider | string): this;
-  attach(addressOrName: string): this;
-  deployed(): Promise<this>;
+  connect(runner?: ContractRunner | null): IUniswapV3PoolImmutables;
+  waitForDeployment(): Promise<this>;
 
   interface: IUniswapV3PoolImmutablesInterface;
 
-  queryFilter<TEvent extends TypedEvent>(
-    event: TypedEventFilter<TEvent>,
+  queryFilter<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TEvent>>;
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  queryFilter<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
 
-  listeners<TEvent extends TypedEvent>(
-    eventFilter?: TypedEventFilter<TEvent>
-  ): Array<TypedListener<TEvent>>;
-  listeners(eventName?: string): Array<Listener>;
-  removeAllListeners<TEvent extends TypedEvent>(
-    eventFilter: TypedEventFilter<TEvent>
-  ): this;
-  removeAllListeners(eventName?: string): this;
-  off: OnEvent<this>;
-  on: OnEvent<this>;
-  once: OnEvent<this>;
-  removeListener: OnEvent<this>;
+  on<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  on<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-  functions: {
-    factory(overrides?: CallOverrides): Promise<[string]>;
+  once<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  once<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-    fee(overrides?: CallOverrides): Promise<[number]>;
+  listeners<TCEvent extends TypedContractEvent>(
+    event: TCEvent
+  ): Promise<Array<TypedListener<TCEvent>>>;
+  listeners(eventName?: string): Promise<Array<Listener>>;
+  removeAllListeners<TCEvent extends TypedContractEvent>(
+    event?: TCEvent
+  ): Promise<this>;
 
-    maxLiquidityPerTick(overrides?: CallOverrides): Promise<[BigNumber]>;
+  factory: TypedContractMethod<[], [string], "view">;
 
-    tickSpacing(overrides?: CallOverrides): Promise<[number]>;
+  fee: TypedContractMethod<[], [bigint], "view">;
 
-    token0(overrides?: CallOverrides): Promise<[string]>;
+  maxLiquidityPerTick: TypedContractMethod<[], [bigint], "view">;
 
-    token1(overrides?: CallOverrides): Promise<[string]>;
-  };
+  tickSpacing: TypedContractMethod<[], [bigint], "view">;
 
-  factory(overrides?: CallOverrides): Promise<string>;
+  token0: TypedContractMethod<[], [string], "view">;
 
-  fee(overrides?: CallOverrides): Promise<number>;
+  token1: TypedContractMethod<[], [string], "view">;
 
-  maxLiquidityPerTick(overrides?: CallOverrides): Promise<BigNumber>;
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
 
-  tickSpacing(overrides?: CallOverrides): Promise<number>;
-
-  token0(overrides?: CallOverrides): Promise<string>;
-
-  token1(overrides?: CallOverrides): Promise<string>;
-
-  callStatic: {
-    factory(overrides?: CallOverrides): Promise<string>;
-
-    fee(overrides?: CallOverrides): Promise<number>;
-
-    maxLiquidityPerTick(overrides?: CallOverrides): Promise<BigNumber>;
-
-    tickSpacing(overrides?: CallOverrides): Promise<number>;
-
-    token0(overrides?: CallOverrides): Promise<string>;
-
-    token1(overrides?: CallOverrides): Promise<string>;
-  };
+  getFunction(
+    nameOrSignature: "factory"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "fee"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "maxLiquidityPerTick"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "tickSpacing"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "token0"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "token1"
+  ): TypedContractMethod<[], [string], "view">;
 
   filters: {};
-
-  estimateGas: {
-    factory(overrides?: CallOverrides): Promise<BigNumber>;
-
-    fee(overrides?: CallOverrides): Promise<BigNumber>;
-
-    maxLiquidityPerTick(overrides?: CallOverrides): Promise<BigNumber>;
-
-    tickSpacing(overrides?: CallOverrides): Promise<BigNumber>;
-
-    token0(overrides?: CallOverrides): Promise<BigNumber>;
-
-    token1(overrides?: CallOverrides): Promise<BigNumber>;
-  };
-
-  populateTransaction: {
-    factory(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    fee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    maxLiquidityPerTick(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    tickSpacing(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    token0(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    token1(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-  };
 }

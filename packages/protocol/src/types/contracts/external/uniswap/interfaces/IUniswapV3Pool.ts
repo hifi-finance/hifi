@@ -3,42 +3,26 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumber,
   BigNumberish,
   BytesLike,
-  CallOverrides,
-  ContractTransaction,
-  Overrides,
-  PopulatedTransaction,
-  Signer,
-  utils,
+  FunctionFragment,
+  Result,
+  Interface,
+  ContractRunner,
+  ContractMethod,
+  Listener,
 } from "ethers";
-import type { FunctionFragment, Result } from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
 import type {
-  TypedEventFilter,
-  TypedEvent,
+  TypedContractEvent,
+  TypedDeferredTopicFilter,
+  TypedEventLog,
   TypedListener,
-  OnEvent,
-  PromiseOrValue,
+  TypedContractMethod,
 } from "../../../../common";
 
-export interface IUniswapV3PoolInterface extends utils.Interface {
-  functions: {
-    "factory()": FunctionFragment;
-    "fee()": FunctionFragment;
-    "initialize(uint160)": FunctionFragment;
-    "maxLiquidityPerTick()": FunctionFragment;
-    "observations(uint256)": FunctionFragment;
-    "observe(uint32[])": FunctionFragment;
-    "slot0()": FunctionFragment;
-    "tickSpacing()": FunctionFragment;
-    "token0()": FunctionFragment;
-    "token1()": FunctionFragment;
-  };
-
+export interface IUniswapV3PoolInterface extends Interface {
   getFunction(
-    nameOrSignatureOrTopic:
+    nameOrSignature:
       | "factory"
       | "fee"
       | "initialize"
@@ -55,7 +39,7 @@ export interface IUniswapV3PoolInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "fee", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "initialize",
-    values: [PromiseOrValue<BigNumberish>]
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "maxLiquidityPerTick",
@@ -63,11 +47,11 @@ export interface IUniswapV3PoolInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "observations",
-    values: [PromiseOrValue<BigNumberish>]
+    values: [BigNumberish]
   ): string;
   encodeFunctionData(
     functionFragment: "observe",
-    values: [PromiseOrValue<BigNumberish>[]]
+    values: [BigNumberish[]]
   ): string;
   encodeFunctionData(functionFragment: "slot0", values?: undefined): string;
   encodeFunctionData(
@@ -96,262 +80,177 @@ export interface IUniswapV3PoolInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "token0", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "token1", data: BytesLike): Result;
-
-  events: {};
 }
 
 export interface IUniswapV3Pool extends BaseContract {
-  connect(signerOrProvider: Signer | Provider | string): this;
-  attach(addressOrName: string): this;
-  deployed(): Promise<this>;
+  connect(runner?: ContractRunner | null): IUniswapV3Pool;
+  waitForDeployment(): Promise<this>;
 
   interface: IUniswapV3PoolInterface;
 
-  queryFilter<TEvent extends TypedEvent>(
-    event: TypedEventFilter<TEvent>,
+  queryFilter<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TEvent>>;
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  queryFilter<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
 
-  listeners<TEvent extends TypedEvent>(
-    eventFilter?: TypedEventFilter<TEvent>
-  ): Array<TypedListener<TEvent>>;
-  listeners(eventName?: string): Array<Listener>;
-  removeAllListeners<TEvent extends TypedEvent>(
-    eventFilter: TypedEventFilter<TEvent>
-  ): this;
-  removeAllListeners(eventName?: string): this;
-  off: OnEvent<this>;
-  on: OnEvent<this>;
-  once: OnEvent<this>;
-  removeListener: OnEvent<this>;
+  on<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  on<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-  functions: {
-    factory(overrides?: CallOverrides): Promise<[string]>;
+  once<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  once<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-    fee(overrides?: CallOverrides): Promise<[number]>;
+  listeners<TCEvent extends TypedContractEvent>(
+    event: TCEvent
+  ): Promise<Array<TypedListener<TCEvent>>>;
+  listeners(eventName?: string): Promise<Array<Listener>>;
+  removeAllListeners<TCEvent extends TypedContractEvent>(
+    event?: TCEvent
+  ): Promise<this>;
 
-    initialize(
-      sqrtPriceX96: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
+  factory: TypedContractMethod<[], [string], "view">;
 
-    maxLiquidityPerTick(overrides?: CallOverrides): Promise<[BigNumber]>;
+  fee: TypedContractMethod<[], [bigint], "view">;
 
-    observations(
-      index: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<
-      [number, BigNumber, BigNumber, boolean] & {
-        blockTimestamp: number;
-        tickCumulative: BigNumber;
-        secondsPerLiquidityCumulativeX128: BigNumber;
+  initialize: TypedContractMethod<
+    [sqrtPriceX96: BigNumberish],
+    [void],
+    "nonpayable"
+  >;
+
+  maxLiquidityPerTick: TypedContractMethod<[], [bigint], "view">;
+
+  observations: TypedContractMethod<
+    [index: BigNumberish],
+    [
+      [bigint, bigint, bigint, boolean] & {
+        blockTimestamp: bigint;
+        tickCumulative: bigint;
+        secondsPerLiquidityCumulativeX128: bigint;
         initialized: boolean;
       }
-    >;
+    ],
+    "view"
+  >;
 
-    observe(
-      secondsAgos: PromiseOrValue<BigNumberish>[],
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber[], BigNumber[]] & {
-        tickCumulatives: BigNumber[];
-        secondsPerLiquidityCumulativeX128s: BigNumber[];
+  observe: TypedContractMethod<
+    [secondsAgos: BigNumberish[]],
+    [
+      [bigint[], bigint[]] & {
+        tickCumulatives: bigint[];
+        secondsPerLiquidityCumulativeX128s: bigint[];
       }
-    >;
+    ],
+    "view"
+  >;
 
-    slot0(
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, number, number, number, number, number, boolean] & {
-        sqrtPriceX96: BigNumber;
-        tick: number;
-        observationIndex: number;
-        observationCardinality: number;
-        observationCardinalityNext: number;
-        feeProtocol: number;
+  slot0: TypedContractMethod<
+    [],
+    [
+      [bigint, bigint, bigint, bigint, bigint, bigint, boolean] & {
+        sqrtPriceX96: bigint;
+        tick: bigint;
+        observationIndex: bigint;
+        observationCardinality: bigint;
+        observationCardinalityNext: bigint;
+        feeProtocol: bigint;
         unlocked: boolean;
       }
-    >;
-
-    tickSpacing(overrides?: CallOverrides): Promise<[number]>;
-
-    token0(overrides?: CallOverrides): Promise<[string]>;
-
-    token1(overrides?: CallOverrides): Promise<[string]>;
-  };
-
-  factory(overrides?: CallOverrides): Promise<string>;
-
-  fee(overrides?: CallOverrides): Promise<number>;
-
-  initialize(
-    sqrtPriceX96: PromiseOrValue<BigNumberish>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  maxLiquidityPerTick(overrides?: CallOverrides): Promise<BigNumber>;
-
-  observations(
-    index: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<
-    [number, BigNumber, BigNumber, boolean] & {
-      blockTimestamp: number;
-      tickCumulative: BigNumber;
-      secondsPerLiquidityCumulativeX128: BigNumber;
-      initialized: boolean;
-    }
+    ],
+    "view"
   >;
 
-  observe(
-    secondsAgos: PromiseOrValue<BigNumberish>[],
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber[], BigNumber[]] & {
-      tickCumulatives: BigNumber[];
-      secondsPerLiquidityCumulativeX128s: BigNumber[];
-    }
-  >;
+  tickSpacing: TypedContractMethod<[], [bigint], "view">;
 
-  slot0(
-    overrides?: CallOverrides
-  ): Promise<
-    [BigNumber, number, number, number, number, number, boolean] & {
-      sqrtPriceX96: BigNumber;
-      tick: number;
-      observationIndex: number;
-      observationCardinality: number;
-      observationCardinalityNext: number;
-      feeProtocol: number;
-      unlocked: boolean;
-    }
-  >;
+  token0: TypedContractMethod<[], [string], "view">;
 
-  tickSpacing(overrides?: CallOverrides): Promise<number>;
+  token1: TypedContractMethod<[], [string], "view">;
 
-  token0(overrides?: CallOverrides): Promise<string>;
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
 
-  token1(overrides?: CallOverrides): Promise<string>;
-
-  callStatic: {
-    factory(overrides?: CallOverrides): Promise<string>;
-
-    fee(overrides?: CallOverrides): Promise<number>;
-
-    initialize(
-      sqrtPriceX96: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-
-    maxLiquidityPerTick(overrides?: CallOverrides): Promise<BigNumber>;
-
-    observations(
-      index: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<
-      [number, BigNumber, BigNumber, boolean] & {
-        blockTimestamp: number;
-        tickCumulative: BigNumber;
-        secondsPerLiquidityCumulativeX128: BigNumber;
+  getFunction(
+    nameOrSignature: "factory"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "fee"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "initialize"
+  ): TypedContractMethod<[sqrtPriceX96: BigNumberish], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "maxLiquidityPerTick"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "observations"
+  ): TypedContractMethod<
+    [index: BigNumberish],
+    [
+      [bigint, bigint, bigint, boolean] & {
+        blockTimestamp: bigint;
+        tickCumulative: bigint;
+        secondsPerLiquidityCumulativeX128: bigint;
         initialized: boolean;
       }
-    >;
-
-    observe(
-      secondsAgos: PromiseOrValue<BigNumberish>[],
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber[], BigNumber[]] & {
-        tickCumulatives: BigNumber[];
-        secondsPerLiquidityCumulativeX128s: BigNumber[];
+    ],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "observe"
+  ): TypedContractMethod<
+    [secondsAgos: BigNumberish[]],
+    [
+      [bigint[], bigint[]] & {
+        tickCumulatives: bigint[];
+        secondsPerLiquidityCumulativeX128s: bigint[];
       }
-    >;
-
-    slot0(
-      overrides?: CallOverrides
-    ): Promise<
-      [BigNumber, number, number, number, number, number, boolean] & {
-        sqrtPriceX96: BigNumber;
-        tick: number;
-        observationIndex: number;
-        observationCardinality: number;
-        observationCardinalityNext: number;
-        feeProtocol: number;
+    ],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "slot0"
+  ): TypedContractMethod<
+    [],
+    [
+      [bigint, bigint, bigint, bigint, bigint, bigint, boolean] & {
+        sqrtPriceX96: bigint;
+        tick: bigint;
+        observationIndex: bigint;
+        observationCardinality: bigint;
+        observationCardinalityNext: bigint;
+        feeProtocol: bigint;
         unlocked: boolean;
       }
-    >;
-
-    tickSpacing(overrides?: CallOverrides): Promise<number>;
-
-    token0(overrides?: CallOverrides): Promise<string>;
-
-    token1(overrides?: CallOverrides): Promise<string>;
-  };
+    ],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "tickSpacing"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "token0"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "token1"
+  ): TypedContractMethod<[], [string], "view">;
 
   filters: {};
-
-  estimateGas: {
-    factory(overrides?: CallOverrides): Promise<BigNumber>;
-
-    fee(overrides?: CallOverrides): Promise<BigNumber>;
-
-    initialize(
-      sqrtPriceX96: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-
-    maxLiquidityPerTick(overrides?: CallOverrides): Promise<BigNumber>;
-
-    observations(
-      index: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    observe(
-      secondsAgos: PromiseOrValue<BigNumberish>[],
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    slot0(overrides?: CallOverrides): Promise<BigNumber>;
-
-    tickSpacing(overrides?: CallOverrides): Promise<BigNumber>;
-
-    token0(overrides?: CallOverrides): Promise<BigNumber>;
-
-    token1(overrides?: CallOverrides): Promise<BigNumber>;
-  };
-
-  populateTransaction: {
-    factory(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    fee(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    initialize(
-      sqrtPriceX96: PromiseOrValue<BigNumberish>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
-
-    maxLiquidityPerTick(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    observations(
-      index: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    observe(
-      secondsAgos: PromiseOrValue<BigNumberish>[],
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    slot0(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    tickSpacing(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    token0(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    token1(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-  };
 }

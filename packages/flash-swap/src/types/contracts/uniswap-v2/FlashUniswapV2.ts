@@ -3,41 +3,29 @@
 /* eslint-disable */
 import type {
   BaseContract,
-  BigNumber,
   BigNumberish,
   BytesLike,
-  CallOverrides,
-  ContractTransaction,
-  Overrides,
-  PopulatedTransaction,
-  Signer,
-  utils,
-} from "ethers";
-import type {
   FunctionFragment,
   Result,
+  Interface,
   EventFragment,
-} from "@ethersproject/abi";
-import type { Listener, Provider } from "@ethersproject/providers";
+  AddressLike,
+  ContractRunner,
+  ContractMethod,
+  Listener,
+} from "ethers";
 import type {
-  TypedEventFilter,
-  TypedEvent,
+  TypedContractEvent,
+  TypedDeferredTopicFilter,
+  TypedEventLog,
+  TypedLogDescription,
   TypedListener,
-  OnEvent,
-  PromiseOrValue,
+  TypedContractMethod,
 } from "../../common";
 
-export interface FlashUniswapV2Interface extends utils.Interface {
-  functions: {
-    "balanceSheet()": FunctionFragment;
-    "getRepayAmount(address,address,uint256)": FunctionFragment;
-    "uniV2Factory()": FunctionFragment;
-    "uniV2PairInitCodeHash()": FunctionFragment;
-    "uniswapV2Call(address,uint256,uint256,bytes)": FunctionFragment;
-  };
-
+export interface FlashUniswapV2Interface extends Interface {
   getFunction(
-    nameOrSignatureOrTopic:
+    nameOrSignature:
       | "balanceSheet"
       | "getRepayAmount"
       | "uniV2Factory"
@@ -45,254 +33,215 @@ export interface FlashUniswapV2Interface extends utils.Interface {
       | "uniswapV2Call"
   ): FunctionFragment;
 
-  encodeFunctionData(
-    functionFragment: "balanceSheet",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "getRepayAmount",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>
-    ]
-  ): string;
-  encodeFunctionData(
-    functionFragment: "uniV2Factory",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "uniV2PairInitCodeHash",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "uniswapV2Call",
-    values: [
-      PromiseOrValue<string>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BigNumberish>,
-      PromiseOrValue<BytesLike>
-    ]
-  ): string;
-
-  decodeFunctionResult(
-    functionFragment: "balanceSheet",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "getRepayAmount",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "uniV2Factory",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "uniV2PairInitCodeHash",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "uniswapV2Call",
-    data: BytesLike
-  ): Result;
-
-  events: {
-    "FlashSwapAndLiquidateBorrow(address,address,address,uint256,uint256,uint256,uint256,uint256)": EventFragment;
-  };
-
   getEvent(
     nameOrSignatureOrTopic: "FlashSwapAndLiquidateBorrow"
   ): EventFragment;
+
+  encodeFunctionData(
+    functionFragment: "balanceSheet",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getRepayAmount",
+    values: [AddressLike, AddressLike, BigNumberish]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "uniV2Factory",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "uniV2PairInitCodeHash",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "uniswapV2Call",
+    values: [AddressLike, BigNumberish, BigNumberish, BytesLike]
+  ): string;
+
+  decodeFunctionResult(
+    functionFragment: "balanceSheet",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getRepayAmount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "uniV2Factory",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "uniV2PairInitCodeHash",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "uniswapV2Call",
+    data: BytesLike
+  ): Result;
 }
 
-export interface FlashSwapAndLiquidateBorrowEventObject {
-  liquidator: string;
-  borrower: string;
-  bond: string;
-  underlyingAmount: BigNumber;
-  seizeAmount: BigNumber;
-  repayAmount: BigNumber;
-  subsidyAmount: BigNumber;
-  profitAmount: BigNumber;
+export namespace FlashSwapAndLiquidateBorrowEvent {
+  export type InputTuple = [
+    liquidator: AddressLike,
+    borrower: AddressLike,
+    bond: AddressLike,
+    underlyingAmount: BigNumberish,
+    seizeAmount: BigNumberish,
+    repayAmount: BigNumberish,
+    subsidyAmount: BigNumberish,
+    profitAmount: BigNumberish
+  ];
+  export type OutputTuple = [
+    liquidator: string,
+    borrower: string,
+    bond: string,
+    underlyingAmount: bigint,
+    seizeAmount: bigint,
+    repayAmount: bigint,
+    subsidyAmount: bigint,
+    profitAmount: bigint
+  ];
+  export interface OutputObject {
+    liquidator: string;
+    borrower: string;
+    bond: string;
+    underlyingAmount: bigint;
+    seizeAmount: bigint;
+    repayAmount: bigint;
+    subsidyAmount: bigint;
+    profitAmount: bigint;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
 }
-export type FlashSwapAndLiquidateBorrowEvent = TypedEvent<
-  [
-    string,
-    string,
-    string,
-    BigNumber,
-    BigNumber,
-    BigNumber,
-    BigNumber,
-    BigNumber
-  ],
-  FlashSwapAndLiquidateBorrowEventObject
->;
-
-export type FlashSwapAndLiquidateBorrowEventFilter =
-  TypedEventFilter<FlashSwapAndLiquidateBorrowEvent>;
 
 export interface FlashUniswapV2 extends BaseContract {
-  connect(signerOrProvider: Signer | Provider | string): this;
-  attach(addressOrName: string): this;
-  deployed(): Promise<this>;
+  connect(runner?: ContractRunner | null): FlashUniswapV2;
+  waitForDeployment(): Promise<this>;
 
   interface: FlashUniswapV2Interface;
 
-  queryFilter<TEvent extends TypedEvent>(
-    event: TypedEventFilter<TEvent>,
+  queryFilter<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
     fromBlockOrBlockhash?: string | number | undefined,
     toBlock?: string | number | undefined
-  ): Promise<Array<TEvent>>;
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
+  queryFilter<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    fromBlockOrBlockhash?: string | number | undefined,
+    toBlock?: string | number | undefined
+  ): Promise<Array<TypedEventLog<TCEvent>>>;
 
-  listeners<TEvent extends TypedEvent>(
-    eventFilter?: TypedEventFilter<TEvent>
-  ): Array<TypedListener<TEvent>>;
-  listeners(eventName?: string): Array<Listener>;
-  removeAllListeners<TEvent extends TypedEvent>(
-    eventFilter: TypedEventFilter<TEvent>
-  ): this;
-  removeAllListeners(eventName?: string): this;
-  off: OnEvent<this>;
-  on: OnEvent<this>;
-  once: OnEvent<this>;
-  removeListener: OnEvent<this>;
+  on<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  on<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-  functions: {
-    balanceSheet(overrides?: CallOverrides): Promise<[string]>;
+  once<TCEvent extends TypedContractEvent>(
+    event: TCEvent,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
+  once<TCEvent extends TypedContractEvent>(
+    filter: TypedDeferredTopicFilter<TCEvent>,
+    listener: TypedListener<TCEvent>
+  ): Promise<this>;
 
-    getRepayAmount(
-      pair: PromiseOrValue<string>,
-      underlying: PromiseOrValue<string>,
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<[BigNumber] & { repayAmount: BigNumber }>;
+  listeners<TCEvent extends TypedContractEvent>(
+    event: TCEvent
+  ): Promise<Array<TypedListener<TCEvent>>>;
+  listeners(eventName?: string): Promise<Array<Listener>>;
+  removeAllListeners<TCEvent extends TypedContractEvent>(
+    event?: TCEvent
+  ): Promise<this>;
 
-    uniV2Factory(overrides?: CallOverrides): Promise<[string]>;
+  balanceSheet: TypedContractMethod<[], [string], "view">;
 
-    uniV2PairInitCodeHash(overrides?: CallOverrides): Promise<[string]>;
+  getRepayAmount: TypedContractMethod<
+    [
+      pair: AddressLike,
+      underlying: AddressLike,
+      underlyingAmount: BigNumberish
+    ],
+    [bigint],
+    "view"
+  >;
 
-    uniswapV2Call(
-      sender: PromiseOrValue<string>,
-      amount0: PromiseOrValue<BigNumberish>,
-      amount1: PromiseOrValue<BigNumberish>,
-      data: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<ContractTransaction>;
-  };
+  uniV2Factory: TypedContractMethod<[], [string], "view">;
 
-  balanceSheet(overrides?: CallOverrides): Promise<string>;
+  uniV2PairInitCodeHash: TypedContractMethod<[], [string], "view">;
 
-  getRepayAmount(
-    pair: PromiseOrValue<string>,
-    underlying: PromiseOrValue<string>,
-    underlyingAmount: PromiseOrValue<BigNumberish>,
-    overrides?: CallOverrides
-  ): Promise<BigNumber>;
+  uniswapV2Call: TypedContractMethod<
+    [
+      sender: AddressLike,
+      amount0: BigNumberish,
+      amount1: BigNumberish,
+      data: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
 
-  uniV2Factory(overrides?: CallOverrides): Promise<string>;
+  getFunction<T extends ContractMethod = ContractMethod>(
+    key: string | FunctionFragment
+  ): T;
 
-  uniV2PairInitCodeHash(overrides?: CallOverrides): Promise<string>;
+  getFunction(
+    nameOrSignature: "balanceSheet"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "getRepayAmount"
+  ): TypedContractMethod<
+    [
+      pair: AddressLike,
+      underlying: AddressLike,
+      underlyingAmount: BigNumberish
+    ],
+    [bigint],
+    "view"
+  >;
+  getFunction(
+    nameOrSignature: "uniV2Factory"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "uniV2PairInitCodeHash"
+  ): TypedContractMethod<[], [string], "view">;
+  getFunction(
+    nameOrSignature: "uniswapV2Call"
+  ): TypedContractMethod<
+    [
+      sender: AddressLike,
+      amount0: BigNumberish,
+      amount1: BigNumberish,
+      data: BytesLike
+    ],
+    [void],
+    "nonpayable"
+  >;
 
-  uniswapV2Call(
-    sender: PromiseOrValue<string>,
-    amount0: PromiseOrValue<BigNumberish>,
-    amount1: PromiseOrValue<BigNumberish>,
-    data: PromiseOrValue<BytesLike>,
-    overrides?: Overrides & { from?: PromiseOrValue<string> }
-  ): Promise<ContractTransaction>;
-
-  callStatic: {
-    balanceSheet(overrides?: CallOverrides): Promise<string>;
-
-    getRepayAmount(
-      pair: PromiseOrValue<string>,
-      underlying: PromiseOrValue<string>,
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    uniV2Factory(overrides?: CallOverrides): Promise<string>;
-
-    uniV2PairInitCodeHash(overrides?: CallOverrides): Promise<string>;
-
-    uniswapV2Call(
-      sender: PromiseOrValue<string>,
-      amount0: PromiseOrValue<BigNumberish>,
-      amount1: PromiseOrValue<BigNumberish>,
-      data: PromiseOrValue<BytesLike>,
-      overrides?: CallOverrides
-    ): Promise<void>;
-  };
+  getEvent(
+    key: "FlashSwapAndLiquidateBorrow"
+  ): TypedContractEvent<
+    FlashSwapAndLiquidateBorrowEvent.InputTuple,
+    FlashSwapAndLiquidateBorrowEvent.OutputTuple,
+    FlashSwapAndLiquidateBorrowEvent.OutputObject
+  >;
 
   filters: {
-    "FlashSwapAndLiquidateBorrow(address,address,address,uint256,uint256,uint256,uint256,uint256)"(
-      liquidator?: PromiseOrValue<string> | null,
-      borrower?: PromiseOrValue<string> | null,
-      bond?: PromiseOrValue<string> | null,
-      underlyingAmount?: null,
-      seizeAmount?: null,
-      repayAmount?: null,
-      subsidyAmount?: null,
-      profitAmount?: null
-    ): FlashSwapAndLiquidateBorrowEventFilter;
-    FlashSwapAndLiquidateBorrow(
-      liquidator?: PromiseOrValue<string> | null,
-      borrower?: PromiseOrValue<string> | null,
-      bond?: PromiseOrValue<string> | null,
-      underlyingAmount?: null,
-      seizeAmount?: null,
-      repayAmount?: null,
-      subsidyAmount?: null,
-      profitAmount?: null
-    ): FlashSwapAndLiquidateBorrowEventFilter;
-  };
-
-  estimateGas: {
-    balanceSheet(overrides?: CallOverrides): Promise<BigNumber>;
-
-    getRepayAmount(
-      pair: PromiseOrValue<string>,
-      underlying: PromiseOrValue<string>,
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<BigNumber>;
-
-    uniV2Factory(overrides?: CallOverrides): Promise<BigNumber>;
-
-    uniV2PairInitCodeHash(overrides?: CallOverrides): Promise<BigNumber>;
-
-    uniswapV2Call(
-      sender: PromiseOrValue<string>,
-      amount0: PromiseOrValue<BigNumberish>,
-      amount1: PromiseOrValue<BigNumberish>,
-      data: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<BigNumber>;
-  };
-
-  populateTransaction: {
-    balanceSheet(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    getRepayAmount(
-      pair: PromiseOrValue<string>,
-      underlying: PromiseOrValue<string>,
-      underlyingAmount: PromiseOrValue<BigNumberish>,
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    uniV2Factory(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    uniV2PairInitCodeHash(
-      overrides?: CallOverrides
-    ): Promise<PopulatedTransaction>;
-
-    uniswapV2Call(
-      sender: PromiseOrValue<string>,
-      amount0: PromiseOrValue<BigNumberish>,
-      amount1: PromiseOrValue<BigNumberish>,
-      data: PromiseOrValue<BytesLike>,
-      overrides?: Overrides & { from?: PromiseOrValue<string> }
-    ): Promise<PopulatedTransaction>;
+    "FlashSwapAndLiquidateBorrow(address,address,address,uint256,uint256,uint256,uint256,uint256)": TypedContractEvent<
+      FlashSwapAndLiquidateBorrowEvent.InputTuple,
+      FlashSwapAndLiquidateBorrowEvent.OutputTuple,
+      FlashSwapAndLiquidateBorrowEvent.OutputObject
+    >;
+    FlashSwapAndLiquidateBorrow: TypedContractEvent<
+      FlashSwapAndLiquidateBorrowEvent.InputTuple,
+      FlashSwapAndLiquidateBorrowEvent.OutputTuple,
+      FlashSwapAndLiquidateBorrowEvent.OutputObject
+    >;
   };
 }
