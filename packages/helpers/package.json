@@ -17,10 +17,10 @@
     "hardhat": "^2.19.0"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^5.17.0",
-    "@typescript-eslint/parser": "^5.17.0",
-    "eslint": "^8.12.0",
-    "eslint-config-prettier": "^8.5.0",
+    "@typescript-eslint/eslint-plugin": "^5.62.0",
+    "@typescript-eslint/parser": "^5.62.0",
+    "eslint": "^8.53.0",
+    "eslint-config-prettier": "^8.10.0",
     "prettier": "^2.8.8",
     "shx": "^0.3.4",
     "typescript": "^4.9.5"
