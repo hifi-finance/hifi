@@ -69,6 +69,18 @@ async function depositCollateral() {
 }
 ```
 
+## Deployment
+
+### Hifi Proxy Target
+
+```bash
+$ yarn hardhat deploy:contract:hifi-proxy-target \
+    --confirmations 5 \
+    --network ${NETWORK} \
+    --print true \
+    --verify true
+```
+
 ## License
 
 [LGPL v3](./LICENSE.md) © Mainframe Group Inc.

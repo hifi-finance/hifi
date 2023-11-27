@@ -101,6 +101,33 @@ async function flashLiquidate() {
 }
 ```
 
+## Deployment
+
+### Flash Uniswap V2
+
+```bash
+$ yarn hardhat deploy:contract:flash-uniswap-v2 \
+    --balance-sheet ${BALANCE_SHEET} \
+    --uni-v2-factory ${UNI_V2_FACTORY} \
+    --uni-v2-pair-init-code-hash ${UNI_V2_PAIR_INIT_CODE_HASH} \
+    --confirmations 5 \
+    --network ${NETWORK} \
+    --print true \
+    --verify true
+```
+
+### Flash Uniswap V3
+
+```bash
+$ yarn hardhat deploy:contract:flash-uniswap-v3 \
+    --balance-sheet ${BALANCE_SHEET} \
+    --uni-v3-factory ${UNI_V3_FACTORY} \
+    --confirmations 5 \
+    --network ${NETWORK} \
+    --print true \
+    --verify true
+```
+
 ## License
 
 [LGPL v3](./LICENSE.md) © Mainframe Group Inc.

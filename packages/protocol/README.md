@@ -66,6 +66,96 @@ async function queryAccountLiquidity() {
 }
 ```
 
+## Deployment
+
+### Balance Sheet
+
+```bash
+$ yarn hardhat deploy:contract:balance-sheet \
+    --fintroller ${FINTROLLER} \
+    --oracle ${ORACLE} \
+    --new-owner ${NEW_OWNER} \
+    --confirmations 5 \
+    --network ${NETWORK} \
+    --print true \
+    --verify true
+```
+
+### Chainlink Operator
+
+```bash
+$ yarn hardhat deploy:contract:chainlink-operator \
+    --new-owner ${NEW_OWNER} \
+    --confirmations 5 \
+    --network ${NETWORK} \
+    --print true \
+    --verify true
+```
+
+### Fintroller
+
+```bash
+$ yarn hardhat deploy:contract:fintroller \
+    --new-owner ${NEW_OWNER} \
+    --confirmations 5 \
+    --network ${NETWORK} \
+    --print true \
+    --verify true
+```
+
+### HToken
+
+```bash
+$ yarn hardhat deploy:contract:h-token \
+    --name ${NAME} \
+    --symbol ${SYMBOL} \
+    --maturity ${MATURITY} \
+    --balance-sheet ${BALANCE_SHEET} \
+    --fintroller ${FINTROLLER} \
+    --underlying ${UNDERLYING} \
+    --confirmations 5 \
+    --network ${NETWORK} \
+    --print true \
+    --verify true
+```
+
+### Simple Price Feed
+
+```bash
+$ yarn hardhat deploy:contract:simple-price-feed \
+    --description ${DESCRIPTION} \
+    --confirmations 5 \
+    --network ${NETWORK} \
+    --print true \
+    --verify true
+```
+
+### Stablecoin Price Feed
+
+```bash
+$ yarn hardhat deploy:contract:stablecoin-price-feed \
+    --price ${PRICE} \
+    --description ${DESCRIPTION} \
+    --confirmations 5 \
+    --network ${NETWORK} \
+    --print true \
+    --verify true
+```
+
+### Uniswap V3 Price Feed
+
+```bash
+$ yarn hardhat deploy:contract:uniswap-v3-price-feed \
+    --pool ${POOL} \
+    --quoteAsset ${QUOTE_ASSET} \
+    --twapInterval ${TWAP_INTERVAL} \
+    --maxPrice ${MAX_PRICE} \
+    --confirmations 5 \
+    --network ${NETWORK} \
+    --print true \
+    --verify true
+```
+
 ## License
 
 [BUSL 1.1](./LICENSE.md) © Mainframe Group Inc.
