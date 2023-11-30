@@ -8,7 +8,7 @@ import { SUBTASK_DEPLOY_WAIT_FOR_CONFIRMATIONS, TASK_DEPLOY_CONTRACT_FINTROLLER 
 
 task(TASK_DEPLOY_CONTRACT_FINTROLLER)
   .addOptionalParam("confirmations", "How many block confirmations to wait for", 2, types.int)
-  .addOptionalParam("newOwner", "The address of new owner to set the deployed contract to", null, types.string)
+  .addOptionalParam("newOwner", "The address of new owner to set the deployed contract to", "", types.string)
   .addOptionalParam("print", "Print the address in the console", true, types.boolean)
   .addOptionalParam("verify", "Verify the contract on Etherscan", true, types.boolean)
   .setAction(async function (taskArgs: TaskArguments, { ethers, run }): Promise<string> {

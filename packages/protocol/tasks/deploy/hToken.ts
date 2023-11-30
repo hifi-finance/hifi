@@ -17,7 +17,7 @@ task(TASK_DEPLOY_CONTRACT_H_TOKEN)
   .addParam("underlying", "Address of the underlying ERC-20 contract")
   // Developer settings
   .addOptionalParam("confirmations", "How many block confirmations to wait for", 2, types.int)
-  .addOptionalParam("newOwner", "The address of new owner to set the deployed contract to", null, types.string)
+  .addOptionalParam("newOwner", "The address of new owner to set the deployed contract to", "", types.string)
   .addOptionalParam("print", "Print the address in the console", true, types.boolean)
   .addOptionalParam("setOutput", "Set the contract address as an output in GitHub Actions", false, types.boolean)
   .addOptionalParam("verify", "Verify the contract on Etherscan", true, types.boolean)

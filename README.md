@@ -54,6 +54,12 @@ Install the dependencies:
 $ yarn install
 ```
 
+Build the packages:
+
+```bash
+$ yarn build
+```
+
 Create a `.env` file and follow the `.env.example` file to add the requisite environment variables, then run the watcher:
 
 ```bash
