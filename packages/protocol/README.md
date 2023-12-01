@@ -68,12 +68,10 @@ async function queryAccountLiquidity() {
 
 ## Deployment
 
-### Balance Sheet
+### Fintroller
 
 ```bash
-$ yarn hardhat deploy:contract:balance-sheet \
-    --fintroller ${FINTROLLER} \
-    --oracle ${ORACLE} \
+$ yarn hardhat deploy:contract:fintroller \
     --new-owner ${NEW_OWNER} \
     --confirmations 5 \
     --network ${NETWORK} \
@@ -92,10 +90,12 @@ $ yarn hardhat deploy:contract:chainlink-operator \
     --verify true
 ```
 
-### Fintroller
+### Balance Sheet
 
 ```bash
-$ yarn hardhat deploy:contract:fintroller \
+$ yarn hardhat deploy:contract:balance-sheet \
+    --fintroller ${FINTROLLER} \
+    --oracle ${ORACLE} \
     --new-owner ${NEW_OWNER} \
     --confirmations 5 \
     --network ${NETWORK} \

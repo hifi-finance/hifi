@@ -63,6 +63,16 @@ async function getQuote() {
 
 ## Deployment
 
+### Hifi Pool Registry
+
+```bash
+$ yarn hardhat deploy:contract:hifi-pool-registry \
+    --confirmations 5 \
+    --network ${NETWORK} \
+    --print true \
+    --verify true
+```
+
 ### Hifi Pool
 
 ```bash
@@ -71,16 +81,6 @@ $ yarn hardhat deploy:contract:hifi-pool \
     --symbol ${SYMBOL} \
     --h-token ${H_TOKEN} \
     --hifi-pool-registry ${HIFI_POOL_REGISTRY} \
-    --confirmations 5 \
-    --network ${NETWORK} \
-    --print true \
-    --verify true
-```
-
-### Hifi Pool Registry
-
-```bash
-$ yarn hardhat deploy:contract:hifi-pool-registry \
     --confirmations 5 \
     --network ${NETWORK} \
     --print true \
