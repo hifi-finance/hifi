@@ -32,11 +32,14 @@ const config: HardhatUserConfig = {
   },
   etherscan: {
     apiKey: {
+      arbitrumOne: getEnvVar("ARBISCAN_API_KEY"),
+      avalanche: getEnvVar("SNOWTRACE_API_KEY"),
+      bsc: getEnvVar("BSCSCAN_API_KEY"),
       mainnet: getEnvVar("ETHERSCAN_API_KEY"),
-      goerli: getEnvVar("ETHERSCAN_API_KEY"),
+      optimisticEthereum: getEnvVar("OPTIMISM_API_KEY"),
       polygon: getEnvVar("POLYGONSCAN_API_KEY"),
-      rinkeby: getEnvVar("ETHERSCAN_API_KEY"),
-      ropsten: getEnvVar("ETHERSCAN_API_KEY"),
+      polygonMumbai: getEnvVar("POLYGONSCAN_API_KEY"),
+      sepolia: getEnvVar("ETHERSCAN_API_KEY"),
     },
   },
   gasReporter: {
@@ -60,11 +63,14 @@ const config: HardhatUserConfig = {
       },
       url: "http://localhost:8545",
     },
-    goerli: getChainConfig("goerli", infuraApiKey, mnemonic),
+    arbitrum: getChainConfig("arbitrum-mainnet", infuraApiKey, mnemonic),
+    avalanche: getChainConfig("avalanche", infuraApiKey, mnemonic),
+    bsc: getChainConfig("bsc", infuraApiKey, mnemonic),
     mainnet: getChainConfig("mainnet", infuraApiKey, mnemonic),
+    optimism: getChainConfig("optimism-mainnet", infuraApiKey, mnemonic),
     "polygon-mainnet": getChainConfig("polygon-mainnet", infuraApiKey, mnemonic),
-    rinkeby: getChainConfig("rinkeby", infuraApiKey, mnemonic),
-    ropsten: getChainConfig("ropsten", infuraApiKey, mnemonic),
+    "polygon-mumbai": getChainConfig("polygon-mumbai", infuraApiKey, mnemonic),
+    sepolia: getChainConfig("sepolia", infuraApiKey, mnemonic),
   },
   packager: {
     contracts: [
