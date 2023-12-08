@@ -41,7 +41,7 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
         IErc20 underlying;
     }
 
-    struct FlashLiquidateCallbackParams {
+    struct UniswapV3SwapCallbackParams {
         IHToken bond;
         address borrower;
         IErc20 collateral;
@@ -68,8 +68,8 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
 
         swapExactOutputInternal({
             amountOut: params.underlyingAmount,
-            benificiary: address(this),
-            params: FlashLiquidateCallbackParams({
+            to: address(this),
+            params: UniswapV3SwapCallbackParams({
                 bond: params.bond,
                 borrower: params.borrower,
                 collateral: params.collateral,
@@ -81,12 +81,15 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
         });
     }
 
-    struct FlashLiquidateCallbackLocalVars {
+    struct UniswapV3SwapCallbackLocalVars {
         uint256 mintedHTokenAmount;
         uint256 profitAmount;
         uint256 repayAmount;
         uint256 seizeAmount;
         uint256 subsidyAmount;
+        address tokenOut;
+        uint24 fee;
+        address tokenIn;
     }
 
     /// @inheritdoc IUniswapV3SwapCallback
@@ -95,25 +98,28 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
         int256 amount1Delta,
         bytes calldata data
     ) external override {
-        FlashLiquidateCallbackLocalVars memory vars;
+        UniswapV3SwapCallbackLocalVars memory vars;
 
         // Unpack the ABI encoded data passed by the UniswapV3Pool contract.
-        FlashLiquidateCallbackParams memory params = abi.decode(data, (FlashLiquidateCallbackParams));
+        UniswapV3SwapCallbackParams memory params = abi.decode(data, (UniswapV3SwapCallbackParams));
 
-        (address tokenOut, address tokenIn, uint24 fee) = params.path.decodeFirstPool();
+        (vars.tokenOut, vars.tokenIn, vars.fee) = params.path.decodeFirstPool();
 
         // Check that the caller is the Uniswap V3 flash pool contract.
-        if (msg.sender != poolFor(getPoolKey({ tokenA: tokenIn, tokenB: tokenOut, fee: fee }))) {
+        if (msg.sender != getPool({ tokenA: vars.tokenIn, tokenB: vars.tokenOut, fee: vars.fee })) {
             revert FlashUniswapV3__CallNotAuthorized(msg.sender);
         }
 
-        if (params.path.hasMultiplePools()) {
-            // Initiate the next swap.
-            params.path = params.path.skipToken();
-            swapExactOutputInternal({ amountOut: vars.repayAmount, benificiary: msg.sender, params: params });
-        } else {
-            // Liquidate the underwater vault.
+        // Calculate the amount of input tokens required to receive the exact output amount.
+        vars.repayAmount = amount0Delta > 0 ? uint256(amount0Delta) : uint256(amount1Delta);
 
+        // Initiate the next swap.
+        if (params.path.hasMultiplePools()) {
+            params.path = params.path.skipToken();
+            swapExactOutputInternal({ amountOut: vars.repayAmount, to: msg.sender, params: params });
+        }
+        // Or liquidate the underwater vault.
+        else {
             // Mint hTokens and liquidate the borrower.
             vars.mintedHTokenAmount = mintHTokens({ bond: params.bond, underlyingAmount: params.underlyingAmount });
             vars.seizeAmount = liquidateBorrow({
@@ -122,9 +128,6 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
                 collateral: params.collateral,
                 mintedHTokenAmount: vars.mintedHTokenAmount
             });
-
-            // Calculate the amount of collateral required to repay.
-            vars.repayAmount = uint256(amount0Delta > 0 ? amount0Delta : amount1Delta);
 
             // Note that "turnout" is a signed int. When it is negative, it acts as a maximum subsidy amount.
             // When its value is positive, it acts as a minimum profit.
@@ -171,18 +174,16 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
 
     /// INTERNAL CONSTANT FUNCTIONS ///
 
-    /// @dev Returns the Uniswap V3 pool key for a given token pair and fee level.
-    function getPoolKey(
+    /// @dev Calculates the CREATE2 address for a Uniswap V3 pool for a given token pair and fee level without
+    /// making any external calls.
+    function getPool(
         address tokenA,
         address tokenB,
         uint24 fee
-    ) internal pure returns (PoolKey memory) {
+    ) internal view returns (address pool) {
         if (tokenA > tokenB) (tokenA, tokenB) = (tokenB, tokenA);
-        return PoolKey({ token0: tokenA, token1: tokenB, fee: fee });
-    }
+        PoolKey memory key = PoolKey({ token0: tokenA, token1: tokenB, fee: fee });
 
-    /// @dev Calculates the CREATE2 address for a Uniswap V3 pool without making any external calls.
-    function poolFor(PoolKey memory key) internal view returns (address pool) {
         // solhint-disable-next-line reason-string
         require(key.token0 < key.token1);
         pool = address(
@@ -262,8 +263,8 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
     /// @dev Performs a Uniswap V3 swap, receiving an exact amount of output.
     function swapExactOutputInternal(
         uint256 amountOut,
-        address benificiary,
-        FlashLiquidateCallbackParams memory params
+        address to,
+        UniswapV3SwapCallbackParams memory params
     ) private returns (uint256 amountIn) {
         SwapExactOutputLocalVars memory vars;
 
@@ -275,9 +276,9 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
 
         // Swap the exact output amount.
         (int256 amount0Delta, int256 amount1Delta) = IUniswapV3Pool(
-            poolFor(getPoolKey({ tokenA: vars.tokenIn, tokenB: vars.tokenOut, fee: vars.fee }))
+            getPool({ tokenA: vars.tokenIn, tokenB: vars.tokenOut, fee: vars.fee })
         ).swap({
-                recipient: benificiary,
+                recipient: to,
                 zeroForOne: vars.zeroForOne,
                 amountSpecified: -int256(amountOut),
                 sqrtPriceLimitX96: vars.zeroForOne ? MIN_SQRT_RATIO + 1 : MAX_SQRT_RATIO - 1,

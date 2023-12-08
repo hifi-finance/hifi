@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.4;
 
-import "@hifi/protocol/contracts/core/balance-sheet/IBalanceSheetV2.sol";
-import "@uniswap/v3-core/contracts/interfaces/callback/IUniswapV3SwapCallback.sol";
+import { IErc20 } from "@prb/contracts/token/erc20/IErc20.sol";
+import { IBalanceSheetV2 } from "@hifi/protocol/contracts/core/balance-sheet/IBalanceSheetV2.sol";
+import { IHToken } from "@hifi/protocol/contracts/core/h-token/IHToken.sol";
+import { IUniswapV3SwapCallback } from "@uniswap/v3-core/contracts/interfaces/callback/IUniswapV3SwapCallback.sol";
 
 /// @title IFlashUniswapV3
 /// @author Hifi
