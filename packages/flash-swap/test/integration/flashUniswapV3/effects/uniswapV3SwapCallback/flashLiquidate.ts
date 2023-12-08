@@ -5,6 +5,7 @@ import { LIQUIDATION_INCENTIVES } from "@hifi/constants";
 import { BalanceSheetErrors, FlashUniswapV3Errors } from "@hifi/errors";
 import { USDC, WBTC, getNow, hUSDC, price } from "@hifi/helpers";
 import { expect } from "chai";
+import { utils } from "ethers";
 import { toBn } from "evm-bn";
 
 import { IFlashUniswapV3 } from "../../../../../src/types/contracts/uniswap-v3/IFlashUniswapV3";
@@ -20,11 +21,13 @@ async function getFlashLiquidateParams(
 ): Promise<FlashLiquidateParams> {
   const borrower: string = this.signers.borrower.address;
   const bond: string = this.contracts.hToken.address;
+  const fee: number = await this.contracts.uniswapV3Pool.fee();
+  const underlying: string = await this.contracts.hToken.underlying();
   const params: FlashLiquidateParams = {
     borrower: borrower,
     bond: bond,
     collateral: collateral,
-    poolFee: await this.contracts.uniswapV3Pool.connect(this.signers.raider).fee(),
+    path: utils.solidityPack(["address", "uint24", "address"], [underlying, fee, collateral]),
     turnout: turnout,
     underlyingAmount: underlyingAmount,
   };
@@ -225,10 +228,10 @@ export function shouldBehaveLikeFlashLiquidate(): void {
             expect(oldCollateralBalance).to.equal(newCollateralBalance);
           });
 
-          it("emits a FlashSwapAndLiquidateBorrow event", async function () {
+          it("emits a FlashLiquidate event", async function () {
             const contractCall = this.contracts.flashUniswapV3.connect(this.signers.liquidator).flashLiquidate(params);
             await expect(contractCall)
-              .to.emit(this.contracts.flashUniswapV3, "FlashSwapAndLiquidateBorrow")
+              .to.emit(this.contracts.flashUniswapV3, "FlashLiquidate")
               .withArgs(
                 this.signers.liquidator.address,
                 this.signers.borrower.address,
@@ -295,12 +298,12 @@ export function shouldBehaveLikeFlashLiquidate(): void {
               expect(oldCollateralBalance.sub(newCollateralBalance)).to.equal(subsidyCollateralAmount);
             });
 
-            it("emits a FlashSwapAndLiquidateBorrow event", async function () {
+            it("emits a FlashLiquidate event", async function () {
               const contractCall = this.contracts.flashUniswapV3
                 .connect(this.signers.liquidator)
                 .flashLiquidate(params);
               await expect(contractCall)
-                .to.emit(this.contracts.flashUniswapV3, "FlashSwapAndLiquidateBorrow")
+                .to.emit(this.contracts.flashUniswapV3, "FlashLiquidate")
                 .withArgs(
                   this.signers.liquidator.address,
                   this.signers.borrower.address,
@@ -352,12 +355,12 @@ export function shouldBehaveLikeFlashLiquidate(): void {
               expect(newCollateralBalance.sub(profitCollateralAmount)).to.equal(oldCollateralBalance);
             });
 
-            it("emits a FlashSwapAndLiquidateBorrow event", async function () {
+            it("emits a FlashLiquidate event", async function () {
               const contractCall = this.contracts.flashUniswapV3
                 .connect(this.signers.liquidator)
                 .flashLiquidate(params);
               await expect(contractCall)
-                .to.emit(this.contracts.flashUniswapV3, "FlashSwapAndLiquidateBorrow")
+                .to.emit(this.contracts.flashUniswapV3, "FlashLiquidate")
                 .withArgs(
                   this.signers.liquidator.address,
                   this.signers.borrower.address,

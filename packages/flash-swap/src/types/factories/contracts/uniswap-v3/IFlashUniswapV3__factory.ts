@@ -24,6 +24,22 @@ const _abi = [
   {
     inputs: [
       {
+        internalType: "uint256",
+        name: "amountOutExpected",
+        type: "uint256",
+      },
+      {
+        internalType: "uint256",
+        name: "amountOutReceived",
+        type: "uint256",
+      },
+    ],
+    name: "FlashUniswapV3__InsufficientSwapOutputAmount",
+    type: "error",
+  },
+  {
+    inputs: [
+      {
         internalType: "address",
         name: "borrower",
         type: "address",
@@ -116,7 +132,7 @@ const _abi = [
         type: "uint256",
       },
     ],
-    name: "FlashSwapAndLiquidateBorrow",
+    name: "FlashLiquidate",
     type: "event",
   },
   {
@@ -152,9 +168,9 @@ const _abi = [
             type: "address",
           },
           {
-            internalType: "uint24",
-            name: "poolFee",
-            type: "uint24",
+            internalType: "bytes",
+            name: "path",
+            type: "bytes",
           },
           {
             internalType: "int256",
