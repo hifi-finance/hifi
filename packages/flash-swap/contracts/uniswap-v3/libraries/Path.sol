@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
+// solhint-disable
 pragma solidity >=0.8.4;
 
 import "./BytesLib.sol";
