@@ -1,9 +1,13 @@
 name: "Deploy: ChainlinkOperator"
 
 env:
-  ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
   INFURA_API_KEY: ${{ secrets.INFURA_API_KEY }}
   MNEMONIC: ${{ secrets.MNEMONIC }}
+  ARBISCAN_API_KEY: ${{ secrets.ARBISCAN_API_KEY }}
+  SNOWTRACE_API_KEY: ${{ secrets.SNOWTRACE_API_KEY }}
+  BSCSCAN_API_KEY: ${{ secrets.BSCSCAN_API_KEY }}
+  ETHERSCAN_API_KEY: ${{ secrets.ETHERSCAN_API_KEY }}
+  OPTIMISM_API_KEY: ${{ secrets.OPTIMISM_API_KEY }}
   POLYGONSCAN_API_KEY: ${{ secrets.POLYGONSCAN_API_KEY }}
 
 on:
