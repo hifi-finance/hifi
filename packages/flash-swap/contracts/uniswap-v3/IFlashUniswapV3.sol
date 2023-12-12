@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity >=0.8.4;
 
-import "@hifi/protocol/contracts/core/balance-sheet/IBalanceSheetV2.sol";
-import "@uniswap/v3-core/contracts/interfaces/callback/IUniswapV3SwapCallback.sol";
+import { IErc20 } from "@prb/contracts/token/erc20/IErc20.sol";
+import { IBalanceSheetV2 } from "@hifi/protocol/contracts/core/balance-sheet/IBalanceSheetV2.sol";
+import { IHToken } from "@hifi/protocol/contracts/core/h-token/IHToken.sol";
+import { IUniswapV3SwapCallback } from "@uniswap/v3-core/contracts/interfaces/callback/IUniswapV3SwapCallback.sol";
 
 /// @title IFlashUniswapV3
 /// @author Hifi
@@ -12,6 +14,9 @@ interface IFlashUniswapV3 is IUniswapV3SwapCallback {
 
     /// @notice Emitted when the caller is not the Uniswap V3 pool contract.
     error FlashUniswapV3__CallNotAuthorized(address caller);
+
+    /// @notice Emitted when the amount of tokens received from the swap is less than the amount expected.
+    error FlashUniswapV3__InsufficientSwapOutputAmount(uint256 amountOutExpected, uint256 amountOutReceived);
 
     /// @notice Emitted when liquidating a vault backed by underlying.
     error FlashUniswapV3__LiquidateUnderlyingBackedVault(address borrower, address underlying);
@@ -32,7 +37,7 @@ interface IFlashUniswapV3 is IUniswapV3SwapCallback {
     /// @param repayAmount The amount of collateral that had to be repaid by the liquidator.
     /// @param subsidyAmount The amount of collateral subsidized by the liquidator.
     /// @param profitAmount The amount of collateral pocketed as profit by the liquidator.
-    event FlashSwapAndLiquidateBorrow(
+    event FlashLiquidate(
         address indexed liquidator,
         address indexed borrower,
         address indexed bond,
@@ -46,12 +51,12 @@ interface IFlashUniswapV3 is IUniswapV3SwapCallback {
 
     /// STRUCTS ///
 
-    /// @dev The parameters for the flash liquidation.
+    /// @dev The parameters for the n-hop flash liquidation.
     struct FlashLiquidateParams {
         address borrower;
         IHToken bond;
         IErc20 collateral;
-        uint24 poolFee;
+        bytes path;
         int256 turnout;
         uint256 underlyingAmount;
     }
@@ -73,7 +78,8 @@ interface IFlashUniswapV3 is IUniswapV3SwapCallback {
 
     /// NON-CONSTANT FUNCTIONS ///
 
-    /// @notice Flash borrows underlying from Uniswap V3, liquidates the underwater account, and repays the flash loan.
+    /// @notice Flash borrows underlying from Uniswap V3 via an n-hop swap, liquidates the underwater account, and
+    /// repays the flash loan.
     /// @param params The parameters for the liquidation.
     function flashLiquidate(FlashLiquidateParams memory params) external;
 }

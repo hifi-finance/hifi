@@ -1,27 +1,46 @@
 import { defaultAbiCoder } from "@ethersproject/abi";
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
+import { DEFAULT_FEE } from "@hifi/constants";
 import { FlashUniswapV3Errors } from "@hifi/errors";
 import { USDC, WBTC } from "@hifi/helpers";
 import { expect } from "chai";
+import { utils } from "ethers";
 
 import { shouldBehaveLikeFlashLiquidate } from "./flashLiquidate";
 
-async function getSwapCallbackData(
-  this: Mocha.Context,
-  collateral: string,
-  token0: string,
-  token1: string,
-  fee: number,
-): Promise<string> {
-  const types = ["address", "address", "address", "address", "address", "uint24", "address", "int256", "uint256"];
+async function getSwapCallbackData(this: Mocha.Context, collateral: string): Promise<string> {
   const bond: string = this.contracts.hToken.address;
   const borrower: string = this.signers.borrower.address;
   const sender: string = this.signers.raider.address;
+  const underlying: string = await this.contracts.hToken.underlying();
   const turnout: string = String(WBTC("0.001"));
   const underlyingAmount: string = String(USDC("10000"));
-  const values = [bond, borrower, collateral, token0, token1, fee, sender, turnout, underlyingAmount];
-  const data: string = defaultAbiCoder.encode(types, values);
+  const data: string = defaultAbiCoder.encode(
+    [
+      `tuple(
+        address bond,
+        address borrower,
+        address collateral,
+        bytes path,
+        address sender,
+        int256 turnout,
+        uint256 underlyingAmount
+        )`,
+    ],
+    [
+      {
+        bond,
+        borrower,
+        collateral,
+        path: utils.solidityPack(["address", "uint24", "address"], [underlying, DEFAULT_FEE, collateral]),
+        sender,
+        turnout,
+        underlyingAmount,
+      },
+    ],
+  );
+
   return data;
 }
 
@@ -41,14 +60,7 @@ export function shouldBehaveLikeUniswapV3SwapCallback(): void {
     let data: string;
 
     beforeEach(async function () {
-      const { token0, token1, fee } = this.contracts.uniswapV3Pool;
-      data = await getSwapCallbackData.call(
-        this,
-        this.contracts.wbtc.address,
-        await token0(),
-        await token1(),
-        await fee(),
-      );
+      data = await getSwapCallbackData.call(this, this.contracts.wbtc.address);
     });
 
     context("when the caller is not the UniswapV3Pool contract", function () {

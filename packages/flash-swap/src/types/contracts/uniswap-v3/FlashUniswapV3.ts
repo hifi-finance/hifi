@@ -32,7 +32,7 @@ export declare namespace IFlashUniswapV3 {
     borrower: PromiseOrValue<string>;
     bond: PromiseOrValue<string>;
     collateral: PromiseOrValue<string>;
-    poolFee: PromiseOrValue<BigNumberish>;
+    path: PromiseOrValue<BytesLike>;
     turnout: PromiseOrValue<BigNumberish>;
     underlyingAmount: PromiseOrValue<BigNumberish>;
   };
@@ -41,14 +41,14 @@ export declare namespace IFlashUniswapV3 {
     string,
     string,
     string,
-    number,
+    string,
     BigNumber,
     BigNumber
   ] & {
     borrower: string;
     bond: string;
     collateral: string;
-    poolFee: number;
+    path: string;
     turnout: BigNumber;
     underlyingAmount: BigNumber;
   };
@@ -57,7 +57,7 @@ export declare namespace IFlashUniswapV3 {
 export interface FlashUniswapV3Interface extends utils.Interface {
   functions: {
     "balanceSheet()": FunctionFragment;
-    "flashLiquidate((address,address,address,uint24,int256,uint256))": FunctionFragment;
+    "flashLiquidate((address,address,address,bytes,int256,uint256))": FunctionFragment;
     "uniV3Factory()": FunctionFragment;
     "uniswapV3SwapCallback(int256,int256,bytes)": FunctionFragment;
   };
@@ -109,15 +109,13 @@ export interface FlashUniswapV3Interface extends utils.Interface {
   ): Result;
 
   events: {
-    "FlashSwapAndLiquidateBorrow(address,address,address,address,uint256,uint256,uint256,uint256,uint256)": EventFragment;
+    "FlashLiquidate(address,address,address,address,uint256,uint256,uint256,uint256,uint256)": EventFragment;
   };
 
-  getEvent(
-    nameOrSignatureOrTopic: "FlashSwapAndLiquidateBorrow"
-  ): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "FlashLiquidate"): EventFragment;
 }
 
-export interface FlashSwapAndLiquidateBorrowEventObject {
+export interface FlashLiquidateEventObject {
   liquidator: string;
   borrower: string;
   bond: string;
@@ -128,7 +126,7 @@ export interface FlashSwapAndLiquidateBorrowEventObject {
   subsidyAmount: BigNumber;
   profitAmount: BigNumber;
 }
-export type FlashSwapAndLiquidateBorrowEvent = TypedEvent<
+export type FlashLiquidateEvent = TypedEvent<
   [
     string,
     string,
@@ -140,11 +138,10 @@ export type FlashSwapAndLiquidateBorrowEvent = TypedEvent<
     BigNumber,
     BigNumber
   ],
-  FlashSwapAndLiquidateBorrowEventObject
+  FlashLiquidateEventObject
 >;
 
-export type FlashSwapAndLiquidateBorrowEventFilter =
-  TypedEventFilter<FlashSwapAndLiquidateBorrowEvent>;
+export type FlashLiquidateEventFilter = TypedEventFilter<FlashLiquidateEvent>;
 
 export interface FlashUniswapV3 extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
@@ -225,7 +222,7 @@ export interface FlashUniswapV3 extends BaseContract {
   };
 
   filters: {
-    "FlashSwapAndLiquidateBorrow(address,address,address,address,uint256,uint256,uint256,uint256,uint256)"(
+    "FlashLiquidate(address,address,address,address,uint256,uint256,uint256,uint256,uint256)"(
       liquidator?: PromiseOrValue<string> | null,
       borrower?: PromiseOrValue<string> | null,
       bond?: PromiseOrValue<string> | null,
@@ -235,8 +232,8 @@ export interface FlashUniswapV3 extends BaseContract {
       repayAmount?: null,
       subsidyAmount?: null,
       profitAmount?: null
-    ): FlashSwapAndLiquidateBorrowEventFilter;
-    FlashSwapAndLiquidateBorrow(
+    ): FlashLiquidateEventFilter;
+    FlashLiquidate(
       liquidator?: PromiseOrValue<string> | null,
       borrower?: PromiseOrValue<string> | null,
       bond?: PromiseOrValue<string> | null,
@@ -246,7 +243,7 @@ export interface FlashUniswapV3 extends BaseContract {
       repayAmount?: null,
       subsidyAmount?: null,
       profitAmount?: null
-    ): FlashSwapAndLiquidateBorrowEventFilter;
+    ): FlashLiquidateEventFilter;
   };
 
   estimateGas: {

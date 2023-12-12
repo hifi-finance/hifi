@@ -4,7 +4,7 @@ pragma solidity =0.7.6;
 
 import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
 
-import "./NoDelegateCall.sol";
+import "./libraries/NoDelegateCall.sol";
 
 import "@uniswap/v3-core/contracts/libraries/LowGasSafeMath.sol";
 import "@uniswap/v3-core/contracts/libraries/SafeCast.sol";

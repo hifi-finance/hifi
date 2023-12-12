@@ -1,16 +1,19 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 pragma solidity ^0.8.4;
 
-import "@prb/contracts/token/erc20/IErc20.sol";
-import "@prb/contracts/token/erc20/SafeErc20.sol";
-import "@hifi/protocol/contracts/core/balance-sheet/IBalanceSheetV2.sol";
-import "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
-
-import "./IFlashUniswapV3.sol";
+import { IErc20 } from "@prb/contracts/token/erc20/IErc20.sol";
+import { SafeErc20 } from "@prb/contracts/token/erc20/SafeErc20.sol";
+import { IBalanceSheetV2 } from "@hifi/protocol/contracts/core/balance-sheet/IBalanceSheetV2.sol";
+import { IHToken } from "@hifi/protocol/contracts/core/h-token/IHToken.sol";
+import { IUniswapV3Pool } from "@uniswap/v3-core/contracts/interfaces/IUniswapV3Pool.sol";
+import { IUniswapV3SwapCallback } from "@uniswap/v3-core/contracts/interfaces/callback/IUniswapV3SwapCallback.sol";
+import { Path } from "./libraries/Path.sol";
+import { IFlashUniswapV3 } from "./IFlashUniswapV3.sol";
 
 /// @title FlashUniswapV3
 /// @author Hifi
 contract FlashUniswapV3 is IFlashUniswapV3 {
+    using Path for bytes;
     using SafeErc20 for IErc20;
 
     /// PUBLIC STORAGE ///
@@ -35,16 +38,14 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
     }
 
     struct FlashLiquidateLocalVars {
-        PoolKey poolKey;
         IErc20 underlying;
-        bool zeroForOne;
     }
 
     struct UniswapV3SwapCallbackParams {
         IHToken bond;
         address borrower;
         IErc20 collateral;
-        PoolKey poolKey;
+        bytes path;
         address sender;
         int256 turnout;
         uint256 underlyingAmount;
@@ -65,32 +66,18 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
             });
         }
 
-        // Compute the flash pool key and address.
-        vars.poolKey = getPoolKey({
-            tokenA: address(params.collateral),
-            tokenB: address(vars.underlying),
-            fee: params.poolFee
-        });
-
-        // The direction of the swap, true for token0 to token1, false for token1 to token0.
-        vars.zeroForOne = address(vars.underlying) == vars.poolKey.token1;
-
-        IUniswapV3Pool(poolFor(vars.poolKey)).swap({
-            recipient: address(this),
-            zeroForOne: vars.zeroForOne,
-            amountSpecified: int256(params.underlyingAmount) * -1,
-            sqrtPriceLimitX96: vars.zeroForOne ? MIN_SQRT_RATIO + 1 : MAX_SQRT_RATIO - 1,
-            data: abi.encode(
-                UniswapV3SwapCallbackParams({
-                    bond: params.bond,
-                    borrower: params.borrower,
-                    collateral: params.collateral,
-                    poolKey: vars.poolKey,
-                    sender: msg.sender,
-                    turnout: params.turnout,
-                    underlyingAmount: params.underlyingAmount
-                })
-            )
+        swapExactOutputInternal({
+            amountOut: params.underlyingAmount,
+            to: address(this),
+            params: UniswapV3SwapCallbackParams({
+                bond: params.bond,
+                borrower: params.borrower,
+                collateral: params.collateral,
+                path: params.path,
+                sender: msg.sender,
+                turnout: params.turnout,
+                underlyingAmount: params.underlyingAmount
+            })
         });
     }
 
@@ -100,6 +87,9 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
         uint256 repayAmount;
         uint256 seizeAmount;
         uint256 subsidyAmount;
+        address tokenOut;
+        uint24 fee;
+        address tokenIn;
     }
 
     /// @inheritdoc IUniswapV3SwapCallback
@@ -113,79 +103,87 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
         // Unpack the ABI encoded data passed by the UniswapV3Pool contract.
         UniswapV3SwapCallbackParams memory params = abi.decode(data, (UniswapV3SwapCallbackParams));
 
+        (vars.tokenOut, vars.tokenIn, vars.fee) = params.path.decodeFirstPool();
+
         // Check that the caller is the Uniswap V3 flash pool contract.
-        if (msg.sender != poolFor(params.poolKey)) {
+        if (msg.sender != getPool({ tokenA: vars.tokenIn, tokenB: vars.tokenOut, fee: vars.fee })) {
             revert FlashUniswapV3__CallNotAuthorized(msg.sender);
         }
 
-        // Mint hTokens and liquidate the borrower.
-        vars.mintedHTokenAmount = mintHTokens({ bond: params.bond, underlyingAmount: params.underlyingAmount });
-        vars.seizeAmount = liquidateBorrow({
-            borrower: params.borrower,
-            bond: params.bond,
-            collateral: params.collateral,
-            mintedHTokenAmount: vars.mintedHTokenAmount
-        });
+        // Calculate the amount of input tokens required to receive the exact output amount.
+        vars.repayAmount = amount0Delta > 0 ? uint256(amount0Delta) : uint256(amount1Delta);
 
-        // Calculate the amount of collateral required to repay.
-        vars.repayAmount = uint256(amount0Delta > 0 ? amount0Delta : amount1Delta);
+        // Initiate the next swap.
+        if (params.path.hasMultiplePools()) {
+            params.path = params.path.skipToken();
+            swapExactOutputInternal({ amountOut: vars.repayAmount, to: msg.sender, params: params });
+        }
+        // Or liquidate the underwater vault.
+        else {
+            // Mint hTokens and liquidate the borrower.
+            vars.mintedHTokenAmount = mintHTokens({ bond: params.bond, underlyingAmount: params.underlyingAmount });
+            vars.seizeAmount = liquidateBorrow({
+                borrower: params.borrower,
+                bond: params.bond,
+                collateral: params.collateral,
+                mintedHTokenAmount: vars.mintedHTokenAmount
+            });
 
-        // Note that "turnout" is a signed int. When it is negative, it acts as a maximum subsidy amount.
-        // When its value is positive, it acts as a minimum profit.
-        if (int256(vars.seizeAmount) < int256(vars.repayAmount) + params.turnout) {
-            revert FlashUniswapV3__TurnoutNotSatisfied({
+            // Note that "turnout" is a signed int. When it is negative, it acts as a maximum subsidy amount.
+            // When its value is positive, it acts as a minimum profit.
+            if (int256(vars.seizeAmount) < int256(vars.repayAmount) + params.turnout) {
+                revert FlashUniswapV3__TurnoutNotSatisfied({
+                    seizeAmount: vars.seizeAmount,
+                    repayAmount: vars.repayAmount,
+                    turnout: params.turnout
+                });
+            }
+
+            // Transfer the subsidy amount.
+            if (vars.repayAmount > vars.seizeAmount) {
+                unchecked {
+                    vars.subsidyAmount = vars.repayAmount - vars.seizeAmount;
+                }
+                params.collateral.safeTransferFrom(params.sender, address(this), vars.subsidyAmount);
+            }
+            // Or reap the profit.
+            else if (vars.seizeAmount > vars.repayAmount) {
+                unchecked {
+                    vars.profitAmount = vars.seizeAmount - vars.repayAmount;
+                }
+                params.collateral.safeTransfer(params.sender, vars.profitAmount);
+            }
+
+            // Pay back the loan.
+            params.collateral.safeTransfer(msg.sender, vars.repayAmount);
+
+            // Emit an event.
+            emit FlashLiquidate({
+                liquidator: params.sender,
+                borrower: params.borrower,
+                bond: address(params.bond),
+                collateral: address(params.collateral),
+                underlyingAmount: params.underlyingAmount,
                 seizeAmount: vars.seizeAmount,
                 repayAmount: vars.repayAmount,
-                turnout: params.turnout
+                subsidyAmount: vars.subsidyAmount,
+                profitAmount: vars.profitAmount
             });
         }
-
-        // Transfer the subsidy amount.
-        if (vars.repayAmount > vars.seizeAmount) {
-            unchecked {
-                vars.subsidyAmount = vars.repayAmount - vars.seizeAmount;
-            }
-            params.collateral.safeTransferFrom(params.sender, address(this), vars.subsidyAmount);
-        }
-        // Or reap the profit.
-        else if (vars.seizeAmount > vars.repayAmount) {
-            unchecked {
-                vars.profitAmount = vars.seizeAmount - vars.repayAmount;
-            }
-            params.collateral.safeTransfer(params.sender, vars.profitAmount);
-        }
-
-        // Pay back the loan.
-        params.collateral.safeTransfer(msg.sender, vars.repayAmount);
-
-        // Emit an event.
-        emit FlashSwapAndLiquidateBorrow({
-            liquidator: params.sender,
-            borrower: params.borrower,
-            bond: address(params.bond),
-            collateral: address(params.collateral),
-            underlyingAmount: params.underlyingAmount,
-            seizeAmount: vars.seizeAmount,
-            repayAmount: vars.repayAmount,
-            subsidyAmount: vars.subsidyAmount,
-            profitAmount: vars.profitAmount
-        });
     }
 
     /// INTERNAL CONSTANT FUNCTIONS ///
 
-    /// @dev Returns the Uniswap V3 pool key for a given token pair and fee level.
-    function getPoolKey(
+    /// @dev Calculates the CREATE2 address for a Uniswap V3 pool for a given token pair and fee level without
+    /// making any external calls.
+    function getPool(
         address tokenA,
         address tokenB,
         uint24 fee
-    ) internal pure returns (PoolKey memory) {
+    ) internal view returns (address pool) {
         if (tokenA > tokenB) (tokenA, tokenB) = (tokenB, tokenA);
-        return PoolKey({ token0: tokenA, token1: tokenB, fee: fee });
-    }
+        PoolKey memory key = PoolKey({ token0: tokenA, token1: tokenB, fee: fee });
 
-    /// @dev Calculates the CREATE2 address for a Uniswap V3 pool without making any external calls.
-    function poolFor(PoolKey memory key) internal view returns (address pool) {
         // solhint-disable-next-line reason-string
         require(key.token0 < key.token1);
         pool = address(
@@ -251,6 +249,54 @@ contract FlashUniswapV3 is IFlashUniswapV3 {
         uint256 newHTokenBalance = bond.balanceOf(address(this));
         unchecked {
             mintedHTokenAmount = newHTokenBalance - oldHTokenBalance;
+        }
+    }
+
+    struct SwapExactOutputLocalVars {
+        uint256 amountOutReceived;
+        uint24 fee;
+        address tokenIn;
+        address tokenOut;
+        bool zeroForOne;
+    }
+
+    /// @dev Performs a Uniswap V3 swap, receiving an exact amount of output.
+    function swapExactOutputInternal(
+        uint256 amountOut,
+        address to,
+        UniswapV3SwapCallbackParams memory params
+    ) private returns (uint256 amountIn) {
+        SwapExactOutputLocalVars memory vars;
+
+        // Decode the first pool from the path.
+        (vars.tokenOut, vars.tokenIn, vars.fee) = params.path.decodeFirstPool();
+
+        // Compute the direction of the swap.
+        vars.zeroForOne = vars.tokenIn < vars.tokenOut;
+
+        // Swap the exact output amount.
+        (int256 amount0Delta, int256 amount1Delta) = IUniswapV3Pool(
+            getPool({ tokenA: vars.tokenIn, tokenB: vars.tokenOut, fee: vars.fee })
+        ).swap({
+                recipient: to,
+                zeroForOne: vars.zeroForOne,
+                amountSpecified: -int256(amountOut),
+                sqrtPriceLimitX96: vars.zeroForOne ? MIN_SQRT_RATIO + 1 : MAX_SQRT_RATIO - 1,
+                data: abi.encode(params)
+            });
+
+        // Compute the amount of input required to receive the exact output amount and the actual amount
+        // of output received.
+        (amountIn, vars.amountOutReceived) = vars.zeroForOne
+            ? (uint256(amount0Delta), uint256(-amount1Delta))
+            : (uint256(amount1Delta), uint256(-amount0Delta));
+
+        // It's technically possible to not receive the full output amount when no price limit has been specified.
+        if (vars.amountOutReceived != amountOut) {
+            revert FlashUniswapV3__InsufficientSwapOutputAmount({
+                amountOutExpected: amountOut,
+                amountOutReceived: vars.amountOutReceived
+            });
         }
     }
 }
