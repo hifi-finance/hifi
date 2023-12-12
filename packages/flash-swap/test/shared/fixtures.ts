@@ -28,10 +28,8 @@ import type { GodModeUniswapV2Factory } from "../../src/types/contracts/uniswap-
 import type { GodModeUniswapV2Pair } from "../../src/types/contracts/uniswap-v2/test/GodModeUniswapV2Pair";
 import type { MaliciousPair as MaliciousV2Pair } from "../../src/types/contracts/uniswap-v2/test/MaliciousPair";
 import type { FlashUniswapV3 } from "../../src/types/contracts/uniswap-v3/FlashUniswapV3";
-import type { UniswapV3Pool } from "../../src/types/contracts/uniswap-v3/UniswapV3Pool";
 import type { GodModeNonfungiblePositionManager } from "../../src/types/contracts/uniswap-v3/test/GodModeNonfungiblePositionManager";
 import { GodModeUniswapV2Pair__factory } from "../../src/types/factories/contracts/uniswap-v2/test/GodModeUniswapV2Pair__factory";
-import { UniswapV3Pool__factory } from "../../src/types/factories/contracts/uniswap-v3/UniswapV3Pool__factory";
 import { deployGodModeErc20 } from "./deployers";
 
 type IntegrationFixtureReturnType = {
