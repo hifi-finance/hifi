@@ -9,7 +9,6 @@ import type { FlashUniswapV2 } from "../../src/types/contracts/uniswap-v2/FlashU
 import type { GodModeUniswapV2Pair } from "../../src/types/contracts/uniswap-v2/test/GodModeUniswapV2Pair";
 import type { MaliciousPair as MaliciousV2Pair } from "../../src/types/contracts/uniswap-v2/test/MaliciousPair";
 import type { FlashUniswapV3 } from "../../src/types/contracts/uniswap-v3/FlashUniswapV3";
-import type { UniswapV3Pool } from "../../src/types/contracts/uniswap-v3/UniswapV3Pool";
 import type { GodModeNonfungiblePositionManager } from "../../src/types/contracts/uniswap-v3/test/GodModeNonfungiblePositionManager";
 
 declare module "mocha" {
@@ -21,6 +20,7 @@ declare module "mocha" {
 
 export interface Contracts {
   balanceSheet: BalanceSheetV2;
+  dai: GodModeErc20;
   fintroller: Fintroller;
   flashUniswapV2: FlashUniswapV2;
   flashUniswapV3: FlashUniswapV3;
@@ -29,7 +29,6 @@ export interface Contracts {
   usdc: GodModeErc20;
   usdcPriceFeed: SimplePriceFeed;
   uniswapV2Pair: GodModeUniswapV2Pair;
-  uniswapV3Pool: UniswapV3Pool;
   uniswapV3PositionManager: GodModeNonfungiblePositionManager;
   wbtc: GodModeErc20;
   wbtcPriceFeed: SimplePriceFeed;

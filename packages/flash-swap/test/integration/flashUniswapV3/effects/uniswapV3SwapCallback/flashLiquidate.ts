@@ -1,7 +1,7 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { MaxUint256 } from "@ethersproject/constants";
 import { Zero } from "@ethersproject/constants";
-import { LIQUIDATION_INCENTIVES } from "@hifi/constants";
+import { DEFAULT_FEE, LIQUIDATION_INCENTIVES } from "@hifi/constants";
 import { BalanceSheetErrors, FlashUniswapV3Errors } from "@hifi/errors";
 import { USDC, WBTC, getNow, hUSDC, price } from "@hifi/helpers";
 import { expect } from "chai";
@@ -21,13 +21,15 @@ async function getFlashLiquidateParams(
 ): Promise<FlashLiquidateParams> {
   const borrower: string = this.signers.borrower.address;
   const bond: string = this.contracts.hToken.address;
-  const fee: number = await this.contracts.uniswapV3Pool.fee();
-  const underlying: string = await this.contracts.hToken.underlying();
+  const underlying: string = this.contracts.usdc.address;
   const params: FlashLiquidateParams = {
     borrower: borrower,
     bond: bond,
     collateral: collateral,
-    path: utils.solidityPack(["address", "uint24", "address"], [underlying, fee, collateral]),
+    path: utils.solidityPack(
+      ["address", "uint24", "address", "uint24", "address"],
+      [underlying, DEFAULT_FEE, this.contracts.dai.address, DEFAULT_FEE, collateral],
+    ),
     turnout: turnout,
     underlyingAmount: underlyingAmount,
   };
@@ -40,7 +42,7 @@ export function shouldBehaveLikeFlashLiquidate(): void {
   const collateralCeiling: BigNumber = USDC("1e6");
   const debtCeiling: BigNumber = hUSDC("1e6");
   const depositCollateralAmount: BigNumber = WBTC("1");
-  const profitCollateralAmount: BigNumber = WBTC("0.59979736");
+  const profitCollateralAmount: BigNumber = WBTC("0.59959926");
   const swapUnderlyingAmount: BigNumber = USDC("10000");
 
   context("when the collateral is the same as the underlying", function () {
@@ -60,8 +62,29 @@ export function shouldBehaveLikeFlashLiquidate(): void {
       // Set the oracle price to 1 USDC = $1.
       await this.contracts.usdcPriceFeed.setPrice(price("1"));
 
-      // Set up the Uniswap V3 Pool and mint a position.
-      await mintPoolReserves.call(this, "100000000000000");
+      // Set up the WBTC-DAI Uniswap V3 Pool and mint a position.
+      await mintPoolReserves.call(
+        this,
+        this.contracts.wbtc,
+        this.contracts.dai,
+        DEFAULT_FEE,
+        // Create a position with price range 1 WBTC ~ 25k DAI.
+        "1",
+        "250000000000000",
+        "10000000000000000000000",
+      );
+
+      // Set up the DAI-USDC Uniswap V3 Pool and mint a position.
+      await mintPoolReserves.call(
+        this,
+        this.contracts.usdc,
+        this.contracts.dai,
+        DEFAULT_FEE,
+        // Create a position with price range 1 DAI ~ 1 USDC.
+        "1",
+        "1000000000000",
+        "10000000000000000000000",
+      );
 
       // List the bond in the Fintroller.
       await this.contracts.fintroller.connect(this.signers.admin).listBond(this.contracts.hToken.address);
@@ -194,10 +217,10 @@ export function shouldBehaveLikeFlashLiquidate(): void {
         });
 
         context("when the repay amount is equal to the seized amount", function () {
-          const subsidyCollateralAmount: BigNumber = WBTC("0.00051608");
-          const liquidationIncentive = toBn("1.00051608");
-          const repayCollateralAmount: BigNumber = WBTC("1.00051608");
-          const seizeCollateralAmount: BigNumber = WBTC("1.00051608");
+          const subsidyCollateralAmount: BigNumber = WBTC("0.00100342");
+          const liquidationIncentive = toBn("1.00100342");
+          const repayCollateralAmount: BigNumber = WBTC("1.00100342");
+          const seizeCollateralAmount: BigNumber = WBTC("1.00100342");
           const swapUnderlyingAmount: BigNumber = USDC("25000");
           let params: FlashLiquidateParams;
 
@@ -247,9 +270,9 @@ export function shouldBehaveLikeFlashLiquidate(): void {
         });
 
         context("when the repay amount is greater than the seized amount", function () {
-          const subsidyCollateralAmount: BigNumber = WBTC("0.20062309");
+          const subsidyCollateralAmount: BigNumber = WBTC("0.20120474");
           const seizeCollateralAmount: BigNumber = WBTC("1");
-          const repayCollateralAmount: BigNumber = WBTC("1.20062309");
+          const repayCollateralAmount: BigNumber = WBTC("1.20120474");
           const swapUnderlyingAmount: BigNumber = USDC("30000");
 
           beforeEach(async function () {
@@ -320,7 +343,7 @@ export function shouldBehaveLikeFlashLiquidate(): void {
         });
 
         context("when the repay amount is less than the seized amount", function () {
-          const repayCollateralAmount: BigNumber = WBTC("0.40020264");
+          const repayCollateralAmount: BigNumber = WBTC("0.40040074");
           const seizeCollateralAmount: BigNumber = WBTC("1");
 
           beforeEach(async function () {

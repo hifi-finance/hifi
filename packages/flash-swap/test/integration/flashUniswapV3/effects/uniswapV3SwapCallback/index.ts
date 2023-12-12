@@ -1,6 +1,7 @@
 import { defaultAbiCoder } from "@ethersproject/abi";
 import { BigNumber } from "@ethersproject/bignumber";
 import { Zero } from "@ethersproject/constants";
+import { DEFAULT_FEE } from "@hifi/constants";
 import { FlashUniswapV3Errors } from "@hifi/errors";
 import { USDC, WBTC } from "@hifi/helpers";
 import { expect } from "chai";
@@ -8,7 +9,7 @@ import { utils } from "ethers";
 
 import { shouldBehaveLikeFlashLiquidate } from "./flashLiquidate";
 
-async function getSwapCallbackData(this: Mocha.Context, collateral: string, fee: number): Promise<string> {
+async function getSwapCallbackData(this: Mocha.Context, collateral: string): Promise<string> {
   const bond: string = this.contracts.hToken.address;
   const borrower: string = this.signers.borrower.address;
   const sender: string = this.signers.raider.address;
@@ -32,7 +33,7 @@ async function getSwapCallbackData(this: Mocha.Context, collateral: string, fee:
         bond,
         borrower,
         collateral,
-        path: utils.solidityPack(["address", "uint24", "address"], [underlying, fee, collateral]),
+        path: utils.solidityPack(["address", "uint24", "address"], [underlying, DEFAULT_FEE, collateral]),
         sender,
         turnout,
         underlyingAmount,
@@ -59,8 +60,7 @@ export function shouldBehaveLikeUniswapV3SwapCallback(): void {
     let data: string;
 
     beforeEach(async function () {
-      const fee: number = await this.contracts.uniswapV3Pool.fee();
-      data = await getSwapCallbackData.call(this, this.contracts.wbtc.address, fee);
+      data = await getSwapCallbackData.call(this, this.contracts.wbtc.address);
     });
 
     context("when the caller is not the UniswapV3Pool contract", function () {

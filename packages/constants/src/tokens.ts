@@ -1,5 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
+export const DAI_DECIMALS: BigNumber = BigNumber.from(18);
+export const DAI_NAME: string = "Dai Stablecoin";
+export const DAI_SYMBOL: string = "DAI";
+
 export const USDC_DECIMALS: BigNumber = BigNumber.from(6);
 export const USDC_NAME: string = "USD Coin";
 export const USDC_PRICE_PRECISION_SCALAR: BigNumber = BigNumber.from(1_000_000_000_000);

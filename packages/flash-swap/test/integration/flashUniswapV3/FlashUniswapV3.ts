@@ -6,10 +6,10 @@ export function integrationTestFlashUniswapV3(): void {
     beforeEach(async function () {
       const {
         balanceSheet,
+        dai,
         fintroller,
         flashUniswapV3,
         hToken,
-        uniswapV3Pool,
         uniswapV3PositionManager,
         usdc,
         usdcPriceFeed,
@@ -17,10 +17,10 @@ export function integrationTestFlashUniswapV3(): void {
         wbtcPriceFeed,
       } = await this.loadFixture(integrationFixture);
       this.contracts.balanceSheet = balanceSheet;
+      this.contracts.dai = dai;
       this.contracts.fintroller = fintroller;
       this.contracts.flashUniswapV3 = flashUniswapV3;
       this.contracts.hToken = hToken;
-      this.contracts.uniswapV3Pool = uniswapV3Pool;
       this.contracts.uniswapV3PositionManager = uniswapV3PositionManager;
       this.contracts.usdc = usdc;
       this.contracts.usdcPriceFeed = usdcPriceFeed;

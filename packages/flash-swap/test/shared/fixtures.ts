@@ -1,6 +1,15 @@
 import { Signer } from "@ethersproject/abstract-signer";
 import { keccak256 } from "@ethersproject/keccak256";
-import { H_TOKEN_MATURITY_ONE_YEAR, WETH_DECIMALS, WETH_NAME, WETH_SYMBOL } from "@hifi/constants";
+import {
+  DAI_DECIMALS,
+  DAI_NAME,
+  DAI_SYMBOL,
+  DEFAULT_FEE,
+  H_TOKEN_MATURITY_ONE_YEAR,
+  WETH_DECIMALS,
+  WETH_NAME,
+  WETH_SYMBOL,
+} from "@hifi/constants";
 import { USDC_DECIMALS, USDC_NAME, USDC_SYMBOL, WBTC_DECIMALS, WBTC_NAME, WBTC_SYMBOL } from "@hifi/constants";
 import { getHTokenName, getHTokenSymbol } from "@hifi/helpers";
 import type { BalanceSheetV2 } from "@hifi/protocol/dist/types/contracts/core/balance-sheet/BalanceSheetV2";
@@ -27,13 +36,13 @@ import { deployGodModeErc20 } from "./deployers";
 
 type IntegrationFixtureReturnType = {
   balanceSheet: BalanceSheetV2;
+  dai: GodModeErc20;
   fintroller: Fintroller;
   flashUniswapV2: FlashUniswapV2;
   flashUniswapV3: FlashUniswapV3;
   hToken: GodModeHToken;
   maliciousV2Pair: MaliciousV2Pair;
   uniswapV2Pair: GodModeUniswapV2Pair;
-  uniswapV3Pool: UniswapV3Pool;
   uniswapV3PositionManager: GodModeNonfungiblePositionManager;
   usdc: GodModeErc20;
   usdcPriceFeed: SimplePriceFeed;
@@ -45,6 +54,7 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
   const deployer: Signer = signers[0];
 
   const wbtc: GodModeErc20 = await deployGodModeErc20(deployer, WBTC_NAME, WBTC_SYMBOL, WBTC_DECIMALS);
+  const dai: GodModeErc20 = await deployGodModeErc20(deployer, DAI_NAME, DAI_SYMBOL, DAI_DECIMALS);
   const usdc: GodModeErc20 = await deployGodModeErc20(deployer, USDC_NAME, USDC_SYMBOL, USDC_DECIMALS);
 
   const simplePriceFeedArtifact: Artifact = await artifacts.readArtifact("SimplePriceFeed");
@@ -112,10 +122,9 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
   const uniswapV3Factory: IUniswapV3Factory = <IUniswapV3Factory>(
     await waffle.deployContract(deployer, uniswapV3FactoryArtifact, [])
   );
-  await uniswapV3Factory.createPool(wbtc.address, usdc.address, 500);
-  const v3PoolAddress: string = await uniswapV3Factory.getPool(wbtc.address, usdc.address, 500);
-
-  const uniswapV3Pool: UniswapV3Pool = UniswapV3Pool__factory.connect(v3PoolAddress, deployer);
+  // Create pools for WBTC-DAI and DAI-USDC.
+  await uniswapV3Factory.createPool(wbtc.address, dai.address, DEFAULT_FEE);
+  await uniswapV3Factory.createPool(dai.address, usdc.address, DEFAULT_FEE);
 
   const weth: GodModeErc20 = await deployGodModeErc20(deployer, WETH_NAME, WETH_SYMBOL, WETH_DECIMALS);
 
@@ -131,13 +140,13 @@ export async function integrationFixture(signers: Signer[]): Promise<Integration
 
   return {
     balanceSheet,
+    dai,
     fintroller,
     flashUniswapV2,
     flashUniswapV3,
     hToken,
     maliciousV2Pair,
     uniswapV2Pair,
-    uniswapV3Pool,
     uniswapV3PositionManager,
     usdc,
     usdcPriceFeed,
