@@ -9,6 +9,7 @@
  */
 pragma solidity >=0.8.4 <0.9.0;
 
+/// @dev https://raw.githubusercontent.com/Uniswap/v3-periphery/v1.3.0/contracts/libraries/BytesLib.sol
 library BytesLib {
     function slice(
         bytes memory _bytes,

@@ -5,6 +5,7 @@ pragma solidity >=0.8.4;
 import "./BytesLib.sol";
 
 /// @title Functions for manipulating path data for multihop swaps
+/// @dev https://raw.githubusercontent.com/Uniswap/v3-periphery/v1.3.0/contracts/libraries/Path.sol
 library Path {
     using BytesLib for bytes;
 
