@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic
 Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.13.0] - 2024-01-02
+
+### Added
+
+- Add support for n-hop swaps in `FlashUniswapV3`.
+
+### Changed
+
+- Rename `FlashSwapAndLiquidateBorrow` event to `FlashLiquidate`.
+- Add dev NatSpec comments to libraries.
+- Add deployment commands to README.
+- Update Etherscan API keys in Hardhat config.
+- Update networks in Hardhat config.
+- Upgrade all package dependencies.
+
 ## [1.12.0] - 2023-04-20
 
 ### Added
@@ -202,6 +217,8 @@ Versioning](https://semver.org/spec/v2.0.0.html).
 
 - First release of the package.
 
+[1.13.0]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.12.0...@hifi/flash-swap@1.13.0
+[1.12.0]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.11.0...@hifi/flash-swap@1.12.0
 [1.11.0]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.10.0...@hifi/flash-swap@1.11.0
 [1.10.0]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.9.0...@hifi/flash-swap@1.10.0
 [1.9.0]: https://github.com/hifi-finance/hifi/compare/@hifi/flash-swap@1.8.0...@hifi/flash-swap@1.9.0
