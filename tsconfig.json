@@ -14,7 +14,8 @@
     "resolveJsonModule": true,
     "sourceMap": true,
     "strict": true,
-    "target": "es6"
+    "target": "es6",
+    "types": ["mocha"]
   },
   "exclude": ["node_modules"]
 }

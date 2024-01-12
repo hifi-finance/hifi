@@ -2,8 +2,7 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "rootDir": "./src",
-    "outDir": "./dist",
-    "types": ["mocha"]
+    "outDir": "./dist"
   },
   "include": ["src/**/*"]
 }
