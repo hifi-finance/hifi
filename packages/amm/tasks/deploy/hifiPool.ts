@@ -13,7 +13,7 @@ task(TASK_DEPLOY_CONTRACT_HIFI_POOL)
   .addParam("name", "ERC-20 name of the pool token")
   .addParam("symbol", "ERC-20 symbol of the pool token")
   .addParam("hToken", "Address of the HToken contract")
-  .addParam("hifiPoolRegistry", "Address of the HifiPoolRegistry contract")
+  .addOptionalParam("hifiPoolRegistry", "Address of the HifiPoolRegistry contract", undefined, types.string)
   // Developer settings
   .addOptionalParam("confirmations", "How many block confirmations to wait for", 2, types.int)
   .addOptionalParam("print", "Print the address in the console", true, types.boolean)
@@ -24,13 +24,15 @@ task(TASK_DEPLOY_CONTRACT_HIFI_POOL)
     const hifiPool: HifiPool = <HifiPool>await hifiPoolFactory.deploy(taskArgs.name, taskArgs.symbol, taskArgs.hToken);
     await hifiPool.deployed();
 
-    const hifiPoolRegistryFactory: HifiPoolRegistry__factory = new HifiPoolRegistry__factory(signers[0]);
-    const hifiPoolRegistry: HifiPoolRegistry = <HifiPoolRegistry>(
-      hifiPoolRegistryFactory.attach(taskArgs.hifiPoolRegistry)
-    );
-    const trackPoolTx = await hifiPoolRegistry.trackPool(hifiPool.address);
-    if (taskArgs.confirmations > 0) {
-      await trackPoolTx.wait(taskArgs.confirmations);
+    if (taskArgs.hifiPoolRegistry) {
+      const hifiPoolRegistryFactory: HifiPoolRegistry__factory = new HifiPoolRegistry__factory(signers[0]);
+      const hifiPoolRegistry: HifiPoolRegistry = <HifiPoolRegistry>(
+        hifiPoolRegistryFactory.attach(taskArgs.hifiPoolRegistry)
+      );
+      const trackPoolTx = await hifiPoolRegistry.trackPool(hifiPool.address);
+      if (taskArgs.confirmations > 0) {
+        await trackPoolTx.wait(taskArgs.confirmations);
+      }
     }
 
     if (taskArgs.print) {
